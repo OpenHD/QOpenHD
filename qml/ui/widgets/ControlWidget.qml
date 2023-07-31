@@ -24,7 +24,7 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    property int m_control_yaw : 0
+    property int m_control_yaw : 1200
     property int m_control_roll: 0
     property int m_control_pitch: 0
     property int m_control_throttle: 0
@@ -206,7 +206,8 @@ BaseWidget {
                 border.color: settings.color_glow
                 border.width: 1
 
-                visible: m_control_throttle < 1000 ? false : true
+                //visible: m_control_throttle < 1000 ? false : true
+                visible: true
 
                 transformOrigin: Item.Center
 
@@ -230,7 +231,8 @@ BaseWidget {
                 border.color: settings.color_glow
                 border.width: 1
 
-                visible: m_control_throttle < 1000 ? false : true
+                //visible: m_control_throttle < 1000 ? false : true
+                visible: true
 
                 transformOrigin: Item.Center
 

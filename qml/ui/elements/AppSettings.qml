@@ -297,6 +297,7 @@ Settings {
     // simple / minimal
     property bool show_vertical_speed_simple_widget: true
     property bool vertical_speed_simple_widget_show_unit: true
+    property bool vertical_speed_simple_widget_show_up_down_arrow: true
     // gauge
     property bool show_vertical_speed_gauge_widget: false
     property int vertical_speed_gauge_widget_max: 20

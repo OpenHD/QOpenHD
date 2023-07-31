@@ -278,6 +278,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_mission_current_decode(&msg,&mission_current);
         //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_CURRENT"<<mission_current.seq;
         set_mission_waypoints_current(mission_current.seq);
+        if(mission_current.total!=0){ // 0 == not supported
+            set_mission_waypoints_current_total(mission_current.total);
+        }
         break;
     }
     case MAVLINK_MSG_ID_MISSION_COUNT:{
@@ -297,11 +300,13 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
            if(item.frame==MAV_FRAME_GLOBAL || item.frame==MAV_FRAME_GLOBAL_RELATIVE_ALT){
                double lat=static_cast<double>(item.x)* 1e-7;
                double lon=static_cast<double>(item.y)* 1e-7;
+               double alt_m=100;
                if(lat==0.0 || lon==0.0){
                    //qDebug()<<"Weird mission item:"<<item.x<<","<<item.y<<" index:"<<item.seq;
                }else{
                    const int mission_index=item.seq;
-                   FCMavlinkMissionItemsModel::instance().hack_add_el_if_nonexisting(lat,lon,mission_index);
+                   const bool currently_active=item.current==1;
+                   FCMavlinkMissionItemsModel::instance().update_mission(mission_index,lat,lon,alt_m,currently_active);
                }
            }
         }

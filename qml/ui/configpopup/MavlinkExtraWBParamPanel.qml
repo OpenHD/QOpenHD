@@ -183,7 +183,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                     text: "MORE INFO"
                     Material.background:Material.LightBlue
                     onClicked: {
-                        var text="After flashing,openhd uses the same default frequency, and your air and ground unit automatically connects.
+                        var text="After flashing,openhd uses the same default frequency, and your air and ground unit automatically connect.
 If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
                         _messageBoxInstance.set_text_and_show(text)
                     }
@@ -247,8 +247,8 @@ If you changed the frequency of your air unit and are using a different Ground u
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change frequency while FC is armed. MCS index can be changed though.";
-                                    _messageBoxInstance.set_text_and_show(text);
+                                    var text="Cannot change frequency while FC is armed.";
+                                    _messageBoxInstance.set_text_and_show(text,5);
                                     return;
                                 }
                                 var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
@@ -308,8 +308,8 @@ If you changed the frequency of your air unit and are using a different Ground u
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change channel width while FC is armed. MCS index can be changed though."
-                                    _messageBoxInstance.set_text_and_show(text);
+                                    var text="Cannot change channel width while FC is armed."
+                                    _messageBoxInstance.set_text_and_show(text,5);
                                     return;
                                 }
                                 var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value

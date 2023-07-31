@@ -344,6 +344,7 @@ Map {
                 //}
                 sourceItem: Item {
                     anchors.fill: parent
+                    visible: model.valid
                     // Red circle indicating the wapoint
                     // NEAT :) https://cuteguide.wordpress.com/2016/11/16/how-to-make-a-circle-from-rectangle/ - ehm doesnt work
                     /*Rectangle {
@@ -357,7 +358,7 @@ Map {
 
                         ShapePath {
                             strokeColor: "red"
-                            fillColor: "red"
+                            fillColor: model.index === _fcMavlinkSystem.mission_waypoints_current ? "green" : "red"
                             strokeWidth: 0
                             strokeStyle: ShapePath.SolidLine
 
@@ -378,7 +379,7 @@ Map {
                         horizontalAlignment : Text.AlignHCenter
                         verticalAlignment : Text.AlignVCenter
                         //text: "X"+model.mission_index
-                        text: ""+model.mission_index
+                        text: ""+model.index
                         color: "white"
                     }
                 }

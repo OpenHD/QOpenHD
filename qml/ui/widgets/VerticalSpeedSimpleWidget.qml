@@ -33,23 +33,24 @@ BaseWidget {
 
     function get_text_vertical_speed(){
         var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
+        if(settings.vertical_speed_simple_widget_show_up_down_arrow){
+            // remove the unit
+            if(vertical_speed_m_per_second<0){
+                vertical_speed_m_per_second*=-1;
+            }
+        }
         var vs_as_str=Number(vertical_speed_m_per_second).toLocaleString(Qt.locale(), 'f', 1);
         if(settings.vertical_speed_simple_widget_show_unit){
             vs_as_str+=" m/s";
-        }
-        if(vertical_speed_m_per_second>0.01){
-            return "+"+vs_as_str;
-        }else if(vertical_speed_m_per_second<-0.01){
-            return vs_as_str;
         }
         return vs_as_str;
     }
 
     function get_text_icon_vertical_speed(){
         var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
-        if(vertical_speed_m_per_second>=0.01){
+        if(vertical_speed_m_per_second>0.0){
             return "\uf062";
-        }else if(vertical_speed_m_per_second<=0.01){
+        }else if(vertical_speed_m_per_second<0.0){
             return "\uf063";
         }
         return "";
@@ -90,6 +91,28 @@ BaseWidget {
                     onCheckedChanged: settings.vertical_speed_simple_widget_show_unit = checked
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show up / down arrow")
+                    horizontalAlignment: Text.AlignRight
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.vertical_speed_simple_widget_show_up_down_arrow
+                    onCheckedChanged: settings.vertical_speed_simple_widget_show_up_down_arrow = checked
+                }
+            }
         }
     }
 
@@ -119,8 +142,9 @@ BaseWidget {
         }
         Text{
             anchors.right: speedtext.left
+            anchors.bottom: speedtext.bottom
             color: settings.color_text
-            font.pixelSize: 14
+            font.pixelSize: 28
             font.family: settings.font_text
             transform: Scale {
                 origin.x: 12
@@ -133,6 +157,7 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow
+            visible: settings.vertical_speed_simple_widget_show_up_down_arrow
         }
     }
 }

@@ -121,7 +121,11 @@ private:
         MessageInterval{MAVLINK_MSG_ID_BATTERY_STATUS,1},
         MessageInterval{MAVLINK_MSG_ID_HOME_POSITION,1},
         MessageInterval{ MAVLINK_MSG_ID_WIND,1},
+        MessageInterval{MAVLINK_MSG_ID_AOA_SSA,1},
+        MessageInterval{MAVLINK_MSG_ID_SCALED_PRESSURE,1},
         MessageInterval{MAVLINK_MSG_ID_MISSION_CURRENT,1},
+        // NOTE: We cannot set broadcast on this one !
+        //MessageInterval{MAVLINK_MSG_ID_MISSION_ITEM_INT,1},
         //MessageInterval{0,0},
         //MessageInterval{0,0},
     };
