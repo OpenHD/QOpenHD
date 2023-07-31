@@ -32,14 +32,14 @@ BaseWidget {
 
     function scale_ppm_us(value){
         if(value==-1)return 0; // N/A
-        if(value<1000){
+        if(value<500){
             return -1;
         }
-        if(value>2000){
+        if(value>2500){
             return 1;
         }
         if(value==0)return 0;
-        return (value-1500)/1000;
+        return ((value-1500)/1000);
     }
 
     function get_scaled_yaw(){
@@ -232,8 +232,10 @@ BaseWidget {
             height: elementLeft.width
             anchors.left: parent.left
 
-            position_x: get_scaled_yaw()
-            position_y: get_scaled_roll()
+            position_x: get_scaled_pitch()
+            position_y: get_scaled_throttle()
+            //position_x: 1.0
+            //position_y: 1.0
         }
 
         ControlWidgetSubElement{
@@ -243,8 +245,8 @@ BaseWidget {
             visible: settings.double_control
             anchors.left: elementLeft.right
 
-            position_x: get_scaled_pitch()
-            position_y: get_scaled_throttle()
+            position_x: get_scaled_yaw()
+            position_y: get_scaled_roll()
         }
 
 

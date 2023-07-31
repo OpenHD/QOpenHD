@@ -36,7 +36,7 @@ ScrollView {
             cardName: qsTr("OpenHD RC")
             cardBody:
                 Text {
-                text: qsTr("Here you can view the values which OpenHD reads from your Joystick\n and sends to the FC via wifibroadcast")
+                text: qsTr("Here you can view the values which OpenHD reads from your Joystick\n and sends to the FC via wifibroadcast (If enabled)")
                 height: 24
                 font.pixelSize: 14
                 leftPadding: 12

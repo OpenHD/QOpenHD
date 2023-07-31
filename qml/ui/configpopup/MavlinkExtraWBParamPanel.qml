@@ -54,6 +54,10 @@ Only enable if you want to quickly change your ground unit's frequency to the al
 Only enable if you want to quickly change your ground unit's channel width to the already set channel width of a running air unit (And know both frequency and channel width on top of your head)"
 
 
+    property string more_info_text: "After flashing,openhd uses the same default frequency, and your air and ground unit automatically connect."+
+    "If you change the frequency / channel width here, both air and ground unit are set to the new frequency."+
+"If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
+
     ScrollView {
         id:mavlinkExtraWBParamPanel
         width: parent.width
@@ -183,9 +187,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                     text: "MORE INFO"
                     Material.background:Material.LightBlue
                     onClicked: {
-                        var text="After flashing,openhd uses the same default frequency, and your air and ground unit automatically connect.
-If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
-                        _messageBoxInstance.set_text_and_show(text)
+                        _messageBoxInstance.set_text_and_show(more_info_text)
                     }
                 }
                 Rectangle {

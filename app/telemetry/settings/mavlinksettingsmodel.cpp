@@ -1,15 +1,12 @@
 ﻿#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
-#include "../models/aohdsystem.h"
-#include "../models/camerastreammodel.h"
 #include "param_names.h"
 #include "documented_param.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
-#include "../../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
 #include <QSettings>
 #include <QVariant>
@@ -402,41 +399,9 @@ void MavlinkSettingsModel::removeData(int row)
     endRemoveRows();
 }
 
-static void hacky_check_stbc(const int sys_id,const MavlinkSettingsModel::SettingData& data){
-    if(sys_id != OHD_SYS_ID_AIR){
-        // Enabling on air unit is way more important
-        return;
-    }
-    if(data.unique_id==openhd::WB_ENABLE_STBC){
-        if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"Error param";
-            return;
-        }
-        const int value=std::get<int32_t>(data.value);
-        // 0 = Disabled, 1 = [+1 (2 antennas)]
-        if(value!=1){
-            //  If your ground unit uses card(s) with 2 antennas, enable STBC on your air unit (transmitting part)."
-            // "If your air unit uses card(s) with 2 antennas, enable STBC on your ground unit (transmitting part).
-            auto message="Please check: Enable WB_E_STBC on air/gnd unit IF your rtl8812au TX/RX both have more than one antenna (NOTE: Without 2 populated rf paths, enabling this option results in"
-                           " no connection !!! OpenHD cannot automatically check how many rf paths are populated on your adapter(s). ASUS has 1 external and "
-                           "1 internal antenna (STBC should be used). If you wish to not see this "
-                           "prompt again, you can disable it in QOpenHD - DEV - dev_wb_show_no_stbc_enabled_warning.";
-            QSettings settings;
-            const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
-            if(!dev_wb_show_no_stbc_enabled_warning){
-                WorkaroundMessageBox::makePopupMessage(message,10);
-            }
-        }
-    }
-}
-
 
 void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData new_data)
 {
-    {
-        // temporary, dirty
-        hacky_check_stbc(m_sys_id,new_data);;
-    }
     int row=-1;
     if(row_opt.has_value()){
         row=row_opt.value();
@@ -464,10 +429,6 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
-    {
-        // temporary, dirty
-        hacky_check_stbc(m_sys_id,data);
-    }
     if(is_param_whitelisted(data.unique_id.toStdString())){
         // never add whitelisted params to the simple model, they need synchronization
         return;

@@ -172,6 +172,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "dirty_enable_mavlink_fc_sys_id_check"
+                 m_long_description: "Only accept FCs that explicitly expose themselves as autopilot - can fix issues with FC discovery in QOpenHD."
 
                 Switch {
                     width: 32

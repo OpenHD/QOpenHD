@@ -595,8 +595,9 @@ void FCMavlinkSystem::set_armed(bool armed) {
         flightTimeStart.start();
         if (m_home_latitude == 0.0 || m_home_longitude == 0.0) {
             //LocalMessage::instance()->showMessage("No Home Position in FCMavlinkSystem", 4);
-            HUDLogMessagesModel::instance().add_message_info("Requesting Home position");
-            request_home_position_from_fc();
+            // Not needed anymore after we just set the proper rate(s)
+            //HUDLogMessagesModel::instance().add_message_info("Requesting Home position");
+            //request_home_position_from_fc();
         }
     }
     m_armed = armed;

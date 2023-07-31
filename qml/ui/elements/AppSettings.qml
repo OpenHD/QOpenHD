@@ -280,7 +280,7 @@ Settings {
     property double map_size: 1
     property bool show_throttle: true
 
-    property bool show_control: false
+    property bool show_control: true
     property bool double_control: true
     property bool control_rev_pitch: false
     property bool control_rev_roll: false

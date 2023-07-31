@@ -154,6 +154,7 @@ private:
      // do not completely pollute the HUD with this error message
     std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point m_last_n_cameras_message=std::chrono::steady_clock::now();
+    bool m_stbc_warning_shown=false;
 };
 
 

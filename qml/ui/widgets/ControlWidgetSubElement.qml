@@ -5,8 +5,9 @@ import QtQuick 2.0
 // a small circle to show the input itself
 Rectangle {
 
-    color: "green"
+    //color: "green"
     //color: "yellow"
+    color: "transparent"
 
     // 1.0 - full right
     //-1.0 - full left
@@ -50,7 +51,7 @@ Rectangle {
 
         transform: Translate {
             x: position_x*(width/2.0)
-            y: position_y*(height/2.0)
+            y: -1*(position_y*(height/2.0))
         }
     }
 

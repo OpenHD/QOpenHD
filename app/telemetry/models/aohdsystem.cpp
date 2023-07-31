@@ -261,6 +261,22 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_wb_stbc_enabled(stbc_lpdc_gi.stbc);
     set_wb_lpdc_enabled(stbc_lpdc_gi.lpdc);
     set_wb_short_guard_enabled(stbc_lpdc_gi.short_guard);
+    if(m_is_air && !stbc_lpdc_gi.stbc){
+        if(m_stbc_warning_shown)return;
+        //  If your ground unit uses card(s) with 2 antennas, enable STBC on your air unit (transmitting part)."
+        // "If your air unit uses card(s) with 2 antennas, enable STBC on your ground unit (transmitting part).
+        auto message="Please check: Enable WB_E_STBC on AIR unit IF your rtl8812au TX/RX both have more than one antenna"
+                       " (NOTE: Without 2 populated rf paths, enabling this option results in"
+                       " no connection !!! OpenHD cannot automatically check how many rf paths are populated on your adapter(s). ASUS has 1 external and "
+                       "1 internal antenna (STBC should be used). If you wish to not see this "
+                       "prompt again, you can disable it in QOpenHD - DEV - dev_wb_show_no_stbc_enabled_warning.";
+        QSettings settings;
+        const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
+        if(!dev_wb_show_no_stbc_enabled_warning){
+            WorkaroundMessageBox::makePopupMessage(message,10);
+            m_stbc_warning_shown=true;
+        }
+    }
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
