@@ -153,6 +153,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     if(param_client==nullptr){
         // not discovered yet
         WorkaroundMessageBox::makePopupMessage("OHD System not found");
+        return false;
     }
     if(param_client){
         // first, remove anything the QT model has cached
@@ -178,6 +179,26 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         }
     }else{
         // not dscovered yet
+    }
+    return false;
+}
+
+
+bool MavlinkSettingsModel::try_fetch_all_parameters_long_running()
+{
+    if(param_client==nullptr){
+        // not discovered yet
+        WorkaroundMessageBox::makePopupMessage("OHD System not found");
+        return false;
+    }
+    const auto begin=std::chrono::steady_clock::now();
+    while(std::chrono::steady_clock::now()-begin < std::chrono::seconds(8)){
+        const auto success=try_fetch_all_parameters();
+        if(success){
+            return true;
+        }else{
+            WorkaroundMessageBox::instance().set_text_and_show("Fetching parameters...",1);
+        }
     }
     return false;
 }

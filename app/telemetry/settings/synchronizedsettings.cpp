@@ -46,14 +46,14 @@ int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
 
     const auto value_ground_opt=MavlinkSettingsModel::instanceGround().try_get_param_int_impl(param_id);
     if(!value_ground_opt.has_value()){
-        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from ground");
+        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from ground",5);
         return -1;
     }
     const auto value_ground=value_ground_opt.value();
     // Now that we have the value from the ground, fetch the value from the air
     const auto value_air_opt=MavlinkSettingsModel::instanceAir().try_get_param_int_impl(param_id);
     if(!value_air_opt.has_value()){
-        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from air");
+        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from air",5);
         return value_ground;
     }
     const auto value_air=value_air_opt.value();
@@ -73,12 +73,12 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     const bool air_and_ground_alive=AOHDSystem::instanceAir().is_alive() && AOHDSystem::instanceGround().is_alive();
     if(allow_changing_without_connected_air_unit){
         if(!AOHDSystem::instanceGround().is_alive()){
-            WorkaroundMessageBox::makePopupMessage("Precondition: OpenHD ground running and alive not given. Change not possible.");
+            WorkaroundMessageBox::makePopupMessage("Precondition: OpenHD ground running and alive not given. Change not possible.",5);
             return;
         }
     }else{
         if(!air_and_ground_alive){
-            WorkaroundMessageBox::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.");
+            WorkaroundMessageBox::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.",5);
             return;
         }
     }

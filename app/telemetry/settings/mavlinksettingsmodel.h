@@ -56,6 +56,10 @@ public:
     // callable from QT.
     // re-fetch all parameters from the server. Clears the cache, then re-fetches the whole parameter set.
     Q_INVOKABLE bool try_fetch_all_parameters();
+
+    Q_INVOKABLE bool try_fetch_all_parameters_long_running();
+
+
     // re-fetch a specific parameter from the server, Updates the parameter set accordingly.
     Q_INVOKABLE bool try_refetch_parameter_int(QString param_id);
     Q_INVOKABLE bool try_refetch_parameter_string(QString param_id);
