@@ -41,6 +41,7 @@ public:
         QSettings settings;
         const bool set_mavlink_message_rates = settings.value("set_mavlink_message_rates",true).toBool();
         const bool mavlink_message_rates_high_speed=settings.value("mavlink_message_rates_high_speed",true).toBool();
+        const bool mavlink_message_rates_high_speed_rc_channels=settings.value("mavlink_message_rates_high_speed_rc_channels",false).toBool();
         if(!set_mavlink_message_rates){
             return std::nullopt;
         }
@@ -64,6 +65,9 @@ public:
             // One of the intervals is not succesfully set yet
             const auto interval=m_intervals.at(tmp);
             auto interval_hz=interval.interval_hz;
+            if(mavlink_message_rates_high_speed_rc_channels && interval.msg_id==MAVLINK_MSG_ID_RC_CHANNELS){
+                interval_hz=15;
+            }
             if(mavlink_message_rates_high_speed){
                 interval_hz*=2;
             }

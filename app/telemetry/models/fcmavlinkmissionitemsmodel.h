@@ -22,6 +22,10 @@ class FCMavlinkMissionItemsModel : public QAbstractListModel
 public:
     explicit FCMavlinkMissionItemsModel(QObject *parent = nullptr);
     static FCMavlinkMissionItemsModel& instance();
+    // This emits the proper signal in which we either update the mission
+    // or add as many elements as needed, then update the mission
+    void update_mission(int mission_index,double lat,double lon,double alt_m,bool currently_active);
+private:
     struct Element{
         int mission_index=0;
         double latitude;
@@ -32,8 +36,6 @@ public:
         // Set to true if this is the currently active mission
         bool currently_active=false;
     };
-    void update_mission(int mission_index,double lat,double lon,double alt_m,bool currently_active);
-private:
     enum Roles {
         IndexRole =Qt::UserRole,
         LatitudeRole,

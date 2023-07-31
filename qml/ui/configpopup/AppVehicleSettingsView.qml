@@ -96,6 +96,24 @@ ScrollView {
                 }
             }
             SettingBaseElement{
+                m_short_description: "High mavlink message rates RC"
+                m_long_description: "Increases the rate for mavlink down rc channel messages (This does not affect your RC over openhd latency !)"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.mavlink_message_rates_high_speed
+                    onCheckedChanged: {
+                        if(settings.mavlink_message_rates_high_speed_rc_channels != checked){
+                            _mavlinkTelemetry.re_apply_rates()
+                        }
+                        settings.mavlink_message_rates_high_speed_rc_channels = checked
+                    }
+                }
+            }
+            SettingBaseElement{
                 m_short_description: "Log quiet FC warning"
                 m_long_description: "Log a warning when we get heartbeats from the FC, but not proper data"
                 Switch {

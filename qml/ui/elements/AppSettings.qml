@@ -286,6 +286,7 @@ Settings {
     property bool control_rev_roll: false
     property bool control_rev_yaw: false
     property bool control_rev_throttle: false
+    property bool control_widget_use_fc_channels: true
 
     property bool show_gpio: false
     property int selected_map_provider: 0
@@ -353,6 +354,7 @@ Settings {
     property bool set_mavlink_message_rates: true
     // Double the default rate(s) - for people who want more mavlink
     property bool mavlink_message_rates_high_speed: false
+    property bool mavlink_message_rates_high_speed_rc_channels: false
     // log a warning if fc is quiet - happened to a lot of people new to mavlink
     property bool log_quiet_fc_warning_to_hud : true
 

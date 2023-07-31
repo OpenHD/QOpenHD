@@ -24,10 +24,52 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    property int m_control_yaw : 1200
-    property int m_control_roll: 0
-    property int m_control_pitch: 0
-    property int m_control_throttle: 0
+    // Assumes AETR
+    property int m_control_yaw : settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_yaw : _rcchannelsmodelground.control_yaw
+    property int m_control_roll: settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_roll : _rcchannelsmodelground.control_roll
+    property int m_control_pitch: settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_pitch : _rcchannelsmodelground.control_pitch
+    property int m_control_throttle: settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_throttle : _rcchannelsmodelground.control_throttle
+
+    function scale_ppm_us(value){
+        if(value==-1)return 0; // N/A
+        if(value<1000){
+            return -1;
+        }
+        if(value>2000){
+            return 1;
+        }
+        if(value==0)return 0;
+        return (value-1500)/1000;
+    }
+
+    function get_scaled_yaw(){
+        var tmp=scale_ppm_us(m_control_yaw);
+        if(settings.control_rev_yaw){
+            tmp*=-1;
+        }
+        return tmp;
+    }
+    function get_scaled_roll(){
+        var tmp=scale_ppm_us(m_control_roll);
+        if(settings.control_rev_roll){
+            tmp*=-1;
+        }
+        return tmp;
+    }
+    function get_scaled_pitch(){
+        var tmp=scale_ppm_us(m_control_pitch);
+        if(settings.control_rev_pitch){
+            tmp*=-1;
+        }
+        return tmp;
+    }
+    function get_scaled_throttle(){
+        var tmp=scale_ppm_us(m_control_throttle);
+        if(settings.control_rev_throttle){
+            tmp*=-1;
+        }
+        return tmp;
+    }
 
 
     widgetDetailComponent: ScrollView {
@@ -58,6 +100,27 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.double_control
                     onCheckedChanged: settings.double_control = checked
+                }
+            }
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: qsTr("Use FC channels")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.control_widget_use_fc_channels
+                    onCheckedChanged: settings.control_widget_use_fc_channels = checked
                 }
             }
             Item {
@@ -163,7 +226,29 @@ BaseWidget {
         might add a 3rd type of display version then the either or logic would have to
         be undone...
 */
-        Item {
+        ControlWidgetSubElement{
+            id: elementLeft
+            width: settings.double_control ? parent.width*0.5 : parent.width
+            height: elementLeft.width
+            anchors.left: parent.left
+
+            position_x: get_scaled_yaw()
+            position_y: get_scaled_roll()
+        }
+
+        ControlWidgetSubElement{
+            id: elementRight
+            width: settings.double_control ? parent.width*0.5 : parent.width
+            height: elementRight.width
+            visible: settings.double_control
+            anchors.left: elementLeft.right
+
+            position_x: get_scaled_pitch()
+            position_y: get_scaled_throttle()
+        }
+
+
+        /*Item {
             id: singleCircle
             height: parent.height
             width: parent.width
@@ -349,6 +434,11 @@ BaseWidget {
                                                     * -1 : ((m_control_pitch - 1500) / 10) / 2
                 }
             }
-        }
+
+            ControlWidgetSubElement{
+                width: 100
+                height: 100
+            }
+        }*/
     }
 }
