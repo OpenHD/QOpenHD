@@ -63,6 +63,14 @@ BaseWidget {
         return ret;
     }
 
+    function get_text_dbm(){
+        var dbm=_ohdSystemGround.current_rx_rssi;
+        if(dbm<=-127){
+            return "N/A";
+        }
+        return ""+dbm;
+    }
+
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -153,11 +161,29 @@ BaseWidget {
                     }
                 }
             }
-
-
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("dBm low warning")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_dbm_warning
+                    onCheckedChanged: settings.downlink_dbm_warning = checked
+                }
+            }
         }
     }
-
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
 
     widgetActionComponent: ScrollView{
@@ -290,7 +316,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
 
-            text: _ohdSystemGround.current_rx_rssi <= -127 ? qsTr("N/A") : _ohdSystemGround.current_rx_rssi
+            text: get_text_dbm()
             anchors.left: downlink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
@@ -325,6 +351,28 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+        Text {
+            id: downlink_dbm_warn
+            width: 32
+            height: 24
+            color: "red"
+            text: "!"
+            anchors.left: downlink_dbm.right
+            anchors.leftMargin: 1
+            anchors.top: parent.top
+            anchors.topMargin: 1
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 22
+            font.family: settings.font_text
+            verticalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideNone
+            clip: false
+            style: Text.Outline
+            styleColor: settings.color_glow
+            visible: settings.downlink_dbm_warning && _ohdSystemGround.dbm_too_low_warning
+        }
+
 // Consti10 temporary begin - r.n we only have the n of injected and received packets per card, no FEC statistics (and the fec statistics also have changed such
 // that what was displayed previosly doesn't make sense anymore
         ColumnLayout{

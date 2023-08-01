@@ -20,6 +20,22 @@
 #include <../util/WorkaroundMessageBox.h>
 #include "../settings/synchronizedsettings.h"
 
+// From https://netbeez.net/blog/what-is-mcs-index/
+static std::vector<int> get_dbm_20mhz(){
+    return {-82,-79,-77,-74,-70,-66,-65,-64,-59,-57};
+}
+static std::vector<int> get_dbm_40mhz(){
+    return {-79,-76,-74,-71,-67,-63,-62,-61,-56,-54};
+}
+
+static int get_required_dbm_for_rate(int channel_width,int mcs_index){
+    const auto values=channel_width==20 ? get_dbm_20mhz() : get_dbm_40mhz();
+    if(mcs_index>=0 && mcs_index<=values.size()){
+        return values[mcs_index];
+    }
+    return 0;
+}
+
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},m_is_air(is_air)
 {
@@ -276,6 +292,21 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
             WorkaroundMessageBox::makePopupMessage(message,10);
             m_stbc_warning_shown=true;
         }
+    }
+    // We need to get the mcs index from the other system (aka from air if we are running on ground) since that's whats being injected
+    const int mcs_index_other=m_is_air ? AOHDSystem::instanceGround().m_curr_mcs_index : AOHDSystem::instanceAir().m_curr_mcs_index;
+    const int minimum_dbm=get_required_dbm_for_rate(m_curr_channel_width_mhz,mcs_index_other);
+    const auto curr_rx_dbm=m_current_rx_rssi;
+    //qDebug()<<"TX mcs:"<<mcs_index_other<<" RX rssi:"<<curr_rx_dbm<<" minumum dbm:"<<minimum_dbm;
+    if(minimum_dbm !=0 && curr_rx_dbm>-127){
+        const auto warning_min_dbm=minimum_dbm+2; // show 2dBm early
+        if(curr_rx_dbm>warning_min_dbm){
+            set_dbm_too_low_warning(false);
+        }else{
+            set_dbm_too_low_warning(true);
+        }
+    }else{
+        set_dbm_too_low_warning(false);
     }
 }
 

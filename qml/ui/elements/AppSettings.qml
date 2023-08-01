@@ -118,6 +118,7 @@ Settings {
     // r.n one of the most important statistics about link quality
     property int downlink_packet_loss_perc_caution : 10
     property int downlink_packet_loss_perc_warn : 20
+    property bool downlink_dbm_warning: true
 
     property bool show_uplink_rssi: true
     property bool uplink_rssi_declutter: false
