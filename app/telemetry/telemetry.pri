@@ -29,8 +29,8 @@ QOPENHD_LINK_MAVSDK_SHARED {
         contains(ANDROID_TARGET_ARCH, armeabi-v7a) {
             MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
         } else:contains(ANDROID_TARGET_ARCH, arm64-v8a) {
-            #MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
-            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64-extra
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
+            #MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64-extra
         } else:contains(ANDROID_TARGET_ARCH, x86_64) {
             MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-x86_64/build/android-x86_64/install
         } else {
