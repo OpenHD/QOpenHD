@@ -30,6 +30,20 @@ BaseWidget {
     // If openhd feature passive mode is enabled, show watermark instead
     property bool m_passive_mode: _ohdSystemGround.tx_passive_mode
 
+    function get_text_dbm(){
+        var dbm=_ohdSystemAir.current_rx_rssi;
+        if(dbm<=-127){
+            return "N/A";
+        }
+        return ""+dbm;
+    }
+    function get_dbm_text_color(){
+        if(settings.downlink_dbm_warning && _ohdSystemAir.dbm_too_low_warning){
+            return "red";
+        }
+        return settings.color_text;
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -142,10 +156,9 @@ BaseWidget {
         Text {
             id: uplink_rssi
             height: 24
-            color: settings.color_text
+            color: get_dbm_text_color()
 
-            text: _ohdSystemAir.current_rx_rssi
-                  <= -127 ? qsTr("N/A") : _ohdSystemAir.current_rx_rssi
+            text: get_text_dbm()
             anchors.left: uplink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
@@ -164,7 +177,7 @@ BaseWidget {
             id: uplink_dbm
             width: 32
             height: 24
-            color: settings.color_text
+            color: get_dbm_text_color()
             text: qsTr("dBm")
             anchors.left: uplink_rssi.right
             anchors.leftMargin: 2

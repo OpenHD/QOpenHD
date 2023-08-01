@@ -70,6 +70,12 @@ BaseWidget {
         }
         return ""+dbm;
     }
+    function get_dbm_text_color(){
+        if(settings.downlink_dbm_warning && _ohdSystemGround.dbm_too_low_warning){
+            return "red";
+        }
+        return settings.color_text;
+    }
 
 
     //----------------------------- DETAIL BELOW ----------------------------------
@@ -314,7 +320,7 @@ BaseWidget {
         Text {
             id: downlink_rssi
             height: 24
-            color: settings.color_text
+            color: get_dbm_text_color()
 
             text: get_text_dbm()
             anchors.left: downlink_icon.right
@@ -335,7 +341,7 @@ BaseWidget {
             id: downlink_dbm
             width: 32
             height: 24
-            color: settings.color_text
+            color: get_dbm_text_color()
             text: qsTr("dBm")
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
@@ -350,27 +356,6 @@ BaseWidget {
             clip: false
             style: Text.Outline
             styleColor: settings.color_glow
-        }
-        Text {
-            id: downlink_dbm_warn
-            width: 32
-            height: 24
-            color: "red"
-            text: "!"
-            anchors.left: downlink_dbm.right
-            anchors.leftMargin: 1
-            anchors.top: parent.top
-            anchors.topMargin: 1
-            horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 22
-            font.family: settings.font_text
-            verticalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideNone
-            clip: false
-            style: Text.Outline
-            styleColor: settings.color_glow
-            visible: settings.downlink_dbm_warning && _ohdSystemGround.dbm_too_low_warning
         }
 
 // Consti10 temporary begin - r.n we only have the n of injected and received packets per card, no FEC statistics (and the fec statistics also have changed such
