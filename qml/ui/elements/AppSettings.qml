@@ -171,6 +171,7 @@ Settings {
     property bool show_flight_time: true
 
     property bool show_flight_mode: true
+    property bool flight_mode_show_disarmed: true
 
     property bool show_flight_distance: true
 
