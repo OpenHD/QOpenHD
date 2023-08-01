@@ -31,9 +31,9 @@ void QAndroidMediaPlayer::setup_start_video_decoder_display()
         }
     };
     m_low_lag_decoder->registerOnDecoderRatioChangedCallback(ratio_changed_cb);
-    const auto settings=QOpenHDVideoHelper::read_from_settings();
-    auto codec=QOpenHDVideoHelper::read_from_settings().video_codec;
-    const int port = settings.qopenhd_switch_primary_secondary ? 5601 : 5600;
+    const auto settings=QOpenHDVideoHelper::read_config_from_settings();
+    auto codec=settings.primary_stream_config.video_codec;
+    const int port = settings.generic.qopenhd_switch_primary_secondary ? 5601 : 5600;
     m_receiver=std::make_unique<GstRtpReceiver>(port,codec);
 }
 
