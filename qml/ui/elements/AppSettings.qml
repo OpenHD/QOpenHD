@@ -251,12 +251,12 @@ Settings {
     property bool speed_ladder_show_ladder: true
     property bool speed_ladder_show_unit: true
     property bool speed_ladder_use_kmh: true
-    property bool speed_ladder_use_groundspeed: true
+    property bool speed_ladder_use_groundspeed: false
     property int speed_ladder_range: 100
     property int speed_ladder_minimum: 0
 
     property bool show_speed_second: true
-    property bool speed_second_use_groundspeed: false
+    property bool speed_second_use_groundspeed: true
     property bool speed_second_use_kmh: true
     property bool speed_second_show_unit: false
 

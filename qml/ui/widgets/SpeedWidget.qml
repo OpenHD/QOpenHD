@@ -29,26 +29,30 @@ BaseWidget {
 
     function get_speed_number(){
         var speed_m_per_second=settings.speed_ladder_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
+        if(settings.enable_imperial){
+            return speed_m_per_second*2,23694;
+        }
         if(settings.speed_ladder_use_kmh){
             return speed_m_per_second*3.6;
         }
-        var speed = settings.enable_imperial ? speed_m_per_second*0.621371 : speed_m_per_second;
-        return speed;
+        return speed_m_per_second;
+    }
+
+    function get_speed_unit(){
+        if(settings.enable_imperial){
+            return "mph";
+        }
+        if(settings.speed_ladder_use_kmh){
+            return "kph";
+        }
+        return "m/s";
     }
 
     function get_text_speed(){
         var speed = get_speed_number()
         var ret=Number(speed).toLocaleString( Qt.locale(), 'f', 0)
-        if(settings.speed_ladder_show_unit && speed <999){
-            if(settings.enable_imperial){
-                ret +=" mph";
-            }else{
-                if(settings.speed_ladder_use_kmh){
-                     ret +=" kph";
-                }else{
-                    ret +=" m/s";
-                }
-            }
+        if(settings.speed_ladder_show_unit && speed <99){
+            ret+=get_speed_unit();
         }
         return ret;
     }

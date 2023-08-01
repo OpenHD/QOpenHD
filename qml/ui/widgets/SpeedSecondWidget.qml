@@ -24,21 +24,32 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    function get_text_speed(){
-        var speed = settings.speed_second_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
+    function get_speed_number(){
+        var speed_m_per_second=settings.speed_second_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
         if(settings.enable_imperial){
-            // TODO
+            return speed_m_per_second*2,23694;
         }
         if(settings.speed_second_use_kmh){
-            speed *= 3.6;
+            return speed_m_per_second*3.6;
         }
-        var ret=Number(speed).toLocaleString(Qt.locale(), 'f', 0)
-        if(settings.speed_second_show_unit){
-            if(settings.speed_second_use_kmh){
-                ret+=" kph";
-            }else{
-                ret+=" m/s";
-            }
+        return speed_m_per_second;
+    }
+
+    function get_speed_unit(){
+        if(settings.enable_imperial){
+            return "mph";
+        }
+        if(settings.speed_second_use_kmh){
+            return "kph";
+        }
+        return "m/s";
+    }
+
+    function get_text_speed(){
+        var speed = get_speed_number()
+        var ret=Number(speed).toLocaleString( Qt.locale(), 'f', 0)
+        if(settings.speed_ladder_show_unit && speed <99){
+            ret+=get_speed_unit();
         }
         return ret;
     }
