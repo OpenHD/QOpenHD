@@ -476,17 +476,17 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                                 text: "POLLUTED"
                                 onClicked: {
                                     set_keyframe_interval(2)
-                                    set_fec_percentage(40)
+                                    set_fec_percentage(50)
                                 }
-                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==40
+                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==50
                             }
                             Button{
                                 text: "CITY"
                                 onClicked: {
                                     set_keyframe_interval(3)
-                                    set_fec_percentage(30)
+                                    set_fec_percentage(40)
                                 }
-                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==30
+                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==40
                             }
                             Button{
                                 text: "DEFAULT"

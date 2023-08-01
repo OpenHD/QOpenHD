@@ -274,7 +274,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             }
                         }
                         Switch{
-                            text: "gnd only"
+                            text: "allow gnd only"
                             checked: settings.qopenhd_allow_changing_ground_unit_frequency_no_sync
                             onCheckedChanged: {
                                 if(settings.qopenhd_allow_changing_ground_unit_frequency_no_sync != checked && checked){
@@ -339,7 +339,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             }
                         }
                         Switch{
-                            text: "gnd only"
+                            text: "allow gnd only"
                             checked: settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync
                             onCheckedChanged: {
                                 if(settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync != checked && checked){
