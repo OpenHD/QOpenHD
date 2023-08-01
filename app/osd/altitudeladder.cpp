@@ -23,8 +23,7 @@ void AltitudeLadder::paint(QPainter* painter) {
 
     painter->setFont(m_font);
 
-    auto alt = m_imperial ? (m_altitudeRelMsl ? (m_altMsl*3.28) : (m_altRel*3.28)) :
-                            (m_altitudeRelMsl ? m_altMsl : m_altRel);
+    auto alt = m_altitude;
 
 
     //weird rounding issue where decimals make ladder dissappear
@@ -105,16 +104,9 @@ void AltitudeLadder::setGlow(QColor glow) {
 }
 
 
-void AltitudeLadder::setAltitudeRelMsl(bool altitudeRelMsl) {
-    m_altitudeRelMsl = altitudeRelMsl;
-    emit altitudeRelMslChanged(m_altitudeRelMsl);
-    update();
-}
-
-
-void AltitudeLadder::setImperial(bool imperial) {
-    m_imperial = imperial;
-    emit imperialChanged(m_imperial);
+void AltitudeLadder::set_altitude(double alt) {
+    m_altitude = alt;
+    emit altitude_changed(m_altitude);
     update();
 }
 
@@ -125,19 +117,6 @@ void AltitudeLadder::setAltitudeRange(int altitudeRange) {
     update();
 }
 
-
-void AltitudeLadder::setAltMsl(double altMsl) {
-    m_altMsl = altMsl;
-    emit altMslChanged(m_altMsl);
-    update();
-}
-
-
-void AltitudeLadder::setAltRel(double altRel) {
-    m_altRel = altRel;
-    emit altRelChanged(m_altRel);
-    update();
-}
 
 void AltitudeLadder::setFontFamily(QString fontFamily) {
     m_fontFamily = fontFamily;

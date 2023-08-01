@@ -19,20 +19,28 @@ BaseWidget {
     defaultXOffset: 40
     defaultVCenter: true
 
-    visible: settings.show_altitude
+    visible: settings.altitude_ladder_show
 
     widgetIdentifier: "altitude_widget"
     bw_verbose_name: "ALTITUDE"
 
     defaultHCenter: false
 
-    function get_text_altitude(){
-        var altitude_m_or_foot = settings.altitude_rel_msl ? _fcMavlinkSystem.alt_msl : _fcMavlinkSystem.alt_rel;
+    hasWidgetDetail: true
+    widgetDetailHeight: 250+100
+
+    function get_altitude_value(){
+        var altitude_m_or_foot = settings.altitude_ladder_use_msl ? _fcMavlinkSystem.altitude_msl_m : _fcMavlinkSystem.altitude_rel_m;
         if(settings.enable_imperial){
             altitude_m_or_foot *= 3.28;
         }
-        var alt_str=Number(altitude_m_or_foot).toLocaleString(Qt.locale(), 'f', 0);
-        if(settings.altitude_ladder_show_unit && altitude_m_or_foot<999 ){
+        return altitude_m_or_foot;
+    }
+
+    function get_text_altitude(){
+        var alt = get_altitude_value();
+        var alt_str=Number(alt).toLocaleString(Qt.locale(), 'f', 0);
+        if(settings.altitude_ladder_show_unit && alt<999 ){
             if(settings.enable_imperial){
                 alt_str+=" ft";
             }else{
@@ -42,7 +50,6 @@ BaseWidget {
         return alt_str;
     }
 
-    hasWidgetDetail: true
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -59,7 +66,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Relative / MSL")
+                    text: qsTr("Use MSL")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -72,8 +79,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.altitude_rel_msl
-                    onCheckedChanged: settings.altitude_rel_msl = checked
+                    checked: settings.altitude_ladder_use_msl
+                    onCheckedChanged: settings.altitude_ladder_use_msl = checked
                 }
             }
             Item {
@@ -93,8 +100,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.show_altitude_ladder
-                    onCheckedChanged: settings.show_altitude_ladder = checked
+                    checked: settings.altitude_ladder_show_ladder
+                    onCheckedChanged: settings.altitude_ladder_show_ladder = checked
                 }
             }
             Item {
@@ -134,7 +141,7 @@ BaseWidget {
                     id: altitude_range_Slider
                     orientation: Qt.Horizontal
                     from: 40
-                    value: settings.altitude_range
+                    value: settings.altitude_ladder_range
                     to: 150
                     stepSize: 10
                     height: parent.height
@@ -144,7 +151,7 @@ BaseWidget {
 
                     onValueChanged: {
                         // @disable-check M223
-                        settings.altitude_range = altitude_range_Slider.value
+                        settings.altitude_ladder_range = altitude_range_Slider.value
                     }
                 }
             }
@@ -163,7 +170,7 @@ BaseWidget {
             anchors.left: parent.left
             anchors.leftMargin: 20 //tweak ladder left or right
 
-            visible: settings.show_altitude_ladder
+            visible: settings.altitude_ladder_show_ladder
 
             transform: Scale {
                 origin.x: -5
@@ -180,13 +187,9 @@ BaseWidget {
                 clip: false
                 color: settings.color_shape
                 glow: settings.color_glow
-                altitudeRelMsl: settings.altitude_rel_msl
-                altitudeRange: settings.altitude_range
-                imperial: settings.enable_imperial
-                Behavior on altMsl {NumberAnimation { duration: settings.smoothing }}
-                altMsl: _fcMavlinkSystem.alt_msl
-                Behavior on altRel {NumberAnimation { duration: settings.smoothing }}
-                altRel: _fcMavlinkSystem.alt_rel
+                altitude: get_altitude_value()
+                altitudeRange: settings.altitude_ladder_range
+                Behavior on altitude {NumberAnimation { duration: settings.smoothing }}
                 fontFamily: settings.font_text
             }
         }

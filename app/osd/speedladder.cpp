@@ -20,8 +20,7 @@ void SpeedLadder::paint(QPainter* painter) {
 
     painter->setFont(m_font);
 
-    auto speed = m_imperial ? (m_useGroundspeed ? (m_speed * 0.621371) : (m_airspeed * 0.621371)) :
-                              (m_useGroundspeed ? m_speed : m_airspeed);
+    auto speed = m_speed;
 
     //weird rounding issue where decimals make ladder dissappear
     speed = round(speed);
@@ -106,20 +105,6 @@ void SpeedLadder::setGlow(QColor glow) {
 }
 
 
-void SpeedLadder::setUseGroundspeed(bool useGroundspeed) {
-    m_useGroundspeed = useGroundspeed;
-    emit useGroundspeedChanged(m_useGroundspeed);
-    update();
-}
-
-
-void SpeedLadder::setImperial(bool imperial) {
-    m_imperial = imperial;
-    emit imperialChanged(m_imperial);
-    update();
-}
-
-
 void SpeedLadder::setSpeedMinimum(int speedMinimum) {
     m_speedMinimum = speedMinimum;
     emit speedMinimumChanged(m_speedMinimum);
@@ -140,12 +125,6 @@ void SpeedLadder::setSpeed(int speed) {
     update();
 }
 
-
-void SpeedLadder::setAirspeed(int airspeed) {
-    m_airspeed = airspeed;
-    emit airspeedChanged(m_airspeed);
-    update();
-}
 
 void SpeedLadder::setFontFamily(QString fontFamily) {
     m_fontFamily = fontFamily;

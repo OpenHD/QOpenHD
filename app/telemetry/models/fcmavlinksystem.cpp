@@ -228,18 +228,20 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_global_position_int_decode(&msg, &global_position_int);
         const double lat=static_cast<double>(global_position_int.lat) / 10000000.0;
         const double lon=static_cast<double>(global_position_int.lon) / 10000000.0;
-        if(m_lat!=0.0 && m_lon!=0.0 && m_gps_hdop<20){
+        // This way we could also calculate the flight distance - but aparently, this results in slightly too small values
+        // (probably could be fixed by using a distance calculation method that is a better fit)
+        /*if(m_lat!=0.0 && m_lon!=0.0 && m_gps_hdop<20){
             const auto added_distance_m=distance_between(m_lat,m_lon,lat,lon);
             total_dist = total_dist + added_distance_m;
             //qDebug() << "total distance" << total_dist;
             set_flight_distance_m( total_dist);
-        }
+        }*/
         set_lat(lat);
         set_lon(lon);
         set_boot_time(global_position_int.time_boot_ms);
-        set_alt_rel(global_position_int.relative_alt/1000.0);
+        set_altitude_rel_m(global_position_int.relative_alt/1000.0);
         // qDebug() << "Altitude relative " << alt_rel;
-        set_alt_msl(global_position_int.alt/1000.0);
+        set_altitude_msl_m(global_position_int.alt/1000.0);
         set_vx(global_position_int.vx/100.0);
         set_vy(global_position_int.vy/100.0);
         set_vz(global_position_int.vz/100.0);
@@ -252,7 +254,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         }
         calculate_home_distance();
         calculate_home_course();
-        //updateFlightDistance();
         updateVehicleAngles();
         updateWind();
         break;
@@ -344,13 +345,14 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_vfr_hud_t vfr_hud;
         mavlink_msg_vfr_hud_decode (&msg, &vfr_hud);
         set_throttle(vfr_hud.throttle);
-        auto airspeed = vfr_hud.airspeed*3.6;
-        set_airspeed(airspeed);
-        auto speed = vfr_hud.groundspeed*3.6;
-        set_speed(speed);
+        set_air_speed_meter_per_second(vfr_hud.airspeed);
+        set_ground_speed_meter_per_second(vfr_hud.groundspeed);
+        update_flight_distance_using_groundspeed();
         // qDebug() << "Speed- ground " << speed;
         auto vsi = vfr_hud.climb;
         set_vertical_speed_indicator_mps(vsi);
+        // TODO use ?
+        //set_altitude_msl_m(vfr_hud.alt);
         // qDebug() << "VSI- " << vsi;
         //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
         //last_vfr_timestamp = current_timestamp;
@@ -571,23 +573,23 @@ void FCMavlinkSystem::updateFlightTimer() {
     }
 }
 
-/*void FCMavlinkSystem::updateFlightDistance() {
+void FCMavlinkSystem::update_flight_distance_using_groundspeed() {
     if (m_gps_hdop > 20 || m_lat == 0.0){
         //do not pollute distance if we have bad data
         return;
     }
     if (m_armed==true){
-        const auto elapsed = flightTimeStart.elapsed();
-        const auto time = elapsed / 3600;
-        const auto time_diff = time - m_flight_distance_last_time_us;
-        m_flight_distance_last_time_us = time;
-        const auto added_distance =  m_speed * time_diff;
+        const auto elapsed_ms = flightTimeStart.elapsed();
+        const auto time_diff_ms = elapsed_ms - m_flight_distance_last_time_ms;
+        m_flight_distance_last_time_ms = elapsed_ms;
+        const auto time_diff_s =time_diff_ms / 1000.0;
+        const auto added_distance =  m_ground_speed_meter_per_second * time_diff_s;
         //qDebug() << "added distance" << added_distance;
         total_dist = total_dist + added_distance;
         //qDebug() << "total distance" << total_dist;
         set_flight_distance_m( total_dist);
     }
-}*/
+}
 
 
 void FCMavlinkSystem::set_armed(bool armed) {
@@ -863,11 +865,6 @@ void FCMavlinkSystem::updateWind(){
             speed_last_time=actual_speed;
         }
     }
-}
-
-void FCMavlinkSystem::update_flight_distance(double prev_lat, double prev_lon, double new_lat, double new_lon)
-{
-
 }
 
 void FCMavlinkSystem::arm_fc_async(bool arm)
@@ -1163,10 +1160,10 @@ void FCMavlinkSystem::recalculate_efficiency()
         // recalculate and update efficiency
         const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
         set_battery_consumed_mah_per_km(efficiency_mah_per_km);
-        qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
+        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
         m_efficiency_last_distance_m=m_flight_distance_m;
         m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
     }else{
-        qDebug()<<"Not enough difference, recalculating later: "<<delta_distance_m<<"m, "<<delta_charge_mah<<"mAh";
+        //qDebug()<<"Not enough difference, recalculating later: "<<delta_distance_m<<"m, "<<delta_charge_mah<<"mAh";
     }
 }

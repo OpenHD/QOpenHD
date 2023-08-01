@@ -24,6 +24,19 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+    function get_text_flight_distance(){
+        var distance = _fcMavlinkSystem.flight_distance_m / 1000.0
+        var unit = "km"
+        var use_imperial = settings.value("enable_imperial", false)
+        // QML settings can return strings for booleans on some platforms so we check
+        if (use_imperial === true || use_imperial === 1
+                || use_imperial === "true") {
+            unit = "mi"
+            distance /= 1.609344
+        }
+        return distance.toLocaleString(Qt.locale(), "f", 1) + unit
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -68,20 +81,7 @@ BaseWidget {
             clip: true
 
             color: settings.color_text
-            // @disable-check M222
-            text: {
-                var distance = _fcMavlinkSystem.flight_distance_m / 1000.0
-                var unit = "km"
-                var use_imperial = settings.value("enable_imperial", false)
-                // QML settings can return strings for booleans on some platforms so we check
-                if (use_imperial === true || use_imperial === 1
-                        || use_imperial === "true") {
-                    unit = "mi"
-                    distance /= 1.609344
-                }
-
-                return distance.toLocaleString(Qt.locale(), "f", 1) + unit
-            }
+            text: get_text_flight_distance()
             elide: Text.ElideNone
             anchors.right: parent.right
             anchors.rightMargin: 0

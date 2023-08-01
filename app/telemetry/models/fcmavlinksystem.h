@@ -113,8 +113,8 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(double,vy,set_vy,0.0)
     L_RO_PROP(double,vz,set_vz,0.0)
     //
-    L_RO_PROP(double,alt_rel,set_alt_rel,0.0)
-    L_RO_PROP(double,alt_msl,set_alt_msl,0.0)
+    L_RO_PROP(double,altitude_rel_m,set_altitude_rel_m,0.0)
+    L_RO_PROP(double,altitude_msl_m,set_altitude_msl_m,0.0)
     //
     L_RO_PROP(double,vehicle_vx_angle,set_vehicle_vx_angle,0.0);
     L_RO_PROP(double,vehicle_vy_angle,set_vehicle_vy_angle,0.0);
@@ -137,9 +137,9 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(double,home_distance,set_home_distance,0)
     L_RO_PROP(int,boot_time,set_boot_time,0)
     L_RO_PROP(int,hdg,set_hdg,0)
-    L_RO_PROP(double,speed,set_speed,0)
-    //
-    L_RO_PROP(double,airspeed,set_airspeed,0)
+    L_RO_PROP(double,ground_speed_meter_per_second,set_ground_speed_meter_per_second,0)
+    L_RO_PROP(double,air_speed_meter_per_second,set_air_speed_meter_per_second,0)
+
     L_RO_PROP(float,clipping_x,set_clipping_x,0.0)
     L_RO_PROP(float,clipping_y,set_clipping_y,0.0)
     L_RO_PROP(float,clipping_z,set_clipping_z,0.0)
@@ -185,13 +185,11 @@ public:
     void updateFlightTimer();
     // Calculates the flght distance (dirty) by taking time delta and current speed into account
     // replaced by using distance between lat,lon point(s) (this is a bit more accurate)
-    //void updateFlightDistance();
+    void update_flight_distance_using_groundspeed();
     // Something something luke
     void updateVehicleAngles();
     // Something somethng luke
     void updateWind();
-    //
-    void update_flight_distance(double prev_lat,double prev_lon,double new_lat,double new_lon);
 
     Q_PROPERTY(int home_course MEMBER m_home_course WRITE set_home_course NOTIFY home_course_changed)
     void set_home_course(int home_course);
@@ -232,7 +230,7 @@ private:
 
     double speed_last_time = 0.0;
 
-    qint64 m_flight_distance_last_time_us= 0;
+    qint64 m_flight_distance_last_time_ms= 0;
     long total_dist= 0;
 
     QElapsedTimer totalTime;

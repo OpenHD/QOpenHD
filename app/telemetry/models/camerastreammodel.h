@@ -91,7 +91,7 @@ private:
     };
     static std::string resolution_framerate_to_string(const ResolutionFramerate& data);
     ResolutionFramerate m_curr_res_framerate{};
-
+    std::chrono::steady_clock::time_point m_last_hud_message_camera_restarting=std::chrono::steady_clock::now();
 };
 
 #endif // AIRCAMERAMODEL_H

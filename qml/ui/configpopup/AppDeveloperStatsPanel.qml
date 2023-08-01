@@ -64,7 +64,7 @@ Rectangle {
             height: 24
             text: "Set Tele rates"
             onClicked:{
-                _mavlinkTelemetry.exp_set_data_rates()
+                _mavlinkTelemetry.re_apply_rates()
             }
         }
 

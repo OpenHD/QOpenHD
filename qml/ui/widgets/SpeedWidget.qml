@@ -13,7 +13,7 @@ BaseWidget {
     width: 64
     height: 24
 
-    visible: settings.show_speed
+    visible: settings.speed_ladder_show
 
     defaultXOffset: 20
     defaultVCenter: true
@@ -25,15 +25,29 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    function get_text_speed(){
-        var speed_m_per_second=settings.speed_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed;
+    widgetDetailHeight: 250+150
+
+    function get_speed_number(){
+        var speed_m_per_second=settings.speed_ladder_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
+        if(settings.speed_ladder_use_kmh){
+            return speed_m_per_second*3.6;
+        }
         var speed = settings.enable_imperial ? speed_m_per_second*0.621371 : speed_m_per_second;
+        return speed;
+    }
+
+    function get_text_speed(){
+        var speed = get_speed_number()
         var ret=Number(speed).toLocaleString( Qt.locale(), 'f', 0)
         if(settings.speed_ladder_show_unit && speed <999){
             if(settings.enable_imperial){
                 ret +=" mph";
             }else{
-                ret +=" m/s";
+                if(settings.speed_ladder_use_kmh){
+                     ret +=" kph";
+                }else{
+                    ret +=" m/s";
+                }
             }
         }
         return ret;
@@ -55,7 +69,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Airspeed / Groundspeed")
+                    text: qsTr("Use groundspeed")
                     horizontalAlignment: Text.AlignRight
                     color: "white"
                     height: parent.height
@@ -69,8 +83,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.speed_use_groundspeed
-                    onCheckedChanged: settings.speed_use_groundspeed = checked
+                    checked: settings.speed_ladder_use_groundspeed
+                    onCheckedChanged: settings.speed_ladder_use_groundspeed = checked
                 }
             }
             Item {
@@ -90,8 +104,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.show_speed_ladder
-                    onCheckedChanged: settings.show_speed_ladder = checked
+                    checked: settings.speed_ladder_show_ladder
+                    onCheckedChanged: settings.speed_ladder_show_ladder = checked
                 }
             }
             Item {
@@ -119,6 +133,27 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
+                    text: qsTr("Use km/h")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.speed_ladder_use_kmh
+                    onCheckedChanged: settings.speed_ladder_use_kmh = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
                     text: qsTr("Range")
                     color: "white"
                     height: parent.height
@@ -131,7 +166,7 @@ BaseWidget {
                     id: speed_range_Slider
                     orientation: Qt.Horizontal
                     from: 40
-                    value: settings.speed_range
+                    value: settings.speed_ladder_range
                     to: 150
                     stepSize: 10
                     height: parent.height
@@ -141,7 +176,7 @@ BaseWidget {
 
                     onValueChanged: {
                         // @disable-check M223
-                        settings.speed_range = speed_range_Slider.value
+                        settings.speed_ladder_range = speed_range_Slider.value
                     }
                 }
             }
@@ -149,7 +184,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Minimum")
+                    text: qsTr("Minimum:"+settings.speed_ladder_minimum)
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -161,7 +196,7 @@ BaseWidget {
                     id: speed_minimum_Slider
                     orientation: Qt.Horizontal
                     from: 0
-                    value: settings.speed_minimum
+                    value: settings.speed_ladder_minimum
                     to: 50
                     stepSize: 10
                     height: parent.height
@@ -171,7 +206,7 @@ BaseWidget {
 
                     onValueChanged: {
                         // @disable-check M223
-                        settings.speed_minimum = speed_minimum_Slider.value
+                        settings.speed_ladder_minimum = speed_minimum_Slider.value
                     }
                 }
             }
@@ -190,7 +225,7 @@ BaseWidget {
             anchors.right: parent.right
             anchors.rightMargin: 20 //tweak ladder left or right
 
-            visible: settings.show_speed_ladder
+            visible: settings.speed_ladder_show_ladder
 
             transform: Scale {
                 origin.x: -33
@@ -207,14 +242,10 @@ BaseWidget {
                 clip: false
                 color: settings.color_shape
                 glow: settings.color_glow
-                useGroundspeed: settings.speed_use_groundspeed
-                imperial: settings.enable_imperial
-                speedMinimum: settings.speed_minimum
-                speedRange: settings.speed_range
+                speedMinimum: settings.speed_ladder_minimum
+                speedRange: settings.speed_ladder_range
                 Behavior on speed {NumberAnimation { duration: settings.smoothing }}
-                speed: _fcMavlinkSystem.speed
-                Behavior on airspeed {NumberAnimation { duration: settings.smoothing }}
-                airspeed: _fcMavlinkSystem.airspeed
+                speed: get_speed_number()
                 fontFamily: settings.font_text
             }
         }

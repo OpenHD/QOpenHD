@@ -20,6 +20,8 @@ BaseWidget {
     defaultVCenter: true
 
     hasWidgetDetail: true
+    widgetDetailHeight: 250+250
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height

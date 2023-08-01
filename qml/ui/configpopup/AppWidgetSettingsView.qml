@@ -929,8 +929,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_altitude
-                    onCheckedChanged: settings.show_altitude = checked
+                    checked: settings.altitude_ladder_show
+                    onCheckedChanged: settings.altitude_ladder_show = checked
                 }
             }
 
@@ -958,8 +958,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_speed
-                    onCheckedChanged: settings.show_speed = checked
+                    checked: settings.speed_ladder_show
+                    onCheckedChanged: settings.speed_ladder_show = checked
                 }
             }
 

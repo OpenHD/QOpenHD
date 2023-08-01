@@ -112,6 +112,16 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     }else{
         qDebug()<<"Invalid video codec: "<<codec_in_openhd;
     }
+    // Feature - log in the HUD if the camera is restarting
+    if(msg.dummy0==1){
+        const auto elapsed=std::chrono::steady_clock::now()-m_last_hud_message_camera_restarting;
+        if(elapsed>=std::chrono::seconds(3)){
+           m_last_hud_message_camera_restarting=std::chrono::steady_clock::now();
+           std::stringstream log;
+           log<<(secondary ? "CAM2" : "CAM1")<<" is restarting, please wait";
+           HUDLogMessagesModel::instance().add_message_info(log.str().c_str());
+        }
+    }
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)

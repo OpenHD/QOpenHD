@@ -8,13 +8,13 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 Item {
-    height: 24
+    height: 25
     clip: true
 
     Text {
         id: messageIcon
         width: 24
-        height: 24
+        height: 25
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
 
