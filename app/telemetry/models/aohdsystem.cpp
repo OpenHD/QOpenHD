@@ -293,20 +293,25 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
             m_stbc_warning_shown=true;
         }
     }
+    // Feature: Warning if dBm falls below minimum threshold for current MCS index on packets that need to be received
     // We need to get the mcs index from the other system (aka from air if we are running on ground) since that's whats being injected
     const int mcs_index_other=m_is_air ? AOHDSystem::instanceGround().m_curr_mcs_index : AOHDSystem::instanceAir().m_curr_mcs_index;
     const int minimum_dbm=get_required_dbm_for_rate(m_curr_channel_width_mhz,mcs_index_other);
-    const auto curr_rx_dbm=m_current_rx_rssi;
-    //qDebug()<<"TX mcs:"<<mcs_index_other<<" RX rssi:"<<curr_rx_dbm<<" minumum dbm:"<<minimum_dbm;
+    const int curr_rx_dbm=m_current_rx_rssi;
+    const auto dbm_remaining=curr_rx_dbm - minimum_dbm;
+    //qDebug()<<"On "<<(m_is_air ? "AIR" : "GND" )<<" RX mcs:"<<mcs_index_other<<" RX rssi:"<<curr_rx_dbm<<" minumum dbm:"<<minimum_dbm<<" remaining dbm:"<<dbm_remaining;
     if(minimum_dbm !=0 && curr_rx_dbm>-127){
-        const auto warning_min_dbm=minimum_dbm+2; // show 2dBm early
-        if(curr_rx_dbm>warning_min_dbm){
-            set_dbm_too_low_warning(false);
+        if(dbm_remaining<=0){
+            // warning
+            set_dbm_too_low_warning(2);
+        }else if(dbm_remaining<=2){
+            // caution
+            set_dbm_too_low_warning(1);
         }else{
-            set_dbm_too_low_warning(true);
+            set_dbm_too_low_warning(0);
         }
     }else{
-        set_dbm_too_low_warning(false);
+        set_dbm_too_low_warning(0);
     }
 }
 

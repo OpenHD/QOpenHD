@@ -71,8 +71,12 @@ BaseWidget {
         return ""+dbm;
     }
     function get_dbm_text_color(){
-        if(settings.downlink_dbm_warning && _ohdSystemGround.dbm_too_low_warning){
+        var warning_level=_ohdSystemGround.dbm_too_low_warning;
+        if(settings.downlink_dbm_warning && warning_level==2){
             return "red";
+        }
+        if(settings.downlink_dbm_warning && warning_level==1){
+            return "orange";
         }
         return settings.color_text;
     }
