@@ -1471,7 +1471,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "Show live rate control widget"
-                m_long_description: "Trade range for bitrate at run time. Experimental, only usable when variable bitrate enabled & supported hardware"
+                m_long_description: "Trade range / stability for bitrate at run time. Requires hw support (rtl8812au)"
                 Switch {
                     width: 32
                     height: elementHeight

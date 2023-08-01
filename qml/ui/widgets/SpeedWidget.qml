@@ -40,12 +40,12 @@ BaseWidget {
 
     function get_speed_unit(){
         if(settings.enable_imperial){
-            return "mph";
+            return " mph";
         }
         if(settings.speed_ladder_use_kmh){
-            return "kph";
+            return " kph";
         }
-        return "m/s";
+        return " m/s";
     }
 
     function get_text_speed(){
