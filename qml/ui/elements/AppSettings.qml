@@ -259,7 +259,7 @@ Settings {
     property bool show_speed_second: true
     property bool speed_second_use_groundspeed: true
     property bool speed_second_use_kmh: true
-    property bool speed_second_show_unit: false
+    property bool speed_second_show_unit: true
 
     property bool altitude_ladder_show: true
     property bool altitude_ladder_show_ladder: true

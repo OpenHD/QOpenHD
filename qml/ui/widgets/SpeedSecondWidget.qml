@@ -48,7 +48,7 @@ BaseWidget {
     function get_text_speed(){
         var speed = get_speed_number()
         var ret=Number(speed).toLocaleString( Qt.locale(), 'f', 0)
-        if(settings.speed_ladder_show_unit && speed <99){
+        if(settings.speed_second_show_unit && speed <99){
             ret+=get_speed_unit();
         }
         return ret;

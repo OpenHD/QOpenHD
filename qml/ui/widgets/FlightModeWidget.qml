@@ -464,8 +464,8 @@ VTOL
             color: settings.color_text
             opacity: bw_current_opacity
             text: "DISARMED"
-            anchors.bottom: flight_mode_text.top
-            anchors.left: flight_mode_text.left
+            anchors.bottom: parent.top
+            anchors.left: parent.left
             bottomPadding: 5
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
