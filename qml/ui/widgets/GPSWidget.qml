@@ -49,15 +49,21 @@ BaseWidget {
     // garbles the first decimals if wanted
     function get_latitude(){
         var number=_fcMavlinkSystem.lat
-        if(settings.gps_garble_lat_lon_first_decimals){
-            return hide_before_decimals(number)
+        //if(settings.gps_garble_lat_lon_first_decimals){
+        //    return hide_before_decimals(number)
+        //}
+        if(settings.gps_hide_identity_using_offset){
+            number +=settings.hide_identity_latitude_offset;
         }
         return Number(number).toLocaleString(Qt.locale(), 'f', 6)
     }
     function get_longitude(){
         var number=_fcMavlinkSystem.lon
-        if(settings.gps_garble_lat_lon_first_decimals){
-            return hide_before_decimals(number)
+        //if(settings.gps_garble_lat_lon_first_decimals){
+        //    return hide_before_decimals(number)
+        //}
+        if(settings.gps_hide_identity_using_offset){
+            number +=settings.hide_identity_longitude_offset;
         }
         return Number(number).toLocaleString(Qt.locale(), 'f', 6)
     }
@@ -110,8 +116,15 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.gps_garble_lat_lon_first_decimals
-                    onCheckedChanged: settings.gps_garble_lat_lon_first_decimals = checked
+                    checked: settings.gps_hide_identity_using_offset
+                    onCheckedChanged: {
+                        if(settings.gps_hide_identity_using_offset != checked && checked){
+                            if(settings.hide_identity_latitude_offset==0.0 || settings.hide_identity_longitude_offset==0.0){
+                                _messageBoxInstance.set_text_and_show("Your identity is only hidden if you set custom offset values for lat,lon. Go to QOpenHD/General and set custom values.",10);
+                            }
+                        }
+                        settings.gps_hide_identity_using_offset = checked
+                    }
                 }
             }
             Item {

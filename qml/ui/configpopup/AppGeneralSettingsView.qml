@@ -204,6 +204,49 @@ ScrollView {
                     }
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Hide identity offset lattitude"
+                m_long_description: "Set this to a random value only you know to hide lat identity"
+
+                SpinBox {
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    from: -10
+                    to: 10
+                    stepSize: 1
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                    value: settings.hide_identity_latitude_offset
+                    onValueChanged: {
+                        settings.hide_identity_latitude_offset = value
+                    }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Hide identity offset longitude"
+                m_long_description: "Set this to a random value only you know to hide lon identity"
+
+                SpinBox {
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    //
+                    from: -10
+                    to: 10
+                    stepSize: 1
+
+                    value: settings.hide_identity_longitude_offset
+                    onValueChanged: {
+                        settings.hide_identity_longitude_offset = value
+                    }
+                }
+            }
 
         }
     }

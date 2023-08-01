@@ -57,15 +57,21 @@ BaseWidget {
     // garbles the first decimals if wanted
     function get_home_latitude(){
         var number=_fcMavlinkSystem.home_latitude
-        if(settings.gps_garble_lat_lon_first_decimals){
-            return hide_before_decimals(number)
+        //if(settings.gps_garble_lat_lon_first_decimals){
+        //    return hide_before_decimals(number)
+        //}
+        if(settings.gps_hide_identity_using_offset){
+            number +=settings.hide_identity_latitude_offset;
         }
         return Number(number).toLocaleString(Qt.locale(), 'f', 6)
     }
     function get_home_longitude(){
         var number=_fcMavlinkSystem.home_longitude
-        if(settings.gps_garble_lat_lon_first_decimals){
-            return hide_before_decimals(number)
+        //if(settings.gps_garble_lat_lon_first_decimals){
+        //    return hide_before_decimals(number)
+        //}
+        if(settings.gps_hide_identity_using_offset){
+            number +=settings.hide_identity_longitude_offset;
         }
         return Number(number).toLocaleString(Qt.locale(), 'f', 6)
     }

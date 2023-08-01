@@ -159,7 +159,7 @@ Settings {
 
     property bool show_gps: true
     property bool gps_show_all: false
-    property bool gps_garble_lat_lon_first_decimals: false
+    property bool gps_hide_identity_using_offset: false
     property bool gps_declutter: false
     property double gps_warn: 3
     property double gps_caution: 2
@@ -402,4 +402,7 @@ Settings {
     // dangerous, but neccessary
     property bool qopenhd_allow_changing_ground_unit_frequency_no_sync: false
     property bool qopenhd_allow_changing_ground_unit_channel_width_no_sync: false
+
+    property double hide_identity_latitude_offset: 0.0
+    property double hide_identity_longitude_offset: 0.0
 }
