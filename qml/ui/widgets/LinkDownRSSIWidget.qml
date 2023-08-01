@@ -192,6 +192,27 @@ BaseWidget {
                     onCheckedChanged: settings.downlink_dbm_warning = checked
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("EXP-signal quality %")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_signal_quality_show
+                    onCheckedChanged: settings.downlink_signal_quality_show = checked
+                }
+            }
         }
     }
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
@@ -371,6 +392,19 @@ BaseWidget {
                 visible: true
                 text: "Loss: " + m_packet_loss_perc+"%"
                 color: warning_level_to_color(get_packet_loss_perc_warning_level())
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            Text {
+                visible: settings.downlink_signal_quality_show
+                text: settings.downlink_signal_quality_show ? (""+_ohdSystemGround.current_rx_signal_quality+ "%") : ""
+                color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
                 font.family: settings.font_text

@@ -113,7 +113,8 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
         qDebug()<<"Invalid video codec: "<<codec_in_openhd;
     }
     // Feature - log in the HUD if the camera is restarting
-    if(msg.dummy0==2){
+    set_camera_status(msg.cam_status);
+    if(msg.cam_status==2){
         const auto elapsed=std::chrono::steady_clock::now()-m_last_hud_message_camera_restarting;
         if(elapsed>=std::chrono::seconds(3)){
            m_last_hud_message_camera_restarting=std::chrono::steady_clock::now();

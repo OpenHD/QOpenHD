@@ -80,6 +80,7 @@ public: // public for QT
     L_RO_PROP(bool,is_alive,set_is_alive,false)
     //
     L_RO_PROP(int,current_rx_rssi,set_current_rx_rssi,-128)
+    L_RO_PROP(int,current_rx_signal_quality,set_current_rx_signal_quality,-1)
     //
     L_RO_PROP(int,wifi_rx_packets_count,wifi_rx_packets_count,-1)
     L_RO_PROP(int,wifi_tx_packets_count,wifi_tx_packets_count,-1)

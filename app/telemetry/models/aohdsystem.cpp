@@ -235,6 +235,10 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         card.process_mavlink(msg);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
     }
+    // TODO: r.n we don't differentiate signal quality per card
+    if(msg.card_index==0){
+        set_current_rx_signal_quality(msg.rx_signal_quality);
+    }
 }
 
 void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t &msg){
