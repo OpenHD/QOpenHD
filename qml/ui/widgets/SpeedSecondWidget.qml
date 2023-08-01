@@ -27,7 +27,7 @@ BaseWidget {
     function get_speed_number(){
         var speed_m_per_second=settings.speed_second_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
         if(settings.enable_imperial){
-            return speed_m_per_second*2,23694;
+            return speed_m_per_second*2.23694;
         }
         if(settings.speed_second_use_kmh){
             return speed_m_per_second*3.6;
