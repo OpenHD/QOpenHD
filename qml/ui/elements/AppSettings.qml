@@ -318,11 +318,12 @@ Settings {
     property double wind_tumbler_tens: 13
     property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)
 
-    property bool show_roll: true
-    property bool roll_invert: false
-    property bool roll_show_arc: true
-    property bool roll_show_numbers: true
-    property bool roll_sky_pointer: false
+    // Default to false, since while really usefully for advanced flyers, not really a common OSD element
+    property bool bank_angle_indicator_widget_show: false
+    property bool bank_angle_indicator_widget_roll_invert: false
+    property bool bank_angle_indicator_widget_show_arc: true
+    property bool bank_angle_indicator_widget_show_numbers: true
+    property bool bank_angle_indicator_widget_sky_pointer: false
 
     property bool show_adsb: false
     property int adsb_distance_limit: 15000//meters. Bound box for api from map center (so x2)

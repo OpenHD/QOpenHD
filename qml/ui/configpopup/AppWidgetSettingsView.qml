@@ -1074,8 +1074,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_roll
-                    onCheckedChanged: settings.show_roll = checked
+                    checked: settings.bank_angle_indicator_widget_show
+                    onCheckedChanged: settings.bank_angle_indicator_widget_show = checked
                 }
             }
 
