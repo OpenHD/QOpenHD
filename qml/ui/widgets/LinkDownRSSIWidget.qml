@@ -403,7 +403,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_signal_quality_show
-                text: settings.downlink_signal_quality_show ? (""+_ohdSystemGround.current_rx_signal_quality+ "%") : ""
+                text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemGround.current_rx_signal_quality+ "%") : ""
                 color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
