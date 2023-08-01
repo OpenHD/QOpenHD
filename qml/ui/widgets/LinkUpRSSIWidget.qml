@@ -201,9 +201,9 @@ BaseWidget {
             anchors.top: uplink_rssi.bottom
             spacing:0
             Text {
-                visible: settings.downlink_signal_quality_show
-                text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemAir.current_rx_signal_quality+ "%") : ""
-                color:  settings.color_text
+                visible: true
+                text: m_passive_mode ? "LISTEN ONLY" : ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+                color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
                 font.family: settings.font_text
@@ -214,9 +214,9 @@ BaseWidget {
                 styleColor: settings.color_glow
             }
             Text {
-                visible: true
-                text: m_passive_mode ? "LISTEN ONLY" : ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
-                color: settings.color_text
+                visible: settings.downlink_signal_quality_show
+                text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemAir.current_rx_signal_quality+ "%") : ""
+                color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
                 font.family: settings.font_text
