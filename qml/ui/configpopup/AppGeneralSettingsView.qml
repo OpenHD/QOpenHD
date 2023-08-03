@@ -208,12 +208,13 @@ ScrollView {
                 m_short_description: "Hide identity offset lattitude"
                 m_long_description: "Set this to a random value only you know to hide lat identity"
 
-                SpinBox {
+                /*SpinBox {
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
                     from: -10
                     to: 10
                     stepSize: 1
@@ -223,27 +224,45 @@ ScrollView {
                     onValueChanged: {
                         settings.hide_identity_latitude_offset = value
                     }
-                }
-            }
-            SettingBaseElement{
-                m_short_description: "Hide identity offset longitude"
-                m_long_description: "Set this to a random value only you know to hide lon identity"
-
-                SpinBox {
+                }*/
+                XDecimalSpinBox{
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    //
-                    from: -10
-                    to: 10
-                    stepSize: 1
 
-                    value: settings.hide_identity_longitude_offset
-                    onValueChanged: {
-                        settings.hide_identity_longitude_offset = value
+                    m_default_value: settings.hide_identity_latitude_offset
+
+                    onRealValueChanged: {
+                        if(settings.hide_identity_latitude_offset!=realValue){
+                            settings.hide_identity_latitude_offset=realValue
+                            console.log("Value is: "+settings.hide_identity_latitude_offset)
+                        }
+                    }
+                }
+
+            }
+            SettingBaseElement{
+                m_short_description: "Hide identity offset longitude"
+                m_long_description: "Set this to a random value only you know to hide lon identity"
+
+                XDecimalSpinBox{
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                    m_default_value: settings.hide_identity_longitude_offset
+
+                    onRealValueChanged: {
+                        if(settings.hide_identity_longitude_offset!=realValue){
+                            settings.hide_identity_longitude_offset=realValue
+                            console.log("Value is: "+settings.hide_identity_longitude_offset)
+                        }
                     }
                 }
             }
