@@ -71,7 +71,20 @@ public: // Stuff needs to be public for qt
     // not directly battery, but similar
     L_RO_PROP(int,battery_consumed_mah,set_battery_consumed_mah,0)
     // TODO this value is not calculated yet
-    L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,0)
+    L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,-1)
+    // Ardupilot might show the same battery as multiple batteries when more than one current sensor is used
+    // (Aparently a few peole do that)
+    L_RO_PROP(double, battery_id0_current_ampere, set_battery_id0_current_ampere, 0)
+    L_RO_PROP(double, battery_id0_voltage_volt, set_battery_id0_voltage_volt, 0)
+    L_RO_PROP(int,    battery_id0_consumed_mah,set_battery_id0_consumed_mah,0)
+    L_RO_PROP(QString,battery_id0_type,set_battery_id0_type,"N/A")
+    L_RO_PROP(int,    battery_id0_remaining_time_s,set_battery_id0_remaining_time_s,-1)
+    L_RO_PROP(double, battery_id1_current_ampere, set_battery_id1_current_ampere, 0)
+    L_RO_PROP(double, battery_id1_voltage_volt, set_battery_id1_voltage_volt, 0)
+    L_RO_PROP(int,    battery_id1_consumed_mah,set_battery_id1_consumed_mah,0)
+    L_RO_PROP(QString,battery_id1_type,set_battery_id1_type,"N/A")
+    L_RO_PROP(int,    battery_id1_remaining_time_s,set_battery_id1_remaining_time_s,-1)
+
     // roll, pitch and yaw
     L_RO_PROP(double, pitch, set_pitch, 0)
     L_RO_PROP(double, roll, set_roll, 0)
@@ -100,8 +113,8 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(double,vy,set_vy,0.0)
     L_RO_PROP(double,vz,set_vz,0.0)
     //
-    L_RO_PROP(double,alt_rel,set_alt_rel,0.0)
-    L_RO_PROP(double,alt_msl,set_alt_msl,0.0)
+    L_RO_PROP(double,altitude_rel_m,set_altitude_rel_m,0.0)
+    L_RO_PROP(double,altitude_msl_m,set_altitude_msl_m,0.0)
     //
     L_RO_PROP(double,vehicle_vx_angle,set_vehicle_vx_angle,0.0);
     L_RO_PROP(double,vehicle_vy_angle,set_vehicle_vy_angle,0.0);
@@ -124,9 +137,9 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(double,home_distance,set_home_distance,0)
     L_RO_PROP(int,boot_time,set_boot_time,0)
     L_RO_PROP(int,hdg,set_hdg,0)
-    L_RO_PROP(double,speed,set_speed,0)
-    //
-    L_RO_PROP(double,airspeed,set_airspeed,0)
+    L_RO_PROP(double,ground_speed_meter_per_second,set_ground_speed_meter_per_second,0)
+    L_RO_PROP(double,air_speed_meter_per_second,set_air_speed_meter_per_second,0)
+
     L_RO_PROP(float,clipping_x,set_clipping_x,0.0)
     L_RO_PROP(float,clipping_y,set_clipping_y,0.0)
     L_RO_PROP(float,clipping_z,set_clipping_z,0.0)
@@ -160,14 +173,22 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(int,mission_waypoints_current,set_mission_waypoints_current,-1);
     // Current mission type, verbose as string for the user
     L_RO_PROP(QString,mission_current_type,set_mission_current_type,"Unknown");
+    L_RO_PROP(int,distance_sensor_distance_cm,set_distance_sensor_distance_cm,-1);
+    // (GPS) reported time
+    L_RO_PROP(quint64,sys_time_unix_usec,set_sys_time_unix_usec,0);
+    L_RO_PROP(QString,sys_time_unix_as_str,set_sys_time_unix_as_str,"N/A");
 public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
-
+    // Updates the flight time by increasing the time when armed
     void updateFlightTimer();
-    void updateFlightDistance();
+    // Calculates the flght distance (dirty) by taking time delta and current speed into account
+    // replaced by using distance between lat,lon point(s) (this is a bit more accurate)
+    void update_flight_distance_using_groundspeed();
+    // Something something luke
     void updateVehicleAngles();
+    // Something somethng luke
     void updateWind();
 
     Q_PROPERTY(int home_course MEMBER m_home_course WRITE set_home_course NOTIFY home_course_changed)
@@ -209,7 +230,7 @@ private:
 
     double speed_last_time = 0.0;
 
-    qint64 flightDistanceLastTime= 0;
+    qint64 m_flight_distance_last_time_ms= 0;
     long total_dist= 0;
 
     QElapsedTimer totalTime;
@@ -268,6 +289,13 @@ private:
     double m_efficiency_last_distance_m=0;
     int m_efficiency_last_charge_consumed_mAh=0;
     std::chrono::steady_clock::time_point m_efficiency_last_update=std::chrono::steady_clock::now();
+private:
+    // Feature: log warning if heartbeats are received, but no "attitude" messages -
+    // we use this as a hint that the telemetry rate(s) are messed up
+    // Every 10 heartbeats, check when we received the last "attitude" message - if we didn't receive an attiude message in this interval,
+    // log a warning
+    int m_n_heartbeats=0;
+    int m_n_attitude_messages=0;
 };
 
 

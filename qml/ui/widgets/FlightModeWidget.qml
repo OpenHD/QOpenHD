@@ -44,6 +44,29 @@ BaseWidget {
             id: idBaseWidgetDefaultUiControlElements
             show_vertical_lock: true
             show_horizontal_lock: true
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show disarmed")
+                    horizontalAlignment: Text.AlignRight
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.flight_mode_show_disarmed
+                    onCheckedChanged: settings.flight_mode_show_disarmed = checked
+                }
+            }
         }
     }
 
@@ -433,6 +456,25 @@ VTOL
             elide: Text.ElideRight
             style: Text.Outline
             styleColor: settings.color_glow
+        }
+        Text{
+            id: disarmed_text
+            height: 48
+            width: parent.width
+            color: settings.color_text
+            opacity: bw_current_opacity
+            text: "DISARMED"
+            anchors.bottom: parent.top
+            anchors.left: parent.left
+            bottomPadding: 5
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 24
+            font.family: settings.font_text
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
+            visible: settings.flight_mode_show_disarmed && (!_fcMavlinkSystem.armed && _fcMavlinkSystem.is_alive)
         }
     }
 }

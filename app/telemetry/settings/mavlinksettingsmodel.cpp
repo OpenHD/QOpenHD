@@ -1,15 +1,12 @@
 ﻿#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
-#include "../models/aohdsystem.h"
-#include "../models/camerastreammodel.h"
 #include "param_names.h"
 #include "documented_param.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
-#include "../../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
 #include <QSettings>
 #include <QVariant>
@@ -156,6 +153,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     if(param_client==nullptr){
         // not discovered yet
         WorkaroundMessageBox::makePopupMessage("OHD System not found");
+        return false;
     }
     if(param_client){
         // first, remove anything the QT model has cached
@@ -181,6 +179,26 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         }
     }else{
         // not dscovered yet
+    }
+    return false;
+}
+
+
+bool MavlinkSettingsModel::try_fetch_all_parameters_long_running()
+{
+    if(param_client==nullptr){
+        // not discovered yet
+        WorkaroundMessageBox::makePopupMessage("OHD System not found");
+        return false;
+    }
+    const auto begin=std::chrono::steady_clock::now();
+    while(std::chrono::steady_clock::now()-begin < std::chrono::seconds(8)){
+        const auto success=try_fetch_all_parameters();
+        if(success){
+            return true;
+        }else{
+            WorkaroundMessageBox::instance().set_text_and_show("Fetching parameters...",1);
+        }
     }
     return false;
 }
@@ -402,76 +420,9 @@ void MavlinkSettingsModel::removeData(int row)
     endRemoveRows();
 }
 
-// hacky, temporary
-static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
-    if(data.unique_id=="VIDEO_CODEC"){
-        // Check if the param is still an int (should always be the case, but we don't want to crash in c++)
-        if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"ERROR video codec setting messed up, fixme";
-            return;
-        }
-        const int video_codec_in_openhd=std::get<int32_t>(data.value);
-        if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-            CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(0,video_codec_in_openhd);
-        }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
-            CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(1,video_codec_in_openhd);
-        }
-    }
-}
-
-static void hacky_set_n_cameras_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
-    if(data.unique_id=="V_N_CAMERAS"){
-        if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"ERROR N_CAMERAS messed up, fixme";
-            return;
-        }
-        const int value=std::get<int32_t>(data.value);
-        const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
-        if(value!=value_in_qopenhd && value_in_qopenhd==1){
-            auto message="QopenHD is not configured for single cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
-            qDebug()<<message;
-            WorkaroundMessageBox::makePopupMessage(message);
-        }
-    }
-}
-
-static void hacky_check_stbc(const int sys_id,const MavlinkSettingsModel::SettingData& data){
-    if(sys_id != OHD_SYS_ID_AIR){
-        // Enabling on air unit is way more important
-        return;
-    }
-    if(data.unique_id==openhd::WB_ENABLE_STBC){
-        if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"Error param";
-            return;
-        }
-        const int value=std::get<int32_t>(data.value);
-        // 0 = Disabled, 1 = [+1 (2 antennas)]
-        if(value!=1){
-            //  If your ground unit uses card(s) with 2 antennas, enable STBC on your air unit (transmitting part)."
-            // "If your air unit uses card(s) with 2 antennas, enable STBC on your ground unit (transmitting part).
-            auto message="Please check: Enable WB_E_STBC on air/gnd unit IF your rtl8812au TX/RX both have more than one antenna (NOTE: Without 2 populated rf paths, enabling this option results in"
-                           " no connection !!! OpenHD cannot automatically check how many rf paths are populated on your adapter(s). ASUS has 1 external and "
-                           "1 internal antenna (STBC should be used). If you wish to not see this "
-                           "prompt again, you can disable it in QOpenHD - DEV - dev_wb_show_no_stbc_enabled_warning.";
-            QSettings settings;
-            const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
-            if(!dev_wb_show_no_stbc_enabled_warning){
-                WorkaroundMessageBox::makePopupMessage(message);
-            }
-        }
-    }
-}
-
 
 void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData new_data)
 {
-    {
-        // temporary, dirty
-        hacky_set_n_cameras_in_qopenhd(m_comp_id,new_data);
-        hacky_set_video_codec_in_qopenhd(m_comp_id,new_data);
-        hacky_check_stbc(m_sys_id,new_data);
-    }
     int row=-1;
     if(row_opt.has_value()){
         row=row_opt.value();
@@ -499,12 +450,6 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
-    {
-        // temporary, dirty
-        hacky_set_n_cameras_in_qopenhd(m_comp_id,data);
-        hacky_set_video_codec_in_qopenhd(m_comp_id,data);
-        hacky_check_stbc(m_sys_id,data);
-    }
     if(is_param_whitelisted(data.unique_id.toStdString())){
         // never add whitelisted params to the simple model, they need synchronization
         return;
@@ -655,6 +600,27 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(tmp.has_value()){
         return tmp.value().requires_reboot;
     }
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_keyframe_interval(int keyframe_interval)
+{
+    const auto ret=try_update_parameter_int("V_KEYFRAME_I",keyframe_interval);
+    if(ret=="")return true;
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_fec_percentage(int percent)
+{
+    const auto ret=try_update_parameter_int(openhd::WB_VIDEO_FEC_PERCENTAGE,percent);
+    if(ret=="")return true;
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_video_resolution_framerate(QString res_str)
+{
+    const auto ret=try_update_parameter_string("V_FORMAT",res_str);
+    if(ret=="")return true;
     return false;
 }
 

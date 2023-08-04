@@ -8,6 +8,7 @@
 #include "../telemetryutil.hpp"
 
 #include <geographiclib-c-2.0/src/geodesic.h>
+#include "../geodesi_helper.h"
 
 #include <QDateTime>
 
@@ -16,6 +17,8 @@
 #include "mavsdk_helper.hpp"
 #include "fcmavlinkmissionitemsmodel.h"
 #include "fcmavlinksettingsmodel.h"
+
+#include <QDateTime>
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
@@ -35,6 +38,10 @@ FCMavlinkSystem& FCMavlinkSystem::instance() {
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // The system is set once when discovered, then should not change !!
+    if(m_system!=nullptr){
+        HUDLogMessagesModel::instance().add_message_warning("FC sys id conflict");
+        return;
+    }
     assert(m_system==nullptr);
     m_system=system;
     if(!m_system->has_autopilot()){
@@ -92,6 +99,18 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         }else{
             qDebug()<<"Weird heartbeat";
         }
+        m_n_heartbeats++;
+        if(m_n_heartbeats>10){
+            if(m_n_attitude_messages<=0){
+                QSettings settings;
+                const bool log_quiet_fc_warning_to_hud = settings.value("log_quiet_fc_warning_to_hud",true).toBool();
+                if(log_quiet_fc_warning_to_hud){
+                    HUDLogMessagesModel::instance().add_message_warning("Quiet FC, please check your mavlink message rate(s)");
+                }
+            }
+            m_n_attitude_messages=0;
+            m_n_heartbeats=0;
+        }
         break;
     }
     case MAVLINK_MSG_ID_AUTOPILOT_VERSION: {
@@ -116,13 +135,24 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_battery_voltage_volt(battery_voltage_v);
         set_battery_voltage_single_cell(QOpenHDMavlinkHelper::calclate_voltage_per_cell(battery_voltage_v));
         set_battery_current_ampere((double)sys_status.current_battery/100.0);
-        // TODO XX
+        // TODO - should we use values from here or from the battery message ?
+        const auto battery_remaining_perc=sys_status.battery_remaining;
+        if(battery_remaining_perc != -1){
+            set_battery_percent(battery_remaining_perc);
+            const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_remaining_perc);
+            set_battery_percent_gauge(fc_battery_gauge_glyph);
+        }
         break;
     }
 
     case MAVLINK_MSG_ID_SYSTEM_TIME:{
         mavlink_system_time_t sys_time;
         mavlink_msg_system_time_decode(&msg, &sys_time);
+        set_sys_time_unix_usec(sys_time.time_unix_usec);
+        QDateTime time;
+        time.setTime_t(sys_time.time_unix_usec/1000/1000);
+        set_sys_time_unix_as_str(time.toString());
+
         uint32_t boot_time = sys_time.time_boot_ms;
         /*if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
@@ -187,6 +217,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         //const auto yaw_deg=Telemetryutil::angle_mavlink_rad_to_degree(attitude.yaw);
         //set_hdg(yaw_deg);
         //qDebug()<<"degree Roll:"<<roll_deg<<" Pitch:"<<pitch_deg<<" Yaw:"<<yaw_deg;
+        m_n_attitude_messages++;
         break;
     }
     case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
@@ -197,12 +228,20 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_global_position_int_decode(&msg, &global_position_int);
         const double lat=static_cast<double>(global_position_int.lat) / 10000000.0;
         const double lon=static_cast<double>(global_position_int.lon) / 10000000.0;
+        // This way we could also calculate the flight distance - but aparently, this results in slightly too small values
+        // (probably could be fixed by using a distance calculation method that is a better fit)
+        /*if(m_lat!=0.0 && m_lon!=0.0 && m_gps_hdop<20){
+            const auto added_distance_m=distance_between(m_lat,m_lon,lat,lon);
+            total_dist = total_dist + added_distance_m;
+            //qDebug() << "total distance" << total_dist;
+            set_flight_distance_m( total_dist);
+        }*/
         set_lat(lat);
         set_lon(lon);
         set_boot_time(global_position_int.time_boot_ms);
-        set_alt_rel(global_position_int.relative_alt/1000.0);
+        set_altitude_rel_m(global_position_int.relative_alt/1000.0);
         // qDebug() << "Altitude relative " << alt_rel;
-        set_alt_msl(global_position_int.alt/1000.0);
+        set_altitude_msl_m(global_position_int.alt/1000.0);
         set_vx(global_position_int.vx/100.0);
         set_vy(global_position_int.vy/100.0);
         set_vz(global_position_int.vz/100.0);
@@ -215,7 +254,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         }
         calculate_home_distance();
         calculate_home_course();
-        updateFlightDistance();
         updateVehicleAngles();
         updateWind();
         break;
@@ -248,6 +286,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_mission_current_decode(&msg,&mission_current);
         //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_CURRENT"<<mission_current.seq;
         set_mission_waypoints_current(mission_current.seq);
+        if(mission_current.total!=0){ // 0 == not supported
+            set_mission_waypoints_current_total(mission_current.total);
+        }
         break;
     }
     case MAVLINK_MSG_ID_MISSION_COUNT:{
@@ -267,11 +308,13 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
            if(item.frame==MAV_FRAME_GLOBAL || item.frame==MAV_FRAME_GLOBAL_RELATIVE_ALT){
                double lat=static_cast<double>(item.x)* 1e-7;
                double lon=static_cast<double>(item.y)* 1e-7;
+               double alt_m=100;
                if(lat==0.0 || lon==0.0){
                    //qDebug()<<"Weird mission item:"<<item.x<<","<<item.y<<" index:"<<item.seq;
                }else{
                    const int mission_index=item.seq;
-                   FCMavlinkMissionItemsModel::instance().hack_add_el_if_nonexisting(lat,lon,mission_index);
+                   const bool currently_active=item.current==1;
+                   FCMavlinkMissionItemsModel::instance().update_mission(mission_index,lat,lon,alt_m,currently_active);
                }
            }
         }
@@ -302,13 +345,14 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_vfr_hud_t vfr_hud;
         mavlink_msg_vfr_hud_decode (&msg, &vfr_hud);
         set_throttle(vfr_hud.throttle);
-        auto airspeed = vfr_hud.airspeed*3.6;
-        set_airspeed(airspeed);
-        auto speed = vfr_hud.groundspeed*3.6;
-        set_speed(speed);
+        set_air_speed_meter_per_second(vfr_hud.airspeed);
+        set_ground_speed_meter_per_second(vfr_hud.groundspeed);
+        update_flight_distance_using_groundspeed();
         // qDebug() << "Speed- ground " << speed;
         auto vsi = vfr_hud.climb;
         set_vertical_speed_indicator_mps(vsi);
+        // TODO use ?
+        //set_altitude_msl_m(vfr_hud.alt);
         // qDebug() << "VSI- " << vsi;
         //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
         //last_vfr_timestamp = current_timestamp;
@@ -345,13 +389,31 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_battery_status_t battery_status;
         mavlink_msg_battery_status_decode(&msg, &battery_status);
         set_battery_consumed_mah(battery_status.current_consumed);
-        set_battery_percent(battery_status.battery_remaining);
-        const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-        set_battery_percent_gauge(fc_battery_gauge_glyph);
+        QSettings settings;
+        const bool air_battery_use_batt_id_0_only=settings.value("air_battery_use_batt_id_0_only", false).toBool();
+        if(!air_battery_use_batt_id_0_only){
+           set_battery_percent(battery_status.battery_remaining);
+           const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+           set_battery_percent_gauge(fc_battery_gauge_glyph);
+        }
         // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
         // battery to measure the voltage of a single cell (which is what this would be for)
         // January 22: doesn't work reliably, use the worse but working qopenhd local setting approach
         //set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
+        if(battery_status.id==0){
+           set_battery_id0_voltage_volt(battery_status.voltages[0]/1000.0);
+           set_battery_id0_current_ampere(battery_status.current_battery/100);
+           set_battery_id0_consumed_mah(battery_status.current_consumed);
+           set_battery_id0_type(qopenhd::battery_type_to_string(battery_status.type).c_str());
+           set_battery_id0_remaining_time_s(battery_status.time_remaining);
+        }else if(battery_status.id==1){
+           set_battery_id1_voltage_volt(battery_status.voltages[0]);
+           set_battery_id1_current_ampere(battery_status.current_battery/100);
+           set_battery_id1_consumed_mah(battery_status.current_consumed);
+           set_battery_id1_type(qopenhd::battery_type_to_string(battery_status.type).c_str());
+           set_battery_id1_remaining_time_s(battery_status.time_remaining);
+        }
+        //qDebug()<<qopenhd::detailed_battery_voltages_to_string(battery_status.voltages).c_str();
         break;
     }
     case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -414,6 +476,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_SCALED_PRESSURE2:{
         break;
     }
+    case MAVLINK_MSG_ID_HIL_GPS:{
+        break;
+    }
+    case MAVLINK_MSG_ID_TERRAIN_REQUEST:{
+        break;
+    }
     case MAVLINK_MSG_ID_HOME_POSITION:{
         mavlink_home_position_t home_position;
         mavlink_msg_home_position_decode(&msg, &home_position);
@@ -456,6 +524,13 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     case MAVLINK_MSG_ID_AIRSPEED_AUTOCAL:
         break;
+    case MAVLINK_MSG_ID_GIMBAL_DEVICE_ATTITUDE_STATUS:
+        break;
+    case MAVLINK_MSG_ID_DISTANCE_SENSOR:{
+        mavlink_distance_sensor_t decoded;
+        mavlink_msg_distance_sensor_decode(&msg,&decoded);
+        set_distance_sensor_distance_cm(decoded.current_distance);
+    };break;
     default: {
         //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
         qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
@@ -498,17 +573,17 @@ void FCMavlinkSystem::updateFlightTimer() {
     }
 }
 
-void FCMavlinkSystem::updateFlightDistance() {
+void FCMavlinkSystem::update_flight_distance_using_groundspeed() {
     if (m_gps_hdop > 20 || m_lat == 0.0){
         //do not pollute distance if we have bad data
         return;
     }
     if (m_armed==true){
-        const auto elapsed = flightTimeStart.elapsed();
-        const auto time = elapsed / 3600;
-        const auto time_diff = time - flightDistanceLastTime;
-        flightDistanceLastTime = time;
-        const auto added_distance =  m_speed * time_diff;
+        const auto elapsed_ms = flightTimeStart.elapsed();
+        const auto time_diff_ms = elapsed_ms - m_flight_distance_last_time_ms;
+        m_flight_distance_last_time_ms = elapsed_ms;
+        const auto time_diff_s =time_diff_ms / 1000.0;
+        const auto added_distance =  m_ground_speed_meter_per_second * time_diff_s;
         //qDebug() << "added distance" << added_distance;
         total_dist = total_dist + added_distance;
         //qDebug() << "total distance" << total_dist;
@@ -529,8 +604,9 @@ void FCMavlinkSystem::set_armed(bool armed) {
         flightTimeStart.start();
         if (m_home_latitude == 0.0 || m_home_longitude == 0.0) {
             //LocalMessage::instance()->showMessage("No Home Position in FCMavlinkSystem", 4);
-            HUDLogMessagesModel::instance().add_message_info("Requesting Home position");
-            request_home_position_from_fc();
+            // Not needed anymore after we just set the proper rate(s)
+            //HUDLogMessagesModel::instance().add_message_info("Requesting Home position");
+            //request_home_position_from_fc();
         }
     }
     m_armed = armed;
@@ -561,25 +637,10 @@ void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
 void FCMavlinkSystem::calculate_home_distance() {
     // if home lat/long are zero the calculation will be wrong so we skip it
     if (m_home_latitude != 0.0 && m_home_longitude != 0.0) {
-        double s12;
-        double azi1;
-        double azi2;
-
-        geod_geodesic geod{};
-        // from https://manpages.ubuntu.com/manpages/bionic/man3/geodesic.3.html
-        const double a = 6378137, f = 1/298.257223563; /* WGS84 */
-        geod_init(&geod,a,f);
-        geod_inverse(&geod,m_home_latitude,m_home_longitude,m_lat,m_lon,&s12,&azi1,&azi2);
-
-        /* todo: this could be easily extended to save the azimuth as well, which gives us the direction
-           home for free as a result of the calculation above.
-        */
-        set_home_distance(s12);
-        //qDebug()<<"XX"<<Telemetryutil::normalize_degree(azi1);
+        const auto home_distance=distance_between(m_home_latitude,m_home_longitude,m_lat,m_lon);
+        set_home_distance(home_distance);
     } else {
-        /*
-         * If the system doesnt have home pos just show "0"
-         */
+        // If the system doesnt have home pos just show "0"
         set_home_distance(0.0);
     }
 }
@@ -943,6 +1004,7 @@ bool FCMavlinkSystem::overwrite_home_to_current()
     set_home_latitude(m_lat);
     set_home_longitude(m_lon);
     HUDLogMessagesModel::instance().add_message_warning("HOME POSITION OVERWRITTEN");
+    return true;
 }
 
 bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)
@@ -1082,17 +1144,26 @@ void FCMavlinkSystem::recalculate_efficiency()
     //qDebug()<<"FCMavlinkSystem::recalculate_efficiency()";
     m_efficiency_last_update=std::chrono::steady_clock::now();
     const double delta_distance_m=m_flight_distance_m-m_efficiency_last_distance_m;
-    const double delta_distance_km=delta_distance_m / 1000.0;
     const int delta_charge_mah=m_battery_consumed_mah-m_efficiency_last_charge_consumed_mAh;
-    if(delta_distance_m>0.0 && delta_charge_mah>0.0){
-        //qDebug()<<"recalculate_efficiency: delta_distance_m:"<<delta_distance_m<<" delta_charge_mah:"<<delta_charge_mah;
+    if(delta_distance_m<0){
+        qDebug()<<"Invalid distance delta,resetting:"<<delta_distance_m;
+        m_efficiency_last_distance_m=m_flight_distance_m;
+        return;
+    }
+    if(delta_charge_mah<0){
+        qDebug()<<"Invalid charge delta,resetting"<<delta_charge_mah;
+        m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
+        return;
+    }
+    if(delta_distance_m>1.0 && delta_charge_mah > 10){
+        const double delta_distance_km=delta_distance_m / 1000.0;
         // recalculate and update efficiency
         const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
         set_battery_consumed_mah_per_km(efficiency_mah_per_km);
         //qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
+        m_efficiency_last_distance_m=m_flight_distance_m;
+        m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
     }else{
-        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency - cannot";
+        //qDebug()<<"Not enough difference, recalculating later: "<<delta_distance_m<<"m, "<<delta_charge_mah<<"mAh";
     }
-    m_efficiency_last_distance_m=m_flight_distance_m;
-    m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
 }

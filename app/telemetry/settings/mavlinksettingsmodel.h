@@ -5,6 +5,8 @@
 #include <QAbstractListModel>
 #include <map>
 #include <optional>
+#include <thread>
+#include <mutex>
 
 #include "../mavsdk_include.h"
 
@@ -56,6 +58,9 @@ public:
     // callable from QT.
     // re-fetch all parameters from the server. Clears the cache, then re-fetches the whole parameter set.
     Q_INVOKABLE bool try_fetch_all_parameters();
+
+    Q_INVOKABLE bool try_fetch_all_parameters_long_running();
+
     // re-fetch a specific parameter from the server, Updates the parameter set accordingly.
     Q_INVOKABLE bool try_refetch_parameter_int(QString param_id);
     Q_INVOKABLE bool try_refetch_parameter_string(QString param_id);
@@ -152,8 +157,16 @@ public:
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
 
+    // We have a special UI for changing the keyframe interval (a camera specific param)
+    // and for the fec percentage (a WB param)
+    Q_INVOKABLE bool set_param_keyframe_interval(int keyframe_interval);
+    Q_INVOKABLE bool set_param_fec_percentage(int percent);
+    Q_INVOKABLE bool set_param_video_resolution_framerate(QString res_str);
+
 private:
     QString get_short_description(QString param_id)const;
+    std::mutex m_update_all_async_mutex;
+    std::unique_ptr<std::thread> m_update_all_async_thread=nullptr;
 
 };
 

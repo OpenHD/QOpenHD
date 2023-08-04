@@ -8,7 +8,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: speedsecondWidget
-    width: 40
+    width: 80
     height: 25
     defaultAlignment: 3
     defaultHCenter: false
@@ -24,6 +24,36 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+    function get_speed_number(){
+        var speed_m_per_second=settings.speed_second_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
+        if(settings.enable_imperial){
+            return speed_m_per_second*2.23694;
+        }
+        if(settings.speed_second_use_kmh){
+            return speed_m_per_second*3.6;
+        }
+        return speed_m_per_second;
+    }
+
+    function get_speed_unit(){
+        if(settings.enable_imperial){
+            return " mph";
+        }
+        if(settings.speed_second_use_kmh){
+            return " kph";
+        }
+        return " m/s";
+    }
+
+    function get_text_speed(){
+        var speed = get_speed_number()
+        var ret=Number(speed).toLocaleString( Qt.locale(), 'f', 0)
+        if(settings.speed_second_show_unit && speed <99){
+            ret+=get_speed_unit();
+        }
+        return ret;
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -37,7 +67,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: mslTitle
-                    text: qsTr("Airspeed / Groundspeed")
+                    text: qsTr("Use groundspeed")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -54,6 +84,48 @@ BaseWidget {
                     onCheckedChanged: settings.speed_second_use_groundspeed = checked
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Use km/h")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.speed_second_use_kmh
+                    onCheckedChanged: settings.speed_second_use_kmh = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show unit")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.speed_second_show_unit
+                    onCheckedChanged: settings.speed_second_show_unit = checked
+                }
+            }
         }
     }
 
@@ -64,27 +136,8 @@ BaseWidget {
         scale: bw_current_scale
 
         Text {
-            id: second_alt_text
-            color: settings.color_text
-            opacity: bw_current_opacity
-            font.pixelSize: 14
-            font.family: settings.font_text
-            width: 40
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.verticalCenter: widgetGlyph.verticalCenter
-            text: Number(
-                      settings.enable_imperial ? (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed * 0.621371 : _fcMavlinkSystem.airspeed * 0.621371) : (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed)).toLocaleString(
-                      Qt.locale(), 'f', 0)
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignVCenter
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
-        Text {
             id: widgetGlyph
-            width: 40
+            width: 20
             height: parent.height
             color: settings.color_shape
             opacity: bw_current_opacity
@@ -94,6 +147,23 @@ BaseWidget {
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 14
+            verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
+        Text {
+            id: second_alt_text
+            color: settings.color_text
+            opacity: bw_current_opacity
+            font.pixelSize: 14
+            font.family: settings.font_text
+            width: 40
+            anchors.left: widgetGlyph.right
+            anchors.rightMargin: 0
+            anchors.verticalCenter: widgetGlyph.verticalCenter
+            text: get_text_speed()
+            horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow

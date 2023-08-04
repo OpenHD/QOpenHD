@@ -11,20 +11,22 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: vsiWidget
+    id: vsGaugeWidget
     width: 50
     height: 50
     defaultAlignment: 1
     defaultXOffset: -20
+
     defaultHCenter: false
     defaultVCenter: true
 
-    visible: settings.show_vsi
+    visible: settings.show_vertical_speed_gauge_widget
 
-    widgetIdentifier: "vsi_widget"
-    bw_verbose_name: "VERTICAL SPEED"
+    widgetIdentifier: "vertical_speed_gauge_widget"
+    bw_verbose_name: "VERTICAL SPEED (CLIMB)"
 
     property double m_vertical_speed_m_per_second: _fcMavlinkSystem.vertical_speed_indicator_mps
+
 
     hasWidgetDetail: true
 
@@ -36,6 +38,9 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements{
             id: idBaseWidgetDefaultUiControlElements
+
+            show_vertical_lock: true
+
             Item {
                 width: parent.width
                 height: 32
@@ -52,16 +57,15 @@ BaseWidget {
                     id: vsi_max_Slider
                     orientation: Qt.Horizontal
                     from: 5
-                    value: settings.vsi_max
+                    value: settings.vertical_speed_gauge_widget_max
                     to: 50
                     stepSize: 5
                     height: parent.height
                     anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
-                    // @disable-check M223
                     onValueChanged: {
-                        settings.vsi_max = vsi_max_Slider.value
+                        settings.vertical_speed_gauge_widget_max = vsi_max_Slider.value
                     }
                 }
             }
@@ -76,6 +80,7 @@ BaseWidget {
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
+            visible: !settings.vertical_speed_indicator_simple
             transform: Scale {
                 origin.x: 25
                 origin.y: 25
@@ -131,8 +136,8 @@ BaseWidget {
 
                 rotation: 270
 
-                minimumValue: settings.vsi_max * -1
-                maximumValue: settings.vsi_max
+                minimumValue: settings.vertical_speed_gauge_widget_max * -1
+                maximumValue: settings.vertical_speed_gauge_widget_max
 
                 Behavior on value {NumberAnimation { duration: settings.smoothing }}
                 value: m_vertical_speed_m_per_second
@@ -141,11 +146,11 @@ BaseWidget {
                     labelInset: outerRadius * -.3
                     minorTickmarkCount: 0
                     tickmarkStepSize: {
-                        settings.vsi_max / 5
+                        settings.vertical_speed_gauge_widget_max / 5
                     }
                     // @disable-check M223
                     labelStepSize: {
-                        settings.vsi_max / 5
+                        settings.vertical_speed_gauge_widget_max / 5
                     }
                     maximumValueAngle: 135
                     minimumValueAngle: -135

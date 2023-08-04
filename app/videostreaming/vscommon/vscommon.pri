@@ -30,3 +30,6 @@ windows {
         $$PWD/QOpenHDVideoHelper.hpp \
 }
 
+HEADERS += \
+    $$PWD/ExternalDecodeService.hpp
+

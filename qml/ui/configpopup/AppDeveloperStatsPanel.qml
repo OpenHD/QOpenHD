@@ -59,10 +59,23 @@ Rectangle {
                 local_ip_button.text=text
             }
         }
+        Button{
+            id: exp_set_rates
+            height: 24
+            text: "Set Tele rates"
+            onClicked:{
+                _mavlinkTelemetry.re_apply_rates()
+            }
+        }
+
 
         Text {
             id: test1
             text: qsTr("Art Horizon mavlink update rate:"+_fcMavlinkSystem.curr_update_rate_mavlink_message_attitude+" Hz")
+        }
+        Text {
+            id: tele_in
+            text: qsTr("Tele in"+_mavlinkTelemetry.telemetry_pps_in+" pps")
         }
         // air
         Text {

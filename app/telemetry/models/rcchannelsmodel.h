@@ -26,6 +26,12 @@ class RCChannelsModel : public  QAbstractListModel
     static RCChannelsModel& instanceFC();
     // Considered alive if we got an update in the last X seconds
     L_RO_PROP(bool,is_alive,set_is_alive,false)
+    // This is extra for the "controls" widget
+    // Assumes AETR
+    L_RO_PROP(double,control_yaw,set_control_yaw,-1)
+    L_RO_PROP(double,control_roll,set_control_roll,-1)
+    L_RO_PROP(double,control_pitch,set_control_pitch,-1)
+    L_RO_PROP(double,control_throttle,set_control_throttle,-1)
 public:
     enum Roles {
         // The current value for this channel

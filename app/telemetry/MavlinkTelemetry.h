@@ -8,6 +8,9 @@
 #include <thread>
 
 #include "mavsdk_include.h"
+#include "models/fcmessageintervalhelper.hpp"
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
+#include "../common/TimeHelper.hpp"
 
 /**
  * Changed: Used to have custom UDP and TCP stuff, but now just uses MAVSDK - MAVSDK already has both TCP and UDP support.
@@ -39,6 +42,9 @@ public:
      * @return true on success (this does not mean the message was received, but rather the message was sent out via the lossy connection)
      */
     bool sendMessage(mavlink_message_t msg);
+    // A couple of stats exposed as QT properties
+    L_RO_PROP(int,telemetry_pps_in,set_telemetry_pps_in,-1)
+    L_RO_PROP(int,telemetry_bps_in,set_telemetry_bps_in,-1)
 private:
     // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
     // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
@@ -52,12 +58,12 @@ private:
     std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdGround=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdAir=nullptr;
+    // MAVSDK is a bit stupid in this direction - passtrough(s) are for each system, but if there are multiple
+    // system(s) behind a connection, this pattern is completely broken.
+    // Normally, this passtrough is for the ground station - since we normally talk to both air and fc via the ground
+    // However, if there is no ground, we create the passtrough from the air or FC system too.
+    // This way one can also connect qopenhd to the FC without air / ground running and/or to the air unit without ground.
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround=nullptr;
-    // urgh, mavsdk is really annoying in this regard. In case of OpenHD, the telemetry from the drone
-    // always comes through via the OHD Ground unit, so we have the passtroughOhdGround. However, if there is no
-    // OpenHD running (e.g. only the SITL during development) we never get the OHD ground system, and therefore the ground passtrough
-    // is never created. hacky workaround that for now
-    std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughFromFC=nullptr;
     // called by mavsdk whenever a new system is detected
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
     // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
@@ -67,6 +73,10 @@ private:
     // (not block the UI thread)
     void tcp_only_establish_connection();
     std::unique_ptr<std::thread> m_tcp_connect_thread= nullptr;
+    int64_t m_tele_received_bytes=0;
+    int64_t m_tele_received_packets=0;
+    BitrateCalculator2 m_tele_bitrate_in;
+    PacketsPerSecondCalculator m_tele_pps_in;
 public:
     // ping all the systems (using timesync, since "ping" is deprecated)
     Q_INVOKABLE void ping_all_systems();
@@ -87,6 +97,11 @@ public:
     // 2: 5.8G only
     // similar for channel widths
     Q_INVOKABLE bool ohd_gnd_request_channel_scan(int freq_bands,int channel_widths);
+private:
+    std::unique_ptr<FCMessageIntervalHelper> m_msg_interval_helper=nullptr;
+    void process_check_for_data_rates(const mavlink_message_t &msg);
+public:
+    Q_INVOKABLE void re_apply_rates();
 };
 
 #endif // OHDMAVLINKCONNECTION_H

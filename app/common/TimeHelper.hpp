@@ -410,5 +410,79 @@ public:
     }
 };
 
+class PacketsPerSecondCalculator{
+private:
+    // return current packets per second
+    // aka packets since last call / time delta since last call
+    uint64_t recalculateSinceLast(uint64_t curr_packets){
+        const auto now=std::chrono::steady_clock::now();
+        const auto deltaTime=now-last_time;
+        const auto deltaPackets=curr_packets-packets_last_time;
+        last_time=now;
+        packets_last_time=curr_packets;
+        const auto delta_time_us=std::chrono::duration_cast<std::chrono::microseconds>(deltaTime).count();
+        if(delta_time_us>0 && deltaPackets>0){
+            const auto packets_per_second=(deltaPackets*1000*1000 / delta_time_us);
+            return packets_per_second;
+        }else{
+            return 0;
+        }
+    }
+public:
+    uint64_t get_last_or_recalculate(uint64_t curr_packets,const std::chrono::steady_clock::duration& time_between_recalculations=std::chrono::seconds(2)){
+        if(std::chrono::steady_clock::now()-last_time>=time_between_recalculations){
+            curr_packets_per_second= recalculateSinceLast(curr_packets);
+        }
+        return curr_packets_per_second;
+    }
+    void reset(){
+        packets_last_time=0;
+        last_time=std::chrono::steady_clock::now();
+        curr_packets_per_second=0;
+    }
+private:
+    uint64_t packets_last_time=0;
+    std::chrono::steady_clock::time_point last_time=std::chrono::steady_clock::now();
+    //
+    uint64_t curr_packets_per_second=0;
+};
+class BitrateCalculator2{
+private:
+    // return: current bitrate in bits per second.
+    // aka bits received since last call / time delta since last call.
+    uint64_t recalculateSinceLast(const uint64_t curr_bytes_received){
+        const auto now=std::chrono::steady_clock::now();
+        const auto deltaTime=now-last_time;
+        const auto deltaBytes=curr_bytes_received-bytes_last_time;
+        const auto delta_bits=deltaBytes*8;
+        last_time=now;
+        bytes_last_time=curr_bytes_received;
+        const auto delta_time_us=std::chrono::duration_cast<std::chrono::microseconds>(deltaTime).count();
+        if(delta_time_us>0 && delta_bits>0){
+            const auto bits_per_second=(delta_bits*1000*1000 / delta_time_us);
+            return bits_per_second;
+        }else{
+            return 0;
+        }
+    }
+public:
+    // returns bits per second -
+    // calculated in the given interval
+    uint64_t get_last_or_recalculate(uint64_t curr_bytes_received,const std::chrono::steady_clock::duration& time_between_recalculations=std::chrono::seconds(2)){
+        if(std::chrono::steady_clock::now()-last_time>=time_between_recalculations){
+            curr_bits_per_second= recalculateSinceLast(curr_bytes_received);
+        }
+        return curr_bits_per_second;
+    }
+    void reset(){
+        bytes_last_time=0;
+        last_time=std::chrono::steady_clock::now();
+        curr_bits_per_second=0;
+    }
+private:
+    uint64_t bytes_last_time=0;
+    std::chrono::steady_clock::time_point last_time=std::chrono::steady_clock::now();
+    uint64_t curr_bits_per_second=0;
+};
 
 #endif //LIVEVIDEO10MS_TIMEHELPER_HPP

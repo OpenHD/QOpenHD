@@ -14,7 +14,7 @@ import "../elements"
 
 // Contains a list of all the settings on the left, and opens up a parameter editor instance on
 // the right if the user wants to edit any mavlink settings
-Pane {
+Rectangle {
     width: parent.width
     height: parent.height
     property int paramEditorWidth: 300
@@ -27,6 +27,10 @@ Pane {
 
     property string m_name: "undefined"
 
+    //color: "red"
+    //color: "transparent"
+    color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
+
     // Refetch all button
     Button {
         height: 48
@@ -36,9 +40,12 @@ Pane {
         enabled: m_instanceCheckIsAvlie.is_alive
         onClicked: {
             parameterEditor.visible=false
-            var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
+            //var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
+            var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters_long_running()
             if(!result){
-                _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
+                _messageBoxInstance.set_text_and_show("Fetch all failed, please try again",5)
+            }else{
+                 _messageBoxInstance.set_text_and_show("SUCCESS",1)
             }
         }
     }
@@ -55,11 +62,42 @@ Pane {
             _messageBoxInstance.set_text_and_show(text)
         }
     }
+    Switch{
+        id: screen_settings_openhd_parameters_transparentSwitch
+        anchors.top: parent.top
+        anchors.left: fetchAllButtonInfoId.right
+        anchors.leftMargin: 20
+        checked: settings.screen_settings_openhd_parameters_transparent
+        onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
+    }
+    Button{
+        id: bUp
+        anchors.top: parent.top
+        anchors.left: screen_settings_openhd_parameters_transparentSwitch.right
+        anchors.leftMargin: 20
+        text:"DOWN"
+        onClicked: {
+            paramListScrollView.ScrollBar.vertical.position += 0.1
+        }
+    }
+    Button{
+        id: bDown
+        anchors.top: parent.top
+        anchors.left: bUp.right
+        anchors.leftMargin: 20
+        text:"UP"
+        onClicked: {
+            paramListScrollView.ScrollBar.vertical.position -= 0.1
+        }
+    }
 
     Component {
         id: delegateMavlinkSettingsValue
+
         Rectangle{
-            color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+            //color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+            //color: "transparent"
+            color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : ((index % 2 == 0) ? "#8cbfd7f3" : "#00000000")
             //color: "green"
             //implicitHeight: elementsRow.implicitHeight
             //implicitWidth: elementsRow.implicitWidth
@@ -73,19 +111,30 @@ Pane {
                 spacing: 5
                 //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                 height: 64
-                Label {
+                Text {
                     anchors.verticalCenter: parent.verticalCenter
                     //font.pixelSize: 20
                     width:150
                     text: model.unique_id
                     font.bold: true
+                    //color: settings.screen_settings_openhd_parameters_transparent ? "green" : "black"
+                    color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                    style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
+                    styleColor: settings.color_glow
                 }
-                Label {
+                Text {
                     width:150
                     //font.pixelSize: 20
                     text: model.extraValue
                     font.bold: true
                     anchors.verticalCenter: parent.verticalCenter
+                    color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                    //background: settings.screen_settings_openhd_parameters_transparent ? "white" : "transparent"
+                    //styleColor: settings.color_glow
+                    //background: "yellow"
+                    //opacity: 1.0
+                    style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
+                    styleColor: settings.color_glow
                 }
                 Button {
                     anchors.verticalCenter: parent.verticalCenter
@@ -131,8 +180,11 @@ Pane {
         anchors.left: parent.left
         anchors.right: parent.right
         //color: "green"
+        //opacity: 0.5
+        color: settings.screen_settings_openhd_parameters_transparent ? "transparent" :  "white"
 
         ScrollView{
+            id: paramListScrollView
             width: parent.width
             height: parent.height
             clip: true

@@ -5,6 +5,7 @@
         <file>resources/cursors/arrow_512_transparent.png</file>
         <file>resources/cursors/arrow_512_white.png</file>
         <file>resources/cursors/hand_white.png</file>
+        <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
     </qresource>
     <qresource lang="de" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
@@ -41,7 +42,7 @@
         <file>ui/widgets/MessageHUD.qml</file>
         <file>LICENSE_UI.txt</file>
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>
-        <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
+        <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
         <file>ui/widgets/LinkUpRSSIWidget.qml</file>
         <file>ui/widgets/SOCStatusWidgetGround.qml</file>
         <file>ui/widgets/SOCStatusWidgetAir.qml</file>
@@ -72,7 +73,7 @@
         <file>ui/widgets/FlightMahWidget.qml</file>
         <file>ui/widgets/ControlWidget.qml</file>
         <file>ui/widgets/VibrationWidget.qml</file>
-        <file>ui/widgets/VsiWidget.qml</file>
+        <file>ui/widgets/VerticalSpeedSimpleWidget.qml</file>
         <file>ui/widgets/WindWidget.qml</file>
         <file>ui/widgets/ExampleWidget.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
@@ -238,5 +239,11 @@
         <file>resources/cursors/hand_white.png</file>
         <file>ui/configpopup/ConnectPanel.qml</file>
         <file>ui/configpopup/PanelFCSetup.qml</file>
+        <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
+        <file>ui/widgets/DistanceSensorWidget.qml</file>
+        <file>ui/widgets/UAVTimeWiget.qml</file>
+        <file>ui/widgets/VerticalSpeedGaugeWidget.qml</file>
+        <file>ui/widgets/ControlWidgetSubElement.qml</file>
+        <file>ui/elements/XDecimalSpinBox.qml</file>
     </qresource>
 </RCC>

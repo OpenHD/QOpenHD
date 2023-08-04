@@ -4,6 +4,7 @@
 #include "../../common/StringHelper.hpp"
 #include "../../common/TimeHelper.hpp"
 #include "../telemetryutil.hpp"
+#include "QOpenHDVideoHelper.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
 #include "camerastreammodel.h"
@@ -16,8 +17,27 @@
 
 #include "util/qopenhd.h"
 
+#include <../util/WorkaroundMessageBox.h>
+#include "../settings/synchronizedsettings.h"
+
+// From https://netbeez.net/blog/what-is-mcs-index/
+static std::vector<int> get_dbm_20mhz(){
+    return {-82,-79,-77,-74,-70,-66,-65,-64,-59,-57};
+}
+static std::vector<int> get_dbm_40mhz(){
+    return {-79,-76,-74,-71,-67,-63,-62,-61,-56,-54};
+}
+
+static int get_required_dbm_for_rate(int channel_width,int mcs_index){
+    const auto values=channel_width==20 ? get_dbm_20mhz() : get_dbm_40mhz();
+    if(mcs_index>=0 && mcs_index<=values.size()){
+        return values[mcs_index];
+    }
+    return 0;
+}
+
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
-    : QObject{parent},_is_air(is_air)
+    : QObject{parent},m_is_air(is_air)
 {
     m_alive_timer = new QTimer(this);
     QObject::connect(m_alive_timer, &QTimer::timeout, this, &AOHDSystem::update_alive);
@@ -88,10 +108,46 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_x3(parsedMsg);
             return true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_AIR_FEC_PERFORMANCE:{
+            mavlink_openhd_stats_wb_video_air_fec_performance_t parsedMsg;
+            mavlink_msg_openhd_stats_wb_video_air_fec_performance_decode(&msg,&parsedMsg);
+            process_x3b(parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_CAMERA_STATUS:{
+            mavlink_openhd_camera_status_t parsedMsg;
+            mavlink_msg_openhd_camera_status_decode(&msg,&parsedMsg);
+            if(msg.compid==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
+                CameraStreamModel::instance(0).update_mavlink_openhd_camera_stats(parsedMsg);
+            }else if(msg.compid==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
+                CameraStreamModel::instance(1).update_mavlink_openhd_camera_stats(parsedMsg);
+                // Feature - tell user to enable 2 cameras in qopenhd
+                set_n_openhd_cameras(2);
+                const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
+                if(value_in_qopenhd!=2){
+                    const auto elapsed=std::chrono::steady_clock::now()-m_last_n_cameras_message;
+                    if(elapsed>std::chrono::seconds(10)){
+                        auto message="QOpenHD is not configured for dual cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
+                        qDebug()<<message;
+                        WorkaroundMessageBox::makePopupMessage(message,8);
+                        m_last_n_cameras_message=std::chrono::steady_clock::now();
+                    }
+                    HUDLogMessagesModel::instance().add_message_info("QOpenHD only shows 1 camera");
+                }
+
+            }
+            return true;
+        }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_GROUND:{
             mavlink_openhd_stats_wb_video_ground_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_ground_decode(&msg,&parsedMsg);
             process_x4(parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_GROUND_FEC_PERFORMANCE:{
+            mavlink_openhd_stats_wb_video_ground_fec_performance_t parsedMsg;
+            mavlink_msg_openhd_stats_wb_video_ground_fec_performance_decode(&msg,&parsedMsg);
+            process_x4b(parsedMsg);
             return true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_ONBOARD_COMPUTER_STATUS_EXTENSION:{
@@ -118,7 +174,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              mavlink_statustext_t parsedMsg;
              mavlink_msg_statustext_decode(&msg,&parsedMsg);
              auto tmp=Telemetryutil::statustext_convert(parsedMsg);
-             LogMessagesModel::instanceOHD().addLogMessage(_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
+             LogMessagesModel::instanceOHD().addLogMessage(m_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
              // Notify user in HUD of external device connect / disconnect events
              if(tmp.message.find("External device") != std::string::npos){
                 HUDLogMessagesModel::instance().add_message(tmp.level,tmp.message.c_str());
@@ -157,31 +213,31 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
-    if(_is_air && msg.card_index>1){
+    if(m_is_air && msg.card_index>1){
         qDebug()<<"Air only has 1 wifibroadcats card";
         return;
     }
     //qDebug()<<"Got mavlink_openhd_stats_monitor_mode_wifi_card_t";
-    if(_is_air){
+    if(m_is_air){
         if(msg.card_index!=0){
             qDebug()<<"Air only has 1 wifibroadcats card";
             return;
         }
         auto& card=WiFiCard::instance_air();
-        card.set_alive(true);
-        card.set_curr_rx_rssi_dbm(msg.rx_rssi);
-        card.set_n_received_packets(msg.count_p_received);
-        set_current_rx_rssi(msg.rx_rssi);
+        card.process_mavlink(msg);
+        set_current_rx_rssi(msg.rx_rssi_1);
     }else{
         if(msg.card_index<0 || msg.card_index>=4){
             qDebug()<<"Gnd invalid card index"<<msg.card_index;
             return;
         }
         auto& card=WiFiCard::instance_gnd(msg.card_index);
-        card.set_alive(true);
-        card.set_curr_rx_rssi_dbm(msg.rx_rssi);
-        card.set_n_received_packets(msg.count_p_received);
+        card.process_mavlink(msg);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
+    }
+    // TODO: r.n we don't differentiate signal quality per card
+    if(msg.card_index==0){
+        set_current_rx_signal_quality(msg.rx_signal_quality);
     }
 }
 
@@ -190,6 +246,81 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_rx_packet_loss_perc(msg.curr_rx_packet_loss_perc);
     set_count_tx_inj_error_hint(msg.count_tx_inj_error_hint);
     set_count_tx_dropped_packets(msg.count_tx_dropped_packets);
+    // only on ground
+    if(! m_is_air){
+        for(int i=0;i<WiFiCard::N_CARDS;i++){
+            WiFiCard::instance_gnd(i).set_is_active_tx(false);
+        }
+        const auto active_tx_idx=msg.curr_tx_card_idx;
+        if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
+            WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
+        }
+        set_tx_passive_mode(msg.tx_passive_mode_is_enabled==1);
+    }
+    const int new_mcs_index=msg.curr_tx_mcs_index;
+    if(m_is_air){
+        // We are only interested in the mcs index of the air unit
+        if(m_curr_mcs_index!=-1 && new_mcs_index!=m_curr_mcs_index){
+            std::stringstream ss;
+            ss<<"MCS index changed to "<<new_mcs_index;
+            HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+        }
+    }
+    set_curr_mcs_index(new_mcs_index);
+    set_curr_channel_mhz(msg.curr_tx_channel_mhz);
+    set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+    if(!m_is_air){
+        SynchronizedSettings::instance().validate_and_set_channel_mhz(msg.curr_tx_channel_mhz);
+        SynchronizedSettings::instance().validate_and_set_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+    }
+    set_curr_bitrate_kbits(msg.curr_rate_kbits);
+    set_curr_n_rate_adjustments(msg.curr_n_rate_adjustments);
+    set_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_tx_bps,msg.curr_tx_pps).c_str());
+    set_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_rx_bps,msg.curr_rx_pps).c_str());
+    const auto stbc_lpdc_gi=Telemetryutil::get_stbc_lpdc_shortguard_bitfield(msg.curr_tx_stbc_lpdc_shortguard_bitfield);
+    set_wb_stbc_enabled(stbc_lpdc_gi.stbc);
+    set_wb_lpdc_enabled(stbc_lpdc_gi.lpdc);
+    set_wb_short_guard_enabled(stbc_lpdc_gi.short_guard);
+    if(m_is_air && !stbc_lpdc_gi.stbc){
+        if(m_stbc_warning_shown)return;
+        //  If your ground unit uses card(s) with 2 antennas, enable STBC on your air unit (transmitting part)."
+        // "If your air unit uses card(s) with 2 antennas, enable STBC on your ground unit (transmitting part).
+        /*auto message="Please check: Enable WB_E_STBC on AIR unit IF your rtl8812au TX/RX both have more than one antenna"
+                       " (NOTE: Without 2 populated rf paths, enabling this option results in"
+                       " no connection !!! OpenHD cannot automatically check how many rf paths are populated on your adapter(s). ASUS has 1 external and "
+                       "1 internal antenna (STBC should be used). If you wish to not see this "
+                       "prompt again, you can disable it in QOpenHD - DEV - dev_wb_show_no_stbc_enabled_warning.";*/
+        auto message="Please check: STBC is not enabled on your air unit. "
+                       "If your air unit has 2 or more antennas (ONLY IF!), enable STBC to use them both and increase range significantly."
+                       "See the wiki for more info."
+                       "You can disable this prompt by going to QOpenHD - DEV and set dev_wb_show_no_stbc_enabled_warning=off.";
+        QSettings settings;
+        const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
+        if(!dev_wb_show_no_stbc_enabled_warning){
+            WorkaroundMessageBox::makePopupMessage(message,10);
+            m_stbc_warning_shown=true;
+        }
+    }
+    // Feature: Warning if dBm falls below minimum threshold for current MCS index on packets that need to be received
+    // We need to get the mcs index from the other system (aka from air if we are running on ground) since that's whats being injected
+    const int mcs_index_other=m_is_air ? AOHDSystem::instanceGround().m_curr_mcs_index : AOHDSystem::instanceAir().m_curr_mcs_index;
+    const int minimum_dbm=get_required_dbm_for_rate(m_curr_channel_width_mhz,mcs_index_other);
+    const int curr_rx_dbm=m_current_rx_rssi;
+    const auto dbm_remaining=curr_rx_dbm - minimum_dbm;
+    //qDebug()<<"On "<<(m_is_air ? "AIR" : "GND" )<<" RX mcs:"<<mcs_index_other<<" RX rssi:"<<curr_rx_dbm<<" minumum dbm:"<<minimum_dbm<<" remaining dbm:"<<dbm_remaining;
+    if(minimum_dbm !=0 && curr_rx_dbm>-127){
+        if(dbm_remaining<=0){
+            // warning
+            set_dbm_too_low_warning(2);
+        }else if(dbm_remaining<=2){
+            // caution
+            set_dbm_too_low_warning(1);
+        }else{
+            set_dbm_too_low_warning(0);
+        }
+    }else{
+        set_dbm_too_low_warning(0);
+    }
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
@@ -199,11 +330,13 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
     set_curr_telemetry_tx_pps(Telemetryutil::pps_to_string(msg.curr_tx_pps));
     set_curr_telemetry_rx_bps(Telemetryutil::bitrate_bps_to_qstring(msg.curr_rx_bps));
     set_curr_telemetry_tx_bps(Telemetryutil::bitrate_bps_to_qstring(msg.curr_tx_bps));
+    set_tx_tele_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_tx_bps,msg.curr_tx_pps).c_str());
+    set_rx_tele_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_rx_bps,msg.curr_rx_pps).c_str());
 }
 
 void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     //qDebug()<<"Got mavlink_openhd_stats_wb_video_air_t";
-    if(!_is_air){
+    if(!m_is_air){
         qDebug()<<"warning got mavlink_openhd_stats_wb_video_air from ground";
         return;
     }
@@ -216,14 +349,14 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     // dirty
     if(msg.link_index!=0)return;
     if(x_last_dropped_packets<0){
-        x_last_dropped_packets=msg.curr_dropped_packets;
+        x_last_dropped_packets=msg.curr_dropped_frames;
     }else{
-        const auto delta=msg.curr_dropped_packets-x_last_dropped_packets;
-        x_last_dropped_packets=msg.curr_dropped_packets;
+        const auto delta=msg.curr_dropped_frames-x_last_dropped_packets;
+        x_last_dropped_packets=msg.curr_dropped_frames;
         if(delta>0){
             const auto elapsed_since_last=std::chrono::steady_clock::now()-m_last_tx_error_hud_message;
             if(elapsed_since_last>std::chrono::seconds(3)){
-                HUDLogMessagesModel::instance().add_message_warning("TX error,reduce bitrate");
+                HUDLogMessagesModel::instance().add_message_warning("TX error (dropped packets)");
                 m_last_tx_error_hud_message=std::chrono::steady_clock::now();
             }
             set_tx_is_currently_dropping_packets(true);
@@ -231,26 +364,41 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
             set_tx_is_currently_dropping_packets(false);
         }
     }
-    const int new_mcs_index=msg.unused0;
-    if(valid_mcs_packet_received_at_least_once && new_mcs_index!=m_curr_mcs_index){
-        std::stringstream ss;
-        ss<<"MCS index changed to "<<new_mcs_index;
-        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
-    }
-    set_curr_mcs_index(msg.unused0);
-    valid_mcs_packet_received_at_least_once=true;
+}
 
+void AOHDSystem::process_x3b(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
+{
+    if(!m_is_air){
+        qDebug()<<"warning got mavlink_openhd_stats_wb_video_air_fec_performance_t from ground";
+        return;
+    }
+    if(msg.link_index==0 || msg.link_index==1){
+        auto& cam=CameraStreamModel::instance(msg.link_index);
+        cam.update_mavlink_openhd_stats_wb_video_air_fec_performance(msg);
+    }
 }
 
 void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     //qDebug()<<"Got mavlink_openhd_stats_wb_video_ground_t";
-    if(_is_air){
+    if(m_is_air){
          qDebug()<<"warning got mavlink_openhd_stats_wb_video_ground from air";
          return;
     }
     if(msg.link_index==0 || msg.link_index==1){
         auto& cam=CameraStreamModel::instance(msg.link_index);
         cam.update_mavlink_openhd_stats_wb_video_ground(msg);
+    }
+}
+
+void AOHDSystem::process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
+{
+    if(m_is_air){
+        qDebug()<<"warning got mavlink_openhd_stats_wb_video_ground_fec_performance_ from air";
+        return;
+    }
+    if(msg.link_index==0 || msg.link_index==1){
+        auto& cam=CameraStreamModel::instance(msg.link_index);
+        cam.update_mavlink_openhd_stats_wb_video_ground_fec_performance(msg);
     }
 }
 
@@ -317,7 +465,7 @@ bool AOHDSystem::send_command_reboot(bool reboot)
 
 void AOHDSystem::send_message_hud_connection(bool connected){
     std::stringstream message;
-    if(_is_air){
+    if(m_is_air){
         message << "Air unit ";
     }else{
         message << "Ground unit ";

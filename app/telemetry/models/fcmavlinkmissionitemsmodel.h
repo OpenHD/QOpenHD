@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QVector>
 #include <map>
+#include <mutex>
 #include <qtimer.h>
 #include <utility>
 
@@ -13,44 +14,56 @@
 // This model pretty much only exposes mission items (dynamic size) such that we can make use of them
 // (draw them in .qml) for the map.
 // each mission item is pretty much really easy to define - a lattitude, longitude and mission index
-// NOTE: This doesn't sort the mission items (yet)
+// NOTE: Elements in this model are by increasing mission index - if we don't have the data for a given mission index (yet),
+// valid is set to false (aka if valid=false this is just a dummy waiting to be filled with valid mission data)
 class FCMavlinkMissionItemsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
     explicit FCMavlinkMissionItemsModel(QObject *parent = nullptr);
     static FCMavlinkMissionItemsModel& instance();
+    // This emits the proper signal in which we either update the mission
+    // or add as many elements as needed, then update the mission
+    void update_mission(int mission_index,double lat,double lon,double alt_m,bool currently_active);
+private:
     struct Element{
+        int mission_index=0;
         double latitude;
         double longitude;
-        int mission_index=0;
+        double altitude_meter=0;
+        // Set to true once we got valid lat / lon data for this mission item
+        bool valid=false;
+        // Set to true if this is the currently active mission
+        bool currently_active=false;
     };
-    Q_INVOKABLE void add_element(FCMavlinkMissionItemsModel::Element el);
-    // To avoid duplicates, we keep a map of already added mission waypoints and only add them if they don't exist already
-    void hack_add_el_if_nonexisting(double lat,double lon,int mission_index);
-private:
     enum Roles {
-        LatitudeRole =Qt::UserRole,
+        IndexRole =Qt::UserRole,
+        LatitudeRole,
         LongitudeRole,
-        MissionIndexRole
+        AltitudeRole,
+        // This is set to true once we got lat / lon for this mission item -
+        // The mission items in this model are sorted by the mission index
+        ValidRole,
+        // Currently active
+        CurrentlyActiveRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
     QHash<int, QByteArray> roleNames() const override;
-    // workaround signals
-    void do_not_call_me_add_element(double lat,double lon,int mission_index);
 public slots:
-    void removeData(int row);
-    void addData(FCMavlinkMissionItemsModel::Element logMessageData);
+    //void removeData(int row);
+    void addData(FCMavlinkMissionItemsModel::Element element);
+    void updateData(int row, FCMavlinkMissionItemsModel::Element data);
 private:
     QVector<FCMavlinkMissionItemsModel::Element> m_data;
 public:
 signals:
-    void signalAddElement(double lat,double lon,int mission_index);
+    void signal_qt_ui_update_element(int mission_index,double lat,double lon,double alt_m,bool currently_active);
 private:
-    std::map<std::pair<double,double>,void*> m_map;
+    // NOTE: NEEDS TO BE CALLED FROM QT UI THREAD (via signal)
+    void qt_ui_update_element(int mission_index,double lat,double lon,double alt_m,bool currently_active);
     // Memory safety check
-    static constexpr int MAX_N_ELEMENTS=100;
+    static constexpr int MAX_N_ELEMENTS=200;
     // save performance if map is not enabled
     bool show_map=false;
 };

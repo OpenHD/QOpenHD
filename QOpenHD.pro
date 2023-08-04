@@ -117,6 +117,9 @@ SOURCES += \
 
 HEADERS += \
     app/common/util_fs.h \
+    app/common/StringHelper.hpp \
+    app/common/TimeHelper.hpp \
+    app/common/Helper.hpp \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \

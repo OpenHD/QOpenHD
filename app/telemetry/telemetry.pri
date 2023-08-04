@@ -29,8 +29,8 @@ QOPENHD_LINK_MAVSDK_SHARED {
         contains(ANDROID_TARGET_ARCH, armeabi-v7a) {
             MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
         } else:contains(ANDROID_TARGET_ARCH, arm64-v8a) {
-            #MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
-            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64-extra
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
+            #MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64-extra
         } else:contains(ANDROID_TARGET_ARCH, x86_64) {
             MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-x86_64/build/android-x86_64/install
         } else {
@@ -68,6 +68,7 @@ QOPENHD_LINK_MAVSDK_SHARED {
 }
 
 SOURCES += \
+    $$PWD/models/fcmapmodel.cpp \
     $$PWD/models/fcmavlinksettingsmodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/telemetry/models/camerastreammodel.cpp \
@@ -82,8 +83,11 @@ SOURCES += \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
+    $$PWD/geodesi_helper.h \
     $$PWD/mavlink_enum_to_string.h \
+    $$PWD/models/fcmapmodel.h \
     $$PWD/models/fcmavlinksettingsmodel.h \
+    $$PWD/models/fcmessageintervalhelper.hpp \
     $$PWD/settings/documented_param.h \
     app/telemetry/mavsdk_helper.hpp \
     app/telemetry/mavsdk_include.h \
@@ -101,5 +105,6 @@ HEADERS += \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \
     app/telemetry/models/fcmavlinkmissionitemsmodel.h \
+    app/telemetry/models/fcmessageintervalhelper.hpp \
 
 DEFINES += QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY

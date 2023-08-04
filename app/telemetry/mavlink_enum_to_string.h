@@ -237,8 +237,8 @@ static QString mav_type_to_string(MAV_TYPE type){
         return "VTOL_FIXEDROTOR";
     case MAV_TYPE_VTOL_TAILSITTER:
         return "VTOL_TAILSITTER";
-    case MAV_TYPE_VTOL_RESERVED4:
-        return "VTOL_RESERVED4";
+    //case MAV_TYPE_VTOL_RESERVED4:
+    //    return "VTOL_RESERVED4";
     case MAV_TYPE_VTOL_RESERVED5:
         return "VTOL_RESERVED5";
     case MAV_TYPE_GIMBAL:
@@ -343,6 +343,38 @@ static MavTypeAndFlightMode type_and_flight_mode_as_string(MAV_TYPE uav_type,uin
         break;
     }
     return ret;
+}
+
+static std::string battery_type_to_string(uint8_t batt_type){
+    switch(batt_type){
+    case MAV_BATTERY_TYPE_LIPO:
+        return "LiPo";
+    case MAV_BATTERY_TYPE_LIFE:
+        return "LiFe";
+    case  MAV_BATTERY_TYPE_LION:
+        return "LiIo";
+    case MAV_BATTERY_TYPE_NIMH:
+        return "NiMh";
+    default:
+        break;
+    }
+    return "N/A";
+}
+
+static std::string detailed_battery_voltages_to_string(const uint16_t voltages[10]){
+    std::stringstream ss;
+    ss<<"Voltages[";
+    for(int i=0;i<10;i++){
+        const auto voltage=voltages[i];
+        if(voltage!=UINT16_MAX){
+            if(i!=0){
+                ss<<",";
+            }
+            ss<<(int)voltage;
+        }
+    }
+    ss<<"]";
+    return ss.str();
 }
 
 }

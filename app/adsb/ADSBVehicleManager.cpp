@@ -137,7 +137,7 @@ void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distan
      *  need to calculate azimuth and bearing of any threats so that it can be shared
      *  and depicted in the adsb widget
      */
-    int drone_alt = FCMavlinkSystem::instance().alt_msl();
+    int drone_alt = FCMavlinkSystem::instance().altitude_msl_m();
 
     if (traffic_alt - drone_alt < 300 && traffic_distance < 2) {
 //        LocalMessage::instance()->showMessage("Aircraft Traffic", 3);

@@ -111,6 +111,8 @@ void LogMessagesModel::addData(LogMessageData logMessageData)
     // hacky temporary
     if(logMessageData.message.contains("Scanning ")){
         HUDLogMessagesModel::instance().add_message_info(logMessageData.message);
+    }else if(logMessageData.message.contains("Cannot scan ")){
+        HUDLogMessagesModel::instance().add_message_warning(logMessageData.message);
     }
     //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
     // We limit logging to X log messages here

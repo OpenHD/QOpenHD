@@ -63,6 +63,69 @@ ScrollView {
                     onCheckedChanged: settings.show_fc_messages_in_hud = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Set mavlink message rates"
+                m_long_description: "Set mavlink message rate(s) that should work for most users. NOTE: When disabling this feature, you have to manually set the mavlink message rate(s)
+ via mission planner for your autpilot running ardupilot/ PX4 ! After disabling, a reboot of the FC is required."
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.set_mavlink_message_rates
+                    onCheckedChanged: settings.set_mavlink_message_rates = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "High mavlink message rates"
+                m_long_description: "Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD."
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.mavlink_message_rates_high_speed
+                    onCheckedChanged: {
+                        if(settings.mavlink_message_rates_high_speed != checked){
+                            _mavlinkTelemetry.re_apply_rates()
+                        }
+                        settings.mavlink_message_rates_high_speed = checked
+                    }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "High mavlink message rates RC"
+                m_long_description: "Increases the rate for mavlink down rc channel messages (This does not affect your RC over openhd latency !)"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.mavlink_message_rates_high_speed
+                    onCheckedChanged: {
+                        if(settings.mavlink_message_rates_high_speed_rc_channels != checked){
+                            _mavlinkTelemetry.re_apply_rates()
+                        }
+                        settings.mavlink_message_rates_high_speed_rc_channels = checked
+                    }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Log quiet FC warning"
+                m_long_description: "Log a warning when we get heartbeats from the FC, but not proper data"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.log_quiet_fc_warning_to_hud
+                    onCheckedChanged: settings.log_quiet_fc_warning_to_hud = checked
+                }
+            }
         }
     }
 }

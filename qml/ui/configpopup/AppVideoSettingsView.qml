@@ -50,14 +50,14 @@ ScrollView {
                     model: itemsVideoCodec
                     Component.onCompleted: {
                         // out of bounds checking
-                        if(settings.selectedVideoCodecPrimary>2 || settings.selectedVideoCodecPrimary<0){
-                            settings.selectedVideoCodecPrimary=0;
+                        if(settings.qopenhd_primary_video_codec>2 || settings.qopenhd_primary_video_codec<0){
+                            settings.qopenhd_primary_video_codec=0;
                         }
-                        currentIndex = settings.selectedVideoCodecPrimary;
+                        currentIndex = settings.qopenhd_primary_video_codec;
                     }
                     onCurrentIndexChanged:{
                         console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
-                        settings.selectedVideoCodecPrimary=currentIndex;
+                        settings.qopenhd_primary_video_codec=currentIndex;
                     }
                 }
             }
@@ -71,8 +71,26 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.primary_enable_software_video_decoder
-                    onCheckedChanged: settings.primary_enable_software_video_decoder = checked
+                    checked: settings.qopenhd_primary_video_force_sw
+                    onCheckedChanged: settings.qopenhd_primary_video_force_sw = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Primary video udp in port"
+                m_long_description: "UDP port where qopenhd listens for video data for the primary video stream"
+                SpinBox {
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    from: 1
+                    to: 6900
+                    stepSize: 1
+                    editable: true
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    value: settings.qopenhd_primary_video_rtp_input_port
+                    onValueChanged: settings.qopenhd_primary_video_rtp_input_port = value
                 }
             }
             SettingBaseElement{
@@ -91,14 +109,14 @@ ScrollView {
                     model: itemsVideoCodec
                     Component.onCompleted: {
                         // out of bounds checking
-                        if(settings.selectedVideoCodecSecondary >2 || settings.selectedVideoCodecSecondary<0){
-                            settings.selectedVideoCodecSecondary=0;
+                        if(settings.qopenhd_secondary_video_codec >2 || settings.qopenhd_secondary_video_codec<0){
+                            settings.qopenhd_secondary_video_codec=0;
                         }
-                        currentIndex = settings.selectedVideoCodecSecondary;
+                        currentIndex = settings.qopenhd_secondary_video_codec;
                     }
                     onCurrentIndexChanged:{
                         console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
-                        settings.selectedVideoCodecSecondary=currentIndex;
+                        settings.qopenhd_secondary_video_codec=currentIndex;
                     }
                 }
             }
@@ -115,25 +133,27 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.secondary_enable_software_video_decoder
-                    onCheckedChanged: settings.secondary_enable_software_video_decoder = checked
+                    checked: settings.qopenhd_secondary_video_force_sw
+                    onCheckedChanged: settings.qopenhd_secondary_video_force_sw = checked
                 }
             }
-
-
             SettingBaseElement{
-                m_short_description: "Backgrund transparent"
-                m_long_description: "Use a transparent surface, such that another application can play (hw composer accelerated) video behind the QOpenHD surface."
-
-                Switch {
-                    width: 32
+                m_short_description: "Secondary video udp in port"
+                m_long_description: "UDP port where qopenhd listens for video data for the secondary video stream"
+                visible: settings.dev_qopenhd_n_cameras==2
+                SpinBox {
                     height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
+                    width: 210
+                    font.pixelSize: 14
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.app_background_transparent
-                    onCheckedChanged: settings.app_background_transparent = checked
+                    from: 1
+                    to: 6900
+                    stepSize: 1
+                    editable: true
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    value: settings.qopenhd_secondary_video_rtp_input_port
+                    onValueChanged: settings.qopenhd_secondary_video_rtp_input_port = value
                 }
             }
 
@@ -306,69 +326,7 @@ ScrollView {
                     onCheckedChanged: settings.dev_feed_incomplete_frames_to_decoder = checked
                 }
             }
-            // temporary end
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                Text {
-                    text: qsTr("dev_stream0_udp_rtp_input_port")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-                SpinBox {
-                    id: dev_stream0_udp_rtp_input_port_input
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    stepSize: 1
-                    editable: true
-                    from:0
-                    to: 100000
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.dev_stream0_udp_rtp_input_port
-                    onValueChanged: settings.dev_stream0_udp_rtp_input_port = value
-                }
-            }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("dev_stream0_udp_rtp_input_ip_address")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-                TextInput{
-                    id: dev_stream0_udp_rtp_input_ip_address_ti
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    text: settings.dev_stream0_udp_rtp_input_ip_address
-                    onEditingFinished: {
-                        settings.dev_stream0_udp_rtp_input_ip_address = dev_stream0_udp_rtp_input_ip_address_ti.text
-                    }
-                }
-            }
             // dirty
             SettingBaseElement{
                 m_short_description: "dev_rpi_use_external_omx_decode_service"
@@ -394,6 +352,20 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.dev_always_use_generic_external_decode_service
                     onCheckedChanged: settings.dev_always_use_generic_external_decode_service = checked
+                }
+            }
+
+            SettingBaseElement{
+                m_short_description: "Switch primary / secondary video"
+                m_long_description: "Show secondary video in main video window & primary video in pip window (if the platform supports pip)"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.qopenhd_switch_primary_secondary
+                    onCheckedChanged: settings.qopenhd_switch_primary_secondary = checked
                 }
             }
         }

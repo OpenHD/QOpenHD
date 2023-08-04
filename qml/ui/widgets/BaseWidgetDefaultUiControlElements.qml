@@ -13,6 +13,8 @@ ColumnLayout{
     spacing: 0
     clip: false
 
+    // Set these to true if the settings "horizontal / vertical lock" should be shown
+    // (aka it makes sense that the user wishes to place this widget vertically / horizontally in the center)
     property bool show_vertical_lock: false
     property bool show_horizontal_lock: false
 

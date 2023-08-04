@@ -26,6 +26,16 @@ BaseWidget {
 
     property int curr_mah_per_km: _fcMavlinkSystem.battery_consumed_mah_per_km
 
+    function get_text_mah(){
+        if(curr_mah_per_km<0){
+            return "---mAh/km";
+        }
+        if(curr_mah_per_km>10*1000){
+             return "---mAh/km";
+        }
+        return curr_mah_per_km + "mAh/km";
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -66,10 +76,9 @@ BaseWidget {
             id: flight_mah_km_text
             width: 102
             height: 24
-            clip: true
+            clip: false
             color: settings.color_text
-            text: (curr_mah_per_km > 0)
-                  && (curr_mah_per_km < 999) ? (curr_mah_per_km + "mAh/km") : "---mAh/km"
+            text: get_text_mah()
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter

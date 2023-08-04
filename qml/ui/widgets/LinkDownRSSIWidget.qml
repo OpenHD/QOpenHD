@@ -19,7 +19,7 @@ BaseWidget {
     visible: settings.show_downlink_rssi
 
     widgetIdentifier: "downlink_rssi_widget"
-    bw_verbose_name: "DOWNLINK RSSI"
+    bw_verbose_name: "DOWNLINK/GND RSSI"
 
     defaultAlignment: 0
     defaultXOffset: 80
@@ -30,6 +30,8 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
+
+    widgetActionHeight: 164+50+30
 
     property int m_packet_loss_perc : _ohdSystemGround.curr_rx_packet_loss_perc
     function get_packet_loss_perc_warning_level(){
@@ -46,6 +48,37 @@ BaseWidget {
         if(level===2)return settings.color_warn;
         if(level===1)return settings.color_caution;
         return settings.color_shape;
+    }
+
+    function text_for_card(card_idx){
+        var card=_wifi_card_gnd0;
+        if(card_idx==1)card=_wifi_card_gnd1;
+        if(card_idx==2)card=_wifi_card_gnd2;
+        if(card_idx==3)card=_wifi_card_gnd3;
+        // use uint16_t looping to not pollute the UI too much
+        var ret="["+(card_idx+1)+"] " + card.n_received_packets + " " + card.curr_rx_rssi_dbm + " dBm"+" "+card.packet_loss_perc+"%"
+        if(card.is_active_tx){
+            ret +=" TX"
+        }
+        return ret;
+    }
+
+    function get_text_dbm(){
+        var dbm=_ohdSystemGround.current_rx_rssi;
+        if(dbm<=-127){
+            return "N/A";
+        }
+        return ""+dbm;
+    }
+    function get_dbm_text_color(){
+        var warning_level=_ohdSystemGround.dbm_too_low_warning;
+        if(settings.downlink_dbm_warning && warning_level==2){
+            return "red";
+        }
+        if(settings.downlink_dbm_warning && warning_level==1){
+            return "orange";
+        }
+        return settings.color_text;
     }
 
 
@@ -138,11 +171,50 @@ BaseWidget {
                     }
                 }
             }
-
-
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("dBm low warning")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_dbm_warning
+                    onCheckedChanged: settings.downlink_dbm_warning = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("EXP-signal quality %")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_signal_quality_show
+                    onCheckedChanged: settings.downlink_signal_quality_show = checked
+                }
+            }
         }
     }
-
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
 
     widgetActionComponent: ScrollView{
@@ -188,10 +260,9 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
-
             Text {
                 //Layout.alignment: left
-                text: "Rx video0: "+_cameraStreamModelPrimary.curr_video0_received_bitrate_with_fec;
+                text: "AIR TX: "+_ohdSystemAir.tx_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -200,7 +271,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx tele: "+_ohdSystemGround.curr_telemetry_rx_bps;
+                text: "AIR TX tele: "+_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -209,7 +280,34 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele: "+_ohdSystemGround.curr_telemetry_tx_pps;
+                text: "AIR TX video0: "+_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "AIR RX: "+_ohdSystemAir.rx_packets_per_second_and_bits_per_second
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "TX PWR Air: "+_wifi_card_air.tx_power;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "STBC/LPDC/SGI: "+_ohdSystemAir.wb_stbc_enabled+"/"+_ohdSystemAir.wb_lpdc_enabled+"/"+_ohdSystemAir.wb_short_guard_enabled
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -247,9 +345,9 @@ BaseWidget {
         Text {
             id: downlink_rssi
             height: 24
-            color: settings.color_text
+            color: get_dbm_text_color()
 
-            text: _ohdSystemGround.current_rx_rssi <= -127 ? qsTr("N/A") : _ohdSystemGround.current_rx_rssi
+            text: get_text_dbm()
             anchors.left: downlink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
@@ -268,7 +366,7 @@ BaseWidget {
             id: downlink_dbm
             width: 32
             height: 24
-            color: settings.color_text
+            color: get_dbm_text_color()
             text: qsTr("dBm")
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
@@ -284,6 +382,7 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+
 // Consti10 temporary begin - r.n we only have the n of injected and received packets per card, no FEC statistics (and the fec statistics also have changed such
 // that what was displayed previosly doesn't make sense anymore
         ColumnLayout{
@@ -293,6 +392,19 @@ BaseWidget {
                 visible: true
                 text: "Loss: " + m_packet_loss_perc+"%"
                 color: warning_level_to_color(get_packet_loss_perc_warning_level())
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            Text {
+                visible: settings.downlink_signal_quality_show
+                text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemGround.current_rx_signal_quality+ "%") : ""
+                color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
                 font.family: settings.font_text
@@ -331,7 +443,7 @@ BaseWidget {
             // dBm and packets for card index 0
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd0.alive
-                text: "[1] " + _wifi_card_gnd0.n_received_packets + " " + _wifi_card_gnd0.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(0)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -345,7 +457,7 @@ BaseWidget {
             // dBm and packets for card index 1
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd1.alive
-                text: "[2] "  + _wifi_card_gnd1.n_received_packets + " " + _wifi_card_gnd1.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(1)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -359,7 +471,7 @@ BaseWidget {
             // dBm and packets for card index 2
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd2.alive
-                text: "[3] " + _wifi_card_gnd2.n_received_packets + " " + _wifi_card_gnd2.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(2)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -373,7 +485,7 @@ BaseWidget {
             // dBm and packets for card index 3
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd3.alive
-                text: "[4] " + _wifi_card_gnd3.n_received_packets + " " + _wifi_card_gnd3.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(3)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

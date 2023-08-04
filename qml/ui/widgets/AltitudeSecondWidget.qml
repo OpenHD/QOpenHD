@@ -24,6 +24,11 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+    function get_text_altitude(){
+        var altitude_m=settings.altitude_second_msl_rel ? _fcMavlinkSystem.altitude_msl_m : _fcMavlinkSystem.altitude_rel_m;
+        return Number(altitude_m).toLocaleString(Qt.locale(), 'f', 0)
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -72,9 +77,7 @@ BaseWidget {
             anchors.left: widgetGlyph.right
             anchors.leftMargin: 0
             anchors.verticalCenter: widgetGlyph.verticalCenter
-            text: Number(
-                      settings.enable_imperial ? (settings.altitude_second_msl_rel ? (_fcMavlinkSystem.alt_msl * 3.28) : (_fcMavlinkSystem.alt_rel * 3.28)) : (settings.altitude_second_msl_rel ? _fcMavlinkSystem.alt_msl : _fcMavlinkSystem.alt_rel)).toLocaleString(
-                      Qt.locale(), 'f', 0)
+            text: get_text_altitude()
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline

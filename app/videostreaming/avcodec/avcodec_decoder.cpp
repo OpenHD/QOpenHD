@@ -15,10 +15,7 @@
 #include "../logging/hudlogmessagesmodel.h"
 #include "../logging/logmessagesmodel.h"
 
-#ifdef HAVE_MMAL
-#include "mmal/rpimmaldecodedisplay.h"
-//#include "mmal/rpi_check_fkms.h"
-#endif
+#include "ExternalDecodeService.hpp"
 
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     int err = 0;
@@ -84,7 +81,7 @@ AVCodecDecoder::~AVCodecDecoder()
 void AVCodecDecoder::init(bool primaryStream)
 {
     qDebug() << "AVCodecDecoder::init()";
-    m_last_video_settings=QOpenHDVideoHelper::read_from_settings();
+    m_last_video_settings=QOpenHDVideoHelper::read_config_from_settings();
     decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
     timer_check_settings_changed=std::make_unique<QTimer>();
     QObject::connect(timer_check_settings_changed.get(), &QTimer::timeout, this, &AVCodecDecoder::timer_check_settings_changed_callback);
@@ -108,7 +105,7 @@ void AVCodecDecoder::terminate()
 
 void AVCodecDecoder::timer_check_settings_changed_callback()
 {
-    const auto new_settings=QOpenHDVideoHelper::read_from_settings();
+    const auto new_settings=QOpenHDVideoHelper::read_config_from_settings();
     if(m_last_video_settings!=new_settings){
         // We just request a restart from the video (break out of the current constant_decode() loop,
         // and restart with the new settings.
@@ -121,38 +118,42 @@ void AVCodecDecoder::constant_decode()
 {
     while(!m_should_terminate){
         qDebug()<<"Start decode";
-         const auto settings = QOpenHDVideoHelper::read_from_settings();
-         bool do_custom_rtp=settings.dev_use_low_latency_parser_when_possible;
-         if(settings.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG){
+        const auto settings = QOpenHDVideoHelper::read_config_from_settings();
+        // this is always for primary video, unless switching is enabled
+        auto stream_config=settings.primary_stream_config;
+        if(settings.generic.qopenhd_switch_primary_secondary){
+            stream_config=settings.secondary_stream_config;
+        }
+         bool do_custom_rtp=settings.generic.dev_use_low_latency_parser_when_possible;
+         if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG){
              // we got no support for mjpeg in our custom rtp parser
              do_custom_rtp=false;
         }
-        if(settings.dev_always_use_generic_external_decode_service){
-             dirty_generic_decode_via_external_decode_service(settings);
+        // On a couple of embedded platform(s) we do not do the decoding in qopenhd,
+        // but by using a "decode service" that renders / composes the video into a plane behind qopenhd
+        // on rpi, this is by far the most performant / low latency option
+        bool use_external_decode_service=false;
+        // choice - enable regardless of platform, usefull for development
+        if(settings.generic.dev_always_use_generic_external_decode_service){
+            use_external_decode_service=true;
+        }
+        bool is_rpi=false;
+#ifdef IS_PLATFORM_RPI
+        is_rpi=true;
+#endif // IS_PLATFORM_RPI
+        if(is_rpi && settings.generic.dev_rpi_use_external_omx_decode_service){
+            use_external_decode_service=true;
+        }
+        if(use_external_decode_service){
+            dirty_generic_decode_via_external_decode_service(settings);
         }else{
-             if(settings.dev_test_video_mode!=QOpenHDVideoHelper::VideoTestMode::DISABLED){
-                 // file playback always goes via non-custom rtp parser (since it is not rtp)
-                 do_custom_rtp=false;
-             }
-             if(do_custom_rtp){
-#ifdef HAVE_MMAL
-                // When we have mmal at compile time, we can do the "even more optimized" path for h264 decode on pi
-                // (but only for h264 HW decode and rtp)
-                if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
-                    && settings.enable_software_video_decoder==false
-                    && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-                    if(settings.dev_rpi_use_external_omx_decode_service){
-                        dirty_generic_decode_via_external_decode_service(settings);
-                    }else{
-                        open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
-                    }
-                }else{
-                     open_and_decode_until_error_custom_rtp(settings);
-                }
-#else
+            if(settings.generic.dev_test_video_mode!=QOpenHDVideoHelper::VideoTestMode::DISABLED){
+                // file playback always goes via non-custom rtp parser (since it is not rtp)
+                do_custom_rtp=false;
+            }
+            if(do_custom_rtp){
                 // Does h264 and h265 custom rtp parse, but uses avcodec for decode
                 open_and_decode_until_error_custom_rtp(settings);
-#endif
             }else{
                 open_and_decode_until_error(settings);
             }
@@ -355,20 +356,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
     }
     // Once we got the first frame, reduce the log level
     av_log_set_level(AV_LOG_WARNING);
-    if(frame->format==AV_PIX_FMT_MMAL){
-#ifdef HAVE_MMAL
-        TextureRenderer::instance().clear_all_video_textures_next_frame();
-        const auto before=std::chrono::steady_clock::now();
-        RpiMMALDisplay::instance().display_frame(frame);
-        avg_send_mmal_frame_to_display.add(std::chrono::steady_clock::now()-before);
-        avg_send_mmal_frame_to_display.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-            qDebug()<<name.c_str()<<":"<<message.c_str();
-        });
-        return;
-#else
-        qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";
-#endif
-    }
+    //qDebug()<<debug_frame(frame).c_str();
     TextureRenderer::instance().queue_new_frame_for_display(frame);
     if(last_frame_width==-1 || last_frame_height==-1){
         last_frame_width=frame->width;
@@ -399,23 +387,28 @@ void AVCodecDecoder::reset_before_decode_start()
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
+    // this is always for primary video, unless switching is enabled
+    auto stream_config=settings.primary_stream_config;
+    if(settings.generic.qopenhd_switch_primary_secondary){
+        stream_config=settings.secondary_stream_config;
+    }
     std::string in_filename="";
-    if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
-        in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(settings);
+    if(settings.generic.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
+        in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(stream_config);
         //in_filename="rtp://192.168.0.1:5600";
     }else{
-        if(settings.dev_enable_custom_pipeline){
-            in_filename=settings.dev_custom_pipeline;
+        if(settings.generic.dev_enable_custom_pipeline){
+            in_filename=settings.generic.dev_custom_pipeline;
         }else{
             // For testing, I regulary change the filename(s) and recompile
             const bool consti_testing=false;
             if(consti_testing){
-                if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+                if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264){
                      //in_filename="/tmp/x_raw_h264.h264";
                     in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
-                }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+                }else if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265){
                       //in_filename="/tmp/x_raw_h265.h265";
                     in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
@@ -424,7 +417,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
                    //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
                 }
             }else{
-                in_filename=QOpenHDVideoHelper::get_default_openhd_test_file(settings.video_codec);
+                in_filename=QOpenHDVideoHelper::get_default_openhd_test_file(stream_config.video_codec);
             }
 
         }
@@ -523,7 +516,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     if (decoder->id == AV_CODEC_ID_H264) {
         qDebug()<<"H264 decode";
         qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
-        if(!settings.enable_software_video_decoder){
+        if(!stream_config.enable_software_video_decoder){
             // weird workaround needed for pi + DRM_PRIME
             /*if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
                 fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
@@ -539,6 +532,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
             }
         }else{
             wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+            //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         }
     }
     else if(decoder->id==AV_CODEC_ID_H265){
@@ -569,9 +563,6 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
         avformat_close_input(&input_ctx);
         return -1;
     }
-#ifdef HAVE_MMAL
-     RpiMMALDisplay::instance().prepareDecoderContext(decoder_ctx,&av_dictionary);
-#endif
 
     // From moonlight-qt. However, on PI, this doesn't seem to make any difference, at least for H265 decode.
     // (I never measured h264, but don't think there it is different).
@@ -588,10 +579,10 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     }
 
     std::string selected_decoding_type="?";
-    if(settings.enable_software_video_decoder ||
+    if(stream_config.enable_software_video_decoder ||
             // for mjpeg we always use sw decode r.n, since for some reason the "fallback" to sw decode doesn't work here
             // and also the PI cannot do HW mjpeg decode anyways at least no one bothered to fix ffmpeg for it.
-            settings.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG
+            stream_config.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG
             ){
         qDebug()<<"User wants SW decode / mjpeg";
         decoder_ctx->get_format  = get_sw_format;
@@ -652,8 +643,8 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 
             if (video_stream == packet.stream_index){
             //if(true){
-                int limitedFrameRate=settings.dev_limit_fps_on_test_file;
-                if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
+                int limitedFrameRate=settings.generic.dev_limit_fps_on_test_file;
+                if(settings.generic.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
                     // never limit the fps on decode when doing live streaming !
                     limitedFrameRate=-1;
                 }
@@ -696,13 +687,19 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 // https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
+    // this is always for primary video, unless switching is enabled
+    auto stream_config=settings.primary_stream_config;
+    if(settings.generic.qopenhd_switch_primary_secondary){
+        stream_config=settings.secondary_stream_config;
+    }
+
     // This thread pulls frame(s) from the rtp decoder and therefore should have high priority
     SchedulingHelper::setThreadParamsMaxRealtime();
     av_log_set_level(AV_LOG_TRACE);
-     assert(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264 || settings.video_codec==QOpenHDVideoHelper::VideoCodecH265);
-     if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+     assert(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264 || stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265);
+     if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
-     }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+     }else if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H265);
      }
      if (!decoder) {
@@ -714,7 +711,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      if (decoder->id == AV_CODEC_ID_H264) {
          qDebug()<<"H264 decode";
          qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
-         if(!settings.enable_software_video_decoder){
+         if(!stream_config.enable_software_video_decoder){
              auto tmp = avcodec_find_decoder_by_name("h264_mmal");
              if(tmp!=nullptr){
                  decoder = tmp;
@@ -728,7 +725,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          }
      }else if(decoder->id==AV_CODEC_ID_H265){
          qDebug()<<"H265 decode";
-         if(!settings.enable_software_video_decoder){
+         if(!stream_config.enable_software_video_decoder){
              qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
              // HW format used by rpi h265 HW decoder
              wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
@@ -744,10 +741,6 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          return;
      }
      // ----------------------------------
-#ifdef HAVE_MMAL
-     AVDictionary* av_dictionary=nullptr;
-     RpiMMALDisplay::instance().prepareDecoderContext(decoder_ctx,&av_dictionary);
-#endif
     // From moonlight-qt. However, on PI, this doesn't seem to make any difference, at least for H265 decode.
     // (I never measured h264, but don't think there it is different).
     // Always request low delay decoding
@@ -781,7 +774,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          return;
      }
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
-     m_rtp_receiver=std::make_unique<RTPReceiver>(settings.udp_rtp_input_port,settings.udp_rtp_input_ip_address,settings.video_codec==1,settings.dev_feed_incomplete_frames_to_decoder);
+     m_rtp_receiver=std::make_unique<RTPReceiver>(stream_config.udp_rtp_input_port,stream_config.udp_rtp_input_ip_address,stream_config.video_codec==1,settings.generic.dev_feed_incomplete_frames_to_decoder);
 
      reset_before_decode_start();
      DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
@@ -831,133 +824,6 @@ finish:
      avcodec_free_context(&decoder_ctx);
 }
 
-#ifdef HAVE_MMAL
-void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings)
-{
-    qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct";
-    //if(!rpi::check_mmal::is_fkms_enabled()){
-    //    workaround::makePopupMessage("FKMS disabled - video won't work");
-    //}
-    assert(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264);
-    assert(settings.enable_software_video_decoder==false);
-    assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);
-
-    m_rtp_receiver=std::make_unique<RTPReceiver>(settings.udp_rtp_input_port,settings.udp_rtp_input_ip_address,false,settings.dev_feed_incomplete_frames_to_decoder);
-    std::unique_ptr<RPIMMalDecodeDisplay> mmal_decode_display=std::make_unique<RPIMMalDecodeDisplay>();
-    // We use the HW composer, not opengl
-    TextureRenderer::instance().clear_all_video_textures_next_frame();
-
-    reset_before_decode_start();
-    DecodingStatistcs::instance().set_primary_stream_frame_format("MMAL waiting");
-    DecodingStatistcs::instance().set_decoding_type("HW");
-    bool cb_set=false;
-
-    bool has_keyframe_data=false;
-    int feed_frame_error_count=0;
-
-    std::chrono::steady_clock::time_point m_last_log_decoder_unhealty=std::chrono::steady_clock::now();
-
-    while(true){
-        if(request_restart){
-            request_restart=false;
-            goto finish;
-        }
-        if(m_rtp_receiver->config_has_changed_during_decode){
-            qDebug()<<"Break/Restart,config has changed during decode";
-            goto finish;
-        }
-        /*if(feed_frame_error_count>10){
-            // Decoder clearly unhealthy, use a full restart to fix it
-            qDebug()<<"MMAL Direct decoder unhealthy-restart";
-            goto finish;
-        }*/
-        //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        if(!has_keyframe_data){
-            std::shared_ptr<std::vector<uint8_t>> keyframe_buf=m_rtp_receiver->get_config_data();
-            if(keyframe_buf==nullptr){
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                continue;
-            }
-             qDebug()<<"Got decode data (before keyframe)";
-             //RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
-             const auto w_h=m_rtp_receiver->sps_get_width_height();
-             {
-                 std::stringstream ss;
-                 ss<<"MMAL "<<w_h[0]<<"x"<<w_h[1];
-                 DecodingStatistcs::instance().set_primary_stream_frame_format(ss.str().c_str());
-             }
-             mmal_decode_display->initialize(keyframe_buf->data(),keyframe_buf->size(),w_h[0], w_h[1],60);
-             has_keyframe_data=true;
-             continue;
-        }else{
-		  // Switch over to a callback-based approach for lower latency. mmal already has a frame queue, so we don't need an extra one
-            if(!cb_set){
-                auto cb=[this,&mmal_decode_display,&feed_frame_error_count,&m_last_log_decoder_unhealty](const NALU& nalu){
-                    const bool feed_frame_success=mmal_decode_display->feed_frame(nalu.getData(),nalu.getSize(),std::chrono::milliseconds(8));
-                    //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
-                    //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
-                    if(!feed_frame_success){
-                        qDebug()<<"MMAL - cannot feed frame";
-                        feed_frame_error_count++;
-                        DecodingStatistcs::instance().set_n_decoder_dropped_frames(feed_frame_error_count);
-                        // Tell user what's going on
-                        const auto elapsed_since_last_log=std::chrono::steady_clock::now()-m_last_log_decoder_unhealty;
-                        if(elapsed_since_last_log>std::chrono::seconds(3)){
-                            m_last_log_decoder_unhealty=std::chrono::steady_clock::now();
-                            HUDLogMessagesModel::instance().add_message_warning("Decoder unhealthy-reduce load");
-                        }
-                    }
-                    const auto delay=std::chrono::steady_clock::now()-nalu.creationTime;
-                    avg_parse_time.add(delay);
-                    avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                        //qDebug()<<name.c_str()<<":"<<message.c_str();
-                        DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
-                    });
-                };
-                m_rtp_receiver->register_new_nalu_callback(cb);
-                cb_set=true;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            /*std::shared_ptr<NALU> buf=nullptr;
-             while(buf==nullptr){
-                 // for some weird reason, using the queue with a waking up approach doesn't work on rpi.
-                 // doesn't work == by using a timeout, we get incredibly high parse & enqueue time (in the 250ms range)
-                 // It doesn't make sense from a sw standpoint, but we unfortunately need to use a
-                 // "wake upd in regular intervalls and fetch latest" approach here.
-                 // This doesn't work
-                 //buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(5));
-                 // This works
-                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
-                 buf=m_rtp_receiver->get_next_frame(std::nullopt);
-                 if(request_restart){
-                     request_restart=false;
-                     goto finish;
-                 }
-             }
-              //const auto before_feed_frame=std::chrono::steady_clock::now();
-              const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize());
-              //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
-              //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
-              if(!feed_frame_success){
-                  feed_frame_error_count++;
-              }
-              const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
-              avg_parse_time.add(delay);
-              avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                  //qDebug()<<name.c_str()<<":"<<message.c_str();
-                  DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
-              });*/
-        }
-    }
-finish:
-    qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct-end loop";
-    m_rtp_receiver=nullptr;
-    mmal_decode_display->cleanup();
-    mmal_decode_display=nullptr;
-}
-#endif
-
-
 void AVCodecDecoder::timestamp_add_fed(int64_t ts)
 {
     m_fed_timestamps_queue.push_back(ts);
@@ -984,80 +850,7 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
     }
 }
 
-// QOpenHD video decode "service" workaround
-#include "../common/openhd-util.hpp"
-
-static void write_service_rotation_file(int rotation){
-    qDebug()<<"Writing "<<rotation<<"° to video service file";
-    FILE *f = fopen("/tmp/video_service_rotation.txt", "w");
-    if (f == NULL){
-        qDebug()<<"Error opening file!";
-        return;
-    }
-    fprintf(f, "%d",rotation);
-    fclose(f);
-}
-
-static constexpr auto GENERIC_H264_DECODE_SERVICE="h264_decode";
-static constexpr auto GENERIC_H265_DECODE_SERVICE="h265_decode";
-static constexpr auto GENERIC_MJPEG_DECODE_SERVICE="mjpeg_decode";
-static std::string get_service_name_for_codec(const QOpenHDVideoHelper::VideoCodec& codec){
-    if(codec==QOpenHDVideoHelper::VideoCodecH264)return GENERIC_H264_DECODE_SERVICE;
-    if(codec==QOpenHDVideoHelper::VideoCodecH264)return GENERIC_H265_DECODE_SERVICE;
-    return GENERIC_MJPEG_DECODE_SERVICE;
-}
-
-static void stop_service_if_exists(const std::string& name){
-    if(util::fs::service_file_exists(name)){
-        OHDUtil::run_command("systemctl stop",{name});
-    }
-}
-
-static void start_service_if_exists(const std::string& name){
-    if(util::fs::service_file_exists(name)){
-        OHDUtil::run_command("systemctl start",{name});
-    }else{
-        std::stringstream message;
-        message<<"Cannot start video decode service "<<name;
-        LogMessagesModel::instanceOHD().add_message_warn("QOpenHD",message.str().c_str());
-        qDebug()<<message.str().c_str();
-    }
-}
-
-static void stop_all_services(){
-    std::vector<std::string> services{GENERIC_H264_DECODE_SERVICE,GENERIC_H265_DECODE_SERVICE,GENERIC_MJPEG_DECODE_SERVICE};
-    for(const auto& service:services){
-        stop_service_if_exists(service);
-    }
-}
-
 void AVCodecDecoder::dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings)
 {
-    qDebug()<<"dirty_generic_decode_via_external_decode_service begin";
-    // Stop any still running service (just in case there is one)
-    stop_all_services();
-    // QRS are not available with this implementation
-    DecodingStatistcs::instance().reset_all_to_default();
-    {
-        std::stringstream type;
-        type<<"External "<<QOpenHDVideoHelper::video_codec_to_string(settings.video_codec);
-        DecodingStatistcs::instance().set_decoding_type(type.str().c_str());
-    }
-    // Dirty way we communicate with the service / executable
-    const auto rotation=QOpenHDVideoHelper::get_display_rotation();
-    write_service_rotation_file(rotation);
-    // Start service
-    const auto service_name=get_service_name_for_codec(settings.video_codec);
-    start_service_if_exists(service_name);
-    // We follow the same pattern here as the decode flows that don't use an "external service"
-    while(true){
-        if(request_restart){
-            request_restart=false;
-            break;
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-    // Stop service
-    OHDUtil::run_command("systemctl stop",{service_name});
-    qDebug()<<"dirty_generic_decode_via_external_decode_service end";
+    qopenhd::decode::service::decode_via_external_decode_service(settings,request_restart);
 }

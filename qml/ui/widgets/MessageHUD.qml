@@ -10,10 +10,9 @@ import OpenHD 1.0
 BaseWidget {
     id: messageWidget
     property alias messageListView: messageListView
-    property alias messageWidget: messageWidget
 
     width: 480
-    height: 72
+    height: 5*25 // Up to 5 simultaneous messages
 
     visible: settings.show_message_hud
 

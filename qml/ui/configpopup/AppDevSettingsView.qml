@@ -170,6 +170,21 @@ ScrollView {
                     onCheckedChanged: settings.dirty_enable_inav_hacks = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "dirty_enable_mavlink_fc_sys_id_check"
+                 m_long_description: "Only accept FCs that explicitly expose themselves as autopilot - can fix issues with FC discovery in QOpenHD."
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dirty_enable_mavlink_fc_sys_id_check
+                    onCheckedChanged: settings.dirty_enable_mavlink_fc_sys_id_check = checked
+                }
+            }
 
             SettingBaseElement{
                 m_short_description: "dev_mavlink_via_tcp"

@@ -16,8 +16,62 @@ Settings {
 
     property string locale: "en"
 
-    property int dev_stream0_udp_rtp_input_port: 5600
-    property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
+
+    // ----------------------------------------------------------------------------------
+    // All video (streaming) related settings local to qopenhd (nothing to do with openhd) begin
+    // ----------------------------------------------------------------------------------
+
+    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
+    property int dev_qopenhd_n_cameras:1
+
+    // Inside QOpenHD, swap primary and secondary camera - on platforms that only are capable of showing one video stream,
+    // this can be used to switch between 2 different video feeds
+    // When the app is started, this value is automatically reset to false
+    property bool qopenhd_switch_primary_secondary: false
+
+    // Video decode settings, per primary / secondary video
+    property int qopenhd_primary_video_rtp_input_port: 5600
+    property string qopenhd_primary_video_rtp_input_ip: "127.0.0.1"
+    // Video codec of the primary video stream (main window).
+    property int qopenhd_primary_video_codec: 0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
+    property bool qopenhd_primary_video_force_sw: false
+
+    property int qopenhd_secondary_video_rtp_input_port: 5601
+    property string qopenhd_secondary_video_rtp_input_ip: "127.0.0.1"
+    property int qopenhd_secondary_video_codec: 0
+    property bool qopenhd_secondary_video_force_sw: false
+
+    // enably a test video source instead of decoding actual video data, if supported by the platform
+    // 0 = disabled
+    // 1 = raw video
+    // 2 = raw vide encode and then decode
+    property int dev_test_video_mode:0 // 0 is disabled
+    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
+    // that ends with qmlglsink )
+    property bool dev_enable_custom_pipeline: false
+    // only for ffmpeg
+    property int dev_limit_fps_on_test_file: -1
+    property bool dev_draw_alternating_rgb_dummy_frames: false;
+    // r.n only works on h264 / h265 and on select video stream(s)
+    // does not work on mjpeg, but as far as I can see, mjpeg doesn't suffer from the "one frame buffering" issue in avcodec
+    property bool dev_use_low_latency_parser_when_possible: true;
+    property bool dev_feed_incomplete_frames_to_decoder:false;
+
+    // dirty, perhaps temporary
+    property bool dev_rpi_use_external_omx_decode_service: true;
+    property bool dev_always_use_generic_external_decode_service: false
+
+    // The user can controll the width and height the secondary video has when in minimized state
+    // (By that he also controlls the ratio).
+    // And he can specify a factor by which the secondary video is maximized when clicked
+    property int secondary_video_minimized_width : 320
+    property int secondary_video_minimized_height : 240
+    property int secondary_video_maximize_factor_perc : 200
+
+    // ----------------------------------------------------------------------------------
+    // All video (streaming) related settings local to qopenhd (nothing to do with openhd) end
+    // ----------------------------------------------------------------------------------
+
 
     // Sys id QOpenHD uses itself
     property int qopenhd_mavlink_sysid: 255
@@ -36,34 +90,7 @@ Settings {
     // aka this setting only has an effect when running QOpenHD on a PC, and there also
     // pretty much only during development
     property bool app_explicit_window_fullscreen: false
-    // force sw decode on primary video
-    property bool primary_enable_software_video_decoder: false
-    // force sw decode on secondary video
-    property bool secondary_enable_software_video_decoder: false
-    // enably a test video source instead of decoding actual video data, if supported by the platform
-    // 0 = disabled
-    // 1 = raw video
-    // 2 = raw vide encode and then decode
-    property int dev_test_video_mode:0 // 0 is disabled
-    // Video codec of the primary video stream (main window).
-    property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
-    property int selectedVideoCodecSecondary:0
 
-    property bool dev_jetson: false
-    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
-    // that ends with qmlglsink )
-    property bool dev_enable_custom_pipeline: false
-    // only for ffmpeg
-    property int dev_limit_fps_on_test_file: -1
-    property bool dev_draw_alternating_rgb_dummy_frames: false;
-    // r.n only works on h264 / h265 and on select video stream(s)
-    // does not work on mjpeg, but as far as I can see, mjpeg doesn't suffer from the "one frame buffering" issue in avcodec
-    property bool dev_use_low_latency_parser_when_possible: true;
-    property bool dev_feed_incomplete_frames_to_decoder:false;
-
-    // dirty, perhaps temporary
-    property bool dev_rpi_use_external_omx_decode_service: true;
-    property bool dev_always_use_generic_external_decode_service: false
 
     property bool enable_speech: true
     property bool enable_imperial: false
@@ -78,9 +105,7 @@ Settings {
 
     // animation smoothing value, in ms
     // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here
-    property int smoothing: 100
-
-    property int log_level: 6
+    property int smoothing: 33
 
     property bool show_downlink_rssi: true
     //Const10
@@ -93,6 +118,8 @@ Settings {
     // r.n one of the most important statistics about link quality
     property int downlink_packet_loss_perc_caution : 10
     property int downlink_packet_loss_perc_warn : 20
+    property bool downlink_dbm_warning: true
+    property bool downlink_signal_quality_show: false
 
     property bool show_uplink_rssi: true
     property bool uplink_rssi_declutter: false
@@ -116,8 +143,9 @@ Settings {
 
 
     property bool show_air_battery: true
-    property bool air_battery_show_voltage_current: false
+    property bool air_battery_show_voltage_current: true
     property bool air_battery_show_single_cell: false
+    property bool air_battery_use_batt_id_0_only: false
 
     property bool show_ground_battery: false
     property bool ground_battery_show_voltage_current: false
@@ -133,6 +161,7 @@ Settings {
 
     property bool show_gps: true
     property bool gps_show_all: false
+    property bool gps_hide_identity_using_offset: false
     property bool gps_declutter: false
     property double gps_warn: 3
     property double gps_caution: 2
@@ -144,6 +173,7 @@ Settings {
     property bool show_flight_time: true
 
     property bool show_flight_mode: true
+    property bool flight_mode_show_disarmed: true
 
     property bool show_flight_distance: true
 
@@ -220,19 +250,24 @@ Settings {
     property double fpv_lateral_limit: 60
 
 
-    property bool show_speed: true
-    property bool speed_use_groundspeed: true
-    property bool show_speed_ladder: true
-    property int speed_range: 100
-    property int speed_minimum: 0
+    property bool speed_ladder_show: true
+    property bool speed_ladder_show_ladder: true
+    property bool speed_ladder_show_unit: true
+    property bool speed_ladder_use_kmh: true
+    property bool speed_ladder_use_groundspeed: false
+    property int speed_ladder_range: 100
+    property int speed_ladder_minimum: 0
 
     property bool show_speed_second: true
-    property bool speed_second_use_groundspeed: false
+    property bool speed_second_use_groundspeed: true
+    property bool speed_second_use_kmh: true
+    property bool speed_second_show_unit: true
 
-    property bool show_altitude: true
-    property bool altitude_rel_msl: false
-    property bool show_altitude_ladder: true
-    property int altitude_range: 100
+    property bool altitude_ladder_show: true
+    property bool altitude_ladder_show_ladder: true
+    property bool altitude_ladder_use_msl: false
+    property int altitude_ladder_range: 100
+    property bool altitude_ladder_show_unit: true
 
     property bool show_altitude_second: true
     property bool altitude_second_msl_rel: true
@@ -251,12 +286,13 @@ Settings {
     property double map_size: 1
     property bool show_throttle: true
 
-    property bool show_control: false
+    property bool show_control: true
     property bool double_control: true
     property bool control_rev_pitch: false
     property bool control_rev_roll: false
     property bool control_rev_yaw: false
     property bool control_rev_throttle: false
+    property bool control_widget_use_fc_channels: true
 
     property bool show_gpio: false
     property int selected_map_provider: 0
@@ -264,10 +300,15 @@ Settings {
 
     property bool show_vibration: false
 
-    // Disabled by default, since it has a quite big impact on draw call performance on embedded devices
-    // like rpi
-    property bool show_vsi: false
-    property int vsi_max: 20
+    // Simple is on by default, gauge is off by default
+    // simple / minimal
+    property bool show_vertical_speed_simple_widget: true
+    property bool vertical_speed_simple_widget_show_unit: true
+    property bool vertical_speed_simple_widget_show_up_down_arrow: true
+    // gauge
+    property bool show_vertical_speed_gauge_widget: false
+    property int vertical_speed_gauge_widget_max: 20
+
 
     property bool show_wind: false
     property bool wind_plane_copter: false //should default to plane
@@ -277,11 +318,12 @@ Settings {
     property double wind_tumbler_tens: 13
     property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)
 
-    property bool show_roll: true
-    property bool roll_invert: false
-    property bool roll_show_arc: true
-    property bool roll_show_numbers: true
-    property bool roll_sky_pointer: false
+    // Default to false, since while really usefully for advanced flyers, not really a common OSD element
+    property bool bank_angle_indicator_widget_show: false
+    property bool bank_angle_indicator_widget_roll_invert: false
+    property bool bank_angle_indicator_widget_show_arc: true
+    property bool bank_angle_indicator_widget_show_numbers: true
+    property bool bank_angle_indicator_widget_sky_pointer: false
 
     property bool show_adsb: false
     property int adsb_distance_limit: 15000//meters. Bound box for api from map center (so x2)
@@ -295,15 +337,6 @@ Settings {
     property bool show_record_widget: true
     property double recordTextSize: 14
     property bool show_minimal_record_widget: true
-    property double record_widget_height: 48
-    property double record_widget_width: 140
-
-    // The user can controll the width and height the secondary video has when in minimized state
-    // (By that he also controlls the ratio).
-    // And he can specify a factor by which the secondary video is maximized when clicked
-    property int secondary_video_minimized_width : 320
-    property int secondary_video_minimized_height : 240
-    property int secondary_video_maximize_factor_perc : 200
 
     property bool show_aoa: false
     property bool aoa_declutter: false
@@ -313,8 +346,9 @@ Settings {
 
     property bool show_example_widget: false
 
-    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
-    property int dev_qopenhd_n_cameras:1
+    property bool show_distance_sensor_widget: false
+    // (GPS) time
+    property bool show_time_widget: false
 
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
     // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance
@@ -322,6 +356,14 @@ Settings {
 
     // Show FC mavlink messages in the HUD
     property bool show_fc_messages_in_hud: true
+
+    // Set the mavlink message rate(s) via qopenhd
+    property bool set_mavlink_message_rates: true
+    // Double the default rate(s) - for people who want more mavlink
+    property bool mavlink_message_rates_high_speed: false
+    property bool mavlink_message_rates_high_speed_rc_channels: false
+    // log a warning if fc is quiet - happened to a lot of people new to mavlink
+    property bool log_quiet_fc_warning_to_hud : true
 
     // only works on select platforms (on rpi, we are automatically already full screen)
     property bool dev_force_show_full_screen: false
@@ -336,9 +378,16 @@ Settings {
 
     // HUD WB link rate control element settings
     property bool wb_link_rate_control_widget_show: true
+    property bool wb_link_rate_control_widget_show_frequency: true
+    property bool wb_link_rate_control_widget_show_bitrate: true
+    property bool wb_link_rate_control_widget_show_fec_and_keyframe: true
+
+    property bool wb_link_rate_control_widget_show_bitrate_detailed: true
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
+    // FC discovery - annoying mavsdk
+    property bool dirty_enable_mavlink_fc_sys_id_check: false
 
     property int custom_cursor_type: 0
     property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,
@@ -349,4 +398,14 @@ Settings {
 
     // message can be removed if needed.
     property bool dev_wb_show_no_stbc_enabled_warning: false
+
+    property int screen_settings_overlay_size_percent : 100
+    property bool screen_settings_openhd_parameters_transparent: false
+
+    // dangerous, but neccessary
+    property bool qopenhd_allow_changing_ground_unit_frequency_no_sync: false
+    property bool qopenhd_allow_changing_ground_unit_channel_width_no_sync: false
+
+    property double hide_identity_latitude_offset: 0.0
+    property double hide_identity_longitude_offset: 0.0
 }

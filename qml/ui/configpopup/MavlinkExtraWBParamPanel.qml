@@ -13,7 +13,16 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-Pane{
+// This is an extra screen for changing the frequency / channel width -
+// They both need to match !
+Rectangle{
+    width: parent.width
+    height: parent.height
+
+    //color: "transparent"
+    //color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
+    //opacity: settings.screen_settings_openhd_parameters_transparent ? 0.2 : 1
+
     // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
     // For the models above (model with value) try to find the index of the first  item where model[i].value===value
     function find_index(model,value){
@@ -31,6 +40,23 @@ Pane{
     function fc_is_armed(){
         return _fcMavlinkSystem.armed
     }
+
+    // Re-set the "disable sync" on init
+    Component.onCompleted: {
+        settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync=false
+        settings.qopenhd_allow_changing_ground_unit_frequency_no_sync=false
+    }
+
+    property string m_text_warning_nosync_frequency: "WARNING: THIS CHANGES YOUR GROUND UNIT FREQUENCY WITHOUT CHANGING YOUR AIR UNIT FREQUENCY !
+Only enable if you want to quickly change your ground unit's frequency to the already set frequency of a running air unit (And know both frequency and channel width on top of your head)";
+
+    property string m_text_warning_nosync_chanel_width: "WARNING: THIS CHANGES YOUR GROUND UNIT CHANNEL WIDTH WITHOUT CHANGING YOUR AIR UNIT CHANNEL WIDTH !
+Only enable if you want to quickly change your ground unit's channel width to the already set channel width of a running air unit (And know both frequency and channel width on top of your head)"
+
+
+    property string more_info_text: "After flashing,openhd uses the same default frequency, and your air and ground unit automatically connect."+
+    "If you change the frequency / channel width here, both air and ground unit are set to the new frequency."+
+"If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
 
     ScrollView {
         id:mavlinkExtraWBParamPanel
@@ -75,20 +101,20 @@ Pane{
                     //ListElement {title: "2397Mhz [X] (Atheros)"; value: 2397}
                     //ListElement {title: "2402Mhz [X] (Atheros)"; value: 2402}
                     //ListElement {title: "2407Mhz [X] (Atheros)"; value: 2407}
-                    ListElement {title: "2412Mhz [1] (Ralink/Atheros)"; value: 2412}
-                    ListElement {title: "2417Mhz [2]  (Ralink/Atheros)"; value: 2417}
-                    ListElement {title: "2422Mhz [3]  (Ralink/Atheros)"; value: 2422}
-                    ListElement {title: "2427Mhz [4]  (Ralink/Atheros)"; value: 2427}
-                    ListElement {title: "2432Mhz [5]  (Ralink/Atheros)"; value: 2432}
-                    ListElement {title: "2437Mhz [6]  (Ralink/Atheros)"; value: 2437}
-                    ListElement {title: "2442Mhz [7]  (Ralink/Atheros)"; value: 2442}
-                    ListElement {title: "2447Mhz [8]  (Ralink/Atheros)"; value: 2447}
-                    ListElement {title: "2452Mhz [9]  (Ralink/Atheros)"; value: 2452}
-                    ListElement {title: "2457Mhz [10](Ralink/Atheros)"; value: 2457}
-                    ListElement {title: "2462Mhz [11](Ralink/Atheros)"; value: 2462}
-                    ListElement {title: "2467Mhz [12](Ralink/Atheros)"; value: 2467}
-                    ListElement {title: "2472Mhz [13](Ralink/Atheros)"; value: 2472}
-                    ListElement {title: "2484Mhz [14](Ralink/Atheros)"; value: 2484}
+                    ListElement {title: "2412Mhz [1] (Normal 2.4G)"; value: 2412}
+                    //ListElement {title: "2417Mhz [2]  (Ralink/Atheros)"; value: 2417}
+                    //ListElement {title: "2422Mhz [3]  (Ralink/Atheros)"; value: 2422}
+                    //ListElement {title: "2427Mhz [4]  (Ralink/Atheros)"; value: 2427}
+                    ListElement {title: "2432Mhz [5]  (Normal 2.4G)"; value: 2432}
+                    //ListElement {title: "2437Mhz [6]  (Ralink/Atheros)"; value: 2437}
+                    //ListElement {title: "2442Mhz [7]  (Ralink/Atheros)"; value: 2442}
+                    //ListElement {title: "2447Mhz [8]  (Ralink/Atheros)"; value: 2447}
+                    ListElement {title: "2452Mhz [9]  (Normal 2.4G)"; value: 2452}
+                    //ListElement {title: "2457Mhz [10](Ralink/Atheros)"; value: 2457}
+                    //ListElement {title: "2462Mhz [11](Ralink/Atheros)"; value: 2462}
+                    //ListElement {title: "2467Mhz [12](Ralink/Atheros)"; value: 2467}
+                    ListElement {title: "2472Mhz [13](Normal 2.4G)"; value: 2472}
+                    //ListElement {title: "2484Mhz [14](Ralink/Atheros)"; value: 2484}
                     //ListElement {title: "2477Mhz [X] (Atheros)"; value: 2477}
                     //ListElement {title: "2482Mhz [X] (Atheros)"; value: 2482}
                     //ListElement {title: "2487Mhz [X] (Atheros)"; value: 2487}
@@ -107,6 +133,8 @@ Pane{
                     ListElement {title: "2672Mhz [X] (Atheros)"; value: 2672}
                     ListElement {title: "2692Mhz [X] (Atheros)"; value: 2692}
                     ListElement {title: "2712Mhz [X] (Atheros)"; value: 2712}
+                    //
+                    ListElement {title: "Unknown"; value: -1}
                     // 5G begin
                     ListElement {title: "5180Mhz [36] (DEFAULT)"; value: 5180}
                     ListElement {title: "5200Mhz [40]"; value: 5200}
@@ -140,23 +168,29 @@ Pane{
                 }
 
                 ListModel{
-                    id: mcsIndexModel
-                    ListElement {title: "~4.5 Mbps  (MCS0)"; value: 0}
-                    ListElement {title: "~6.5 Mbps  (MCS1)"; value: 1}
-                    ListElement {title: "~8.5 Mbps (long range) (MCS2)"; value: 2}
-                    ListElement {title: "~12  Mbps (default) (MCS3)"; value: 3}
-                    ListElement {title: "~17  Mbps (EXP)(MCS4)"; value: 4}
-                    ListElement {title: "~20+ Mbps (EXP) (MCS5)"; value: 5}
-                    ListElement {title: "~20+ Mbps (EXP) (MCS6)"; value: 6}
-                    ListElement {title: "~20+ Mbps (EXP) (MCS7)"; value: 7}
-                }
-
-                ListModel{
                     id: channelWidthModel
+                    ListElement {title: "Unknown"; value: -1}
                     ListElement {title: "20MHz (default)"; value: 20}
-                    ListElement {title: "40MHz (experimental)"; value: 40}
+                    ListElement {title: "40MHz (rtl8812au only)"; value: 40}
                 }
-
+                Text{
+                    width: parent.width
+                    height: rowHeight / 2
+                    elide: Text.ElideLeft
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    text:{
+                        "NOTE: Frequency and channel width of air and ground unit BOTH need to match."
+                    }
+                }
+                Button{
+                    text: "MORE INFO"
+                    Material.background:Material.LightBlue
+                    onClicked: {
+                        _messageBoxInstance.set_text_and_show(more_info_text)
+                    }
+                }
                 Rectangle {
                     width: parent.width
                     height: rowHeight
@@ -182,7 +216,6 @@ Pane{
                         }
                     }
                 }
-
                 // Changing the wifi frequency, r.n only 5G
                 Rectangle {
                     width: parent.width
@@ -208,7 +241,8 @@ Pane{
                             textRole: "title"
                             implicitWidth:  elementComboBoxWidth
                             // 5.8G is generally recommended and much more commonly used than 2.4G. Default to it when unknown, just like openhd does
-                            currentIndex: 30
+                            currentIndex: 21
+
                         }
                         Button{
                             text: "Switch Frequency"
@@ -216,11 +250,15 @@ Pane{
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change frequency while FC is armed. MCS index can be changed though.";
-                                    _messageBoxInstance.set_text_and_show(text);
+                                    var text="Cannot change frequency while FC is armed.";
+                                    _messageBoxInstance.set_text_and_show(text,5);
                                     return;
                                 }
                                 var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
+                                if(selectedValue<=100){
+                                    _messageBoxInstance.set_text_and_show("Please select a valid frequency",5);
+                                    return;
+                                }
                                 _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
@@ -229,9 +267,20 @@ Pane{
                             text: "INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar. "+
+                                var text="Frequency in Mhz and channel number. (DFS-RADAR) - also used by commercial plane(s) weather radar (most likely illegal). "+
+                                        "[X] - Not a legal wifi frequency, AR9271 does them anyways."+
 "It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
                                 _messageBoxInstance.set_text_and_show(text)
+                            }
+                        }
+                        Switch{
+                            text: "allow gnd only"
+                            checked: settings.qopenhd_allow_changing_ground_unit_frequency_no_sync
+                            onCheckedChanged: {
+                                if(settings.qopenhd_allow_changing_ground_unit_frequency_no_sync != checked && checked){
+                                    _messageBoxInstance.set_text_and_show(m_text_warning_nosync_frequency,10)
+                                }
+                                settings.qopenhd_allow_changing_ground_unit_frequency_no_sync = checked
                             }
                         }
                     }
@@ -266,11 +315,15 @@ Pane{
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change channel width while FC is armed. MCS index can be changed though."
-                                    _messageBoxInstance.set_text_and_show(text);
+                                    var text="Cannot change channel width while FC is armed."
+                                    _messageBoxInstance.set_text_and_show(text,5);
                                     return;
                                 }
                                 var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
+                                if(!(selectedValue===10 || selectedValue===20 || selectedValue===40 || selectedValue===80)){
+                                    _messageBoxInstance.set_text_and_show("Please select a valid channel width",5);
+                                    return;
+                                }
                                 _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
@@ -285,66 +338,16 @@ Pane{
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }
-                    }
-                }
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    RowLayout{
-                        anchors.verticalCenter: parent.verticalCenter
-                        Button{
-                            text: "Fetch"
-                            onClicked: {
-                                //var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
-                                var _res=_synchronizedSettings.get_param_int_air_only_mcs()
-                                if(_res>=0){
-                                    buttonSwitchMCS.enabled=true
+                        Switch{
+                            text: "allow gnd only"
+                            checked: settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync
+                            onCheckedChanged: {
+                                if(settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync != checked && checked){
+                                    _messageBoxInstance.set_text_and_show(m_text_warning_nosync_chanel_width,10)
                                 }
-                                //console.log("Got ",_res)
-                                update_combobox(comboBoxMcsIndex,_res);
+                                settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync = checked
                             }
                         }
-                        ComboBox {
-                            id: comboBoxMcsIndex
-                            model: mcsIndexModel
-                            textRole: "title"
-                            implicitWidth:  elementComboBoxWidth
-                            // openhd defaults to MCS 3
-                            currentIndex: 3
-                        }
-                        Button{
-                            text: "Change MCS"
-                            id: buttonSwitchMCS
-                            enabled: false
-                            onClicked: {
-                                var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
-                                //_synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
-                                _synchronizedSettings.change_param_air_only_mcs(selectedValue,false)
-                            }
-                            //Material.foreground: fc_is_armed() ? Material.Green : Material.Dark;
-                        }
-                        Button{
-                            text: "INFO"
-                            Material.background:Material.LightBlue
-                            onClicked: {
-                                var text="Only supported on rtl8812au!\nThe MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less sensitivity/range."+
-                                        "In contrast to the frequency / channel width, this param only needs to be set on the air unit. As long as your camera supports variable bitrate,"+
-                                        "you can even safely change this param without adjusting the camera bitrate / during flight."
-                                _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }
-                    }
-                }
-                Text{
-                    width: parent.width
-                    elide: Text.ElideLeft
-                    wrapMode: Text.WordWrap
-                    text:{
-                        "Changing the frequency / channel width requires synchronisation between your air and ground unit. It can fail and is therefore only safe to change in disarmed state. "+
-                        "You can use the channel scan feature to recover a failed synchronisation.\n"+
-                        "Changing the MCS index only requires changing the value on the air unit, and is therefore safe to do during flight - as long as your camera supports variable bitrate."
                     }
                 }
             }

@@ -19,9 +19,11 @@ import "../elements"
  * all manually defined and every one of them has a manually vertical offset to position it
  * inside the scroll view.
  */
-Item {
+Rectangle {
     Layout.fillHeight: true
     Layout.fillWidth: true
+
+    color: "white"
 
     property int rowHeight: 64
     property int elementHeight: 48

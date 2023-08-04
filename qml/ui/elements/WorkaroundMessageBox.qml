@@ -16,9 +16,9 @@ Card {
     id: workaroundMessageBox
     width: 360
     height: 340
-    z: 5.0
+    z: 20.0
     anchors.centerIn: parent
-    cardName: qsTr("QOpenHD")
+    cardName: qsTr("QOpenHD")+(_messageBoxInstance.remaining_time_seconds==-1 ? "" : ("   "+_messageBoxInstance.remaining_time_seconds+"s"))
     cardNameColor: "black"
     visible: _messageBoxInstance.visible
     cardBody: Column {
@@ -52,6 +52,8 @@ Card {
             onPressed: {
                 _messageBoxInstance.okay_button_clicked()
             }
+            // In case the message is removed automatically after 1 or less seconds, we don't show it
+            visible: (_messageBoxInstance.remaining_time_seconds==-1) || (_messageBoxInstance.remaining_time_seconds>1)
         }
     }
 }

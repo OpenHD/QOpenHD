@@ -929,8 +929,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_altitude
-                    onCheckedChanged: settings.show_altitude = checked
+                    checked: settings.altitude_ladder_show
+                    onCheckedChanged: settings.altitude_ladder_show = checked
                 }
             }
 
@@ -958,8 +958,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_speed
-                    onCheckedChanged: settings.show_speed = checked
+                    checked: settings.speed_ladder_show
+                    onCheckedChanged: settings.speed_ladder_show = checked
                 }
             }
 
@@ -1074,8 +1074,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_roll
-                    onCheckedChanged: settings.show_roll = checked
+                    checked: settings.bank_angle_indicator_widget_show
+                    onCheckedChanged: settings.bank_angle_indicator_widget_show = checked
                 }
             }
 
@@ -1266,7 +1266,7 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Show Vertical Speed")
+                    text: qsTr("Show Vertical Speed (minimal)")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -1284,8 +1284,36 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_vsi
-                    onCheckedChanged: settings.show_vsi = checked
+                    checked: settings.show_vertical_speed_simple_widget
+                    onCheckedChanged: settings.show_vertical_speed_simple_widget = checked
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Show Vertical Speed Gauge")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_vertical_speed_gauge_widget
+                    onCheckedChanged: settings.show_vertical_speed_gauge_widget = checked
                 }
             }
             Rectangle {
@@ -1443,7 +1471,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "Show live rate control widget"
-                m_long_description: "Trade range for bitrate at run time. Experimental, only usable when variable bitrate enabled & supported hardware"
+                m_long_description: "Trade range / stability for bitrate at run time. Requires hw support (rtl8812au)"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -1482,6 +1510,36 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_record_widget
                     onCheckedChanged: settings.show_record_widget = checked
+                }
+            }
+
+            SettingBaseElement{
+                m_short_description: "Show distance sensor widget"
+                m_long_description: "For UAVs with a distance sensor"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_distance_sensor_widget
+                    onCheckedChanged: settings.show_distance_sensor_widget = checked
+                }
+            }
+
+            SettingBaseElement{
+                m_short_description: "Show (GPS) time widget"
+                m_long_description: "For UAVs with GPS, shows the time as reported by the UAV"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_time_widget
+                    onCheckedChanged: settings.show_time_widget = checked
                 }
             }
         }

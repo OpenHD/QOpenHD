@@ -91,6 +91,11 @@ static std::vector<XParam> get_parameters_list(){
                "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, "
                "but increases packet collisions."
     );
+    append_int(ret,openhd::WB_PASSIVE_MODE,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable passive mode if you want to use your GCS as a passive listener to an existing openhd air-ground link. E.g. if you want to tune into"
+               "someone elses openhd link (if encryption is enabled, you need his encryption key) but not interfere with any RC/MAVLINK control."
+               );
 
     {
         // Measurements of @Marcel Essers:
@@ -155,6 +160,17 @@ static std::vector<XParam> get_parameters_list(){
     }
     {
         auto default_values=std::vector<ImprovedIntSetting::Item>{
+            {"DEFAULT",100},
+            {"90%",90},
+            {"80%",80},
+            {"70%",70},
+            };
+        append_int(ret,openhd::WB_VIDEO_RATE_FOR_MCS_ADJUSTMENT_PERC,
+                   ImprovedIntSetting(1,500,default_values),
+                   "Reduce used data rate per mcs index by fixed value (not needed in most cases)");
+    }
+    {
+        auto default_values=std::vector<ImprovedIntSetting::Item>{
                 {"10%",10},
                 {"20% (low interf)",20},
                 {"30%",30},
@@ -178,7 +194,9 @@ static std::vector<XParam> get_parameters_list(){
         );
     }
     append_int(ret,openhd::WB_MCS_INDEX,
-               ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"}),
+               ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4(not rec)","MCS5(not rec)","MCS6(not rec)","MCS7(not rec)",
+                                               "MCS8 (VHT0+2SS)", "MCS9 (VHT1+2SS)", "MCS10 (VHT2+2SS)", "MCS11 (VHT3+2SS)",
+                                               }),
                "!!!Editing this param manually without care will result in a broken link!!!"
     );
     append_int(ret,openhd::WB_MCS_INDEX_VIA_RC_CHANNEL,

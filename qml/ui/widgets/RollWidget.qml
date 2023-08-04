@@ -12,7 +12,7 @@ BaseWidget {
     width: 100
     height: 30
 
-    visible: settings.show_roll
+    visible: settings.bank_angle_indicator_widget_show
 
     widgetIdentifier: "roll_widget"
     bw_verbose_name: "BANK ANGLE INDICATOR"
@@ -51,8 +51,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.roll_invert
-                    onCheckedChanged: settings.roll_invert = checked
+                    checked: settings.bank_angle_indicator_widget_roll_invert
+                    onCheckedChanged: settings.bank_angle_indicator_widget_roll_invert = checked
                 }
             }
 
@@ -73,8 +73,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.roll_show_arc
-                    onCheckedChanged: settings.roll_show_arc = checked
+                    checked: settings.bank_angle_indicator_widget_show_arc
+                    onCheckedChanged: settings.bank_angle_indicator_widget_show_arc = checked
                 }
             }
 
@@ -95,8 +95,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.roll_show_numbers
-                    onCheckedChanged: settings.roll_show_numbers = checked
+                    checked: settings.bank_angle_indicator_widget_show_numbers
+                    onCheckedChanged: settings.bank_angle_indicator_widget_show_numbers = checked
                 }
             }
 
@@ -117,8 +117,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.roll_sky_pointer
-                    onCheckedChanged: settings.roll_sky_pointer = checked
+                    checked: settings.bank_angle_indicator_widget_sky_pointer
+                    onCheckedChanged: settings.bank_angle_indicator_widget_sky_pointer = checked
                 }
             }
         }
@@ -152,7 +152,7 @@ BaseWidget {
                     y: 0
                     layer.enabled: true
                     layer.samples: 4
-                    visible: settings.roll_show_arc
+                    visible: settings.bank_angle_indicator_widget_show_arc
 
                     ShapePath {
                         fillColor: "transparent"
@@ -186,7 +186,7 @@ BaseWidget {
 
                     Text {
                         color: settings.color_shape
-                        visible: settings.roll_show_numbers
+                        visible: settings.bank_angle_indicator_widget_show_numbers
                         text: "60"
                         anchors.bottom: right_60_roll_rect.top
                         anchors.bottomMargin: 2
@@ -219,7 +219,7 @@ BaseWidget {
 
                     Text {
                         color: settings.color_shape
-                        visible: settings.roll_show_numbers
+                        visible: settings.bank_angle_indicator_widget_show_numbers
                         text: "40"
                         anchors.bottom: right_40_roll_rect.top
                         anchors.bottomMargin: 2
@@ -252,7 +252,7 @@ BaseWidget {
 
                     Text {
                         color: settings.color_shape
-                        visible: settings.roll_show_numbers
+                        visible: settings.bank_angle_indicator_widget_show_numbers
                         text: "20"
                         anchors.bottom: right_20_roll_rect.top
                         anchors.bottomMargin: 2
@@ -314,7 +314,7 @@ BaseWidget {
 
                     Text {
                         color: settings.color_shape
-                        visible: settings.roll_show_numbers
+                        visible: settings.bank_angle_indicator_widget_show_numbers
                         text: "60"
                         anchors.bottom: left_60_roll_rect.top
                         anchors.bottomMargin: 2
@@ -347,7 +347,7 @@ BaseWidget {
 
                     Text {
                         color: settings.color_shape
-                        visible: settings.roll_show_numbers
+                        visible: settings.bank_angle_indicator_widget_show_numbers
                         text: "40"
                         anchors.bottom: left_40_roll_rect.top
                         anchors.bottomMargin: 2
@@ -380,7 +380,7 @@ BaseWidget {
 
                     Text {
                         color: settings.color_shape
-                        visible: settings.roll_show_numbers
+                        visible: settings.bank_angle_indicator_widget_show_numbers
                         text: "20"
                         anchors.bottom: left_20_roll_rect.top
                         anchors.bottomMargin: 2
@@ -402,7 +402,7 @@ BaseWidget {
                     origin.x: 100
                     origin.y: 150
                     Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                    angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1)
+                    angle: settings.bank_angle_indicator_widget_sky_pointer ? 0 : (settings.bank_angle_indicator_widget_roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1)
                 }
             }
 
@@ -439,7 +439,7 @@ BaseWidget {
                     origin.x: 100
                     origin.y: 150
                     Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                    angle: settings.roll_sky_pointer ? (settings.roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1) : 0
+                    angle: settings.bank_angle_indicator_widget_sky_pointer ? (settings.bank_angle_indicator_widget_roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1) : 0
                 }
             }
         }

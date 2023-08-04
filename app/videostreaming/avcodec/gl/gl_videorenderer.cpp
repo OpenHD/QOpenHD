@@ -4,6 +4,7 @@
 
 #include "gl_videorenderer.h"
 #include "../color_helper.h"
+#include <GL/gl.h>
 #include <chrono>
 
 static EGLint texgen_attrs[] = {
@@ -78,8 +79,11 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
   }*/
   const GLuint frame_width=frame->width;
   const GLuint frame_height=frame->height;
+  //const GLuint frame_width=frame->linesize[0];
+  //const GLuint frame_height=frame->linesize[1];
   // Both 420 and 422 have half width
   const GLuint uv_width= frame_width/2;
+  //const GLuint uv_width=frame->linesize[1];
   // 420 has half height, 422 has full height
   const GLuint uv_height=is_AV_PIX_FMT_YUV420P(frame->format) ? frame_height/2 : frame_height;
   //std::cerr<<"UV width x height"<<uv_width<<"x"<<uv_height<<"\n";
@@ -93,6 +97,11 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
 	  uv_height,
 	  uv_height
   };
+  // Better be safe than sorry with how annying QT can be
+  int gl_unpack_row_length_before=0;
+  glGetIntegerv(GL_UNPACK_ROW_LENGTH,&gl_unpack_row_length_before);
+  int gl_unpack_alignment_before=0;
+  glGetIntegerv(GL_UNPACK_ALIGNMENT,&gl_unpack_alignment_before);
   for(int i=0;i<3;i++){
 	if(yuv_420_p_sw_frame_texture.textures[i]==0){
 	  glGenTextures(1,&yuv_420_p_sw_frame_texture.textures[i]);
@@ -103,8 +112,11 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
 	glBindTexture(test_texture_target, yuv_420_p_sw_frame_texture.textures[i]);
 	glTexParameteri(test_texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(test_texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH,frame->linesize[i]);
 	glTexImage2D(test_texture_target, 0, GL_LUMINANCE, widths[i], heights[i], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
   }
+  glPixelStorei(GL_UNPACK_ROW_LENGTH,gl_unpack_row_length_before);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, gl_unpack_alignment_before);
   glBindTexture(GL_TEXTURE_2D,0);
   GL_shaders::checkGlError("upload YUV420P");
   yuv_420_p_sw_frame_texture.has_valid_image= true;
