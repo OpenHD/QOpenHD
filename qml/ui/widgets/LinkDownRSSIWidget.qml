@@ -415,6 +415,19 @@ BaseWidget {
                 styleColor: settings.color_glow
             }
             Text {
+                visible: settings.downlink_signal_quality_show
+                text: settings.downlink_signal_quality_show ? ("Pollution: "+_ohdSystemGround.wb_link_pollution+ "%") : ""
+                color:  settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            Text {
                 visible: settings.downlink_show_received_injected_packets ? true : false
                 text: "TX: " + Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
                 color: settings.color_text
