@@ -109,7 +109,8 @@ Settings {
 
     property bool show_downlink_rssi: true
     //Const10
-    property bool downlink_show_dbm_and_packets_per_card: false
+    property bool downlink_show_dbm_and_packets_per_card: true
+    property bool downlink_dbm_per_card_show_multiple_antennas:false
     property bool downlink_show_current_bitrate: false
     property bool downlink_cards_right: false
     property bool downlink_rssi_declutter: false
@@ -120,6 +121,7 @@ Settings {
     property int downlink_packet_loss_perc_warn : 20
     property bool downlink_dbm_warning: true
     property bool downlink_signal_quality_show: false
+    property bool downlink_pollution_show: true
 
     property bool show_uplink_rssi: true
     property bool uplink_rssi_declutter: false

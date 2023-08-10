@@ -65,7 +65,7 @@ int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
 }
 
 
-void SynchronizedSettings::change_param_air_and_ground(QString param_id,int value,bool allow_changing_without_connected_air_unit)
+void SynchronizedSettings::change_param_air_and_ground(QString param_id,int value,bool allow_changing_without_connected_air_unit,bool log_to_hud)
 {
     qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value<<" no-sync:"<<allow_changing_without_connected_air_unit;
 
@@ -94,7 +94,11 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
         }else{
             std::stringstream ss;
             ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-            WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),10);
+            if(log_to_hud){
+                HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+            }else{
+                WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),10);
+            }
             return;
         }
     }
@@ -111,7 +115,11 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     if(!allow_changing_without_connected_air_unit){
         std::stringstream ss;
         ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
-        WorkaroundMessageBox:: makePopupMessage(ss.str().c_str(),2);
+        if(log_to_hud){
+            HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+        }else{
+            WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),5);
+        }
     }
 }
 

@@ -96,7 +96,13 @@ static std::vector<XParam> get_parameters_list(){
                "Enable passive mode if you want to use your GCS as a passive listener to an existing openhd air-ground link. E.g. if you want to tune into"
                "someone elses openhd link (if encryption is enabled, you need his encryption key) but not interfere with any RC/MAVLINK control."
                );
-
+    append_int(ret,openhd::WB_VIDEO_ENCRYPTION_ENABLE,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable video encryption - by default, video is not encrypted (only validated) to save CPU performance (Telemetry is always encrypted though)."
+               "It is recommended to leave video encryption off unless you are using at least RPI 4 on air and are TOTALLY worried about someone listening to your video"
+               " - even with encryption disabled, it is not easy for an attacker to listen in on your openhd video "
+               "(and impossible to attack your video due to always on secure packet validation)."
+               );
     {
         // Measurements of @Marcel Essers:
         //19: 10-12 mW

@@ -93,8 +93,8 @@ public: // public for QT
     // similar for channel / channel width
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
-    // We show a watermark if passive mode is enabled
-    L_RO_PROP(bool,tx_passive_mode,set_tx_passive_mode,false)
+    // 0: can do tx and rx, 1=card can (probably) only do rx 2=passive / listen only mode actively enabled
+    L_RO_PROP(int,tx_operating_mode,set_tx_operating_mode,0)
     // wifibroadcast options
     L_RO_PROP(bool,wb_stbc_enabled,set_wb_stbc_enabled,false)
     L_RO_PROP(bool,wb_lpdc_enabled,set_wb_lpdc_enabled,false)

@@ -321,7 +321,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                             Button{
                                 text: "20Mhz"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_and_ground_channel_width(20)
+                                    _synchronizedSettings.change_param_air_and_ground_channel_width(20,true)
                                 }
                                 highlighted: m_curr_channel_width==20
                                 enabled: !m_is_armed
@@ -329,7 +329,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                             Button{
                                 text: "40Mhz"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_and_ground_channel_width(40)
+                                    _synchronizedSettings.change_param_air_and_ground_channel_width(40,true)
                                 }
                                 highlighted:  m_curr_channel_width==40
                                 enabled: !m_is_armed
