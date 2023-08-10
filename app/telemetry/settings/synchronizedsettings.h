@@ -42,7 +42,7 @@ public:
         return get_param_int_air_and_ground_value(PARAM_ID_WB_CHANNEL_WIDTH);
     }
 
-    void change_param_air_and_ground(QString param_id,int value,bool allow_changing_without_connected_air_unit);
+    void change_param_air_and_ground(QString param_id,int value,bool allow_changing_without_connected_air_unit,bool log_to_hud=false);
 
     Q_INVOKABLE void change_param_air_and_ground_frequency(int value){
         QSettings settings;
@@ -50,10 +50,10 @@ public:
         change_param_air_and_ground(PARAM_ID_WB_FREQ,value,qopenhd_allow_changing_ground_unit_frequency_no_sync);
     }
 
-    Q_INVOKABLE void change_param_air_and_ground_channel_width(int value){
+    Q_INVOKABLE void change_param_air_and_ground_channel_width(int value,bool log_to_hud=false){
         QSettings settings;
         const bool qopenhd_allow_changing_ground_unit_channel_width_no_sync = settings.value("qopenhd_allow_changing_ground_unit_channel_width_no_sync",false).toBool();
-        change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value,qopenhd_allow_changing_ground_unit_channel_width_no_sync);
+        change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value,qopenhd_allow_changing_ground_unit_channel_width_no_sync,log_to_hud);
     }
     // MCS index does not need to match - 2.3.3 and upwards uses the lowest mcs index possible for uplink, and
     // allows changing the MCS index of the downlink (e.g. the mcs index used for injecting packets on the air unit)

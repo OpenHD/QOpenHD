@@ -44,6 +44,14 @@ BaseWidget {
         return 0;
     }
 
+    function int_to_string_N_chars_wide(value,n_chars){
+        var ret=""+value;
+        for(var i=ret.length;i<n_chars;i++){
+            ret="0"+ret;
+        }
+        return ret;
+    }
+
     function warning_level_to_color(level){
         if(level===2)return settings.color_warn;
         if(level===1)return settings.color_caution;
@@ -55,8 +63,22 @@ BaseWidget {
         if(card_idx==1)card=_wifi_card_gnd1;
         if(card_idx==2)card=_wifi_card_gnd2;
         if(card_idx==3)card=_wifi_card_gnd3;
-        // use uint16_t looping to not pollute the UI too much
-        var ret="["+(card_idx+1)+"] " + card.n_received_packets + " " + card.curr_rx_rssi_dbm + " dBm"+" "+card.packet_loss_perc+"%"
+        // use rolling to not pollute the UI too much
+        var ret="["+(card_idx+1)+"] " + int_to_string_N_chars_wide(card.n_received_packets_rolling,4) + " ";
+        ret+=" "+ int_to_string_N_chars_wide(card.packet_loss_perc,2)+"% "
+        // Number(card.packet_loss_perc).toLocaleString( Qt.locale(), 'f', 0)
+        // dBm of card in general
+        ret += card.curr_rx_rssi_dbm + " dBm";
+        if(settings.downlink_dbm_per_card_show_multiple_antennas){
+             ret+=(card.curr_rx_rssi_dbm_antenna1+"/"+card.curr_rx_rssi_dbm_antenna2+" dBm");
+        }
+        /*var dbm_antenna2=card.curr_rx_rssi_dbm_antenna2;
+        var show_2_antenna_dbm_values=settings.downlink_dbm_per_card_show_multiple_antennas && dbm_antenna2>-127;
+        if(show_2_antenna_dbm_values){
+            ret+=(card.curr_rx_rssi_dbm_antenna1+"/"+dbm_antenna2+" dBm");
+        }else{
+            ret += card.curr_rx_rssi_dbm_antenna1 + " dBm";
+        }*/
         if(card.is_active_tx){
             ret +=" TX"
         }
@@ -97,7 +119,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Show dBm per card")
+                    text: qsTr("Show stats per card")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -112,6 +134,27 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.downlink_show_dbm_and_packets_per_card
                     onCheckedChanged: settings.downlink_show_dbm_and_packets_per_card = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("dBm of each ant/card")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_dbm_per_card_show_multiple_antennas
+                    onCheckedChanged: settings.downlink_dbm_per_card_show_multiple_antennas = checked
                 }
             }
 
@@ -196,7 +239,28 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("EXP-signal quality %")
+                    text: qsTr("Show pollution estimate %")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_pollution_show
+                    onCheckedChanged: settings.downlink_pollution_show = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show signal quality %")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -392,6 +456,19 @@ BaseWidget {
                 visible: true
                 text: "Loss: " + m_packet_loss_perc+"%"
                 color: warning_level_to_color(get_packet_loss_perc_warning_level())
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            Text {
+                visible: settings.downlink_pollution_show
+                text: settings.downlink_pollution_show? ("Pollution: "+_ohdSystemGround.wb_link_pollution+ "%") : ""
+                color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
                 font.family: settings.font_text

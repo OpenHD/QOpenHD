@@ -27,8 +27,16 @@ BaseWidget {
 
     widgetActionHeight: 164+50
 
-    // If openhd feature passive mode is enabled, show watermark instead
-    property bool m_passive_mode: _ohdSystemGround.tx_passive_mode
+
+    function get_text_loss(){
+        if(_ohdSystemGround.tx_operating_mode==1){
+            return "TX UNSUPPORTED";
+        }
+        if(_ohdSystemGround.tx_operating_mode==2){
+            return "LISTEN ONLY";
+        }
+        return ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+    }
 
     function get_text_dbm(){
         var dbm=_ohdSystemAir.current_rx_rssi;
@@ -202,7 +210,7 @@ BaseWidget {
             spacing:0
             Text {
                 visible: true
-                text: m_passive_mode ? "LISTEN ONLY" : ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+                text: get_text_loss()
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -213,7 +221,8 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
-            Text {
+            // Quality and pollution on the uplink are not usable due to not enough packets in most cases
+            /*Text {
                 visible: settings.downlink_signal_quality_show
                 text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemAir.current_rx_signal_quality+ "%") : ""
                 color:  settings.color_text
@@ -225,7 +234,20 @@ BaseWidget {
                 elide: Text.ElideRight
                 style: Text.Outline
                 styleColor: settings.color_glow
-            }
+            }*/
+            /*Text {
+                visible: settings.downlink_pollution_show
+                text: settings.downlink_pollution_show ? ("Pollution: "+_ohdSystemAir.wb_link_pollution+ "%") : ""
+                color:  settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }*/
         }
     }
 }

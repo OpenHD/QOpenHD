@@ -225,7 +225,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         }
         auto& card=WiFiCard::instance_air();
         card.process_mavlink(msg);
-        set_current_rx_rssi(msg.rx_rssi_1);
+        set_current_rx_rssi(card.curr_rx_rssi_dbm());
     }else{
         if(msg.card_index<0 || msg.card_index>=4){
             qDebug()<<"Gnd invalid card index"<<msg.card_index;
@@ -255,7 +255,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
         if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
             WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
         }
-        set_tx_passive_mode(msg.tx_passive_mode_is_enabled==1);
+        set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
     }
     const int new_mcs_index=msg.curr_tx_mcs_index;
     if(m_is_air){
@@ -321,6 +321,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     }else{
         set_dbm_too_low_warning(0);
     }
+    set_wb_link_pollution(msg.dummy0);
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
@@ -404,24 +405,19 @@ void AOHDSystem::process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_perf
 
 void AOHDSystem::update_alive()
 {
-    if(m_last_heartbeat_ms==-1){
+    // On the air unit, we consider it alive if "any" message has come in, not only the mavlink heartbeat
+    const int32_t last_heartbeat_or_message = m_is_air ? m_last_message_ms : m_last_heartbeat_ms;
+    if(last_heartbeat_or_message==-1){
         set_is_alive(false);
     }else{
-        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat_ms;
-        // after 3 seconds, consider as "not alive"
-        const bool alive=elapsed_since_last_heartbeat< 4*1000;
+        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-last_heartbeat_or_message;
+        // after X seconds, consider as "not alive"
+        const bool alive=elapsed_since_last_heartbeat< 3*1000;
         if(alive != m_is_alive){
             // message when state changes
             send_message_hud_connection(alive);
             //
             set_is_alive(alive);
-        }
-    }
-    {
-        // If we don't get any bitrate updates, after 5 seconds go back to default
-        const auto delta=std::chrono::steady_clock::now()-m_last_message_openhd_stats_total_all_wifibroadcast_streams;
-        if(delta>std::chrono::seconds(5)){
-            //TODO clear curr values
         }
     }
 }

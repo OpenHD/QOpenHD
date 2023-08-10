@@ -31,26 +31,42 @@ BaseWidget {
 
     property double m_vertical_speed_m_per_second: _fcMavlinkSystem.vertical_speed_indicator_mps
 
-    function get_text_vertical_speed(){
+    function get_v_speed_number(){
         var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
+        if(settings.enable_imperial){
+            // feet per second
+            return vertical_speed_m_per_second*3.28084;
+        }
+        return vertical_speed_m_per_second;
+    }
+
+    function get_v_speed_unit(){
+        if(settings.enable_imperial){
+            return " ft/s";
+        }
+        return " m/s";
+    }
+
+    function get_text_vertical_speed(){
+        var vert_speed = get_v_speed_number()
         if(settings.vertical_speed_simple_widget_show_up_down_arrow){
-            // remove the unit
-            if(vertical_speed_m_per_second<0){
-                vertical_speed_m_per_second*=-1;
+            // remove the "-" since we show a icon instead
+            if(vert_speed<0){
+                vert_speed*=-1;
             }
         }
-        var vs_as_str=Number(vertical_speed_m_per_second).toLocaleString(Qt.locale(), 'f', 1);
-        if(settings.vertical_speed_simple_widget_show_unit){
-            vs_as_str+=" m/s";
+        var ret=Number(vert_speed).toLocaleString( Qt.locale(), 'f', 0)
+        if(settings.vertical_speed_simple_widget_show_unit && vert_speed <99){
+            ret+=get_v_speed_unit();
         }
-        return vs_as_str;
+        return ret;
     }
 
     function get_text_icon_vertical_speed(){
-        var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
-        if(vertical_speed_m_per_second>0.0){
+        var vert_speed=get_v_speed_number()
+        if(vert_speed>0.0){
             return "\uf062";
-        }else if(vertical_speed_m_per_second<0.0){
+        }else if(vert_speed<0.0){
             return "\uf063";
         }
         return "";

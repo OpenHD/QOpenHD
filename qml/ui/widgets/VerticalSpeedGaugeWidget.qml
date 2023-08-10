@@ -25,7 +25,12 @@ BaseWidget {
     widgetIdentifier: "vertical_speed_gauge_widget"
     bw_verbose_name: "VERTICAL SPEED (CLIMB)"
 
-    property double m_vertical_speed_m_per_second: _fcMavlinkSystem.vertical_speed_indicator_mps
+    function get_vertical_speed_m_s_or_ft_s(){
+        if(settings.enable_imperial){
+            return _fcMavlinkSystem.vertical_speed_indicator_mps*3.28084; // ft /s
+        }
+        return _fcMavlinkSystem.vertical_speed_indicator_mps; // m/s
+    }
 
 
     hasWidgetDetail: true
@@ -140,7 +145,7 @@ BaseWidget {
                 maximumValue: settings.vertical_speed_gauge_widget_max
 
                 Behavior on value {NumberAnimation { duration: settings.smoothing }}
-                value: m_vertical_speed_m_per_second
+                value: get_vertical_speed_m_s_or_ft_s()
 
                 style: CircularGaugeStyle {
                     labelInset: outerRadius * -.3

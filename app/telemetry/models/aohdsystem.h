@@ -93,8 +93,8 @@ public: // public for QT
     // similar for channel / channel width
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
-    // We show a watermark if passive mode is enabled
-    L_RO_PROP(bool,tx_passive_mode,set_tx_passive_mode,false)
+    // 0: can do tx and rx, 1=card can (probably) only do rx 2=passive / listen only mode actively enabled
+    L_RO_PROP(int,tx_operating_mode,set_tx_operating_mode,0)
     // wifibroadcast options
     L_RO_PROP(bool,wb_stbc_enabled,set_wb_stbc_enabled,false)
     L_RO_PROP(bool,wb_lpdc_enabled,set_wb_lpdc_enabled,false)
@@ -108,6 +108,8 @@ public: // public for QT
     L_RO_PROP(int,n_openhd_cameras,set_n_openhd_cameras,-1)
     // 0==no warning, 1== orange 2==red
     L_RO_PROP(int,dbm_too_low_warning,set_dbm_too_low_warning,0)
+    //
+    L_RO_PROP(int,wb_link_pollution,set_wb_link_pollution,-1)
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{

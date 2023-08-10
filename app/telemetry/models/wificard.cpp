@@ -35,7 +35,10 @@ WiFiCard &WiFiCard::instance_air()
 void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg)
 {
     set_alive(true);
-    set_curr_rx_rssi_dbm(msg.rx_rssi_1);
+    set_curr_rx_rssi_dbm(msg.dummy0);
+    set_curr_rx_rssi_dbm_antenna1(msg.rx_rssi_1);
+    set_curr_rx_rssi_dbm_antenna2(msg.rx_rssi_2);
+
     set_n_received_packets(msg.count_p_received);
     set_packet_loss_perc(msg.curr_rx_packet_loss_perc);
     if(m_tx_power >0 && m_tx_power!=msg.tx_power){
@@ -64,6 +67,18 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
             HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
         }
     }
+    // Packets received in the last 1 second on this card
+    const auto diff=std::chrono::steady_clock::now()-m_last_packets_in_X_second_recalculation;
+    if(m_last_packets_in_X_second_value<=-1){
+        m_last_packets_in_X_second_value=msg.count_p_received;
+    }else{
+        if(diff>=std::chrono::seconds(1)){
+            const int64_t delta=msg.count_p_received-m_last_packets_in_X_second_value;
+            set_n_received_packets_rolling(delta);
+            m_last_packets_in_X_second_value=msg.count_p_received;
+            m_last_packets_in_X_second_recalculation=std::chrono::steady_clock::now();
+        }
+    }
 }
 
 int WiFiCard::helper_get_gnd_curr_best_rssi()
@@ -71,8 +86,9 @@ int WiFiCard::helper_get_gnd_curr_best_rssi()
     int best_rssi=-127;
     for(int i=0;i<4;i++){
         auto& card=instance_gnd(i);
-        if(card.alive() && card.m_curr_rx_rssi_dbm>best_rssi){
-            best_rssi=card.m_curr_rx_rssi_dbm;
+        const auto card_rssi=card.m_curr_rx_rssi_dbm;
+        if(card.alive() && card_rssi>best_rssi){
+            best_rssi=card_rssi;
         }
     }
     return best_rssi;
