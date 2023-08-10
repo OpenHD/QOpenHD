@@ -2,9 +2,9 @@ name: build_package_rpi
 
 on:
   push:
-    branches: [ "2.4-evo" ]
+    branches: [ "2.5-evo" ]
   pull_request:
-    branches: [ "2.4-evo" ]
+    branches: [ "2.5-evo" ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
