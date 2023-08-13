@@ -31,10 +31,13 @@ Item {
             text: qsTr("USB Tether")
         }
         TabButton {
-            text: qsTr("Ethernet (USB Eth) passive")
+            text: qsTr("(USB) Ethernet passive")
         }
         TabButton {
-            text: qsTr("Ethernet (USB Eth) active")
+            text: qsTr("(USB) Ethernet active")
+        }
+        TabButton {
+            text: qsTr("WiFi")
         }
     }
 
@@ -91,8 +94,8 @@ Requires a phone and cellular contract that allows USB tethering."
                 width:parent.width
                 height: 600
                 wrapMode: Text.WordWrap
-                text: "1) Make sure ETH_HOTSPOT_E is disabled\n
-2) Enable ETH_PASSIVE_F on your openhd ground unit\n
+                text: "1) Make sure ETH_HOTSPOT_E is disabled (Ground param)\n
+2) Enable ETH_PASSIVE_F on your openhd ground unit (Ground param)\n
 3) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n
 4) Make sure to select 'share my internet with ...' when the android connection setup pops up\n
 Video and telemetry forwarding should start automatically, and your GCS can get internet from your phone."
@@ -106,11 +109,71 @@ Video and telemetry forwarding should start automatically, and your GCS can get 
                 height: 600
                 wrapMode: Text.WordWrap
                 text: "
-1) Make sure ETH_PASSIVE_F is disabled\n
-2) Enable ETH_HOTSPOT_E on your openhd ground unit\n
+1) Make sure ETH_PASSIVE_F is disabled (Ground param)\n
+2) Enable ETH_HOTSPOT_E on your openhd ground unit (Ground param)\n
 3) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n
 You might have to disable wifi and cellular on your phone !.\n
 Video and telemetry forwarding should start automatically."
+            }
+        }
+        Pane {
+            width: parent.width
+            height: parent.height
+            /*Flickable {
+                width: parent.width;
+                height: parent.height
+                contentWidth: 1280;
+                contentHeight: 720
+
+                Rectangle{
+                    color: "green"
+                    width: 1280
+                    height: 720
+
+                    ColumnLayout{
+                        width:parent.width
+                        height:parent.height
+
+                        Text{
+                            width:parent.width
+                            height: 400
+                            wrapMode: Text.WordWrap
+                            text: "
+            1) Make sure WIFI_HOTSPOT_E is enabled (on air or ground unit)\n
+            2) Connect to openhd pw openhdopenhd\n
+            3) Press button.
+            NOTE: You cannot use WIFI hotspot during flight (while armed)"
+                        }
+                        Button{
+                            text: "Connect Air/Ground Hotspot"
+                            onClicked: _mavlinkTelemetry.add_tcp_connection_handler()
+                        }
+                        Button{
+                            text: "Connect Ground Hotspot"
+                        }
+                    }
+
+                }
+            }*/
+            ColumnLayout{
+                Layout.fillWidth: true
+                Layout.minimumHeight: 30
+                spacing: 6
+                Text{
+                    width:parent.width
+                    height: 400
+                    wrapMode: Text.WordWrap
+                    text: "
+1) Make sure WIFI_HOTSPOT_E is enabled (on air or ground unit)\n
+2) Connect to wifi 'openhd' pw 'openhdopenhd'\n
+3) Press button.
+NOTE: You cannot use WIFI hotspot during flight (while armed)
+NOTE: There is no video streaming over wifi hotspot, only telemetry."
+                }
+                Button{
+                    text: "Connect Air/Ground Hotspot"
+                    onClicked: _mavlinkTelemetry.add_tcp_connection_handler()
+                }
             }
         }
     }

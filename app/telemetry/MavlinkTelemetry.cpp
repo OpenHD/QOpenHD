@@ -51,11 +51,11 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
     QSettings settings;
     dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
     if(dev_use_tcp){
-        dev_tcp_server_ip=settings.value("dev_mavlink_tcp_ip","0.0.0.0").toString().toStdString();
+        /*dev_tcp_server_ip=settings.value("dev_mavlink_tcp_ip","0.0.0.0").toString().toStdString();
         if(!OHDUtil::is_valid_ip(dev_tcp_server_ip)){
             qWarning("%s not a valid ip, using default",dev_tcp_server_ip.c_str());
             dev_tcp_server_ip = "0.0.0.0";
-        }
+        }*/
         //dev_tcp_server_ip = "0.0.0.0";
         // We try connecting until success
         m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
@@ -274,9 +274,16 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
 
 void MavlinkTelemetry::tcp_only_establish_connection()
 {
-    assert(dev_use_tcp);
+    //assert(dev_use_tcp);
     qDebug()<<"tcp_only_establish_connection";
     while(true){
+        QSettings settings;
+        auto dev_tcp_server_ip=settings.value("dev_mavlink_tcp_ip","0.0.0.0").toString().toStdString();
+        if(!OHDUtil::is_valid_ip(dev_tcp_server_ip)){
+            qWarning("%s not a valid ip, using default",dev_tcp_server_ip.c_str());
+            dev_tcp_server_ip = "0.0.0.0";
+        }
+        //dev_tcp_server_ip = "0.0.0.0";
         {
             std::stringstream ss;
             ss<<"TCP try connecting to ["<<dev_tcp_server_ip<<"]:"<<OHD_GROUND_SERVER_TCP_PORT;
@@ -294,6 +301,18 @@ void MavlinkTelemetry::tcp_only_establish_connection()
         // wait a bit before trying again
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
+}
+
+void MavlinkTelemetry::add_tcp_connection_handler()
+{
+    QSettings settings;
+    //settings.setValue("dev_mavlink_via_tcp",true);
+    settings.setValue("dev_mavlink_tcp_ip","192.168.3.1");
+    if(m_tcp_connect_thread!=nullptr){
+        // already enabled
+        return;
+    }
+    m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
 }
 
 void MavlinkTelemetry::ping_all_systems()

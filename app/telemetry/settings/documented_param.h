@@ -262,8 +262,8 @@ static std::vector<XParam> get_parameters_list(){
             auto cam_config_items=std::vector<std::string>{
                     "Legacy(MMAL)",
                     "IMX462 Low Light Mini",
-                    "SkyMaster HDR",
-                    "SkyVision Pro",
+                    "SkyMaster HDR (708)",
+                    "SkyVision Pro (519)",
                     "LIBCAMERA_IMX477M",
                     "LIBCAMERA_IMX477",
                     "LIBCAMERA_IMX462",

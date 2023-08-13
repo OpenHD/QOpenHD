@@ -51,7 +51,7 @@ private:
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
     // change requires restart, udp is used by default (not tcp)
     bool dev_use_tcp=false;
-    std::string dev_tcp_server_ip="0.0.0.0";
+    //std::string dev_tcp_server_ip="0.0.0.0";
     // workaround systems discovery is not thread safe
     std::mutex systems_mutex;
     int mavsdk_already_known_systems=0;
@@ -102,6 +102,8 @@ private:
     void process_check_for_data_rates(const mavlink_message_t &msg);
 public:
     Q_INVOKABLE void re_apply_rates();
+public:
+    Q_INVOKABLE void add_tcp_connection_handler();
 };
 
 #endif // OHDMAVLINKCONNECTION_H

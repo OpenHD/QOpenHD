@@ -326,6 +326,8 @@ void QOpenHD::sysctl_openhd(int task)
     // not supported
 }
 
+
+
 void QOpenHD::keep_screen_on(bool on)
 {
 #if defined(__android__)
