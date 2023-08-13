@@ -624,6 +624,8 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 0
 
+        // default index
+        currentIndex: _qopenhd.is_android() ? 0 : 1
 
         ConnectPanel{
             id: connectPanel
