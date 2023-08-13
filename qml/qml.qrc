@@ -5,7 +5,6 @@
         <file>resources/cursors/arrow_512_transparent.png</file>
         <file>resources/cursors/arrow_512_white.png</file>
         <file>resources/cursors/hand_white.png</file>
-        <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
     </qresource>
     <qresource lang="de" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>

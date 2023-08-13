@@ -36,6 +36,9 @@ Item {
         TabButton {
             text: qsTr("Ethernet (USB Eth) active")
         }
+        TabButton {
+            text: qsTr("WiFi")
+        }
     }
 
     // placed right below the top bar
@@ -111,6 +114,46 @@ Video and telemetry forwarding should start automatically, and your GCS can get 
 3) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n
 You might have to disable wifi and cellular on your phone !.\n
 Video and telemetry forwarding should start automatically."
+            }
+        }
+        Pane {
+            width: parent.width
+            height: parent.height
+            Flickable {
+                width: parent.width;
+                height: parent.height
+                contentWidth: 1280;
+                contentHeight: 720
+
+                Rectangle{
+                    color: "green"
+                    width: 1280
+                    height: 720
+
+                    ColumnLayout{
+                        width:parent.width
+                        height:parent.height
+
+                        Text{
+                            width:parent.width
+                            height: 400
+                            wrapMode: Text.WordWrap
+                            text: "
+            1) Make sure WIFI_HOTSPOT_E is enabled (on air or ground unit)\n
+            2) Connect to openhd pw openhdopenhd\n
+            3) Press button.
+            NOTE: You cannot use WIFI hotspot during flight (while armed)"
+                        }
+                        Button{
+                            text: "Connect Air/Ground Hotspot"
+                            onClicked: _mavlinkTelemetry.add_tcp_connection_handler()
+                        }
+                        /*Button{
+                            text: "Connect Ground Hotspot"
+                        }*/
+                    }
+
+                }
             }
         }
     }

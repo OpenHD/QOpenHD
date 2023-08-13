@@ -108,10 +108,14 @@ void LogMessagesModel::removeData(int row)
 
 void LogMessagesModel::addData(LogMessageData logMessageData)
 {
-    // hacky temporary
+    // A few important log(s) we show in the HUD
     if(logMessageData.message.contains("Scanning ")){
         HUDLogMessagesModel::instance().add_message_info(logMessageData.message);
     }else if(logMessageData.message.contains("Cannot scan ")){
+        HUDLogMessagesModel::instance().add_message_warning(logMessageData.message);
+    }else if(logMessageData.message.contains("TX (likely) not supported by card(s)")){
+        //HUDLogMessagesModel::instance().add_message_warning(logMessageData.message);
+    }else if(logMessageData.message.contains("Bind phrase mismatch")){
         HUDLogMessagesModel::instance().add_message_warning(logMessageData.message);
     }
     //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
