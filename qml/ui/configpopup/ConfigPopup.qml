@@ -113,6 +113,57 @@ Rectangle {
             width: parent.width
             anchors.top: parent.top
 
+            // We only need the connect panel on android (external device)
+            // On localhost, QOpenHD "automatically" connects due to udp localhost method
+            Item {
+                height: left_sidebar_elements_height
+                width: parent.width
+                // only show on android to not confuse users
+                visible: _qopenhd.is_android() || true
+                Button{
+                    id: connectB
+                    height: parent.height
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Text {
+                        id: connectIcon
+                        text: "\uf6ff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 18
+                        height: parent.height
+                        width: 24
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        color: "#dde4ed"
+                    }
+
+                    Text {
+                        id: connectBX
+                        text: qsTr("Connect")
+                        height: parent.height
+                        anchors.left: connectIcon.right
+                        anchors.leftMargin: 6
+                        font.pixelSize: 15
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                    }
+                    background: Rectangle {
+                        opacity: .5
+                        radius: 5
+                        //later this can be changed to focus
+                        color: connectB.hovered ? "grey" : "transparent" // I update background color by this
+                    }
+                    onClicked: {
+                        mainStackLayout.currentIndex = 0
+                    }
+                }
+            }
+
             // QOpenHD Settings - AppSettingsPanel
             Item {
                 height: left_sidebar_elements_height
@@ -156,7 +207,7 @@ Rectangle {
                         color: appSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 0
+                        mainStackLayout.currentIndex = 1
                     }
                 }
             }
@@ -203,7 +254,7 @@ Rectangle {
                         color: openhdSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 1
+                        mainStackLayout.currentIndex = 2
                     }
                 }
             }
@@ -252,7 +303,7 @@ Rectangle {
                         color: logBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 2
+                        mainStackLayout.currentIndex = 3
                     }
                 }
             }
@@ -300,7 +351,7 @@ Rectangle {
                         color: powerSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 3
+                        mainStackLayout.currentIndex = 4
                     }
                 }
             }
@@ -348,7 +399,7 @@ Rectangle {
                         color: aboutBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 4
+                        mainStackLayout.currentIndex = 5
                         if (eeInt > 8){
                             eeItem.visible = true
                             eeInt = 0
@@ -403,7 +454,7 @@ Rectangle {
                         color: rcSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 5
+                        mainStackLayout.currentIndex = 6
                     }
                 }
             }
@@ -502,60 +553,11 @@ Rectangle {
                         color: devStatsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 6
-                    }
-                }
-            }
-
-            // connect (on android)
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                // only show on android to not confuse users
-                visible: _qopenhd.is_android() || true
-                Button{
-                    id: connectB
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: connectIcon
-                        text: "\uf6ff"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: connectBX
-                        text: qsTr("Connect")
-                        height: parent.height
-                        anchors.left: connectIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: connectB.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
                         mainStackLayout.currentIndex = 7
                     }
                 }
             }
+
 
             Item {
                 id: eeItem
@@ -623,6 +625,10 @@ Rectangle {
         anchors.topMargin: 0
 
 
+        ConnectPanel{
+            id: connectPanel
+        }
+
         AppSettingsPanel {
             id: appSettingsPanel
         }
@@ -649,10 +655,6 @@ Rectangle {
 
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
-        }
-
-        ConnectPanel{
-            id: connectPanel
         }
 
         EasterEggPanel {
