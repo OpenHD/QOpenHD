@@ -150,7 +150,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -198,7 +198,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -245,7 +245,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -294,7 +294,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -342,7 +342,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -390,7 +390,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -445,7 +445,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -544,7 +544,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
