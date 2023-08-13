@@ -119,7 +119,7 @@ Rectangle {
                 height: left_sidebar_elements_height
                 width: parent.width
                 // only show on android to not confuse users
-                visible: _qopenhd.is_android() || true
+                visible: _qopenhd.is_android()
                 Button{
                     id: connectB
                     height: parent.height
