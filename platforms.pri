@@ -33,7 +33,7 @@ linux {
             DEFINES += __androidarm64__
         }
     } else {
-        error("Compiler/platform not supported")
+        error("Compiler/platform not supported $$basename(QMAKESPEC)")
     }
 }
 
