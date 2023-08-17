@@ -58,6 +58,7 @@ Rectangle {
           currentIndex: selectItemInStackLayoutBar.currentIndex
 
           MavlinkExtraWBParamPanel{
+          //WBFrequencyPanel{
               id: xX_WBLinkSettings
           }
         //   MavlinkSetupPiCameraPanel{

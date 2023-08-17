@@ -63,6 +63,16 @@ private:
         }
         return false;
     }
+
+    static mavlink_command_long_t create_cmd_request_message(int target_system,int target_component,int message_type){
+        mavlink_command_long_t command{};
+        command.target_system=target_system;
+        command.target_component=target_component;
+        command.command=MAV_CMD_REQUEST_MESSAGE;
+        command.confirmation=0;
+        command.param1=static_cast<float>(message_type);
+        return command;
+    }
 };
 
 #endif // REQUESTMESSAGEHELPER_H

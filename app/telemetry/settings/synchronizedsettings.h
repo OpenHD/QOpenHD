@@ -21,6 +21,17 @@ public:
 
     static SynchronizedSettings& instance();
 
+    // FLOW: Invalid until first message announcing channel frequency and width is received from the ground
+    // When we receive this type of message from the ground, we start requesting the supported frequencies from the ground unit
+    // (until successfully requested)
+    // Then we know the current frequency, channel width and which channels the ground is capable of -
+    // and are ready to populate the choices for the user.
+    // Whenever we want to change one of those params, we first try changing it on the air unit
+    // (Air unit will reject if it is not capable of the given frequency)
+    // and on success, we change the ground unit frequency. Since one can only select frequencies the ground unit supports,
+    // this should nevver fail.
+
+
     // These are also in aohdsystem, their usage (and correct setting of them) is required here, too
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
@@ -28,12 +39,13 @@ public:
     // Set to true once the channels from the ground have been succesfully fetched
     L_RO_PROP(bool,has_fetched_channels,set_has_fetched_channels,false);
 public:
+    void process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t& msg);
+public:
     Q_INVOKABLE void fetch_channels_if_needed();
-
-    Q_INVOKABLE void xx_tmp();
 public:
     void validate_and_set_channel_mhz(int channel);
     void validate_and_set_channel_width_mhz(int channel_width_mhz);
+    void after_channel_freq_or_channel_width_check_ready();
 
     static constexpr auto PARAM_ID_WB_FREQ=openhd::WB_FREQUENCY;
     static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;
@@ -64,14 +76,15 @@ public:
     }
 
     //
-    Q_INVOKABLE int get_next_frequency_item(int index);
-    Q_INVOKABLE QString get_next_frequency_item_description();
+    Q_INVOKABLE int get_next_supported_frequency(int index);
+    Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
 private:
     std::unique_ptr<RequestMessageHelper> m_request_message_helper;
     std::vector<uint16_t> m_supported_channels;
     void update_channels_on_success();
+    bool m_valid_channel_channel_width_once=false;
 };
 
 #endif // SynchronizedSettings_H

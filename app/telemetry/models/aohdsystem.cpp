@@ -181,6 +181,13 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              }
              return true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_SUPPORTED_CHANNELS:{
+            mavlink_openhd_wifbroadcast_supported_channels_t parsedMsg;
+            mavlink_msg_openhd_wifbroadcast_supported_channels_decode(&msg,&parsedMsg);
+            if(!m_is_air){
+                SynchronizedSettings::instance().process_message_openhd_wifibroadcast_supported_channels(parsedMsg);
+            }
+        }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
             mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);

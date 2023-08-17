@@ -40,9 +40,7 @@ public:
     // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
     std::optional<uint8_t> get_fc_sys_id();
     // Set the mavlink system reference, once discovered.
-    // If we can get a telemetry value (e.g. the altitude) by subscribing to a mavlink message this is preferred over
-    // manually parsing the message, and we register the callbacks to mavsdk when this is called (since we need the "system"
-    // reference for it)
+    // NOTE: We only use the system to get broadcast message(s) (pass_through) and a few more things
     void set_system(std::shared_ptr<mavsdk::System> system);
 public: // Stuff needs to be public for qt
     // These members can be written & read from c++, but are only readable from qml (which is a common recommendation for QT application(s)).
