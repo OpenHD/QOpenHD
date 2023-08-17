@@ -162,6 +162,10 @@ public:
     Q_INVOKABLE bool set_param_keyframe_interval(int keyframe_interval);
     Q_INVOKABLE bool set_param_fec_percentage(int percent);
     Q_INVOKABLE bool set_param_video_resolution_framerate(QString res_str);
+    // MCS index does not need to match - 2.3.3 and upwards uses the lowest mcs index possible for uplink, and
+    // allows changing the MCS index of the downlink (e.g. the mcs index used for injecting packets on the air unit)
+    // @param use_hud: when true, errors are logged to the HUD, otherwise, they are logged via a message popup
+    Q_INVOKABLE bool set_param_air_only_mcs(int value);
 
 private:
     QString get_short_description(QString param_id)const;

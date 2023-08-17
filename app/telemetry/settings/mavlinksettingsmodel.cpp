@@ -624,6 +624,22 @@ bool MavlinkSettingsModel::set_param_video_resolution_framerate(QString res_str)
     return false;
 }
 
+bool MavlinkSettingsModel::set_param_air_only_mcs(int value)
+{
+    /*{
+        const auto var_bitrate_enabled=MavlinkSettingsModel::instanceAir().try_get_param_int_impl("VARIABLE_BITRATE");
+        if(var_bitrate_enabled.has_value() && var_bitrate_enabled!=((int)true)){
+            const auto message="Variable bitrate is OFF !";
+            HUDLogMessagesModel::instance().add_message_warning(message);
+            LogMessagesModel::instanceOHD().add_message_warn("MCS",message);
+            return false;
+        }
+    }*/
+    const auto ret=try_update_parameter_int(openhd::WB_MCS_INDEX,value);
+    if(ret=="")return true;
+    return false;
+}
+
 QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     auto tmp=find_param(param_id.toStdString());

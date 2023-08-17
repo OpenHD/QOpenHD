@@ -13,7 +13,7 @@
 SynchronizedSettings::SynchronizedSettings(QObject *parent)
     : QObject{parent}
 {
-
+    m_request_message_helper=std::make_unique<RequestMessageHelper>();
 }
 
 SynchronizedSettings& SynchronizedSettings::instance()
@@ -21,6 +21,47 @@ SynchronizedSettings& SynchronizedSettings::instance()
     static SynchronizedSettings tmp;
     return tmp;
 }
+
+void SynchronizedSettings::fetch_channels_if_needed()
+{
+    if(m_has_fetched_channels){
+        qDebug()<<"Already fetched";
+        return;
+    }
+    m_request_message_helper->request_message(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_SUPPORTED_CHANNELS);
+    QTimer::singleShot(1000, this, &SynchronizedSettings::update_channels_on_success);
+    QTimer::singleShot(2000, this, &SynchronizedSettings::update_channels_on_success);
+}
+
+
+void SynchronizedSettings::xx_tmp()
+{
+    set_has_fetched_channels(true);
+}
+
+void SynchronizedSettings::update_channels_on_success()
+{
+    const auto channel_message_opt=m_request_message_helper->get_last_requested_message();
+    if(!channel_message_opt.has_value()){
+        return;
+    }
+    if(m_has_fetched_channels){
+        return;
+    }
+    const auto channel_message=channel_message_opt.value();
+    mavlink_openhd_wifbroadcast_supported_channels_t tmp{};
+    mavlink_msg_openhd_wifbroadcast_supported_channels_decode(&channel_message,&tmp);
+    m_supported_channels.resize(0);
+    for(int i=0;i<60;i++){
+        if(tmp.channels[i]!=0){
+            m_supported_channels.push_back(tmp.channels[i]);
+        }
+    }
+    if(!m_supported_channels.empty()){
+        set_has_fetched_channels(true);
+    }
+}
+
 
 void SynchronizedSettings::validate_and_set_channel_mhz(int channel_mhz)
 {
@@ -123,44 +164,15 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     }
 }
 
-void SynchronizedSettings::change_param_air_only_mcs(int value,bool use_hud)
+int SynchronizedSettings::get_next_frequency_item(int index)
 {
-    const bool air_alive=AOHDSystem::instanceAir().is_alive();
-    if(!air_alive){
-        log_result_message("Precondition: Air running and alive not given. Change not possible.",use_hud);
-        return;
-    }
-    {
-        const auto var_bitrate_enabled=MavlinkSettingsModel::instanceAir().try_get_param_int_impl("VARIABLE_BITRATE");
-        if(var_bitrate_enabled.has_value() && var_bitrate_enabled!=((int)true)){
-            const auto message="Variable bitrate is OFF !";
-            HUDLogMessagesModel::instance().add_message_warning(message);
-            LogMessagesModel::instanceOHD().add_message_warn("MCS",message);
-        }
-    }
-    const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
-    const QString param_id=PARAM_ID_WB_MCS_INDEX;
-    const auto air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
-    if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
-        std::stringstream ss;
-        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-        log_result_message(ss.str(),use_hud);
-        return;
-    }
-    std::stringstream ss;
-    ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value;
-    log_result_message(ss.str(),use_hud);
+    if(index<10)return index+1;
+    return -1;
 }
 
-int SynchronizedSettings::get_param_int_air_only_mcs()
+QString SynchronizedSettings::get_next_frequency_item_description()
 {
-    const QString param_id=PARAM_ID_WB_MCS_INDEX;
-    const auto value_air_opt=MavlinkSettingsModel::instanceAir().try_get_param_int_impl(param_id);
-    if(!value_air_opt.has_value()){
-        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from air");
-        return -1;
-    }
-    return value_air_opt.value();
+    return "TODO";
 }
 
 void SynchronizedSettings::log_result_message(const std::string &result_message, bool use_hud)

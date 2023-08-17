@@ -129,18 +129,24 @@ BaseWidget {
     function set_keyframe_interval(interval){
         var success=_airCameraSettingsModel.set_param_keyframe_interval(interval)
         if(success!==true){
-             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam1 keyframe interval")
+            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam1 keyframe interval")
             return;
         }
         if(settings.dev_qopenhd_n_cameras==2){
             _airCameraSettingsModel2.set_param_keyframe_interval(interval)
-             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam2 keyframe interval")
+            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam2 keyframe interval")
         }
     }
     function set_fec_percentage(percentage){
         var success=_airPiSettingsModel.set_param_fec_percentage(percentage)
         if(success!==true){
-             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set fec percentage")
+            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set fec percentage")
+        }
+    }
+    function set_air_only_mcs(mcs_index){
+        var success=_airPiSettingsModel.set_param_air_only_mcs(mcs_index)
+        if(success!==true){
+            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set MCS index")
         }
     }
 
@@ -398,28 +404,28 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                             Button{
                                 text: "MCS0"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(0,true)
+                                    set_air_only_mcs(0)
                                 }
                                 highlighted: m_curr_mcs_index==0
                             }
                             Button{
                                 text: "MCS1"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(1,true)
+                                    set_air_only_mcs(1)
                                 }
                                 highlighted: m_curr_mcs_index==1
                             }
                             Button{
                                 text: "MCS2"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(2,true)
+                                    set_air_only_mcs(2)
                                 }
                                 highlighted: m_curr_mcs_index==2
                             }
                             Button{
                                 text: "MCS3"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(3,true)
+                                    set_air_only_mcs(3)
                                 }
                                 highlighted: m_curr_mcs_index==3
                             }

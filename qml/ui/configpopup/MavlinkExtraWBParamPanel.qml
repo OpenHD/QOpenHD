@@ -41,6 +41,32 @@ Rectangle{
         return _fcMavlinkSystem.armed
     }
 
+    property bool m_has_fetched_channels : _synchronizedSettings.has_fetched_channels
+
+    ListModel{
+        id: supported_frequencies_model
+        ListElement {title: "Unknown"; value:-1}
+    }
+
+    function create_list_model_supported(){
+        supported_frequencies_model.clear()
+        for(var i=0;i<100;i++){
+            var frequency=_synchronizedSettings.get_next_frequency_item(i);
+            if(frequency<=0)break;
+            var text=_synchronizedSettings.get_next_frequency_item_description(i)
+            supported_frequencies_model.append({title: text, value: frequency})
+        }
+        comboBoxFreq.model=supported_frequencies_model
+    }
+
+    onM_has_fetched_channelsChanged: {
+        // Create the channels model
+        if(m_has_fetched_channels){
+            console.log("Populating model");
+            create_list_model_supported();
+        }
+    }
+
     // Re-set the "disable sync" on init
     Component.onCompleted: {
         settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync=false
@@ -144,6 +170,9 @@ Only enable if you want to quickly change your ground unit's channel width to th
                     ListElement {title: "5280Mhz [56]  (DFS RADAR)"; value: 5280}
                     ListElement {title: "5300Mhz [60]  (DFS RADAR)"; value: 5300}
                     ListElement {title: "5320Mhz [64]  (DFS RADAR)"; value: 5320}
+                    // exp - probably illegal
+                    ListElement {title: "5380Mhz [76]  (NOT ALLOWED)"; value: 5380}
+
                     ListElement {title: "5500Mhz [100] (DFS RADAR)"; value: 5500}
                     ListElement {title: "5520Mhz [104] (DFS RADAR)"; value: 5520}
                     ListElement {title: "5540Mhz [108] (DFS RADAR)"; value: 5540}
@@ -227,12 +256,13 @@ Only enable if you want to quickly change your ground unit's channel width to th
                         Button{
                             text: "Fetch"
                             onClicked: {
-                                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
+                                _synchronizedSettings.xx_tmp();
+                                /*var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
                                 if(_res>=0){
                                     buttonSwitchFreq.enabled=true
                                 }
                                 //console.log("Got ",_res)
-                                update_combobox(comboBoxFreq,_res);
+                                update_combobox(comboBoxFreq,_res);*/
                             }
                         }
                         ComboBox {
