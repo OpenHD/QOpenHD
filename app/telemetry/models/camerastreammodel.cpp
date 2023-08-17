@@ -78,11 +78,13 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
     set_camera_type(msg.cam_type);
-    std::stringstream ss;
-    ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
-    set_curr_set_video_format(ss.str().c_str());
-    ss<<", "<<video_codec_to_string(msg.encoding_format);
-    set_curr_set_video_format_and_codec(ss.str().c_str());
+    {
+        std::stringstream ss;
+        ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
+        set_curr_set_video_format(ss.str().c_str());
+        ss<<", "<<video_codec_to_string(msg.encoding_format);
+        set_curr_set_video_format_and_codec(ss.str().c_str());
+    }
     auto new_res_fps=ResolutionFramerate{msg.stream_w,msg.stream_h,msg.stream_fps};
     if(new_res_fps.is_any_invalid()){
         qDebug()<<"Invalid data from air unit:"<<resolution_framerate_to_string(new_res_fps).c_str();
@@ -115,11 +117,12 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     // Feature - log in the HUD if the camera is restarting
     set_camera_status(msg.cam_status);
     if(msg.cam_status==2){
-        const auto elapsed=std::chrono::steady_clock::now()-m_last_hud_message_camera_restarting;
+        const auto elapsed=std::chrono::steady_clock::now()-m_last_hud_message_camera_status;
         if(elapsed>=std::chrono::seconds(3)){
-           m_last_hud_message_camera_restarting=std::chrono::steady_clock::now();
+           m_last_hud_message_camera_status=std::chrono::steady_clock::now();
            std::stringstream log;
-           log<<(secondary ? "CAM2" : "CAM1")<<" is restarting, please wait";
+           log<<(secondary ? "CAM2" : "CAM1");
+           log<<" is restarting, please wait";
            HUDLogMessagesModel::instance().add_message_info(log.str().c_str());
         }
     }

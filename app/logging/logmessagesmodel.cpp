@@ -117,6 +117,8 @@ void LogMessagesModel::addData(LogMessageData logMessageData)
         //HUDLogMessagesModel::instance().add_message_warning(logMessageData.message);
     }else if(logMessageData.message.contains("Bind phrase mismatch")){
         HUDLogMessagesModel::instance().add_message_warning(logMessageData.message);
+    }else if(logMessageData.message.contains("error - unsupported resolution ?")){
+        HUDLogMessagesModel::instance().add_message_warning(logMessageData.message);
     }
     //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
     // We limit logging to X log messages here

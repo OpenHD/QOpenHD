@@ -63,6 +63,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         if(elapsed>=CARD_DISCONNECTED_WARNING_INTERVAL){
             m_last_disconnected_warning=std::chrono::steady_clock::now();
             std::stringstream message;
+            message<<(m_is_air_card ? "Air ":"Gnd ");
             message<<"Card "<<(int)msg.card_index<<" disconnected";
             HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
         }
