@@ -204,6 +204,7 @@ static std::vector<FrequencyItem> get_freq_descr(){
         FrequencyItem{5,2432},
         FrequencyItem{9,2452},
         FrequencyItem{13,2472},
+        FrequencyItem{14,2484},
         // ACTUAL 2G end
         FrequencyItem{-1,2492},
         FrequencyItem{-1,2512},
