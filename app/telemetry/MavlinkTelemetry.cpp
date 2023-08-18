@@ -344,7 +344,7 @@ bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &c
 
 bool MavlinkTelemetry::send_command_long_blocking(const mavlink_command_long_t &command)
 {
-    qDebug()<<"Sending command";
+    qDebug()<<"send_command_long_blocking";
     if(passtroughOhdGround){
         mavsdk::MavlinkPassthrough::CommandLong command_mavsdk{};
         command_mavsdk.target_sysid=command.target_system;
@@ -353,6 +353,9 @@ bool MavlinkTelemetry::send_command_long_blocking(const mavlink_command_long_t &
         command_mavsdk.param1=command.param1;
         command_mavsdk.param2=command.param2;
         auto res=passtroughOhdGround->send_command_long(command_mavsdk);
+        std::stringstream ss;
+        ss<<"Send command result:"<<res;
+        qDebug()<<ss.str().c_str();
         return res==mavsdk::MavlinkPassthrough::Result::Success;
     }
     return false;
