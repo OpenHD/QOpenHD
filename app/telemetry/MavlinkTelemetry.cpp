@@ -342,24 +342,17 @@ bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &c
     return sendMessage(msg);
 }
 
-bool MavlinkTelemetry::ohd_gnd_request_channel_scan(int freq_bands,int channel_widths)
+bool MavlinkTelemetry::send_command_long_blocking(const mavlink_command_long_t &command)
 {
-    qDebug()<<"Channels can: "<<freq_bands<<","<<channel_widths;
-    /*mavlink_command_long_t command{};
-    // channel scan is always done by teh ground unit
-    command.target_system=OHD_SYS_ID_GROUND;
-    command.command=OPENHD_CMD_INITIATE_CHANNEL_SEARCH;
-    command.param1=static_cast<float>(freq_bands);
-    command.param2=static_cast<float>(channel_widths);
-    return send_command_long_oneshot(command);*/
+    qDebug()<<"Sending command";
     if(passtroughOhdGround){
-        mavsdk::MavlinkPassthrough::CommandLong command{};
-        command.target_sysid=OHD_SYS_ID_GROUND;
-        command.target_compid=OHD_COMP_ID_LINK_PARAM;
-        command.command=OPENHD_CMD_INITIATE_CHANNEL_SEARCH;
-        command.param1=static_cast<float>(freq_bands);
-        command.param2=static_cast<float>(channel_widths);
-        auto res=passtroughOhdGround->send_command_long(command);
+        mavsdk::MavlinkPassthrough::CommandLong command_mavsdk{};
+        command_mavsdk.target_sysid=command.target_system;
+        command_mavsdk.target_compid=command.target_component;
+        command_mavsdk.command=command.command;
+        command_mavsdk.param1=command.param1;
+        command_mavsdk.param2=command.param2;
+        auto res=passtroughOhdGround->send_command_long(command_mavsdk);
         return res==mavsdk::MavlinkPassthrough::Result::Success;
     }
     return false;

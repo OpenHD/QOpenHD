@@ -38,10 +38,24 @@ public:
 
     // Set to true once the channels from the ground have been succesfully fetched
     L_RO_PROP(bool,has_fetched_channels,set_has_fetched_channels,false);
+    // Dirty
+    L_RO_PROP(int,progress_scan_channels_perc,set_progress_scan_channels_perc,-1);
+    L_RO_PROP(int,progress_analyze_channels_perc,set_progress_analyze_channels_perc,-1);
+    L_RO_PROP(QString,text_for_qml,set_text_for_qml,"NONE");
 public:
     void process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t& msg);
+    void process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t& msg);
+    void process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t& msg);
 public:
     Q_INVOKABLE void fetch_channels_if_needed();
+
+    Q_INVOKABLE bool start_analyze_channels();
+    // freq_bands:
+    // 0: 2.4G and 5.8G
+    // 1: 2.4G only
+    // 2: 5.8G only
+    // similar for channel widths
+    Q_INVOKABLE bool start_scan_channels(int freq_bands,int channel_widths);
 public:
     void validate_and_set_channel_mhz(int channel);
     void validate_and_set_channel_width_mhz(int channel_width_mhz);
@@ -85,6 +99,8 @@ private:
     std::vector<uint16_t> m_supported_channels;
     void update_channels_on_success();
     bool m_valid_channel_channel_width_once=false;
+public:
+    Q_INVOKABLE void analyze_channels();
 };
 
 #endif // SynchronizedSettings_H

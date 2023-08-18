@@ -2,6 +2,7 @@
 
 #include "../models/aohdsystem.h"
 #include "mavlinksettingsmodel.h"
+#include "../MavlinkTelemetry.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
@@ -33,6 +34,38 @@ void SynchronizedSettings::fetch_channels_if_needed()
     QTimer::singleShot(2000, this, &SynchronizedSettings::update_channels_on_success);
 }
 
+bool SynchronizedSettings::start_analyze_channels()
+{
+    mavlink_command_long_t cmd{};
+    cmd.target_system=OHD_SYS_ID_GROUND;
+    cmd.target_component=OHD_COMP_ID_LINK_PARAM;
+    cmd.command=OPENHD_CMD_INITIATE_CHANNEL_ANALYZE;
+    const auto ret=MavlinkTelemetry::instance().send_command_long_blocking(cmd);
+    if(ret){
+        set_progress_analyze_channels_perc(0);
+        set_text_for_qml("Analyzing");
+        return true;
+    }
+    return false;
+}
+
+bool SynchronizedSettings::start_scan_channels(int freq_bands,int channel_widths)
+{
+    mavlink_command_long_t cmd{};
+    cmd.target_system=OHD_SYS_ID_GROUND;
+    cmd.target_component=OHD_COMP_ID_LINK_PARAM;
+    cmd.command=OPENHD_CMD_INITIATE_CHANNEL_SEARCH;
+    cmd.param1=static_cast<float>(freq_bands);
+    cmd.param2=static_cast<float>(channel_widths);
+    const auto ret=MavlinkTelemetry::instance().send_command_long_blocking(cmd);
+    if(ret){
+        set_progress_scan_channels_perc(0);
+        set_text_for_qml("Scanning");
+        return true;
+    }
+    return false;
+}
+
 
 void SynchronizedSettings::update_channels_on_success()
 {
@@ -55,6 +88,11 @@ void SynchronizedSettings::update_channels_on_success()
     if(!m_supported_channels.empty()){
         set_has_fetched_channels(true);
     }
+}
+
+void SynchronizedSettings::analyze_channels()
+{
+
 }
 
 
@@ -90,6 +128,36 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_supported_channe
     }
     m_supported_channels=channels;
     after_channel_freq_or_channel_width_check_ready();
+}
+
+void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
+{
+    //qDebug()<<"Got progress "<<msg.channel_mhz<<"@"<<msg.channel_width_mhz<<"Mhz "<<msg.progress<<"%";
+    std::stringstream ss;
+    ss<<"Analyzed "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
+    if(msg.progress>=100){
+        ss<<"100%, Done";
+    }else{
+        ss<<(int)msg.progress<<"%";
+    }
+    qDebug()<<ss.str().c_str();
+    set_progress_analyze_channels_perc(msg.progress);
+    set_text_for_qml(ss.str().c_str());
+}
+
+void SynchronizedSettings::process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t &msg)
+{
+    std::stringstream ss;
+    ss<<"Scanned "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
+    ss<<"Progress:"<<(int)msg.progress<<"%";
+    /*if(msg.progress>=100){
+        ss<<"100%, Done";
+    }else{
+        ss<<(int)msg.progress<<"%";
+    }*/
+    qDebug()<<ss.str().c_str();
+    set_progress_scan_channels_perc(msg.progress);
+    set_text_for_qml(ss.str().c_str());
 }
 
 void SynchronizedSettings::after_channel_freq_or_channel_width_check_ready()
@@ -241,6 +309,8 @@ static std::vector<FrequencyItem> get_freq_descr(){
         FrequencyItem{132,5660,true},
         FrequencyItem{136,5680,true},
         FrequencyItem{140,5700,true},
+        FrequencyItem{144,5720,true},
+        // Here is the weird break
         FrequencyItem{149,5745},
         FrequencyItem{153,5765},
         FrequencyItem{157,5785},

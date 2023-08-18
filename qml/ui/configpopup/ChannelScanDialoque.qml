@@ -118,7 +118,7 @@ max 30 seconds, usually less"
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
                     var how_many_bandwidths=comboBoxWhichChannelWidthsToScan.currentIndex
                     console.log("Initate channel scan "+how_many_freq_bands+","+how_many_bandwidths)
-                    var result=_mavlinkTelemetry.ohd_gnd_request_channel_scan(how_many_freq_bands,how_many_bandwidths)
+                    var result = _synchronizedSettings.start_scan_channels(how_many_freq_bands,how_many_bandwidths)
                     if(result){
                          m_curr_index++;
                         //settings_panel.close_all()

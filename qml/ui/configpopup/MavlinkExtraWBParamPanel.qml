@@ -97,6 +97,20 @@ Rectangle{
         settings.qopenhd_allow_changing_ground_unit_frequency_no_sync=false
     }
 
+    function get_text_current_loss_pollution(){
+        if(!_ohdSystemAir.is_alive){
+            return "No air unit";
+        }
+        var ret=("Curr Loss:"+_ohdSystemGround.curr_rx_packet_loss_perc+"%d"+" Pollution:"+_ohdSystemGround.wb_link_pollution+"%");
+        var throttle=_ohdSystemAir.curr_n_rate_adjustments;
+        if(throttle<=0){
+            ret+=" Throttle:None"
+        }else{
+            ret+=" Throttle: -"+throttle;
+        }
+        return ret;
+    }
+
     property string m_text_warning_nosync_frequency: "WARNING: THIS CHANGES YOUR GROUND UNIT FREQUENCY WITHOUT CHANGING YOUR AIR UNIT FREQUENCY !
 Only enable if you want to quickly change your ground unit's frequency to the already set frequency of a running air unit (And know both frequency and channel width on top of your head)";
 
@@ -108,6 +122,11 @@ Only enable if you want to quickly change your ground unit's channel width to th
     "If you change the frequency / channel width here, both air and ground unit are set to the new frequency."+
 "If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
 
+    property string find_air_unit_text:"Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels, and we need to listen on each of them for a short timespan)"
+
+    property string analyze_channels_text: "Analyze channels text"
+
+
     ScrollView {
         id:mavlinkExtraWBParamPanel
         width: parent.width
@@ -117,6 +136,10 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
         Item {
             anchors.fill: parent
+
+            ChannelScanDialoque{
+                id: dialoqueStartChannelScan
+            }
 
             Column {
                 id:wbParamColumn
@@ -135,43 +158,31 @@ Only enable if you want to quickly change your ground unit's channel width to th
                         "NOTE: Frequency and channel width of air and ground unit BOTH need to match."
                     }
                 }
-                Button{
-                    text: "MORE INFO"
-                    Material.background:Material.LightBlue
-                    onClicked: {
-                        _messageBoxInstance.set_text_and_show(more_info_text)
-                    }
-                }
                 Rectangle {
                     width: parent.width
                     height: rowHeight
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
                         Button{
-                            text: "Find Air unit"
-                            enabled: _ohdSystemGround.is_alive
-                            onClicked: {
-                                dialoqueStartChannelScan.m_curr_index=0
-                                dialoqueStartChannelScan.visible=true
-                            }
-                        }
-                        Button{
-                            text: "INFO"
+                            text: "MORE INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels, and we need to listen on each of them for a short timespan)"
-                                _messageBoxInstance.set_text_and_show(text)
+                                _messageBoxInstance.set_text_and_show(more_info_text)
                             }
+                        }
+                        Text{
+                            text: get_text_current_loss_pollution()
                         }
                     }
                 }
+
                 // Changing the wifi frequency, r.n only 5G
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    color: "#8cbfd7f3"
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
@@ -271,7 +282,8 @@ Only enable if you want to quickly change your ground unit's channel width to th
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    color: "#8cbfd7f3"
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
@@ -331,6 +343,82 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                 settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync = checked
                             }
                         }
+                    }
+                }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    color: "#00000000"
+
+                    RowLayout{
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width
+                        height: parent.height
+                        IconInfoButon{
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show(find_air_unit_text)
+                            }
+                        }
+                        Button{
+                            text: "Find Air unit"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                dialoqueStartChannelScan.m_curr_index=0
+                                dialoqueStartChannelScan.visible=true
+                            }
+                        }
+                        ProgressBar{
+                            Layout.fillWidth: true
+                            Layout.rightMargin: 15
+                            Layout.leftMargin: 15
+                            height: parent.height
+                            //indeterminate: true
+                            from: 0
+                            to: 100
+                            value: _synchronizedSettings.progress_scan_channels_perc
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    color: "#00000000"
+                    RowLayout{
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width
+                        height: parent.height
+                        IconInfoButon{
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show(analyze_channels_text)
+                            }
+                        }
+                        Button{
+                            text: "ANALYZE"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                _synchronizedSettings.start_analyze_channels()
+                            }
+                        }
+                        ProgressBar{
+                            Layout.fillWidth: true
+                            Layout.rightMargin: 15
+                            Layout.leftMargin: 15
+                            height: parent.height
+                            //indeterminate: true
+                            from: 0
+                            to: 100
+                            value: _synchronizedSettings.progress_analyze_channels_perc
+                        }
+                    }
+                }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    Text{
+                        text: _synchronizedSettings.text_for_qml
                     }
                 }
             }

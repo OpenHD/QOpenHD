@@ -82,21 +82,17 @@ public:
     Q_INVOKABLE void ping_all_systems();
     // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
     Q_INVOKABLE void request_openhd_version();
+public:
     // send a command, to all connected systems
     // doesn't reatransmitt
     bool send_command_long_oneshot(const mavlink_command_long_t& command);
+    // does re-transmit
+    bool send_command_long_blocking(const mavlink_command_long_t& command);
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;
 private:
     std::chrono::steady_clock::time_point m_last_time_version_requested=std::chrono::steady_clock::now();
-public:
-    // freq_bands:
-    // 0: 2.4G and 5.8G
-    // 1: 2.4G only
-    // 2: 5.8G only
-    // similar for channel widths
-    Q_INVOKABLE bool ohd_gnd_request_channel_scan(int freq_bands,int channel_widths);
 private:
     std::unique_ptr<FCMessageIntervalHelper> m_msg_interval_helper=nullptr;
     void process_check_for_data_rates(const mavlink_message_t &msg);

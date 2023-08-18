@@ -156,10 +156,6 @@ ApplicationWindow {
             visible: false
         }
 
-        ChannelScanDialoque{
-             id: dialoqueStartChannelScan
-        }
-
         WorkaroundMessageBox{
             id: workaroundmessagebox
         }
