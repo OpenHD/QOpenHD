@@ -560,12 +560,12 @@ Rectangle {
 
 
             Item {
-                id: eeItem
-                visible: false
+                id: Credits
+                visible: true
                 height: left_sidebar_elements_height
                 width: parent.width
                 Button{
-                    id: eeBtn
+                    id: CreditsBtn
 
                     height: parent.height
                     width: parent.width
@@ -573,7 +573,7 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     Text {
-                        id: eeIcon
+                        id: CreditsIcon
                         text: "\uf05a"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -587,12 +587,12 @@ Rectangle {
                     }
 
                     Text {
-                        id: eeButton
+                        id: creditsButton
                         height: parent.height
                         anchors.left: eeIcon.right
                         anchors.leftMargin: 6
 
-                        text: qsTr("EasterEgg")
+                        text: qsTr("Credits")
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
@@ -659,8 +659,8 @@ Rectangle {
             id: appDeveloperStatsPanel
         }
 
-        EasterEggPanel {
-            id: easterEgPanel
+        Credits {
+            id: credits
         }
     }
 }
