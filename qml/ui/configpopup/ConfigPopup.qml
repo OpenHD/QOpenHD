@@ -356,61 +356,6 @@ Rectangle {
                 }
             }
 
-            // About
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: aboutBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: aboutIcon
-                        text: "\uf05a"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: aboutButton
-                        text: qsTr("About")
-                        height: parent.height
-                        anchors.left: aboutIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: aboutBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 5
-                        if (eeInt > 8){
-                            eeItem.visible = true
-                            eeInt = 0
-                        }else{
-                            eeItem.visible = false
-                            eeInt = eeInt+1
-                        }
-                    }
-                }
-            }
-
             // RC
             Item {
                 height: left_sidebar_elements_height
@@ -424,7 +369,7 @@ Rectangle {
 
                     Text {
                         id: rcIcon
-                        text: "\uf05a"
+                        text: "\uf11b"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.family: "Font Awesome 5 Free"
@@ -508,8 +453,6 @@ Rectangle {
                 }
             }*/
 
-
-
             // Developer stats
             Item {
                 height: left_sidebar_elements_height
@@ -523,7 +466,7 @@ Rectangle {
 
                     Text {
                         id: developerStatsIcon
-                        text: "\uf05a"
+                        text: "\uf0ad"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.family: "Font Awesome 5 Free"
@@ -557,15 +500,62 @@ Rectangle {
                     }
                 }
             }
-
-
+            // About
             Item {
-                id: Credits
+                height: left_sidebar_elements_height
+                width: parent.width
+                Button{
+                    id: aboutBtn
+                    height: parent.height
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Text {
+                        id: aboutIcon
+                        text: "\uf05a"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 18
+                        height: parent.height
+                        width: 24
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        color: "#dde4ed"
+                    }
+
+                    Text {
+                        id: aboutButton
+                        text: qsTr("About")
+                        height: parent.height
+                        anchors.left: aboutIcon.right
+                        anchors.leftMargin: 6
+                        font.pixelSize: 15
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                    }
+                    background: Rectangle {
+                        opacity: .5
+                        radius: 5
+                        //later this can be changed to focus
+                        color: aboutBtn.hovered ? "grey" : "transparent" // I update background color by this
+                    }
+                    onClicked: {
+                        mainStackLayout.currentIndex = 5
+                        }
+                }
+            }
+
+            // Credits and copyright
+            Item {
+                id: credits
                 visible: true
                 height: left_sidebar_elements_height
                 width: parent.width
                 Button{
-                    id: CreditsBtn
+                    id: creditsBtn
 
                     height: parent.height
                     width: parent.width
@@ -573,8 +563,8 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     Text {
-                        id: CreditsIcon
-                        text: "\uf05a"
+                        id: creditsIcon
+                        text: "\uf005"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.family: "Font Awesome 5 Free"
@@ -589,7 +579,7 @@ Rectangle {
                     Text {
                         id: creditsButton
                         height: parent.height
-                        anchors.left: eeIcon.right
+                        anchors.left: creditsIcon.right
                         anchors.leftMargin: 6
 
                         text: qsTr("Credits")
@@ -602,7 +592,7 @@ Rectangle {
                         opacity: .5
                         radius: 5
                         //later this can be changed to focus
-                        color: eeBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: creditsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
                         mainStackLayout.currentIndex = 8
@@ -660,7 +650,7 @@ Rectangle {
         }
 
         Credits {
-            id: credits
+            id: creditspanel
         }
     }
 }
