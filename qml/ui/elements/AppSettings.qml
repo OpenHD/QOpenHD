@@ -205,6 +205,7 @@ Settings {
 
     property bool show_ground_status: true
     property bool ground_status_declutter: false
+    property bool ground_status_show_undervolt_icon: false
     property double ground_status_cpu_caution: 50
     property double ground_status_cpu_warn: 70
     property double ground_status_temp_caution: 60
@@ -212,6 +213,7 @@ Settings {
 
     property bool show_air_status: true
     property bool air_status_declutter: false
+    property bool air_status_show_undervolt_icon: false
     property double air_status_cpu_caution: 50
     property double air_status_cpu_warn: 70
     property double air_status_temp_caution: 60

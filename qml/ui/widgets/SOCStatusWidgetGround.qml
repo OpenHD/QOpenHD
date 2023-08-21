@@ -110,6 +110,27 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
+                    text: qsTr("Show undervolt icon")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.ground_status_show_undervolt_icon
+                    onCheckedChanged: settings.ground_status_show_undervolt_icon = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
                     text: qsTr("Caution CPU")
                     color: "white"
                     height: parent.height
@@ -346,7 +367,7 @@ BaseWidget {
         scale: bw_current_scale
 
         Text {
-            id: chip_icon_gnd
+            id: chip_icon
             y: 0
             width: 24
             height: 24
@@ -369,6 +390,29 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
+        Text{
+            id: undervolt_error
+            width: 24
+            height: 24
+            opacity: bw_current_opacity
+            //text: "X"
+            text: String.fromCodePoint(0xf0e7)+"!"
+            anchors.right: chip_icon.left
+            anchors.top: chip_icon.top
+            anchors.rightMargin: 2
+            anchors.topMargin: 2
+            anchors.verticalCenter: parent.verticalCenter
+            font.family: "Font Awesome 5 Free"
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignRight
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: "red"
+            color: "yellow"
+            //visible: true
+            visible: m_rpi_undervolt_error && settings.ground_status_show_undervolt_icon
+        }
         Text {
             id: cpuload_gnd
             x: 0
