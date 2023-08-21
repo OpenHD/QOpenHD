@@ -7,6 +7,7 @@
 #include "param_names.h"
 #include "../requestmessagehelper.h"
 
+// DON'T ASK, THIS CLASS IS HUGE AND REALLY HARD TO D
 // Helper for settings that MUST STAY IN SYNC on the ground and air pi, since otherwise the wifibroadcast link is lost
 // and the user needs to manually recover the link
 // It does not fix the 2 general's problem (this is a unfixable problem) but it makes it really unlikely to happen.
@@ -48,6 +49,8 @@ public:
     void process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t& msg);
     void process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t& msg);
     void process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t& msg);
+    void validate_and_set_channel_mhz(int channel);
+    void validate_and_set_channel_width_mhz(int channel_width_mhz);
 public:
     //Q_INVOKABLE void fetch_channels_if_needed();
     Q_INVOKABLE bool start_analyze_channels();
@@ -57,16 +60,11 @@ public:
     // 2: 5.8G only
     // similar for channel widths
     Q_INVOKABLE bool start_scan_channels(int freq_bands,int channel_widths);
-public:
-    void validate_and_set_channel_mhz(int channel);
-    void validate_and_set_channel_width_mhz(int channel_width_mhz);
-
+private:
     static constexpr auto PARAM_ID_WB_FREQ=openhd::WB_FREQUENCY;
     static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;
-
     // Air and ground should always match, otherwise something weird has happenened.
     // Note that this would be "really" weird, since on not matching params there should be no connectivitiy.
-private:
     int get_param_int_air_and_ground_value(QString param_id);
     // Returns empty string on success, error code otherwise
     QString change_param_air_and_ground(QString param_id,int value);
@@ -93,8 +91,6 @@ public:
     Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
         return change_param_ground_only(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
-
-    //
     Q_INVOKABLE int get_next_supported_frequency(int index);
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
     Q_INVOKABLE int get_frequency_pollution(int frequency_mhz);

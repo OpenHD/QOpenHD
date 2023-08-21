@@ -148,8 +148,10 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels
 {
     {
         std::stringstream ss;
-        ss<<"Analyzing "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
+        ss<<"Analyzed "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
+        //ss<<" Foreign:"<<(int)msg.foreign_packets<<"packets";
         ss<<" Progress:"<<(int)msg.progress<<"%";
+        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
     }
     //qDebug()<<"Got progress "<<msg.channel_mhz<<"@"<<msg.channel_width_mhz<<"Mhz "<<msg.progress<<"%";
     std::stringstream ss;
@@ -175,25 +177,15 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_scan_channels_pr
         ss<<"Scanned "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
         ss<<" Progress:"<<(int)msg.progress<<"%";
         if(msg.success){
-            ss<<"-found";
+            ss<<"-SUCCESS";
         }else{
-            ss<<"-not found";
+            ss<<"-NOT FOUND";
         }
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+        qDebug()<<ss.str().c_str();
+        set_text_for_qml(ss.str().c_str());
     }
-    std::stringstream ss;
-    ss<<"Scanned "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
-    ss<<"Progress:"<<(int)msg.progress<<"%";
-    if(msg.progress>=100){
-        if(msg.success){
-            ss<<" SUCCESS";
-        }else{
-            ss<<" NOT FOUND";
-        }
-    }
-    qDebug()<<ss.str().c_str();
     set_progress_scan_channels_perc(msg.progress);
-    set_text_for_qml(ss.str().c_str());
 }
 
 int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
