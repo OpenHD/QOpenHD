@@ -23,7 +23,7 @@ SynchronizedSettings& SynchronizedSettings::instance()
     return tmp;
 }
 
-void SynchronizedSettings::fetch_channels_if_needed()
+/*void SynchronizedSettings::fetch_channels_if_needed()
 {
     if(m_has_fetched_channels){
         qDebug()<<"Already fetched";
@@ -32,7 +32,29 @@ void SynchronizedSettings::fetch_channels_if_needed()
     m_request_message_helper->request_message(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_SUPPORTED_CHANNELS);
     QTimer::singleShot(1000, this, &SynchronizedSettings::update_channels_on_success);
     QTimer::singleShot(2000, this, &SynchronizedSettings::update_channels_on_success);
-}
+}*/
+/*void SynchronizedSettings::update_channels_on_success()
+{
+    const auto channel_message_opt=m_request_message_helper->get_last_requested_message();
+    if(!channel_message_opt.has_value()){
+        return;
+    }
+    if(m_has_fetched_channels){
+        return;
+    }
+    const auto channel_message=channel_message_opt.value();
+    mavlink_openhd_wifbroadcast_supported_channels_t tmp{};
+    mavlink_msg_openhd_wifbroadcast_supported_channels_decode(&channel_message,&tmp);
+    m_supported_channels.resize(0);
+    for(int i=0;i<60;i++){
+        if(tmp.channels[i]!=0){
+            m_supported_channels.push_back(tmp.channels[i]);
+        }
+    }
+    if(!m_supported_channels.empty()){
+        set_has_fetched_channels(true);
+    }
+}*/
 
 bool SynchronizedSettings::start_analyze_channels()
 {
@@ -67,56 +89,38 @@ bool SynchronizedSettings::start_scan_channels(int freq_bands,int channel_widths
 }
 
 
-void SynchronizedSettings::update_channels_on_success()
-{
-    const auto channel_message_opt=m_request_message_helper->get_last_requested_message();
-    if(!channel_message_opt.has_value()){
-        return;
-    }
-    if(m_has_fetched_channels){
-        return;
-    }
-    const auto channel_message=channel_message_opt.value();
-    mavlink_openhd_wifbroadcast_supported_channels_t tmp{};
-    mavlink_msg_openhd_wifbroadcast_supported_channels_decode(&channel_message,&tmp);
-    m_supported_channels.resize(0);
-    for(int i=0;i<60;i++){
-        if(tmp.channels[i]!=0){
-            m_supported_channels.push_back(tmp.channels[i]);
-        }
-    }
-    if(!m_supported_channels.empty()){
-        set_has_fetched_channels(true);
-    }
-}
-
-void SynchronizedSettings::analyze_channels()
-{
-
-}
-
-
 void SynchronizedSettings::validate_and_set_channel_mhz(int channel_mhz)
 {
     if(channel_mhz<=1000 || channel_mhz>=8000){
         qDebug()<<"Invalid channel "<<channel_mhz<<"Mhz";
         return;
     }
-    set_curr_channel_mhz(channel_mhz);
-    after_channel_freq_or_channel_width_check_ready();
+    if(!m_has_valid_ground_channel_data){
+        // Ground channel data not available yet
+        return;
+    }
+    if(m_curr_channel_mhz!=channel_mhz){
+        qDebug()<<"Changing channel from "<<m_curr_channel_mhz<<" to "<<channel_mhz;
+        set_curr_channel_mhz(channel_mhz);
+        signal_ui_rebuild_model_when_possible();
+    }
 }
 
 void SynchronizedSettings::validate_and_set_channel_width_mhz(int channel_width_mhz)
 {
-    if(!(channel_width_mhz==20 || channel_width_mhz==40)){
+    if(!(channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
         qDebug()<<"Invalid channel width "<<channel_width_mhz<<" Mhz";
         return;
     }
-    set_curr_channel_width_mhz(channel_width_mhz);
-    if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0){
-        // both are valid, start requesting the supported channels
+    if(!m_has_valid_ground_channel_data){
+        // Ground channel data not available yet
+        return;
     }
-    after_channel_freq_or_channel_width_check_ready();
+    if(m_curr_channel_width_mhz!=channel_width_mhz){
+        qDebug()<<"Changing channel width from "<<m_curr_channel_width_mhz<<" to "<<channel_width_mhz;
+        set_curr_channel_width_mhz(channel_width_mhz);
+        signal_ui_rebuild_model_when_possible();
+    }
 }
 
 void SynchronizedSettings::process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t &msg)
@@ -126,8 +130,18 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_supported_channe
         if(msg.channels[i]==0)break;
         channels.push_back(msg.channels[i]);
     }
-    m_supported_channels=channels;
-    after_channel_freq_or_channel_width_check_ready();
+    if(channels.empty()){
+        qDebug()<<"No valid channels from ground station - should never happen";
+        return;
+    }
+    // We have valid supported channels datat
+    if(m_has_valid_ground_channel_data==false){
+        m_supported_channels=channels;
+        m_has_valid_ground_channel_data=true;
+        qDebug()<<"Got valid ground channel data";
+        signal_ui_rebuild_model_when_possible();
+    }
+
 }
 
 void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
@@ -135,6 +149,7 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels
     //qDebug()<<"Got progress "<<msg.channel_mhz<<"@"<<msg.channel_width_mhz<<"Mhz "<<msg.progress<<"%";
     std::stringstream ss;
     ss<<"Analyzed "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
+    ss<<" Foreign packets:"<<msg.foreign_packets<<" ";
     if(msg.progress>=100){
         ss<<"100%, Done";
     }else{
@@ -143,6 +158,9 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels
     qDebug()<<ss.str().c_str();
     set_progress_analyze_channels_perc(msg.progress);
     set_text_for_qml(ss.str().c_str());
+    update_pollution(msg.channel_mhz,msg.foreign_packets);
+    // signal to the UI to rebuild model
+    signal_ui_rebuild_model_when_possible();
 }
 
 void SynchronizedSettings::process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t &msg)
@@ -150,25 +168,16 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_scan_channels_pr
     std::stringstream ss;
     ss<<"Scanned "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
     ss<<"Progress:"<<(int)msg.progress<<"%";
-    /*if(msg.progress>=100){
-        ss<<"100%, Done";
-    }else{
-        ss<<(int)msg.progress<<"%";
-    }*/
+    if(msg.progress>=100){
+        if(msg.success){
+            ss<<" SUCCESS";
+        }else{
+            ss<<" NOT FOUND";
+        }
+    }
     qDebug()<<ss.str().c_str();
     set_progress_scan_channels_perc(msg.progress);
     set_text_for_qml(ss.str().c_str());
-}
-
-void SynchronizedSettings::after_channel_freq_or_channel_width_check_ready()
-{
-    if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0 && !m_supported_channels.empty()){
-        if(m_valid_channel_channel_width_once==false){
-            m_valid_channel_channel_width_once=true;
-            qDebug()<<"Got channel and channel frequency first time, request supported channels message";
-            set_has_fetched_channels(true);
-        }
-    }
 }
 
 int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
@@ -189,49 +198,29 @@ int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
     }
     const auto value_air=value_air_opt.value();
     if(value_air!=value_ground){
-         WorkaroundMessageBox::makePopupMessage("Air and ground are out of sync - this can happen after a channel scan. Reboot Ground to Fix.");
-         return value_ground;
+        WorkaroundMessageBox::makePopupMessage("Air and ground are out of sync - use the channel scan to fix.");
+        return value_ground;
     }
     return value_ground;
 }
 
 
-void SynchronizedSettings::change_param_air_and_ground(QString param_id,int value,bool allow_changing_without_connected_air_unit,bool log_to_hud)
+QString SynchronizedSettings::change_param_air_and_ground(QString param_id,int value)
 {
-    qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value<<" no-sync:"<<allow_changing_without_connected_air_unit;
-
+    qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;
     // sanity checking
     const bool air_and_ground_alive=AOHDSystem::instanceAir().is_alive() && AOHDSystem::instanceGround().is_alive();
-    if(allow_changing_without_connected_air_unit){
-        if(!AOHDSystem::instanceGround().is_alive()){
-            WorkaroundMessageBox::makePopupMessage("Precondition: OpenHD ground running and alive not given. Change not possible.",5);
-            return;
-        }
-    }else{
-        if(!air_and_ground_alive){
-            WorkaroundMessageBox::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.",5);
-            return;
-        }
+    if(!air_and_ground_alive){
+        return "Precondition: Air and Ground running and alive not given. Change not possible.";
     }
     const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
     // First change it on the air and wait for ack - if failed, return. MAVSDK does 3 retransmission(s) until acked so it is really unlikely that
     // we set the value and all 3 ack's are lost (which would be the generals problem and then the frequenies are out of sync).
     const auto air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
     if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
-        if(allow_changing_without_connected_air_unit){
-            std::stringstream ss;
-            ss<<"No air unit connected - changing ground only to "<<value<<"Mhz";
-            WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),5);
-        }else{
-            std::stringstream ss;
-            ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-            if(log_to_hud){
-                HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
-            }else{
-                WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),10);
-            }
-            return;
-        }
+        std::stringstream ss;
+        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
+        return ss.str().c_str();
     }
     // we have changed the value on air, now change the ground
     // It is highly unlikely that fauls - if it does, we have an issue ! (2 generals problem)
@@ -239,19 +228,23 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     if(!(ground_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-        ss<<"\nAir and ground are out of sync";
-        WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),10);
-        return;
+        return ss.str().c_str();
     }
-    if(!allow_changing_without_connected_air_unit){
-        std::stringstream ss;
-        ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
-        if(log_to_hud){
-            HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
-        }else{
-            WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),5);
-        }
+    std::stringstream ss;
+    ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
+    qDebug()<<ss.str().c_str();
+    return "";
+}
+
+bool SynchronizedSettings::change_param_ground_only(QString param_id, int value)
+{
+    const auto ground_success=MavlinkSettingsModel::instanceGround().try_set_param_int_impl(param_id,value);
+    if(ground_success==MavlinkSettingsModel::SetParamResult::SUCCESS){
+        qDebug()<<"change_param_ground_only success "<<param_id<<":"<<value;
+        return true;
     }
+    qDebug()<<"change_param_ground_only failure "<<param_id<<":"<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(ground_success).c_str();
+    return false;
 }
 
 
@@ -346,24 +339,51 @@ int SynchronizedSettings::get_next_supported_frequency(int index)
     return -1;
 }
 
+static std::string spaced_string(int number){
+    std::stringstream ss;
+    if(number<100)ss<<" ";
+    if(number<10)ss<<" ";
+    ss<<number;
+    return ss.str();
+}
+
 QString SynchronizedSettings::get_frequency_description(int frequency_mhz)
 {
     auto frequency_item=find_frequency_item(frequency_mhz);
     std::stringstream ss;
     const bool is_2g=frequency_mhz<3000;
     if(is_2g){
-        ss<<"2.4G ";
+        //ss<<"2.4G ";
     }else{
         //ss<<"5.8G ";
     }
-    ss<<"["<<frequency_item.channel_nr<<"] "<<frequency_mhz<<"Mhz ";
-    if(frequency_item.channel_nr==-1){
-        ss<<"(ATH) ";
-    }
+    ss<<"["<<spaced_string(frequency_item.channel_nr)<<"] ";
+    ss<<frequency_mhz<<"Mhz ";
+    //if(frequency_item.channel_nr==-1){
+    //    ss<<"(ATH) ";
+    //}
     if(frequency_item.radar){
         ss<<"(DFS RADAR)";
     }
+    const auto opt_pollution=get_pollution_for_frequency_channel_width(frequency_mhz,40);
+    //if(opt_pollution.has_value()){
+        /*if(opt_pollution.value().n_foreign_packets>10){
+            ss<<" POLLUTED";
+        }else{
+            ss<<" NOT POLLUTED";
+        }*/
+        //ss<<" P:"<<opt_pollution.value().n_foreign_packets;
+    //}
     return ss.str().c_str();
+}
+
+int SynchronizedSettings::get_frequency_pollution(int frequency_mhz)
+{
+    auto pollution=get_pollution_for_frequency_channel_width(frequency_mhz,40);
+    if(pollution.has_value()){
+        return pollution.value().n_foreign_packets;
+    }
+    return -1;
 }
 
 void SynchronizedSettings::log_result_message(const std::string &result_message, bool use_hud)
@@ -375,3 +395,32 @@ void SynchronizedSettings::log_result_message(const std::string &result_message,
     }
 }
 
+void SynchronizedSettings::update_pollution(int frequency, int n_foreign_packets)
+{
+    for(int i=0;i<m_pollution_elements.size();i++){
+       if(m_pollution_elements.at(i).frequency_mhz==frequency){
+            m_pollution_elements[i].n_foreign_packets=n_foreign_packets;
+       }
+    }
+    m_pollution_elements.push_back(PollutionElement{frequency,40,n_foreign_packets});
+}
+
+std::optional<SynchronizedSettings::PollutionElement> SynchronizedSettings::get_pollution_for_frequency_channel_width(int frequency, int width)
+{
+    for(int i=0;i<m_pollution_elements.size();i++){
+       if(m_pollution_elements.at(i).frequency_mhz==frequency){
+            return m_pollution_elements[i];
+       }
+    }
+    return std::nullopt;
+}
+
+void SynchronizedSettings::signal_ui_rebuild_model_when_possible()
+{
+    if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0 && m_has_valid_ground_channel_data){
+       qDebug()<<"Signal UI Ready & should rebuild "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz "<<m_has_valid_ground_channel_data;
+       set_ui_rebuild_models(m_ui_rebuild_models+1);
+    }else{
+       qDebug()<<"Signal UI Not ready yet "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz "<<m_has_valid_ground_channel_data;
+    }
+}

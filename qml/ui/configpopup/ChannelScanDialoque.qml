@@ -86,7 +86,7 @@ max 30 seconds, usually less"
 
         Text{
             id: dialoqueStartChannelScan_text2
-            text: "Scanning channels, you can close this dialoque and go back to your OSD screen. This operation hapens in the background, progress is not implemented yet."
+            text: "Scanning channels, you can close this dialoque and go back to your OSD screen. PLEASE DO NOT CHANGE SETTINGS WHILE CHANNEL SCAN IS ACTIVE !"
             width: parent.width
             height: parent.height-100
             leftPadding: 12
@@ -124,7 +124,7 @@ max 30 seconds, usually less"
                         //settings_panel.close_all()
                     }else{
                         console.log("Cannot initiate channel scan");
-                        _messageBoxInstance.set_text_and_show("Please try again")
+                        _messageBoxInstance.set_text_and_show("Busy,please try again later",3)
                     }
                 }else{
                      dialoqueStartChannelScan.visible=false;

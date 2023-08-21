@@ -246,5 +246,7 @@
         <file>ui/elements/XDecimalSpinBox.qml</file>
         <file>ui/configpopup/WBFrequencyPanel.qml</file>
         <file>ui/elements/IconInfoButon.qml</file>
+        <file>ui/configpopup/FrequencyChangeDialoque.qml</file>
+        <file>ui/configpopup/DialoqueAnalyzeChannels.qml</file>
     </qresource>
 </RCC>

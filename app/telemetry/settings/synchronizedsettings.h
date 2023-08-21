@@ -37,18 +37,19 @@ public:
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
 
     // Set to true once the channels from the ground have been succesfully fetched
-    L_RO_PROP(bool,has_fetched_channels,set_has_fetched_channels,false);
+    //L_RO_PROP(bool,has_fetched_channels,set_has_fetched_channels,false);
     // Dirty
     L_RO_PROP(int,progress_scan_channels_perc,set_progress_scan_channels_perc,-1);
     L_RO_PROP(int,progress_analyze_channels_perc,set_progress_analyze_channels_perc,-1);
     L_RO_PROP(QString,text_for_qml,set_text_for_qml,"NONE");
+    // Dirty, incremented to signal to the UI that it should rebuild the model(s)
+    L_RO_PROP(int,ui_rebuild_models,set_ui_rebuild_models,0)
 public:
     void process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t& msg);
     void process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t& msg);
     void process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t& msg);
 public:
-    Q_INVOKABLE void fetch_channels_if_needed();
-
+    //Q_INVOKABLE void fetch_channels_if_needed();
     Q_INVOKABLE bool start_analyze_channels();
     // freq_bands:
     // 0: 2.4G and 5.8G
@@ -59,15 +60,18 @@ public:
 public:
     void validate_and_set_channel_mhz(int channel);
     void validate_and_set_channel_width_mhz(int channel_width_mhz);
-    void after_channel_freq_or_channel_width_check_ready();
 
     static constexpr auto PARAM_ID_WB_FREQ=openhd::WB_FREQUENCY;
     static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;
-    static constexpr auto PARAM_ID_WB_MCS_INDEX=openhd::WB_MCS_INDEX;
 
     // Air and ground should always match, otherwise something weird has happenened.
     // Note that this would be "really" weird, since on not matching params there should be no connectivitiy.
-    Q_INVOKABLE int get_param_int_air_and_ground_value(QString param_id);
+private:
+    int get_param_int_air_and_ground_value(QString param_id);
+    // Returns empty string on success, error code otherwise
+    QString change_param_air_and_ground(QString param_id,int value);
+    bool change_param_ground_only(QString param_id,int value);
+public:
     Q_INVOKABLE int get_param_int_air_and_ground_value_freq(){
         return get_param_int_air_and_ground_value(PARAM_ID_WB_FREQ);
     }
@@ -75,23 +79,25 @@ public:
         return get_param_int_air_and_ground_value(PARAM_ID_WB_CHANNEL_WIDTH);
     }
 
-    void change_param_air_and_ground(QString param_id,int value,bool allow_changing_without_connected_air_unit,bool log_to_hud=false);
-
-    Q_INVOKABLE void change_param_air_and_ground_frequency(int value){
-        QSettings settings;
-        const bool qopenhd_allow_changing_ground_unit_frequency_no_sync = settings.value("qopenhd_allow_changing_ground_unit_frequency_no_sync",false).toBool();
-        change_param_air_and_ground(PARAM_ID_WB_FREQ,value,qopenhd_allow_changing_ground_unit_frequency_no_sync);
+    Q_INVOKABLE bool change_param_air_and_ground_frequency(int value){
+        return change_param_air_and_ground(PARAM_ID_WB_FREQ,value)=="";
     }
 
-    Q_INVOKABLE void change_param_air_and_ground_channel_width(int value,bool log_to_hud=false){
-        QSettings settings;
-        const bool qopenhd_allow_changing_ground_unit_channel_width_no_sync = settings.value("qopenhd_allow_changing_ground_unit_channel_width_no_sync",false).toBool();
-        change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value,qopenhd_allow_changing_ground_unit_channel_width_no_sync,log_to_hud);
+    Q_INVOKABLE bool change_param_air_and_ground_channel_width(int value){
+        return change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value)=="";
+    }
+
+    Q_INVOKABLE bool change_param_ground_only_frequency(int value){
+        return change_param_ground_only(PARAM_ID_WB_FREQ,value);
+    }
+    Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
+        return change_param_ground_only(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
 
     //
     Q_INVOKABLE int get_next_supported_frequency(int index);
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
+    Q_INVOKABLE int get_frequency_pollution(int frequency_mhz);
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
 private:
@@ -99,8 +105,18 @@ private:
     std::vector<uint16_t> m_supported_channels;
     void update_channels_on_success();
     bool m_valid_channel_channel_width_once=false;
-public:
-    Q_INVOKABLE void analyze_channels();
+private:
+    struct PollutionElement{
+        int frequency_mhz;
+        int width_mhz;
+        int n_foreign_packets;
+    };
+    std::vector<PollutionElement> m_pollution_elements;
+    void update_pollution(int frequency,int n_foreign_packets);
+    std::optional<PollutionElement> get_pollution_for_frequency_channel_width(int frequency,int width);
+private:
+    std::atomic<bool> m_has_valid_ground_channel_data=false;
+    void signal_ui_rebuild_model_when_possible();
 };
 
 #endif // SynchronizedSettings_H

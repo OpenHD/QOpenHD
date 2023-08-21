@@ -41,12 +41,10 @@ Rectangle{
         return _fcMavlinkSystem.armed
     }
 
-    property bool m_has_fetched_channels : _synchronizedSettings.has_fetched_channels
-
 
     ListModel{
         id: supported_frequencies_model
-        ListElement {title: "Unknown"; value:-1}
+        ListElement {title: "Unknown"; value:-1; pollution: -1}
     }
     ListModel{
         id: channel_width_model
@@ -62,7 +60,8 @@ Rectangle{
             var frequency=_synchronizedSettings.get_next_supported_frequency(i);
             if(frequency<=0)break; // no more supported frequences
             var text=_synchronizedSettings.get_frequency_description(frequency)
-            supported_frequencies_model.append({title: text, value: frequency})
+            var v_pollution= _synchronizedSettings.get_frequency_pollution(frequency)
+            supported_frequencies_model.append({title: text, value: frequency, pollution: v_pollution })
         }
         var index=find_index(supported_frequencies_model,_synchronizedSettings.curr_channel_mhz);
         comboBoxFreq.model=supported_frequencies_model
@@ -70,6 +69,7 @@ Rectangle{
             comboBoxFreq.currentIndex=index;
         }else{
             comboBoxFreq.currentIndex=0;
+            console.log("Seems not to be a valid channel "+_synchronizedSettings.curr_channel_mhz)
         }
     }
 
@@ -79,37 +79,96 @@ Rectangle{
             comboBoxChannelWidth.currentIndex=index;
         }else{
             comboBoxChannelWidth.currentIndex=0;
+            console.log("Seems not to be a valid channel width"+_synchronizedSettings.curr_channel_width_mhz)
         }
     }
 
-    onM_has_fetched_channelsChanged: {
-        // Create the channels model
-        if(m_has_fetched_channels){
-            console.log("Populating model");
-            create_list_model_supported();
-            update_channel_width()
-        }
+    // We get notified every time we should re-build the model(s) and their current selection
+    property int m_ui_rebuild_models : _synchronizedSettings.ui_rebuild_models
+    onM_ui_rebuild_modelsChanged: {
+        console.log("Rebuilding models "+_synchronizedSettings.ui_rebuild_models);
+        create_list_model_supported();
+        update_channel_width()
     }
 
     // Re-set the "disable sync" on init
     Component.onCompleted: {
-        settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync=false
-        settings.qopenhd_allow_changing_ground_unit_frequency_no_sync=false
+
     }
 
-    function get_text_current_loss_pollution(){
+    // ------------------- PART HELPER FOR CURRENT LOSS / POLLUTION / THROTTLE BEGIN -------------------
+    property bool m_is_ground_and_air_alive: _ohdSystemGround.is_alive && _ohdSystemAir.is_alive
+    function get_text_current_loss(){
+        if(!_ohdSystemGround.is_alive){
+            return "No Ground unit - Is OpenHD core running ?"
+        }
         if(!_ohdSystemAir.is_alive){
             return "No air unit";
         }
-        var ret=("Curr Loss:"+_ohdSystemGround.curr_rx_packet_loss_perc+"%d"+" Pollution:"+_ohdSystemGround.wb_link_pollution+"%");
-        var throttle=_ohdSystemAir.curr_n_rate_adjustments;
-        if(throttle<=0){
-            ret+=" Throttle:None"
-        }else{
-            ret+=" Throttle: -"+throttle;
-        }
-        return ret;
+        return "Curr Loss:"+_ohdSystemGround.curr_rx_packet_loss_perc+"%";
     }
+    function get_color_current_loss(){
+        var curr_rx_packet_loss_perc=_ohdSystemGround.curr_rx_packet_loss_perc;
+        if(curr_rx_packet_loss_perc>=10)return "red";
+        if(curr_rx_packet_loss_perc>=6)return "orange";
+        return "black";
+    }
+    function get_text_current_pollution(){
+        if(!m_is_ground_and_air_alive){
+            return "";
+        }
+        var wb_link_pollution=_ohdSystemGround.wb_link_pollution;
+        return "Pollution:"+wb_link_pollution+" %";
+    }
+    function get_color_current_pollution(){
+        var wb_link_pollution=_ohdSystemGround.wb_link_pollution;
+        if(wb_link_pollution>=8)return "red";
+        if(wb_link_pollution>=3)return "orange";
+        return "black";
+    }
+    function get_text_current_throttle(){
+        if(!m_is_ground_and_air_alive){
+            return "";
+        }
+        var throttle=_ohdSystemAir.curr_n_rate_adjustments;
+        if(throttle<=-1)return "";
+        if(throttle<=0){
+            return " Throttle:None"
+        }
+        return " Throttle: -"+throttle;
+    }
+    function get_color_current_throttle(){
+        var throttle=_ohdSystemAir.curr_n_rate_adjustments;
+        if(throttle>=3)return "red"
+        if(throttle>=1)return "orange"
+        return "black";
+    }
+    // ------------------- PART HELPER FOR CURRENT LOSS / POLLUTION / THROTTLE END -------------------
+
+
+    function get_combobox_text_color(element_index,curr_index,frequency){
+        if(frequency===_synchronizedSettings.curr_channel_mhz){
+            return "green";
+        }
+        if(element_index===curr_index){
+            // currently selected in the combobox (but not neccessarily applied in openhd)
+            return "blue";
+        }
+        return "black";
+    }
+
+    function get_color_pollution(pollution){
+        if(pollution<=0)return "green";
+        if(pollution<=10) return "orange"
+        return "red";
+    }
+
+    function get_text_pollution(pollution){
+        if(pollution<=-1)return "";
+        if(pollution<=0)return "FREE";
+        return "P:"+pollution;
+    }
+
 
     property string m_text_warning_nosync_frequency: "WARNING: THIS CHANGES YOUR GROUND UNIT FREQUENCY WITHOUT CHANGING YOUR AIR UNIT FREQUENCY !
 Only enable if you want to quickly change your ground unit's frequency to the already set frequency of a running air unit (And know both frequency and channel width on top of your head)";
@@ -139,6 +198,13 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
             ChannelScanDialoque{
                 id: dialoqueStartChannelScan
+            }
+            FrequencyChangeDialoque{
+                id: dialoqueChangeFrequency
+            }
+
+            DialoqueAnalyzeChannels{
+                id: dialoqueAnalyzeChannels
             }
 
             Column {
@@ -172,7 +238,16 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             }
                         }
                         Text{
-                            text: get_text_current_loss_pollution()
+                            text: get_text_current_loss()
+                            color: get_color_current_loss()
+                        }
+                        Text{
+                            text: get_text_current_pollution()
+                            color: get_color_current_pollution()
+                        }
+                        Text{
+                            text: get_text_current_throttle()
+                            color: get_color_current_throttle()
                         }
                     }
                 }
@@ -189,13 +264,13 @@ Only enable if you want to quickly change your ground unit's channel width to th
                         Button{
                             text: "Fetch"
                             onClicked: {
-
                                 /*var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
                                 if(_res>=0){
                                     buttonSwitchFreq.enabled=true
                                 }
                                 //console.log("Got ",_res)
                                 update_combobox(comboBoxFreq,_res);*/
+                                create_list_model_supported();
                             }
                         }
                         ComboBox {
@@ -206,28 +281,44 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             // 5.8G is generally recommended and much more commonly used than 2.4G. Default to it when unknown, just like openhd does
                             currentIndex: 0
                             // Customization
-                            /*delegate: ItemDelegate {
+                            delegate: ItemDelegate {
                                 width: comboBoxFreq.width
                                 contentItem: Rectangle{
                                     color: "transparent"
                                     anchors.fill: parent
+                                    anchors.margins: 6
                                     Rectangle{
                                         anchors.fill: parent
                                         color: "transparent"
                                         //border.color: "red"
                                     }
-                                    Text {
-                                        anchors.fill: parent
-                                        text: title
-                                        //color: "#21be2b"
-                                        font: comboBoxFreq.font
-                                        elide: Text.ElideLeft
-                                        verticalAlignment: Text.AlignVCenter
+                                    RowLayout{
+                                        width:parent.width
+                                        height:parent.height
+                                        Text {
+                                            //anchors.fill: parent
+                                            //anchors.centerIn: parent
+                                            //Layout.fillHeight: true
+                                            Layout.fillWidth: true
+                                            text: title
+                                            //color: "#21be2b"
+                                            //color: comboBoxFreq.currentIndex === index ? "blue" : "black"
+                                            color: get_combobox_text_color(comboBoxFreq.currentIndex,index,value)
+                                            font: comboBoxFreq.font
+                                            //elide: comboBoxFreq
+                                            //verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Text{
+                                            text: get_text_pollution(pollution)
+                                            color: get_color_pollution(pollution)
+                                        }
+                                        /*Text{
+                                            text: "Y";
+                                        }*/
                                     }
-
                                 }
                                 highlighted: comboBoxFreq.highlightedIndex === index
-                            }*/
+                            }
                             /*background: Rectangle {
                                 visible: control.enabled && control.editable && !control.flat
                                 border.width: parent && parent.activeFocus ? 2 : 1
@@ -242,6 +333,12 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             id: buttonSwitchFreq
                             //enabled: false
                             onClicked: {
+                                // Ground needs to be alive and well
+                                if(!_ohdSystemGround.is_alive){
+                                    _messageBoxInstance.set_text_and_show("Ground unit not alive",5);
+                                    return;
+                                }
+                                // FC needs to be disarmed (unless disabled)
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
                                     var text="Cannot change frequency while FC is armed.";
                                     _messageBoxInstance.set_text_and_show(text,5);
@@ -252,10 +349,15 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                     _messageBoxInstance.set_text_and_show("Please select a valid frequency",5);
                                     return;
                                 }
-                                _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
+                                var result=_synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
+                                if(result){
+                                    _messageBoxInstance.set_text_and_show("Succesfully set air and ground to "+selectedValue+"Mhz",5);
+                                }else{
+                                    dialoqueChangeFrequency.initialize_and_show_frequency(selectedValue);
+                                }
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
-                            enabled: _synchronizedSettings.has_fetched_channels
+                            enabled: _synchronizedSettings.ui_rebuild_models>=0
                         }
                         Button{
                             text: "INFO"
@@ -265,16 +367,6 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                         "[X] - Not a legal wifi frequency, AR9271 does them anyways."+
 "It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
                                 _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }
-                        Switch{
-                            text: "allow gnd only"
-                            checked: settings.qopenhd_allow_changing_ground_unit_frequency_no_sync
-                            onCheckedChanged: {
-                                if(settings.qopenhd_allow_changing_ground_unit_frequency_no_sync != checked && checked){
-                                    _messageBoxInstance.set_text_and_show(m_text_warning_nosync_frequency,10)
-                                }
-                                settings.qopenhd_allow_changing_ground_unit_frequency_no_sync = checked
                             }
                         }
                     }
@@ -307,10 +399,16 @@ Only enable if you want to quickly change your ground unit's channel width to th
                         Button{
                             text: "Change Channel Width"
                             id: buttonSwitchChannelWidth
-                            enabled: false
+                            enabled: _synchronizedSettings.ui_rebuild_models>=0
                             onClicked: {
+                                // Ground needs to be alive and well
+                                if(!_ohdSystemGround.is_alive){
+                                    _messageBoxInstance.set_text_and_show("Ground unit not alive",5);
+                                    return;
+                                }
+                                // FC needs to be disarmed (unless disabled)
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change channel width while FC is armed."
+                                    var text="Cannot change channel width while FC is armed.";
                                     _messageBoxInstance.set_text_and_show(text,5);
                                     return;
                                 }
@@ -319,7 +417,12 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                     _messageBoxInstance.set_text_and_show("Please select a valid channel width",5);
                                     return;
                                 }
-                                _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
+                                var result=_synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue);
+                                if(result){
+                                    _messageBoxInstance.set_text_and_show("Succesfully set air and ground to "+selectedValue+"Mhz",5);
+                                }else{
+                                    dialoqueChangeFrequency.initialize_and_show_channel_width(selectedValue);
+                                }
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                             //Material.background: Material.Light;
@@ -331,16 +434,6 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                 var text="Only supported on rtl8812au!\nA channel width of 40Mhz gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of "+
 "interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only changeable on rtl8812au."
                                 _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }
-                        Switch{
-                            text: "allow gnd only"
-                            checked: settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync
-                            onCheckedChanged: {
-                                if(settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync != checked && checked){
-                                    _messageBoxInstance.set_text_and_show(m_text_warning_nosync_chanel_width,10)
-                                }
-                                settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync = checked
                             }
                         }
                     }
@@ -399,7 +492,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             text: "ANALYZE"
                             enabled: _ohdSystemGround.is_alive
                             onClicked: {
-                                _synchronizedSettings.start_analyze_channels()
+                                dialoqueAnalyzeChannels.setup_and_show();
                             }
                         }
                         ProgressBar{

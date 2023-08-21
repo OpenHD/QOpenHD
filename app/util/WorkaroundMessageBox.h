@@ -29,12 +29,12 @@ public:
     // @param optional_time_until_autoremove :
     // time until the message is automatically removed (for goggles users) - leave at -1 if the message shall stay there
     // until the user clicks okay
-    Q_INVOKABLE void set_text_and_show(QString text,int optional_time_until_autoremove=-1){
+    Q_INVOKABLE void set_text_and_show(QString text,int optional_time_until_autoremove_seconds=-1){
         // We might not be called from the UI thread, which is why we use the signal workaround
-        emit signal_set_text_and_show(text,optional_time_until_autoremove);
+        emit signal_set_text_and_show(text,optional_time_until_autoremove_seconds);
     }
-    static void makePopupMessage(QString text,int optional_time_until_autoremove=-1){
-        WorkaroundMessageBox::instance().set_text_and_show(text,optional_time_until_autoremove);
+    static void makePopupMessage(QString text,int optional_time_until_autoremove_seconds=-1){
+        WorkaroundMessageBox::instance().set_text_and_show(text,optional_time_until_autoremove_seconds);
     }
 public:
     L_RO_PROP(QString,text,set_text,"NONE");

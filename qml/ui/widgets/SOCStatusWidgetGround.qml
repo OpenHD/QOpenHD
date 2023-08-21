@@ -41,6 +41,7 @@ BaseWidget {
     property int m_curr_core_freq_mhz : _ohdSystemGround.curr_core_freq_mhz
     property int m_curr_v3d_freq_mhz : _ohdSystemGround.curr_v3d_freq_mhz
     property int m_ram_usage_perc  : _ohdSystemGround.ram_usage_perc
+    property bool m_rpi_undervolt_error: _ohdSystemGround.rpi_undervolt_error
 
     // 0 - no warning
     // 1 - caution
@@ -320,6 +321,15 @@ BaseWidget {
             Text {
                 //Layout.alignment: left
                 text: "RAM: "+m_ram_usage_perc+" %"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "RPI undervolt: "+(m_rpi_undervolt_error ? "Y" : "N")
                 color: "white"
                 font.bold: true
                 height: parent.height
