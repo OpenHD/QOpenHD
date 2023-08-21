@@ -1,4 +1,4 @@
-name: build_package_x86_23.04
+name: build_package_LUNAR
 
 on:
   push:
