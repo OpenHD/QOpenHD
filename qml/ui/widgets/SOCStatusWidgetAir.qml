@@ -398,7 +398,7 @@ BaseWidget {
             text: String.fromCodePoint(0xf0e7)+"!"
             anchors.right: chip_icon.left
             anchors.top: chip_icon.top
-            anchors.rightMargin: 2
+            anchors.rightMargin: 0
             anchors.topMargin: 2
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Font Awesome 5 Free"
