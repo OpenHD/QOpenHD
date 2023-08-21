@@ -146,6 +146,11 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_supported_channe
 
 void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
 {
+    {
+        std::stringstream ss;
+        ss<<"Analyzing "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
+        ss<<" Progress:"<<(int)msg.progress<<"%";
+    }
     //qDebug()<<"Got progress "<<msg.channel_mhz<<"@"<<msg.channel_width_mhz<<"Mhz "<<msg.progress<<"%";
     std::stringstream ss;
     ss<<"Analyzed "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
@@ -165,6 +170,17 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels
 
 void SynchronizedSettings::process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t &msg)
 {
+    {
+        std::stringstream ss;
+        ss<<"Scanned "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
+        ss<<" Progress:"<<(int)msg.progress<<"%";
+        if(msg.success){
+            ss<<"-found";
+        }else{
+            ss<<"-not found";
+        }
+        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+    }
     std::stringstream ss;
     ss<<"Scanned "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
     ss<<"Progress:"<<(int)msg.progress<<"%";
