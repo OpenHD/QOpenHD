@@ -122,14 +122,6 @@ ApplicationWindow {
             anchors.centerIn: parent
         }
 
-        RestartDialog {
-            id: restartDialog
-            height: 240
-            width: 400
-            z: 5.0
-            anchors.centerIn: parent
-        }
-
         // UI areas
 
         HUDOverlayGrid {

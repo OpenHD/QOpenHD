@@ -1,0 +1,1 @@
+QOpenHD settings

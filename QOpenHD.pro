@@ -197,6 +197,8 @@ DISTFILES += \
     extra_build_qmake.sh \
     lib/h264nal/h264nal.pri \
     qml/qtquickcontrols2.conf \
+    qml/ui/configpopup/openhd_settings/README.md \
+    qml/ui/configpopup/qopenhd_settings/README.md \
     qml/ui/qmldir \
 
 
