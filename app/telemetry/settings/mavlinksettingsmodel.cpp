@@ -640,6 +640,28 @@ bool MavlinkSettingsModel::set_param_air_only_mcs(int value)
     return false;
 }
 
+bool MavlinkSettingsModel::set_param_tx_power(bool is_tx_power_index, bool is_for_armed_state, int value)
+{
+    qDebug()<<"set_param_tx_power "<<(is_tx_power_index ? "IDX" : "MW")<<" "<<(is_for_armed_state ? "ARMED" : "DISARMED")<<" "<<value;
+    std::string param_id="";
+    if(is_tx_power_index){
+        if(is_for_armed_state){
+            param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_ARMED;
+        }else{
+            param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_OVERRIDE;
+        }
+    }else{
+        if(is_for_armed_state){
+            param_id=openhd::WB_TX_POWER_MILLI_WATT_ARMED;
+        }else{
+            param_id=openhd::WB_TX_POWER_MILLI_WATT;
+        }
+    }
+    const auto ret=try_update_parameter_int(param_id.c_str(),value);
+    if(ret=="")return true;
+    return false;
+}
+
 QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     auto tmp=find_param(param_id.toStdString());

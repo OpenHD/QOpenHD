@@ -150,6 +150,13 @@ BaseWidget {
         }
     }
 
+    function set_channel_width(channel_width_mhz){
+        var result = _synchronizedSettings.change_param_air_and_ground_channel_width(channel_width_mhz)
+        if(result != true){
+            _hudLogMessagesModel.add_message_warning("Cannot set "+channel_width_mhz+"Mhz Bandwidth")
+        }
+    }
+
     property string m_DESCRIPTION_CHANNEL_WIDTH: "
 A higher channel width (40Mhz) increases the bitrate significantly, but reduces the maximum range of the system.
 In cntrast to the MCS index (see below), it can only be changed while disarmed (not during flight),
@@ -157,13 +164,14 @@ It is recommended to use a 40Mhz channel width if your hardware supports it,
 and controll the MCS index for fine adjustments."
 
     property string m_DESCRIPTION_MCS: "
-The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data. If you want to, you can change this value using the RC channel switcher -
-this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)"
+The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data."+
+"This means that with a lower MCS index, you have a much greater range (but less bitrate).If you want to, you can change this value using the RC channel switcher -"+
+"this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)"
 
     property string m_DESCRIPTION_STABILITY: "
-Make the video more stable (less microfreezes) on the cost of less image quality.
-Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability
-and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel."
+Make the video more stable (less microfreezes) on the cost of less image quality."+
+"Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability"+
+"and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel."
 
     widgetDetailComponent: ScrollView {
 
@@ -327,7 +335,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                             Button{
                                 text: "20Mhz"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_and_ground_channel_width(20,true)
+                                    set_channel_width(20)
                                 }
                                 highlighted: m_curr_channel_width==20
                                 enabled: !m_is_armed
@@ -335,7 +343,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                             Button{
                                 text: "40Mhz"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_and_ground_channel_width(40,true)
+                                   set_channel_width(40)
                                 }
                                 highlighted:  m_curr_channel_width==40
                                 enabled: !m_is_armed
@@ -416,7 +424,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                                 highlighted: m_curr_mcs_index==1
                             }
                             Button{
-                                text: "MCS2"
+                                text: "MCS2\n(DEFAULT)"
                                 onClicked: {
                                     set_air_only_mcs(2)
                                 }

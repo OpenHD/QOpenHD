@@ -5,6 +5,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
+import QtQuick.Controls.Styles 1.4
 
 import Qt.labs.settings 1.0
 
@@ -169,6 +170,28 @@ Rectangle{
         return "P:"+pollution;
     }
 
+    function get_text_tx_power(ground){
+        var card= ground ? _wifi_card_gnd0 : _wifi_card_air;
+        //var card= _wifi_card_gnd0;
+        var ret = ground ? "TX PWR GND: " : "TX PWR AIR: ";
+        var tx_power=card.tx_power;
+        var card_type=card.card_type;
+        if(!card.alive){
+            ret+="No info";
+            return ret;
+        }
+        if(card_type<=0){
+            ret+=(tx_power+" mW");
+            ret+=" (maybe,unreliable)";
+            return ret;
+        }
+        if(card_type==1){
+            ret+=(tx_power+" (unitless)");
+            return ret;
+        }
+        ret+=(tx_power+" mW");
+        return ret;
+    }
 
     property string m_text_warning_nosync_frequency: "WARNING: THIS CHANGES YOUR GROUND UNIT FREQUENCY WITHOUT CHANGING YOUR AIR UNIT FREQUENCY !
 Only enable if you want to quickly change your ground unit's frequency to the already set frequency of a running air unit (And know both frequency and channel width on top of your head)";
@@ -205,6 +228,10 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
             DialoqueAnalyzeChannels{
                 id: dialoqueAnalyzeChannels
+            }
+
+            TxPowerDialoque{
+                id: txPowerDialoque
             }
 
             Column {
@@ -249,6 +276,17 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             text: get_text_current_throttle()
                             color: get_color_current_throttle()
                         }
+                        Item{ // padding
+                            width: 20
+                        }
+                        ColumnLayout{
+                            Text{
+                                text: get_text_tx_power(true)
+                            }
+                            Text{
+                                text: get_text_tx_power(false)
+                            }
+                        }
                     }
                 }
 
@@ -281,6 +319,22 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             // 5.8G is generally recommended and much more commonly used than 2.4G. Default to it when unknown, just like openhd does
                             currentIndex: 0
                             // Customization
+                            // https://stackoverflow.com/questions/31411844/how-to-limit-the-size-of-drop-down-of-a-combobox-in-qml
+                            /*style: ComboBoxStyle {
+                                id: comboBoxStyle
+
+                                // drop-down customization here
+                                property Component __dropDownStyle: MenuStyle {
+                                  __maxPopupHeight: Math.max(55, //min value to keep it to a functional size even if it would not look nice
+                                                             Math.min(400,
+                                                                      //limit the max size so the menu is inside the application bounds
+                                                                        comboBoxStyle.control.Window.height
+                                                                      - mapFromItem(comboBoxStyle.control, 0,0).y
+                                                                      - comboBoxStyle.control.height))
+                                  __menuItemType: "comboboxitem" //not 100% sure if this is needed
+                                } //Component __dropDownStyle: MenuStyle
+                            } //style: ComboBoxStyle */
+
                             delegate: ItemDelegate {
                                 width: comboBoxFreq.width
                                 contentItem: Rectangle{
@@ -438,6 +492,40 @@ Only enable if you want to quickly change your ground unit's channel width to th
                         }
                     }
                 }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    color: "#00000000"
+
+                    RowLayout{
+                        anchors.verticalCenter: parent.verticalCenter
+                        Layout.preferredWidth: 200
+                        height: parent.height
+                        IconInfoButon{
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show("Change GND / AIR TX power. Higher Air TX power results in more range on the downlink (video,telemetry).
+Higher GND TX power results in more range on the uplink (mavlink up). You can set different tx power for armed / disarmed state (requres FC),
+but it is not possible to change the TX power during flight (due to the risk of misconfiguration / power outage).")
+                            }
+                        }
+                        Button{
+                            text: "GND TX PWR"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                txPowerDialoque.open_tx_power_dialoque(true)
+                            }
+                        }
+                        Button{
+                            text: "AIR TX PWR"
+                            enabled: _ohdSystemAir.is_alive
+                            onClicked: {
+                                txPowerDialoque.open_tx_power_dialoque(false)
+                            }
+                        }
+                    }
+                }
+
                 Rectangle {
                     width: parent.width
                     height: rowHeight

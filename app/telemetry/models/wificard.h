@@ -21,6 +21,8 @@ class WiFiCard : public QObject
     // A card might have more than one antenna
     L_RO_PROP(int,curr_rx_rssi_dbm_antenna1,set_curr_rx_rssi_dbm_antenna1,-128)
     L_RO_PROP(int,curr_rx_rssi_dbm_antenna2,set_curr_rx_rssi_dbm_antenna2,-128)
+    //
+    L_RO_PROP(int,card_type,set_card_type,-1) // -1 = no info available yet, otherwise, openhd card type (0..?)
 public:
     explicit WiFiCard(bool is_air,int card_idx,QObject *parent = nullptr);
     static constexpr int N_CARDS=4;

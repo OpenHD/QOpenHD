@@ -151,6 +151,7 @@ ApplicationWindow {
         WorkaroundMessageBox{
             id: workaroundmessagebox
         }
+        // Used by settings that require a restart
         RestartQOpenHDMessageBox{
             id: restartQOpenHDMessageBox
         }

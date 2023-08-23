@@ -80,7 +80,6 @@
         <file>ui/elements/LanguageSelectForm.ui.qml</file>
         <file alias="round.png">../icons/round.png</file>
         <file>ui/elements/Card.qml</file>
-        <file>ui/elements/CardForm.ui.qml</file>
         <file>ui/widgets/SpeedSecondWidget.qml</file>
         <file>osdfonts/Acme-Regular.ttf</file>
         <file>osdfonts/Aldrich-Regular.ttf</file>
@@ -198,7 +197,6 @@
         <file>ui/widgets/RCRssiWidget.qml</file>
         <file>video/ExpMainVideoAndroid.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
-        <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
@@ -244,5 +242,7 @@
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/TxPowerDialoque.qml</file>
+        <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
     </qresource>
 </RCC>

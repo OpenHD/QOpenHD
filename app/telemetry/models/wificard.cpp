@@ -80,6 +80,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
             m_last_packets_in_X_second_recalculation=std::chrono::steady_clock::now();
         }
     }
+    set_card_type(msg.card_type);
 }
 
 int WiFiCard::helper_get_gnd_curr_best_rssi()

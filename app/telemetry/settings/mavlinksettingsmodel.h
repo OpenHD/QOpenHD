@@ -166,7 +166,8 @@ public:
     // allows changing the MCS index of the downlink (e.g. the mcs index used for injecting packets on the air unit)
     // @param use_hud: when true, errors are logged to the HUD, otherwise, they are logged via a message popup
     Q_INVOKABLE bool set_param_air_only_mcs(int value);
-
+    //
+    Q_INVOKABLE bool set_param_tx_power(bool is_tx_power_index,bool is_for_armed_state,int value);
 private:
     QString get_short_description(QString param_id)const;
     std::mutex m_update_all_async_mutex;

@@ -34,6 +34,7 @@ Rectangle {
     function close_all(){
         visible = false;
         focus=false;
+        hudOverlayGrid.regain_focus();
     }
 
     function showAppSettings(i) {
@@ -48,11 +49,6 @@ Rectangle {
 
     color: "transparent"
 
-
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: false
-    }
     Rectangle {
         id: spacerTopSpacer
         width: 132
@@ -93,7 +89,7 @@ Rectangle {
                         color: closeButton.hovered ? "grey" : "white" // I update background color by this
                     }
                     onClicked: {
-                        settings_form.visible=false
+                        close_all();
                     }
                 }
             }

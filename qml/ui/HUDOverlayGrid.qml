@@ -16,6 +16,11 @@ Item {
 
     property bool globalDragLock: false
 
+    // Called by the config popup when closed to give focus back
+    function regain_focus(){
+        settingsButton.focus=true
+    }
+
     Image {
         id: settingsButton
         width: 48
@@ -30,11 +35,12 @@ Item {
         anchors.topMargin: 0
         focus: true
         Keys.onPressed: (event)=> {
+                console.log("Key was pressed:"+event);
                 if (event.key == Qt.Key_Return) {
                     console.log("enter was pressed");
                     event.accepted = true;
                     hudOverlayGrid.settingsButtonClicked();
-                                settingsButton.focus=false;
+                    //settingsButton.focus=false;
                 }
             }
         MouseArea {
