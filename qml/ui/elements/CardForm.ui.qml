@@ -20,13 +20,17 @@ Item {
     property color cardNameColor: "#33aaff"
     property color borderColor: "#3a000000"
 
+    property bool m_style_error: false
+
     Rectangle {
         id: innerCard
         radius: cardRadius
-        color: "white"
+        color: m_style_error ? "red" : "white"
         anchors.fill: parent
         border.width: 1
         border.color: borderColor
+        //border.width: m_style_error ? 10: 1
+        //border.color: m_style_error ? "red" : borderColor
 
     }
 

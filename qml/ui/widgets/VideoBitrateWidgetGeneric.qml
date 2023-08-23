@@ -51,14 +51,14 @@ BaseWidget {
             if(!success){
                 _hudLogMessagesModel.add_message_warning("Cannot change camera 1 resolutin");
             }else{
-                m_curr_video_format=resolution_str;
+                //m_curr_video_format=resolution_str;
             }
         }else{
             var success= _airCameraSettingsModel2.set_param_video_resolution_framerate(resolution_str)
              if(!success){
                 _hudLogMessagesModel.add_message_warning("Cannot change camera 2 resolutin");
             }else{
-                m_curr_video_format=resolution_str;
+                //m_curr_video_format=resolution_str;
             }
         }
     }

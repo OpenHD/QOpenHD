@@ -166,10 +166,13 @@ static std::vector<XParam> get_parameters_list(){
     }
     {
         auto default_values=std::vector<ImprovedIntSetting::Item>{
+            {"70% (lower)",70},
+            {"80% (lower)",80},
+            {"90% (slightly lower)",90},
             {"DEFAULT",100},
-            {"90%",90},
-            {"80%",80},
-            {"70%",70},
+            {"110% (slightly higher)",110},
+            {"120% (higher)",120},
+            {"130% (higher)",130},
             };
         append_int(ret,openhd::WB_VIDEO_RATE_FOR_MCS_ADJUSTMENT_PERC,
                    ImprovedIntSetting(1,500,default_values),

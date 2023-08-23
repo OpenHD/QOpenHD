@@ -28,7 +28,8 @@ ColumnLayout {
         return m_is_alive ? "Yes" : "NOT ALIVE !"
     }
     function get_alive_text_color(){
-        return m_is_alive ? "green" : "red"
+        //return m_is_alive ? "green" : "red"
+        return m_is_alive ? "green" : "black"
     }
 
     property int rowHeight: 64

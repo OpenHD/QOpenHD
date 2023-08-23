@@ -431,8 +431,8 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             text: "INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="Only supported on rtl8812au!\nA channel width of 40Mhz gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of "+
-"interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only changeable on rtl8812au."
+                                var text="A channel width of 40Mhz gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of "+
+"interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only supported on rtl8812au/bu on air."
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }

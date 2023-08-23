@@ -129,7 +129,6 @@ Rectangle {
             // On localhost, QOpenHD "automatically" connects due to udp localhost method
             ConfigPopupSidebarButton{
                 visible: m_show_connect_option
-
                 id:  connect_button
                 m_icon_text: "\uf6ff"
                 m_description_text: "Connect"
@@ -152,19 +151,19 @@ Rectangle {
                 m_selection_index: 2
             }
 
+            // Power
+            ConfigPopupSidebarButton{
+                id:  power
+                m_icon_text: "\uf21e" //"\uf011"
+                m_description_text: "Status"
+                m_selection_index: 3
+            }
+
             // Log
             ConfigPopupSidebarButton{
                 id:  log_button
                 m_icon_text: "\uf0c9"
                 m_description_text: "Log"
-                m_selection_index: 3
-            }
-
-            // Power
-            ConfigPopupSidebarButton{
-                id:  power
-                m_icon_text: "\uf011"
-                m_description_text: "Power"
                 m_selection_index: 4
             }
 
@@ -222,12 +221,12 @@ Rectangle {
             id:  mavlinkAllSettingsPanel //this is "openhd" menu
         }
 
-        LogMessagesStatusView{
-            id: logMessagesStatusView
+        PanelStatus {
+            id: statusPanel
         }
 
-        PanelStatus {
-            id: powerPanel
+        LogMessagesStatusView{
+            id: logMessagesStatusView
         }
 
         RcInfoPanel {

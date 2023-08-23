@@ -19,6 +19,15 @@ ColumnLayout {
     property int rowHeight: 64
     property int text_minHeight: 20
 
+    property bool m_is_alive: _fcMavlinkSystem.is_alive
+    function get_alive_text(){
+        return m_is_alive ? "Yes" : "NOT ALIVE !"
+    }
+    function get_alive_text_color(){
+        //return m_is_alive ? "green" : "red"
+        return m_is_alive ? "green" : "black"
+    }
+
     RowLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: text_minHeight
@@ -88,8 +97,8 @@ ColumnLayout {
             leftPadding: 12
         }
         Text {
-            text: _fcMavlinkSystem.is_alive ? "Yes" : "No"
-            color: _fcMavlinkSystem.is_alive ? "GREEN" : "RED"
+            text: get_alive_text()
+            color: get_alive_text_color()
             height: 24
             width: 256
             font.pixelSize: 14
