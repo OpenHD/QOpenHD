@@ -34,7 +34,7 @@ Rectangle{
     visible: false
     // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
     // but this can be replaced by the proper instance for air or camera
-    property var instanceMavlinkSettingsModel: _groundPiSettingsModel
+    property var instanceMavlinkSettingsModel: _ohdSystemGroundSettings
 
     property int customHeight: 50
 

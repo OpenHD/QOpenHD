@@ -138,13 +138,13 @@ BaseWidget {
         }
     }
     function set_fec_percentage(percentage){
-        var success=_airPiSettingsModel.set_param_fec_percentage(percentage)
+        var success=_ohdSystemAirSettingsModel.set_param_fec_percentage(percentage)
         if(success!==true){
             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set fec percentage")
         }
     }
     function set_air_only_mcs(mcs_index){
-        var success=_airPiSettingsModel.set_param_air_only_mcs(mcs_index)
+        var success=_ohdSystemAirSettingsModel.set_param_air_only_mcs(mcs_index)
         if(success!==true){
             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set MCS index")
         }

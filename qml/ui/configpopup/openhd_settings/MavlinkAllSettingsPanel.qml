@@ -80,13 +80,13 @@ Rectangle {
           MavlinkParamPanel{
               id: x2_AirSettingsPanel
               m_name: "Air"
-              m_instanceMavlinkSettingsModel: _airPiSettingsModel
+              m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
               m_instanceCheckIsAvlie: _ohdSystemAir
           }
           MavlinkParamPanel{
               id: x3_GroundSettingsPanel
               m_name: "Ground"
-              m_instanceMavlinkSettingsModel: _groundPiSettingsModel
+              m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
               m_instanceCheckIsAvlie: _ohdSystemGround
           }
       }
