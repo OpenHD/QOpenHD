@@ -247,5 +247,6 @@
         <file>ui/widgets/map/MapWidget.qml</file>
         <file>ui/elements/IconWarningButton.qml</file>
         <file>ui/configpopup/status/OpenHDAndFCStatusColumn.qml</file>
+        <file>ui/configpopup/status/ActionsColumn.qml</file>
     </qresource>
 </RCC>

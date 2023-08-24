@@ -21,7 +21,6 @@ Card {
     anchors.topMargin: 12
 
     hasHeader: false
-    height: 80
 
     cardBody: ColumnLayout {
         Row {

@@ -14,9 +14,6 @@ import "../../elements"
 // The 3 status cards (OpenHD AIR & GND, FC)
 // next to each other
 Item {
-    width: parent.width
-    height: 300
-
 
     RowLayout {
         width: parent.width
