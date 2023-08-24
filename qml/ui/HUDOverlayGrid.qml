@@ -262,9 +262,9 @@ Item {
             return ""
         }
     }*/
-    AdsbWidget{
-        id: adsbwidget
-    }
+    //AdsbWidget{
+    //    id: adsbwidget
+    //}
 
     ExampleWidget {
         id: exampleWidget

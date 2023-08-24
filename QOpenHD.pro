@@ -101,9 +101,10 @@ LinuxBuild {
 
 # adsb library
 # Only tested on linux so far, but might work on other platforms already / with minimal effort, too
-LinuxBuild {
-    #include(app/adsb/adsb_lib.pri)
-}
+# 25.August 23 removed - it is just a pain to compile, and should be updated from QGroundControl anyways.
+#LinuxBuild {
+#    include(app/adsb/adsb_lib.pri)
+#}
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
