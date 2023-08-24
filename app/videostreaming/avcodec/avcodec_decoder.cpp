@@ -5,15 +5,15 @@
 #include <sstream>
 
 #include "avcodec_helper.hpp"
-#include "../common/TimeHelper.hpp"
+#include "common/TimeHelper.hpp"
 #include "common/util_fs.h"
 
 #include "texturerenderer.h"
 #include "decodingstatistcs.h"
 #include "common/SchedulingHelper.hpp"
-#include "../util/WorkaroundMessageBox.h"
-#include "../logging/hudlogmessagesmodel.h"
-#include "../logging/logmessagesmodel.h"
+#include "util/WorkaroundMessageBox.h"
+#include "logging/hudlogmessagesmodel.h"
+#include "logging/logmessagesmodel.h"
 
 #include "ExternalDecodeService.hpp"
 

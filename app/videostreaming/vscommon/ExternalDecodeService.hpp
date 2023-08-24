@@ -6,8 +6,8 @@
 #include "common/util_fs.h"
 #include "decodingstatistcs.h"
 
-#include <../logging/logmessagesmodel.h>
-#include <../logging/hudlogmessagesmodel.h>
+#include <logging/logmessagesmodel.h>
+#include <logging/hudlogmessagesmodel.h>
 #include <thread>
 
 

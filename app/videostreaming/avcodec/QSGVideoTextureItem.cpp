@@ -6,7 +6,7 @@
 #include <QtQuick/qquickwindow.h>
 #include <QtCore/QRunnable>
 
-#include "../util/qrenderstats.h"
+#include "util/qrenderstats.h"
 
 
 QSGVideoTextureItem::QSGVideoTextureItem():
