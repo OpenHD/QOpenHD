@@ -41,22 +41,24 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
 
     set_n_received_packets(msg.count_p_received);
     set_packet_loss_perc(msg.curr_rx_packet_loss_perc);
-    if(m_tx_power >0 && m_tx_power!=msg.tx_power){
+    if(m_tx_power >0 && m_tx_power!=msg.tx_power_current){
         // TX power changed
         if(m_is_air_card){
             std::stringstream ss;
-            ss<<"Air TX Power "<<(int)msg.tx_power;
+            ss<<"Air TX Power "<<(int)msg.tx_power_current;
             HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
         }else{
             // All gnd cards use the same tx power
             if(m_card_idx==0){
                 std::stringstream ss;
-                ss<<"GND TX Power "<<(int)msg.tx_power;
+                ss<<"GND TX Power "<<(int)msg.tx_power_current;
                 HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
             }
         }
     }
-    set_tx_power(msg.tx_power);
+    set_tx_power(msg.tx_power_current);
+    set_tx_power_armed(msg.tx_power_armed);
+    set_tx_power_disarmed(msg.tx_power_disarmed);
     const bool disconnected=msg.curr_status==1;
     if(disconnected){
         const auto elapsed=std::chrono::steady_clock::now()-m_last_disconnected_warning;

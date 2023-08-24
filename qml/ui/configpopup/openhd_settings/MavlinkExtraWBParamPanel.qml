@@ -169,27 +169,29 @@ Rectangle{
         if(pollution<=0)return "FREE";
         return "P:"+pollution;
     }
+    function get_text_current_disarmed_armed(pwr_current,pwr_disarmed,pwr_armed){
+        return "Curr:"+pwr_current+" Arm:"+pwr_armed+" Disarm:"+pwr_disarmed;
+    }
 
     function get_text_tx_power(ground){
         var card= ground ? _wifi_card_gnd0 : _wifi_card_air;
         //var card= _wifi_card_gnd0;
         var ret = ground ? "TX PWR GND: " : "TX PWR AIR: ";
-        var tx_power=card.tx_power;
         var card_type=card.card_type;
         if(!card.alive){
             ret+="No info";
             return ret;
         }
-        if(card_type<=0){
-            ret+=(tx_power+" mW");
-            ret+=" (maybe,unreliable)";
-            return ret;
-        }
         if(card_type==1){
-            ret+=(tx_power+" (unitless)");
+            ret+=get_text_current_disarmed_armed(card.tx_power,card.tx_power_disarmed,card.tx_power_armed);
+            ret+=" (unitless)"
             return ret;
         }
-        ret+=(tx_power+" mW");
+        ret+=get_text_current_disarmed_armed(card.tx_power,card.tx_power_disarmed,card.tx_power_armed);
+        ret+=" MW";
+        if(card_type<=0){
+            ret+=" (maybe,unreliable)";
+        }
         return ret;
     }
 

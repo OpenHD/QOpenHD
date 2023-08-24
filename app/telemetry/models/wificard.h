@@ -17,6 +17,8 @@ class WiFiCard : public QObject
     L_RO_PROP(int,packet_loss_perc,set_packet_loss_perc,-1)
     L_RO_PROP(bool,is_active_tx,set_is_active_tx,false)
     L_RO_PROP(int,tx_power,set_tx_power,-1)
+    L_RO_PROP(int,tx_power_armed,set_tx_power_armed,-1)
+    L_RO_PROP(int,tx_power_disarmed,set_tx_power_disarmed,-1)
     L_RO_PROP(int,n_received_packets_rolling,set_n_received_packets_rolling,0)
     // A card might have more than one antenna
     L_RO_PROP(int,curr_rx_rssi_dbm_antenna1,set_curr_rx_rssi_dbm_antenna1,-128)
