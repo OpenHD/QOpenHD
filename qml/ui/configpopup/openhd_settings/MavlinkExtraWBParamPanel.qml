@@ -220,7 +220,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
     property string find_air_unit_text:"Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels, and we need to listen on each of them for a short timespan)"
 
-    property string analyze_channels_text: "Analyze channels text"
+    property string analyze_channels_text: "Listen for other WIFi packets packets on each frequency for a short amount of time - a lot of foreign packets hint at a polluted channel"
 
      property string m_info_text_change_frequency: "Frequency in Mhz and channel number. (DFS-RADAR) - also used by commercial plane(s) weather radar (not recommended unless you have ADSB). "+
 " ! OPENHD DOESN'T HAVE ANY RESTRICTIONS ! - It is your responsibility to use channels (frequencies) allowed in your country."
