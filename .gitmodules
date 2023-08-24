@@ -2,3 +2,6 @@
 [submodule "lib/mavsdk_prebuilts"]
 	path = lib/mavsdk_prebuilts
 	url = https://github.com/OpenHD/mavsdk_prebuilts.git
+[submodule "lib/MAVSDK"]
+	path = lib/MAVSDK
+	url = https://github.com/OpenHD/MAVSDK.git
