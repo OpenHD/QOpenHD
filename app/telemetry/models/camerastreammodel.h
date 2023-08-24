@@ -35,9 +35,14 @@ public:
     L_RO_PROP(QString,curr_video_measured_encoder_bitrate,set_curr_video_measured_encoder_bitrate,"N/A")
     L_RO_PROP(QString,curr_video_injected_bitrate,set_curr_video_injected_bitrate,"N/A") //includes FEC overhead
     L_RO_PROP(QString,curr_video0_injected_pps,set_curr_video0_injected_pps,"-1pps") //includes FEC overhead
-    L_RO_PROP(int,curr_video0_dropped_packets,set_curr_video0_dropped_packets,0)
+    // total n of frames that were dropped on the tx (hints at too high bitrate)
+    L_RO_PROP(int,total_n_tx_dropped_frames,set_total_n_tx_dropped_frames,0)
+    // calculated in fixed X second interval(s) - n of tx frames dropped during this interval
+    L_RO_PROP(int,curr_delta_tx_dropped_frames,set_curr_delta_tx_dropped_frames,0)
+    // DEV stats
     L_RO_PROP(QString,curr_video0_fec_encode_time_avg_min_max,set_curr_video0_fec_encode_time_avg_min_max,"avg na, min na, max na")
     L_RO_PROP(QString,curr_video0_fec_block_length_min_max_avg,set_curr_video0_fec_block_length_min_max_avg,"avg na, min na, max na")
+    L_RO_PROP(QString,curr_time_until_tx_min_max_avg,set_curr_time_until_tx_min_max_avg,"avg na, min na, max na")
     // Used to show the user a visual indication that the set and measured encoder bitrate are far apart
     // 0 - all okay, 1= bitrate is too low (yellow), 2= bitrate is too high (red)
     L_RO_PROP(int,curr_set_and_measured_bitrate_mismatch,set_curr_set_and_measured_bitrate_mismatch,0)
@@ -93,6 +98,9 @@ private:
     static std::string resolution_framerate_to_string(const ResolutionFramerate& data);
     ResolutionFramerate m_curr_res_framerate{};
     std::chrono::steady_clock::time_point m_last_hud_message_camera_status=std::chrono::steady_clock::now();
+private:
+    std::chrono::steady_clock::time_point m_last_tx_frame_drop_calculation=std::chrono::steady_clock::now();
+    int m_last_tx_frame_drop_calculation_count=-1;
 };
 
 #endif // AIRCAMERAMODEL_H

@@ -42,7 +42,18 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
     set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
     set_curr_video0_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
-    set_curr_video0_dropped_packets(msg.curr_dropped_frames);
+    set_total_n_tx_dropped_frames(msg.curr_dropped_frames);
+    if(m_last_tx_frame_drop_calculation_count<0){
+        m_last_tx_frame_drop_calculation_count=msg.curr_dropped_frames;
+    }else{
+        const auto elapsed=std::chrono::steady_clock::now()-m_last_tx_frame_drop_calculation;
+        if(elapsed>std::chrono::seconds(1)){
+            const int diff=msg.curr_dropped_frames-m_last_tx_frame_drop_calculation_count;
+            m_last_tx_frame_drop_calculation_count=msg.curr_dropped_frames;
+            set_curr_delta_tx_dropped_frames(diff);
+        }
+    }
+
     if(msg.curr_recommended_bitrate>1 && msg.curr_measured_encoder_bitrate>1 ){ //check for valid measured / set values
         const double recommended_kbits=static_cast<float>(msg.curr_recommended_bitrate);
         // Measured and set encoder bitrate should match on a 20% basis
@@ -134,6 +145,8 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance
         Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
     set_curr_video0_fec_block_length_min_max_avg(
         Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
+    set_curr_time_until_tx_min_max_avg(
+        Telemetryutil::us_min_max_avg_to_string(msg.curr_tx_delay_min_us,msg.curr_tx_delay_max_us,msg.curr_tx_delay_avg_us));
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)

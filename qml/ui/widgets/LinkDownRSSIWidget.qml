@@ -103,6 +103,9 @@ BaseWidget {
         return settings.color_text;
     }
 
+    function get_tx_error_text(){
+        return "TX hint/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
+    }
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -290,7 +293,7 @@ BaseWidget {
             width:200
             Text {
                 //Layout.alignment: left
-                text: "TX error/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
+                text: get_tx_error_text();
                 color: "white"
                 font.bold: true
                 height: parent.height

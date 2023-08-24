@@ -175,6 +175,28 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("TX drop (tot/curr):")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: m_camera_stream_model.curr_delta_tx_dropped_frames+":"+m_camera_stream_model.total_n_tx_dropped_frames
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
             Item{
                 width: parent.width
                 height: 150
