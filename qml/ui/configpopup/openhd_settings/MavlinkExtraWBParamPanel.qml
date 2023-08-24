@@ -99,33 +99,51 @@ Rectangle{
 
     // ------------------- PART HELPER FOR CURRENT LOSS / POLLUTION / THROTTLE BEGIN -------------------
     property bool m_is_ground_and_air_alive: _ohdSystemGround.is_alive && _ohdSystemAir.is_alive
+    property int m_loss_warning_level: {
+        if(!_ohdSystemAir.is_alive)return 0; // Info not available
+        var curr_rx_packet_loss_perc=_ohdSystemGround.curr_rx_packet_loss_perc;
+        if(curr_rx_packet_loss_perc>=8)return 2;
+        if(curr_rx_packet_loss_perc>=4)return 1;
+        return 0;
+    }
+
+    property int m_pollution_warning_level: {
+        if(!_ohdSystemAir.is_alive)return 0; // Info not available
+        var wb_link_pollution=_ohdSystemGround.wb_link_pollution;
+        if(wb_link_pollution>=8)return 2;
+        if(wb_link_pollution>=3)return 1;
+        return 0;
+    }
+
+    property int m_throttle_warning_level: {
+        if(!_ohdSystemAir.is_alive)return 0; // Info not available
+        var throttle=_ohdSystemAir.curr_n_rate_adjustments;
+        if(throttle>=3)return 2;
+        if(throttle>=1)return 1;
+        return 0;
+    }
+    function warning_level_to_color(level){
+        if(level==2)return "red";
+        if(level==1)return "green";
+        return "black";
+    }
+
     function get_text_current_loss(){
         if(!_ohdSystemGround.is_alive){
-            return "No Ground unit - Is OpenHD core running ?"
+            return "No Ground unit"
         }
         if(!_ohdSystemAir.is_alive){
             return "No air unit";
         }
         return "Curr Loss:"+_ohdSystemGround.curr_rx_packet_loss_perc+"%";
     }
-    function get_color_current_loss(){
-        var curr_rx_packet_loss_perc=_ohdSystemGround.curr_rx_packet_loss_perc;
-        if(curr_rx_packet_loss_perc>=10)return "red";
-        if(curr_rx_packet_loss_perc>=6)return "orange";
-        return "black";
-    }
+
     function get_text_current_pollution(){
         if(!m_is_ground_and_air_alive){
             return "";
         }
         var wb_link_pollution=_ohdSystemGround.wb_link_pollution;
         return "Pollution:"+wb_link_pollution+" %";
-    }
-    function get_color_current_pollution(){
-        var wb_link_pollution=_ohdSystemGround.wb_link_pollution;
-        if(wb_link_pollution>=8)return "red";
-        if(wb_link_pollution>=3)return "orange";
-        return "black";
     }
     function get_text_current_throttle(){
         if(!m_is_ground_and_air_alive){
@@ -137,12 +155,6 @@ Rectangle{
             return " Throttle:None"
         }
         return " Throttle: -"+throttle;
-    }
-    function get_color_current_throttle(){
-        var throttle=_ohdSystemAir.curr_n_rate_adjustments;
-        if(throttle>=3)return "red"
-        if(throttle>=1)return "orange"
-        return "black";
     }
     // ------------------- PART HELPER FOR CURRENT LOSS / POLLUTION / THROTTLE END -------------------
 
@@ -210,6 +222,26 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
     property string analyze_channels_text: "Analyze channels text"
 
+     property string m_info_text_change_frequency: "Frequency in Mhz and channel number. (DFS-RADAR) - also used by commercial plane(s) weather radar (not recommended unless you have ADSB). "+
+" ! OPENHD DOESN'T HAVE ANY RESTRICTIONS ! - It is your responsibility to use channels (frequencies) allowed in your country."
+
+    property string m_info_text_change_channel_width: "A channel width of 40Mhz (40Mhz bandwitdh) gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of "+
+"interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only supported on rtl8812au/bu on air."
+
+    property string m_info_text_change_tx_power: "Change GND / AIR TX power. Higher Air TX power results in more range on the downlink (video,telemetry).
+Higher GND TX power results in more range on the uplink (mavlink up). You can set different tx power for armed / disarmed state (requres FC),
+but it is not possible to change the TX power during flight (due to the risk of misconfiguration / power outage)."+
+    " ! OPENHD DOESN'T HAVE ANY RESTRICTIONS ON TX POWER - It is your responsibility to use a tx power allowed in your country. !"
+
+    property string m_warning_text_no_gnd_unit: "If you are running QOpenHD (the UI application) on your ground station itself, make sure OpenHD core is running. Otherwise, if you
+are running QOpenHD on an external device, connect it to your ground station."
+    property string m_warning_text_no_air_unit: "Make sure your air unit hardware is functioning properly. If you freshly flashed your air and ground unit, they use the same frequency
+and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan all channels for your air unit."
+
+    property string m_warning_info_text_polluted_channel: "OpenHD is broadcast and works best on a channel free of noise and interference. Sometimes you cannot find such a channel
+(e.g. in urban environments), in which case you might want to use the city preset from WBLink widget. To find a free channel, use a frequency analyzer on your phone,
+the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Europe, since it only allows 25mW."
+
     // Changes either the frequency or channel width
     // In case no air unit is connected / reachable, show the dialoque for the user to change the ground frequency / channel width only
     function change_frequency_or_channel_width_sync_otherwise_handle_error(frequency_mhz,channel_width_mhz){
@@ -273,11 +305,15 @@ Only enable if you want to quickly change your ground unit's channel width to th
         id:mavlinkExtraWBParamPanel
         width: parent.width
         height: parent.height
-        contentHeight: wbParamColumn.height
+        contentHeight: mainItem.height
         clip: true
+        //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+        ScrollBar.vertical.interactive: true
 
         Item {
-            anchors.fill: parent
+            id: mainItem
+            width: parent.width
+            height: rowHeight*7
 
             ChannelScanDialoque{
                 id: dialoqueStartChannelScan
@@ -300,21 +336,10 @@ Only enable if you want to quickly change your ground unit's channel width to th
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                Text{
-                    width: parent.width
-                    height: rowHeight / 2
-                    elide: Text.ElideLeft
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    text:{
-                        "NOTE: Frequency and channel width of air and ground unit BOTH need to match."
-                    }
-                }
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    color: "#00000000"
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
                         Button{
@@ -326,29 +351,37 @@ Only enable if you want to quickly change your ground unit's channel width to th
                         }
                         Text{
                             text: get_text_current_loss()
-                            color: get_color_current_loss()
+                            color: warning_level_to_color(m_loss_warning_level)
                         }
                         Text{
                             text: get_text_current_pollution()
-                            color: get_color_current_pollution()
+                            color: warning_level_to_color(m_pollution_warning_level)
                         }
                         Text{
                             text: get_text_current_throttle()
-                            color: get_color_current_throttle()
+                            color: warning_level_to_color(m_throttle_warning_level)
                         }
-                        Item{ // padding
-                            width: 20
-                        }
-                        ColumnLayout{
-                            Text{
-                                text: get_text_tx_power(true)
+                        IconWarningButton{
+                            visible: !_ohdSystemGround.is_alive
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show(m_warning_text_no_gnd_unit)
                             }
-                            Text{
-                                text: get_text_tx_power(false)
+                        }
+                        IconWarningButton{
+                            visible: _ohdSystemGround.is_alive && !_ohdSystemAir.is_alive
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show(m_warning_text_no_air_unit)
+                            }
+                        }
+                        IconWarningButton{
+                            visible: m_loss_warning_level>0 || m_pollution_warning_level>0 || m_throttle_warning_level>0;
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show(m_warning_info_text_polluted_channel)
                             }
                         }
                     }
                 }
+
 
                 // Changing the wifi frequency, r.n only 5G
                 Rectangle {
@@ -359,16 +392,9 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        Button{
-                            text: "Fetch"
+                        IconInfoButon{
                             onClicked: {
-                                /*var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
-                                if(_res>=0){
-                                    buttonSwitchFreq.enabled=true
-                                }
-                                //console.log("Got ",_res)
-                                update_combobox(comboBoxFreq,_res);*/
-                                create_list_model_supported();
+                                _messageBoxInstance.set_text_and_show(m_info_text_change_frequency)
                             }
                         }
                         ComboBox {
@@ -443,7 +469,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
 
                         Button{
-                            text: "Switch Frequency"
+                            text: "APPLY FREQ"
                             id: buttonSwitchFreq
                             //enabled: false
                             onClicked: {
@@ -468,16 +494,6 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                             enabled: _synchronizedSettings.ui_rebuild_models>=0
                         }
-                        Button{
-                            text: "INFO"
-                            Material.background:Material.LightBlue
-                            onClicked: {
-                                var text="Frequency in Mhz and channel number. (DFS-RADAR) - also used by commercial plane(s) weather radar (most likely illegal). "+
-                                        "[X] - Not a legal wifi frequency, AR9271 does them anyways."+
-"It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
-                                _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }
                     }
                 }
                 Rectangle {
@@ -488,15 +504,9 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        Button{
-                            text: "Fetch"
+                        IconInfoButon{
                             onClicked: {
-                                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
-                                if(_res>=0){
-                                    buttonSwitchChannelWidth.enabled=true
-                                }
-                                //console.log("Got ",_res)
-                                update_combobox(comboBoxChannelWidth,_res);
+                                _messageBoxInstance.set_text_and_show(m_info_text_change_channel_width)
                             }
                         }
                         ComboBox {
@@ -506,7 +516,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             implicitWidth:  elementComboBoxWidth
                         }
                         Button{
-                            text: "Change Channel Width"
+                            text: "APPLY BW"
                             id: buttonSwitchChannelWidth
                             enabled: _synchronizedSettings.ui_rebuild_models>=0
                             onClicked: {
@@ -531,15 +541,6 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                             //Material.background: Material.Light;
                         }
-                        Button{
-                            text: "INFO"
-                            Material.background:Material.LightBlue
-                            onClicked: {
-                                var text="A channel width of 40Mhz gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of "+
-"interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only supported on rtl8812au/bu on air."
-                                _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }
                     }
                 }
                 Rectangle {
@@ -554,9 +555,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                         height: parent.height
                         IconInfoButon{
                             onClicked: {
-                                _messageBoxInstance.set_text_and_show("Change GND / AIR TX power. Higher Air TX power results in more range on the downlink (video,telemetry).
-Higher GND TX power results in more range on the uplink (mavlink up). You can set different tx power for armed / disarmed state (requres FC),
-but it is not possible to change the TX power during flight (due to the risk of misconfiguration / power outage).")
+                                _messageBoxInstance.set_text_and_show(m_info_text_change_tx_power)
                             }
                         }
                         Button{
@@ -571,6 +570,15 @@ but it is not possible to change the TX power during flight (due to the risk of 
                             enabled: _ohdSystemAir.is_alive
                             onClicked: {
                                 txPowerDialoque.open_tx_power_dialoque(false)
+                            }
+                        }
+                        ColumnLayout{
+                            Layout.fillWidth: true
+                            Text{
+                                text: get_text_tx_power(true)
+                            }
+                            Text{
+                                text: get_text_tx_power(false)
                             }
                         }
                     }

@@ -35,7 +35,7 @@ WiFiCard &WiFiCard::instance_air()
 void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg)
 {
     set_alive(true);
-    set_curr_rx_rssi_dbm(msg.dummy0);
+    set_curr_rx_rssi_dbm(msg.rx_rssi);
     set_curr_rx_rssi_dbm_antenna1(msg.rx_rssi_1);
     set_curr_rx_rssi_dbm_antenna2(msg.rx_rssi_2);
 
