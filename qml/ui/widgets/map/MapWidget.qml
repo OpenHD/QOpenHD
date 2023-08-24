@@ -3,7 +3,7 @@ import QtQuick.Window 2.14
 //import QtLocation 15.5
 //import QtPositioning 15.5
 
-import "../elements";
+import "../../elements";
 
 // The actual Map canvas is in map/MapComponent.qml
 // Here we just do integration with BaseWidget and stuff like

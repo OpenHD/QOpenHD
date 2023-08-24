@@ -9,6 +9,7 @@ import OpenHD 1.0
 import Qt.labs.settings 1.0
 
 import "./widgets"
+import "./widgets/map"
 import "../resources" as Resources
 
 Item {

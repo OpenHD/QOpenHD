@@ -161,8 +161,6 @@
         <file>resources/homemarker.png</file>
         <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
         <file>ui/widgets/QRenderStatsWidget.qml</file>
-        <file>ui/widgets/MapWidget.qml</file>
-        <file>ui/widgets/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapComponent.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
         <file>resources/master1.png</file>
@@ -244,5 +242,8 @@
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
         <file>ui/configpopup/openhd_settings/TxPowerDialoque.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
+        <file>ui/widgets/map/ADSBMapItem.qml</file>
+        <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
+        <file>ui/widgets/map/MapWidget.qml</file>
     </qresource>
 </RCC>

@@ -9,6 +9,8 @@ import Qt.labs.settings 1.0
 import QtQuick.Window 2.12
 //import QtLocation 5.15
 
+import "../";
+
 import OpenHD 1.0
 
 BaseWidget {
