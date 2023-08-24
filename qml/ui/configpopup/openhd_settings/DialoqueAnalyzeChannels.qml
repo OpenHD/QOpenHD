@@ -64,7 +64,7 @@ PLEASE DO NOT CHANGE SETTINGS WHILE ANALYZING."
                 highlighted: true
                 Layout.alignment: Qt.AlignRight
                 onPressed: {
-                    var result=_synchronizedSettings.start_analyze_channels()
+                    var result=_wbLinkSettingsHelper.start_analyze_channels()
                     if(result!==true){
                         _messageBoxInstance.set_text_and_show("Busy,please try again later",3)
                     }else{

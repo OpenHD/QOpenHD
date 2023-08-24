@@ -151,7 +151,7 @@ BaseWidget {
     }
 
     function set_channel_width(channel_width_mhz){
-        var result = _synchronizedSettings.change_param_air_and_ground_channel_width(channel_width_mhz)
+        var result = _wbLinkSettingsHelper.change_param_air_and_ground_channel_width(channel_width_mhz)
         if(result != 0){
             _hudLogMessagesModel.add_message_warning("Cannot set "+channel_width_mhz+"Mhz Bandwidth")
         }

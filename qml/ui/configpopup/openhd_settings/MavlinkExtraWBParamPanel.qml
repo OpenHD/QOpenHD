@@ -58,36 +58,36 @@ Rectangle{
         supported_frequencies_model.clear()
         //supported_frequencies_model.append({title: "Unknown", value: -1})
         for(var i=0;i<100;i++){
-            var frequency=_synchronizedSettings.get_next_supported_frequency(i);
+            var frequency=_wbLinkSettingsHelper.get_next_supported_frequency(i);
             if(frequency<=0)break; // no more supported frequences
-            var text=_synchronizedSettings.get_frequency_description(frequency)
-            var v_pollution= _synchronizedSettings.get_frequency_pollution(frequency)
+            var text=_wbLinkSettingsHelper.get_frequency_description(frequency)
+            var v_pollution= _wbLinkSettingsHelper.get_frequency_pollution(frequency)
             supported_frequencies_model.append({title: text, value: frequency, pollution: v_pollution })
         }
-        var index=find_index(supported_frequencies_model,_synchronizedSettings.curr_channel_mhz);
+        var index=find_index(supported_frequencies_model,_wbLinkSettingsHelper.curr_channel_mhz);
         comboBoxFreq.model=supported_frequencies_model
         if(index>=0){
             comboBoxFreq.currentIndex=index;
         }else{
             comboBoxFreq.currentIndex=0;
-            console.log("Seems not to be a valid channel "+_synchronizedSettings.curr_channel_mhz)
+            console.log("Seems not to be a valid channel "+_wbLinkSettingsHelper.curr_channel_mhz)
         }
     }
 
     function update_channel_width(){
-        var index=find_index(channel_width_model,_synchronizedSettings.curr_channel_width_mhz);
+        var index=find_index(channel_width_model,_wbLinkSettingsHelper.curr_channel_width_mhz);
         if(index>=0){
             comboBoxChannelWidth.currentIndex=index;
         }else{
             comboBoxChannelWidth.currentIndex=0;
-            console.log("Seems not to be a valid channel width"+_synchronizedSettings.curr_channel_width_mhz)
+            console.log("Seems not to be a valid channel width"+_wbLinkSettingsHelper.curr_channel_width_mhz)
         }
     }
 
     // We get notified every time we should re-build the model(s) and their current selection
-    property int m_ui_rebuild_models : _synchronizedSettings.ui_rebuild_models
+    property int m_ui_rebuild_models : _wbLinkSettingsHelper.ui_rebuild_models
     onM_ui_rebuild_modelsChanged: {
-        console.log("Rebuilding models "+_synchronizedSettings.ui_rebuild_models);
+        console.log("Rebuilding models "+_wbLinkSettingsHelper.ui_rebuild_models);
         create_list_model_supported();
         update_channel_width()
     }
@@ -160,7 +160,7 @@ Rectangle{
 
 
     function get_combobox_text_color(element_index,curr_index,frequency){
-        if(frequency===_synchronizedSettings.curr_channel_mhz){
+        if(frequency===_wbLinkSettingsHelper.curr_channel_mhz){
             return "green";
         }
         if(element_index===curr_index){
@@ -253,10 +253,10 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
         var change_frequency=false;
         if(frequency_mhz>0){
             change_frequency=true;
-            result= _synchronizedSettings.change_param_air_and_ground_frequency(frequency_mhz);
+            result= _wbLinkSettingsHelper.change_param_air_and_ground_frequency(frequency_mhz);
         }else{
             change_frequency=false;
-            result = _synchronizedSettings.change_param_air_and_ground_channel_width(channel_width_mhz);
+            result = _wbLinkSettingsHelper.change_param_air_and_ground_channel_width(channel_width_mhz);
         }
         if(result==0){
             var message="";
@@ -289,7 +289,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
         if(result==-4){ // Air unit rejected the param
             var message = "";
             if(change_frequency){
-                message = _synchronizedSettings.curr_channel_width_mhz==40 ? "Frequency not supported - perhaps 40Mhz not possible on this channel ?":
+                message = _wbLinkSettingsHelper.curr_channel_width_mhz==40 ? "Frequency not supported - perhaps 40Mhz not possible on this channel ?":
                             "Frequency not supported by air unit";
             }else{
                 message = channel_width_mhz==40 ? "40Mhz not supported on this channel":
@@ -492,7 +492,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 change_frequency_or_channel_width_sync_otherwise_handle_error(selectedValue,-1);
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
-                            enabled: _synchronizedSettings.ui_rebuild_models>=0
+                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0
                         }
                     }
                 }
@@ -518,7 +518,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         Button{
                             text: "APPLY BW"
                             id: buttonSwitchChannelWidth
-                            enabled: _synchronizedSettings.ui_rebuild_models>=0
+                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0
                             onClicked: {
                                 // Ground needs to be alive and well
                                 if(!_ohdSystemGround.is_alive){
@@ -615,7 +615,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             //indeterminate: true
                             from: 0
                             to: 100
-                            value: _synchronizedSettings.progress_scan_channels_perc
+                            value: _wbLinkSettingsHelper.progress_scan_channels_perc
                         }
                     }
                 }
@@ -649,7 +649,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             //indeterminate: true
                             from: 0
                             to: 100
-                            value: _synchronizedSettings.progress_analyze_channels_perc
+                            value: _wbLinkSettingsHelper.progress_analyze_channels_perc
                         }
                     }
                 }
@@ -657,7 +657,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                     width: parent.width
                     height: rowHeight
                     Text{
-                        text: _synchronizedSettings.text_for_qml
+                        text: _wbLinkSettingsHelper.text_for_qml
                     }
                 }
             }

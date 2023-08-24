@@ -18,7 +18,7 @@
 #include "util/qopenhd.h"
 
 #include <../util/WorkaroundMessageBox.h>
-#include "../settings/synchronizedsettings.h"
+#include "../settings/wblinksettingshelper.h"
 
 // From https://netbeez.net/blog/what-is-mcs-index/
 static std::vector<int> get_dbm_20mhz(){
@@ -185,21 +185,21 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             mavlink_openhd_wifbroadcast_supported_channels_t parsedMsg;
             mavlink_msg_openhd_wifbroadcast_supported_channels_decode(&msg,&parsedMsg);
             if(!m_is_air){
-                SynchronizedSettings::instance().process_message_openhd_wifibroadcast_supported_channels(parsedMsg);
+                WBLinkSettingsHelper::instance().process_message_openhd_wifibroadcast_supported_channels(parsedMsg);
             }
         }break;
         case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_ANALYZE_CHANNELS_PROGRESS:{
             mavlink_openhd_wifbroadcast_analyze_channels_progress_t parsedMsg;
             mavlink_msg_openhd_wifbroadcast_analyze_channels_progress_decode(&msg,&parsedMsg);
             if(!m_is_air){
-                SynchronizedSettings::instance().process_message_openhd_wifibroadcast_analyze_channels_progress(parsedMsg);
+                WBLinkSettingsHelper::instance().process_message_openhd_wifibroadcast_analyze_channels_progress(parsedMsg);
             }
         }break;
         case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_SCAN_CHANNELS_PROGRESS:{
             mavlink_openhd_wifbroadcast_scan_channels_progress_t parsedMsg;
             mavlink_msg_openhd_wifbroadcast_scan_channels_progress_decode(&msg,&parsedMsg);
             if(!m_is_air){
-                SynchronizedSettings::instance().process_message_openhd_wifibroadcast_scan_channels_progress(parsedMsg);
+                WBLinkSettingsHelper::instance().process_message_openhd_wifibroadcast_scan_channels_progress(parsedMsg);
             }
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
@@ -292,8 +292,8 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
     set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
     if(!m_is_air){
-        SynchronizedSettings::instance().validate_and_set_channel_mhz(msg.curr_tx_channel_mhz);
-        SynchronizedSettings::instance().validate_and_set_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+        WBLinkSettingsHelper::instance().validate_and_set_channel_mhz(msg.curr_tx_channel_mhz);
+        WBLinkSettingsHelper::instance().validate_and_set_channel_width_mhz(msg.curr_tx_channel_w_mhz);
     }
     set_curr_bitrate_kbits(msg.curr_rate_kbits);
     set_curr_n_rate_adjustments(msg.curr_n_rate_adjustments);

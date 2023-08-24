@@ -73,13 +73,13 @@ SOURCES += \
     $$PWD/models/fcmapmodel.cpp \
     $$PWD/models/fcmavlinksettingsmodel.cpp \
     $$PWD/requestmessagehelper.cpp \
+    $$PWD/settings/wblinksettingshelper.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/telemetry/models/camerastreammodel.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
     app/telemetry/models/wificard.cpp \
     app/telemetry/settings/improvedintsetting.cpp \
     app/telemetry/settings/improvedstringsetting.cpp \
-    app/telemetry/settings/synchronizedsettings.cpp \
     app/telemetry/MavlinkTelemetry.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
     app/telemetry/models/fcmavlinksystem.cpp \
@@ -93,6 +93,7 @@ HEADERS += \
     $$PWD/models/fcmessageintervalhelper.hpp \
     $$PWD/requestmessagehelper.h \
     $$PWD/settings/documented_param.h \
+    $$PWD/settings/wblinksettingshelper.h \
     app/telemetry/mavsdk_helper.hpp \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
@@ -103,7 +104,6 @@ HEADERS += \
     app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/improvedintsetting.h \
     app/telemetry/settings/improvedstringsetting.h \
-    app/telemetry/settings/synchronizedsettings.h \
     app/telemetry/telemetryutil.hpp \
     app/telemetry/MavlinkTelemetry.h \
     app/telemetry/settings/mavlinksettingsmodel.h \

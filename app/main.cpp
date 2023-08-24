@@ -24,7 +24,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/MavlinkTelemetry.h"
 #include "telemetry/models/rcchannelsmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
-#include "telemetry/settings/synchronizedsettings.h"
+#include "telemetry/settings/wblinksettingshelper.h"
 #endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
 #include "osd/speedladder.h"
@@ -290,7 +290,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
     // exp
     //engine.rootContext()->setContextProperty("_fcSettingsModel", &MavlinkSettingsModel::instanceFC());
-    engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
+    engine.rootContext()->setContextProperty("_wbLinkSettingsHelper", &WBLinkSettingsHelper::instance());
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkMissionItemsModel", &FCMavlinkMissionItemsModel::instance());

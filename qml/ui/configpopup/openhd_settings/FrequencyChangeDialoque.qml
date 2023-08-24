@@ -134,7 +134,7 @@ AS WELL AS YOUR BIND PHRASE"
                 onPressed: {
                     if(m_type==0){
                         console.log("Try changing ground only to frequency "+m_wanted_frequency)
-                        var result = _synchronizedSettings.change_param_ground_only_frequency(m_wanted_frequency);
+                        var result = _wbLinkSettingsHelper.change_param_ground_only_frequency(m_wanted_frequency);
                         if(result){
                             _messageBoxInstance.set_text_and_show("GND set to frequency "+m_wanted_frequency+"Mhz",3);
                             m_visible=false;
@@ -143,7 +143,7 @@ AS WELL AS YOUR BIND PHRASE"
                         }
                     }else{
                         console.log("Try changing ground only to channel width "+m_wanted_channel_width)
-                        var result = _synchronizedSettings.change_param_ground_only_channel_width(m_wanted_channel_width);
+                        var result = _wbLinkSettingsHelper.change_param_ground_only_channel_width(m_wanted_channel_width);
                         if(result){
                             _messageBoxInstance.set_text_and_show("GND set to channel width "+m_wanted_channel_width+"Mhz",3);
                             m_visible=false;

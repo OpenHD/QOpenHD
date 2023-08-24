@@ -1,4 +1,4 @@
-#include "synchronizedsettings.h"
+#include "wblinksettingshelper.h"
 
 #include "../models/aohdsystem.h"
 #include "mavlinksettingsmodel.h"
@@ -11,15 +11,15 @@
 #include <sstream>
 
 
-SynchronizedSettings::SynchronizedSettings(QObject *parent)
+WBLinkSettingsHelper::WBLinkSettingsHelper(QObject *parent)
     : QObject{parent}
 {
     m_request_message_helper=std::make_unique<RequestMessageHelper>();
 }
 
-SynchronizedSettings& SynchronizedSettings::instance()
+WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
 {
-    static SynchronizedSettings tmp;
+    static WBLinkSettingsHelper tmp;
     return tmp;
 }
 
@@ -56,7 +56,7 @@ SynchronizedSettings& SynchronizedSettings::instance()
     }
 }*/
 
-bool SynchronizedSettings::start_analyze_channels()
+bool WBLinkSettingsHelper::start_analyze_channels()
 {
     mavlink_command_long_t cmd{};
     cmd.target_system=OHD_SYS_ID_GROUND;
@@ -71,7 +71,7 @@ bool SynchronizedSettings::start_analyze_channels()
     return false;
 }
 
-bool SynchronizedSettings::start_scan_channels(int freq_bands,int channel_widths)
+bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths)
 {
     mavlink_command_long_t cmd{};
     cmd.target_system=OHD_SYS_ID_GROUND;
@@ -89,7 +89,7 @@ bool SynchronizedSettings::start_scan_channels(int freq_bands,int channel_widths
 }
 
 
-void SynchronizedSettings::validate_and_set_channel_mhz(int channel_mhz)
+void WBLinkSettingsHelper::validate_and_set_channel_mhz(int channel_mhz)
 {
     if(channel_mhz<=1000 || channel_mhz>=8000){
         qDebug()<<"Invalid channel "<<channel_mhz<<"Mhz";
@@ -106,7 +106,7 @@ void SynchronizedSettings::validate_and_set_channel_mhz(int channel_mhz)
     }
 }
 
-void SynchronizedSettings::validate_and_set_channel_width_mhz(int channel_width_mhz)
+void WBLinkSettingsHelper::validate_and_set_channel_width_mhz(int channel_width_mhz)
 {
     if(!(channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
         qDebug()<<"Invalid channel width "<<channel_width_mhz<<" Mhz";
@@ -123,7 +123,7 @@ void SynchronizedSettings::validate_and_set_channel_width_mhz(int channel_width_
     }
 }
 
-void SynchronizedSettings::process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t &msg)
+void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t &msg)
 {
     std::vector<uint16_t> channels;
     for(int i=0;i<60;i++){
@@ -144,7 +144,7 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_supported_channe
 
 }
 
-void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
+void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
 {
     {
         std::stringstream ss;
@@ -170,7 +170,7 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_analyze_channels
     signal_ui_rebuild_model_when_possible();
 }
 
-void SynchronizedSettings::process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t &msg)
+void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t &msg)
 {
     {
         std::stringstream ss;
@@ -188,7 +188,7 @@ void SynchronizedSettings::process_message_openhd_wifibroadcast_scan_channels_pr
     set_progress_scan_channels_perc(msg.progress);
 }
 
-int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
+int WBLinkSettingsHelper::get_param_int_air_and_ground_value(QString param_id)
 {
     qDebug()<<"get_param_air_and_ground_value "<<param_id;
 
@@ -213,7 +213,7 @@ int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
 }
 
 
-int SynchronizedSettings::change_param_air_and_ground(QString param_id,int value)
+int WBLinkSettingsHelper::change_param_air_and_ground(QString param_id,int value)
 {
     qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;
     // sanity checking
@@ -254,7 +254,7 @@ int SynchronizedSettings::change_param_air_and_ground(QString param_id,int value
     return 0;
 }
 
-bool SynchronizedSettings::change_param_ground_only(QString param_id, int value)
+bool WBLinkSettingsHelper::change_param_ground_only(QString param_id, int value)
 {
     const auto ground_success=MavlinkSettingsModel::instanceGround().try_set_param_int_impl(param_id,value);
     if(ground_success==MavlinkSettingsModel::SetParamResult::SUCCESS){
@@ -346,7 +346,7 @@ static FrequencyItem find_frequency_item(const int frequency){
 
 
 
-int SynchronizedSettings::get_next_supported_frequency(int index)
+int WBLinkSettingsHelper::get_next_supported_frequency(int index)
 {
     const auto tmp=m_supported_channels;
     if(index<m_supported_channels.size()){
@@ -365,7 +365,7 @@ static std::string spaced_string(int number){
     return ss.str();
 }
 
-QString SynchronizedSettings::get_frequency_description(int frequency_mhz)
+QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
 {
     auto frequency_item=find_frequency_item(frequency_mhz);
     std::stringstream ss;
@@ -395,7 +395,7 @@ QString SynchronizedSettings::get_frequency_description(int frequency_mhz)
     return ss.str().c_str();
 }
 
-int SynchronizedSettings::get_frequency_pollution(int frequency_mhz)
+int WBLinkSettingsHelper::get_frequency_pollution(int frequency_mhz)
 {
     auto pollution=get_pollution_for_frequency_channel_width(frequency_mhz,40);
     if(pollution.has_value()){
@@ -404,7 +404,7 @@ int SynchronizedSettings::get_frequency_pollution(int frequency_mhz)
     return -1;
 }
 
-void SynchronizedSettings::log_result_message(const std::string &result_message, bool use_hud)
+void WBLinkSettingsHelper::log_result_message(const std::string &result_message, bool use_hud)
 {
     if(use_hud){
         HUDLogMessagesModel::instance().add_message_info(result_message.c_str());
@@ -413,7 +413,7 @@ void SynchronizedSettings::log_result_message(const std::string &result_message,
     }
 }
 
-void SynchronizedSettings::update_pollution(int frequency, int n_foreign_packets)
+void WBLinkSettingsHelper::update_pollution(int frequency, int n_foreign_packets)
 {
     for(int i=0;i<m_pollution_elements.size();i++){
        if(m_pollution_elements.at(i).frequency_mhz==frequency){
@@ -423,7 +423,7 @@ void SynchronizedSettings::update_pollution(int frequency, int n_foreign_packets
     m_pollution_elements.push_back(PollutionElement{frequency,40,n_foreign_packets});
 }
 
-std::optional<SynchronizedSettings::PollutionElement> SynchronizedSettings::get_pollution_for_frequency_channel_width(int frequency, int width)
+std::optional<WBLinkSettingsHelper::PollutionElement> WBLinkSettingsHelper::get_pollution_for_frequency_channel_width(int frequency, int width)
 {
     for(int i=0;i<m_pollution_elements.size();i++){
        if(m_pollution_elements.at(i).frequency_mhz==frequency){
@@ -433,7 +433,7 @@ std::optional<SynchronizedSettings::PollutionElement> SynchronizedSettings::get_
     return std::nullopt;
 }
 
-void SynchronizedSettings::signal_ui_rebuild_model_when_possible()
+void WBLinkSettingsHelper::signal_ui_rebuild_model_when_possible()
 {
     if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0 && m_has_valid_ground_channel_data){
        qDebug()<<"Signal UI Ready & should rebuild "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz "<<m_has_valid_ground_channel_data;

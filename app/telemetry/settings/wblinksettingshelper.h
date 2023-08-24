@@ -7,20 +7,20 @@
 #include "param_names.h"
 #include "../requestmessagehelper.h"
 
-// DON'T ASK, THIS CLASS IS HUGE AND REALLY HARD TO D
+// DON'T ASK, THIS CLASS IS HUGE AND REALLY HARD TO DESCRIBE
 // Helper for settings that MUST STAY IN SYNC on the ground and air pi, since otherwise the wifibroadcast link is lost
 // and the user needs to manually recover the link
 // It does not fix the 2 general's problem (this is a unfixable problem) but it makes it really unlikely to happen.
 // TODO: I think for these 3 (only) parameters that need to be kept in sync in evo, we should find a better way
 // (e.g. exposing the param only on the ground, and having a more advanced wifibroadcast imlementation that establishes a connection/
 // handles frequency changes itself)
-class SynchronizedSettings : public QObject
+class WBLinkSettingsHelper : public QObject
 {
     Q_OBJECT
 public:
-    explicit SynchronizedSettings(QObject *parent = nullptr);
+    explicit WBLinkSettingsHelper(QObject *parent = nullptr);
 
-    static SynchronizedSettings& instance();
+    static WBLinkSettingsHelper& instance();
 
     // FLOW: Invalid until first message announcing channel frequency and width is received from the ground
     // When we receive this type of message from the ground, we start requesting the supported frequencies from the ground unit
