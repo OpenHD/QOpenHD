@@ -66,8 +66,14 @@ private:
     // Air and ground should always match, otherwise something weird has happenened.
     // Note that this would be "really" weird, since on not matching params there should be no connectivitiy.
     int get_param_int_air_and_ground_value(QString param_id);
-    // Returns empty string on success, error code otherwise
-    QString change_param_air_and_ground(QString param_id,int value);
+    // Returns 0 on success, error code otherwise.
+    // Viable error code(s):
+    // -1 : gnd unit not alive
+    // -2 : gnd unit alive, but air unit not alive
+    // -3 : cannot set value on air - not reachable
+    // -4 : cannot set value on air - reached, but param was rejected
+    // -5 : succesfully set value on air, but ground doesn't support - really bad
+    int change_param_air_and_ground(QString param_id,int value);
     bool change_param_ground_only(QString param_id,int value);
 public:
     Q_INVOKABLE int get_param_int_air_and_ground_value_freq(){
@@ -77,12 +83,12 @@ public:
         return get_param_int_air_and_ground_value(PARAM_ID_WB_CHANNEL_WIDTH);
     }
 
-    Q_INVOKABLE bool change_param_air_and_ground_frequency(int value){
-        return change_param_air_and_ground(PARAM_ID_WB_FREQ,value)=="";
+    Q_INVOKABLE int change_param_air_and_ground_frequency(int value){
+        return change_param_air_and_ground(PARAM_ID_WB_FREQ,value);
     }
 
-    Q_INVOKABLE bool change_param_air_and_ground_channel_width(int value){
-        return change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value)=="";
+    Q_INVOKABLE int change_param_air_and_ground_channel_width(int value){
+        return change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
 
     Q_INVOKABLE bool change_param_ground_only_frequency(int value){

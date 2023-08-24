@@ -213,13 +213,17 @@ int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
 }
 
 
-QString SynchronizedSettings::change_param_air_and_ground(QString param_id,int value)
+int SynchronizedSettings::change_param_air_and_ground(QString param_id,int value)
 {
     qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;
     // sanity checking
-    const bool air_and_ground_alive=AOHDSystem::instanceAir().is_alive() && AOHDSystem::instanceGround().is_alive();
-    if(!air_and_ground_alive){
-        return "Precondition: Air and Ground running and alive not given. Change not possible.";
+    if(!AOHDSystem::instanceGround().is_alive()){
+        qDebug()<<"Precondition: Ground running and alive not given. Change not possible.";
+        return -1;
+    }
+    if(!AOHDSystem::instanceAir().is_alive()){
+        qDebug()<<"Precondition: Air running and alive not given. Change not possible.";
+        return -2;
     }
     const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
     // First change it on the air and wait for ack - if failed, return. MAVSDK does 3 retransmission(s) until acked so it is really unlikely that
@@ -228,7 +232,12 @@ QString SynchronizedSettings::change_param_air_and_ground(QString param_id,int v
     if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-        return ss.str().c_str();
+        qDebug()<<ss.str().c_str();
+        if(air_success==MavlinkSettingsModel::SetParamResult::VALUE_UNSUPPORTED){
+            return -4;
+        }else{
+            return -3;
+        }
     }
     // we have changed the value on air, now change the ground
     // It is highly unlikely that fauls - if it does, we have an issue ! (2 generals problem)
@@ -236,12 +245,13 @@ QString SynchronizedSettings::change_param_air_and_ground(QString param_id,int v
     if(!(ground_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-        return ss.str().c_str();
+        qWarning("%s", ss.str().c_str());
+        return -5;
     }
     std::stringstream ss;
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
     qDebug()<<ss.str().c_str();
-    return "";
+    return 0;
 }
 
 bool SynchronizedSettings::change_param_ground_only(QString param_id, int value)

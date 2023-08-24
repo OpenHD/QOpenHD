@@ -210,6 +210,64 @@ Only enable if you want to quickly change your ground unit's channel width to th
 
     property string analyze_channels_text: "Analyze channels text"
 
+    // Changes either the frequency or channel width
+    // In case no air unit is connected / reachable, show the dialoque for the user to change the ground frequency / channel width only
+    function change_frequency_or_channel_width_sync_otherwise_handle_error(frequency_mhz,channel_width_mhz){
+        if(frequency_mhz>0 && channel_width_mhz>0){
+            console.log("Use this method to change either of both !");
+            return;
+        }
+        var result=-100;
+        var change_frequency=false;
+        if(frequency_mhz>0){
+            change_frequency=true;
+            result= _synchronizedSettings.change_param_air_and_ground_frequency(frequency_mhz);
+        }else{
+            change_frequency=false;
+            result = _synchronizedSettings.change_param_air_and_ground_channel_width(channel_width_mhz);
+        }
+        if(result==0){
+            var message="";
+            if(change_frequency){
+                message = "Succesfully set air and ground to FREQUENCY: "+frequency_mhz+"Mhz"
+            }else{
+                message = "Succesfully set air and ground to BANDWIDTH: "+channel_width_mhz+"Mhz"
+            }
+            _messageBoxInstance.set_text_and_show(message,5);
+            return;
+        }
+        if(result==-1){
+            _messageBoxInstance.set_text_and_show("GND not alive",5);
+            return;
+        }
+        if(result==-2 || result==-3){
+            var message="";
+            if(result==-2){
+                message = "Air unit not alive";
+            }else{
+                message = "Air unit not reachable";
+            }
+            if(change_frequency){
+                dialoqueChangeFrequencyGroundOnly.initialize_and_show_frequency(frequency_mhz,message);
+            }else{
+                dialoqueChangeFrequencyGroundOnly.initialize_and_show_channel_width(channel_width_mhz,message);
+            }
+            return;
+        }
+        if(result==-4){ // Air unit rejected the param
+            var message = "";
+            if(change_frequency){
+                message = _synchronizedSettings.curr_channel_width_mhz==40 ? "Frequency not supported - perhaps 40Mhz not possible on this channel ?":
+                            "Frequency not supported by air unit";
+            }else{
+                message = channel_width_mhz==40 ? "40Mhz not supported on this channel":
+                            "20Mhz not supported on this channel";
+            }
+            _messageBoxInstance.set_text_and_show(message,5);
+            return;
+        }
+        _messageBoxInstance.set_text_and_show("Something went wrong - please use 'FIND AIR UNIT' to fix",5);
+    }
 
     ScrollView {
         id:mavlinkExtraWBParamPanel
@@ -225,7 +283,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                 id: dialoqueStartChannelScan
             }
             FrequencyChangeDialoque{
-                id: dialoqueChangeFrequency
+                id: dialoqueChangeFrequencyGroundOnly
             }
 
             DialoqueAnalyzeChannels{
@@ -405,12 +463,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                     _messageBoxInstance.set_text_and_show("Please select a valid frequency",5);
                                     return;
                                 }
-                                var result=_synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
-                                if(result){
-                                    _messageBoxInstance.set_text_and_show("Succesfully set air and ground to "+selectedValue+"Mhz",5);
-                                }else{
-                                    dialoqueChangeFrequency.initialize_and_show_frequency(selectedValue);
-                                }
+                                change_frequency_or_channel_width_sync_otherwise_handle_error(selectedValue,-1);
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                             enabled: _synchronizedSettings.ui_rebuild_models>=0
@@ -473,12 +526,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                     _messageBoxInstance.set_text_and_show("Please select a valid channel width",5);
                                     return;
                                 }
-                                var result=_synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue);
-                                if(result){
-                                    _messageBoxInstance.set_text_and_show("Succesfully set air and ground to "+selectedValue+"Mhz",5);
-                                }else{
-                                    dialoqueChangeFrequency.initialize_and_show_channel_width(selectedValue);
-                                }
+                                change_frequency_or_channel_width_sync_otherwise_handle_error(-1,selectedValue);
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                             //Material.background: Material.Light;

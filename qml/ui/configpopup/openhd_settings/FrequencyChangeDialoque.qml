@@ -7,6 +7,7 @@ import QtQuick.Controls.Material 2.12
 import "../../elements"
 
 // I fucking hate writing UIs in QT
+// Dialoque that is shown to the user with the option to manually change the grond station frequency.
 Card {
     id: dialoqueChangeFrequency
     width: 360
@@ -29,39 +30,33 @@ Card {
 
     property bool m_visible: false
 
+    property string m_original_error_message: ""
 
-    function initialize_and_show_frequency(frequency){
+
+    function initialize_and_show_frequency(frequency,error_message){
         m_wanted_frequency=frequency
         m_wanted_channel_width=-1
         m_type=0;
         m_index=0
+        m_original_error_message=error_message;
         m_visible=true
     }
-    function initialize_and_show_channel_width(channel_width){
+    function initialize_and_show_channel_width(channel_width,error_message){
         m_wanted_channel_width=channel_width
         m_wanted_frequency=-1
         m_type=1;
         m_index=0
+        m_original_error_message=error_message;
         m_visible=true
     }
 
-
-    property string m_warning_str:"Looks like no air unit is connected.
-Please use the channel scan to find your air unit, then change frequency.
+    property string m_info_string_frequency: "Please use the channel scan to find your air unit, then change frequency.
 Otherwise, you can manually change your ground station frequency,
 leaving your air unit untouched -
 NOTE: BOTH CHANNEL AND CHANNEL WIDTH NEED TO MACTCH,
 AS WELL AS YOUR BIND PHRASE"
 
-    property string m_info_string_frequency: "Looks like no air unit is connected.
-Please use the channel scan to find your air unit, then change frequency.
-Otherwise, you can manually change your ground station frequency,
-leaving your air unit untouched -
-NOTE: BOTH CHANNEL AND CHANNEL WIDTH NEED TO MACTCH,
-AS WELL AS YOUR BIND PHRASE"
-
-    property string m_info_string_chanel_width: "Looks like no air unit is connected.
-Please use the channel scan to find your air unit, then change channel width.
+    property string m_info_string_chanel_width: "Please use the channel scan to find your air unit, then change channel width (bandwidth).
 Otherwise, you can manually change your ground station channel width,
 leaving your air unit untouched -
 NOTE: BOTH CHANNEL AND CHANNEL WIDTH NEED TO MACTCH,
@@ -76,9 +71,9 @@ AS WELL AS YOUR BIND PHRASE"
         if(m_index==0){
             // In Info mode
             if(m_type==0){
-                return m_info_string_frequency;
+                return m_original_error_message +"\n"+ m_info_string_frequency;
             }
-            return m_info_string_chanel_width;
+            return m_original_error_message +"\n"+ m_info_string_chanel_width;
         }
         // In last warning mode
         if(m_type==0){
@@ -141,7 +136,7 @@ AS WELL AS YOUR BIND PHRASE"
                         console.log("Try changing ground only to frequency "+m_wanted_frequency)
                         var result = _synchronizedSettings.change_param_ground_only_frequency(m_wanted_frequency);
                         if(result){
-                            _messageBoxInstance.set_text_and_show("GND set to channel frequency "+m_wanted_frequency+"Mhz",3);
+                            _messageBoxInstance.set_text_and_show("GND set to frequency "+m_wanted_frequency+"Mhz",3);
                             m_visible=false;
                         }else{
                             _messageBoxInstance.set_text_and_show("Failed, GND busy,please try again later",3);
