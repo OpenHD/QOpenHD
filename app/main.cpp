@@ -32,7 +32,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/headingladder.h"
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
-#include "osd/drawingcanvas.h"
 #include "osd/aoagauge.h"
 #include "osd/performancehorizonladder.h"
 
@@ -64,12 +63,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
-
-#ifdef QOPENHD_ENABLE_ADSB_LIBRARY
-#include "adsb/ADSBVehicleManager.h"
-#include "adsb/ADSBVehicle.h"
-#include "adsb/QmlObjectListModel.h"
-#endif
 
 
 // Load all the fonts we use ?!
@@ -263,7 +256,6 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<HeadingLadder>("OpenHD", 1, 0, "HeadingLadder");
     qmlRegisterType<HorizonLadder>("OpenHD", 1, 0, "HorizonLadder");
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
-    qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
     qmlRegisterType<PerformanceHorizonLadder>("OpenHD", 1, 0, "PerformanceHorizonLadder");
 
@@ -354,20 +346,6 @@ int main(int argc, char *argv[]) {
     // dirty
     engine.rootContext()->setContextProperty("_messageBoxInstance", &WorkaroundMessageBox::instance());
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
-
-#ifdef QOPENHD_ENABLE_ADSB_LIBRARY
-    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
-    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(true));
-    engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
-    engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
-    auto adsbVehicleManager = ADSBVehicleManager::instance();
-    engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
-    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
-    adsbVehicleManager->onStarted();
-#else
-    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(false));
-    engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
-#endif
 
     // This allows to use the defines as strings in qml
     engine.rootContext()->setContextProperty("QOPENHD_GIT_VERSION",

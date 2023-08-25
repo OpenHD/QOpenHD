@@ -68,7 +68,6 @@ LinuxBuild {
 # (aka all these really should come with pretty much any qt install)
 # In general, parts of QOpenHD that need additional libraries should have their code in a subdirectory with a .pri where those
 # dependencies are added such that you can easily compile the project even on systems that might lack some of those qt functionalities
-# see app/adsb/adsb_lib.pri for an example
 QT +=core quick qml gui \
     widgets
 QT += opengl
@@ -98,13 +97,6 @@ LinuxBuild {
     # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
     include(app/videostreaming/gstreamer/gst_video.pri)
 }
-
-# adsb library
-# Only tested on linux so far, but might work on other platforms already / with minimal effort, too
-# 25.August 23 removed - it is just a pain to compile, and should be updated from QGroundControl anyways.
-#LinuxBuild {
-#    include(app/adsb/adsb_lib.pri)
-#}
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
@@ -140,7 +132,6 @@ SOURCES += \
     app/osd/horizonladder.cpp \
     app/osd/speedladder.cpp \
     app/osd/altitudeladder.cpp \
-    app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/osd/aoagauge.cpp \
     app/osd/performancehorizonladder.cpp \
@@ -150,7 +141,6 @@ HEADERS += \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \
     app/osd/altitudeladder.h \
-    app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/osd/debug_overdraw.hpp \
     app/osd/aoagauge.h \
@@ -183,7 +173,6 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     android/src/org/openhd/IsConnected.java \
     android/src/org/openhd/LiveVideoPlayerWrapper.java \
-    app/adsb/adsb_lib.pri \
     app/logging/README.txt \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \

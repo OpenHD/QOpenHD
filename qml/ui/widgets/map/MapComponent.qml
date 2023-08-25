@@ -62,9 +62,6 @@ Map {
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("Map component: center",center_coord.latitude, center_coord.longitude);
-
-        //AdsbVehicleManager.newMapCenter(center_coord);
-
     }
 
     PositionSource {

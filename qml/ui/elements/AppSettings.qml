@@ -329,13 +329,6 @@ Settings {
     property bool bank_angle_indicator_widget_show_numbers: true
     property bool bank_angle_indicator_widget_sky_pointer: false
 
-    property bool show_adsb: false
-    property int adsb_distance_limit: 15000//meters. Bound box for api from map center (so x2)
-    //property int adsb_sdr_distance: 20
-    property bool adsb_api_sdr: false
-    property bool adsb_api_openskynetwork: false
-    property bool adsb_show_unknown_or_zero_alt: false
-
     property bool show_mission: false
 
     property bool show_record_widget: true
