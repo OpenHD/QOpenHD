@@ -246,5 +246,9 @@
         <file>ui/elements/IconWarningButton.qml</file>
         <file>ui/configpopup/status/OpenHDAndFCStatusColumn.qml</file>
         <file>ui/configpopup/status/ActionsColumn.qml</file>
+        <file>ui/configpopup/connect/InfoPane.qml</file>
+        <file>ui/configpopup/connect/PaneUSBTether.qml</file>
+        <file>ui/configpopup/connect/PaneWIFI.qml</file>
+        <file>ui/configpopup/connect/PaneCustom.qml</file>
     </qresource>
 </RCC>

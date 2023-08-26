@@ -60,6 +60,8 @@ public:
     // runs systemctl start/stop/enable/disable openhd
     // opens error message if the openhd service file does not exist (e.g. false on all non linux platforms)
     Q_INVOKABLE void sysctl_openhd(int task);
+
+    Q_INVOKABLE bool is_valid_ip(QString ip);
 signals:
     void fontFamilyChanged(QString fontFamily);
 private:

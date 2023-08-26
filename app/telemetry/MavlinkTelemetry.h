@@ -99,7 +99,7 @@ private:
 public:
     Q_INVOKABLE void re_apply_rates();
 public:
-    Q_INVOKABLE void add_tcp_connection_handler();
+    Q_INVOKABLE void add_tcp_connection_handler(QString ip);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

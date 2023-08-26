@@ -326,6 +326,11 @@ void QOpenHD::sysctl_openhd(int task)
     // not supported
 }
 
+bool QOpenHD::is_valid_ip(QString ip)
+{
+    return OHDUtil::is_valid_ip(ip.toStdString());
+}
+
 
 
 void QOpenHD::keep_screen_on(bool on)

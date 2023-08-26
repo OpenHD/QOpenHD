@@ -173,22 +173,13 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     android/src/org/openhd/IsConnected.java \
     android/src/org/openhd/LiveVideoPlayerWrapper.java \
-    app/logging/README.txt \
-    app/openhd_systems/README.md \
-    app/osd_extra/Readme.txt \
-    app/platform/README.md \
     app/telemetry/telemetry.pri \
-    app/util/README.md \
-    app/videostreaming/README.md \
-    app/videostreaming/README.txt \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
     app/videostreaming/vscommon/vscommon.pri \
     app/vs_android/videostreamingandroid.pri \
     extra_build_qmake.sh \
     lib/h264nal/h264nal.pri \
     qml/qtquickcontrols2.conf \
-    qml/ui/configpopup/openhd_settings/README.md \
-    qml/ui/configpopup/qopenhd_settings/README.md \
     qml/ui/qmldir \
 
 

@@ -303,13 +303,13 @@ void MavlinkTelemetry::tcp_only_establish_connection()
     }
 }
 
-void MavlinkTelemetry::add_tcp_connection_handler()
+void MavlinkTelemetry::add_tcp_connection_handler(QString ip)
 {
     QSettings settings;
     //settings.setValue("dev_mavlink_via_tcp",true);
-    settings.setValue("dev_mavlink_tcp_ip","192.168.3.1");
+    settings.setValue("dev_mavlink_tcp_ip",ip);
     if(m_tcp_connect_thread!=nullptr){
-        // already enabled
+        qDebug()<<"Already enabled";
         return;
     }
     m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
