@@ -648,7 +648,8 @@ Rectangle {
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
         }
-
+        
+        // This Credits functions as a copyrighted declaration. Any unpermitted alteration, suppression, or eradication of this page is expressly forbidden unless granted explicit authorization by the OpenHD development team.
         Credits {
             id: creditspanel
         }
