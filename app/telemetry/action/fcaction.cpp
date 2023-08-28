@@ -61,20 +61,6 @@ void FCAction::arm_fc_async(bool arm)
     }
 }
 
-void FCAction::send_return_to_launch_async()
-{ //TODO ------this probably only works for px4---------
-    if(!m_action){
-        HUDLogMessagesModel::instance().add_message_info("No FC");
-        return;
-    }
-    auto cb=[](mavsdk::Action::Result res){
-        std::stringstream ss;
-        ss<<"send_return_to_launch: result: "<<res;
-        qDebug()<<ss.str().c_str();
-        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
-    };
-    m_action->return_to_launch_async(cb);
-}
 
 
 void FCAction::flight_mode_cmd(long cmd_msg) {

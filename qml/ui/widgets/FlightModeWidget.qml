@@ -152,7 +152,7 @@ VTOL
                 onCheckedChanged: {
                     if (checked == true) {
                         //_fcMavlinkSystem.set_Requested_Flight_Mode(msg_id);
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                         console.log("FLIGHT MODE MSD ID=");
                     }
                 }
@@ -173,7 +173,7 @@ VTOL
                 }
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -194,7 +194,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -214,7 +214,7 @@ VTOL
                 }
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -234,7 +234,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -254,7 +254,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -274,7 +274,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -292,7 +292,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -311,7 +311,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -324,7 +324,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -337,7 +337,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -350,7 +350,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -363,7 +363,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -376,7 +376,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -389,7 +389,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -401,7 +401,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }
@@ -413,7 +413,7 @@ VTOL
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd(msg_id);
                     }
                 }
             }

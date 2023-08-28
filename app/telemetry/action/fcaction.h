@@ -21,9 +21,7 @@ public:
     // Try to change the arming state.
     // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void arm_fc_async(bool arm=false);
-    // Try to send a return to launch command.
-    // The result (success/failure) is logged in the HUD once completed
-    Q_INVOKABLE void send_return_to_launch_async();
+
     // return true on success, false otherwise
     Q_INVOKABLE bool enable_disable_mission_updates(bool enable);
 

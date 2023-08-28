@@ -89,10 +89,10 @@ BaseWidget {
                 onCheckedChanged: {
                     if (checked == true){ //must be true since switch reverts to false
                         if (_fcMavlinkSystem.armed == true) {
-                            _fcMavlinkSystem.arm_fc_async(false)
+                            _fcMavlinkAction.arm_fc_async(false)
                         }
                         else {
-                            _fcMavlinkSystem.arm_fc_async(true)
+                            _fcMavlinkAction.arm_fc_async(true)
                         }
                     }
                 }
