@@ -3,7 +3,7 @@
 
 // A lot of bloat code
 
-#include "../telemetry/mavsdk_include.h"
+#include "mavsdk_include.h"
 #include <QString>
 
 namespace qopenhd {

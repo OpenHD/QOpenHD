@@ -1,12 +1,12 @@
 ﻿#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
-#include "../openhd_defines.hpp"
 #include "param_names.h"
 #include "documented_param.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
+#include "util/openhd_defines.hpp"
 
 #include <QSettings>
 #include <QVariant>

@@ -70,8 +70,8 @@ QOPENHD_LINK_MAVSDK_SHARED {
 }
 
 SOURCES += \
+    $$PWD/action/fcaction.cpp \
     $$PWD/models/fcmapmodel.cpp \
-    $$PWD/models/fcmavlinksettingsmodel.cpp \
     $$PWD/requestmessagehelper.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
     app/telemetry/models/aohdsystem.cpp \
@@ -86,25 +86,25 @@ SOURCES += \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
-    $$PWD/geodesi_helper.h \
-    $$PWD/mavlink_enum_to_string.h \
+    $$PWD/action/fcaction.h \
+    $$PWD/util/geodesi_helper.h \
+    $$PWD/util/mavlink_enum_to_string.h \
+    $$PWD//util/mavsdk_helper.hpp \
+    $$PWD//util/mavsdk_include.h \
+    $$PWD//util/openhd_defines.hpp \
+    $$PWD//util/qopenhdmavlinkhelper.hpp \
+    $$PWD//util/telemetryutil.hpp \
     $$PWD/models/fcmapmodel.h \
-    $$PWD/models/fcmavlinksettingsmodel.h \
     $$PWD/models/fcmessageintervalhelper.hpp \
     $$PWD/requestmessagehelper.h \
     $$PWD/settings/documented_param.h \
     $$PWD/settings/wblinksettingshelper.h \
-    app/telemetry/mavsdk_helper.hpp \
-    app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/camerastreammodel.h \
     app/telemetry/models/rcchannelsmodel.h \
     app/telemetry/models/wificard.h \
-    app/telemetry/openhd_defines.hpp \
-    app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/improvedintsetting.h \
     app/telemetry/settings/improvedstringsetting.h \
-    app/telemetry/telemetryutil.hpp \
     app/telemetry/MavlinkTelemetry.h \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \

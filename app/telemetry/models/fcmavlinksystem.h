@@ -5,7 +5,9 @@
 #include <QObject>
 #include <QTimer>
 #include <QQmlContext>
-#include "../mavsdk_include.h"
+
+#include "../util/mavsdk_include.h"
+
 #include <atomic>
 
 // Really nice, this way we don't have to write all the setters / getters / signals ourselves !
@@ -37,11 +39,11 @@ public:
     // return true if we know what to do with this message type (aka this message type has been consumed)
     bool process_message(const mavlink_message_t& msg);
     // mavlink sys id of the FC. Pretty much always 1, but it is not a hard requirement that FC always use a sys id of 1.
-    // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
+    // If the FC has not been discovered yet, return std::nullopt.
     std::optional<uint8_t> get_fc_sys_id();
     // Set the mavlink system reference, once discovered.
     // NOTE: We only use the system to get broadcast message(s) (pass_through) and a few more things
-    void set_system(std::shared_ptr<mavsdk::System> system);
+    bool set_system_id(int sys_id);
 public: // Stuff needs to be public for qt
     // These members can be written & read from c++, but are only readable from qml (which is a common recommendation for QT application(s)).
     // Aka we just set them in c++ by calling the setter declared from the macro, which then emits the changed signal if needed
@@ -176,7 +178,6 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(quint64,sys_time_unix_usec,set_sys_time_unix_usec,0);
     L_RO_PROP(QString,sys_time_unix_as_str,set_sys_time_unix_as_str,"N/A");
 public:
-    void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
     // Updates the flight time by increasing the time when armed
@@ -207,16 +208,6 @@ signals:
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
 private:
-    // NOTE: Null until system discovered
-    std::shared_ptr<mavsdk::System> m_system=nullptr;
-    std::shared_ptr<mavsdk::Action> m_action=nullptr;
-    // We got rid of this submodule for a good reason (see above)
-    //std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
-    std::shared_ptr<mavsdk::MavlinkPassthrough> m_pass_thru=nullptr;
-    // TODO: figure out if we shall use mission plugin (compatible with ardupilot) or not
-    // R.N: must be manually enabled by the user to save resources
-    std::shared_ptr<mavsdk::Mission> m_mission=nullptr;
-
     // other members
     bool m_armed = false;
     QString m_flight_mode = "------";
@@ -249,35 +240,12 @@ private:
     std::chrono::steady_clock::time_point m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     int m_n_messages_update_rate_mavlink_message_attitude=0;
 public:
-    // WARNING: Do not call any non-async send command methods from the same thread that is parsing the mavlink messages !
-    //
-    // Try to change the arming state.
-    // The result (success/failure) is logged in the HUD once completed
-    Q_INVOKABLE void arm_fc_async(bool arm=false);
-    // Try to send a return to launch command.
-    // The result (success/failure) is logged in the HUD once completed
-    Q_INVOKABLE void send_return_to_launch_async();
-    // return true on success, false otherwise
-    Q_INVOKABLE bool enable_disable_mission_updates(bool enable);
-
-    // Sends a command to change the flight mode. Note that this is more complicated than it sounds at first,
-    // since copter and plane for example do have different flight mode enums.
-    // For RTL (which is really important) we have a extra impl. just to be sure
-    Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
-    // Some FC stop sending home position when armed, re-request the home position
-    Q_INVOKABLE void request_home_position_from_fc();
     // This overwrites the current home lat / lon values with whatever the fc reported last as lat/lon
     Q_INVOKABLE bool overwrite_home_to_current();
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);
     void send_message_arm_change(bool armed);
-private:
-    // The user can configure a specific rate for the artificial horizon updates in the UI
-    // (Since the artificial horizon may feel really sluggish otherwise, at least with the default update rate of mavlink, which is 10Hz)
-    void test_set_data_stream_rates();
-    int m_rate_n_times_tried=0;
-    bool m_rate_success=false;
 private:
     static bool get_SHOW_FC_MESSAGES_IN_HUD();
     // Used to calculate efficiency in mAh / km
@@ -292,6 +260,9 @@ private:
     // log a warning
     int m_n_heartbeats=0;
     int m_n_attitude_messages=0;
+private:
+    std::atomic<bool> m_discovered=false;
+    int m_sys_id=-1;
 };
 
 

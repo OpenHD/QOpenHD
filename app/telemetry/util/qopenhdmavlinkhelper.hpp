@@ -3,9 +3,9 @@
 
 #include <chrono>
 #include <qsettings.h>
-#include "mavsdk_include.h"
 #include <QByteArray>
 #include <sstream>
+#include "mavsdk_include.h"
 
 namespace QOpenHDMavlinkHelper{
 
@@ -47,14 +47,6 @@ static double calclate_voltage_per_cell(double voltage){
         return voltage / (double) vehicle_battery_n_cells;
     }
     return vehicle_battery_n_cells;
-}
-
-// convert a mavlink message to the raw byte array that can be transmitted
-static std::vector<uint8_t> mavlinkMessageToSendBuffer(const mavlink_message_t& msg){
-    std::vector<uint8_t> buf(MAVLINK_MAX_PACKET_LEN);
-    auto size = mavlink_msg_to_send_buffer(buf.data(), &msg);
-    buf.resize(size);
-    return buf;
 }
 
 static QString safe_string(const char* text,int text_size){

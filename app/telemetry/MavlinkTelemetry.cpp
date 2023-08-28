@@ -1,14 +1,14 @@
 #include "MavlinkTelemetry.h"
 
 #include "common/openhd-util.hpp"
-#include "mavsdk_helper.hpp"
-#include "qopenhdmavlinkhelper.hpp"
-#include "telemetry/openhd_defines.hpp"
 #include "models/aohdsystem.h"
 #include "models/fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
 #include "../logging/logmessagesmodel.h"
+#include "util/mavsdk_helper.hpp"
+
+#include "action/fcaction.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
@@ -100,14 +100,12 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         //    return true;
         //});
         MavlinkSettingsModel::instanceGround().set_param_client(system);
-        AOHDSystem::instanceGround().set_system(system);
     }else if(system->get_system_id()==OHD_SYS_ID_AIR){
         qDebug()<<"Found OHD AIR station";
         m_system_ohd_air=system;
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera2().set_param_client(system);
-        AOHDSystem::instanceAir().set_system(system);
         // hacky, for connecting to the air unit directly
         if(passtroughOhdGround==nullptr){
             passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
@@ -136,7 +134,8 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
             qDebug()<<"Found FC";
             m_system_fc=system;
             // we got the flight controller
-            FCMavlinkSystem::instance().set_system(system);
+            FCMavlinkSystem::instance().set_system_id(m_system_fc->get_system_id());
+            FCAction::instance().set_system(system);
             // hacky, for SITL testing
             if(passtroughOhdGround==nullptr){
                 passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
@@ -186,7 +185,7 @@ static int get_message_size(const mavlink_message_t msg){
     return sizeof(msg);
 }
 
-void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
+void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
 {
     m_tele_received_packets++;
     m_tele_received_bytes+=get_message_size(msg);

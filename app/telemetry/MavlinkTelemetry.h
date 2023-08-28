@@ -7,8 +7,8 @@
 #include <mutex>
 #include <thread>
 
-#include "mavsdk_include.h"
-#include "models/fcmessageintervalhelper.hpp"
+#include "util/mavsdk_include.h"
+#include "action/fcmessageintervalhelper.hpp"
 #include "../../lib/lqtutils_master/lqtutils_prop.h"
 #include "../common/TimeHelper.hpp"
 
@@ -69,7 +69,7 @@ private:
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
     // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
     // work with mavsdk / their subscription based pattern.
-    void onProcessMavlinkMessage(mavlink_message_t msg);
+    void onProcessMavlinkMessage(const mavlink_message_t& msg);
     // The mavsdk tcp connect does block, we therefore need to do it in its own thread
     // (not block the UI thread)
     void tcp_only_establish_connection();

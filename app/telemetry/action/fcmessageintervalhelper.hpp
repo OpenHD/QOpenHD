@@ -4,11 +4,12 @@
 #include <mutex>
 #include <qdebug.h>
 #include <vector>
-#include "../mavsdk_include.h"
 #include <optional>
 #include <qsettings.h>
 #include "../../logging/hudlogmessagesmodel.h"
-#include "qopenhdmavlinkhelper.hpp"
+
+#include "../util/mavsdk_include.h"
+#include "util/qopenhdmavlinkhelper.hpp"
 
 /**
  * We need to manually request / set the message interval(s) for specific messages on ardupilot

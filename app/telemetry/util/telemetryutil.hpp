@@ -4,9 +4,9 @@
 #include <QString>
 #include <QDebug>
 
-#include "../telemetry/mavsdk_include.h"
-#include "../common/TimeHelper.hpp"
-#include "../common/StringHelper.hpp"
+#include "mavsdk_include.h"
+#include "../../common/TimeHelper.hpp"
+#include "../../common/StringHelper.hpp"
 #include "mavlink_enum_to_string.h"
 #include <cstring>
 

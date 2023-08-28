@@ -4,13 +4,14 @@
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
-#include "../mavsdk_include.h"
-#include "../openhd_defines.hpp"
 #include <array>
 #include <QQmlContext>
 #include <atomic>
 
+#include "../util/mavsdk_include.h"
+
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/openhd_defines.hpp"
 
 /**
  * Abstract OHD (Mavlink) system.
@@ -34,8 +35,6 @@ public:
     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
     // Returns true if the passed message was processed (known message id), false otherwise
     bool process_message(const mavlink_message_t& msg);
-    // Set the mavlink system reference, once discovered
-    void set_system(std::shared_ptr<mavsdk::System> system);
 public: // public for QT
     // NOTE: I wrote this class before I knew about the lqutils macros, which is why they are used sparingly here
     //
@@ -141,9 +140,6 @@ private:
     void update_alive();
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end
-private:
-     // NOTE: nullptr until discovered !!
-    std::shared_ptr<mavsdk::System> _system=nullptr;
 private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);

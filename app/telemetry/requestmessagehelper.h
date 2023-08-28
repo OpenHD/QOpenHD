@@ -1,11 +1,12 @@
 #ifndef REQUESTMESSAGEHELPER_H
 #define REQUESTMESSAGEHELPER_H
 
-#include "mavsdk_include.h"
-
 #include <mutex>
 #include <qdebug.h>
 #include <thread>
+#include <optional>
+
+#include "util/mavsdk_include.h"
 
 class RequestMessageHelper
 {

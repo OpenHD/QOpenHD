@@ -2,7 +2,8 @@
 #define AIRCAMERAMODEL_H
 
 #include <QObject>
-#include "../mavsdk_include.h"
+
+#include "../util/mavsdk_include.h"
 
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 

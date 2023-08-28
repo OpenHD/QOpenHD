@@ -1,10 +1,9 @@
 #include "aohdsystem.h"
 
-#include "../qopenhdmavlinkhelper.hpp"
 #include "../../common/StringHelper.hpp"
 #include "../../common/TimeHelper.hpp"
-#include "../telemetryutil.hpp"
 #include "QOpenHDVideoHelper.hpp"
+#include "util/telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
 #include "camerastreammodel.h"
@@ -443,14 +442,6 @@ void AOHDSystem::update_alive()
             set_is_alive(alive);
         }
     }
-}
-
-void AOHDSystem::set_system(std::shared_ptr<mavsdk::System> system)
-{
-    // once discovered, the system never changes !
-    assert(_system==nullptr);
-    assert(system->get_system_id()==get_own_sys_id());
-    _system=system;
 }
 
 void AOHDSystem::send_message_hud_connection(bool connected){
