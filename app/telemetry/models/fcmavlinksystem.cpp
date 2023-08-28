@@ -254,12 +254,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
         break;
     }
-    case MAVLINK_MSG_ID_MISSION_CURRENT:
-    case MAVLINK_MSG_ID_MISSION_COUNT:
-    case MAVLINK_MSG_ID_MISSION_ITEM_INT:
-        // Missions are handled extra
-        FCMavlinkMissionHandler::instance().process_message(msg);
-        break;
     case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
         //qDebug()<<"Got MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN";
         // inav for some reason publishes the home position via this message instead of the home position one (and doesn't want to change it)
@@ -815,14 +809,6 @@ void FCMavlinkSystem::updateWind(){
             speed_last_time=actual_speed;
         }
     }
-}
-
-bool FCMavlinkSystem::overwrite_home_to_current()
-{
-    set_home_latitude(m_lat);
-    set_home_longitude(m_lon);
-    HUDLogMessagesModel::instance().add_message_warning("HOME POSITION OVERWRITTEN");
-    return true;
 }
 
 void FCMavlinkSystem::send_message_hud_connection(bool connected)

@@ -193,16 +193,7 @@ BaseWidget {
                     id: requestHomeButton
                     text: "Request Home"
                     onClicked: {
-                        _fcMavlinkSystem.request_home_position_from_fc()
-                    }
-                }
-                Button{
-                    height:32
-                    id: overwriteHome
-                    text: "Overwrite"
-                    visible: false
-                    onClicked: {
-                        _fcMavlinkSystem.overwrite_home_to_current()
+                        _fcMavlinkAction.request_home_position_from_fc();
                     }
                 }
             }

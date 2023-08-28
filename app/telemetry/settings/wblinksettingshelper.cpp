@@ -14,7 +14,6 @@
 WBLinkSettingsHelper::WBLinkSettingsHelper(QObject *parent)
     : QObject{parent}
 {
-    m_request_message_helper=std::make_unique<RequestMessageHelper>();
 }
 
 WBLinkSettingsHelper& WBLinkSettingsHelper::instance()

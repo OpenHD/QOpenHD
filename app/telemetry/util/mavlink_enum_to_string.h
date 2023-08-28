@@ -6,6 +6,8 @@
 #include "mavlink_include.h"
 #include <QString>
 
+#include <sstream>
+
 namespace qopenhd {
 
 static QString sub_mode_from_enum(SUB_MODE mode){
@@ -373,6 +375,15 @@ static std::string detailed_battery_voltages_to_string(const uint16_t voltages[1
             ss<<(int)voltage;
         }
     }
+    ss<<"]";
+    return ss.str();
+}
+
+static std::string mavlink_command_ack_to_string(const mavlink_command_ack_t& cmd_ack){
+    std::stringstream ss;
+    ss<<"CMD_ACK{"<<(int)cmd_ack.target_system<<":"<<(int)cmd_ack.target_component<<":"<<cmd_ack.command;
+    ss<<",result:"<<(int)cmd_ack.result;
+    ss<<":"<<cmd_ack.result_param2;
     ss<<"]";
     return ss.str();
 }

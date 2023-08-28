@@ -64,12 +64,13 @@ private:
     // Normally, this passtrough is for the ground station - since we normally talk to both air and fc via the ground
     // However, if there is no ground, we create the passtrough from the air or FC system too.
     // This way one can also connect qopenhd to the FC without air / ground running and/or to the air unit without ground.
-    std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround=nullptr;
+    std::shared_ptr<mavsdk::MavlinkPassthrough> m_passtrough=nullptr;
     // called by mavsdk whenever a new system is detected
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
     // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
     // work with mavsdk / their subscription based pattern.
     void onProcessMavlinkMessage(const mavlink_message_t& msg);
+    void process_message_fc(const mavlink_message_t& msg);
     // The mavsdk tcp connect does block, we therefore need to do it in its own thread
     // (not block the UI thread)
     void tcp_only_establish_connection();
@@ -91,7 +92,7 @@ public:
     // doesn't reatransmitt
     bool send_command_long_oneshot(const mavlink_command_long_t& command);
     // does re-transmit
-    bool send_command_long_blocking(const mavlink_command_long_t& command);
+    int send_command_long_blocking(const mavlink_command_long_t& command);
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;

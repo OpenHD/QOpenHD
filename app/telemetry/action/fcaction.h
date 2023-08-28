@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 
 /**
  * This is the one and only class from which messages / actions can be sent to the FC.
@@ -18,7 +18,7 @@ public:
 
     // Set the mavlink system reference, once discovered.
     // NOTE: We only use the system to get broadcast message(s) (pass_through) and a few more things
-    void set_system(std::shared_ptr<mavsdk::System> system);
+    void set_fc_sys_id(int fc_sys_id,int fc_comp_id);
 public:
     // WARNING: Do not call any non-async send command methods from the same thread that is parsing the mavlink messages !
     //
@@ -30,15 +30,12 @@ public:
     // since copter and plane for example do have different flight mode enums.
     // For RTL (which is really important) we have a extra impl. just to be sure
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
+
     // Some FC stop sending home position when armed, re-request the home position
     Q_INVOKABLE void request_home_position_from_fc();
 private:
-    // NOTE: Null until system discovered
-    std::shared_ptr<mavsdk::System> m_system=nullptr;
-    std::shared_ptr<mavsdk::Action> m_action=nullptr;
-    // We got rid of this submodule for a good reason (see above)
-    //std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
-    std::shared_ptr<mavsdk::MavlinkPassthrough> m_pass_thru=nullptr;
+    int m_fc_sys_id=1;
+    int m_fc_comp_id=MAV_COMP_ID_AUTOPILOT1;
 };
 
 #endif // FCACTION_H

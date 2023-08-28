@@ -5,7 +5,11 @@
 #include <qsettings.h>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 #include "param_names.h"
-#include "../requestmessagehelper.h"
+
+#include <optional>
+
+#include "../util/mavsdk_include.h"
+
 
 // DON'T ASK, THIS CLASS IS HUGE AND REALLY HARD TO DESCRIBE
 // Helper for settings that MUST STAY IN SYNC on the ground and air pi, since otherwise the wifibroadcast link is lost
@@ -103,7 +107,6 @@ public:
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
 private:
-    std::unique_ptr<RequestMessageHelper> m_request_message_helper;
     std::vector<uint16_t> m_supported_channels;
     void update_channels_on_success();
     bool m_valid_channel_channel_width_once=false;

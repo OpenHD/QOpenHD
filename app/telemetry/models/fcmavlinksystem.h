@@ -231,9 +231,6 @@ private:
     void update_alive();
     std::chrono::steady_clock::time_point m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     int m_n_messages_update_rate_mavlink_message_attitude=0;
-public:
-    // This overwrites the current home lat / lon values with whatever the fc reported last as lat/lon
-    Q_INVOKABLE bool overwrite_home_to_current();
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);

@@ -9,6 +9,7 @@
 #include "util/mavsdk_helper.hpp"
 #include "models/fcmavlinkmissionitemsmodel.h"
 
+#include "action/fcmissionhandler.h"
 #include "action/fcaction.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
@@ -89,9 +90,9 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
     if(system->get_system_id()==OHD_SYS_ID_GROUND){
         qDebug()<<"Found OHD Ground station";
         m_system_ohd_ground=system;
-        passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-        qDebug()<<"XX:"<<passtroughOhdGround->get_target_sysid();
-        passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+        m_passtrough=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+        qDebug()<<"XX:"<<m_passtrough->get_target_sysid();
+        m_passtrough->intercept_incoming_messages_async([this](mavlink_message_t& msg){
             //qDebug()<<"Intercept:Got message"<<msg.msgid;
             onProcessMavlinkMessage(msg);
             return true;
@@ -108,9 +109,9 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera2().set_param_client(system);
         // hacky, for connecting to the air unit directly
-        if(passtroughOhdGround==nullptr){
-            passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-            passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+        if(m_passtrough==nullptr){
+            m_passtrough=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+            m_passtrough->intercept_incoming_messages_async([this](mavlink_message_t& msg){
                 //qDebug()<<"Intercept:Got message"<<msg.msgid;
                 onProcessMavlinkMessage(msg);
                 return true;
@@ -136,11 +137,11 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
             m_system_fc=system;
             // we got the flight controller
             FCMavlinkSystem::instance().set_system_id(m_system_fc->get_system_id());
-            FCAction::instance().set_system(system);
+            FCAction::instance().set_fc_sys_id(m_system_fc->get_system_id(),MAV_COMP_ID_AUTOPILOT1);
             // hacky, for SITL testing
-            if(passtroughOhdGround==nullptr){
-                passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-                passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+            if(m_passtrough==nullptr){
+                m_passtrough=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+                m_passtrough->intercept_incoming_messages_async([this](mavlink_message_t& msg){
                     //qDebug()<<"Intercept:Got message"<<msg.msgid;
                     onProcessMavlinkMessage(msg);
                     return true;
@@ -167,8 +168,8 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     }
     assert(m_mavsdk!=nullptr);
     std::lock_guard<std::mutex> lock(systems_mutex);
-    if(passtroughOhdGround!=nullptr){
-        passtroughOhdGround->send_message(msg);
+    if(m_passtrough!=nullptr){
+        m_passtrough->send_message(msg);
         return true;
     }else{
         // If the passtrough is not created yet, a connection to the OHD ground unit has not yet been established.
@@ -247,19 +248,18 @@ void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
         const auto fc_sys_id=FCMavlinkSystem::instance().get_fc_sys_id();
         if(fc_sys_id.has_value()){
             if(msg.sysid==fc_sys_id.value()){
-                bool processed=FCMavlinkSystem::instance().process_message(msg);
+               process_message_fc(msg);
                if(m_msg_interval_helper){
                     m_msg_interval_helper->check_acknowledgement(msg);
                     auto opt_command=m_msg_interval_helper->create_command_if_needed();
-                   if(opt_command.has_value()){
+                    if(opt_command.has_value()){
                        auto command=opt_command.value();
                        send_command_long_oneshot(command);
-                   }
+                    }
                 }
                FCMavlinkMissionHandler::instance().opt_send_messages();
             }else{
                 qDebug()<<"MavlinkTelemetry received unmatched message "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
-
             }
         }else{
             // we don't know the FC sys id yet.
@@ -273,6 +273,17 @@ void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
             request_openhd_version();
         }
     }*/
+}
+
+void MavlinkTelemetry::process_message_fc(const mavlink_message_t &msg)
+{
+    if(FCMavlinkMissionHandler::instance().process_message(msg)){
+        return; // No further processing needed;
+    }
+    if(FCMavlinkSystem::instance().process_message(msg)){
+        return;
+    }
+    qDebug()<<"MavlinkTelemetry::process_message_fc unmatched message:"<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
 }
 
 void MavlinkTelemetry::tcp_only_establish_connection()
@@ -368,23 +379,29 @@ bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &c
     return sendMessage(msg);
 }
 
-bool MavlinkTelemetry::send_command_long_blocking(const mavlink_command_long_t &command)
+int MavlinkTelemetry::send_command_long_blocking(const mavlink_command_long_t &command)
 {
     qDebug()<<"send_command_long_blocking";
-    if(passtroughOhdGround){
-        mavsdk::MavlinkPassthrough::CommandLong command_mavsdk{};
-        command_mavsdk.target_sysid=command.target_system;
-        command_mavsdk.target_compid=command.target_component;
-        command_mavsdk.command=command.command;
-        command_mavsdk.param1=command.param1;
-        command_mavsdk.param2=command.param2;
-        auto res=passtroughOhdGround->send_command_long(command_mavsdk);
-        std::stringstream ss;
-        ss<<"Send command result:"<<res;
-        qDebug()<<ss.str().c_str();
-        return res==mavsdk::MavlinkPassthrough::Result::Success;
+    if(!m_passtrough){
+        qDebug()<<"No mavlink passthrough";
+        return -1;
     }
-    return false;
+    mavsdk::MavlinkPassthrough::CommandLong command_mavsdk{};
+    command_mavsdk.target_sysid=command.target_system;
+    command_mavsdk.target_compid=command.target_component;
+    command_mavsdk.command=command.command;
+    command_mavsdk.param1=command.param1;
+    command_mavsdk.param2=command.param2;
+    command_mavsdk.param3=command.param3;
+    command_mavsdk.param4=command.param4;
+    auto res=m_passtrough->send_command_long(command_mavsdk);
+    std::stringstream ss;
+    ss<<"Send command result:"<<res;
+    qDebug()<<ss.str().c_str();
+    if(res==mavsdk::MavlinkPassthrough::Result::Success){
+        return 0;
+    }
+    return -2;
 }
 
 void MavlinkTelemetry::re_apply_rates()

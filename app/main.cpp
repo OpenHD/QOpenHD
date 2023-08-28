@@ -18,6 +18,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/action/fcaction.h"
 #include "telemetry/models/fcmavlinkmissionitemsmodel.h"
+#include "telemetry/action/fcmissionhandler.h"
 #include "telemetry/models/camerastreammodel.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/models/wificard.h"

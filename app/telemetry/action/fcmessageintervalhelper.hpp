@@ -8,8 +8,9 @@
 #include <qsettings.h>
 #include "../../logging/hudlogmessagesmodel.h"
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 #include "util/qopenhdmavlinkhelper.hpp"
+#include "util/mavlink_enum_to_string.h"
 
 /**
  * We need to manually request / set the message interval(s) for specific messages on ardupilot
@@ -26,7 +27,7 @@ public:
         // interval in hertz
         int interval_hz;
     };
-    static mavlink_command_long_t create_cmd_set_msg_interval(int msg_type,int interval_us){
+    static mavlink_command_long_t create_cmd_set_msg_interval(int target_system,int target_component,int msg_type,int interval_us){
         mavlink_command_long_t command{};
         command.target_system=1;
         command.target_component=0;
@@ -41,8 +42,6 @@ public:
         // Can be disabled by the user
         QSettings settings;
         const bool set_mavlink_message_rates = settings.value("set_mavlink_message_rates",true).toBool();
-        const bool mavlink_message_rates_high_speed=settings.value("mavlink_message_rates_high_speed",false).toBool();
-        const bool mavlink_message_rates_high_speed_rc_channels=settings.value("mavlink_message_rates_high_speed_rc_channels",false).toBool();
         if(!set_mavlink_message_rates){
             return std::nullopt;
         }
@@ -66,6 +65,8 @@ public:
             // One of the intervals is not succesfully set yet
             const auto interval=m_intervals.at(tmp);
             auto interval_hz=interval.interval_hz;
+            const bool mavlink_message_rates_high_speed=settings.value("mavlink_message_rates_high_speed",false).toBool();
+            const bool mavlink_message_rates_high_speed_rc_channels=settings.value("mavlink_message_rates_high_speed_rc_channels",false).toBool();
             if(mavlink_message_rates_high_speed_rc_channels && interval.msg_id==MAVLINK_MSG_ID_RC_CHANNELS){
                 interval_hz=15;
             }
@@ -73,7 +74,9 @@ public:
                 interval_hz*=2;
             }
             const auto interval_us=1000*1000/interval_hz;
-            auto command=create_cmd_set_msg_interval(interval.msg_id,interval_us);
+            const auto fc_sys_id=1;
+            const auto fc_comp_id=MAV_COMP_ID_AUTOPILOT1;
+            auto command=create_cmd_set_msg_interval(fc_sys_id,fc_comp_id,interval.msg_id,interval_us);
             m_n_times_already_sent++;
             qDebug()<<"Requesting rate "<<(int)interval.msg_id;
             return command;
@@ -94,6 +97,7 @@ public:
             if(ack.command==MAV_CMD_SET_MESSAGE_INTERVAL && ack.result==MAV_RESULT_ACCEPTED &&
                 ack.target_system== QOpenHDMavlinkHelper::get_own_sys_id()){
                 qDebug()<<"Message interval acknowledged "<<m_last_successfully_set_rate;
+                qDebug()<<qopenhd::mavlink_command_ack_to_string(ack).c_str();
                 // request the next message interval if needed
                 m_last_successfully_set_rate++;
                 m_n_times_already_sent=0;

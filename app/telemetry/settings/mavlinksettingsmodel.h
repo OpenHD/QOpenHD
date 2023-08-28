@@ -46,7 +46,7 @@ public:
     // any instance of this class is only usable as soon as its corresponding system is set
     void set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params=true);
 private:
-    std::shared_ptr<mavsdk::Param> param_client=nullptr;
+    std::shared_ptr<mavsdk::Param> m_param_client_new=nullptr;
     std::shared_ptr<mavsdk::System> m_system=nullptr;
 public:
     // Fetch a param value using mavsdk. Returns std::nullopt on failure,
