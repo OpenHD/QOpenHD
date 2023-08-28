@@ -5,6 +5,9 @@
 
 #include "../util/mavsdk_include.h"
 
+/**
+ * This is the one and only class from which messages / actions can be sent to the FC
+ */
 class FCAction : public QObject
 {
     Q_OBJECT
