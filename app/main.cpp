@@ -287,6 +287,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkAction", &FCAction::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkMissionItemsModel", &FCMavlinkMissionItemsModel::instance());
+    engine.rootContext()->setContextProperty("_fcMavlinkMissionHandler", &FCMavlinkMissionHandler::instance());
     engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
     engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());

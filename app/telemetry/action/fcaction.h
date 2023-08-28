@@ -26,9 +26,6 @@ public:
     // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void arm_fc_async(bool arm=false);
 
-    // return true on success, false otherwise
-    Q_INVOKABLE bool enable_disable_mission_updates(bool enable);
-
     // Sends a command to change the flight mode. Note that this is more complicated than it sounds at first,
     // since copter and plane for example do have different flight mode enums.
     // For RTL (which is really important) we have a extra impl. just to be sure
@@ -42,9 +39,6 @@ private:
     // We got rid of this submodule for a good reason (see above)
     //std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
     std::shared_ptr<mavsdk::MavlinkPassthrough> m_pass_thru=nullptr;
-    // TODO: figure out if we shall use mission plugin (compatible with ardupilot) or not
-    // R.N: must be manually enabled by the user to save resources
-    std::shared_ptr<mavsdk::Mission> m_mission=nullptr;
 };
 
 #endif // FCACTION_H

@@ -165,13 +165,6 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(float,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
     // We expose the sys id for the OSD to show - note that this value should not be used by any c++ code
     L_RO_PROP(int,for_osd_sys_id,set_for_osd_sys_id,-1);
-    // TODO: We have 2 variables for the OSD to show - the current total n of waypoints and the current waypoint the FC is at. Depending on how things are broadcasted,
-    // The user might have to manually request the current total n of waypoints
-    // NOTE: the description "waypoints" is not exactly accurate, left in for now due to legacy reasons though
-    L_RO_PROP(int,mission_waypoints_current_total,set_mission_waypoints_current_total,-1);
-    L_RO_PROP(int,mission_waypoints_current,set_mission_waypoints_current,-1);
-    // Current mission type, verbose as string for the user
-    L_RO_PROP(QString,mission_current_type,set_mission_current_type,"Unknown");
     L_RO_PROP(int,distance_sensor_distance_cm,set_distance_sensor_distance_cm,-1);
     // (GPS) reported time
     L_RO_PROP(quint64,sys_time_unix_usec,set_sys_time_unix_usec,0);

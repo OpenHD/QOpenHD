@@ -254,46 +254,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
         break;
     }
-    case MAVLINK_MSG_ID_MISSION_CURRENT:{
-        // https://mavlink.io/en/messages/common.html#MISSION_CURRENT
-        mavlink_mission_current_t mission_current;
-        mavlink_msg_mission_current_decode(&msg,&mission_current);
-        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_CURRENT"<<mission_current.seq;
-        set_mission_waypoints_current(mission_current.seq);
-        if(mission_current.total!=0){ // 0 == not supported
-            set_mission_waypoints_current_total(mission_current.total);
-        }
+    case MAVLINK_MSG_ID_MISSION_CURRENT:
+    case MAVLINK_MSG_ID_MISSION_COUNT:
+    case MAVLINK_MSG_ID_MISSION_ITEM_INT:
+        // Missions are handled extra
+        FCMavlinkMissionHandler::instance().process_message(msg);
         break;
-    }
-    case MAVLINK_MSG_ID_MISSION_COUNT:{
-        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_COUNT";
-        // https://mavlink.io/en/messages/common.html#MISSION_COUNT
-        mavlink_mission_count_t mission;
-        mavlink_msg_mission_count_decode(&msg,&mission);
-        set_mission_waypoints_current_total(mission.count);
-        set_mission_current_type(Telemetryutil::mavlink_mission_type_to_string(mission.mission_type));
-        break;
-    }
-    case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
-        mavlink_mission_item_int_t item;
-        mavlink_msg_mission_item_int_decode(&msg, &item);
-        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT"<<Telemetryutil::mavlink_frame_to_string(item.frame);
-        {
-           if(item.frame==MAV_FRAME_GLOBAL || item.frame==MAV_FRAME_GLOBAL_RELATIVE_ALT){
-               double lat=static_cast<double>(item.x)* 1e-7;
-               double lon=static_cast<double>(item.y)* 1e-7;
-               double alt_m=100;
-               if(lat==0.0 || lon==0.0){
-                   //qDebug()<<"Weird mission item:"<<item.x<<","<<item.y<<" index:"<<item.seq;
-               }else{
-                   const int mission_index=item.seq;
-                   const bool currently_active=item.current==1;
-                   FCMavlinkMissionItemsModel::instance().update_mission(mission_index,lat,lon,alt_m,currently_active);
-               }
-           }
-        }
-        break;
-    }
     case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
         //qDebug()<<"Got MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN";
         // inav for some reason publishes the home position via this message instead of the home position one (and doesn't want to change it)
@@ -537,6 +503,7 @@ bool FCMavlinkSystem::set_system_id(int sys_id)
     m_sys_id=sys_id;
     m_discovered=true;
     set_for_osd_sys_id(sys_id);
+    return true;
 }
 
 void FCMavlinkSystem::updateFlightTimer() {

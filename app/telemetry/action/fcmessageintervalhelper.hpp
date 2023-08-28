@@ -129,6 +129,7 @@ private:
         MessageInterval{MAVLINK_MSG_ID_AOA_SSA,1},
         MessageInterval{MAVLINK_MSG_ID_SCALED_PRESSURE,1},
         MessageInterval{MAVLINK_MSG_ID_MISSION_CURRENT,1},
+        //MessageInterval{MAVLINK_MSG_ID_MISSION_COUNT,1}, Doesn't work broadcast
         // NOTE: We cannot set broadcast on this one !
         //MessageInterval{MAVLINK_MSG_ID_MISSION_ITEM_INT,1},
         //MessageInterval{0,0},

@@ -33,8 +33,6 @@ void FCAction::set_system(std::shared_ptr<mavsdk::System> system)
     qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)tmp_sys_id;
     m_action=std::make_shared<mavsdk::Action>(system);
     m_pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-    // must be manually enabled by the user to save resources
-    //m_mission=std::make_shared<mavsdk::Mission>(system);
 }
 
 void FCAction::arm_fc_async(bool arm)
@@ -135,53 +133,4 @@ void FCAction::request_home_position_from_fc()
         qDebug()<<msg.c_str();
         HUDLogMessagesModel::instance().add_message_warning(msg.c_str());
     }
-}
-
-bool FCAction::enable_disable_mission_updates(bool enable)
-{
-    if(enable){
-        // Enable mission updates via mavsdk
-        // by instantiating the mavsdk mission instance, we now automatically get updates, but manually parse the mission updates in the main mavlink message callback.
-        if(m_system==nullptr){
-            HUDLogMessagesModel::instance().add_message_info("No FC");
-            return false;
-        }
-        if(m_mission==nullptr){
-            // must be manually enabled by the user to save resources
-            m_mission=std::make_shared<mavsdk::Mission>(m_system);
-            auto cb=[this](mavsdk::Mission::MissionProgress mp){
-                //qDebug()<<"Mission progress: "<<mp.current<<":"<<mp.total;
-            };
-            m_mission->subscribe_mission_progress(cb);
-            const auto [res,plan]=m_mission->download_mission();
-            if(res!=mavsdk::Mission::Result::Success){
-                std::stringstream ss;
-                ss<<"Mission "<<res;
-                HUDLogMessagesModel::instance().add_message_warning(ss.str().c_str());
-            }
-            qDebug()<<"mission items:"<<plan.mission_items.size();
-            HUDLogMessagesModel::instance().add_message_info("Mission updates enabled");
-        }else{
-            HUDLogMessagesModel::instance().add_message_info("Mission updates already enabled");
-        }
-    }else{
-        if(m_mission!=nullptr){
-            // disable mission updates via mavsdk
-            m_mission=nullptr;
-            HUDLogMessagesModel::instance().add_message_info("Mission updates disabled");
-        }else{
-            HUDLogMessagesModel::instance().add_message_info("Mission updates already disabled");
-        }
-    }
-    return true;
-    /*const auto [res,plan]=m_mission->download_mission();
-    if(res!=mavsdk::Mission::Result::Success){
-        HUDLogMessagesModel::instance().add_message_info("Mission download failure");
-        return;
-    }
-    HUDLogMessagesModel::instance().add_message_info("Mission download success");*/
-    /*auto cb=[this](mavsdk::Mission::MissionProgress mp){
-        //qDebug()<<"Mission progress: "<<mp.current<<":"<<mp.total;
-    };
-    m_mission->subscribe_mission_progress(cb);*/
 }

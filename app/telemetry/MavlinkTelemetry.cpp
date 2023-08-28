@@ -7,6 +7,7 @@
 #include "settings/mavlinksettingsmodel.h"
 #include "../logging/logmessagesmodel.h"
 #include "util/mavsdk_helper.hpp"
+#include "models/fcmavlinkmissionitemsmodel.h"
 
 #include "action/fcaction.h"
 
@@ -145,6 +146,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
                     return true;
                 });
             }
+
         }else{
             qDebug()<<"Got weird system:"<<(int)system->get_system_id();
         }
@@ -181,7 +183,7 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     return false;
 }
 
-static int get_message_size(const mavlink_message_t msg){
+static int get_message_size(const mavlink_message_t& msg){
     return sizeof(msg);
 }
 
@@ -254,6 +256,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
                        send_command_long_oneshot(command);
                    }
                 }
+               FCMavlinkMissionHandler::instance().opt_send_messages();
             }else{
                 qDebug()<<"MavlinkTelemetry received unmatched message "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
 
