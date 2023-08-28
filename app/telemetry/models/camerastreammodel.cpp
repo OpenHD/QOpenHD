@@ -1,7 +1,6 @@
 #include "camerastreammodel.h"
 #include "qdebug.h"
 #include "../util/telemetryutil.hpp"
-#include "util/WorkaroundMessageBox.h"
 #include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
 #include <qsettings.h>

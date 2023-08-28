@@ -22,10 +22,8 @@
  * the Flight Controller, but it is NOT a Flight Controller ;)
  * The corresponding qml element is called _fcMavlinkSystem.
  *
- * NOTE: In the beginning, me (Consti10) and @luke experimented a bit with the mavsdk telemetry subscription feature -
- * However, after some testing and discussion, we came to the conclusion that they are more annoying than
- * usefull due to what seems to be a common lack of support for Ardupilot in MAVSDK. We parse the "broadcast"
- * mavlink telemetry message(s) from the FC manually.
+ * NOTE: This is a c++ - write, qml - read only model - this greatly increases simplicity.
+ * You cannot 'talk' to the FC from here - use the action class for that.
  *
  * NOTE: When adding new values, please try and be specific about their unit - e.g. add a "volt" suffix if the value is in volts.
  */
