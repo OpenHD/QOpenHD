@@ -260,8 +260,6 @@ public:
     // return true on success, false otherwise
     Q_INVOKABLE bool enable_disable_mission_updates(bool enable);
 
-    // TODO document me
-    Q_INVOKABLE bool send_command_reboot(bool reboot);
     // Sends a command to change the flight mode. Note that this is more complicated than it sounds at first,
     // since copter and plane for example do have different flight mode enums.
     // For RTL (which is really important) we have a extra impl. just to be sure

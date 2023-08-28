@@ -131,27 +131,27 @@ Card {
                 var messageForHUD="ERROR"
                 if (powerAction === PowerActionDialoque.PowerAction.RebootGround) {
                     messageForHUD="Rebooting ground station"
-                    result = _ohdSystemGround.send_command_reboot(true);
+                    result = _mavlinkTelemetry.send_command_reboot(0,true)
                 }
                 if (powerAction === PowerActionDialoque.PowerAction.ShutdownGround) {
                     messageForHUD="Shutting down ground station"
-                    result = _ohdSystemGround.send_command_reboot(false);
+                    result =  _mavlinkTelemetry.send_command_reboot(0,false);
                 }
                 if (powerAction === PowerActionDialoque.PowerAction.RebootAir) {
                     messageForHUD="Rebooting air pi"
-                    result = _ohdSystemAir.send_command_reboot(true);
+                    result =  _mavlinkTelemetry.send_command_reboot(1,true);
                 }
                 if (powerAction === PowerActionDialoque.PowerAction.ShutdownAir) {
                     messageForHUD="Shutting down air pi"
-                    result = _ohdSystemAir.send_command_reboot(false);
+                    result =  _mavlinkTelemetry.send_command_reboot(1,false);
                 }
                 if (powerAction === PowerActionDialoque.PowerAction.ShutdownFC) { //button commented out
                     messageForHUD="Shutting down Flight Controller"
-                    result = _fcMavlinkSystem.send_command_reboot(false);
+                    result = _mavlinkTelemetry.send_command_reboot(2,false);
                 }
                 if (powerAction === PowerActionDialoque.PowerAction.RebootFC) {
                     messageForHUD="Rebooting Flight Controller"
-                   result =  _fcMavlinkSystem.send_command_reboot(true);
+                   result =   _mavlinkTelemetry.send_command_reboot(2,true);
                 }
                 if(result){
                     settings_panel.visible = false;

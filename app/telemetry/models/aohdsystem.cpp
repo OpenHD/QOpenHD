@@ -11,6 +11,7 @@
 
 #include <string>
 #include <sstream>
+#include <MavlinkTelemetry.h>
 
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
@@ -444,41 +445,12 @@ void AOHDSystem::update_alive()
     }
 }
 
-bool AOHDSystem::send_command_long(mavsdk::Action::CommandLong command)
-{
-    if(!_action){
-        return false;
-    }
-    const auto res=_action->send_command_long(command);
-    assert(command.target_system_id==get_own_sys_id());
-    std::stringstream ss;
-    ss<<"Action: "<<res;
-    qDebug()<<QString(ss.str().c_str());
-    if(res==mavsdk::Action::Result::Success){
-        return true;
-    }
-    return false;
-}
-
-
 void AOHDSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // once discovered, the system never changes !
     assert(_system==nullptr);
     assert(system->get_system_id()==get_own_sys_id());
     _system=system;
-    _action=std::make_shared<mavsdk::Action>(system);
-}
-
-bool AOHDSystem::send_command_reboot(bool reboot)
-{
-    mavsdk::Action::CommandLong command{};
-    command.target_system_id= get_own_sys_id();
-    command.target_component_id=0; // unused r.n
-    command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
-    command.params.maybe_param1=0;
-    command.params.maybe_param2=(reboot ? 1 : 2);
-    return send_command_long(command);
 }
 
 void AOHDSystem::send_message_hud_connection(bool connected){

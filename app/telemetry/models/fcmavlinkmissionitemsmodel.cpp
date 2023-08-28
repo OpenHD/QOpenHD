@@ -3,6 +3,10 @@
 
 #include <qsettings.h>
 
+FCMavlinkMissionHandler::FCMavlinkMissionHandler(QObject *parent): QObject(parent)
+{
+
+}
 
 FCMavlinkMissionItemsModel::FCMavlinkMissionItemsModel(QObject *parent)
     :  QAbstractListModel(parent)

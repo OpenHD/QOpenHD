@@ -9,6 +9,14 @@
 #include <utility>
 
 
+class FCMavlinkMissionHandler: public QObject{
+public:
+    explicit FCMavlinkMissionHandler(QObject *parent = nullptr);
+    // singleton for accessing the model from c++
+    static FCMavlinkMissionHandler& instance();
+private:
+};
+
 // To not pollute the FCMavlinkSystem model class too much, we have an extra model for managing the
 // dynamically sized mission waypoints. ("Map stuff)
 // This model pretty much only exposes mission items (dynamic size) such that we can make use of them
@@ -25,6 +33,8 @@ public:
     // This emits the proper signal in which we either update the mission
     // or add as many elements as needed, then update the mission
     void update_mission(int mission_index,double lat,double lon,double alt_m,bool currently_active);
+    //
+
 private:
     struct Element{
         int mission_index=0;

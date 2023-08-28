@@ -906,24 +906,6 @@ void FCMavlinkSystem::send_return_to_launch_async()
     m_action->return_to_launch_async(cb);
 }
 
-bool FCMavlinkSystem::send_command_reboot(bool reboot)
-{
-    if(!m_action){
-        HUDLogMessagesModel::instance().add_message_info("No FC");
-        return false;
-    }
-    mavsdk::Action::Result res{};
-    if(reboot){
-        res=m_action->reboot();
-    }else{
-        res=m_action->shutdown();
-    }
-    if(res==mavsdk::Action::Result::Success){
-        return true;
-    }
-    return false;
-}
-
 
 void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     if(!m_pass_thru){

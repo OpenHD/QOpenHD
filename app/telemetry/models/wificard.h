@@ -44,8 +44,6 @@ private:
     // On the OSD, we show how many packets were received on each card in X seconds intervals
     std::chrono::steady_clock::time_point m_last_packets_in_X_second_recalculation=std::chrono::steady_clock::now();
     int64_t m_last_packets_in_X_second_value=-1;
-
-
 };
 
 #endif // WIFICARD_H

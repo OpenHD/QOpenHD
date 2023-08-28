@@ -14,8 +14,8 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
     m_msg_interval_helper=std::make_unique<FCMessageIntervalHelper>();
     mavsdk::Mavsdk::Configuration config{QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),false};
-    mavsdk=std::make_shared<mavsdk::Mavsdk>();
-    mavsdk->set_configuration(config);
+    m_mavsdk=std::make_shared<mavsdk::Mavsdk>();
+    m_mavsdk->set_configuration(config);
     mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
                               const std::string& message, // message text
                               const std::string& file,    // source file from which the message was sent
@@ -35,10 +35,10 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
       return true;
     });
     // NOTE: subscribe before adding any connection(s)
-    mavsdk->subscribe_on_new_system([this]() {
+    m_mavsdk->subscribe_on_new_system([this]() {
         std::lock_guard<std::mutex> lock(systems_mutex);
         // hacky, fucking hell. mavsdk might call this callback with more than 1 system added.
-        auto systems=mavsdk->systems();
+        auto systems=m_mavsdk->systems();
         for(auto i=mavsdk_already_known_systems;i<systems.size();i++){
             auto new_system=systems.at(i);
             this->onNewSystem(new_system);
@@ -61,7 +61,7 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
     }else{
         // default, udp, passive (like QGC)
-        mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+        mavsdk::ConnectionResult connection_result = m_mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
         std::stringstream ss;
         ss<<"MAVSDK UDP connection: " << connection_result;
         qDebug()<<ss.str().c_str();
@@ -87,7 +87,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
     }
     if(system->get_system_id()==OHD_SYS_ID_GROUND){
         qDebug()<<"Found OHD Ground station";
-        systemOhdGround=system;
+        m_system_ohd_ground=system;
         passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
         qDebug()<<"XX:"<<passtroughOhdGround->get_target_sysid();
         passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
@@ -103,7 +103,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         AOHDSystem::instanceGround().set_system(system);
     }else if(system->get_system_id()==OHD_SYS_ID_AIR){
         qDebug()<<"Found OHD AIR station";
-        systemOhdAir=system;
+        m_system_ohd_air=system;
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera2().set_param_client(system);
@@ -134,6 +134,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         }
         if(is_fc){
             qDebug()<<"Found FC";
+            m_system_fc=system;
             // we got the flight controller
             FCMavlinkSystem::instance().set_system(system);
             // hacky, for SITL testing
@@ -163,7 +164,7 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
     }
-    assert(mavsdk!=nullptr);
+    assert(m_mavsdk!=nullptr);
     std::lock_guard<std::mutex> lock(systems_mutex);
     if(passtroughOhdGround!=nullptr){
         passtroughOhdGround->send_message(msg);
@@ -290,7 +291,7 @@ void MavlinkTelemetry::tcp_only_establish_connection()
             qDebug()<<ss.str().c_str();
         }
         // This might block, but that's not quaranteed (it won't if the host is there, but no server on the tcp port)
-        mavsdk::ConnectionResult connection_result = mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
+        mavsdk::ConnectionResult connection_result = m_mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
         std::stringstream ss;
         ss<<"MAVSDK TCP connection result: " << connection_result;
         qDebug()<<ss.str().c_str();
@@ -333,6 +334,29 @@ void MavlinkTelemetry::request_openhd_version()
     command.command=MAV_CMD_REQUEST_MESSAGE;
     command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
     send_command_long_oneshot(command);
+}
+
+bool MavlinkTelemetry::send_command_reboot(int system_id, bool reboot)
+{
+    int target_sys_id= -1;
+    if(system_id==0){
+        target_sys_id=OHD_SYS_ID_GROUND;
+    }else if(system_id==1){
+        target_sys_id=OHD_SYS_ID_AIR;
+    }else {
+        if(m_system_fc==nullptr){
+            qDebug()<<"FC not set";
+            return false;
+        }
+        target_sys_id=m_system_fc->get_system_id();
+    }
+    mavlink_command_long_t cmd{};
+    cmd.target_system=target_sys_id;
+    cmd.target_component=0;
+    cmd.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
+    cmd.param1=0;
+    cmd.param2=(reboot ? 1 : 2);
+    return MavlinkTelemetry::instance().send_command_long_blocking(cmd);
 }
 
 bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)

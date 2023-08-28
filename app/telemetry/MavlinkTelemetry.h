@@ -55,9 +55,10 @@ private:
     // workaround systems discovery is not thread safe
     std::mutex systems_mutex;
     int mavsdk_already_known_systems=0;
-    std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
-    std::shared_ptr<mavsdk::System> systemOhdGround=nullptr;
-    std::shared_ptr<mavsdk::System> systemOhdAir=nullptr;
+    std::shared_ptr<mavsdk::Mavsdk> m_mavsdk=nullptr;
+    std::shared_ptr<mavsdk::System> m_system_ohd_ground=nullptr;
+    std::shared_ptr<mavsdk::System> m_system_ohd_air=nullptr;
+    std::shared_ptr<mavsdk::System> m_system_fc=nullptr;
     // MAVSDK is a bit stupid in this direction - passtrough(s) are for each system, but if there are multiple
     // system(s) behind a connection, this pattern is completely broken.
     // Normally, this passtrough is for the ground station - since we normally talk to both air and fc via the ground
@@ -82,6 +83,9 @@ public:
     Q_INVOKABLE void ping_all_systems();
     // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
     Q_INVOKABLE void request_openhd_version();
+    // send the reboot / shutdown command to openhd air or ground unit
+    // @param system_id: 0 for ground, 1 for air, 2 for FC
+    Q_INVOKABLE bool send_command_reboot(int system_id,bool reboot);
 public:
     // send a command, to all connected systems
     // doesn't reatransmitt

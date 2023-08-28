@@ -115,7 +115,7 @@ public: // public for QT
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
-         return m_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
+        return m_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
      }
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
@@ -143,11 +143,7 @@ private:
     // Model / fire and forget data only end
 private:
      // NOTE: nullptr until discovered !!
-     std::shared_ptr<mavsdk::System> _system=nullptr;
-     std::shared_ptr<mavsdk::Action> _action=nullptr;
-     bool send_command_long(mavsdk::Action::CommandLong command);
-public:
-     Q_INVOKABLE bool send_command_reboot(bool reboot);
+    std::shared_ptr<mavsdk::System> _system=nullptr;
 private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);
