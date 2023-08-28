@@ -35,7 +35,6 @@ public:
     // or add as many elements as needed, then update the mission
     void update_mission(int mission_index,double lat,double lon,double alt_m,bool currently_active);
     //
-
 private:
     struct Element{
         int mission_index=0;
