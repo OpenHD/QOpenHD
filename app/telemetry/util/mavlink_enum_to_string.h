@@ -3,7 +3,7 @@
 
 // A lot of bloat code
 
-#include "mavsdk_include.h"
+#include "mavlink_include.h"
 #include <QString>
 
 namespace qopenhd {

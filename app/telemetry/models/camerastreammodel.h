@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 

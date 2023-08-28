@@ -94,6 +94,7 @@ HEADERS += \
     $$PWD//util/openhd_defines.hpp \
     $$PWD//util/qopenhdmavlinkhelper.hpp \
     $$PWD//util/telemetryutil.hpp \
+    $$PWD/util/mavlink_include.h \
     $$PWD/models/fcmapmodel.h \
     $$PWD/models/fcmessageintervalhelper.hpp \
     $$PWD/requestmessagehelper.h \

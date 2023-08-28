@@ -77,13 +77,13 @@ BaseWidget {
                     }
                     var res=false
                     if (checked == true) {
-                        res=_fcMavlinkSystem.enable_disable_mission_updates(true);
+                        res=_fcMavlinkAction.enable_disable_mission_updates(true);
                         if(res===false){
                             error_last=true;
                             checked = !checked;
                         }
                     }else{
-                        res=_fcMavlinkSystem.enable_disable_mission_updates(false);
+                        res=_fcMavlinkAction.enable_disable_mission_updates(false);
                         if(res===false){
                             error_last=true;
                             checked = !checked;

@@ -8,7 +8,7 @@
 #include <qtimer.h>
 #include <utility>
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 
 class FCMavlinkMissionHandler: public QObject{
 public:

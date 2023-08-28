@@ -1,5 +1,7 @@
 #include "wificard.h"
 
+#include <sstream>
+
 #include "../../logging/hudlogmessagesmodel.h"
 
 WiFiCard::WiFiCard(bool is_air,int card_idx,QObject *parent)

@@ -5,7 +5,7 @@
 #include <qsettings.h>
 #include <QByteArray>
 #include <sstream>
-#include "mavsdk_include.h"
+#include "mavlink_include.h"
 
 namespace QOpenHDMavlinkHelper{
 

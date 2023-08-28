@@ -4,11 +4,12 @@
 #include <QString>
 #include <QDebug>
 
-#include "mavsdk_include.h"
+#include "mavlink_include.h"
 #include "../../common/TimeHelper.hpp"
 #include "../../common/StringHelper.hpp"
 #include "mavlink_enum_to_string.h"
 #include <cstring>
+#include <optional>
 
 // Various utility methods for telemetry that are static and take simple imputs.
 namespace Telemetryutil{

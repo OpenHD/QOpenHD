@@ -1,5 +1,5 @@
-#ifndef MAVLINK_INCLUDE_H
-#define MAVLINK_INCLUDE_H
+#ifndef MAVSDK_INCLUDE_H
+#define MAVSDK_INCLUDE_H
 
 // We get mavlink from mavsdk
 #include <mavsdk/mavsdk.h>
@@ -10,4 +10,4 @@
 #include <mavsdk/log_callback.h>
 
 
-#endif // MAVLINK_INCLUDE_H
+#endif // MAVSDK_INCLUDE_H

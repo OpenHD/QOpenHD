@@ -8,7 +8,7 @@
 #include <QQmlContext>
 #include <atomic>
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 #include "util/openhd_defines.hpp"
@@ -30,8 +30,6 @@ public:
     // Singletons for accessing the models from c++
     static AOHDSystem& instanceAir();
     static AOHDSystem& instanceGround();
-    // Called in main.cpp to egister the models for qml
-    static void register_for_qml(QQmlContext* qml_context);
     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
     // Returns true if the passed message was processed (known message id), false otherwise
     bool process_message(const mavlink_message_t& msg);

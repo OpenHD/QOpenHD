@@ -4,7 +4,7 @@
 #include <qobject.h>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 
 // Stats unique per each connected (wifibroadcast) wfi card
 // Air has only one card, ground can have one or more card(s)

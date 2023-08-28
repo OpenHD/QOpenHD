@@ -6,9 +6,10 @@
 #include <QTimer>
 #include <QQmlContext>
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 
 #include <atomic>
+#include <optional>
 
 // Really nice, this way we don't have to write all the setters / getters / signals ourselves !
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"

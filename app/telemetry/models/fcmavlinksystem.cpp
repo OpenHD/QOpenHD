@@ -2,7 +2,6 @@
 #include "rcchannelsmodel.h"
 
 #include <QDebug>
-#include "util/mavsdk_helper.hpp"
 #include "util/qopenhd.h"
 
 #include <geographiclib-c-2.0/src/geodesic.h>
