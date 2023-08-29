@@ -1,7 +1,7 @@
 ﻿#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "param_names.h"
-#include "documented_param.h"
+#include "documented_param.hpp"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"

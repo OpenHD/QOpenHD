@@ -74,7 +74,9 @@ ScrollView {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.set_mavlink_message_rates
-                    onCheckedChanged: settings.set_mavlink_message_rates = checked
+                    onCheckedChanged: {
+                        settings.set_mavlink_message_rates = checked
+                    }
                 }
             }
             SettingBaseElement{
@@ -89,9 +91,9 @@ ScrollView {
                     checked: settings.mavlink_message_rates_high_speed
                     onCheckedChanged: {
                         if(settings.mavlink_message_rates_high_speed != checked){
+                            settings.mavlink_message_rates_high_speed = checked
                             _mavlinkTelemetry.re_apply_rates()
                         }
-                        settings.mavlink_message_rates_high_speed = checked
                     }
                 }
             }
@@ -104,12 +106,12 @@ ScrollView {
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.mavlink_message_rates_high_speed
+                    checked: settings.mavlink_message_rates_high_speed_rc_channels
                     onCheckedChanged: {
                         if(settings.mavlink_message_rates_high_speed_rc_channels != checked){
+                            settings.mavlink_message_rates_high_speed_rc_channels = checked
                             _mavlinkTelemetry.re_apply_rates()
                         }
-                        settings.mavlink_message_rates_high_speed_rc_channels = checked
                     }
                 }
             }

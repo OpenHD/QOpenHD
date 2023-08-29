@@ -95,6 +95,7 @@ HEADERS += \
     $$PWD/action/fcmissionhandler.h \
     $$PWD/action/fcmsgintervalhandler.h \
     $$PWD/action/ohdaction.h \
+    $$PWD/settings/documented_param.hpp \
     $$PWD/util/geodesi_helper.h \
     $$PWD/util/mavlink_enum_to_string.h \
     $$PWD//util/mavsdk_helper.hpp \
@@ -105,7 +106,6 @@ HEADERS += \
     $$PWD/util/mavlink_include.h \
     $$PWD/models/fcmapmodel.h \
     $$PWD/models/fcmessageintervalhelper.hpp \
-    $$PWD/settings/documented_param.h \
     $$PWD/settings/wblinksettingshelper.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/camerastreammodel.h \

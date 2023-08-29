@@ -1,3 +1,6 @@
+NOTE: Code in here is strictly mavlink broadcast - aka no retransmission or quaranteed deliveries.
+NOTE: See action and / or settings subdirectories for code that 'talks' to one or more of the mavlink systems.
+
 Generally, we have 2 OpenHD systems (each wth their own unique mavlink system id and one or more component(s) 
 and the FC system (if connected)
 

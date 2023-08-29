@@ -76,7 +76,7 @@ private:
     std::unique_ptr<std::thread> m_timeout_thread;
     void loop_timeout();
     void handle_timeout();
-    static constexpr auto MAX_N_SIMULTANOEUS_COMMANDS=3;
+    static constexpr auto MAX_N_SIMULTANOEUS_COMMANDS=5;
     static std::string run_command_result_as_string(const RunCommandResult& res);
 };
 

@@ -48,14 +48,15 @@ void FCAction::flight_mode_cmd(long cmd_msg) {
     const auto result=CmdSender::instance().send_command_long_blocking(command);
     if(result==CmdSender::Result::QUEUE_FULL){
         HUDLogMessagesModel::instance().add_message_info("Failed, please try again later");
-    }else if(result==CmdSender::Result::CMD_SUCCESS){
+    }else if(result==CmdSender::CMD_DENIED){
+        HUDLogMessagesModel::instance().add_message_info("Flight mode unsupported");
+    }else if(result==CmdSender::NO_RESPONSE){
+        HUDLogMessagesModel::instance().add_message_info("FC not reachable");
+    }else{
+        assert(result==CmdSender::Result::CMD_SUCCESS);
         std::stringstream ss;
         ss<<"Flight mode success";
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
-    }else if(result==CmdSender::CMD_DENIED){
-        HUDLogMessagesModel::instance().add_message_info("Flight mode unsupported");
-    }else{
-        HUDLogMessagesModel::instance().add_message_info("FC not reachable");
     }
 }
 

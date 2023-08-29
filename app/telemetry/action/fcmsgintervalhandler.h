@@ -9,7 +9,6 @@
 
 #include "../util/mavlink_include.h"
 
-
 /**
  * We need to manually request / set the message interval(s) for specific messages on ardupilot
  * (It doesn't send them by default).
