@@ -11,10 +11,11 @@
 
 #include "action/fcmissionhandler.h"
 #include "action/fcaction.h"
+#include "action/cmdsender.h"
+#include "action/fcmsgintervalhandler.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
-    m_msg_interval_helper=std::make_unique<FCMessageIntervalHelper>();
     mavsdk::Mavsdk::Configuration config{QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),false};
     m_mavsdk=std::make_shared<mavsdk::Mavsdk>();
     m_mavsdk->set_configuration(config);
@@ -225,6 +226,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
         }
         return;
     }
+    if(CmdSender::instance().process_message(msg)){
+        return;
+    }
     // Other than ping, we seperate by sys ID's - there are up to 3 Systems - The OpenHD air unit, the OpenHD ground unit and the FC connected to the OHD air unit.
     // The systems then (optionally) can seperate by components, but r.n this is not needed.
     if(msg.sysid==OHD_SYS_ID_AIR){
@@ -249,15 +253,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
         if(fc_sys_id.has_value()){
             if(msg.sysid==fc_sys_id.value()){
                process_message_fc(msg);
-               if(m_msg_interval_helper){
-                    m_msg_interval_helper->check_acknowledgement(msg);
-                    auto opt_command=m_msg_interval_helper->create_command_if_needed();
-                    if(opt_command.has_value()){
-                       auto command=opt_command.value();
-                       send_command_long_oneshot(command);
-                    }
-                }
-               FCMavlinkMissionHandler::instance().opt_send_messages();
+               FCMsgIntervalHandler::instance().opt_send_messages();
+               FCMissionHandler::instance().opt_send_messages();
             }else{
                 qDebug()<<"MavlinkTelemetry received unmatched message "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
             }
@@ -266,18 +263,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
             qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet known) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
         }
     }
-    /*const auto elapsed_version_request=std::chrono::steady_clock::now()-m_last_time_version_requested;
-    if(elapsed_version_request>std::chrono::seconds(1)){
-        m_last_time_version_requested=std::chrono::steady_clock::now();
-        if(AOHDSystem::instanceAir().should_request_version()  || AOHDSystem::instanceGround().should_request_version()){
-            request_openhd_version();
-        }
-    }*/
 }
 
 void MavlinkTelemetry::process_message_fc(const mavlink_message_t &msg)
 {
-    if(FCMavlinkMissionHandler::instance().process_message(msg)){
+    if(FCMissionHandler::instance().process_message(msg)){
         return; // No further processing needed;
     }
     if(FCMavlinkSystem::instance().process_message(msg)){
@@ -341,72 +331,7 @@ void MavlinkTelemetry::ping_all_systems()
     sendMessage(msg);
 }
 
-void MavlinkTelemetry::request_openhd_version()
-{
-    mavlink_command_long_t command{};
-    command.command=MAV_CMD_REQUEST_MESSAGE;
-    command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
-    send_command_long_oneshot(command);
-}
-
-bool MavlinkTelemetry::send_command_reboot(int system_id, bool reboot)
-{
-    int target_sys_id= -1;
-    if(system_id==0){
-        target_sys_id=OHD_SYS_ID_GROUND;
-    }else if(system_id==1){
-        target_sys_id=OHD_SYS_ID_AIR;
-    }else {
-        if(m_system_fc==nullptr){
-            qDebug()<<"FC not set";
-            return false;
-        }
-        target_sys_id=m_system_fc->get_system_id();
-    }
-    mavlink_command_long_t cmd{};
-    cmd.target_system=target_sys_id;
-    cmd.target_component=0;
-    cmd.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
-    cmd.param1=0;
-    cmd.param2=(reboot ? 1 : 2);
-    return MavlinkTelemetry::instance().send_command_long_blocking(cmd);
-}
-
-bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
-{
-    mavlink_message_t msg;
-    mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(), &msg,&command);
-    return sendMessage(msg);
-}
-
-int MavlinkTelemetry::send_command_long_blocking(const mavlink_command_long_t &command)
-{
-    qDebug()<<"send_command_long_blocking";
-    if(!m_passtrough){
-        qDebug()<<"No mavlink passthrough";
-        return -1;
-    }
-    mavsdk::MavlinkPassthrough::CommandLong command_mavsdk{};
-    command_mavsdk.target_sysid=command.target_system;
-    command_mavsdk.target_compid=command.target_component;
-    command_mavsdk.command=command.command;
-    command_mavsdk.param1=command.param1;
-    command_mavsdk.param2=command.param2;
-    command_mavsdk.param3=command.param3;
-    command_mavsdk.param4=command.param4;
-    auto res=m_passtrough->send_command_long(command_mavsdk);
-    std::stringstream ss;
-    ss<<"Send command result:"<<res;
-    qDebug()<<ss.str().c_str();
-    if(res==mavsdk::MavlinkPassthrough::Result::Success){
-        return 0;
-    }
-    return -2;
-}
-
 void MavlinkTelemetry::re_apply_rates()
 {
-    if(m_msg_interval_helper){
-        m_msg_interval_helper->restart();
-    }
+    FCMsgIntervalHandler::instance().restart();
 }

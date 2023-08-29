@@ -7,7 +7,7 @@
 
 /**
  * This is the one and only class from which messages / actions can be sent to the FC.
- * In general, sending messages to the FC should avoided - a broacast pattern is usually sueficient and preferred in QOpenHD.
+ * THE REST IS BROADCAST !
  */
 class FCAction : public QObject
 {
@@ -16,8 +16,7 @@ public:
     explicit FCAction(QObject *parent = nullptr);
     static FCAction& instance();
 
-    // Set the mavlink system reference, once discovered.
-    // NOTE: We only use the system to get broadcast message(s) (pass_through) and a few more things
+    // Set the mavlink system sys/comp id, once discovered.
     void set_fc_sys_id(int fc_sys_id,int fc_comp_id);
 public:
     // WARNING: Do not call any non-async send command methods from the same thread that is parsing the mavlink messages !
@@ -33,6 +32,8 @@ public:
 
     // Some FC stop sending home position when armed, re-request the home position
     Q_INVOKABLE void request_home_position_from_fc();
+
+    Q_INVOKABLE bool send_command_reboot(bool reboot);
 private:
     int m_fc_sys_id=1;
     int m_fc_comp_id=MAV_COMP_ID_AUTOPILOT1;

@@ -16,6 +16,7 @@
 #include <logging/hudlogmessagesmodel.h>
 
 #include "util/qopenhd.h"
+#include "../util/qopenhdmavlinkhelper.hpp"
 
 #include <../util/WorkaroundMessageBox.h>
 #include "../settings/wblinksettingshelper.h"

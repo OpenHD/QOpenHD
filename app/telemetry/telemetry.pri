@@ -70,8 +70,11 @@ QOPENHD_LINK_MAVSDK_SHARED {
 }
 
 SOURCES += \
+    $$PWD/action/cmdsender.cpp \
     $$PWD/action/fcaction.cpp \
     $$PWD/action/fcmissionhandler.cpp \
+    $$PWD/action/fcmsgintervalhandler.cpp \
+    $$PWD/action/ohdaction.cpp \
     $$PWD/models/fcmapmodel.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
     app/telemetry/models/aohdsystem.cpp \
@@ -86,8 +89,12 @@ SOURCES += \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
+    $$PWD/action/cmdsender.h \
+    $$PWD/action/create_cmd_helper.hpp \
     $$PWD/action/fcaction.h \
     $$PWD/action/fcmissionhandler.h \
+    $$PWD/action/fcmsgintervalhandler.h \
+    $$PWD/action/ohdaction.h \
     $$PWD/util/geodesi_helper.h \
     $$PWD/util/mavlink_enum_to_string.h \
     $$PWD//util/mavsdk_helper.hpp \

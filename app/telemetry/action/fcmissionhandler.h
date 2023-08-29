@@ -18,20 +18,18 @@
 /**
  * Simple class to (semi-reliably) get all the mission waypoints from the FC and more.
  */
-class FCMavlinkMissionHandler: public QObject{
+class FCMissionHandler: public QObject{
     Q_OBJECT
 public:
-    explicit FCMavlinkMissionHandler(QObject *parent = nullptr);
+    explicit FCMissionHandler(QObject *parent = nullptr);
     // singleton for accessing the model from c++
-    static FCMavlinkMissionHandler& instance();
+    static FCMissionHandler& instance();
     // Returns true if the message was "consumed" and does not need to be processed by anybody else, e.g. the main fc model
     bool process_message(const mavlink_message_t& msg);
     // Should be called every time a msg from the FC is received - this class takes care to not pollute the link
     void opt_send_messages();
 public:
-    // We expose some variables as read-only for the OSD
-    // TODO: We have 2 variables for the OSD to show - the current total n of waypoints and the current waypoint the FC is at. Depending on how things are broadcasted,
-    // The user might have to manually request the current total n of waypoints
+    // We expose some variables as read-only for the OSD+
     // NOTE: the description "waypoints" is not exactly accurate, left in for now due to legacy reasons though
     L_RO_PROP(int,mission_waypoints_current_total,set_mission_waypoints_current_total,-1);
     L_RO_PROP(int,mission_waypoints_current,set_mission_waypoints_current,-1);

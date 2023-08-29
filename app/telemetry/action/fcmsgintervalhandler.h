@@ -1,5 +1,5 @@
-#ifndef FCMESSAGEINTERVALHELPER_H
-#define FCMESSAGEINTERVALHELPER_H
+#ifndef FCMSGINTERVALHANDLER_H
+#define FCMSGINTERVALHANDLER_H
 
 #include <mutex>
 #include <qdebug.h>
@@ -19,8 +19,43 @@
  * Basically, call create_command_if_needed() and check_acknowledgement() every time a msg from the FC is received
  * and at some point in the future, all rates should be set succesfully in almost all cases.
  */
-class FCMessageIntervalHelper{
+class FCMsgIntervalHandler{
 public:
+    static FCMsgIntervalHandler& instance();
+    // should be called every time a message from the FC is received,this handler takes care of not polluting the link.
+    void opt_send_messages(){
+        const auto opt_command=create_command_if_needed();
+        if(opt_command.has_value()){
+            // TODO
+        }
+    }
+    // should be called every time a message from the FC is received
+    void check_acknowledgement(const mavlink_message_t &msg){
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if(msg.msgid==MAVLINK_MSG_ID_COMMAND_ACK){
+            mavlink_command_ack_t ack;
+            mavlink_msg_command_ack_decode(&msg,&ack);
+            if(ack.command==MAV_CMD_SET_MESSAGE_INTERVAL && ack.result==MAV_RESULT_ACCEPTED &&
+                ack.target_system== QOpenHDMavlinkHelper::get_own_sys_id()){
+                qDebug()<<"Message interval acknowledged "<<m_last_successfully_set_rate;
+                qDebug()<<qopenhd::mavlink_command_ack_to_string(ack).c_str();
+                // request the next message interval if needed
+                m_last_successfully_set_rate++;
+                m_n_times_already_sent=0;
+            }
+        }
+    }
+    void restart(){
+        std::lock_guard<std::mutex> lock(m_mutex);
+        // Sets the state to 0, again set all the rate(s) again -
+        // Needed if the user changes any rate
+        m_last_successfully_set_rate=0;
+        m_n_times_already_sent=0;
+        logged_once_fail=false;
+        logged_once_success=false;
+        m_last_command=std::chrono::steady_clock::now();
+    }
+private:
     struct MessageInterval{
         // for which message
         int msg_id;
@@ -89,31 +124,6 @@ public:
         return std::nullopt;
     }
 
-    void check_acknowledgement(const mavlink_message_t &msg){
-        std::lock_guard<std::mutex> lock(m_mutex);
-        if(msg.msgid==MAVLINK_MSG_ID_COMMAND_ACK){
-            mavlink_command_ack_t ack;
-            mavlink_msg_command_ack_decode(&msg,&ack);
-            if(ack.command==MAV_CMD_SET_MESSAGE_INTERVAL && ack.result==MAV_RESULT_ACCEPTED &&
-                ack.target_system== QOpenHDMavlinkHelper::get_own_sys_id()){
-                qDebug()<<"Message interval acknowledged "<<m_last_successfully_set_rate;
-                qDebug()<<qopenhd::mavlink_command_ack_to_string(ack).c_str();
-                // request the next message interval if needed
-                m_last_successfully_set_rate++;
-                m_n_times_already_sent=0;
-            }
-        }
-    }
-    void restart(){
-        std::lock_guard<std::mutex> lock(m_mutex);
-        // Sets the state to 0, again set all the rate(s) again -
-        // Needed if the user changes any rate
-        m_last_successfully_set_rate=0;
-        m_n_times_already_sent=0;
-        logged_once_fail=false;
-        logged_once_success=false;
-        m_last_command=std::chrono::steady_clock::now();
-    }
 private:
     static constexpr int RATE_LOW=1; // Once per second
     static constexpr int RATE_MEDIUM=5; // 5 times per second
@@ -138,7 +148,7 @@ private:
         //MessageInterval{MAVLINK_MSG_ID_MISSION_ITEM_INT,1},
         //MessageInterval{0,0},
         //MessageInterval{0,0},
-    };
+        };
     std::mutex m_mutex;
     int m_last_successfully_set_rate=0;
     int m_n_times_already_sent=0;
@@ -147,4 +157,4 @@ private:
     std::chrono::steady_clock::time_point m_last_command=std::chrono::steady_clock::now();
 };
 
-#endif // FCMESSAGEINTERVALHELPER_H
+#endif // FCMSGINTERVALHANDLER_H

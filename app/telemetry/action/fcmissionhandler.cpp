@@ -5,19 +5,19 @@
 
 #include "../models/fcmavlinkmissionitemsmodel.h"
 
-FCMavlinkMissionHandler::FCMavlinkMissionHandler(QObject *parent): QObject(parent)
+FCMissionHandler::FCMissionHandler(QObject *parent): QObject(parent)
 {
     m_mission_items.reserve(MAX_N_MISSION_ITEMS);
     m_missing_items.reserve(MAX_N_MISSION_ITEMS);
 }
 
-FCMavlinkMissionHandler &FCMavlinkMissionHandler::instance()
+FCMissionHandler &FCMissionHandler::instance()
 {
-    static FCMavlinkMissionHandler instance;
+    static FCMissionHandler instance;
     return instance;
 }
 
-bool FCMavlinkMissionHandler::process_message(const mavlink_message_t &msg)
+bool FCMissionHandler::process_message(const mavlink_message_t &msg)
 {
     bool consumed=false;
     switch(msg.msgid){
@@ -79,7 +79,7 @@ static mavlink_message_t create_request_mission_msg(int sequence){
 }
 
 
-void FCMavlinkMissionHandler::opt_send_messages()
+void FCMissionHandler::opt_send_messages()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     if(!m_has_mission_count){
@@ -117,7 +117,7 @@ void FCMavlinkMissionHandler::opt_send_messages()
     }
 }
 
-void FCMavlinkMissionHandler::update_mission_count(const mavlink_mission_count_t& mission_count)
+void FCMissionHandler::update_mission_count(const mavlink_mission_count_t& mission_count)
 {
     //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_COUNT total:"<<mission_count.count;
     const int count=mission_count.count;
@@ -144,7 +144,7 @@ void FCMavlinkMissionHandler::update_mission_count(const mavlink_mission_count_t
     FCMavlinkMissionItemsModel::instance().p_initialize(count);
 }
 
-void FCMavlinkMissionHandler::update_mission(const mavlink_mission_item_int_t &mission_item)
+void FCMissionHandler::update_mission(const mavlink_mission_item_int_t &mission_item)
 {
     //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT:"<<mission_item.seq;
     if(!(mission_item.frame==MAV_FRAME_GLOBAL || mission_item.frame==MAV_FRAME_GLOBAL_RELATIVE_ALT)){
@@ -181,7 +181,7 @@ void FCMavlinkMissionHandler::update_mission(const mavlink_mission_item_int_t &m
     recalculate_missing();
 }
 
-void FCMavlinkMissionHandler::update_mission_current(const mavlink_mission_current_t &mission_current)
+void FCMissionHandler::update_mission_current(const mavlink_mission_current_t &mission_current)
 {
     const int current_mission=mission_current.seq;
     //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_CURRENT seq:"<<mission_current.seq<<" total:"<<mission_current.total;
@@ -196,7 +196,7 @@ void FCMavlinkMissionHandler::update_mission_current(const mavlink_mission_curre
     }
 }
 
-void FCMavlinkMissionHandler::recalculate_missing()
+void FCMissionHandler::recalculate_missing()
 {
     m_missing_items.resize(0);
     for(const auto& tmp_item:m_mission_items){

@@ -41,7 +41,7 @@ Item{
                 }
                 Button{
                     text: "Fetch version"
-                    onClicked: _mavlinkTelemetry.request_openhd_version()
+                    onClicked: _ohdAction.request_openhd_version()
                 }
             }
         }

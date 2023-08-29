@@ -8,7 +8,6 @@
 #include <thread>
 
 #include "util/mavsdk_include.h"
-#include "action/fcmessageintervalhelper.hpp"
 #include "../../lib/lqtutils_master/lqtutils_prop.h"
 #include "../common/TimeHelper.hpp"
 
@@ -82,25 +81,11 @@ private:
 public:
     // ping all the systems (using timesync, since "ping" is deprecated)
     Q_INVOKABLE void ping_all_systems();
-    // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
-    Q_INVOKABLE void request_openhd_version();
-    // send the reboot / shutdown command to openhd air or ground unit
-    // @param system_id: 0 for ground, 1 for air, 2 for FC
-    Q_INVOKABLE bool send_command_reboot(int system_id,bool reboot);
-public:
-    // send a command, to all connected systems
-    // doesn't reatransmitt
-    bool send_command_long_oneshot(const mavlink_command_long_t& command);
-    // does re-transmit
-    int send_command_long_blocking(const mavlink_command_long_t& command);
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;
 private:
     std::chrono::steady_clock::time_point m_last_time_version_requested=std::chrono::steady_clock::now();
-private:
-    std::unique_ptr<FCMessageIntervalHelper> m_msg_interval_helper=nullptr;
-    void process_check_for_data_rates(const mavlink_message_t &msg);
 public:
     Q_INVOKABLE void re_apply_rates();
 public:

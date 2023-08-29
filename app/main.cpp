@@ -17,6 +17,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/action/fcaction.h"
+#include "telemetry/action/ohdaction.h"
 #include "telemetry/models/fcmavlinkmissionitemsmodel.h"
 #include "telemetry/action/fcmissionhandler.h"
 #include "telemetry/models/camerastreammodel.h"
@@ -288,13 +289,14 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkAction", &FCAction::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkMissionItemsModel", &FCMavlinkMissionItemsModel::instance());
-    engine.rootContext()->setContextProperty("_fcMavlinkMissionHandler", &FCMavlinkMissionHandler::instance());
+    engine.rootContext()->setContextProperty("_fcMavlinkMissionHandler", &FCMissionHandler::instance());
     engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
     engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
     engine.rootContext()->setContextProperty("_cameraStreamModelPrimary", &CameraStreamModel::instance(0));
     engine.rootContext()->setContextProperty("_cameraStreamModelSecondary", &CameraStreamModel::instance(1));
+    engine.rootContext()->setContextProperty("_ohdAction", &OHDAction::instance());
     engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
     engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));
     engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));

@@ -2,14 +2,13 @@
 
 #include "../models/aohdsystem.h"
 #include "mavlinksettingsmodel.h"
-#include "../MavlinkTelemetry.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
 #include "../logging/logmessagesmodel.h"
 #include <qsettings.h>
 #include <sstream>
-
+#include "../action/ohdaction.h"
 
 WBLinkSettingsHelper::WBLinkSettingsHelper(QObject *parent)
     : QObject{parent}
@@ -57,12 +56,7 @@ WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
 
 bool WBLinkSettingsHelper::start_analyze_channels()
 {
-    mavlink_command_long_t cmd{};
-    cmd.target_system=OHD_SYS_ID_GROUND;
-    cmd.target_component=OHD_COMP_ID_LINK_PARAM;
-    cmd.command=OPENHD_CMD_INITIATE_CHANNEL_ANALYZE;
-    const auto ret=MavlinkTelemetry::instance().send_command_long_blocking(cmd);
-    if(ret){
+    if(OHDAction::instance().send_command_analyze_channels_blocking()){
         set_progress_analyze_channels_perc(0);
         set_text_for_qml("Analyzing");
         return true;
@@ -72,14 +66,7 @@ bool WBLinkSettingsHelper::start_analyze_channels()
 
 bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths)
 {
-    mavlink_command_long_t cmd{};
-    cmd.target_system=OHD_SYS_ID_GROUND;
-    cmd.target_component=OHD_COMP_ID_LINK_PARAM;
-    cmd.command=OPENHD_CMD_INITIATE_CHANNEL_SEARCH;
-    cmd.param1=static_cast<float>(freq_bands);
-    cmd.param2=static_cast<float>(channel_widths);
-    const auto ret=MavlinkTelemetry::instance().send_command_long_blocking(cmd);
-    if(ret){
+    if(OHDAction::instance().send_command_start_scan_channels_blocking(freq_bands,channel_widths)){
         set_progress_scan_channels_perc(0);
         set_text_for_qml("Scanning");
         return true;
