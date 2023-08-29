@@ -21,39 +21,6 @@ WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
     return tmp;
 }
 
-/*void SynchronizedSettings::fetch_channels_if_needed()
-{
-    if(m_has_fetched_channels){
-        qDebug()<<"Already fetched";
-        return;
-    }
-    m_request_message_helper->request_message(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_SUPPORTED_CHANNELS);
-    QTimer::singleShot(1000, this, &SynchronizedSettings::update_channels_on_success);
-    QTimer::singleShot(2000, this, &SynchronizedSettings::update_channels_on_success);
-}*/
-/*void SynchronizedSettings::update_channels_on_success()
-{
-    const auto channel_message_opt=m_request_message_helper->get_last_requested_message();
-    if(!channel_message_opt.has_value()){
-        return;
-    }
-    if(m_has_fetched_channels){
-        return;
-    }
-    const auto channel_message=channel_message_opt.value();
-    mavlink_openhd_wifbroadcast_supported_channels_t tmp{};
-    mavlink_msg_openhd_wifbroadcast_supported_channels_decode(&channel_message,&tmp);
-    m_supported_channels.resize(0);
-    for(int i=0;i<60;i++){
-        if(tmp.channels[i]!=0){
-            m_supported_channels.push_back(tmp.channels[i]);
-        }
-    }
-    if(!m_supported_channels.empty()){
-        set_has_fetched_channels(true);
-    }
-}*/
-
 bool WBLinkSettingsHelper::start_analyze_channels()
 {
     if(OHDAction::instance().send_command_analyze_channels_blocking()){
