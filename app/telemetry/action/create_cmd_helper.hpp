@@ -55,6 +55,17 @@ static mavlink_command_long_t create_cmd_do_set_flight_mode(int fc_sys_id,int fc
     return cmd;
 }
 
+static mavlink_command_long_t create_cmd_set_msg_interval(int target_system,int target_component,int msg_type,int interval_us){
+    mavlink_command_long_t command{};
+    command.target_system=target_system;
+    command.target_component=target_component;
+    command.command=MAV_CMD_SET_MESSAGE_INTERVAL;
+    command.confirmation=0;
+    command.param1=msg_type;
+    command.param2=interval_us;
+    return command;
+}
+
 }
 
 #endif // CMD_HELPER_H

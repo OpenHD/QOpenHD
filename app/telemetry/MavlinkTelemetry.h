@@ -68,8 +68,10 @@ private:
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
     // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
     // work with mavsdk / their subscription based pattern.
-    void onProcessMavlinkMessage(const mavlink_message_t& msg);
+    void process_mavlink_message(const mavlink_message_t& msg);
     void process_message_fc(const mavlink_message_t& msg);
+    // timesync is handled extra independently
+    void process_message_timesync(const mavlink_message_t &msg);
     // The mavsdk tcp connect does block, we therefore need to do it in its own thread
     // (not block the UI thread)
     void tcp_only_establish_connection();

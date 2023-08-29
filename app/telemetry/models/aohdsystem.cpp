@@ -64,50 +64,51 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         return false;
     }
     m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    bool consumed=false;
     switch(msg.msgid){
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
             mavlink_openhd_version_message_t parsedMsg;
             mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
             QString version(parsedMsg.version);
             set_openhd_version(version);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
             mavlink_onboard_computer_status_t parsedMsg;
             mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
             process_onboard_computer_status(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD:{
             mavlink_openhd_stats_monitor_mode_wifi_card_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_card_decode(&msg,&parsedMsg);
             //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.rx_rssi;
             process_x0(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_LINK:{
             mavlink_openhd_stats_monitor_mode_wifi_link_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_link_decode(&msg,&parsedMsg);
             process_x1(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_TELEMETRY:{
             mavlink_openhd_stats_telemetry_t parsedMsg;
             mavlink_msg_openhd_stats_telemetry_decode(&msg,&parsedMsg);
             process_x2(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_AIR:{
             mavlink_openhd_stats_wb_video_air_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_air_decode(&msg,&parsedMsg);
             process_x3(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_AIR_FEC_PERFORMANCE:{
             mavlink_openhd_stats_wb_video_air_fec_performance_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_air_fec_performance_decode(&msg,&parsedMsg);
             process_x3b(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_CAMERA_STATUS:{
             mavlink_openhd_camera_status_t parsedMsg;
@@ -131,24 +132,24 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
                 }
 
             }
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_GROUND:{
             mavlink_openhd_stats_wb_video_ground_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_ground_decode(&msg,&parsedMsg);
             process_x4(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_GROUND_FEC_PERFORMANCE:{
             mavlink_openhd_stats_wb_video_ground_fec_performance_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_ground_fec_performance_decode(&msg,&parsedMsg);
             process_x4b(parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_ONBOARD_COMPUTER_STATUS_EXTENSION:{
             mavlink_openhd_onboard_computer_status_extension_t parsedMsg;
             mavlink_msg_openhd_onboard_computer_status_extension_decode(&msg,&parsedMsg);
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_HEARTBEAT:{
             mavlink_heartbeat_t parsedMsg;
@@ -157,13 +158,13 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             if(parsedMsg.autopilot!=MAV_AUTOPILOT_INVALID){
                 qDebug()<<"Warning OpenHD systems should always set autopilot to none";
             }
-            return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:{
              mavlink_rc_channels_override_t parsedMsg;
              mavlink_msg_rc_channels_override_decode(&msg,&parsedMsg);
              RCChannelsModel::instanceGround().update_all_channels(Telemetryutil::mavlink_msg_rc_channels_override_to_array(parsedMsg));
-             return true;
+            consumed=true;
         };break;
         case MAVLINK_MSG_ID_STATUSTEXT:{
              mavlink_statustext_t parsedMsg;
@@ -174,7 +175,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              if(tmp.message.find("External device") != std::string::npos){
                 HUDLogMessagesModel::instance().add_message(tmp.level,tmp.message.c_str());
              }
-             return true;
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_SUPPORTED_CHANNELS:{
             mavlink_openhd_wifbroadcast_supported_channels_t parsedMsg;
@@ -182,6 +183,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             if(!m_is_air){
                 WBLinkSettingsHelper::instance().process_message_openhd_wifibroadcast_supported_channels(parsedMsg);
             }
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_ANALYZE_CHANNELS_PROGRESS:{
             mavlink_openhd_wifbroadcast_analyze_channels_progress_t parsedMsg;
@@ -189,6 +191,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             if(!m_is_air){
                 WBLinkSettingsHelper::instance().process_message_openhd_wifibroadcast_analyze_channels_progress(parsedMsg);
             }
+            consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_SCAN_CHANNELS_PROGRESS:{
             mavlink_openhd_wifbroadcast_scan_channels_progress_t parsedMsg;
@@ -196,6 +199,10 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             if(!m_is_air){
                 WBLinkSettingsHelper::instance().process_message_openhd_wifibroadcast_scan_channels_progress(parsedMsg);
             }
+            consumed=true;
+        }break;
+        default:{
+
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
@@ -208,7 +215,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             break;
         }*/
     }
-    return false;
+    return consumed;
 }
 
 void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_status_t &msg)

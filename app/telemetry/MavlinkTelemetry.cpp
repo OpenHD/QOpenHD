@@ -7,6 +7,7 @@
 #include "settings/mavlinksettingsmodel.h"
 #include "../logging/logmessagesmodel.h"
 #include "util/mavsdk_helper.hpp"
+#include "util/qopenhdmavlinkhelper.hpp"
 #include "models/fcmavlinkmissionitemsmodel.h"
 
 #include "action/fcmissionhandler.h"
@@ -95,7 +96,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         qDebug()<<"XX:"<<m_passtrough->get_target_sysid();
         m_passtrough->intercept_incoming_messages_async([this](mavlink_message_t& msg){
             //qDebug()<<"Intercept:Got message"<<msg.msgid;
-            onProcessMavlinkMessage(msg);
+            process_mavlink_message(msg);
             return true;
         });
         //passtroughOhdGround->intercept_outgoing_messages_async([](mavlink_message_t& msg){
@@ -114,7 +115,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
             m_passtrough=std::make_shared<mavsdk::MavlinkPassthrough>(system);
             m_passtrough->intercept_incoming_messages_async([this](mavlink_message_t& msg){
                 //qDebug()<<"Intercept:Got message"<<msg.msgid;
-                onProcessMavlinkMessage(msg);
+                process_mavlink_message(msg);
                 return true;
             });
         }
@@ -144,7 +145,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
                 m_passtrough=std::make_shared<mavsdk::MavlinkPassthrough>(system);
                 m_passtrough->intercept_incoming_messages_async([this](mavlink_message_t& msg){
                     //qDebug()<<"Intercept:Got message"<<msg.msgid;
-                    onProcessMavlinkMessage(msg);
+                    process_mavlink_message(msg);
                     return true;
                 });
             }
@@ -189,7 +190,7 @@ static int get_message_size(const mavlink_message_t& msg){
     return sizeof(msg);
 }
 
-void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
+void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
 {
     m_tele_received_packets++;
     m_tele_received_bytes+=get_message_size(msg);
@@ -201,32 +202,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(const mavlink_message_t& msg)
     //}
     // We use timesync to ping the OpenHD systems and the FC ourselves.
     if(msg.msgid==MAVLINK_MSG_ID_TIMESYNC){
-        mavlink_timesync_t timesync;
-        mavlink_msg_timesync_decode(&msg,&timesync);
-        if(timesync.tc1==0){
-            // someone (most likely the FC) wants to timesync with us, but we ignore it to save uplink bandwidth.
-            return;
-        }
-        if(timesync.ts1==lastTimeSyncOut){
-            qDebug()<<"Got timesync response with we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
-            const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-timesync.ts1;
-            const auto delta_readable=QOpenHDMavlinkHelper::time_microseconds_readable(delta);
-            if(msg.sysid==OHD_SYS_ID_AIR){
-                AOHDSystem::instanceAir().set_last_ping_result_openhd(delta_readable.c_str());
-            }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                AOHDSystem::instanceGround().set_last_ping_result_openhd(delta_readable.c_str());
-            }else{
-                qDebug()<<"Got ping from fc";
-                // almost 100% from flight controller
-                //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
-               FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(delta_readable.c_str());
-            }
-        }else{
-            qDebug()<<"Got timesync but it doesn't match: we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
-        }
+        process_message_timesync(msg);
         return;
     }
     if(CmdSender::instance().process_message(msg)){
+        // Consumed, no further processing needed
         return;
     }
     // Other than ping, we seperate by sys ID's - there are up to 3 Systems - The OpenHD air unit, the OpenHD ground unit and the FC connected to the OHD air unit.
@@ -274,6 +254,33 @@ void MavlinkTelemetry::process_message_fc(const mavlink_message_t &msg)
         return;
     }
     qDebug()<<"MavlinkTelemetry::process_message_fc unmatched message:"<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+}
+
+void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
+{
+    mavlink_timesync_t timesync;
+    mavlink_msg_timesync_decode(&msg,&timesync);
+    if(timesync.tc1==0){
+        // someone (most likely the FC) wants to timesync with us, but we ignore it to save uplink bandwidth.
+        return;
+    }
+    if(timesync.ts1==lastTimeSyncOut){
+        qDebug()<<"Got timesync response with we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
+        const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-timesync.ts1;
+        const auto delta_readable=QOpenHDMavlinkHelper::time_microseconds_readable(delta);
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            AOHDSystem::instanceAir().set_last_ping_result_openhd(delta_readable.c_str());
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
+            AOHDSystem::instanceGround().set_last_ping_result_openhd(delta_readable.c_str());
+        }else{
+            qDebug()<<"Got ping from fc";
+            // almost 100% from flight controller
+            //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
+            FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(delta_readable.c_str());
+        }
+    }else{
+        qDebug()<<"Got timesync but it doesn't match: we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
+    }
 }
 
 void MavlinkTelemetry::tcp_only_establish_connection()
