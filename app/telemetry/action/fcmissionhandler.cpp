@@ -120,6 +120,10 @@ void FCMissionHandler::opt_send_messages()
 void FCMissionHandler::update_mission_count(const mavlink_mission_count_t& mission_count)
 {
     //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_COUNT total:"<<mission_count.count;
+    // We are only interested in primary mission
+    if(mission_count.mission_type!=MAV_MISSION_TYPE_MISSION){
+        return;
+    }
     const int count=mission_count.count;
     set_mission_waypoints_current_total(count);
     set_mission_current_type(Telemetryutil::mavlink_mission_type_to_string(mission_count.mission_type));
@@ -146,6 +150,10 @@ void FCMissionHandler::update_mission_count(const mavlink_mission_count_t& missi
 
 void FCMissionHandler::update_mission(const mavlink_mission_item_int_t &mission_item)
 {
+    // We are only interested in primary mission
+    if(mission_item.mission_type!=MAV_MISSION_TYPE_MISSION){
+        return;
+    }
     //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT:"<<mission_item.seq;
     if(!(mission_item.frame==MAV_FRAME_GLOBAL || mission_item.frame==MAV_FRAME_GLOBAL_RELATIVE_ALT)){
         qDebug()<<"invalid mission item - wrong frame:"<<(int)mission_item.frame;
