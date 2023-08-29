@@ -40,7 +40,10 @@ bool CmdSender::process_message(const mavlink_message_t &msg)
 
 bool CmdSender::send_command_long_async(mavlink_command_long_t cmd, RESULT_CB result_cb,std::chrono::milliseconds retransmit_delay,int n_wanted_retransmissions)
 {
+    assert(n_wanted_retransmissions>=1);
+    assert(retransmit_delay.count()>=10);
     if(!result_cb){
+        // the cb must not be nullptr
         qDebug()<<"No result cb,using dummy";
         auto dummy_cb=[](RunCommandResult result){
             qDebug()<<run_command_result_as_string(result).c_str();

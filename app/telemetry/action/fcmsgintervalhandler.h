@@ -14,17 +14,15 @@
  * We need to manually request / set the message interval(s) for specific messages on ardupilot
  * (It doesn't send them by default).
  * The way this works is not ideal in regards to reliability - but I implemented a similar pattern like QGroundControl here.
- * Basically, call create_command_if_needed() and check_acknowledgement() every time a msg from the FC is received
- * and at some point in the future, all rates should be set succesfully in almost all cases.
+ * Basically, we enqueue one message intervall command after each other, and stop in case one of them times out -
+ * but we use a really high retransmit intervall, so if the commands time out, we should probably stop.
  */
 class FCMsgIntervalHandler{
 public:
     static FCMsgIntervalHandler& instance();
     // should be called every time a message from the FC is received,this handler takes care of not polluting the link.
     void opt_send_messages();
-    // should be called every time a message from the FC is received
-    void check_acknowledgement(const mavlink_message_t &msg);
-    // re-apply all rates
+    // re-apply all rate(s)
     void restart();
 private:
     struct MessageInterval{
@@ -33,13 +31,10 @@ private:
         // interval in hertz
         int interval_hz;
     };
-    std::optional<mavlink_command_long_t> create_command_if_needed();
-
-private:
     static constexpr int RATE_LOW=1; // Once per second
     static constexpr int RATE_MEDIUM=5; // 5 times per second
     // Intervals are in Hertz
-    std::vector<MessageInterval> m_intervals={
+    const std::vector<MessageInterval> m_intervals={
         MessageInterval{MAVLINK_MSG_ID_SYS_STATUS,2}, // battery and more
         MessageInterval{MAVLINK_MSG_ID_SYSTEM_TIME,1},
         MessageInterval{MAVLINK_MSG_ID_GPS_RAW_INT,1}, // we get hdop, vdop, usw from this - not lat /long though (they are from global position int,aka fused)
@@ -61,11 +56,8 @@ private:
         //MessageInterval{0,0},
         };
     std::mutex m_mutex;
-    int m_last_successfully_set_rate=0;
-    int m_n_times_already_sent=0;
-    bool logged_once_fail=false;
-    bool logged_once_success=false;
-    std::chrono::steady_clock::time_point m_last_command=std::chrono::steady_clock::now();
+    bool m_ready_for_next_command=true;
+    int m_next_rate_index=0;
 };
 
 #endif // FCMSGINTERVALHANDLER_H

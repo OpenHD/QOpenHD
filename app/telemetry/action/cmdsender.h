@@ -24,6 +24,7 @@ public:
     bool process_message(const mavlink_message_t& msg);
 
     struct RunCommandResult{
+        // Response from the recipient, if there is any (otherwise, the message got lost on each re-transmit)
         std::optional<mavlink_command_ack_t> opt_ack;
         // How often this command was transmitted until success / failure
         int n_transmissions=-1;
