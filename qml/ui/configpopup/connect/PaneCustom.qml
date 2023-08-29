@@ -37,10 +37,8 @@ Rectangle {
                 inputMethodHints: Qt.ImhFormattedNumbersOnly
                 text: "192.168.178.36" //settings.dev_mavlink_tcp_ip
             }
-            IconInfoButon{
-               onClicked: {
-                   _messageBoxInstance.set_text_and_show("Enter your grund station IP, then click connect")
-               }
+            ButtonIconInfoText{
+                m_info_text: "Enter your grund station IP, then click connect"
             }
         }
 

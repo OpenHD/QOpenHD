@@ -23,15 +23,15 @@ Item {
     property bool m_style_error: false
 
     Rectangle {
-        id: innerCard
+        id: background
         radius: cardRadius
-        color: m_style_error ? "red" : "white"
+        //color: m_style_error ? "red" : "white"
+        color: "white"
         anchors.fill: parent
         border.width: 1
         border.color: borderColor
         //border.width: m_style_error ? 10: 1
         //border.color: m_style_error ? "red" : borderColor
-
     }
 
     Item {
@@ -101,5 +101,14 @@ Item {
         color: "#f6f6f6"
         border.width: 1
         border.color: borderColor
+    }
+
+    Rectangle{
+        anchors.fill: parent
+        color: "transparent"
+        border.color: "red"
+        border.width: 3
+        radius: 6
+        visible: m_style_error
     }
 }

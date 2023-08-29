@@ -25,9 +25,8 @@ Rectangle {
         return current_ma+" mA"
     }
 
-    function open_power_action_dialoque(power_action_type){
-        powerDialog.powerAction=power_action_type
-        powerDialog.visible=true
+    function open_power_action_dialoque(system,reboot){
+        powerDialog.open_dialoque(system,reboot)
     }
 
     ScrollView {
@@ -50,7 +49,7 @@ Rectangle {
                 //anchors.top: airBox.bottom
             }
 
-            OpenHDAndFCStatusColumn{
+            StatusCardsColumn{
                 width: parent.width
                 height: 300
 

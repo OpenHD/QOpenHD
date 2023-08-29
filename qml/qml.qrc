@@ -209,7 +209,7 @@
         <file>ui/widgets/VerticalSpeedGaugeWidget.qml</file>
         <file>ui/widgets/ControlWidgetSubElement.qml</file>
         <file>ui/elements/XDecimalSpinBox.qml</file>
-        <file>ui/elements/IconInfoButon.qml</file>
+        <file>ui/elements/ButtonIconWarning.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVehicleSettingsView.qml</file>
@@ -243,12 +243,17 @@
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapWidget.qml</file>
-        <file>ui/elements/IconWarningButton.qml</file>
-        <file>ui/configpopup/status/OpenHDAndFCStatusColumn.qml</file>
+        <file>ui/elements/ButtonIconWarning.qml</file>
+        <file>ui/configpopup/status/StatusCardsColumn.qml</file>
         <file>ui/configpopup/status/ActionsColumn.qml</file>
         <file>ui/configpopup/connect/InfoPane.qml</file>
         <file>ui/configpopup/connect/PaneUSBTether.qml</file>
         <file>ui/configpopup/connect/PaneWIFI.qml</file>
         <file>ui/configpopup/connect/PaneCustom.qml</file>
+        <file>ui/elements/ButtonRed.qml</file>
+        <file>ui/elements/ButtonOrange.qml</file>
+        <file>ui/configpopup/status/StatusCardFooterGenericOHDFC.qml</file>
+        <file>ui/elements/ButtonIconInfoText.qml</file>
+        <file>ui/elements/ButtonIconInfo.qml</file>
     </qresource>
 </RCC>

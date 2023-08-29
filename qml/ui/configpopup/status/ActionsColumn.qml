@@ -21,7 +21,7 @@ Item{
             id: actions_1
             width: parent.width
             RowLayout{
-                IconInfoButon{
+                ButtonIconInfo{
                     onClicked: {
                         _messageBoxInstance.set_text_and_show("Ping all systems, aka check if they respond to the mavlink ping command. Both OpenHD air and ground support
      this command, FC only ardupilot / px4 support this command. The command is lossy, aka you might need to use it more than once to get a response from all systems.
@@ -34,7 +34,7 @@ Item{
                 }
             }
             RowLayout{
-                IconInfoButon{
+                ButtonIconInfo{
                     onClicked: {
                         _messageBoxInstance.set_text_and_show("Request openhd air / ground station version. Lossy, might need a couple of tries.")
                     }
@@ -50,7 +50,7 @@ Item{
             width: parent.width
 
             RowLayout{
-                IconInfoButon{
+                ButtonIconInfo{
                     onClicked: {
                         _messageBoxInstance.set_text_and_show("Stops QOpenHD and disables the autostart service until the next reboot. Can be used to get into terminal on rpi.")
                     }
@@ -71,7 +71,7 @@ Item{
                 }
             }
             RowLayout{
-                IconInfoButon{
+                ButtonIconInfo{
                     onClicked: {
                         _messageBoxInstance.set_text_and_show("Stops QOpenHD and lets the autostart service restart it (RPI)")
                     }

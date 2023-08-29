@@ -26,6 +26,20 @@ Card {
 
     property bool stateVisible: visible
 
+    function open_dialoque(system,reboot){
+        var action=PowerActionDialoque.PowerAction.RebootGround
+        if(system==0){
+            // OHD GND
+            action = reboot ? PowerActionDialoque.PowerAction.RebootGround : PowerActionDialoque.PowerAction.ShutdownGround
+        }else if(system==1){
+            action = reboot ? PowerActionDialoque.PowerAction.RebootAir : PowerActionDialoque.PowerAction.ShutdownAir
+        }else{
+            action = reboot ? PowerActionDialoque.PowerAction.RebootFC : PowerActionDialoque.PowerAction.ShutdownFC
+        }
+        powerDialog.powerAction=action
+        powerDialog.visible=true
+    }
+
     enum PowerAction {
         RebootAir,
         ShutdownAir,

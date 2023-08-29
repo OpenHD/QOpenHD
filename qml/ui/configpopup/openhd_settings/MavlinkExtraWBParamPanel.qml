@@ -361,19 +361,19 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             text: get_text_current_throttle()
                             color: warning_level_to_color(m_throttle_warning_level)
                         }
-                        IconWarningButton{
+                        ButtonIconWarning{
                             visible: !_ohdSystemGround.is_alive
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(m_warning_text_no_gnd_unit)
                             }
                         }
-                        IconWarningButton{
+                        ButtonIconWarning{
                             visible: _ohdSystemGround.is_alive && !_ohdSystemAir.is_alive
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(m_warning_text_no_air_unit)
                             }
                         }
-                        IconWarningButton{
+                        ButtonIconWarning{
                             visible: m_loss_warning_level>0 || m_pollution_warning_level>0 || m_throttle_warning_level>0;
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(m_warning_info_text_polluted_channel)
@@ -392,7 +392,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        IconInfoButon{
+                        ButtonIconInfo{
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(m_info_text_change_frequency)
                             }
@@ -504,7 +504,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        IconInfoButon{
+                        ButtonIconInfo{
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(m_info_text_change_channel_width)
                             }
@@ -553,7 +553,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         anchors.verticalCenter: parent.verticalCenter
                         Layout.preferredWidth: 200
                         height: parent.height
-                        IconInfoButon{
+                        ButtonIconInfo{
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(m_info_text_change_tx_power)
                             }
@@ -594,7 +594,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         anchors.verticalCenter: parent.verticalCenter
                         width: parent.width
                         height: parent.height
-                        IconInfoButon{
+                        ButtonIconInfo{
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(find_air_unit_text)
                             }
@@ -629,7 +629,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         anchors.verticalCenter: parent.verticalCenter
                         width: parent.width
                         height: parent.height
-                        IconInfoButon{
+                        ButtonIconInfo{
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(analyze_channels_text)
                             }
