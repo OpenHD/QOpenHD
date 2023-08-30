@@ -80,12 +80,6 @@ private:
     int change_param_air_and_ground(QString param_id,int value);
     bool change_param_ground_only(QString param_id,int value);
 public:
-    Q_INVOKABLE int get_param_int_air_and_ground_value_freq(){
-        return get_param_int_air_and_ground_value(PARAM_ID_WB_FREQ);
-    }
-    Q_INVOKABLE int get_param_int_air_and_ground_value_channel_width(){
-        return get_param_int_air_and_ground_value(PARAM_ID_WB_CHANNEL_WIDTH);
-    }
 
     Q_INVOKABLE int change_param_air_and_ground_frequency(int value){
         return change_param_air_and_ground(PARAM_ID_WB_FREQ,value);

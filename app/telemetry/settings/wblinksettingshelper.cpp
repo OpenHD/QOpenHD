@@ -141,31 +141,6 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
     set_progress_scan_channels_perc(msg.progress);
 }
 
-int WBLinkSettingsHelper::get_param_int_air_and_ground_value(QString param_id)
-{
-    qDebug()<<"get_param_air_and_ground_value "<<param_id;
-
-    const auto value_ground_opt=MavlinkSettingsModel::instanceGround().try_get_param_int_impl(param_id);
-    if(!value_ground_opt.has_value()){
-        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from ground",5);
-        return -1;
-    }
-    const auto value_ground=value_ground_opt.value();
-    // Now that we have the value from the ground, fetch the value from the air
-    const auto value_air_opt=MavlinkSettingsModel::instanceAir().try_get_param_int_impl(param_id);
-    if(!value_air_opt.has_value()){
-        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from air",5);
-        return value_ground;
-    }
-    const auto value_air=value_air_opt.value();
-    if(value_air!=value_ground){
-        WorkaroundMessageBox::makePopupMessage("Air and ground are out of sync - use the channel scan to fix.");
-        return value_ground;
-    }
-    return value_ground;
-}
-
-
 int WBLinkSettingsHelper::change_param_air_and_ground(QString param_id,int value)
 {
     qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;

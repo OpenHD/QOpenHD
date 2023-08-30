@@ -46,24 +46,13 @@ public:
     // any instance of this class is only usable as soon as its corresponding system is set
     void set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params=true);
 private:
-    std::shared_ptr<mavsdk::Param> m_param_client_new=nullptr;
-    std::shared_ptr<mavsdk::System> m_system=nullptr;
+    std::shared_ptr<mavsdk::Param> m_param_client=nullptr;
 public:
-    // Fetch a param value using mavsdk. Returns std::nullopt on failure,
-    // The param value otherwise.
-    // Does not update the cached parameter !
-    std::optional<int> try_get_param_int_impl(const QString param_id);
-    std::optional<std::string> try_get_param_string_impl(const QString param_id);
-
     // callable from QT.
     // re-fetch all parameters from the server. Clears the cache, then re-fetches the whole parameter set.
     Q_INVOKABLE bool try_fetch_all_parameters();
 
     Q_INVOKABLE bool try_fetch_all_parameters_long_running();
-
-    // re-fetch a specific parameter from the server, Updates the parameter set accordingly.
-    Q_INVOKABLE bool try_refetch_parameter_int(QString param_id);
-    Q_INVOKABLE bool try_refetch_parameter_string(QString param_id);
 
     // Set a param value using mavsdk. This means we send the "SET" command to the server
     // and get its response (ok or rejected) or - in rare -cases - timeout.

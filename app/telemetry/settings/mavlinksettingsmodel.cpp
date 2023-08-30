@@ -138,10 +138,9 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> syst
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     // DO NOT REMOVE THIS NECCESSARY CHECK - this class is written under the assumption that the "param_client" pointer becomes valid
     // at some point and then stays valid
-    assert(this->m_param_client_new==nullptr);
+    assert(this->m_param_client==nullptr);
     assert(system->get_system_id()==m_sys_id);
-    m_system=system;
-    m_param_client_new=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
+    m_param_client=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
     if(autoload_all_params){
         try_fetch_all_parameters();
     }
@@ -150,12 +149,12 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> syst
 bool MavlinkSettingsModel::try_fetch_all_parameters()
 {
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
-    if(m_param_client_new==nullptr){
+    if(m_param_client==nullptr){
         // not discovered yet
         WorkaroundMessageBox::makePopupMessage("OHD System not found");
         return false;
     }
-    if(m_param_client_new){
+    if(m_param_client){
         // first, remove anything the QT model has cached
         while(rowCount()>0){
             removeData(rowCount()-1);
@@ -163,7 +162,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         qDebug()<<"Done removing old params";
         // now fetch all params using mavsdk (this talks to the OHD system(s).
         //param_client->set_timeout(10);
-        const auto params=m_param_client_new->get_all_params(true);
+        const auto params=m_param_client->get_all_params(true);
         // The order in which params show up is r.n controlled by how they are added here -
         // TODO could be improved. For some reason, string params are generally the most important ones r.n, though
         for(const auto& string_param:params.custom_params){
@@ -186,7 +185,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
 
 bool MavlinkSettingsModel::try_fetch_all_parameters_long_running()
 {
-    if(m_param_client_new==nullptr){
+    if(m_param_client==nullptr){
         // not discovered yet
         WorkaroundMessageBox::makePopupMessage("OHD System not found");
         return false;
@@ -203,55 +202,6 @@ bool MavlinkSettingsModel::try_fetch_all_parameters_long_running()
     return false;
 }
 
-std::optional<int> MavlinkSettingsModel::try_get_param_int_impl(const QString param_id)
-{
-    qDebug()<<"try_get_param_int_impl:"<<param_id;
-    if(m_param_client_new){
-        const auto result=m_param_client_new->get_param_int(param_id.toStdString());
-        if(result.first==mavsdk::Param::Result::Success){
-             auto new_value=result.second;
-             return new_value;
-        }
-    }
-    return std::nullopt;
-}
-
-std::optional<std::string> MavlinkSettingsModel::try_get_param_string_impl(const QString param_id)
-{
-    qDebug()<<"try_get_param_string_impl:"<<param_id;
-    if(m_param_client_new){
-        const auto result=m_param_client_new->get_param_custom(param_id.toStdString());
-        if(result.first==mavsdk::Param::Result::Success){
-             auto new_value=result.second;
-             return new_value;
-        }
-    }
-    return std::nullopt;
-}
-
-bool MavlinkSettingsModel::try_refetch_parameter_int(QString param_id)
-{
-    qDebug()<<"try_fetch_parameter:"<<param_id;
-    auto new_value=try_get_param_int_impl(param_id);
-    if(new_value.has_value()){
-        MavlinkSettingsModel::SettingData tmp{param_id,new_value.value()};
-        updateData(std::nullopt,tmp);
-        return true;
-    }
-    return false;
-}
-bool MavlinkSettingsModel::try_refetch_parameter_string(QString param_id)
-{
-    qDebug()<<"try_fetch_parameter:"<<param_id;
-    auto new_value=try_get_param_string_impl(param_id);
-    if(new_value.has_value()){
-        MavlinkSettingsModel::SettingData tmp{param_id,new_value.value()};
-        updateData(std::nullopt,tmp);
-        return true;
-    }
-    return false;
-}
-
 std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResult &res)
 {
     if(res==SetParamResult::NO_CONNECTION)return "NO_CONNECTION";
@@ -262,17 +212,17 @@ std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResul
 
 MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
 {
-    if(!m_param_client_new)return SetParamResult::NO_CONNECTION;
+    if(!m_param_client)return SetParamResult::NO_CONNECTION;
     if(extra_retransmit_params.has_value()){
         const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-        m_param_client_new->set_timeout(timeout_s);
-        m_param_client_new->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
+        m_param_client->set_timeout(timeout_s);
+        m_param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
     }
-    const auto result=m_param_client_new->set_param_int(param_id.toStdString(),value);
+    const auto result=m_param_client->set_param_int(param_id.toStdString(),value);
     if(extra_retransmit_params.has_value()){
         // restores defaults
-        m_param_client_new->set_timeout(-1);
-        m_param_client_new->set_n_retransmissions(3);
+        m_param_client->set_timeout(-1);
+        m_param_client->set_n_retransmissions(3);
     }
     if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
     if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
@@ -285,17 +235,17 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_int_imp
 
 MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
 {
-    if(!m_param_client_new)return SetParamResult::NO_CONNECTION;
+    if(!m_param_client)return SetParamResult::NO_CONNECTION;
     if(extra_retransmit_params.has_value()){
         const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-        m_param_client_new->set_timeout(timeout_s);
-        m_param_client_new->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
+        m_param_client->set_timeout(timeout_s);
+        m_param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
     }
-    const auto result=m_param_client_new->set_param_custom(param_id.toStdString(),value.toStdString());
+    const auto result=m_param_client->set_param_custom(param_id.toStdString(),value.toStdString());
     if(extra_retransmit_params.has_value()){
         // restores defaults
-        m_param_client_new->set_timeout(-1);
-        m_param_client_new->set_n_retransmissions(3);
+        m_param_client->set_timeout(-1);
+        m_param_client->set_n_retransmissions(3);
     }
     if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
     if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
