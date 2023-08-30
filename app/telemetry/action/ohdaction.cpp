@@ -4,6 +4,8 @@
 #include "../util/openhd_defines.hpp"
 #include "cmdsender.h"
 
+#include "../models/aohdsystem.h"
+
 OHDAction::OHDAction(QObject *parent)
     : QObject{parent}
 {
@@ -16,14 +18,16 @@ OHDAction& OHDAction::instance()
     return instance;
 }
 
-bool OHDAction::request_openhd_version()
+void OHDAction::request_openhd_version_async()
 {
-    // we are not interested in the result
-    auto cmd_air=cmd::helper::create_cmd_request_openhd_version(OHD_SYS_ID_AIR,0);
-    auto cmd_gnd=cmd::helper::create_cmd_request_openhd_version(OHD_SYS_ID_GROUND,0);
-    CmdSender::instance().send_command_long_async(cmd_air,nullptr);
-    CmdSender::instance().send_command_long_async(cmd_gnd,nullptr);
-    return true;
+    if(AOHDSystem::instanceAir().is_alive()){
+        auto cmd_air=cmd::helper::create_cmd_request_openhd_version(OHD_SYS_ID_AIR,0);
+        CmdSender::instance().send_command_long_async(cmd_air,nullptr);
+    }
+    if(AOHDSystem::instanceGround().is_alive()){
+        auto cmd_gnd=cmd::helper::create_cmd_request_openhd_version(OHD_SYS_ID_GROUND,0);
+        CmdSender::instance().send_command_long_async(cmd_gnd,nullptr);
+    }
 }
 
 bool OHDAction::send_command_reboot_air(bool reboot)

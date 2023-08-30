@@ -28,6 +28,8 @@ public:
     bool process_message(const mavlink_message_t& msg);
     // Should be called every time a msg from the FC is received - this class takes care to not pollute the link
     void opt_send_messages();
+
+    Q_INVOKABLE void resync();
 public:
     // We expose some variables as read-only for the OSD+
     // NOTE: the description "waypoints" is not exactly accurate, left in for now due to legacy reasons though
@@ -49,13 +51,13 @@ private:
     std::mutex m_mutex;
     std::vector<MItem> m_mission_items;
     std::vector<int> m_missing_items;
-    void update_mission_count(const mavlink_mission_count_t& mission_count);
-    void update_mission(const mavlink_mission_item_int_t& item);
-    void update_mission_current(const mavlink_mission_current_t& mission_current);
     static constexpr auto MAX_N_MISSION_ITEMS=200;
     std::chrono::steady_clock::time_point m_last_count_request=std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point m_last_item_request=std::chrono::steady_clock::now();
     bool m_has_mission_count=false;
+    void update_mission_count(const mavlink_mission_count_t& mission_count);
+    void update_mission(const mavlink_mission_item_int_t& item);
+    void update_mission_current(const mavlink_mission_current_t& mission_current);
     // Needs to be called with lock locked !
     void recalculate_missing();
 };

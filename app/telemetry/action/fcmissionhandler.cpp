@@ -103,7 +103,7 @@ void FCMissionHandler::opt_send_messages()
         if(elapsed>std::chrono::seconds(1)){
             m_last_item_request=std::chrono::steady_clock::now();
             const auto missing_missions=m_missing_items.size();
-            qDebug()<<"Missions missing: "<<m_missing_items.size();
+            //qDebug()<<"Missions missing: "<<m_missing_items.size();
             std::stringstream ss;
             ss<<"missing: "<<m_missing_items.size();
             set_current_status(ss.str().c_str());
@@ -115,6 +115,15 @@ void FCMissionHandler::opt_send_messages()
             }
         }
     }
+}
+
+void FCMissionHandler::resync()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_mission_items.resize(0);
+    m_missing_items.resize(0);
+    m_has_mission_count=false;
+    FCMavlinkMissionItemsModel::instance().p_initialize(0);
 }
 
 void FCMissionHandler::update_mission_count(const mavlink_mission_count_t& mission_count)

@@ -31,8 +31,6 @@ class MavlinkTelemetry : public QObject
 public:
     MavlinkTelemetry(QObject *parent = nullptr);
     static MavlinkTelemetry& instance();
-    // Called in main.cpp such that we can call the couple of Q_INVOCABLE methods
-    static void register_for_qml(QQmlContext* qml_context);
     /**
      * Send a message to the OHD ground unit. If no connection has been established (yet), this should return immediately.
      * The message can be aimed at either the OHD ground unit, the OHD air unit (forwarded by OpenHD) or the FC connected to the

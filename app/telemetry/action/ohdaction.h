@@ -16,7 +16,7 @@ public:
     static OHDAction& instance();
 public:
     // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
-    Q_INVOKABLE bool request_openhd_version();
+    Q_INVOKABLE void request_openhd_version_async();
     // send the reboot / shutdown command to openhd air or ground unit
     // @param system_id: 0 for ground, 1 for air, 2 for FC
     Q_INVOKABLE bool send_command_reboot_air(bool reboot);

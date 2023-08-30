@@ -79,11 +79,6 @@ MavlinkTelemetry &MavlinkTelemetry::instance()
     return instance;
 }
 
-void MavlinkTelemetry::register_for_qml(QQmlContext *qml_context)
-{
-    qml_context->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
-}
-
 void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
     const auto components=system->component_ids();
     qDebug()<<"System found"<<(int)system->get_system_id()<<" with components:"<<components.size();

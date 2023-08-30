@@ -443,6 +443,10 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_esc_temp((int)esc_telemetry.temperature[0]);
         break;
     }
+    case MAVLINK_MSG_ID_ESC_TELEMETRY_5_TO_8:{
+    }break;
+    case MAVLINK_MSG_ID_ESC_TELEMETRY_9_TO_12:{
+    }break;
     case MAVLINK_MSG_ID_ADSB_VEHICLE: {
         break;
     }

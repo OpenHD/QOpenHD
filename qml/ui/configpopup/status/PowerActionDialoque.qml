@@ -130,10 +130,10 @@ Card {
                     return qsTr("Shutdown Air")
                 }
                 if (powerAction === PowerActionDialoque.PowerAction.RebootFC) {
-                    return qsTr("Reboot Flight Controller")
+                    return qsTr("Reboot FC")
                 }
                 if (powerAction === PowerActionDialoque.PowerAction.ShutdownFC) {
-                    return qsTr("Shutdown Flight Controller")
+                    return qsTr("Shutdown FC")
                 }
                 return qsTr("Yes")
             }

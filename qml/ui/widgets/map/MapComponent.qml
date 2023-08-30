@@ -25,9 +25,11 @@ Map {
     property double userLon: 0.0
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
-    property int track_count: 0;
-    property int track_skip: 1;
-    property int track_limit: 100; //max number of drone track points before it starts averaging
+
+    property int track_limit: 200; //max number of drone track points before it starts averaging
+    // We start with a minimum distance of 3m, each time we perform a track reduction, the minimum distance is increased
+    property int min_distance_between_points_m: 3.0
+
 
     center {
         latitude: _fcMavlinkSystem.lat == 0.0 ? userLat : followDrone ? _fcMavlinkSystem.lat : 9000
@@ -75,33 +77,42 @@ Map {
         }
     }
 
+    //this function keeps recycling points to preserve memory
     function addDroneTrack() {
-        //this function keeps recycling points to preserve memory
-
-        // always remove last point unless it was significant
-        if (track_count != 0) {
-            droneTrack.removeCoordinate(droneTrack.pathLength());
-            //console.log("Map component: total points=", droneTrack.pathLength());
+        //console.log("Add drone track")
+        // only add track while armed
+        if(!_fcMavlinkSystem.armed){
+            return;
         }
-
-        // always add the current location so drone looks like its connected to line
-        droneTrack.addCoordinate(QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon));
-
-        track_count = track_count + 1;
-
-        if (track_count == track_skip) {
-            track_count = 0;
+        var new_coordinate=QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+        if(droneTrack.pathLength()<=1){
+            // first ever 2 points
+            droneTrack.addCoordinate(new_coordinate);
+            return;
         }
-
-        if (droneTrack.pathLength() === track_limit) {
-            //make line more coarse
-            track_skip = track_skip * 2;
-            //cut the points in the list by half
-            for (var i = 0; i < track_limit; ++i) {
-                if (i % 2) {
-                    // it's odd
-                    droneTrack.removeCoordinate(i);
+        var coordinate_prev1=droneTrack.coordinateAt(droneTrack.pathLength()-1);
+        var coordinate_prev2=droneTrack.coordinateAt(droneTrack.pathLength()-2);
+        var distance = coordinate_prev1.distanceTo(coordinate_prev2);
+        //console.log("Distance is:"+distance+"m");
+        if(distance<min_distance_between_points_m){
+            // distance is insignificant - just replace the last coordinate
+            droneTrack.replaceCoordinate(droneTrack.pathLength()-1,new_coordinate);
+        }else{
+            // add new coordinate
+            droneTrack.addCoordinate(new_coordinate);
+            //console.log("Track points:"+droneTrack.pathLength());
+            if(droneTrack.pathLength()>track_limit){
+                console.log("Track limit reached");
+                // make the line more coarse by removing every 2nd element, beginning from the end of the track (front of the list)
+                // but keep first and last point intact
+                for(var i=droneTrack.pathLength()-2;i>=1;i--){
+                    if(i % 2 == 1){
+                        droneTrack.removeCoordinate(i);
+                    }
                 }
+                // increase the min distance between points
+                min_distance_between_points_m+=3.0;
+                console.log("New min distance:"+min_distance_between_points_m+"m");
             }
         }
     }
@@ -143,9 +154,8 @@ Map {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            var coord = map.toCoordinate(Qt.point(mouse.x,
-                                                  mouse.y))
-            console.log(coord.latitude, coord.longitude)
+            var coord = map.toCoordinate(Qt.point(mouse.x,mouse.y))
+            console.log("Map clicked, "+coord.latitude+":"+coord.longitude)
             configureLargeMap()
         }
     }
@@ -259,6 +269,13 @@ Map {
                     // We cannot do waypoint track until we have proper sorting
                     //waypointTrack.addCoordinate(coordinate);
                 }
+                /*TapHandler {
+                    id: tapHandler
+                    //anchors.fill: sourceItem
+                    onTapped: {
+                        console.log("Clicked mission item"+model.index)
+                    }
+                }*/
             }
             /*MapCircle {
                 id: innerCircle

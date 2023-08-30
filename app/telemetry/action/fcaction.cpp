@@ -6,6 +6,7 @@
 #include "cmdsender.h"
 
 #include "create_cmd_helper.hpp"
+#include "../models/fcmavlinksystem.h"
 
 FCAction::FCAction(QObject *parent)
     : QObject{parent}
@@ -28,13 +29,26 @@ void FCAction::set_fc_sys_id(int fc_sys_id, int fc_comp_id)
 
 void FCAction::arm_fc_async(bool arm)
 {
+    if(!FCMavlinkSystem::instance().is_alive()){
+        HUDLogMessagesModel::instance().add_message_info("FC not alive");
+        return;
+    }
     const auto fc_sys_id=m_fc_sys_id;
     const auto fc_comp_id=m_fc_comp_id;
     const auto command=cmd::helper::create_cmd_arm(fc_sys_id,fc_comp_id,arm);
-    CmdSender::instance().send_command_long_async(command,nullptr);
+    auto cb=[this,arm](CmdSender::RunCommandResult result){
+        if(!result.opt_ack.has_value()){
+            HUDLogMessagesModel::instance().add_message_info(arm ? "ARM - FC not reachable" : "DISARM - FC not reachable");
+        }else if(result.is_accepted()){
+            HUDLogMessagesModel::instance().add_message_info(arm ? "ARMED FC":"DISARMED FC");
+        }else{
+            HUDLogMessagesModel::instance().add_message_info(arm ? "ARM not possible":"DISARM not possible");
+        }
+    };
+    CmdSender::instance().send_command_long_async(command,cb);
 }
 
-void FCAction::flight_mode_cmd(long cmd_msg) {
+void FCAction::flight_mode_cmd_async(long cmd_msg) {
     if(cmd_msg<0){
         // We get the flight mode command from qml, something is wrong with it
         std::stringstream ss;
@@ -42,21 +56,31 @@ void FCAction::flight_mode_cmd(long cmd_msg) {
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
         return;
     }
+    if(!FCMavlinkSystem::instance().is_alive()){
+        HUDLogMessagesModel::instance().add_message_info("FC not alive");
+        return;
+    }
+    if(m_has_currently_runnning_flight_mode_change){
+        HUDLogMessagesModel::instance().add_message_info("Busy, please try again later");
+        return;
+    }
     const auto fc_sys_id=m_fc_sys_id;
     const auto fc_comp_id=m_fc_comp_id;
     auto command=cmd::helper::create_cmd_do_set_flight_mode(fc_sys_id,fc_comp_id,cmd_msg);
-    const auto result=CmdSender::instance().send_command_long_blocking(command);
-    if(result==CmdSender::Result::QUEUE_FULL){
+    auto cb=[this](CmdSender::RunCommandResult result){
+        if(!result.opt_ack.has_value()){
+            HUDLogMessagesModel::instance().add_message_info("FC not reachable");
+        }else if(result.is_accepted()){
+            HUDLogMessagesModel::instance().add_message_info("Flight mode success");
+        }else{
+            HUDLogMessagesModel::instance().add_message_info("Flight mode unsupported");
+        }
+        m_has_currently_runnning_flight_mode_change=false;
+    };
+    m_has_currently_runnning_flight_mode_change=true;
+    const auto result=CmdSender::instance().send_command_long_async(command,cb,std::chrono::milliseconds(250),6);
+    if(!result){
         HUDLogMessagesModel::instance().add_message_info("Failed, please try again later");
-    }else if(result==CmdSender::CMD_DENIED){
-        HUDLogMessagesModel::instance().add_message_info("Flight mode unsupported");
-    }else if(result==CmdSender::NO_RESPONSE){
-        HUDLogMessagesModel::instance().add_message_info("FC not reachable");
-    }else{
-        assert(result==CmdSender::Result::CMD_SUCCESS);
-        std::stringstream ss;
-        ss<<"Flight mode success";
-        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
     }
 }
 

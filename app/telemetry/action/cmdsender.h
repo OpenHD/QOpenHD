@@ -28,6 +28,9 @@ public:
         std::optional<mavlink_command_ack_t> opt_ack;
         // How often this command was transmitted until success / failure
         int n_transmissions=-1;
+        bool is_accepted(){
+            return opt_ack.has_value() && opt_ack.value().result==MAV_RESULT_ACCEPTED;
+        }
     };
     typedef std::function<void(RunCommandResult result)> RESULT_CB;
     /**

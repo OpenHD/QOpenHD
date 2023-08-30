@@ -38,7 +38,7 @@ void FCMsgIntervalHandler::opt_send_messages(){
             auto command=cmd::helper::create_cmd_set_msg_interval(fc_sys_id,fc_comp_id,interval.msg_id,interval_us);
             auto cb=[this](CmdSender::RunCommandResult result){
                 std::lock_guard<std::mutex> lock(m_mutex);
-                if(result.opt_ack.has_value() && result.opt_ack.value().result==MAV_RESULT_ACCEPTED){
+                if(result.is_accepted()){
                     qDebug()<<"Succesfully set rate number"<<m_next_rate_index;
                     // success
                     m_ready_for_next_command=true;

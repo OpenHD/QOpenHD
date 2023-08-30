@@ -168,7 +168,7 @@ BaseWidget {
                 }
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkAction.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd_async(msg_id);
                     }
                 }
             }
@@ -181,7 +181,7 @@ BaseWidget {
 
                 onCheckedChanged: {
                     if (checked == true) {
-                        _fcMavlinkAction.flight_mode_cmd(msg_id);
+                        _fcMavlinkAction.flight_mode_cmd_async(msg_id);
                     }
                 }
             }

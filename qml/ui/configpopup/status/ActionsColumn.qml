@@ -41,7 +41,7 @@ Item{
                 }
                 Button{
                     text: "Fetch version"
-                    onClicked: _ohdAction.request_openhd_version()
+                    onClicked: _ohdAction.request_openhd_version_async()
                 }
             }
         }

@@ -130,6 +130,16 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+            Item {
+                width: parent.width
+                height: 20
+                Button{
+                    text: "RESYNC";
+                    onClicked: {
+                        _fcMavlinkMissionHandler.resync()
+                    }
+                }
+            }
         }
     }
 

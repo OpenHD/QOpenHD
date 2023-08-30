@@ -2,6 +2,7 @@
 #define FCACTION_H
 
 #include <QObject>
+#include <mutex>
 
 #include "../util/mavlink_include.h"
 
@@ -27,8 +28,9 @@ public:
 
     // Sends a command to change the flight mode. Note that this is more complicated than it sounds at first,
     // since copter and plane for example do have different flight mode enums.
-    // For RTL (which is really important) we have a extra impl. just to be sure
-    Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
+    // This function is async to not block the calling UI - the result is logged to the HUDLogMessageModel
+    // also, this method only allows one flight mode change queued up at a time
+    Q_INVOKABLE void flight_mode_cmd_async(long cmd_msg);
 
     // Some FC stop sending home position when armed, re-request the home position
     Q_INVOKABLE void request_home_position_from_fc();
@@ -37,6 +39,7 @@ public:
 private:
     int m_fc_sys_id=1;
     int m_fc_comp_id=MAV_COMP_ID_AUTOPILOT1;
+    std::atomic<bool> m_has_currently_runnning_flight_mode_change=false;
 };
 
 #endif // FCACTION_H
