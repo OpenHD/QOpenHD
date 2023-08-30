@@ -73,6 +73,7 @@ BaseWidget {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+        ScrollBar.vertical.interactive: true
         clip: true
         contentHeight: flightModeCommandsColumn.height
 

@@ -42,6 +42,7 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         //horizontalAlignment: checked ? Text.AlignLeft : Text.AlignRight
+        color: checked ? "black" : "white"
     }
 
     Rectangle { // the moveable control

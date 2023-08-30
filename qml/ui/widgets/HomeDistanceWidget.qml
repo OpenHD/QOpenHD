@@ -135,7 +135,6 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-
             /*Item {
                 height: 32
                 Text {
@@ -148,9 +147,11 @@ BaseWidget {
             }*/
             FlightModeSlider{
                 flight_mode_text: "RTL"
+                close_popup_on_success: false
             }
             FlightModeSlider{
                 flight_mode_text: "QRTL"
+                close_popup_on_success: false
             }
 
             RowLayout{

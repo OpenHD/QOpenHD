@@ -4,6 +4,9 @@ PillSlider{
     id: slider
     // Needs to be overridden
     property string flight_mode_text: "TODO"
+    // If set to true, the flightModeWidget's popup is autmatically closed
+    // once this command completes.
+    property bool close_popup_on_success: true
 
     m_pill_description: flight_mode_text
 
@@ -20,7 +23,7 @@ PillSlider{
     Timer {
         id: selectionResetTimer
         running: false
-        interval: 5000
+        interval: 1500
         repeat: false
         onTriggered: {
            slider.reset_to_dragable()
@@ -31,7 +34,9 @@ PillSlider{
         console.log("FM slider onDraggedRight");
         _fcMavlinkAction.flight_mode_cmd_async_string(flight_mode_text)
         selectionResetTimer.start()
-        flightModeWidget.bw_manually_close_action_popup()
+        if(close_popup_on_success){
+            flightModeWidget.bw_manually_close_action_popup()
+        }
     }
 
 }
