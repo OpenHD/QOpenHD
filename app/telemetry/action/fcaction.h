@@ -5,6 +5,7 @@
 #include <mutex>
 
 #include "../util/mavlink_include.h"
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 /**
  * This is the one and only class from which messages / actions can be sent to the FC.
@@ -16,9 +17,8 @@ class FCAction : public QObject
 public:
     explicit FCAction(QObject *parent = nullptr);
     static FCAction& instance();
-
-    // Set the mavlink system sys/comp id, once discovered.
-    void set_fc_sys_id(int fc_sys_id,int fc_comp_id);
+public:
+    L_RO_PROP(int,ardupilot_mav_type,set_ardupilot_mav_type,-1);
 public:
     // WARNING: Do not call any non-async send command methods from the same thread that is parsing the mavlink messages !
     //
@@ -31,14 +31,19 @@ public:
     // This function is async to not block the calling UI - the result is logged to the HUDLogMessageModel
     // also, this method only allows one flight mode change queued up at a time
     Q_INVOKABLE void flight_mode_cmd_async(long cmd_msg);
+    // FUCKING ANNOYING / DANGEROUS:
+    // The mapping of flight modes is completely different for copter/plane/...
+    // If we haven't mapped a (unique) flight mode string to the appropriate COPTER_, PLANE_ command
+    // we just log a warning and return.
+    Q_INVOKABLE void flight_mode_cmd_async_string(QString flight_mode);
+
+    Q_INVOKABLE bool has_mapping(QString flight_mode);
 
     // Some FC stop sending home position when armed, re-request the home position
     Q_INVOKABLE void request_home_position_from_fc();
 
     Q_INVOKABLE bool send_command_reboot(bool reboot);
 private:
-    int m_fc_sys_id=1;
-    int m_fc_comp_id=MAV_COMP_ID_AUTOPILOT1;
     std::atomic<bool> m_has_currently_runnning_flight_mode_change=false;
 };
 

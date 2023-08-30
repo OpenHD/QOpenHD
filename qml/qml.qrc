@@ -256,5 +256,7 @@
         <file>ui/elements/ButtonIconInfoText.qml</file>
         <file>ui/elements/ButtonIconInfo.qml</file>
         <file>ui/elements/PillSlider.qml</file>
+        <file>ui/elements/FlightModeSlider.qml</file>
+        <file>ui/elements/ArmDisarmSlider.qml</file>
     </qresource>
 </RCC>

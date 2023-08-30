@@ -81,6 +81,13 @@ private:
 public:
     // ping all the systems (using timesync, since "ping" is deprecated)
     Q_INVOKABLE void ping_all_systems();
+public:
+    struct FCMavId{
+        int comp_id;
+        int sys_id;
+    };
+    // Returns default FC sys / comp id until FC is successfully discovered.
+    FCMavId get_fc_mav_id();
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;

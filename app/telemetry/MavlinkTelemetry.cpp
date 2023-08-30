@@ -135,7 +135,6 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
             m_system_fc=system;
             // we got the flight controller
             FCMavlinkSystem::instance().set_system_id(m_system_fc->get_system_id());
-            FCAction::instance().set_fc_sys_id(m_system_fc->get_system_id(),MAV_COMP_ID_AUTOPILOT1);
             // hacky, for SITL testing
             if(m_passtrough==nullptr){
                 m_passtrough=std::make_shared<mavsdk::MavlinkPassthrough>(system);
@@ -332,6 +331,15 @@ void MavlinkTelemetry::ping_all_systems()
     timesync.ts1=lastTimeSyncOut;
     mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),&msg,&timesync);
     sendMessage(msg);
+}
+
+MavlinkTelemetry::FCMavId MavlinkTelemetry::get_fc_mav_id()
+{
+    std::lock_guard<std::mutex> lock(systems_mutex);
+    if(m_system_fc!=nullptr){
+        return {m_system_fc->get_system_id(),MAV_COMP_ID_AUTOPILOT1};
+    }
+    return {1,MAV_COMP_ID_AUTOPILOT1};
 }
 
 void MavlinkTelemetry::re_apply_rates()

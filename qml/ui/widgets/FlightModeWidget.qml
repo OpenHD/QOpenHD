@@ -28,14 +28,8 @@ BaseWidget {
     // Needs to be a lot bigger than default:
     widgetActionHeight: 164+ 450
 
-    // The commands are a bit different depending on if the user is using arducopter or arduplane / ardu-vtol.
-    // QUITE ANNOYING FUCK !!!!
-    property bool m_is_arducopter : _fcMavlinkSystem.is_arducopter
-    property bool m_is_arduplane:_fcMavlinkSystem.is_arduplane
-    property bool m_is_arduvtol: _fcMavlinkSystem.is_arduvtol
-
-    function change_flight_mode(msg_id){
-        _fcMavlinkAction.flight_mode_cmd_async(msg_id);
+    function close_action_popup(){
+        flightModeWidget.bw_manually_close_action_popup()
     }
 
     widgetDetailComponent: ScrollView {
@@ -78,346 +72,96 @@ BaseWidget {
     widgetActionComponent: ScrollView {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         clip: true
         contentHeight: flightModeCommandsColumn.height
 
-        /*
-        PLANE_MODE_MANUAL=0,
-        PLANE_MODE_CIRCLE=1,
-        PLANE_MODE_STABILIZE=2,
-        PLANE_MODE_TRAINING=3,
-        PLANE_MODE_ACRO=4,
-        PLANE_MODE_FLY_BY_WIRE_A=5,
-        PLANE_MODE_FLY_BY_WIRE_B=6,
-        PLANE_MODE_CRUISE=7,
-        PLANE_MODE_AUTOTUNE=8,
-        PLANE_MODE_AUTO=10,
-        PLANE_MODE_RTL=11,
-        PLANE_MODE_LOITER=12,
-        PLANE_MODE_TAKEOFF=13
-
-VTOL
-00017     17 : 'QSTABILIZE',
-00018     18 : 'QHOVER',
-00019     19 : 'QLOITER',
-00020     20 : 'QLAND',
-00021     21 : 'QRTL',
-
-       COPTER_MODE_STABILIZE=0
-       COPTER_MODE_ACRO=1
-       COPTER_MODE_ALT_HOLD=2
-       COPTER_MODE_AUTO=3
-       COPTER_MODE_GUIDED=4
-       COPTER_MODE_LOITER=5
-       COPTER_MODE_RTL=6
-       COPTER_MODE_CIRCLE=7
-       COPTER_MODE_LAND=9
-       COPTER_MODE_DRIFT=11
-       COPTER_MODE_SPORT=13
-       COPTER_MODE_FLIP=14
-       COPTER_MODE_AUTOTUNE=15
-       COPTER_MODE_POSHOLD=16
-       COPTER_MODE_BRAKE=17
-       COPTER_MODE_THROW=18
-       COPTER_MODE_AVOID_ADSB=19
-       COPTER_MODE_GUIDED_NOGPS=20
-       COPTER_MODE_SMART_RTL=21
-*/
         Column {
             id: flightModeCommandsColumn
             width: 200
+            height: 900
             spacing: 2
-            height: 600
 
             Text {
-                height: 32
-                text: {
-                    return qsTr("Only For Ardupilot");
-                }
+                text: qsTr("Only For Ardupilot");
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
             }
 
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("RTL")
-                msg_id: {
-                    if (m_is_arducopter){
-                        return 6;
-                    }
-                    if (m_is_arduplane || "VTOL"){
-                        return 11;
-                    }
-                    return -1;
-                }
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "RTL"
             }
-
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("STABILIZE")
-                msg_id: {
-                    if (m_is_arducopter){
-                        return 0;
-                    }
-                    if (m_is_arduplane || "VTOL"){
-                        return 2;
-                    }
-                    return -1;
-                }
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "STABILIZE"
             }
-
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("LOITER")
-                msg_id: {
-                    if (m_is_arducopter){
-                        return 5;
-                    }
-                    if (m_is_arduplane || "VTOL"){
-                        return 12;
-                    }
-                    return -1;
-                }
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "LOITER"
             }
-
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("CIRCLE")
-                msg_id: {
-                    if (m_is_arducopter){
-                        return 7;
-                    }
-                    if (m_is_arduplane || m_is_arduvtol){
-                        return 1;
-                    }
-                    return -1;
-                }
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "CIRCLE"
             }
-
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("AUTO")
-                msg_id: {
-                    if (m_is_arducopter){
-                        return 3;
-                    }
-                    if (m_is_arduplane || m_is_arduvtol){
-                        return 10;
-                    }
-                }
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "AUTO"
             }
-
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("AUTOTUNE")
-                msg_id: {
-                    if (m_is_arducopter){
-                        return 15;
-                    }
-                    if (m_is_arduplane ||  m_is_arduvtol){
-                        return 8;
-                    }
-                }
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "AUTOTUNE"
             }
-
-  //-----------------------DIFFERNT from plane to copter to vtol
-
-            ConfirmSlider {
-                visible: {
-                    if (m_is_arduplane ||  m_is_arduvtol){
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-                text_off: qsTr("MANUAL")
-                msg_id: 0
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "MANUAL"
             }
-
-            ConfirmSlider {
-                visible: {
-                    if (m_is_arduplane ||  m_is_arduvtol){
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-                text_off: qsTr("FBWA")
-                msg_id: 5
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "FBWA"
             }
-
-            ConfirmSlider {
-                visible: {
-                    if (m_is_arduplane ||  m_is_arduvtol){
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-
-                text_off: qsTr("FBWB")
-                msg_id: 6
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "FBWB"
             }
-
-            ConfirmSlider {
-                visible: m_is_arduvtol
-
-                text_off: qsTr("QSTABILIZE")
-                msg_id: 17
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "QSTABILIZE"
             }
-
-            ConfirmSlider {
-                visible: m_is_arduvtol
-
-                text_off: qsTr("QHOVER")
-                msg_id: 18
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "QHOVER"
             }
-
-            ConfirmSlider {
-                visible: m_is_arduvtol
-
-                text_off: qsTr("QLOITER")
-                msg_id: 19
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "QLOITER"
             }
-
-            ConfirmSlider {
-                visible: m_is_arduvtol
-
-                text_off: qsTr("QLAND")
-                msg_id: 20
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "QLAND"
             }
-
-            ConfirmSlider {
-                visible: m_is_arduvtol
-
-                text_off: qsTr("QRTL")
-                msg_id: 21
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "QRTL"
             }
-
-            ConfirmSlider {
-                visible: m_is_arducopter
-
-                text_off: qsTr("ALT_HOLD")
-                msg_id: 2
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "ALT_HOLD"
             }
-            ConfirmSlider {
-                visible: m_is_arducopter
-
-                text_off: qsTr("POSHOLD")
-                msg_id: 16
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "POSHOLD"
             }
-            ConfirmSlider {
-                visible: m_is_arducopter
-
-                text_off: qsTr("ACRO")
-                msg_id: 1
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        change_flight_mode(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "ACRO"
+            }
+            FlightModeSlider{
+                flight_mode_text: "GUIDED"
+            }
+            FlightModeSlider{
+                flight_mode_text: "LAND"
+            }
+            FlightModeSlider{
+                flight_mode_text: "SMART_RTL"
+            }
+            FlightModeSlider{
+                flight_mode_text: "ZIGZAG"
+            }
+            FlightModeSlider{
+                flight_mode_text: "AUTO_RTL"
+            }
+            FlightModeSlider{
+                flight_mode_text: "CRUISE"
+            }
+            FlightModeSlider{
+                flight_mode_text: "TAKEOFF"
             }
         }
     }

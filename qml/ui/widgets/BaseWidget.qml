@@ -86,6 +86,12 @@ BaseWidgetForm {
     // Was the easiest fix
     property bool disable_dragging: false
 
+
+    // Can be called by the imp. to manually close the action popup
+    function bw_manually_close_action_popup(){
+        widgetAction.close()
+    }
+
     //layer.enabled: false
 
     /*Connections {

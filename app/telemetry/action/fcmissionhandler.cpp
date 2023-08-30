@@ -49,7 +49,7 @@ bool FCMissionHandler::process_message(const mavlink_message_t &msg)
     return consumed;
 }
 
-static mavlink_mission_request_list_t create_request_mission_count(){
+static mavlink_mission_request_list_t create_request_mission_count(int fc_sys_id,int fc_comp_id){
     mavlink_mission_request_list_t command{};
     command.mission_type=MAV_MISSION_TYPE_MISSION;
     command.target_component=MAV_COMP_ID_AUTOPILOT1;
@@ -57,15 +57,15 @@ static mavlink_mission_request_list_t create_request_mission_count(){
     return command;
 }
 
-static mavlink_message_t create_request_mission_count_msg(){
-    const auto tmp=create_request_mission_count();
+static mavlink_message_t create_request_mission_count_msg(int fc_sys_id,int fc_comp_id){
+    const auto tmp=create_request_mission_count(fc_sys_id,fc_comp_id);
     mavlink_message_t message;
     const auto sys_id=QOpenHDMavlinkHelper::get_own_sys_id();
     const auto comp_id=QOpenHDMavlinkHelper::get_own_comp_id();
     mavlink_msg_mission_request_list_encode(sys_id,comp_id,&message,&tmp);
     return message;
 }
-static mavlink_message_t create_request_mission_msg(int sequence){
+static mavlink_message_t create_request_mission_msg(int fc_sys_id,int fc_comp_id,int sequence){
     mavlink_mission_request_int_t request{};
     request.mission_type=MAV_MISSION_TYPE_MISSION;
     request.target_component=MAV_COMP_ID_AUTOPILOT1;
@@ -78,7 +78,6 @@ static mavlink_message_t create_request_mission_msg(int sequence){
     return message;
 }
 
-
 void FCMissionHandler::opt_send_messages()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -87,7 +86,8 @@ void FCMissionHandler::opt_send_messages()
         const auto elapsed=std::chrono::steady_clock::now()-m_last_count_request;
         if(elapsed>std::chrono::seconds(1)){
             m_last_count_request=std::chrono::steady_clock::now();
-            auto message=create_request_mission_count_msg();
+            const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
+            auto message=create_request_mission_count_msg(fc_id.sys_id,fc_id.comp_id);
             MavlinkTelemetry::instance().sendMessage(message);
             //qDebug()<<"Requested";
         }
@@ -110,7 +110,8 @@ void FCMissionHandler::opt_send_messages()
             for(int i=0;i<m_missing_items.size() && i<10;i++){
                 const int mission_to_request=m_missing_items[i];
                 //qDebug()<<"Resquesting mission:"<<mission_to_request;
-                auto message=create_request_mission_msg(mission_to_request);
+                const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
+                auto message=create_request_mission_msg(fc_id.sys_id,fc_id.comp_id,mission_to_request);
                 MavlinkTelemetry::instance().sendMessage(message);
             }
         }

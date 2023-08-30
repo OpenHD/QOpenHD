@@ -53,6 +53,11 @@ ColumnLayout {
             width: 256
             font.pixelSize: 14
             leftPadding: 6
+            visible: m_version!=="N/A"
+        }
+        Button{
+            text: "FETCH"
+            onClicked: _ohdAction.request_openhd_version_async()
         }
     }
     RowLayout{

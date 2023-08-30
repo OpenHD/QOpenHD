@@ -105,6 +105,8 @@ static QString copter_mode_from_enum(COPTER_MODE mode){
         return "Avoid ADSB";
     case COPTER_MODE_GUIDED:
         return "Guided";
+    case COPTER_MODE_ZIGZAG:
+        return "ZIGZAG";
     default:
         break;
     }
@@ -386,6 +388,14 @@ static std::string mavlink_command_ack_to_string(const mavlink_command_ack_t& cm
     ss<<":"<<cmd_ack.result_param2;
     ss<<"]";
     return ss.str();
+}
+
+static bool flight_mode_is_copter(const MAV_TYPE& type){
+    return type==MAV_TYPE_TRICOPTER || type==MAV_TYPE_QUADROTOR || type==MAV_TYPE_HEXAROTOR || type==MAV_TYPE_OCTOROTOR
+               || type==MAV_TYPE_DECAROTOR || type==MAV_TYPE_DODECAROTOR;
+}
+static bool flight_mode_is_plane(const MAV_TYPE& type){
+    return type==MAV_TYPE_FIXED_WING;
 }
 
 }

@@ -80,22 +80,8 @@ BaseWidget {
                     anchors.left: parent.left
                 }
             }
-
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.supports_basic_commands
-                text_off: _fcMavlinkSystem.armed ? qsTr("DISARM") : qsTr("ARM")
-
-                onCheckedChanged: {
-                    if (checked == true){ //must be true since switch reverts to false
-                        if (_fcMavlinkSystem.armed == true) {
-                            _fcMavlinkAction.arm_fc_async(false)
-                        }
-                        else {
-                            _fcMavlinkAction.arm_fc_async(true)
-                        }
-                    }
-                }
+            ArmDisarmSlider{
+                id: arm_disarm_slider
             }
         }
     }

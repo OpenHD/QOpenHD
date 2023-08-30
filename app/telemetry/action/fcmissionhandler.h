@@ -28,7 +28,6 @@ public:
     bool process_message(const mavlink_message_t& msg);
     // Should be called every time a msg from the FC is received - this class takes care to not pollute the link
     void opt_send_messages();
-
     Q_INVOKABLE void resync();
 public:
     // We expose some variables as read-only for the OSD+

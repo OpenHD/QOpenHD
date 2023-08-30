@@ -16,6 +16,8 @@
 #include "util/qopenhdmavlinkhelper.hpp"
 #include "util/telemetryutil.hpp"
 
+#include "../action/fcaction.h"
+
 #include <QDateTime>
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
@@ -65,13 +67,11 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             // heartbeat okay
             const auto info=opt_info.value();
             set_flight_mode(info.flight_mode);
-            set_mav_type(info.mav_type);
-            set_autopilot_type(info.autopilot);
-            set_is_arducopter(info.is_arducopter);
-            set_is_arduvtol(m_is_arduvtol);
-            set_is_arduplane(info.is_arduplane);
+            set_autopilot_type_str(info.autopilot);
+            set_mav_type_str(info.mav_type);
             const bool armed=Telemetryutil::get_arm_mode_from_heartbeat(heartbeat);
             set_armed(armed);
+            FCAction::instance().set_ardupilot_mav_type(opt_info->ardupilot_mav_type);
         }else{
             qDebug()<<"Weird heartbeat";
         }

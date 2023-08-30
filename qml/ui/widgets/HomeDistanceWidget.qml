@@ -32,12 +32,6 @@ BaseWidget {
     widgetActionWidth: 256
     widgetActionHeight: 164+30
 
-    // The commands are a bit different depending on if the user is using arducopter or arduplane / ardu-vtol.
-    // QUITE ANNOYING FUCK !!!!
-    property bool m_is_arducopter : _fcMavlinkSystem.is_arducopter
-    property bool m_is_arduplane:_fcMavlinkSystem.is_arduplane
-    property bool m_is_arduvtol: _fcMavlinkSystem.is_arduvtol
-
     // Hides the stuff before decimal, aka returns
     // X.1234...
     function hide_before_decimals(number){
@@ -152,39 +146,13 @@ BaseWidget {
                     anchors.left: parent.left
                 }
             }*/
-
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("RTL")
-                msg_id: {
-                    if (m_is_arducopter){
-                        return 6;
-                    }
-                    if(m_is_arduplane || m_is_arduvtol){
-                        return 11;
-                    }
-                    return -1;
-                }
-                onCheckedChanged: {
-                    if (checked == true) {
-                        _fcMavlinkAction.flight_mode_cmd_async(msg_id);
-                    }
-                }
+            FlightModeSlider{
+                flight_mode_text: "RTL"
+            }
+            FlightModeSlider{
+                flight_mode_text: "QRTL"
             }
 
-            ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "VTOL"
-
-                text_off: qsTr("QRTL")
-                msg_id: 21
-
-                onCheckedChanged: {
-                    if (checked == true) {
-                        _fcMavlinkAction.flight_mode_cmd_async(msg_id);
-                    }
-                }
-            }
             RowLayout{
                 width: parent.width
                 height: 32

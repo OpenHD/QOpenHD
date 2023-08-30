@@ -40,7 +40,7 @@ ColumnLayout {
             leftPadding: 12
         }
         Text {
-            text: _fcMavlinkSystem.autopilot_type
+            text: _fcMavlinkSystem.autopilot_type_str
             height: 24
             width: 256
             font.pixelSize: 14
@@ -59,7 +59,7 @@ ColumnLayout {
             leftPadding: 12
         }
         Text {
-            text: _fcMavlinkSystem.mav_type
+            text: _fcMavlinkSystem.mav_type_str
             height: 24
             width: 256
             font.pixelSize: 14

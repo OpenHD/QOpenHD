@@ -363,6 +363,8 @@ static int mavlink_rc_rssi_to_percent(uint8_t rssi){
 struct HeartBeatInfo{
     QString autopilot="Unknown";
     QString flight_mode="Unknown";
+    // Used to figure out ardupilot flight mode(s)
+    int ardupilot_mav_type=-1;
     QString mav_type="Unknown";
     // These are for sending the right flight mode commands
     // Weather it is any type of "copter,plane or vtol"
@@ -406,6 +408,7 @@ static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& h
                 }else if(type_and_flight_mode.is_vtol){
                     info.is_arduvtol=true;
                 }
+                info.ardupilot_mav_type=uav_type;
             }
        }
        break;
