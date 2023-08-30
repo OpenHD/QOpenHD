@@ -270,7 +270,6 @@ void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
         }else{
             qDebug()<<"Got ping from fc";
             // almost 100% from flight controller
-            //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
             FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(delta_readable.c_str());
         }
     }else{

@@ -81,10 +81,20 @@ Item {
     }
 
     Item {
+        id: cardBodyHolder
         anchors.top: cardID.bottom
         anchors.topMargin: 6
+        //anchors.bottom: cardFooterInner.top
+        //anchors.bottomMargin: 3
         width: parent.width
         children: cardBody
+    }
+
+    Rectangle{
+        anchors.fill: background
+        color: "gray"
+        opacity: 0.6
+        visible: m_style_error
     }
 
     Rectangle {
@@ -103,12 +113,18 @@ Item {
         border.color: borderColor
     }
 
-    Rectangle{
+    /*Rectangle{
         anchors.fill: parent
         color: "transparent"
         border.color: "red"
         border.width: 3
         radius: 6
         visible: m_style_error
-    }
+    }*/
+    /*Rectangle{
+        anchors.fill: cardBodyHolder
+        color: "gray"
+        opacity: 0.8
+        visible: m_style_error
+    }*/
 }

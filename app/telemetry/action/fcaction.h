@@ -36,7 +36,9 @@ public:
     // If we haven't mapped a (unique) flight mode string to the appropriate COPTER_, PLANE_ command
     // we just log a warning and return.
     Q_INVOKABLE void flight_mode_cmd_async_string(QString flight_mode);
-
+    // Returns true if we have a mapping for this flight mode (string id)
+    // taking the current mav type (copter, plane, ..) int account.
+    // This method is called from qml to only show FLightModeSlider elements that will work for the given mav type
     Q_INVOKABLE bool has_mapping(QString flight_mode);
 
     // Some FC stop sending home position when armed, re-request the home position

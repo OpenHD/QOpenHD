@@ -336,15 +336,6 @@ QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
     if(frequency_item.radar){
         ss<<"(DFS RADAR)";
     }
-    const auto opt_pollution=get_pollution_for_frequency_channel_width(frequency_mhz,40);
-    //if(opt_pollution.has_value()){
-        /*if(opt_pollution.value().n_foreign_packets>10){
-            ss<<" POLLUTED";
-        }else{
-            ss<<" NOT POLLUTED";
-        }*/
-        //ss<<" P:"<<opt_pollution.value().n_foreign_packets;
-    //}
     return ss.str().c_str();
 }
 

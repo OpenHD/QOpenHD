@@ -4,6 +4,7 @@
 
 #include "../../logging/hudlogmessagesmodel.h"
 #include "cmdsender.h"
+#include "../MavlinkTelemetry.h"
 
 FCMsgIntervalHandler &FCMsgIntervalHandler::instance()
 {
@@ -33,9 +34,8 @@ void FCMsgIntervalHandler::opt_send_messages(){
                 interval_hz*=2;
             }
             const auto interval_us=1000*1000/interval_hz;
-            const auto fc_sys_id=1;
-            const auto fc_comp_id=MAV_COMP_ID_AUTOPILOT1;
-            auto command=cmd::helper::create_cmd_set_msg_interval(fc_sys_id,fc_comp_id,interval.msg_id,interval_us);
+            const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
+            auto command=cmd::helper::create_cmd_set_msg_interval(fc_id.sys_id,fc_id.comp_id,interval.msg_id,interval_us);
             auto cb=[this](CmdSender::RunCommandResult result){
                 std::lock_guard<std::mutex> lock(m_mutex);
                 if(result.is_accepted()){

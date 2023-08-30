@@ -28,9 +28,7 @@ void FCAction::arm_fc_async(bool arm)
         return;
     }
     const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
-    const auto fc_sys_id=fc_id.sys_id;
-    const auto fc_comp_id=fc_id.comp_id;
-    const auto command=cmd::helper::create_cmd_arm(fc_sys_id,fc_comp_id,arm);
+    const auto command=cmd::helper::create_cmd_arm(fc_id.sys_id,fc_id.comp_id,arm);
     auto cb=[this,arm](CmdSender::RunCommandResult result){
         if(!result.opt_ack.has_value()){
             HUDLogMessagesModel::instance().add_message_info(arm ? "ARM - FC not reachable" : "DISARM - FC not reachable");
@@ -60,9 +58,7 @@ void FCAction::flight_mode_cmd_async(long cmd_msg) {
         return;
     }
     const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
-    const auto fc_sys_id=fc_id.sys_id;
-    const auto fc_comp_id=fc_id.comp_id;
-    auto command=cmd::helper::create_cmd_do_set_flight_mode(fc_sys_id,fc_comp_id,cmd_msg);
+    auto command=cmd::helper::create_cmd_do_set_flight_mode(fc_id.sys_id,fc_id.comp_id,cmd_msg);
     auto cb=[this](CmdSender::RunCommandResult result){
         if(!result.opt_ack.has_value()){
             HUDLogMessagesModel::instance().add_message_info("FC not reachable");
@@ -169,9 +165,7 @@ bool FCAction::has_mapping(QString flight_mode)
 void FCAction::request_home_position_from_fc()
 {
     const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
-    const auto fc_sys_id=fc_id.sys_id;
-    const auto fc_comp_id=fc_id.comp_id;
-    const auto command=cmd::helper::create_cmd_request_message(fc_sys_id,fc_comp_id,MAVLINK_MSG_ID_HOME_POSITION);
+    const auto command=cmd::helper::create_cmd_request_message(fc_id.sys_id,fc_id.comp_id,MAVLINK_MSG_ID_HOME_POSITION);
     const auto result=CmdSender::instance().send_command_long_blocking(command);
     if(result==CmdSender::CMD_SUCCESS){
         HUDLogMessagesModel::instance().add_message_info("Request home success");
@@ -185,7 +179,7 @@ bool FCAction::send_command_reboot(bool reboot)
     const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
     const auto fc_sys_id=fc_id.sys_id;
     const auto fc_comp_id=fc_id.comp_id;
-    auto command=cmd::helper::create_cmd_reboot(fc_sys_id,fc_comp_id,reboot);
+    auto command=cmd::helper::create_cmd_reboot(fc_id.sys_id,fc_id.comp_id,reboot);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
 }

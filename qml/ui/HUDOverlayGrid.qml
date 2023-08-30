@@ -53,6 +53,13 @@ Item {
             }
         }
     }
+    /*BusyIndicator{
+        width: 48
+        height: 48
+        anchors.top: settingsButton.bottom
+        anchors.topMargin: 5
+        //running: false
+    }*/
 
     // + 0% cpu
     MessageHUD {

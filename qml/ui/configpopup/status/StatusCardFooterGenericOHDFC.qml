@@ -31,7 +31,7 @@ Item {
         }else if(m_type==1){
             var text=""
             if(_ohdSystemGround.is_alive){
-                text="Please go to OpenHD settings and connect to your air unit via Wifibroadcast."
+                text="Looks like you are not receiving any messages from your OpenHD air unit - please go to OpenHD settings and connect to your air unit via Wifibroadcast Link"
             }else{
                 text="Please make sure your ground unit is alive first."
             }
@@ -50,7 +50,7 @@ Item {
     RowLayout{
         anchors.fill: parent
         //visible: get_show_power_actions()
-        ButtonOrange{
+        Button{
             visible: get_show_power_actions()
             Layout.alignment: Qt.AlignLeft
             Layout.leftMargin: 10
@@ -59,7 +59,7 @@ Item {
                 open_power_action_dialoque(m_type,true)
             }
         }
-        ButtonRed{
+        Button{
             visible: get_show_power_actions()
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 10

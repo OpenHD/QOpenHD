@@ -32,9 +32,7 @@ ColumnLayout {
         return m_is_alive ? "green" : "black"
     }
 
-    property int rowHeight: 64
-    property int text_minHeight: 20
-
+    property int text_minHeight: 30
 
     RowLayout{
         Layout.fillWidth: true
@@ -42,22 +40,15 @@ ColumnLayout {
         spacing: 6
         Text {
             text: qsTr("OpenHD Version:")
-            height: 24
-            font.pixelSize: 14
-            font.bold: true
-            leftPadding: 12
         }
         Text {
             text: m_version
-            height: 24
-            width: 256
-            font.pixelSize: 14
-            leftPadding: 6
-            visible: m_version!=="N/A"
+            visible: !(m_version==="N/A")
         }
         Button{
-            text: "FETCH"
+            text: "N/A"
             onClicked: _ohdAction.request_openhd_version_async()
+            visible: (m_version==="N/A")
         }
     }
     RowLayout{
@@ -66,17 +57,9 @@ ColumnLayout {
         spacing: 6
         Text {
             text: qsTr("Last Ping:")
-            height: 24
-            font.pixelSize: 14
-            font.bold: true
-            leftPadding: 12
         }
         Text {
             text: m_last_ping
-            height: 24
-            width: 256
-            font.pixelSize: 14
-            leftPadding: 6
         }
     }
     RowLayout{
@@ -85,18 +68,15 @@ ColumnLayout {
         spacing: 6
         Text {
             text: qsTr("Alive: ")
-            height: 24
-            font.pixelSize: 14
-            font.bold: true
-            leftPadding: 12
         }
         Text {
             text: get_alive_text()
             color: get_alive_text_color()
-            height: 24
-            width: 256
-            font.pixelSize: 14
-            leftPadding: 6
         }
+    }
+    // Padding
+    Item{
+        Layout.fillWidth: true
+        Layout.fillHeight: true
     }
 }

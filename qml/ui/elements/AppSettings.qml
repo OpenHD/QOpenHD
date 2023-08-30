@@ -329,7 +329,7 @@ Settings {
     property bool bank_angle_indicator_widget_show_numbers: true
     property bool bank_angle_indicator_widget_sky_pointer: false
 
-    property bool show_mission: false
+    property bool show_mission: true
 
     property bool show_record_widget: true
     property double recordTextSize: 14

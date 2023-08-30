@@ -52,8 +52,8 @@ bool FCMissionHandler::process_message(const mavlink_message_t &msg)
 static mavlink_mission_request_list_t create_request_mission_count(int fc_sys_id,int fc_comp_id){
     mavlink_mission_request_list_t command{};
     command.mission_type=MAV_MISSION_TYPE_MISSION;
-    command.target_component=MAV_COMP_ID_AUTOPILOT1;
-    command.target_system=1;
+    command.target_system=fc_sys_id;
+    command.target_component=fc_comp_id;
     return command;
 }
 
@@ -68,8 +68,8 @@ static mavlink_message_t create_request_mission_count_msg(int fc_sys_id,int fc_c
 static mavlink_message_t create_request_mission_msg(int fc_sys_id,int fc_comp_id,int sequence){
     mavlink_mission_request_int_t request{};
     request.mission_type=MAV_MISSION_TYPE_MISSION;
-    request.target_component=MAV_COMP_ID_AUTOPILOT1;
-    request.target_system=1;
+    request.target_system=fc_sys_id;
+    request.target_component=fc_comp_id;
     request.seq=sequence;
     mavlink_message_t message;
     const auto sys_id=QOpenHDMavlinkHelper::get_own_sys_id();

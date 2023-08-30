@@ -72,4 +72,7 @@ Rectangle {
     PowerActionDialoque{
         id: powerDialog
     }
+    QOpenHDServiceDialoque{
+        id: qopenhdservicedialoque
+    }
 }
