@@ -603,15 +603,21 @@ static std::vector<XParam> get_parameters_list(){
 }
 
 
-static std::map<std::string,XParam> create_param_map(){
+static std::map<std::string,std::shared_ptr<XParam>> create_param_map(){
+   //qWarning("Create param map");
    auto tmp=get_parameters_list();
-   std::map<std::string,XParam> ret;
+   //qWarning("X");
+   std::map<std::string,std::shared_ptr<XParam>> ret;
    for(const auto& param:tmp){
+        //qWarning("Y %s",param.param_name.c_str());
         if(ret.find(param.param_name)!=ret.end()){
-            qWarning("Param %s already exists !",param.param_name.c_str());
+            //qWarning("Param %s already exists !",param.param_name.c_str());
+            assert(false);
         }
-        ret[param.param_name]=param;
+        auto shared=std::make_shared<XParam>(param);
+        ret[param.param_name]=shared;
         //qDebug()<<"YY"<<param.param_name.c_str();
+        //qWarning("Z");
    }
    //qDebug()<<"create_param_map()"<<tmp.size()<<", "<<tmp.size();
    return ret;
@@ -620,11 +626,11 @@ static std::map<std::string,XParam> create_param_map(){
 static std::optional<XParam> find_param(const std::string& param_name){
    //qDebug()<<"find_param"<<param_name.c_str();
    // we use static to create a cache - we only read from the map anyways
-   static std::map<std::string,XParam> cached=create_param_map();
+   static const std::map<std::string,std::shared_ptr<XParam>> cached=create_param_map();
    if(cached.find(param_name)!=cached.end()){
-        XParam ret=cached.at(param_name);
-        //qDebug()<<"XXX Found "<<param_name.c_str()<<" "<<ret.param_name.c_str();
-        return ret;
+        auto ret=cached.at(param_name);
+        //qDebug()<<"XXX Found "<<param_name.c_str()<<" "<<ret->param_name.c_str();
+        return *ret;
    }else{
         //qDebug()<<"XXX Didn't find "<<param_name.c_str();
    }

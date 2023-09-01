@@ -25,9 +25,8 @@ public:
         std::string name;
         int value;
     };
-
     ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<Item> values_enum1);
-    ImprovedIntSetting()=default;
+    ImprovedIntSetting(const ImprovedIntSetting& other);
 public:
     // helper to create a mapping where first element =0,second element =1, ...
     static std::vector<Item> convert_to_default_items(const std::vector<std::string>& values);
@@ -73,7 +72,7 @@ public:
    int min_value_int;
    int max_value_int;
    // wrapped int enum
-   std::vector<Item> values_enum;
+   std::vector<Item> values_enum{};
 };
 
 

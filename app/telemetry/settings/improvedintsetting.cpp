@@ -6,6 +6,10 @@ ImprovedIntSetting::ImprovedIntSetting(int min_value_int, int max_value_int, std
     values_enum(values_enum1){
 }
 
+ImprovedIntSetting::ImprovedIntSetting(const ImprovedIntSetting &other):
+    min_value_int(other.min_value_int),max_value_int(other.max_value_int),values_enum(other.values_enum)
+{
+}
 
 std::vector<ImprovedIntSetting::Item> ImprovedIntSetting::convert_to_default_items(const std::vector<std::string> &values){
     std::vector<Item> ret{};

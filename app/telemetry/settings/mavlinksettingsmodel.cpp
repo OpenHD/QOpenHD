@@ -73,9 +73,8 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
 
 bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
 {
-    // TODO !
     bool ret=false;
-    auto tmp=find_param(param_id);
+    const auto tmp=find_param(param_id);
     if(tmp.has_value()){
         ret=tmp.value().is_read_only;
     }
@@ -84,7 +83,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
 }
 
 static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string& param_id){
-    auto tmp=find_param(param_id);
+    const auto tmp=find_param(param_id);
     if(tmp.has_value()){
         XParam param=tmp.value();
         if(param.improved_int.has_value()){
@@ -95,7 +94,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
 }
 
 static std::optional<ImprovedStringSetting> get_improved_for_string(const std::string param_id){
-    auto tmp=find_param(param_id);
+    const auto tmp=find_param(param_id);
     if(tmp.has_value()){
         XParam param=tmp.value();
         if(param.improved_string.has_value()){
@@ -546,7 +545,7 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 
 bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 {
-    auto tmp=find_param(param_id.toStdString());
+    const auto tmp=find_param(param_id.toStdString());
     if(tmp.has_value()){
         return tmp.value().requires_reboot;
     }
@@ -614,7 +613,7 @@ bool MavlinkSettingsModel::set_param_tx_power(bool is_tx_power_index, bool is_fo
 
 QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
-    auto tmp=find_param(param_id.toStdString());
+   const auto tmp=find_param(param_id.toStdString());
     if(tmp.has_value()){
         return tmp.value().description.c_str();
     }

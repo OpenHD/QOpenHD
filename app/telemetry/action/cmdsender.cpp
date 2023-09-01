@@ -88,8 +88,9 @@ CmdSender::Result CmdSender::send_command_long_blocking(const mavlink_command_lo
 
 bool CmdSender::handle_cmd_ack(const mavlink_command_ack_t &ack)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    auto opt_running_command=find_remove_running_command(ack.command);
+    // Optmization: Hold lock only when neccessary
+    // We don't need to hold it while we call the result cb
+    auto opt_running_command=find_remove_running_command_threadsafe(ack.command);
     if(opt_running_command.has_value()){
         auto running_command=opt_running_command.value();
         RunCommandResult result{ack,running_command.n_transmissions};
@@ -102,27 +103,36 @@ bool CmdSender::handle_cmd_ack(const mavlink_command_ack_t &ack)
 
 void CmdSender::handle_timeout()
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
-        RunningCommand& cmd=*it;
-        const auto elapsed=std::chrono::steady_clock::now()-cmd.last_transmission;
-        if(elapsed>std::chrono::milliseconds(500)){
-            qDebug()<<"CMD Timeout";
-            if(cmd.n_transmissions<cmd.n_wanted_retransmissions){
-                qDebug()<<"Retransmit cmd "<<cmd.n_transmissions;
-                send_command(cmd);
-            }else{
-                qDebug()<<"Timeout after "<<cmd.n_transmissions<<" transmissions";
-                RunCommandResult result{std::nullopt,cmd.n_transmissions};
-                cmd.cb(result);
-                it=m_running_commands.erase(it);
+    // Optimization: We store the commands that timed out (being removed) temporary while we hold the lock
+    // and then call their cb without the lock hold (it is a bad idea to call a cb with a lock hold)
+    std::vector<std::pair<RunningCommand,RunCommandResult>> timed_out_commands{};
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
+            RunningCommand& running_cmd=*it;
+            const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
+            if(elapsed>running_cmd.retransmit_delay){
+                qDebug()<<"CMD Timeout";
+                if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
+                    qDebug()<<"Retransmit cmd "<<running_cmd.n_transmissions;
+                    send_command(running_cmd);
+                }else{
+                    qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
+                    RunCommandResult result{std::nullopt,running_cmd.n_transmissions};
+                    timed_out_commands.push_back(std::make_pair(running_cmd,result));
+                    it=m_running_commands.erase(it);
+                }
             }
         }
     }
+    for(auto& timed_out:timed_out_commands){
+        timed_out.first.cb(timed_out.second);
+    }
 }
 
-std::optional<CmdSender::RunningCommand> CmdSender::find_remove_running_command(int command_id)
+std::optional<CmdSender::RunningCommand> CmdSender::find_remove_running_command_threadsafe(int command_id)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
         const RunningCommand& cmd=*it;
         if(cmd.cmd.command==command_id){

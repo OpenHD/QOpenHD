@@ -65,21 +65,26 @@ private:
         // last time it was sent
         std::chrono::steady_clock::time_point last_transmission=std::chrono::steady_clock::now();
     };
-    bool handle_cmd_ack(const mavlink_command_ack_t& ack);
-private:
     std::mutex m_mutex;
     std::list<RunningCommand> m_running_commands;
+    std::unique_ptr<std::thread> m_timeout_thread;
+    static constexpr auto MAX_N_SIMULTANOEUS_COMMANDS=5;
+private:
+    // checks if we have a running command this ack is for - if yes, removes it and calls the result cb
+    bool handle_cmd_ack(const mavlink_command_ack_t& ack);
     // searches for a command refering to this command id
     // if found, remove the command and return it.
     // ootherwise, return nullopt
-    std::optional<RunningCommand> find_remove_running_command(int command_id);
+    std::optional<RunningCommand> find_remove_running_command_threadsafe(int command_id);
+    // Send command via link, increase (re)-transmit counter
     void send_command(RunningCommand& cmd);
+    // util
     mavlink_message_t pack_command_msg(const mavlink_command_long_t& cmd);
-
-    std::unique_ptr<std::thread> m_timeout_thread;
     void loop_timeout();
+    // Regulary called by the timeout thread - check if any running command timed out,
+    // and either retransmit or remove and call result cb with failure state
     void handle_timeout();
-    static constexpr auto MAX_N_SIMULTANOEUS_COMMANDS=5;
+    // util
     static std::string run_command_result_as_string(const RunCommandResult& res);
 };
 
