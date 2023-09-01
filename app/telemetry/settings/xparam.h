@@ -12,7 +12,8 @@
 class XParam
 {
 public:
-    XParam();
+    explicit XParam();
+    ~XParam();
     static XParam& instance();
     /**
      * returns true if this message has been consumed, false otherwise.
@@ -96,6 +97,7 @@ private:
     static constexpr auto MAX_N_SIMULTANOEUS_COMMANDS=5;
 private:
     std::unique_ptr<std::thread> m_timeout_thread;
+    bool m_timeout_thread_run=true;
     void loop_timeout();
     void check_timeout_param_set();
     void check_timeout_param_get_all();

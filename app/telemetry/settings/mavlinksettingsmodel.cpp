@@ -1,7 +1,7 @@
 ﻿#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "param_names.h"
-#include "documented_param.hpp"
+#include "documentedparam.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
@@ -73,56 +73,8 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
 
 bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
 {
-    bool ret=false;
-    const auto tmp=find_param(param_id);
-    if(tmp.has_value()){
-        ret=tmp.value().is_read_only;
-    }
-    //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
-    return ret;
+    return DocumentedParam::read_only(param_id);
 }
-
-static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string& param_id){
-    const auto tmp=find_param(param_id);
-    if(tmp.has_value()){
-        XParam param=tmp.value();
-        if(param.improved_int.has_value()){
-            return param.improved_int.value();
-        }
-    }
-    return std::nullopt;
-}
-
-static std::optional<ImprovedStringSetting> get_improved_for_string(const std::string param_id){
-    const auto tmp=find_param(param_id);
-    if(tmp.has_value()){
-        XParam param=tmp.value();
-        if(param.improved_string.has_value()){
-            return param.improved_string.value();
-        }
-    }
-    return std::nullopt;
-}
-
-static std::optional<std::string> int_param_to_enum_string_if_known(const std::string param_id,int value){
-    const auto improved_opt=get_improved_for_int(param_id);
-    if(improved_opt.has_value()){
-        const auto& improved=improved_opt.value();
-        if(improved.has_enum_mapping()){
-            return improved.value_to_string(value);
-        }
-    }
-    return std::nullopt;
-}
-static std::optional<std::string> string_param_to_enum_string_if_known(const std::string param_id,std::string value){
-    const auto improved_opt=get_improved_for_string(param_id);
-    if(improved_opt.has_value()){
-        const auto& improved=improved_opt.value();
-        return improved.value_to_key(value);
-    }
-    return std::nullopt;
-}
-
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
     : QAbstractListModel(parent),m_sys_id(sys_id),m_comp_id(comp_id)
@@ -410,7 +362,7 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 
 QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)const
 {
-    auto as_enum=int_param_to_enum_string_if_known(param_id.toStdString(),value);
+    auto as_enum=DocumentedParam::int_param_to_enum_string_if_known(param_id.toStdString(),value);
     if(as_enum.has_value()){
         return QString(as_enum.value().c_str());
     }
@@ -421,7 +373,7 @@ QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)
 
 QString MavlinkSettingsModel::string_enum_get_readable(QString param_id,QString value) const
 {
-    auto as_enum=string_param_to_enum_string_if_known(param_id.toStdString(),value.toStdString());
+    auto as_enum=DocumentedParam::string_param_to_enum_string_if_known(param_id.toStdString(),value.toStdString());
     if(as_enum.has_value()){
         return QString(as_enum.value().c_str());
     }
@@ -432,7 +384,7 @@ QString MavlinkSettingsModel::string_enum_get_readable(QString param_id,QString 
 
 bool MavlinkSettingsModel::int_param_has_min_max(QString param_id) const
 {
-    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
         // min max is a requirement for int param
         return true;
@@ -442,7 +394,7 @@ bool MavlinkSettingsModel::int_param_has_min_max(QString param_id) const
 
 int MavlinkSettingsModel::int_param_get_min_value(QString param_id)const
 {
-    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
         if(improved_opt->has_enum_mapping()){
             return improved_opt->max_value_int;
@@ -453,7 +405,7 @@ int MavlinkSettingsModel::int_param_get_min_value(QString param_id)const
 
 int MavlinkSettingsModel::int_param_get_max_value(QString param_id)const
 {
-    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
         if(improved_opt->has_enum_mapping()){
             return improved_opt->min_value_int;
@@ -464,7 +416,7 @@ int MavlinkSettingsModel::int_param_get_max_value(QString param_id)const
 
 bool MavlinkSettingsModel::int_param_has_enum_keys_values(QString param_id)const
 {
-    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
         if(improved_opt->has_enum_mapping()){
             return true;
@@ -475,7 +427,7 @@ bool MavlinkSettingsModel::int_param_has_enum_keys_values(QString param_id)const
 
 QStringList MavlinkSettingsModel::int_param_get_enum_keys(QString param_id) const
 {
-    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
         const auto improved=improved_opt.value();
         if(improved.has_enum_mapping()){
@@ -491,7 +443,7 @@ QStringList MavlinkSettingsModel::int_param_get_enum_keys(QString param_id) cons
 
 QList<int> MavlinkSettingsModel::int_param_get_enum_values(QString param_id) const
 {
-    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
         const auto improved=improved_opt.value();
         if(improved.has_enum_mapping()){
@@ -506,7 +458,7 @@ QList<int> MavlinkSettingsModel::int_param_get_enum_values(QString param_id) con
 
 bool MavlinkSettingsModel::string_param_has_enum(QString param_id) const
 {
-    const auto improved_opt=get_improved_for_string(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
     if(improved_opt.has_value()){
         return true;
     }
@@ -515,7 +467,7 @@ bool MavlinkSettingsModel::string_param_has_enum(QString param_id) const
 
 QStringList MavlinkSettingsModel::string_param_get_enum_keys(QString param_id) const
 {
-    const auto improved_opt=get_improved_for_string(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
     if(improved_opt.has_value()){
         return improved_opt->enum_keys();
     }
@@ -526,7 +478,7 @@ QStringList MavlinkSettingsModel::string_param_get_enum_keys(QString param_id) c
 
 QStringList MavlinkSettingsModel::string_param_get_enum_values(QString param_id) const
 {
-    const auto improved_opt=get_improved_for_string(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
     if(improved_opt.has_value()){
         return improved_opt->enum_values();
     }
@@ -545,11 +497,7 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 
 bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 {
-    const auto tmp=find_param(param_id.toStdString());
-    if(tmp.has_value()){
-        return tmp.value().requires_reboot;
-    }
-    return false;
+    return DocumentedParam::requires_reboot(param_id.toStdString());
 }
 
 bool MavlinkSettingsModel::set_param_keyframe_interval(int keyframe_interval)
@@ -613,7 +561,7 @@ bool MavlinkSettingsModel::set_param_tx_power(bool is_tx_power_index, bool is_fo
 
 QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
-   const auto tmp=find_param(param_id.toStdString());
+   const auto tmp=DocumentedParam::find_param(param_id.toStdString());
     if(tmp.has_value()){
         return tmp.value().description.c_str();
     }

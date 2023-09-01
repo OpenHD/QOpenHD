@@ -40,8 +40,8 @@ static int get_required_dbm_for_rate(int channel_width,int mcs_index){
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},m_is_air(is_air)
 {
-    m_alive_timer = new QTimer(this);
-    QObject::connect(m_alive_timer, &QTimer::timeout, this, &AOHDSystem::update_alive);
+    m_alive_timer = std::make_unique<QTimer>(this);
+    QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &AOHDSystem::update_alive);
     m_alive_timer->start(1000);
 }
 

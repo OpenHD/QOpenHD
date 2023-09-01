@@ -134,7 +134,7 @@ private:
      //
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
-    QTimer* m_alive_timer = nullptr;
+    std::unique_ptr<QTimer> m_alive_timer = nullptr;
     void update_alive();
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end

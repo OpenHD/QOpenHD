@@ -17,6 +17,7 @@ class CmdSender
 {
 public:
     CmdSender();
+    ~CmdSender();
     static CmdSender& instance();
     /**
      * returns true if this message has been consumed, false otherwise.
@@ -67,6 +68,7 @@ private:
     };
     std::mutex m_mutex;
     std::list<RunningCommand> m_running_commands;
+    bool m_timeout_thread_run=true;
     std::unique_ptr<std::thread> m_timeout_thread;
     static constexpr auto MAX_N_SIMULTANOEUS_COMMANDS=5;
 private:

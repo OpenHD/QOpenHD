@@ -21,11 +21,11 @@
 #include <QDateTime>
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
-    m_flight_time_timer = new QTimer(this);
-    QObject::connect(m_flight_time_timer, &QTimer::timeout, this, &FCMavlinkSystem::updateFlightTimer);
+    m_flight_time_timer = std::make_unique<QTimer>(this);
+    QObject::connect(m_flight_time_timer.get(), &QTimer::timeout, this, &FCMavlinkSystem::updateFlightTimer);
     m_flight_time_timer->start(1000);
-    m_alive_timer = new QTimer(this);
-    QObject::connect(m_alive_timer, &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
+    m_alive_timer = std::make_unique<QTimer>(this);
+    QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
     m_alive_timer->start(1000);
 }
 

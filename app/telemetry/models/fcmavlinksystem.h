@@ -206,15 +206,9 @@ private:
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;
 
-    QTimer* m_flight_time_timer = nullptr;
-
-    int m_mode = 0;
-
-    int m_arm_disarm = 99;
-
-    int m_reboot_shutdown=99;
+    std::unique_ptr<QTimer> m_flight_time_timer = nullptr;
     //
-    QTimer* m_alive_timer = nullptr;
+    std::unique_ptr<QTimer> m_alive_timer = nullptr;
     std::atomic<int32_t> m_last_heartbeat_ms = -1;
     std::atomic<int32_t> m_last_message_ms= -1;
     void update_alive();

@@ -76,6 +76,7 @@ SOURCES += \
     $$PWD/action/fcmsgintervalhandler.cpp \
     $$PWD/action/ohdaction.cpp \
     $$PWD/models/fcmapmodel.cpp \
+    $$PWD/settings/documentedparam.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
     $$PWD/settings/xparam.cpp \
     app/telemetry/models/aohdsystem.cpp \
@@ -96,7 +97,7 @@ HEADERS += \
     $$PWD/action/fcmissionhandler.h \
     $$PWD/action/fcmsgintervalhandler.h \
     $$PWD/action/ohdaction.h \
-    $$PWD/settings/documented_param.hpp \
+    $$PWD/settings/documentedparam.h \
     $$PWD/settings/xparam.h \
     $$PWD/util/geodesi_helper.h \
     $$PWD/util/mavlink_enum_to_string.h \

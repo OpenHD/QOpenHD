@@ -14,6 +14,13 @@ CmdSender::CmdSender()
     });
 }
 
+CmdSender::~CmdSender()
+{
+    m_timeout_thread_run=false;
+    m_timeout_thread->join();
+    m_timeout_thread=nullptr;
+}
+
 CmdSender &CmdSender::instance()
 {
     static CmdSender instance;

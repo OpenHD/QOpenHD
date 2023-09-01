@@ -15,6 +15,7 @@
 #include "action/fcaction.h"
 #include "action/cmdsender.h"
 #include "action/fcmsgintervalhandler.h"
+#include "settings/xparam.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
@@ -204,6 +205,10 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
         // Consumed, no further processing needed
         return;
     }
+    /*if(XParam::instance().process_message(msg)){
+        // Consumed, no further processing needed
+        return;
+    }*/
     // Other than ping, we seperate by sys ID's - there are up to 3 Systems - The OpenHD air unit, the OpenHD ground unit and the FC connected to the OHD air unit.
     // The systems then (optionally) can seperate by components, but r.n this is not needed.
     if(msg.sysid==OHD_SYS_ID_AIR){

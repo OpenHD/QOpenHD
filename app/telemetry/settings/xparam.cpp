@@ -13,6 +13,13 @@ XParam::XParam()
     });
 }
 
+XParam::~XParam()
+{
+    m_timeout_thread_run=false;
+    m_timeout_thread->join();
+    m_timeout_thread=nullptr;
+}
+
 XParam &XParam::instance()
 {
     static XParam instance;
