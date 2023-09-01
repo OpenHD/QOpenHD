@@ -13,33 +13,46 @@ class XParam
 {
 public:
     XParam();
+    static XParam& instance();
     /**
      * returns true if this message has been consumed, false otherwise.
      */
     bool process_message(const mavlink_message_t& msg);
 public:
+    // Not easy to use API, but exposes pretty much all info one could get
     struct SetParamResult{
         // Response from the recipient, if there is any (otherwise, the message got lost on each re-transmit)
         std::optional<mavlink_param_ext_ack_t> response;
         // How often this command was transmitted until success / failure
         int n_transmissions=-1;
     };
-    typedef std::function<void(SetParamResult result)> RESULT_CB;
-    bool try_set_param_async(const mavlink_param_ext_set_t cmd,RESULT_CB result,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
+    typedef std::function<void(SetParamResult result)> SET_PARAM_RESULT_CB;
+    bool try_set_param_async(const mavlink_param_ext_set_t cmd,SET_PARAM_RESULT_CB result,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
 
     struct GetAllParamResult{
         bool success;
         // Full server param set on success, empty param set otherwise
         std::vector<mavlink_param_ext_value_t> param_set;
     };
-    typedef std::function<void(GetAllParamResult result)> RESULT_CB_GET_ALL;
-    bool try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,RESULT_CB_GET_ALL result_cb);
+    typedef std::function<void(GetAllParamResult result)> GET_ALL_PARAM_RESULT_CB;
+    bool try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,GET_ALL_PARAM_RESULT_CB result_cb);
+public:
+    // easy to use API
+    enum EasySetParamResult{
+        NO_RESPONSE, // no response from recipient
+        VALUE_DENIED, // response from recipient, but negative (some error code)
+        VALUE_SUCCESS // positive response from recipient
+    };
+
+    //template<typename T>
+    //bool try_set_param_async(const int target_sys_id,const int target_comp_id,)
+
 private:
     std::mutex m_mutex;
     // A currently active set param action
     struct RunningParamCmdSet{
         mavlink_param_ext_set_t cmd;
-        RESULT_CB cb;
+        SET_PARAM_RESULT_CB cb;
         // How often this command should be retransmitted
         int n_wanted_retransmissions;
         // Delay between each retransmission
@@ -52,7 +65,7 @@ private:
     // A currently active get all params action
     struct RunningParamCmdGetAll{
         mavlink_param_ext_request_list_t base_cmd;
-        RESULT_CB_GET_ALL cb;
+        GET_ALL_PARAM_RESULT_CB cb;
         std::chrono::milliseconds max_delay_until_timeout;
         std::chrono::milliseconds retransmit_delay;
         std::chrono::steady_clock::time_point last_transmission=std::chrono::steady_clock::now();

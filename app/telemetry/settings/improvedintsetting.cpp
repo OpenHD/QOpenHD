@@ -1,5 +1,7 @@
 #include "improvedintsetting.h"
 
+#include <qstringlist.h>
+
 
 ImprovedIntSetting::ImprovedIntSetting(int min_value_int, int max_value_int, std::vector<Item> values_enum1):
     min_value_int(min_value_int),max_value_int(max_value_int),
@@ -44,4 +46,29 @@ ImprovedIntSetting ImprovedIntSetting::createEnumSimple(std::vector<std::pair<st
     }
     // TODO fix min max
     return ImprovedIntSetting(0,100,items);
+}
+
+std::string ImprovedIntSetting::value_to_string(int value) const{
+    for(const auto& item:values_enum){
+        if(item.value==value)return item.name;
+    }
+    std::stringstream ss;
+    ss<<"?{"<<value<<"}?";
+    return ss.str();
+}
+
+QStringList ImprovedIntSetting::int_enum_keys() const{
+    QStringList ret{};
+    for(const auto& item:values_enum){
+        ret.append(QString{item.name.c_str()});
+    }
+    return ret;
+}
+
+QList<int> ImprovedIntSetting::int_enum_values() const{
+    QList<int> ret;
+    for(const auto& item:values_enum){
+        ret.append(item.value);
+    }
+    return ret;
 }

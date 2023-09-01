@@ -13,6 +13,12 @@ XParam::XParam()
     });
 }
 
+XParam &XParam::instance()
+{
+    static XParam instance;
+    return instance;
+}
+
 bool XParam::process_message(const mavlink_message_t &msg)
 {
     if(msg.msgid==MAVLINK_MSG_ID_PARAM_EXT_ACK){
@@ -27,7 +33,7 @@ bool XParam::process_message(const mavlink_message_t &msg)
     return false;
 }
 
-bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, RESULT_CB result_cb, std::chrono::milliseconds retransmit_delay, int n_wanted_retransmissions)
+bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RESULT_CB result_cb, std::chrono::milliseconds retransmit_delay, int n_wanted_retransmissions)
 {
     assert(n_wanted_retransmissions>=1);
     assert(retransmit_delay.count()>=10);
@@ -52,7 +58,7 @@ bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, RESULT_CB re
     return true;
 }
 
-bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd, RESULT_CB_GET_ALL result_cb)
+bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd, GET_ALL_PARAM_RESULT_CB result_cb)
 {
     if(!result_cb){
         // the cb must not be nullptr
@@ -63,7 +69,9 @@ bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,
         result_cb=dummy_cb;
     }
     std::lock_guard<std::mutex> lock(m_mutex);
-    RunningParamCmdGetAll running{cmd,result_cb,std::chrono::milliseconds(3000),std::chrono::milliseconds(100),std::chrono::steady_clock::now(),{}};
+    RunningParamCmdGetAll running{cmd,result_cb,std::chrono::milliseconds(3000),std::chrono::milliseconds(100),std::chrono::steady_clock::now(),{},10,0};
+    m_running_get_all.push_back(running);
+    send_get_all(m_running_get_all.back());
 }
 
 

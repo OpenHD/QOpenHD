@@ -6,8 +6,8 @@
 #include "param_names.h"
 
 #include <map>
+#include <memory>
 #include <string>
-
 
 //
 // Here we have the mapping (if available) and documentation for all parameters
@@ -25,28 +25,35 @@ struct XParam{
     // it has a short description
     std::string description;
     // and this flag (if set) says changing the parameter requires a (manual) reboot
-    bool requires_reboot=false;
+    bool requires_reboot;
     // and this flag (if set) says the parameter is read-only (cannot be changed)
-    bool is_read_only=false;
+    bool is_read_only;
+    XParam(std::string param_name1,std::optional<ImprovedIntSetting> improved_int1,std::optional<ImprovedStringSetting> improved_string1,
+           std::string description1,bool requires_reboot1,bool is_read_only1): param_name(param_name1),improved_int(improved_int1),
+        improved_string(improved_string1),description(description1),requires_reboot(requires_reboot1),is_read_only(is_read_only1){
+    }
 };
 
 // These are util methods for the most common cases for adding parameters to the stored parameters set
-static void append_int(std::vector<XParam>& list,std::string param_name,std::optional<ImprovedIntSetting> improved_int,std::string description,bool requires_reboot=false){
-    list.push_back(XParam{param_name,improved_int,std::nullopt,description,requires_reboot});
+static void append_int(std::vector<std::shared_ptr<XParam>>& list,std::string param_name,ImprovedIntSetting improved_int,std::string description,bool requires_reboot=false){
+    auto tmp=std::make_shared<XParam>(param_name,improved_int,std::nullopt,description,requires_reboot,false);
+    list.push_back(tmp);
 }
-static void append_string(std::vector<XParam>& list,std::string param_name,std::optional<ImprovedStringSetting> improved_string,std::string description,bool requires_reboot=false){
-    list.push_back(XParam{param_name,std::nullopt,improved_string,description,requires_reboot});
+static void append_string(std::vector<std::shared_ptr<XParam>>& list,std::string param_name,ImprovedStringSetting improved_string,std::string description,bool requires_reboot=false){
+    auto tmp=std::make_shared<XParam>(param_name,std::nullopt,improved_string,description,requires_reboot,false);
+    list.push_back(tmp);
 }
-static void append_only_documented(std::vector<XParam>& list,std::string param_name,std::string description,bool requires_reboot=false){
-    list.push_back(XParam{param_name,std::nullopt,std::nullopt,description,requires_reboot});
+static void append_only_documented(std::vector<std::shared_ptr<XParam>>& list,std::string param_name,std::string description,bool requires_reboot=false){
+    auto tmp=std::make_shared<XParam>(param_name,std::nullopt,std::nullopt,description,requires_reboot,false);
+    list.push_back(tmp);
 }
-static void append_documented_read_only(std::vector<XParam>& list,std::string param_name,std::string description){
-    list.push_back(XParam{param_name,std::nullopt,std::nullopt,description,false,true});
+static void append_documented_read_only(std::vector<std::shared_ptr<XParam>>& list,std::string param_name,std::string description){
+    auto tmp=std::make_shared<XParam>(param_name,std::nullopt,std::nullopt,description,false,true);
+    list.push_back(tmp);
 }
 
-
-static std::vector<XParam> get_parameters_list(){
-    std::vector<XParam> ret;
+static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
+    std::vector<std::shared_ptr<XParam>> ret;
     // These params do not exist, they are only for testing
     append_int(ret,"TEST_INT_0",
                ImprovedIntSetting::createEnumEnableDisable(),
@@ -605,17 +612,16 @@ static std::vector<XParam> get_parameters_list(){
 
 static std::map<std::string,std::shared_ptr<XParam>> create_param_map(){
    //qWarning("Create param map");
-   auto tmp=get_parameters_list();
+   auto param_list=get_parameters_list();
    //qWarning("X");
    std::map<std::string,std::shared_ptr<XParam>> ret;
-   for(const auto& param:tmp){
+   for(auto param:param_list){
         //qWarning("Y %s",param.param_name.c_str());
-        if(ret.find(param.param_name)!=ret.end()){
+        if(ret.find(param->param_name)!=ret.end()){
             //qWarning("Param %s already exists !",param.param_name.c_str());
             assert(false);
         }
-        auto shared=std::make_shared<XParam>(param);
-        ret[param.param_name]=shared;
+        ret[param->param_name]=param;
         //qDebug()<<"YY"<<param.param_name.c_str();
         //qWarning("Z");
    }
