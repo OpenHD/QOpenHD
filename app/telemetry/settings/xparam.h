@@ -20,15 +20,19 @@ public:
      */
     bool process_message(const mavlink_message_t& msg);
 public:
-    // Not easy to use API, but exposes pretty much all info one could get
+    // Not easy to use API, but exposes pretty much all info one could need
     struct SetParamResult{
         // Response from the recipient, if there is any (otherwise, the message got lost on each re-transmit)
         std::optional<mavlink_param_ext_ack_t> response;
         // How often this command was transmitted until success / failure
         int n_transmissions=-1;
+        bool is_accepted(){
+            return response.has_value() && response.value().param_result==MAV_RESULT_ACCEPTED;
+        }
     };
     typedef std::function<void(SetParamResult result)> SET_PARAM_RESULT_CB;
     bool try_set_param_async(const mavlink_param_ext_set_t cmd,SET_PARAM_RESULT_CB result,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
+    bool try_set_param_blocking(const mavlink_param_ext_set_t cmd);
 
     struct GetAllParamResult{
         bool success;
@@ -37,6 +41,18 @@ public:
     };
     typedef std::function<void(GetAllParamResult result)> GET_ALL_PARAM_RESULT_CB;
     bool try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,GET_ALL_PARAM_RESULT_CB result_cb);
+    std::optional<std::vector<mavlink_param_ext_value_t>> try_get_param_all_blocking(const int target_sysid,const int target_compid);
+public:
+    static mavlink_param_ext_set_t create_cmd_set_int(int target_sysid,int target_compid,std::string param_name,int value);
+    static mavlink_param_ext_set_t create_cmd_set_string(int target_sysid,int target_compid,std::string param_id,std::string value);
+    static mavlink_param_ext_request_list_t create_cmd_get_all(int target_sysid,int target_compid);
+
+    struct ParamVariant{
+        std::string param_id;
+        std::optional<std::string> string_param;
+        std::optional<int> int_param;
+    };
+    static std::vector<ParamVariant> parse_server_param_set(const std::vector<mavlink_param_ext_value_t>& param_set);
 public:
     // easy to use API
     enum EasySetParamResult{
@@ -75,14 +91,18 @@ private:
         int n_wanted_retransmissions;
         int n_transmissions=0;
     };
-
-    bool handle_param_set_ack(const mavlink_param_ext_ack_t& ack,int sender_sysid,int sender_compid);
+    
+    bool handle_param_ext_ack(const mavlink_param_ext_ack_t& ack,int sender_sysid,int sender_compid);
     bool handle_param_ext_value(const mavlink_param_ext_value_t& response,int sender_sysid,int sender_compid);
 
     // searches for a Running param set command that matches the given param ack
     // if found, remove the command and return it.
     // ootherwise, return nullopt
     std::optional<RunningParamCmdSet> find_remove_running_command_threadsafe(const mavlink_param_ext_ack_t& ack,int sender_sysid,int sender_compid);
+    // Searches for a running get all command
+    // if found, checks if the param set is completely full - in this case, return the param set
+    // otherwise, leave the command on the queue (timeout will remvove it in case it finally times out)
+    std::optional<RunningParamCmdGetAll> find_remove_running_command_get_all_threadsafe(const mavlink_param_ext_value_t &response, int sender_sysid, int sender_compid);
     //
     //
     mavlink_message_t pack_command_msg(const mavlink_param_ext_set_t& cmd);

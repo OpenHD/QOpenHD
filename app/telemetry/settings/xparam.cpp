@@ -1,6 +1,7 @@
 #include "xparam.h"
 #include "util/qopenhdmavlinkhelper.hpp"
 
+#include <cstring>
 #include <sstream>
 
 #include <qdebug.h>
@@ -31,7 +32,7 @@ bool XParam::process_message(const mavlink_message_t &msg)
     if(msg.msgid==MAVLINK_MSG_ID_PARAM_EXT_ACK){
         mavlink_param_ext_ack_t ack;
         mavlink_msg_param_ext_ack_decode(&msg,&ack);
-        return handle_param_set_ack(ack,msg.sysid,msg.compid);
+        return handle_param_ext_ack(ack,msg.sysid,msg.compid);
     }else if(msg.msgid==MAVLINK_MSG_ID_PARAM_EXT_VALUE){
         mavlink_param_ext_value_t response;
         mavlink_msg_param_ext_value_decode(&msg,&response);
@@ -65,6 +66,17 @@ bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RE
     return true;
 }
 
+bool XParam::try_set_param_blocking(const mavlink_param_ext_set_t cmd)
+{
+    std::promise<bool> prom;
+    auto fut = prom.get_future();
+    auto cb=[&prom](SetParamResult result){
+        prom.set_value(result.is_accepted());
+    };
+    try_set_param_async(cmd,cb);
+    return fut.get();
+}
+
 bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd, GET_ALL_PARAM_RESULT_CB result_cb)
 {
     if(!result_cb){
@@ -81,62 +93,138 @@ bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,
     send_get_all(m_running_get_all.back());
 }
 
+std::optional<std::vector<mavlink_param_ext_value_t>> XParam::try_get_param_all_blocking(const int target_sysid, const int target_compid)
+{
+    std::promise<std::optional<std::vector<mavlink_param_ext_value_t>>> prom;
+    auto fut = prom.get_future();
+    auto cb=[&prom](GetAllParamResult result){
+        if(result.success){
+            prom.set_value(result.param_set);
+        }else{
+            prom.set_value(std::nullopt);
+        }
+    };
+    const auto command=create_cmd_get_all(target_sysid,target_compid);
+    try_get_param_all_async(command,cb);
+    return fut.get();
+}
 
-bool XParam::handle_param_set_ack(const mavlink_param_ext_ack_t &ack,int sender_sysid,int sender_compid)
+// allowed: up to 16 bytes, either including or excluding the 0-terminator
+static void set_param_id(char* dest,const std::string& source){
+    if(source.length()>16){
+        qWarning("Invalid param name %s",source.c_str());
+    }
+    const int len =  source.length()>=16 ? 16 :  source.length()+1;
+    std::memcpy(dest, source.c_str(),len);
+}
+static std::string get_param_id(const char* param_id){
+    // The param_id field of the MAVLink struct has length 16 and can not be null terminated.
+    // Therefore, we make a 0 terminated copy first.
+    char param_id_long_enough[16 + 1] = {};
+    std::memcpy(param_id_long_enough, param_id, 16);
+    return {param_id_long_enough};
+}
+static void set_param_value_int(char* param_value,int value){
+    std::memset(param_value,0,128);
+    int32_t tmp=value;
+    std::memcpy(param_value, &tmp, sizeof(tmp));
+}
+static void set_param_value_string(char* param_value,const std::string& value){
+    std::memset(param_value,0,128);
+    const int len =  value.length()>=128 ? 128 :  value.length()+1;
+    std::memcpy(param_value,value.c_str(),len);
+}
+static int get_param_value_int(const char* param_value){
+    int32_t ret;
+    std::memcpy(&ret,param_value,sizeof(ret));
+    return ret;
+}
+static std::string get_param_value_string(const char* param_value){
+    char param_value_long_enough[128 + 1] = {};
+    std::memcpy(param_value_long_enough, param_value,128);
+    return {param_value_long_enough};
+}
+
+
+mavlink_param_ext_set_t XParam::create_cmd_set_int(int target_sysid, int target_compid, std::string param_name, int value)
+{
+    mavlink_param_ext_set_t cmd{};
+    cmd.target_system=target_sysid;
+    cmd.target_component=target_compid;
+    set_param_id(cmd.param_id,param_name);
+    cmd.param_type=MAV_PARAM_EXT_TYPE_INT32;
+    set_param_value_int(cmd.param_value,value);
+    return cmd;
+}
+
+mavlink_param_ext_set_t XParam::create_cmd_set_string(int target_sysid, int target_compid, std::string param_id, std::string value)
+{
+    mavlink_param_ext_set_t cmd{};
+    cmd.target_system=target_sysid;
+    cmd.target_component=target_compid;
+    set_param_id(cmd.param_id,param_id);
+    cmd.param_type=MAV_PARAM_EXT_TYPE_CUSTOM;
+    set_param_value_string(cmd.param_value,value);
+    return cmd;
+}
+
+mavlink_param_ext_request_list_t XParam::create_cmd_get_all(int target_sysid, int target_compid)
+{
+    mavlink_param_ext_request_list_t cmd{};
+    cmd.target_system=target_sysid;
+    cmd.target_component=target_compid;
+    return cmd;
+}
+
+std::vector<XParam::ParamVariant> XParam::parse_server_param_set(const std::vector<mavlink_param_ext_value_t> &param_set)
+{
+    std::vector<ParamVariant> ret;
+    ret.reserve(param_set.size());
+    for(int i=0;i<param_set.size();i++){
+        const auto& param_ext_value=param_set[i];
+        ParamVariant param_variant{get_param_id(param_ext_value.param_id),std::nullopt,std::nullopt};
+        if(param_ext_value.param_type==MAV_PARAM_EXT_TYPE_INT32){
+            param_variant.int_param=get_param_value_int(param_ext_value.param_value);
+        }else if(param_ext_value.param_type==MAV_PARAM_EXT_TYPE_CUSTOM){
+            param_variant.string_param=get_param_value_string(param_ext_value.param_value);
+        }else{
+            qDebug()<<"Unsupported param type:"<<(int)param_ext_value.param_type;
+        }
+        ret.push_back(param_variant);
+    }
+    return ret;
+}
+
+
+bool XParam::handle_param_ext_ack(const mavlink_param_ext_ack_t &ack,int sender_sysid,int sender_compid)
 {
     auto opt_running_cmd_set=find_remove_running_command_threadsafe(ack,sender_sysid,sender_compid);
     if(opt_running_cmd_set.has_value()){
+        //qDebug()<<"Got consumer for mavlink_param_ext_ack_t";
         auto running_cmd_set=opt_running_cmd_set.value();
         SetParamResult result{ack,running_cmd_set.n_transmissions};
         running_cmd_set.cb(result);
         return true;
     }
+    //qDebug()<<"Got no consumer for mavlink_param_ext_ack_t";
     return false;
 }
 
 bool XParam::handle_param_ext_value(const mavlink_param_ext_value_t &response, int sender_sysid, int sender_compid)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    for (auto it=m_running_get_all.begin(); it!=m_running_get_all.end(); ++it){
-        RunningParamCmdGetAll& running=*it;
-        if(running.base_cmd.target_system==sender_sysid && running.base_cmd.target_component==sender_compid){
-            // The response fromt the server can be cosumed by a running "Get all params" action
-            if(response.param_count<=0){
-                qWarning()<<"Invalid param count";
-                return false;
-            }
-            if(response.param_index>=response.param_count){
-                qWarning()<<"Invalid param index";
-                return false;
-            }
-            if(running.server_param_set.empty()){
-                // Size is not yet known
-                running.server_param_set.resize(response.param_count);
-                running.server_param_set[response.param_index]=response;
-            }else{
-                // Size is known, check if we already have this param
-                if(running.server_param_set[response.param_index]!=std::nullopt){
-                    // we already have this param - nothing to do, we could validate it though
-                    return true;
-                }else{
-                    running.server_param_set[response.param_index]=response;
-                    const int missing=get_missing_count(running.server_param_set);
-                    if(missing==0){
-                        // We have all the params from this server
-                        std::vector<mavlink_param_ext_value_t> valid_param_set;
-                        for(auto& param:running.server_param_set){
-                            assert(param.has_value());
-                            valid_param_set.push_back(param.value());
-                        }
-                        GetAllParamResult result{true,valid_param_set};
-                        RunningParamCmdGetAll tmp_copy=running;
-                        m_running_get_all.erase(it);
-                        tmp_copy.cb(result);
-                    }
-                }
-            }
+    auto opt_finished=find_remove_running_command_get_all_threadsafe(response,sender_sysid,sender_compid);
+    if(opt_finished.has_value()){
+        auto finished=opt_finished.value();
+        std::vector<mavlink_param_ext_value_t> valid_param_set;
+        for(auto& param:finished.server_param_set){
+            assert(param.has_value());
+            valid_param_set.push_back(param.value());
         }
+        GetAllParamResult result{true,valid_param_set};
+        finished.cb(result);
+        return true;
     }
+    return true;
 }
 
 
@@ -146,13 +234,56 @@ std::optional<XParam::RunningParamCmdSet> XParam::find_remove_running_command_th
     for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
         const auto& running=*it;
         const auto& cmd=running.cmd;
-        if(cmd.param_id==ack.param_id && cmd.param_type==ack.param_type && cmd.target_system==sender_sysid && cmd.target_component==sender_compid){
+        const auto safe_cmd_param_id=get_param_id(cmd.param_id);
+        const auto safe_ack_param_id=get_param_id(ack.param_id);
+        if(safe_cmd_param_id==safe_ack_param_id && cmd.param_type==ack.param_type && cmd.target_system==sender_sysid && cmd.target_component==sender_compid){
             RunningParamCmdSet tmp=*it;
             m_running_commands.erase(it);
             return tmp;
+        }else{
+            //qDebug()<<"Self:"<<safe_cmd_param_id.c_str()<<" other:"<<safe_ack_param_id.c_str();
         }
     }
     return std::nullopt;
+}
+
+std::optional<XParam::RunningParamCmdGetAll> XParam::find_remove_running_command_get_all_threadsafe(const mavlink_param_ext_value_t &response, int sender_sysid, int sender_compid)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    for (auto it=m_running_get_all.begin(); it!=m_running_get_all.end(); ++it){
+        RunningParamCmdGetAll& running=*it;
+        if(running.base_cmd.target_system==sender_sysid && running.base_cmd.target_component==sender_compid){
+            // The response fromt the server can be cosumed by a running "Get all params" action
+            if(response.param_count<=0){
+                qWarning()<<"Invalid param count";
+                return std::nullopt;
+            }
+            if(response.param_index>=response.param_count){
+                qWarning()<<"Invalid param index";
+                return std::nullopt;
+            }
+            if(running.server_param_set.empty()){
+                // Size is not yet known
+                running.server_param_set.resize(response.param_count);
+                running.server_param_set[response.param_index]=response;
+            }else{
+                // Size is known, check if we already have this param
+                if(running.server_param_set[response.param_index]!=std::nullopt){
+                    // we already have this param - nothing to do, we could validate it though
+                    return std::nullopt;
+                }else{
+                    running.server_param_set[response.param_index]=response;
+                    const int missing=get_missing_count(running.server_param_set);
+                    if(missing==0){
+                        // We have all the params from this server
+                        RunningParamCmdGetAll tmp_copy=running;
+                        it=m_running_get_all.erase(it);
+                        return tmp_copy;
+                    }
+                }
+            }
+        }
+    }
 }
 
 mavlink_message_t XParam::pack_command_msg(const mavlink_param_ext_set_t &cmd)
@@ -196,6 +327,7 @@ void XParam::send_get_all(RunningParamCmdGetAll& running_cmd)
         }
     }
     running_cmd.last_transmission=std::chrono::steady_clock::now();
+    running_cmd.n_transmissions++;
 }
 
 void XParam::send_param_ext_request_list(const mavlink_param_ext_request_list_t& cmd)
