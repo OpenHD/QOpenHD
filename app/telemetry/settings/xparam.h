@@ -28,6 +28,7 @@ public:
     bool try_set_param_async(const mavlink_param_ext_set_t cmd,RESULT_CB result,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
 
     struct GetAllParamResult{
+        bool success;
         // Full server param set on success, empty param set otherwise
         std::vector<mavlink_param_ext_value_t> param_set;
     };
@@ -56,6 +57,9 @@ private:
         std::chrono::milliseconds retransmit_delay;
         std::chrono::steady_clock::time_point last_transmission=std::chrono::steady_clock::now();
         std::vector<std::optional<mavlink_param_ext_value_t>> server_param_set;
+        //
+        int n_wanted_retransmissions;
+        int n_transmissions=0;
     };
 
     bool handle_param_set_ack(const mavlink_param_ext_ack_t& ack,int sender_sysid,int sender_compid);

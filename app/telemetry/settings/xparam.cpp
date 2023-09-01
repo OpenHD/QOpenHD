@@ -113,7 +113,7 @@ bool XParam::handle_param_ext_value(const mavlink_param_ext_value_t &response, i
                             assert(param.has_value());
                             valid_param_set.push_back(param.value());
                         }
-                        GetAllParamResult result{valid_param_set};
+                        GetAllParamResult result{true,valid_param_set};
                         RunningParamCmdGetAll tmp_copy=running;
                         m_running_get_all.erase(it);
                         tmp_copy.cb(result);
@@ -180,6 +180,7 @@ void XParam::send_get_all(RunningParamCmdGetAll& running_cmd)
             }
         }
     }
+    running_cmd.last_transmission=std::chrono::steady_clock::now();
 }
 
 void XParam::send_param_ext_request_list(const mavlink_param_ext_request_list_t& cmd)
@@ -220,26 +221,54 @@ void XParam::loop_timeout()
 
 void XParam::check_timeout_param_set()
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
-        RunningParamCmdSet& running_cmd=*it;
-        const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
-        if(elapsed>running_cmd.retransmit_delay){
-            qDebug()<<"Param cmd set timeout";
-            if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
-                qDebug()<<"Param cmd retransmit "<<running_cmd.n_transmissions;
-                send_set_param(running_cmd);
-            }else{
-                qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
-                SetParamResult result{std::nullopt,running_cmd.n_transmissions};
-                running_cmd.cb(result);
-                it=m_running_commands.erase(it);
+    // Optimization: Call cb without lock being hold
+    std::vector<std::pair<RunningParamCmdSet,SetParamResult>> timed_out_commands{};
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
+            RunningParamCmdSet& running_cmd=*it;
+            const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
+            if(elapsed>running_cmd.retransmit_delay){
+                qDebug()<<"Param cmd set timeout";
+                if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
+                    qDebug()<<"Param cmd retransmit "<<running_cmd.n_transmissions;
+                    send_set_param(running_cmd);
+                }else{
+                    qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
+                    SetParamResult result{std::nullopt,running_cmd.n_transmissions};
+                    timed_out_commands.push_back(std::make_pair(running_cmd,result));
+                    it=m_running_commands.erase(it);
+                }
             }
         }
+    }
+    for(auto& timed_out:timed_out_commands){
+        timed_out.first.cb(timed_out.second);
     }
 }
 
 void XParam::check_timeout_param_get_all()
 {
-
+    std::vector<std::pair<RunningParamCmdGetAll,GetAllParamResult>> timed_out_commands{};
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        for (auto it=m_running_get_all.begin(); it!=m_running_get_all.end(); ++it){
+            RunningParamCmdGetAll& running_cmd=*it;
+            const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
+            if(elapsed>running_cmd.retransmit_delay){
+                qDebug()<<"Param get all timeout";
+                if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
+                    send_get_all(running_cmd);
+                }else{
+                    qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
+                    GetAllParamResult result{false,{}};
+                    timed_out_commands.push_back(std::make_pair(running_cmd,result));
+                    it=m_running_get_all.erase(it);
+                }
+            }
+        }
+    }
+    for(auto& timed_out:timed_out_commands){
+        timed_out.first.cb(timed_out.second);
+    }
 }
