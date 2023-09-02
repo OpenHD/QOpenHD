@@ -46,6 +46,10 @@ bool read_only(const std::string& param_name);
 // By default, a param doesn't require reboot
 bool requires_reboot(const std::string& param_name);
 
+// Returns the param deocumentation if it exists,
+// 'TODO' otherwise
+std::string get_short_description(const std::string& param_name);
+
 }
 
 

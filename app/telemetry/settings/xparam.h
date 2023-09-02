@@ -104,10 +104,9 @@ private:
     // otherwise, leave the command on the queue (timeout will remvove it in case it finally times out)
     std::optional<RunningParamCmdGetAll> find_remove_running_command_get_all_threadsafe(const mavlink_param_ext_value_t &response, int sender_sysid, int sender_compid);
     //
-    //
-    mavlink_message_t pack_command_msg(const mavlink_param_ext_set_t& cmd);
-    void send_set_param(RunningParamCmdSet& cmd);
-    void send_get_all(RunningParamCmdGetAll& cmd);
+    void send_next_message_running_set(RunningParamCmdSet& cmd);
+    void send_next_message_running_get_all(RunningParamCmdGetAll& cmd);
+    void send_param_ext_set(const mavlink_param_ext_set_t &cmd);
     void send_param_ext_request_list(const mavlink_param_ext_request_list_t& cmd);
     void send_param_ext_request_read(const mavlink_param_ext_request_read_t& cmd);
     static int get_missing_count(const std::vector<std::optional<mavlink_param_ext_value_t>>& server_param_set);

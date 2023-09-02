@@ -73,11 +73,6 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
     return false;
 }
 
-bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
-{
-    return DocumentedParam::read_only(param_id);
-}
-
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
     : QAbstractListModel(parent),m_sys_id(sys_id),m_comp_id(comp_id)
 {
@@ -86,7 +81,7 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     //m_data.push_back({"VIDEO_FPS",1});
 }
 
-void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params)
+void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     // DO NOT REMOVE THIS NECCESSARY CHECK - this class is written under the assumption that the "param_client" pointer becomes valid
@@ -94,9 +89,6 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> syst
     assert(this->m_param_client==nullptr);
     assert(system->get_system_id()==m_sys_id);
     m_param_client=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
-    if(autoload_all_params){
-        try_fetch_all_parameters();
-    }
 }
 
 bool MavlinkSettingsModel::try_fetch_all_parameters()
@@ -141,6 +133,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
                     addData(data);
                 }
             }
+            return true;
         }
     }else{
         // not dscovered yet
@@ -151,21 +144,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
 
 bool MavlinkSettingsModel::try_fetch_all_parameters_long_running()
 {
-    if(m_param_client==nullptr){
-        // not discovered yet
-        WorkaroundMessageBox::makePopupMessage("OHD System not found");
-        return false;
-    }
-    const auto begin=std::chrono::steady_clock::now();
-    while(std::chrono::steady_clock::now()-begin < std::chrono::seconds(8)){
-        const auto success=try_fetch_all_parameters();
-        if(success){
-            return true;
-        }else{
-            WorkaroundMessageBox::instance().set_text_and_show("Fetching parameters...",1);
-        }
-    }
-    return false;
+    return try_fetch_all_parameters();
 }
 
 std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResult &res)
@@ -309,10 +288,10 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         }
         return 1;
     } else if(role == ShortDescriptionRole){
-        QString ret=get_short_description(data.unique_id);
+        QString ret=DocumentedParam::get_short_description(data.unique_id.toStdString()).c_str();
         return ret;
     } else if(role ==ReadOnlyRole){
-        return is_param_read_only({data.unique_id.toStdString()});
+        return DocumentedParam::read_only(data.unique_id.toStdString());
     }
     else
         return QVariant();
@@ -544,15 +523,6 @@ bool MavlinkSettingsModel::set_param_video_resolution_framerate(QString res_str)
 
 bool MavlinkSettingsModel::set_param_air_only_mcs(int value)
 {
-    /*{
-        const auto var_bitrate_enabled=MavlinkSettingsModel::instanceAir().try_get_param_int_impl("VARIABLE_BITRATE");
-        if(var_bitrate_enabled.has_value() && var_bitrate_enabled!=((int)true)){
-            const auto message="Variable bitrate is OFF !";
-            HUDLogMessagesModel::instance().add_message_warning(message);
-            LogMessagesModel::instanceOHD().add_message_warn("MCS",message);
-            return false;
-        }
-    }*/
     const auto ret=try_update_parameter_int(openhd::WB_MCS_INDEX,value);
     if(ret=="")return true;
     return false;
@@ -578,13 +548,4 @@ bool MavlinkSettingsModel::set_param_tx_power(bool is_tx_power_index, bool is_fo
     const auto ret=try_update_parameter_int(param_id.c_str(),value);
     if(ret=="")return true;
     return false;
-}
-
-QString MavlinkSettingsModel::get_short_description(const QString param_id)const
-{
-   const auto tmp=DocumentedParam::find_param(param_id.toStdString());
-    if(tmp.has_value()){
-        return tmp.value().description.c_str();
-    }
-    return "TODO";
 }

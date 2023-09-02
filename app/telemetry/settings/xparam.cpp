@@ -62,7 +62,7 @@ bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RE
     }
     RunningParamCmdSet running_cmd{cmd,result_cb,n_wanted_retransmissions,retransmit_delay};
     m_running_commands.push_back(running_cmd);
-    send_set_param(m_running_commands.back());
+    send_next_message_running_set(m_running_commands.back());
     return true;
 }
 
@@ -88,9 +88,9 @@ bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,
         result_cb=dummy_cb;
     }
     std::lock_guard<std::mutex> lock(m_mutex);
-    RunningParamCmdGetAll running{cmd,result_cb,std::chrono::milliseconds(3000),std::chrono::milliseconds(100),std::chrono::steady_clock::now(),{},10,0};
+    RunningParamCmdGetAll running{cmd,result_cb,std::chrono::milliseconds(3000),std::chrono::milliseconds(500),std::chrono::steady_clock::now(),{},10,0};
     m_running_get_all.push_back(running);
-    send_get_all(m_running_get_all.back());
+    send_next_message_running_get_all(m_running_get_all.back());
 }
 
 std::optional<std::vector<mavlink_param_ext_value_t>> XParam::try_get_param_all_blocking(const int target_sysid, const int target_compid)
@@ -212,9 +212,12 @@ bool XParam::handle_param_ext_ack(const mavlink_param_ext_ack_t &ack,int sender_
 
 bool XParam::handle_param_ext_value(const mavlink_param_ext_value_t &response, int sender_sysid, int sender_compid)
 {
+    qDebug()<<"Got mavlink_param_ext_value_t";
     auto opt_finished=find_remove_running_command_get_all_threadsafe(response,sender_sysid,sender_compid);
     if(opt_finished.has_value()){
+        qDebug()<<"Finished get_all command";
         auto finished=opt_finished.value();
+        qDebug()<<"Got "<<finished.server_param_set.size()<<" params";
         std::vector<mavlink_param_ext_value_t> valid_param_set;
         for(auto& param:finished.server_param_set){
             assert(param.has_value());
@@ -275,6 +278,7 @@ std::optional<XParam::RunningParamCmdGetAll> XParam::find_remove_running_command
                     running.server_param_set[response.param_index]=response;
                     const int missing=get_missing_count(running.server_param_set);
                     if(missing==0){
+                        qDebug()<<"No params missing, total:"<<running.server_param_set.size();
                         // We have all the params from this server
                         RunningParamCmdGetAll tmp_copy=running;
                         it=m_running_get_all.erase(it);
@@ -284,34 +288,27 @@ std::optional<XParam::RunningParamCmdGetAll> XParam::find_remove_running_command
             }
         }
     }
+    return std::nullopt;
 }
 
-mavlink_message_t XParam::pack_command_msg(const mavlink_param_ext_set_t &cmd)
+void XParam::send_next_message_running_set(RunningParamCmdSet &cmd)
 {
-    const auto self_sysid=QOpenHDMavlinkHelper::get_own_sys_id();
-    const auto self_compid=QOpenHDMavlinkHelper::get_own_comp_id();
-    mavlink_message_t msg{};
-    mavlink_msg_param_ext_set_encode(self_sysid,self_compid,&msg,&cmd);
-    return msg;
-}
-
-void XParam::send_set_param(RunningParamCmdSet &cmd)
-{
-    auto msg=pack_command_msg(cmd.cmd);
-    MavlinkTelemetry::instance().sendMessage(msg);
+    send_param_ext_set(cmd.cmd);
     cmd.last_transmission=std::chrono::steady_clock::now();
     cmd.n_transmissions++;
 }
 
-void XParam::send_get_all(RunningParamCmdGetAll& running_cmd)
+void XParam::send_next_message_running_get_all(RunningParamCmdGetAll& running_cmd)
 {
     if(running_cmd.server_param_set.size()==0){
+        qDebug()<<"Size not yet known";
         // No message ever received yet, size not yet known
         send_param_ext_request_list(running_cmd.base_cmd);
     }else{
         // We know how many params the server provides, request until we have all of them
         assert(running_cmd.server_param_set.size()>0);
         const int n_missing=get_missing_count(running_cmd.server_param_set);
+        qDebug()<<"Still missing:"<<n_missing<<" total:"<<running_cmd.server_param_set.size();
         if(n_missing >= running_cmd.server_param_set.size()/2){
             // A lot are stil missing, request them all again
             send_param_ext_request_list(running_cmd.base_cmd);
@@ -328,6 +325,15 @@ void XParam::send_get_all(RunningParamCmdGetAll& running_cmd)
     }
     running_cmd.last_transmission=std::chrono::steady_clock::now();
     running_cmd.n_transmissions++;
+}
+
+void XParam::send_param_ext_set(const mavlink_param_ext_set_t &cmd)
+{
+    const auto self_sysid=QOpenHDMavlinkHelper::get_own_sys_id();
+    const auto self_compid=QOpenHDMavlinkHelper::get_own_comp_id();
+    mavlink_message_t msg{};
+    mavlink_msg_param_ext_set_encode(self_sysid,self_compid,&msg,&cmd);
+    MavlinkTelemetry::instance().sendMessage(msg);
 }
 
 void XParam::send_param_ext_request_list(const mavlink_param_ext_request_list_t& cmd)
@@ -379,7 +385,7 @@ void XParam::check_timeout_param_set()
                 qDebug()<<"Param cmd set timeout";
                 if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
                     qDebug()<<"Param cmd retransmit "<<running_cmd.n_transmissions;
-                    send_set_param(running_cmd);
+                    send_next_message_running_set(running_cmd);
                 }else{
                     qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
                     SetParamResult result{std::nullopt,running_cmd.n_transmissions};
@@ -405,7 +411,7 @@ void XParam::check_timeout_param_get_all()
             if(elapsed>running_cmd.retransmit_delay){
                 qDebug()<<"Param get all timeout";
                 if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
-                    send_get_all(running_cmd);
+                    send_next_message_running_get_all(running_cmd);
                 }else{
                     qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
                     GetAllParamResult result{false,{}};

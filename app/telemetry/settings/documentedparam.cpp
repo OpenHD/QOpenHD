@@ -684,3 +684,12 @@ bool DocumentedParam::requires_reboot(const std::string &param_name)
     }
     return false;
 }
+
+std::string DocumentedParam::get_short_description(const std::string &param_name)
+{
+    const auto tmp=DocumentedParam::find_param(param_name);
+    if(tmp.has_value()){
+        return tmp.value().description.c_str();
+    }
+    return "TODO";
+}

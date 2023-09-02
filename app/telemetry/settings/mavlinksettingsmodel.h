@@ -44,7 +44,7 @@ public:
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 public:
     // any instance of this class is only usable as soon as its corresponding system is set
-    void set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params=true);
+    void set_param_client(std::shared_ptr<mavsdk::System> system);
 private:
     std::shared_ptr<mavsdk::Param> m_param_client=nullptr;
 public:
@@ -158,7 +158,6 @@ public:
     //
     Q_INVOKABLE bool set_param_tx_power(bool is_tx_power_index,bool is_for_armed_state,int value);
 private:
-    QString get_short_description(QString param_id)const;
     std::mutex m_update_all_async_mutex;
     std::unique_ptr<std::thread> m_update_all_async_thread=nullptr;
 
