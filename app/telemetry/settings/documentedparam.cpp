@@ -693,3 +693,25 @@ std::string DocumentedParam::get_short_description(const std::string &param_name
     }
     return "TODO";
 }
+
+// ----------
+static std::map<std::string, void *> get_whitelisted_params()
+{
+    std::map<std::string,void*> ret{};
+    ret[openhd::WB_FREQUENCY]=nullptr;
+    ret[openhd::WB_CHANNEL_WIDTH]=nullptr;
+    ret[openhd::WB_MCS_INDEX]=nullptr;
+    ret["CONFIG_BOOT_AIR"]=nullptr;
+    ret[openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM]=nullptr;
+    //ret[""]=nullptr;
+    return ret;
+}
+
+bool DocumentedParam::is_param_whitelisted(const std::string &param_id)
+{
+    const auto tmp=get_whitelisted_params();
+    if(tmp.find(param_id)!=tmp.end()){
+        return true;
+    }
+    return false;
+}

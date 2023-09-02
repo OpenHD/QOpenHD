@@ -35,12 +35,7 @@ public:
     // (aka what for example mission planner would show)
     //static MavlinkSettingsModel& instanceFC();
 
-    // parameters that need to be synchronized are white-listed
-    static std::map<std::string,void*> get_whitelisted_params();
     bool is_param_whitelisted(const std::string param_id)const;
-    // workaround read only
-    bool is_param_read_only(const std::string param_id)const;
-
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 public:
     // any instance of this class is only usable as soon as its corresponding system is set

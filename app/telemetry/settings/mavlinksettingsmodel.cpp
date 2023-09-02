@@ -42,35 +42,18 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
     return *instanceFc;
 }*/
 
-std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
+bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
 {
-    std::map<std::string,void*> ret{};
-    //dev_show_whitelisted_params
     QSettings settings;
     const auto dev_show_whitelisted_params =settings.value("dev_show_whitelisted_params", false).toBool();
     if(dev_show_whitelisted_params){
         // no param whitelisted
-        return ret;
+        return false;
     }
-    ret[openhd::WB_FREQUENCY]=nullptr;
-    ret[openhd::WB_CHANNEL_WIDTH]=nullptr;
-    ret[openhd::WB_MCS_INDEX]=nullptr;
-    ret["CONFIG_BOOT_AIR"]=nullptr;
-    ret[openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM]=nullptr;
-    //ret[""]=nullptr;
-    return ret;
-}
-
-bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
-{
     if(param_id.empty()){
         return false;
     }
-    const auto tmp=get_whitelisted_params();
-    if(tmp.find(param_id)!=tmp.end()){
-        return true;
-    }
-    return false;
+    return DocumentedParam::is_param_whitelisted(param_id);
 }
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
@@ -99,44 +82,26 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         WorkaroundMessageBox::makePopupMessage("OHD System not found");
         return false;
     }
-    if(m_param_client){
-        // first, remove anything the QT model has cached
-        while(rowCount()>0){
-            removeData(rowCount()-1);
-        }
-        qDebug()<<"Done removing old params";
-        // now fetch all params using mavsdk (this talks to the OHD system(s).
-        //param_client->set_timeout(10);
-        /*const auto params=m_param_client->get_all_params(true);
-        // The order in which params show up is r.n controlled by how they are added here -
-        // TODO could be improved. For some reason, string params are generally the most important ones r.n, though
-        for(const auto& string_param:params.custom_params){
-            MavlinkSettingsModel::SettingData data{QString(string_param.name.c_str()),string_param.value};
-            addData(data);
-        }
-        for(const auto& int_param:params.int_params){
-            MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
-            addData(data);
-        }
-        if(!params.int_params.empty()){
-            return true;
-        }*/
-        auto param_set=XParam::instance().try_get_param_all_blocking(m_sys_id,m_comp_id);
-        if(param_set.has_value()){
-            const auto parsed_param_set=XParam::parse_server_param_set(param_set.value());
-            for(const auto& param:parsed_param_set){
-                if(param.int_param.has_value()){
-                    MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),(int32_t)param.int_param.value()};
-                    addData(data);
-                }else if(param.string_param.has_value()){
-                    MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),param.string_param.value()};
-                    addData(data);
-                }
+    // first, remove anything the QT model has cached
+    while(rowCount()>0){
+        removeData(rowCount()-1);
+    }
+    qDebug()<<"Done removing old params";
+    // now fetch the full param set from the server (defined by sys / comp id)
+    // TODO: make async
+    auto param_set=XParam::instance().try_get_param_all_blocking(m_sys_id,m_comp_id);
+    if(param_set.has_value()){
+        const auto parsed_param_set=XParam::parse_server_param_set(param_set.value());
+        for(const auto& param:parsed_param_set){
+            if(param.int_param.has_value()){
+                MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),(int32_t)param.int_param.value()};
+                addData(data);
+            }else if(param.string_param.has_value()){
+                MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),param.string_param.value()};
+                addData(data);
             }
-            return true;
         }
-    }else{
-        // not dscovered yet
+        return true;
     }
     return false;
 }

@@ -50,6 +50,10 @@ bool requires_reboot(const std::string& param_name);
 // 'TODO' otherwise
 std::string get_short_description(const std::string& param_name);
 
+// extra, we whitelist some params, aka they should not be exposed in the param list to the user
+// (since they are changed in a different part in the UI)
+bool is_param_whitelisted(const std::string& param_id);
+
 }
 
 
