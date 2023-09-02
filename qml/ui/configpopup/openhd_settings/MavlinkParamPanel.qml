@@ -41,12 +41,13 @@ Rectangle {
         onClicked: {
             parameterEditor.visible=false
             //var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
-            var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters_long_running()
+            /*var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters_long_running()
             if(!result){
                 _messageBoxInstance.set_text_and_show("Fetch all failed, please try again",5)
             }else{
                  _messageBoxInstance.set_text_and_show("SUCCESS",1)
-            }
+            }*/
+            m_instanceMavlinkSettingsModel.try_refetch_all_parameters()
         }
     }
     Button {
@@ -208,5 +209,13 @@ Rectangle {
         total_width: paramEditorWidth
         instanceMavlinkSettingsModel: m_instanceMavlinkSettingsModel
     }
+
+    /*BusyIndicator{
+        width: 48
+        height: 48
+        anchors.centerIn: parent
+        running: _xParamUI.is_busy
+        //visible: _xParamUI.is_busy
+    }*/
 
 }

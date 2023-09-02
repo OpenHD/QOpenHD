@@ -11,6 +11,8 @@
 #include "../../lib/lqtutils_master/lqtutils_prop.h"
 #include "../common/TimeHelper.hpp"
 
+#include "connection/udp_connection.h"
+
 /**
  * Changed: Used to have custom UDP and TCP stuff, but now just uses MAVSDK - MAVSDK already has both TCP and UDP support.
  *
@@ -51,21 +53,14 @@ private:
     //std::string dev_tcp_server_ip="0.0.0.0";
     // workaround systems discovery is not thread safe
     std::mutex systems_mutex;
-    int mavsdk_already_known_systems=0;
     std::shared_ptr<mavsdk::Mavsdk> m_mavsdk=nullptr;
-    std::shared_ptr<mavsdk::System> m_system_ohd_ground=nullptr;
-    std::shared_ptr<mavsdk::System> m_system_ohd_air=nullptr;
-    std::shared_ptr<mavsdk::System> m_system_fc=nullptr;
     // MAVSDK is a bit stupid in this direction - passtrough(s) are for each system, but if there are multiple
     // system(s) behind a connection, this pattern is completely broken.
     // Normally, this passtrough is for the ground station - since we normally talk to both air and fc via the ground
     // However, if there is no ground, we create the passtrough from the air or FC system too.
     // This way one can also connect qopenhd to the FC without air / ground running and/or to the air unit without ground.
     std::shared_ptr<mavsdk::MavlinkPassthrough> m_passtrough=nullptr;
-    // called by mavsdk whenever a new system is detected
-    void onNewSystem(std::shared_ptr<mavsdk::System> system);
-    // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
-    // work with mavsdk / their subscription based pattern.
+    // Called every time we get a mavlink message (from any system).
     void process_mavlink_message(const mavlink_message_t& msg);
     void process_message_fc(const mavlink_message_t& msg);
     // timesync is handled extra independently
@@ -91,12 +86,15 @@ public:
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;
-private:
-    std::chrono::steady_clock::time_point m_last_time_version_requested=std::chrono::steady_clock::now();
 public:
     Q_INVOKABLE void re_apply_rates();
 public:
     Q_INVOKABLE void add_tcp_connection_handler(QString ip);
+private:
+    std::unique_ptr<UDPConnection> m_udp_connection;
+    bool m_fc_found=false;
+    int m_fc_sys_id=-1;
+    int m_fc_comp_id=-1;
 };
 
 #endif // OHDMAVLINKCONNECTION_H

@@ -369,6 +369,9 @@ void XParam::loop_timeout()
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         check_timeout_param_get_all();
         check_timeout_param_set();
+        /*std::lock_guard<std::mutex> lock(m_mutex);
+        const bool busy=!(m_running_commands.empty()&&m_running_get_all.empty());
+        XParamUI::instance().set_is_busy(busy);*/
     }
 }
 

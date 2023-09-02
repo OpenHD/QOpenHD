@@ -38,25 +38,12 @@ public:
     bool is_param_whitelisted(const std::string param_id)const;
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 public:
-    // any instance of this class is only usable as soon as its corresponding system is set
-    void set_param_client(std::shared_ptr<mavsdk::System> system);
-private:
-    std::shared_ptr<mavsdk::Param> m_param_client=nullptr;
+    void set_ready();
 public:
     // callable from QT.
     // re-fetch all parameters from the server. Clears the cache, then re-fetches the whole parameter set.
-    Q_INVOKABLE bool try_fetch_all_parameters();
+    Q_INVOKABLE void try_refetch_all_parameters();
 
-    Q_INVOKABLE bool try_fetch_all_parameters_long_running();
-
-    // Set a param value using mavsdk. This means we send the "SET" command to the server
-    // and get its response (ok or rejected) or - in rare -cases - timeout.
-    // Returns true on success, false otherwise
-    // NOTE: This does not update the value cached in the QT model on the ground, use try_update_parameter..() instead
-    struct ExtraRetransmitParams{
-        std::chrono::nanoseconds retransmit_timeout=std::chrono::milliseconds(500);
-        int n_retransmissions=3;
-    };
     // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
     enum class SetParamResult{
         UNKNOWN, // Hints at a programmer's error
@@ -65,8 +52,8 @@ public:
         SUCCESS, //Param was successfully updated
     };
     static std::string set_param_result_as_string(const SetParamResult& res);
-    SetParamResult try_set_param_int_impl(const QString param_id,int value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
-    SetParamResult try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
+    SetParamResult try_set_param_int_impl(const QString param_id,int value);
+    SetParamResult try_set_param_string_impl(const QString param_id,QString value);
 
     // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
     // then updates the internal cached parameter (if previous update was successfull).
@@ -155,7 +142,10 @@ public:
 private:
     std::mutex m_update_all_async_mutex;
     std::unique_ptr<std::thread> m_update_all_async_thread=nullptr;
-
+private:
+    void remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t>& param_set);
+private:
+    std::atomic<bool> m_is_ready=false;
 };
 
 #endif // MavlinkSettingsModel_H

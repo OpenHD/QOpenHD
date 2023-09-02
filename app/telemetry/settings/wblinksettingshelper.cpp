@@ -153,10 +153,9 @@ int WBLinkSettingsHelper::change_param_air_and_ground(QString param_id,int value
         qDebug()<<"Precondition: Air running and alive not given. Change not possible.";
         return -2;
     }
-    const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
-    // First change it on the air and wait for ack - if failed, return. MAVSDK does 3 retransmission(s) until acked so it is really unlikely that
+    // First change it on the air and wait for ack - if failed, return. We do 3 retransmission(s) until acked so it is really unlikely that
     // we set the value and all 3 ack's are lost (which would be the generals problem and then the frequenies are out of sync).
-    const auto air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
+    const auto air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value);
     if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);

@@ -75,6 +75,7 @@ SOURCES += \
     $$PWD/action/fcmissionhandler.cpp \
     $$PWD/action/fcmsgintervalhandler.cpp \
     $$PWD/action/ohdaction.cpp \
+    $$PWD/connection/udp_connection.cpp \
     $$PWD/models/fcmapmodel.cpp \
     $$PWD/settings/documentedparam.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
@@ -97,6 +98,7 @@ HEADERS += \
     $$PWD/action/fcmissionhandler.h \
     $$PWD/action/fcmsgintervalhandler.h \
     $$PWD/action/ohdaction.h \
+    $$PWD/link/mudplink.h \
     $$PWD/settings/documentedparam.h \
     $$PWD/settings/xparam.h \
     $$PWD/util/geodesi_helper.h \

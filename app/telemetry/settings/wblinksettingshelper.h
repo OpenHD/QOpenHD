@@ -98,6 +98,8 @@ public:
     Q_INVOKABLE int get_next_supported_frequency(int index);
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
     Q_INVOKABLE int get_frequency_pollution(int frequency_mhz);
+    // These params can be changed "on the fly" and are additionally their value(s) are broadcasted
+
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
 private:

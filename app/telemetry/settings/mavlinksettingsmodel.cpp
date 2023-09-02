@@ -64,52 +64,40 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     //m_data.push_back({"VIDEO_FPS",1});
 }
 
-void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
+void MavlinkSettingsModel::set_ready()
 {
-    // only allow adding the param client once it is discovered, do not overwrite it once discovered.
-    // DO NOT REMOVE THIS NECCESSARY CHECK - this class is written under the assumption that the "param_client" pointer becomes valid
-    // at some point and then stays valid
-    assert(this->m_param_client==nullptr);
-    assert(system->get_system_id()==m_sys_id);
-    m_param_client=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
+    m_is_ready=true;
 }
 
-bool MavlinkSettingsModel::try_fetch_all_parameters()
+void MavlinkSettingsModel::try_refetch_all_parameters()
 {
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
-    if(m_param_client==nullptr){
+    if(!m_is_ready){
         // not discovered yet
         WorkaroundMessageBox::makePopupMessage("OHD System not found");
-        return false;
+        return;
     }
-    // first, remove anything the QT model has cached
-    while(rowCount()>0){
-        removeData(rowCount()-1);
-    }
-    qDebug()<<"Done removing old params";
-    // now fetch the full param set from the server (defined by sys / comp id)
+    // Fetch the full param set from the server (defined by sys / comp id)
     // TODO: make async
-    auto param_set=XParam::instance().try_get_param_all_blocking(m_sys_id,m_comp_id);
-    if(param_set.has_value()){
-        const auto parsed_param_set=XParam::parse_server_param_set(param_set.value());
-        for(const auto& param:parsed_param_set){
-            if(param.int_param.has_value()){
-                MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),(int32_t)param.int_param.value()};
-                addData(data);
-            }else if(param.string_param.has_value()){
-                MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),param.string_param.value()};
-                addData(data);
-            }
-        }
-        return true;
+    auto param_set_opt=XParam::instance().try_get_param_all_blocking(m_sys_id,m_comp_id);
+    if(param_set_opt.has_value()){
+        const auto param_set=param_set_opt.value();
+        remove_and_replace_param_set(param_set);
+        WorkaroundMessageBox::makePopupMessage("Fetch all success",2);
+    }else{
+        WorkaroundMessageBox::makePopupMessage("Fetch all failed",2);
     }
-    return false;
-}
-
-
-bool MavlinkSettingsModel::try_fetch_all_parameters_long_running()
-{
-    return try_fetch_all_parameters();
+    /*auto cb=[this](XParam::GetAllParamResult result){
+        if(result.success){
+            const auto param_set=result.param_set;
+            remove_and_replace_param_set(param_set);
+            //WorkaroundMessageBox::makePopupMessage("Fetch all success",2);
+        }else{
+            WorkaroundMessageBox::makePopupMessage("Fetch all failed",2);
+        }
+    };
+    const auto command=XParam::create_cmd_get_all(m_sys_id,m_comp_id);
+    XParam::instance().try_get_param_all_async(command,cb);*/
 }
 
 std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResult &res)
@@ -120,53 +108,15 @@ std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResul
     return "UNKNOWN";
 }
 
-MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value)
 {
-    /*if(!m_param_client)return SetParamResult::NO_CONNECTION;
-    if(extra_retransmit_params.has_value()){
-        const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-        m_param_client->set_timeout(timeout_s);
-        m_param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
-    }
-    const auto result=m_param_client->set_param_int(param_id.toStdString(),value);
-    if(extra_retransmit_params.has_value()){
-        // restores defaults
-        m_param_client->set_timeout(-1);
-        m_param_client->set_n_retransmissions(3);
-    }
-    if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
-    if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
-    if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
-    if(result==mavsdk::Param::Result::ParamNameTooLong || result==mavsdk::Param::Result::ParamValueTooLong || result==mavsdk::Param::Result::WrongType){
-        qDebug()<<"Improper use, fix your code!";
-    }
-    return SetParamResult::UNKNOWN;*/
     auto command=XParam::create_cmd_set_int(m_sys_id,m_comp_id,param_id.toStdString(),value);
     const auto result=XParam::instance().try_set_param_blocking(command);
     return result ? SetParamResult::SUCCESS : SetParamResult::NO_CONNECTION;
 }
 
-MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value)
 {
-    /*if(!m_param_client)return SetParamResult::NO_CONNECTION;
-    if(extra_retransmit_params.has_value()){
-        const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-        m_param_client->set_timeout(timeout_s);
-        m_param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
-    }
-    const auto result=m_param_client->set_param_custom(param_id.toStdString(),value.toStdString());
-    if(extra_retransmit_params.has_value()){
-        // restores defaults
-        m_param_client->set_timeout(-1);
-        m_param_client->set_n_retransmissions(3);
-    }
-    if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
-    if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
-    if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
-    if(result==mavsdk::Param::Result::ParamNameTooLong || result==mavsdk::Param::Result::ParamValueTooLong || result==mavsdk::Param::Result::WrongType){
-        qDebug()<<"Improper use, fix your code!";
-    }
-    return SetParamResult::UNKNOWN;*/
     auto command=XParam::create_cmd_set_string(m_sys_id,m_comp_id,param_id.toStdString(),value.toStdString());
     const auto result=XParam::instance().try_set_param_blocking(command);
     return result ? SetParamResult::SUCCESS : SetParamResult::NO_CONNECTION;
@@ -513,4 +463,25 @@ bool MavlinkSettingsModel::set_param_tx_power(bool is_tx_power_index, bool is_fo
     const auto ret=try_update_parameter_int(param_id.c_str(),value);
     if(ret=="")return true;
     return false;
+}
+
+void MavlinkSettingsModel::remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t> &param_set)
+{
+    qDebug()<<"Replacing full param set, previous size:"<<rowCount()<<" new size:"<<param_set.size();
+    // first, remove anything the QT model has cached
+    while(rowCount()>0){
+        removeData(rowCount()-1);
+    }
+    qDebug()<<"Done removing old params";
+    const auto parsed_param_set=XParam::parse_server_param_set(param_set);
+    for(const auto& param:parsed_param_set){
+        if(param.int_param.has_value()){
+            MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),(int32_t)param.int_param.value()};
+            addData(data);
+        }else if(param.string_param.has_value()){
+            MavlinkSettingsModel::SettingData data{QString(param.param_id.c_str()),param.string_param.value()};
+            addData(data);
+        }
+    }
+    qDebug()<<"Done filling in new params";
 }

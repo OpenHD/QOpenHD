@@ -153,20 +153,19 @@ std::optional<CmdSender::RunningCommand> CmdSender::find_remove_running_command_
 
 void CmdSender::send_command(RunningCommand &cmd)
 {
-    auto msg=pack_command_msg(cmd.cmd);
-    MavlinkTelemetry::instance().sendMessage(msg);
+    send_mavlink_command_long(cmd.cmd);
     cmd.last_transmission=std::chrono::steady_clock::now();
     cmd.n_transmissions++;
     cmd.cmd.confirmation=cmd.n_transmissions;
 }
 
-mavlink_message_t CmdSender::pack_command_msg(const mavlink_command_long_t &cmd)
+void CmdSender::send_mavlink_command_long(const mavlink_command_long_t &cmd)
 {
     const auto self_sysid=QOpenHDMavlinkHelper::get_own_sys_id();
     const auto self_compid=QOpenHDMavlinkHelper::get_own_comp_id();
     mavlink_message_t msg{};
     mavlink_msg_command_long_encode(self_sysid,self_compid,&msg,&cmd);
-    return msg;
+    MavlinkTelemetry::instance().sendMessage(msg);
 }
 
 void CmdSender::loop_timeout()

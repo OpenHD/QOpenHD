@@ -37,7 +37,7 @@ public:
     /**
      * enqueues a commmand to be sent (with retransmissions). If the queue has reached its limit, false is returned and the result cb is not called.
      * Otherwise, the result cb is quaranteed to be called after either
-     * an ack (success/denied) from the recipient is received or the command timed out (no response from the recipient)
+     * an ack (success/denied) from the recipient is received or the command timed out after n retransmissions is exhausted (no response from the recipient)
      */
     bool send_command_long_async(const mavlink_command_long_t cmd,RESULT_CB result,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
 
@@ -81,7 +81,7 @@ private:
     // Send command via link, increase (re)-transmit counter
     void send_command(RunningCommand& cmd);
     // util
-    mavlink_message_t pack_command_msg(const mavlink_command_long_t& cmd);
+    void send_mavlink_command_long(const mavlink_command_long_t& cmd);
     void loop_timeout();
     // Regulary called by the timeout thread - check if any running command timed out,
     // and either retransmit or remove and call result cb with failure state
