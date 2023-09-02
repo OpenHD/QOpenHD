@@ -67,18 +67,18 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
     }else{
         // default, udp, passive (like QGC)
-        mavsdk::ConnectionResult connection_result = m_mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+        /*mavsdk::ConnectionResult connection_result = m_mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
         std::stringstream ss;
         ss<<"MAVSDK UDP connection: " << connection_result;
-        qDebug()<<ss.str().c_str();
-        /*auto cb=[this](mavlink_message_t msg){
+        qDebug()<<ss.str().c_str();*/
+        auto cb=[this](mavlink_message_t msg){
             process_mavlink_message(msg);
         };
         const auto ip="0.0.0.0"; //"127.0.0.1"
         m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb);
         if(m_udp_connection->start()){
             qDebug()<<"UDP started";
-        }*/
+        }
     }
 }
 
@@ -98,6 +98,10 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     if(msg.compid!=comp_id){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
+    }
+    if(m_udp_connection){
+        m_udp_connection->send_message(msg);
+        return true;
     }
     assert(m_mavsdk!=nullptr);
     std::lock_guard<std::mutex> lock(systems_mutex);

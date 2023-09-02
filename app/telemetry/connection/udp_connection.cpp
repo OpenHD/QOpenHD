@@ -90,7 +90,7 @@ void UDPConnection::process_data(const uint8_t *data, int data_len)
 
 void UDPConnection::process_mavlink_message(mavlink_message_t message)
 {
-    // TODO
+    m_cb(message);
 }
 
 void UDPConnection::loop_receive()
@@ -108,6 +108,7 @@ void UDPConnection::loop_receive()
             0,
             reinterpret_cast<struct sockaddr*>(&src_addr),
             &src_addr_len);
+        //qDebug()<<"Gt data";
 
         if (recv_len == 0) {
             // This can happen when shutdown is called on the socket,
