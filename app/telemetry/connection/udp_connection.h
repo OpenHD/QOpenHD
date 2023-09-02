@@ -9,7 +9,7 @@
 #include <sstream>
 #include <optional>
 #include <mutex>
-
+#include <functional>
 
 /**
  * @brief Mavlink udp link - follows the semi-established pattern

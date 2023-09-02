@@ -7,7 +7,7 @@
 #include <mutex>
 #include <thread>
 
-#include "util/mavsdk_include.h"
+#include "util/mavlink_include.h"
 #include "../../lib/lqtutils_master/lqtutils_prop.h"
 #include "../common/TimeHelper.hpp"
 
@@ -52,14 +52,6 @@ private:
     bool dev_use_tcp=false;
     //std::string dev_tcp_server_ip="0.0.0.0";
     // workaround systems discovery is not thread safe
-    std::mutex systems_mutex;
-    std::shared_ptr<mavsdk::Mavsdk> m_mavsdk=nullptr;
-    // MAVSDK is a bit stupid in this direction - passtrough(s) are for each system, but if there are multiple
-    // system(s) behind a connection, this pattern is completely broken.
-    // Normally, this passtrough is for the ground station - since we normally talk to both air and fc via the ground
-    // However, if there is no ground, we create the passtrough from the air or FC system too.
-    // This way one can also connect qopenhd to the FC without air / ground running and/or to the air unit without ground.
-    std::shared_ptr<mavsdk::MavlinkPassthrough> m_passtrough=nullptr;
     // Called every time we get a mavlink message (from any system).
     void process_mavlink_message(const mavlink_message_t& msg);
     void process_message_fc(const mavlink_message_t& msg);

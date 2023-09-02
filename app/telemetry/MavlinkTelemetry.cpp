@@ -7,7 +7,6 @@
 
 #include "settings/mavlinksettingsmodel.h"
 #include "../logging/logmessagesmodel.h"
-#include "util/mavsdk_helper.hpp"
 #include "util/qopenhdmavlinkhelper.hpp"
 #include "models/fcmavlinkmissionitemsmodel.h"
 
@@ -19,41 +18,6 @@
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
-    mavsdk::Mavsdk::Configuration config{QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),false};
-    m_mavsdk=std::make_shared<mavsdk::Mavsdk>();
-    m_mavsdk->set_configuration(config);
-    mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
-                              const std::string& message, // message text
-                              const std::string& file,    // source file from which the message was sent
-                              int line) {                 // line number in the source file
-      // process the log message in a way you like
-      qDebug()<<"MAVSDK::"<<message.c_str();
-      // Annoying, but no better way - we manually parse the mavlink statustext messages. The problem here is that
-      // mavsdk doesn't tell if it is a message from a mavlink system or internal, and also not the system id such that
-      // we can create the proper tag for the message
-      // Dirty fix,we only want messages from "mavlink" displayed, not internal MAVSDK log messages.
-      //if(message.find("MAVLink: warning:")!=std::string::npos){
-      //if(level>=mavsdk::log::Level::Warn){
-      //    LogMessagesModel::instance().addLogMessage("T",message.c_str(),0);
-      //}
-      // returning true from the callback disables printing the message to stdout
-      //return level < mavsdk::log::Level::Warn;
-      return true;
-    });
-    // NOTE: subscribe before adding any connection(s)
-    m_mavsdk->subscribe_on_new_system([this]() {
-        std::lock_guard<std::mutex> lock(systems_mutex);
-        if(m_passtrough==nullptr){
-            qDebug()<<"Creating passthrough";
-            auto systems=m_mavsdk->systems();
-            m_passtrough=std::make_shared<mavsdk::MavlinkPassthrough>(systems.at(0));
-            m_passtrough->intercept_incoming_messages_async([this](mavlink_message_t& msg){
-                //qDebug()<<"Intercept:Got message"<<msg.msgid;
-                process_mavlink_message(msg);
-                return true;
-            });
-        }
-    });
     QSettings settings;
     dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
     if(dev_use_tcp){
@@ -67,10 +31,6 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
     }else{
         // default, udp, passive (like QGC)
-        /*mavsdk::ConnectionResult connection_result = m_mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
-        std::stringstream ss;
-        ss<<"MAVSDK UDP connection: " << connection_result;
-        qDebug()<<ss.str().c_str();*/
         auto cb=[this](mavlink_message_t msg){
             process_mavlink_message(msg);
         };
@@ -103,22 +63,6 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
         m_udp_connection->send_message(msg);
         return true;
     }
-    assert(m_mavsdk!=nullptr);
-    std::lock_guard<std::mutex> lock(systems_mutex);
-    if(m_passtrough!=nullptr){
-        m_passtrough->send_message(msg);
-        return true;
-    }else{
-        // If the passtrough is not created yet, a connection to the OHD ground unit has not yet been established.
-        //qDebug()<<"MAVSDK passtroughOhdGround not created";
-        // only log it once, then not again to keep logcat clean
-        static bool first=true;
-        if(first){
-            qDebug()<<"No OHD Ground unit connected";
-            //first=false;
-        }
-    }
-    return false;
 }
 
 static int get_message_size(const mavlink_message_t& msg){
@@ -283,14 +227,7 @@ void MavlinkTelemetry::tcp_only_establish_connection()
             qDebug()<<ss.str().c_str();
         }
         // This might block, but that's not quaranteed (it won't if the host is there, but no server on the tcp port)
-        mavsdk::ConnectionResult connection_result = m_mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
-        std::stringstream ss;
-        ss<<"MAVSDK TCP connection result: " << connection_result;
-        qDebug()<<ss.str().c_str();
-        if(connection_result==mavsdk::ConnectionResult::Success){
-            qDebug()<<"TCP connection established";
-            return;
-        }
+        // TODO
         // wait a bit before trying again
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
@@ -322,10 +259,9 @@ void MavlinkTelemetry::ping_all_systems()
 
 MavlinkTelemetry::FCMavId MavlinkTelemetry::get_fc_mav_id()
 {
-    std::lock_guard<std::mutex> lock(systems_mutex);
-    /*if(m_system_fc!=nullptr){
-        return {m_system_fc->get_system_id(),MAV_COMP_ID_AUTOPILOT1};
-    }*/
+    if(m_fc_found){
+        return {m_fc_sys_id,m_fc_comp_id};
+    }
     return {1,MAV_COMP_ID_AUTOPILOT1};
 }
 

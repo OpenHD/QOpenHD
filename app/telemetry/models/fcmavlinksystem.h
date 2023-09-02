@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <optional>
+#include <memory>
 
 // Really nice, this way we don't have to write all the setters / getters / signals ourselves !
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"

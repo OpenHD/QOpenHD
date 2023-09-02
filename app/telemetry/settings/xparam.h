@@ -6,6 +6,7 @@
 #include <mutex>
 #include <optional>
 #include <thread>
+#include <functional>
 
 #include "../util/mavlink_include.h"
 

@@ -8,7 +8,7 @@
 #include <thread>
 #include <mutex>
 
-#include "../util/mavsdk_include.h"
+#include "../util/mavlink_include.h"
 
 
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
