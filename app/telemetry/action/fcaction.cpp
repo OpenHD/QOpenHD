@@ -3,7 +3,7 @@
 
 #include "../../logging/hudlogmessagesmodel.h"
 #include "../MavlinkTelemetry.h"
-#include "cmdsender.h"
+#include "impl/cmdsender.h"
 
 #include "create_cmd_helper.hpp"
 #include "../models/fcmavlinksystem.h"

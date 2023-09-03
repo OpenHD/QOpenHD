@@ -45,19 +45,8 @@ public:
     // re-fetches the complete param set - any changed values, types, ... are catched from it
     Q_INVOKABLE void try_refetch_all_parameters_async(bool log_result=true);
 
-    // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
-    enum class SetParamResult{
-        UNKNOWN, // Hints at a programmer's error
-        NO_CONNECTION, // Most likely all retransmitts failed, cannot be completely avoided
-        VALUE_UNSUPPORTED, // (openhd) rejected the param value, it is not valid / not supported by the HW
-        SUCCESS, //Param was successfully updated
-    };
-    static std::string set_param_result_as_string(const SetParamResult& res);
-    SetParamResult try_set_param_int_impl(const QString param_id,int value);
-    SetParamResult try_set_param_string_impl(const QString param_id,QString value);
-
     // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
-    // then updates the internal cached parameter (if previous update was successfull).
+    // then updates the internal cached parameter
     // Kinda dirty, but since we use it from QML - returns an empty string "" on success, an error code otherwise
     Q_INVOKABLE QString try_update_parameter_int(const QString param_id,int value);
     Q_INVOKABLE QString try_update_parameter_string(const QString param_id,QString value);
@@ -100,6 +89,16 @@ private:
     const uint8_t m_sys_id;
     const uint8_t m_comp_id;
     bool is_param_whitelisted(const std::string param_id)const;
+    // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
+    enum class SetParamResult{
+        BUSY, // Too many params queued up
+        NO_CONNECTION, // Most likely all retransmitts failed, cannot be completely avoided
+        VALUE_UNSUPPORTED, // (openhd) rejected the param value, it is not valid / not supported by the HW
+        SUCCESS, //Param was successfully updated
+    };
+    static std::string set_param_result_as_string(const SetParamResult& res);
+    SetParamResult try_set_param_int_impl(const QString param_id,int value);
+    SetParamResult try_set_param_string_impl(const QString param_id,QString value);
 public:
     // These are for the UI to query more data about a specific params
     Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;

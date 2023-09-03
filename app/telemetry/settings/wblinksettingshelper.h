@@ -67,9 +67,6 @@ public:
 private:
     static constexpr auto PARAM_ID_WB_FREQ=openhd::WB_FREQUENCY;
     static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;
-    // Air and ground should always match, otherwise something weird has happenened.
-    // Note that this would be "really" weird, since on not matching params there should be no connectivitiy.
-    int get_param_int_air_and_ground_value(QString param_id);
     // Returns 0 on success, error code otherwise.
     // Viable error code(s):
     // -1 : gnd unit not alive
@@ -77,23 +74,21 @@ private:
     // -3 : cannot set value on air - not reachable
     // -4 : cannot set value on air - reached, but param was rejected
     // -5 : succesfully set value on air, but ground doesn't support - really bad
-    int change_param_air_and_ground(QString param_id,int value);
-    bool change_param_ground_only(QString param_id,int value);
+    int change_param_air_and_ground_blocking(QString param_id,int value);
+    bool change_param_ground_only_blocking(QString param_id,int value);
+    void change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag);
 public:
-
     Q_INVOKABLE int change_param_air_and_ground_frequency(int value){
-        return change_param_air_and_ground(PARAM_ID_WB_FREQ,value);
+        return change_param_air_and_ground_blocking(PARAM_ID_WB_FREQ,value);
     }
-
     Q_INVOKABLE int change_param_air_and_ground_channel_width(int value){
-        return change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value);
+        return change_param_air_and_ground_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
-
     Q_INVOKABLE bool change_param_ground_only_frequency(int value){
-        return change_param_ground_only(PARAM_ID_WB_FREQ,value);
+        return change_param_ground_only_blocking(PARAM_ID_WB_FREQ,value);
     }
     Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
-        return change_param_ground_only(PARAM_ID_WB_CHANNEL_WIDTH,value);
+        return change_param_ground_only_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
     Q_INVOKABLE int get_next_supported_frequency(int index);
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
@@ -107,8 +102,6 @@ public:
     Q_INVOKABLE void set_param_air_only_mcs_async(int value);
     // Extra
     Q_INVOKABLE bool set_param_tx_power(bool ground,bool is_tx_power_index,bool is_for_armed_state,int value);
-private:
-    void change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag);
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
 private:

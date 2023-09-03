@@ -2,7 +2,7 @@
 
 #include "create_cmd_helper.hpp"
 #include "../util/openhd_defines.hpp"
-#include "cmdsender.h"
+#include "impl/cmdsender.h"
 
 #include "../models/aohdsystem.h"
 

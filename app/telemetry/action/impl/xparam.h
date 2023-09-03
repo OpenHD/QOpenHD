@@ -9,7 +9,7 @@
 #include <functional>
 #include <vector>
 
-#include "../util/mavlink_include.h"
+#include "../../util/mavlink_include.h"
 
 class XParam
 {
@@ -38,7 +38,7 @@ public:
     };
     typedef std::function<void(SetParamResult result)> SET_PARAM_RESULT_CB;
     bool try_set_param_async(const mavlink_param_ext_set_t cmd,SET_PARAM_RESULT_CB result,PROGRESS_CB opt_progress_cb=nullptr,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
-    bool try_set_param_blocking(const mavlink_param_ext_set_t cmd);
+    bool try_set_param_blocking(const mavlink_param_ext_set_t cmd,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
 
     struct GetAllParamResult{
         bool success;

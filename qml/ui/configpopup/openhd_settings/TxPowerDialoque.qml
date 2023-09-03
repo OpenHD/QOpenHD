@@ -366,11 +366,7 @@ the card driver doesn't support changing it.");
                         var success=false
                         var is_tx_power_index_unit = m_card_chip_type==0;
 
-                        if(m_is_ground){
-                            _wbLinkSettingsHelper.set_param_tx_power(true,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
-                        }else{
-                            _wbLinkSettingsHelper.set_param_tx_power(false,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
-                        }
+                        success = _wbLinkSettingsHelper.set_param_tx_power(m_is_ground,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
                         if(success==true){
                             txPowerDialoque.visible=false;
                             var message = "Set TX POWER "+get_change_armed_as_string()+" to ";

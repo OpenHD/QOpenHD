@@ -11,9 +11,9 @@
 #include "models/fcmavlinkmissionitemsmodel.h"
 
 #include "action/fcmissionhandler.h"
-#include "action/cmdsender.h"
+#include "action/impl/cmdsender.h"
 #include "action/fcmsgintervalhandler.h"
-#include "settings/xparam.h"
+#include "action/impl/xparam.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {

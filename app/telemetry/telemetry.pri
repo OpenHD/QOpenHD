@@ -3,16 +3,17 @@ INCLUDEPATH += $$PWD
 #INCLUDEPATH += $$PWD/../../lib/mavlink-headers
 
 SOURCES += \
-    $$PWD/action/cmdsender.cpp \
+    $$PWD/action/impl/cmdsender.cpp \
     $$PWD/action/fcaction.cpp \
     $$PWD/action/fcmissionhandler.cpp \
     $$PWD/action/fcmsgintervalhandler.cpp \
     $$PWD/action/ohdaction.cpp \
+    $$PWD/connection/tcp_connection.cpp \
     $$PWD/connection/udp_connection.cpp \
     $$PWD/models/fcmapmodel.cpp \
     $$PWD/settings/documentedparam.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
-    $$PWD/settings/xparam.cpp \
+    $$PWD/action/impl/xparam.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/telemetry/models/camerastreammodel.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
@@ -25,15 +26,16 @@ SOURCES += \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
-    $$PWD/action/cmdsender.h \
+    $$PWD/action/impl/cmdsender.h \
     $$PWD/action/create_cmd_helper.hpp \
     $$PWD/action/fcaction.h \
     $$PWD/action/fcmissionhandler.h \
     $$PWD/action/fcmsgintervalhandler.h \
     $$PWD/action/ohdaction.h \
+    $$PWD/connection/tcp_connection.h \
     $$PWD/link/mudplink.h \
     $$PWD/settings/documentedparam.h \
-    $$PWD/settings/xparam.h \
+    $$PWD/action/impl/xparam.h \
     $$PWD/util/geodesi_helper.h \
     $$PWD/util/mavlink_enum_to_string.h \
     $$PWD//util/mavsdk_helper.hpp \

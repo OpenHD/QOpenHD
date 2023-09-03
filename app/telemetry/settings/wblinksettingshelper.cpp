@@ -1,12 +1,10 @@
 #include "wblinksettingshelper.h"
-#include "xparam.h"
+#include "../action/impl/xparam.h"
 
 #include "../models/aohdsystem.h"
-#include "mavlinksettingsmodel.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
-#include "../logging/logmessagesmodel.h"
 #include <qsettings.h>
 #include <sstream>
 #include "../action/ohdaction.h"
@@ -142,7 +140,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
     set_progress_scan_channels_perc(msg.progress);
 }
 
-int WBLinkSettingsHelper::change_param_air_and_ground(QString param_id,int value)
+int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,int value)
 {
     qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;
     // sanity checking
@@ -154,25 +152,23 @@ int WBLinkSettingsHelper::change_param_air_and_ground(QString param_id,int value
         qDebug()<<"Precondition: Air running and alive not given. Change not possible.";
         return -2;
     }
-    // First change it on the air and wait for ack - if failed, return. We do 3 retransmission(s) until acked so it is really unlikely that
-    // we set the value and all 3 ack's are lost (which would be the generals problem and then the frequenies are out of sync).
-    const auto air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value);
-    if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
+    // First change it on the air and wait for ack - if failed, return. We do a lot of retransmissions to make it unlikely that fails
+    const auto command_air=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
+    const bool air_success=XParam::instance().try_set_param_blocking(command_air,std::chrono::milliseconds(100),20);
+    if(!air_success){
         std::stringstream ss;
-        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
+        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" air not reached";
         qDebug()<<ss.str().c_str();
-        if(air_success==MavlinkSettingsModel::SetParamResult::VALUE_UNSUPPORTED){
-            return -4;
-        }else{
-            return -3;
-        }
+        return -3;
     }
     // we have changed the value on air, now change the ground
-    // It is highly unlikely that fauls - if it does, we have an issue ! (2 generals problem)
-    const auto ground_success=MavlinkSettingsModel::instanceGround().try_set_param_int_impl(param_id,value);
-    if(!(ground_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
+    // It is highly unlikely that fauls - if it does, we have an issue !
+    // But since qopenhd <-> openhd ground is either localhost or tcp, that should never be an issue
+    const auto command_gnd=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
+    const bool ground_success=XParam::instance().try_set_param_blocking(command_gnd,std::chrono::milliseconds(200),5);
+    if(!ground_success){
         std::stringstream ss;
-        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
+        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" (gnd failed)";
         qWarning("%s", ss.str().c_str());
         return -5;
     }
@@ -182,14 +178,15 @@ int WBLinkSettingsHelper::change_param_air_and_ground(QString param_id,int value
     return 0;
 }
 
-bool WBLinkSettingsHelper::change_param_ground_only(QString param_id, int value)
+bool WBLinkSettingsHelper::change_param_ground_only_blocking(QString param_id, int value)
 {
-    const auto ground_success=MavlinkSettingsModel::instanceGround().try_set_param_int_impl(param_id,value);
-    if(ground_success==MavlinkSettingsModel::SetParamResult::SUCCESS){
+    const auto command_gnd=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
+    const bool ground_success=XParam::instance().try_set_param_blocking(command_gnd,std::chrono::milliseconds(200),5);
+    if(ground_success){
         qDebug()<<"change_param_ground_only success "<<param_id<<":"<<value;
         return true;
     }
-    qDebug()<<"change_param_ground_only failure "<<param_id<<":"<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(ground_success).c_str();
+    qDebug()<<"change_param_ground_only failure "<<param_id<<":"<<value;
     return false;
 }
 
@@ -330,10 +327,9 @@ void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interv
 void WBLinkSettingsHelper::set_param_video_resolution_framerate_async(bool primary,QString res_str)
 {
     const std::string value=res_str.toStdString();
-    change_param_air_async(primary ?OHD_COMP_ID_AIR_CAMERA_PRIMARY : OHD_COMP_ID_AIR_CAMERA_SECONDARY,
-        "V_FORMAT",value,"KEYFRAME");
+    const auto comp_id = primary ? OHD_COMP_ID_AIR_CAMERA_PRIMARY : OHD_COMP_ID_AIR_CAMERA_SECONDARY;
+    change_param_air_async(comp_id,"V_FORMAT",value,"VIDEO FORMAT");
 }
-
 void WBLinkSettingsHelper::set_param_fec_percentage_async(int percent)
 {
     change_param_air_async(OHD_COMP_ID_LINK_PARAM,openhd::WB_VIDEO_FEC_PERCENTAGE,static_cast<int32_t>(percent),"FEC PERCENTAGE");
@@ -406,7 +402,7 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
             HUDLogMessagesModel::instance().add_message_warning(ss.str().c_str());
         }
     };
-    const bool enqueue_success=XParam::instance().try_set_param_async(command,res_cb,nullptr);
+    const bool enqueue_success=XParam::instance().try_set_param_async(command,res_cb,nullptr,std::chrono::milliseconds(200),5);
     if(!enqueue_success){
         HUDLogMessagesModel::instance().add_message_warning("Busy - cannot change "+QString(tag.c_str())+", try again later");
         return;

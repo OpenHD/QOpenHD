@@ -6,7 +6,7 @@
 #include <future>
 
 #include <qdebug.h>
-#include "../MavlinkTelemetry.h"
+#include "../../MavlinkTelemetry.h"
 
 XParam::XParam()
 {
@@ -67,14 +67,17 @@ bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RE
     return true;
 }
 
-bool XParam::try_set_param_blocking(const mavlink_param_ext_set_t cmd)
+bool XParam::try_set_param_blocking(const mavlink_param_ext_set_t cmd,std::chrono::milliseconds retransmit_delay, int n_wanted_retransmission)
 {
     std::promise<bool> prom;
     auto fut = prom.get_future();
     auto cb=[&prom](SetParamResult result){
         prom.set_value(result.is_accepted());
     };
-    try_set_param_async(cmd,cb);
+    if(!try_set_param_async(cmd,cb,nullptr,retransmit_delay,n_wanted_retransmission)){
+        qDebug()<<"Cannot enqueue param ";
+        return false;
+    }
     return fut.get();
 }
 

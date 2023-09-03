@@ -3,7 +3,7 @@
 #include "create_cmd_helper.hpp"
 
 #include "../../logging/hudlogmessagesmodel.h"
-#include "cmdsender.h"
+#include "impl/cmdsender.h"
 #include "../MavlinkTelemetry.h"
 
 FCMsgIntervalHandler &FCMsgIntervalHandler::instance()

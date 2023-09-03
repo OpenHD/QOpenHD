@@ -11,7 +11,7 @@
 #include <QSettings>
 #include <QVariant>
 
-#include "xparam.h"
+#include "../action/impl/xparam.h"
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {

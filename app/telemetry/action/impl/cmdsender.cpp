@@ -2,8 +2,8 @@
 
 #include <qdebug.h>
 
-#include "../util/qopenhdmavlinkhelper.hpp"
-#include "../MavlinkTelemetry.h"
+#include "../../util/qopenhdmavlinkhelper.hpp"
+#include "../../MavlinkTelemetry.h"
 #include "util/mavlink_enum_to_string.h"
 #include <future>
 
@@ -89,7 +89,9 @@ CmdSender::Result CmdSender::send_command_long_blocking(const mavlink_command_lo
             }
         }
     };
-    send_command_long_async(cmd,cb,retransmit_delay,n_wanted_retransmissions);
+    if(!send_command_long_async(cmd,cb,retransmit_delay,n_wanted_retransmissions)){
+        return CmdSender::QUEUE_FULL;
+    }
     return fut.get();
 }
 
