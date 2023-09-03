@@ -127,27 +127,13 @@ BaseWidget {
     }
 
     function set_keyframe_interval(interval){
-        var success=_airCameraSettingsModel.set_param_keyframe_interval(interval)
-        if(success!==true){
-            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam1 keyframe interval")
-            return;
-        }
-        if(settings.dev_qopenhd_n_cameras==2){
-            _airCameraSettingsModel2.set_param_keyframe_interval(interval)
-            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam2 keyframe interval")
-        }
+        _wbLinkSettingsHelper.set_param_keyframe_interval_async(interval)
     }
     function set_fec_percentage(percentage){
-        var success=_ohdSystemAirSettingsModel.set_param_fec_percentage(percentage)
-        if(success!==true){
-            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set fec percentage")
-        }
+        _wbLinkSettingsHelper.set_param_fec_percentage_async(percentage)
     }
     function set_air_only_mcs(mcs_index){
-        var success=_ohdSystemAirSettingsModel.set_param_air_only_mcs(mcs_index)
-        if(success!==true){
-            _hudLogMessagesModel.signalAddLogMessage(6,"cannot set MCS index")
-        }
+        _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
     }
 
     function set_channel_width(channel_width_mhz){

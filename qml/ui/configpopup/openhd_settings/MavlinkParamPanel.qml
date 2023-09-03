@@ -1,7 +1,6 @@
-import QtQuick 2.0
-
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
 
@@ -31,66 +30,86 @@ Rectangle {
     //color: "transparent"
     color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
 
-    // Refetch all button
-    Button {
+    property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
+
+    // When we show this UI to the user, and the param set has never been fetched yet, fetch it
+    function fetch_unless_already_visible(){
+        if(m_instanceCheckIsAvlie.is_alive && m_instanceMavlinkSettingsModel.rowCount()<=0 ){
+            console.log("Param set not fetched, fetch");
+            m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async(false)
+        }
+    }
+
+    SimpleProgressBar{
+        id: fetch_all_progress
+        width: parent.width
+        height:  15
+        anchors.top: parent.top
+        visible: m_progress_perc>=0 && m_progress_perc<=100
+        impl_curr_progress_perc: m_progress_perc
+        impl_curr_color: m_progress_perc>=100 ? "green" : "blue"
+    }
+
+    RowLayout{
+        id: upper_action_row
+        width: parent.width
         height: 48
-        anchors.top: parent.top
-        id: fetchAllButtonId
-        text:"ReFetch All "+m_name
-        enabled: m_instanceCheckIsAvlie.is_alive
-        onClicked: {
-            parameterEditor.visible=false
-            //var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
-            /*var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters_long_running()
-            if(!result){
-                _messageBoxInstance.set_text_and_show("Fetch all failed, please try again",5)
-            }else{
-                 _messageBoxInstance.set_text_and_show("SUCCESS",1)
-            }*/
-            m_instanceMavlinkSettingsModel.try_refetch_all_parameters()
+        anchors.top: fetch_all_progress.bottom
+        anchors.topMargin: 1
+        ButtonIconWarning{
+            onClicked: {
+                _messageBoxInstance.set_text_and_show(""+m_name+ " not alive, parameters unavailable. Please check status view.");
+            }
+            visible: !m_instanceCheckIsAvlie.is_alive
+        }
+        Button {
+            text:"REFETCH "+m_name
+            visible: m_instanceCheckIsAvlie.is_alive
+            onClicked: {
+                parameterEditor.visible=false
+                m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
+            }
+        }
+        Button {
+            text:"INFO"
+            Material.background:Material.LightBlue
+            visible: m_instanceCheckIsAvlie.is_alive
+            onClicked: {
+                var text="Refresh your complete parameter set by fetching it from the openhd air/ground unit."
+                _messageBoxInstance.set_text_and_show(text)
+            }
+        }
+        Switch{
+            checked: settings.screen_settings_openhd_parameters_transparent
+            onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
+        }
+        Button{
+            text:"DOWN"
+            onClicked: {
+                paramListScrollView.ScrollBar.vertical.position += 0.1
+            }
+        }
+        Button{
+            text:"UP"
+            onClicked: {
+                paramListScrollView.ScrollBar.vertical.position -= 0.1
+            }
+        }
+        Item{ // Filler
+            Layout.fillWidth: true
+            Layout.fillHeight: true
         }
     }
-    Button {
-        height: 48
-        anchors.top: parent.top
-        anchors.left: fetchAllButtonId.right
-        anchors.leftMargin: 20
-        id: fetchAllButtonInfoId
-        text:"INFO"
-        Material.background:Material.LightBlue
-        onClicked: {
-            var text="Refresh your complete parameter set by fetching it from the openhd air/ground unit. Might need a couple of tries"
-            _messageBoxInstance.set_text_and_show(text)
-        }
-    }
-    Switch{
-        id: screen_settings_openhd_parameters_transparentSwitch
-        anchors.top: parent.top
-        anchors.left: fetchAllButtonInfoId.right
-        anchors.leftMargin: 20
-        checked: settings.screen_settings_openhd_parameters_transparent
-        onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
-    }
-    Button{
-        id: bUp
-        anchors.top: parent.top
-        anchors.left: screen_settings_openhd_parameters_transparentSwitch.right
-        anchors.leftMargin: 20
-        text:"DOWN"
-        onClicked: {
-            paramListScrollView.ScrollBar.vertical.position += 0.1
-        }
-    }
-    Button{
-        id: bDown
-        anchors.top: parent.top
-        anchors.left: bUp.right
-        anchors.leftMargin: 20
-        text:"UP"
-        onClicked: {
-            paramListScrollView.ScrollBar.vertical.position -= 0.1
-        }
-    }
+
+    /*ProgressBar{
+        width: parent.width
+        height: 50
+        from: 0
+        to: 100
+        value: m_progress_perc
+        //visible: m_progress_perc>=0
+        anchors.top: fetchAllButtonId.top
+    }*/
 
     Component {
         id: delegateMavlinkSettingsValue
@@ -175,8 +194,8 @@ Rectangle {
     Rectangle{
         id: scrollViewRectangle
         width: parent.width
-        height: parent.height - fetchAllButtonId.height
-        anchors.top: fetchAllButtonId.bottom
+        height: parent.height - upper_action_row.height
+        anchors.top: upper_action_row.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right

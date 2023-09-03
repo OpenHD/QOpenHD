@@ -11,7 +11,6 @@
 #include "models/fcmavlinkmissionitemsmodel.h"
 
 #include "action/fcmissionhandler.h"
-#include "action/fcaction.h"
 #include "action/cmdsender.h"
 #include "action/fcmsgintervalhandler.h"
 #include "settings/xparam.h"
@@ -31,11 +30,11 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
     }else{
         // default, udp, passive (like QGC)
-        auto cb=[this](mavlink_message_t msg){
+        auto cb_udp=[this](mavlink_message_t msg){
             process_mavlink_message(msg);
         };
         const auto ip="0.0.0.0"; //"127.0.0.1"
-        m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb);
+        m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
         if(m_udp_connection->start()){
             qDebug()<<"UDP started";
         }
@@ -140,26 +139,18 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
     // The systems then (optionally) can seperate by components, but r.n this is not needed.
     if(msg.sysid==OHD_SYS_ID_AIR){
         // msg was produced by the OHD air unit
-        if(AOHDSystem::instanceAir().process_message(msg)){
-            // OHD specific message comsumed
-        }else{
-            //qDebug()<<"MavlinkTelemetry received unmatched message from OHD Air unit "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
-        }
+        process_broadcast_message_openhd_air(msg);
         return;
     } else if(msg.sysid==OHD_SYS_ID_GROUND){
         // msg was produced by the OHD ground unit
-        if(AOHDSystem::instanceGround().process_message(msg)){
-            // OHD specific message consumed
-        }else{
-            //qDebug()<<"MavlinkTelemetry received unmatched message from OHD Air unit "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
-        }
+        process_broadcast_message_openhd_gnd(msg);
         return;
     }else {
         // msg was neither produced by the OHD air nor ground unit, so almost 100% from the FC
         const auto fc_sys_id=FCMavlinkSystem::instance().get_fc_sys_id();
         if(fc_sys_id.has_value()){
             if(msg.sysid==fc_sys_id.value()){
-               process_message_fc(msg);
+               process_broadcast_message_fc(msg);
                FCMsgIntervalHandler::instance().opt_send_messages();
                FCMissionHandler::instance().opt_send_messages();
             }else{
@@ -172,7 +163,26 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
     }
 }
 
-void MavlinkTelemetry::process_message_fc(const mavlink_message_t &msg)
+void MavlinkTelemetry::process_broadcast_message_openhd_air(const mavlink_message_t &msg)
+{
+    if(AOHDSystem::instanceAir().process_message(msg)){
+        // OHD specific message comsumed
+    }else{
+        //qDebug()<<"MavlinkTelemetry received unmatched message from OHD Air unit "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+    }
+}
+
+void MavlinkTelemetry::process_broadcast_message_openhd_gnd(const mavlink_message_t &msg)
+{
+    // msg was produced by the OHD ground unit
+    if(AOHDSystem::instanceGround().process_message(msg)){
+        // OHD specific message consumed
+    }else{
+        //qDebug()<<"MavlinkTelemetry received unmatched message from OHD ground unit "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+    }
+}
+
+void MavlinkTelemetry::process_broadcast_message_fc(const mavlink_message_t &msg)
 {
     if(FCMissionHandler::instance().process_message(msg)){
         return; // No further processing needed;

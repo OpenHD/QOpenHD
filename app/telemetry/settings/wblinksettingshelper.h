@@ -99,7 +99,14 @@ public:
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
     Q_INVOKABLE int get_frequency_pollution(int frequency_mhz);
     // These params can be changed "on the fly" and are additionally their value(s) are broadcasted
-
+    // so we can update them completely async, log the result to the user
+    // and use the broadcasted value(s) to update the UI
+    Q_INVOKABLE void set_param_keyframe_interval_async(int keyframe_interval);
+    Q_INVOKABLE void set_param_fec_percentage_async(int percent);
+    Q_INVOKABLE void set_param_video_resolution_framerate_async(QString res_str);
+    Q_INVOKABLE void set_param_air_only_mcs_async(int value);
+    // Extra
+    Q_INVOKABLE bool set_param_tx_power(bool is_tx_power_index,bool is_for_armed_state,int value);
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
 private:

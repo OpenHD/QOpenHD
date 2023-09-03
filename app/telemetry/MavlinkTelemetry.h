@@ -54,7 +54,9 @@ private:
     // workaround systems discovery is not thread safe
     // Called every time we get a mavlink message (from any system).
     void process_mavlink_message(const mavlink_message_t& msg);
-    void process_message_fc(const mavlink_message_t& msg);
+    void process_broadcast_message_openhd_air(const mavlink_message_t& msg);
+    void process_broadcast_message_openhd_gnd(const mavlink_message_t& msg);
+    void process_broadcast_message_fc(const mavlink_message_t& msg);
     // timesync is handled extra independently
     void process_message_timesync(const mavlink_message_t &msg);
     // The mavsdk tcp connect does block, we therefore need to do it in its own thread

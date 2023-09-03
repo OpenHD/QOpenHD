@@ -41,7 +41,7 @@ bool XParam::process_message(const mavlink_message_t &msg)
     return false;
 }
 
-bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RESULT_CB result_cb, std::chrono::milliseconds retransmit_delay, int n_wanted_retransmissions)
+bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RESULT_CB result_cb,PROGRESS_CB opt_progress_cb, std::chrono::milliseconds retransmit_delay, int n_wanted_retransmissions)
 {
     assert(n_wanted_retransmissions>=1);
     assert(retransmit_delay.count()>=10);
@@ -60,7 +60,7 @@ bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RE
         qDebug()<<ss.str().c_str();
         return false;
     }
-    RunningParamCmdSet running_cmd{cmd,result_cb,n_wanted_retransmissions,retransmit_delay};
+    RunningParamCmdSet running_cmd{cmd,result_cb,opt_progress_cb,n_wanted_retransmissions,retransmit_delay};
     m_running_commands.push_back(running_cmd);
     send_next_message_running_set(m_running_commands.back());
     return true;
@@ -77,7 +77,7 @@ bool XParam::try_set_param_blocking(const mavlink_param_ext_set_t cmd)
     return fut.get();
 }
 
-bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd, GET_ALL_PARAM_RESULT_CB result_cb)
+void XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd, GET_ALL_PARAM_RESULT_CB result_cb,PROGRESS_CB opt_progress_cb)
 {
     if(!result_cb){
         // the cb must not be nullptr
@@ -88,7 +88,7 @@ bool XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,
         result_cb=dummy_cb;
     }
     std::lock_guard<std::mutex> lock(m_mutex);
-    RunningParamCmdGetAll running{cmd,result_cb,std::chrono::milliseconds(3000),std::chrono::milliseconds(500),std::chrono::steady_clock::now(),{},10,0};
+    RunningParamCmdGetAll running{cmd,result_cb,opt_progress_cb,std::chrono::milliseconds(3000),std::chrono::milliseconds(500),std::chrono::steady_clock::now(),{},10,0};
     m_running_get_all.push_back(running);
     send_next_message_running_get_all(m_running_get_all.back());
 }
@@ -269,6 +269,7 @@ std::optional<XParam::RunningParamCmdGetAll> XParam::find_remove_running_command
                 // Size is not yet known
                 running.server_param_set.resize(response.param_count);
                 running.server_param_set[response.param_index]=response;
+                update_progress_get_all(running);
             }else{
                 // Size is known, check if we already have this param
                 if(running.server_param_set[response.param_index]!=std::nullopt){
@@ -276,6 +277,7 @@ std::optional<XParam::RunningParamCmdGetAll> XParam::find_remove_running_command
                     return std::nullopt;
                 }else{
                     running.server_param_set[response.param_index]=response;
+                    update_progress_get_all(running);
                     const int missing=get_missing_count(running.server_param_set);
                     if(missing==0){
                         qDebug()<<"No params missing, total:"<<running.server_param_set.size();
@@ -362,6 +364,35 @@ int XParam::get_missing_count(const std::vector<std::optional<mavlink_param_ext_
     }
     return ret;
 }
+
+void XParam::update_progress_set(const RunningParamCmdSet &cmd,bool done)
+{
+    if(cmd.opt_progress_cb){
+        if(done){
+            cmd.opt_progress_cb(100.0);
+        }else{
+            const float progress=(float)cmd.n_transmissions/(float)cmd.n_wanted_retransmissions*100.0;
+            cmd.opt_progress_cb(progress);
+        }
+    }
+}
+
+void XParam::update_progress_get_all(const RunningParamCmdGetAll &cmd)
+{
+    if(cmd.opt_progress_cb){
+        float progress=0;
+        if(cmd.server_param_set.size()>0){
+            const int missing=get_missing_count(cmd.server_param_set);
+            if(missing<=0){
+                progress=100;
+            }else{
+                progress= (static_cast<float>(cmd.server_param_set.size()-missing) / static_cast<float>(cmd.server_param_set.size())*100.0f);
+            }
+        }
+        cmd.opt_progress_cb(progress);
+    }
+}
+
 
 void XParam::loop_timeout()
 {

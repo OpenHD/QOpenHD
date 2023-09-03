@@ -1,4 +1,5 @@
 #include "wblinksettingshelper.h"
+#include "xparam.h"
 
 #include "../models/aohdsystem.h"
 #include "mavlinksettingsmodel.h"
@@ -320,6 +321,67 @@ int WBLinkSettingsHelper::get_frequency_pollution(int frequency_mhz)
         return pollution.value().n_foreign_packets;
     }
     return -1;
+}
+
+void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
+{
+    if(!AOHDSystem::instanceAir().is_alive()){
+        HUDLogMessagesModel::instance().add_message_warning("Keyframe change not possible, air unit not alive");
+        return;
+    }
+    auto command1=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA_PRIMARY,"V_KEYFRAME_I",keyframe_interval);
+    auto command2=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA_SECONDARY,"V_KEYFRAME_I",keyframe_interval);
+
+}
+
+void WBLinkSettingsHelper::set_param_fec_percentage_async(int percent)
+{
+    if(!AOHDSystem::instanceAir().is_alive()){
+        HUDLogMessagesModel::instance().add_message_warning("FEC percentage change not possible, air unit not alive");
+        return;
+    }
+    auto command=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,openhd::WB_VIDEO_FEC_PERCENTAGE,percent);
+}
+
+void WBLinkSettingsHelper::set_param_video_resolution_framerate_async(QString res_str)
+{
+    if(!AOHDSystem::instanceAir().is_alive()){
+        HUDLogMessagesModel::instance().add_message_warning("FEC percentage change not possible, air unit not alive");
+        return;
+    }
+    auto command1=XParam::create_cmd_set_string(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA_PRIMARY,"V_FORMAT",res_str.toStdString());
+    auto command2=XParam::create_cmd_set_string(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA_SECONDARY,"V_FORMAT",res_str.toStdString());
+}
+
+void WBLinkSettingsHelper::set_param_air_only_mcs_async(int value)
+{
+    if(!AOHDSystem::instanceAir().is_alive()){
+        HUDLogMessagesModel::instance().add_message_warning("FEC percentage change not possible, air unit not alive");
+        return;
+    }
+    auto command=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,openhd::WB_MCS_INDEX,value);
+}
+
+bool WBLinkSettingsHelper::set_param_tx_power(bool is_tx_power_index, bool is_for_armed_state, int value)
+{
+    /*qDebug()<<"set_param_tx_power "<<(is_tx_power_index ? "IDX" : "MW")<<" "<<(is_for_armed_state ? "ARMED" : "DISARMED")<<" "<<value;
+    std::string param_id="";
+    if(is_tx_power_index){
+        if(is_for_armed_state){
+            param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_ARMED;
+        }else{
+            param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_OVERRIDE;
+        }
+    }else{
+        if(is_for_armed_state){
+            param_id=openhd::WB_TX_POWER_MILLI_WATT_ARMED;
+        }else{
+            param_id=openhd::WB_TX_POWER_MILLI_WATT;
+        }
+    }
+    const auto ret=try_update_parameter_int(param_id.c_str(),value);
+    if(ret=="")return true;
+    return false;*/
 }
 
 void WBLinkSettingsHelper::log_result_message(const std::string &result_message, bool use_hud)

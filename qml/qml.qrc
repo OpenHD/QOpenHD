@@ -256,5 +256,6 @@
         <file>ui/elements/FlightModeSlider.qml</file>
         <file>ui/elements/ArmDisarmSlider.qml</file>
         <file>ui/configpopup/status/QOpenHDServiceDialoque.qml</file>
+        <file>ui/elements/SimpleProgressBar.qml</file>
     </qresource>
 </RCC>

@@ -21,6 +21,10 @@ public:
      */
     bool process_message(const mavlink_message_t& msg);
 public:
+    // Progress CB - no heavy load must be performed on the progress cb,
+    // as well as any try_() method since lock might be hold
+    typedef std::function<void(float progress_perc)> PROGRESS_CB;
+
     // Not easy to use API, but exposes pretty much all info one could need
     struct SetParamResult{
         // Response from the recipient, if there is any (otherwise, the message got lost on each re-transmit)
@@ -32,7 +36,7 @@ public:
         }
     };
     typedef std::function<void(SetParamResult result)> SET_PARAM_RESULT_CB;
-    bool try_set_param_async(const mavlink_param_ext_set_t cmd,SET_PARAM_RESULT_CB result,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
+    bool try_set_param_async(const mavlink_param_ext_set_t cmd,SET_PARAM_RESULT_CB result,PROGRESS_CB opt_progress_cb=nullptr,std::chrono::milliseconds retransmit_delay=std::chrono::milliseconds(500),int n_wanted_retransmissions=3);
     bool try_set_param_blocking(const mavlink_param_ext_set_t cmd);
 
     struct GetAllParamResult{
@@ -41,7 +45,7 @@ public:
         std::vector<mavlink_param_ext_value_t> param_set;
     };
     typedef std::function<void(GetAllParamResult result)> GET_ALL_PARAM_RESULT_CB;
-    bool try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,GET_ALL_PARAM_RESULT_CB result_cb);
+    void try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,GET_ALL_PARAM_RESULT_CB result_cb,PROGRESS_CB opt_progress_cb=nullptr);
     std::optional<std::vector<mavlink_param_ext_value_t>> try_get_param_all_blocking(const int target_sysid,const int target_compid);
 public:
     static mavlink_param_ext_set_t create_cmd_set_int(int target_sysid,int target_compid,std::string param_name,int value);
@@ -71,6 +75,7 @@ private:
     struct RunningParamCmdSet{
         mavlink_param_ext_set_t cmd;
         SET_PARAM_RESULT_CB cb;
+        PROGRESS_CB opt_progress_cb;
         // How often this command should be retransmitted
         int n_wanted_retransmissions;
         // Delay between each retransmission
@@ -84,6 +89,7 @@ private:
     struct RunningParamCmdGetAll{
         mavlink_param_ext_request_list_t base_cmd;
         GET_ALL_PARAM_RESULT_CB cb;
+        PROGRESS_CB opt_progress_cb;
         std::chrono::milliseconds max_delay_until_timeout;
         std::chrono::milliseconds retransmit_delay;
         std::chrono::steady_clock::time_point last_transmission=std::chrono::steady_clock::now();
@@ -111,6 +117,8 @@ private:
     void send_param_ext_request_list(const mavlink_param_ext_request_list_t& cmd);
     void send_param_ext_request_read(const mavlink_param_ext_request_read_t& cmd);
     static int get_missing_count(const std::vector<std::optional<mavlink_param_ext_value_t>>& server_param_set);
+    void update_progress_set(const RunningParamCmdSet& cmd,bool done);
+    void update_progress_get_all(const RunningParamCmdGetAll& cmd);
 private:
     std::list<RunningParamCmdSet> m_running_commands;
     std::list<RunningParamCmdGetAll> m_running_get_all;

@@ -59,7 +59,7 @@ AOHDSystem &AOHDSystem::instanceGround()
 
 bool AOHDSystem::process_message(const mavlink_message_t &msg)
 {
-    if(msg.sysid != get_own_sys_id()){
+    if(msg.sysid != get_own_sys_id()){ // improper usage
         qDebug()<<"AOHDSystem::process_message: wron sys id";
         return false;
     }
