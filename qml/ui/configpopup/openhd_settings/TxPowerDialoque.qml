@@ -363,14 +363,13 @@ the card driver doesn't support changing it.");
                             _messageBoxInstance.set_text_and_show("Please select a valid tx power",5);
                             return;
                         }
-
                         var success=false
                         var is_tx_power_index_unit = m_card_chip_type==0;
 
                         if(m_is_ground){
-                            success = _ohdSystemGroundSettings.set_param_tx_power(is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
+                            _wbLinkSettingsHelper.set_param_tx_power(true,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
                         }else{
-                            success = _ohdSystemAirSettingsModel.set_param_tx_power(is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
+                            _wbLinkSettingsHelper.set_param_tx_power(false,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
                         }
                         if(success==true){
                             txPowerDialoque.visible=false;

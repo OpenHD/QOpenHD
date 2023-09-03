@@ -101,7 +101,7 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
             remove_and_replace_param_set(param_set);
             if(log_result)WorkaroundMessageBox::makePopupMessage("Fetch all success",2);
         }else{
-            if(log_result)WorkaroundMessageBox::makePopupMessage("Fetch all failed",2);
+            if(log_result)WorkaroundMessageBox::makePopupMessage("Fetch all failed, please check your up / downlink.",2);
         }
         m_is_currently_busy=false;
     };

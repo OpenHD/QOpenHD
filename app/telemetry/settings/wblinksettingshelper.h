@@ -103,10 +103,12 @@ public:
     // and use the broadcasted value(s) to update the UI
     Q_INVOKABLE void set_param_keyframe_interval_async(int keyframe_interval);
     Q_INVOKABLE void set_param_fec_percentage_async(int percent);
-    Q_INVOKABLE void set_param_video_resolution_framerate_async(QString res_str);
+    Q_INVOKABLE void set_param_video_resolution_framerate_async(bool primary,QString res_str);
     Q_INVOKABLE void set_param_air_only_mcs_async(int value);
     // Extra
-    Q_INVOKABLE bool set_param_tx_power(bool is_tx_power_index,bool is_for_armed_state,int value);
+    Q_INVOKABLE bool set_param_tx_power(bool ground,bool is_tx_power_index,bool is_for_armed_state,int value);
+private:
+    void change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag);
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
 private:

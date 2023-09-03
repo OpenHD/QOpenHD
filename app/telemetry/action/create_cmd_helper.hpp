@@ -19,6 +19,8 @@ static mavlink_command_long_t create_cmd_reboot(int target_sysid,int target_comp
 static mavlink_command_long_t create_cmd_request_message(int target_sysid,int target_compid,int message_id){
     mavlink_command_long_t command{};
     command.command=MAV_CMD_REQUEST_MESSAGE;
+    command.target_system=target_sysid;
+    command.target_component=target_compid;
     command.param1=static_cast<float>(message_id);
     return command;
 }

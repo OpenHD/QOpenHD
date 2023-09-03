@@ -47,19 +47,9 @@ BaseWidget {
 
     function set_camera_resolution(resolution_str){
         if(m_is_for_primary_camera){
-           var success= _airCameraSettingsModel.set_param_video_resolution_framerate(resolution_str)
-            if(!success){
-                _hudLogMessagesModel.add_message_warning("Cannot change camera 1 resolutin");
-            }else{
-                //m_curr_video_format=resolution_str;
-            }
+           _wbLinkSettingsHelper.set_param_video_resolution_framerate_async(true,resolution_str)
         }else{
-            var success= _airCameraSettingsModel2.set_param_video_resolution_framerate(resolution_str)
-             if(!success){
-                _hudLogMessagesModel.add_message_warning("Cannot change camera 2 resolutin");
-            }else{
-                //m_curr_video_format=resolution_str;
-            }
+            _wbLinkSettingsHelper.set_param_video_resolution_framerate_async(false,resolution_str)
         }
     }
 

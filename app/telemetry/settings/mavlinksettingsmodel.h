@@ -43,7 +43,7 @@ public:
     // callable from QT.
     // async with progress bar and result being prompted to the user
     // re-fetches the complete param set - any changed values, types, ... are catched from it
-    Q_INVOKABLE void try_refetch_all_parameters_async(bool log_result=false);
+    Q_INVOKABLE void try_refetch_all_parameters_async(bool log_result=true);
 
     // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
     enum class SetParamResult{

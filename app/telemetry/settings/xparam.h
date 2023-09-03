@@ -7,6 +7,7 @@
 #include <optional>
 #include <thread>
 #include <functional>
+#include <vector>
 
 #include "../util/mavlink_include.h"
 
@@ -32,7 +33,7 @@ public:
         // How often this command was transmitted until success / failure
         int n_transmissions=-1;
         bool is_accepted(){
-            return response.has_value() && response.value().param_result==MAV_RESULT_ACCEPTED;
+            return response.has_value() && response.value().param_result==PARAM_ACK_ACCEPTED;
         }
     };
     typedef std::function<void(SetParamResult result)> SET_PARAM_RESULT_CB;

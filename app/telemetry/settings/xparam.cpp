@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <sstream>
+#include <future>
 
 #include <qdebug.h>
 #include "../MavlinkTelemetry.h"

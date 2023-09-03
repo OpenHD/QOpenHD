@@ -47,7 +47,7 @@ Rectangle {
         anchors.top: parent.top
         visible: m_progress_perc>=0 && m_progress_perc<=100
         impl_curr_progress_perc: m_progress_perc
-        impl_curr_color: m_progress_perc>=100 ? "green" : "blue"
+        //impl_curr_color: m_progress_perc>=100 ? "green" : "blue"
     }
 
     RowLayout{
