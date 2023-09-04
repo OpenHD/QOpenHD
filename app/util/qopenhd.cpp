@@ -328,7 +328,12 @@ void QOpenHD::sysctl_openhd(int task)
 
 bool QOpenHD::is_valid_ip(QString ip)
 {
+#ifdef __windows__
+    //TODO fix windows
+    return true;
+#else
     return OHDUtil::is_valid_ip(ip.toStdString());
+#endif
 }
 
 

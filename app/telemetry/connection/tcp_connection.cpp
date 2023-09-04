@@ -1,9 +1,10 @@
 #include "tcp_connection.h"
-
+#ifdef __windows__
+#else
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-
+#endif
 #include <qdebug.h>
 #include <unistd.h>
 
@@ -28,10 +29,13 @@ void TCPConnection::start()
 void TCPConnection::stop()
 {
     m_keep_receiving=false;
+#ifdef __windows__
+#else
     // This should interrupt a recv/recvfrom call.
     shutdown(m_socket_fd, SHUT_RDWR);
     // But on Mac, closing is also needed to stop blocking recv/recvfrom.
     close(m_socket_fd);
+#endif
     if(m_receive_thread){
         m_receive_thread->join();
     }
@@ -40,6 +44,8 @@ void TCPConnection::stop()
 
 void TCPConnection::send_message(const mavlink_message_t &msg)
 {
+#ifdef __windows__
+#else
     struct sockaddr_in dest_addr {};
     dest_addr.sin_family = AF_INET;
     inet_pton(AF_INET, m_remote_ip.c_str(), &dest_addr.sin_addr.s_addr);
@@ -62,6 +68,7 @@ void TCPConnection::send_message(const mavlink_message_t &msg)
     if (send_len != buffer_len) {
         qDebug()<<"Cannot send message";
     }
+#endif
 }
 
 void TCPConnection::process_data(const uint8_t *data, int data_len)
@@ -92,6 +99,8 @@ void TCPConnection::loop_receive()
 
 void TCPConnection::connect_once()
 {
+#ifdef __windows__
+#else
     m_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (m_socket_fd < 0) {
@@ -128,5 +137,5 @@ void TCPConnection::connect_once()
         }
         process_data(buffer,recv_len);
     }
-
+#endif
 }

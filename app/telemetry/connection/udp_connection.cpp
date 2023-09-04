@@ -1,11 +1,27 @@
 #include "udp_connection.h"
 
+#ifdef __windows__
+#define _WIN32_WINNT 0x0600 //TODO dirty
+#include <winsock2.h>
+#include <Ws2tcpip.h> // For InetPton
+#else
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#endif
 
 #include <qdebug.h>
 #include <unistd.h>
+
+#ifdef WINDOWS
+#define GET_ERROR(_x) WSAGetLastError()
+#else
+#define GET_ERROR(_x) strerror(_x)
+#endif
+
+#ifdef __windows__
+#endif
+
 
 UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb)
     :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb)
@@ -29,12 +45,19 @@ void UDPConnection::stop()
 {
     qDebug()<<"UDP stop - begin";
     m_keep_receiving=false;
+#ifdef __windows__
+    shutdown(m_socket_fd, SD_BOTH);
+
+    closesocket(m_socket_fd);
+
+    WSACleanup();
+#else
     // This should interrupt a recv/recvfrom call.
     shutdown(m_socket_fd, SHUT_RDWR);
 
     // But on Mac, closing is also needed to stop blocking recv/recvfrom.
     close(m_socket_fd);
-
+#endif
     if(m_receive_thread){
         m_receive_thread->join();
     }
@@ -49,7 +72,6 @@ void UDPConnection::send_message(const mavlink_message_t &msg)
         const Remote& remote=opt_remote.value();
         struct sockaddr_in dest_addr {};
         dest_addr.sin_family = AF_INET;
-
         inet_pton(AF_INET, remote.ip.c_str(), &dest_addr.sin_addr.s_addr);
         dest_addr.sin_port = htons(remote.port);
 
@@ -97,6 +119,13 @@ void UDPConnection::loop_receive()
 
 bool UDPConnection::setup_socket()
 {
+#ifdef __windows__
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        qDebug() << "Error: Winsock failed, error: %d", WSAGetLastError();
+        return false;
+    }
+#else
     m_socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (m_socket_fd < 0) {
@@ -119,6 +148,7 @@ bool UDPConnection::setup_socket()
         qDebug()<<"Cannot bind port "<<strerror(errno);
         return false;
     }
+#endif
     return true;
 }
 
@@ -134,7 +164,7 @@ void UDPConnection::connect_once()
             socklen_t src_addr_len = sizeof(src_addr);
             const auto recv_len = recvfrom(
                 m_socket_fd,
-                buffer,
+                (char*)buffer,
                 sizeof(buffer),
                 0,
                 reinterpret_cast<struct sockaddr*>(&src_addr),

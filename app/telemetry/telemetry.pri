@@ -33,19 +33,15 @@ HEADERS += \
     $$PWD/action/fcmsgintervalhandler.h \
     $$PWD/action/ohdaction.h \
     $$PWD/connection/tcp_connection.h \
-    $$PWD/link/mudplink.h \
     $$PWD/settings/documentedparam.h \
     $$PWD/action/impl/xparam.h \
     $$PWD/util/geodesi_helper.h \
     $$PWD/util/mavlink_enum_to_string.h \
-    $$PWD//util/mavsdk_helper.hpp \
-    $$PWD//util/mavsdk_include.h \
     $$PWD//util/openhd_defines.hpp \
     $$PWD//util/qopenhdmavlinkhelper.hpp \
     $$PWD//util/telemetryutil.hpp \
     $$PWD/util/mavlink_include.h \
     $$PWD/models/fcmapmodel.h \
-    $$PWD/models/fcmessageintervalhelper.hpp \
     $$PWD/settings/wblinksettingshelper.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/camerastreammodel.h \
@@ -57,6 +53,9 @@ HEADERS += \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \
     app/telemetry/models/fcmavlinkmissionitemsmodel.h \
-    app/telemetry/models/fcmessageintervalhelper.hpp \
 
 DEFINES += QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
+
+WindowsBuild{
+    LIBS += -lws2_32
+}

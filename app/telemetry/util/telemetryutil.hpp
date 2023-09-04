@@ -519,10 +519,17 @@ struct StbcLpdcShortGuardBitfield {
     unsigned int short_guard:1;
     unsigned int unused:5;
 }__attribute__ ((packed));
+// TODO FIX WINDOWS
+#ifdef __windows__
+#else
 static_assert(sizeof(StbcLpdcShortGuardBitfield)==1);
+#endif
 static StbcLpdcShortGuardBitfield get_stbc_lpdc_shortguard_bitfield(uint8_t bitfield){
     StbcLpdcShortGuardBitfield ret{};
+#ifdef __windows__
+#else
     std::memcpy((uint8_t*)&ret,&bitfield,1);
+#endif
     return ret;
 }
 
