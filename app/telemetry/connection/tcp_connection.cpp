@@ -5,12 +5,18 @@
 #include <sys/socket.h>
 
 #include <qdebug.h>
+#include <unistd.h>
 
 
 TCPConnection::TCPConnection(const std::string remote_ip, const int remote_port, MAV_MSG_CB cb)
     :m_remote_ip(remote_ip),m_remote_port(remote_port),m_cb(cb)
 {
 
+}
+
+TCPConnection::~TCPConnection()
+{
+    stop();
 }
 
 void TCPConnection::start()
@@ -22,6 +28,10 @@ void TCPConnection::start()
 void TCPConnection::stop()
 {
     m_keep_receiving=false;
+    // This should interrupt a recv/recvfrom call.
+    shutdown(m_socket_fd, SHUT_RDWR);
+    // But on Mac, closing is also needed to stop blocking recv/recvfrom.
+    close(m_socket_fd);
     if(m_receive_thread){
         m_receive_thread->join();
     }
@@ -36,12 +46,11 @@ void TCPConnection::send_message(const mavlink_message_t &msg)
     dest_addr.sin_port = htons(m_remote_port);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    uint16_t buffer_len = mavlink_msg_to_send_buffer(buffer, &msg);
+    const uint16_t buffer_len = mavlink_msg_to_send_buffer(buffer, &msg);
 
     // TODO: remove this assert again
     assert(buffer_len <= MAVLINK_MAX_PACKET_LEN);
-
-     auto flags = MSG_NOSIGNAL;
+    auto flags = MSG_NOSIGNAL;
     const auto send_len = sendto(
         m_socket_fd,
         reinterpret_cast<char*>(buffer),
@@ -75,13 +84,14 @@ void TCPConnection::loop_receive()
 {
     while (m_keep_receiving) {
         connect_once();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if(m_keep_receiving)std::this_thread::sleep_for(std::chrono::seconds(1));// try again in 1 second
     }
 }
 
 
 void TCPConnection::connect_once()
 {
+    qDebug()<<"TCP start on "<<m_remote_ip.c_str()<<":"<<m_remote_port;
     m_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (m_socket_fd < 0) {

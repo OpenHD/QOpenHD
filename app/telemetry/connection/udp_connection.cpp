@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 
 #include <qdebug.h>
+#include <unistd.h>
 
 UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb)
     :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb)
@@ -12,43 +13,33 @@ UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV
 
 }
 
-
-bool UDPConnection::start()
+UDPConnection::~UDPConnection()
 {
-    m_socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    stop();
+}
 
-    if (m_socket_fd < 0) {
-        qDebug()<<"Cannot create socket"<<strerror(errno);
-        return false;
-    }
 
-    struct sockaddr_in addr {};
-    addr.sin_family = AF_INET;
-    inet_pton(AF_INET, m_local_ip.c_str(), &(addr.sin_addr));
-    addr.sin_port = htons(m_local_port);
-
-    // TODO needed ?
-    // Without setting reuse, this might block infinite on some platforms
-    /*int enable = 1;
-    if (setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
-        LogWarn()<<"Cannot set socket reuse"; // warn,but continue anyway.
-    }*/
-    if (bind(m_socket_fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
-        qDebug()<<"Cannot bind port "<<strerror(errno);
-        return false;
-    }
+void UDPConnection::start()
+{
     m_keep_receiving=true;
     m_receive_thread=std::make_unique<std::thread>(&UDPConnection::loop_receive,this);
-    return true;
 }
 
 void UDPConnection::stop()
 {
+    qDebug()<<"UDP stop - begin";
     m_keep_receiving=false;
+    // This should interrupt a recv/recvfrom call.
+    shutdown(m_socket_fd, SHUT_RDWR);
+
+    // But on Mac, closing is also needed to stop blocking recv/recvfrom.
+    close(m_socket_fd);
+
     if(m_receive_thread){
         m_receive_thread->join();
     }
     m_receive_thread=nullptr;
+    qDebug()<<"UDP stop - end";
 }
 
 void UDPConnection::send_message(const mavlink_message_t &msg)
@@ -97,38 +88,80 @@ void UDPConnection::process_mavlink_message(mavlink_message_t message)
 
 void UDPConnection::loop_receive()
 {
-    // Enough for MTU 1500 bytes.
-    uint8_t buffer[2048];
-
-    while (m_keep_receiving) {
-        struct sockaddr_in src_addr = {};
-        socklen_t src_addr_len = sizeof(src_addr);
-        const auto recv_len = recvfrom(
-            m_socket_fd,
-            buffer,
-            sizeof(buffer),
-            0,
-            reinterpret_cast<struct sockaddr*>(&src_addr),
-            &src_addr_len);
-        //qDebug()<<"Gt data";
-
-        if (recv_len == 0) {
-            // This can happen when shutdown is called on the socket,
-            // therefore we check _should_exit again.
-            continue;
-        }
-
-        if (recv_len < 0) {
-            // This happens on destruction when close(_socket_fd) is called,
-            // therefore be quiet.
-            // LogErr() << "recvfrom error: " << GET_ERROR(errno);
-            continue;
-        }
-        const std::string remote_ip=inet_ntoa(src_addr.sin_addr);
-        const int remote_port=ntohs(src_addr.sin_port);
-        set_remote(remote_ip,remote_port);
-        process_data(buffer,recv_len);
+    while(m_keep_receiving){
+        qDebug()<<"UDP start receiving on "<<m_local_ip.c_str()<<":"<<m_local_port;
+        connect_once();
+        if(m_keep_receiving)std::this_thread::sleep_for(std::chrono::seconds(1));// try again in 1 second
     }
+}
+
+bool UDPConnection::setup_socket()
+{
+    m_socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (m_socket_fd < 0) {
+        qDebug()<<"Cannot create socket"<<strerror(errno);
+        return false;
+    }
+
+    struct sockaddr_in addr {};
+    addr.sin_family = AF_INET;
+    inet_pton(AF_INET, m_local_ip.c_str(), &(addr.sin_addr));
+    addr.sin_port = htons(m_local_port);
+
+    // TODO needed ?
+    // Without setting reuse, this might block infinite on some platforms
+    /*int enable = 1;
+    if (setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+        LogWarn()<<"Cannot set socket reuse"; // warn,but continue anyway.
+    }*/
+    if (bind(m_socket_fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
+        qDebug()<<"Cannot bind port "<<strerror(errno);
+        return false;
+    }
+    return true;
+}
+
+void UDPConnection::connect_once()
+{
+    const bool success=setup_socket();
+    if(success){
+        // Enough for MTU 1500 bytes.
+        uint8_t buffer[2048];
+
+        while (m_keep_receiving) {
+            struct sockaddr_in src_addr = {};
+            socklen_t src_addr_len = sizeof(src_addr);
+            const auto recv_len = recvfrom(
+                m_socket_fd,
+                buffer,
+                sizeof(buffer),
+                0,
+                reinterpret_cast<struct sockaddr*>(&src_addr),
+                &src_addr_len);
+            //qDebug()<<"Gt data";
+
+            if (recv_len == 0) {
+                // This can happen when shutdown is called on the socket,
+                // therefore we check _should_exit again.
+                continue;
+            }
+
+            if (recv_len < 0) {
+                // This happens on destruction when close(_socket_fd) is called,
+                // therefore be quiet.
+                // LogErr() << "recvfrom error: " << GET_ERROR(errno);
+                continue;
+            }
+            const std::string remote_ip=inet_ntoa(src_addr.sin_addr);
+            const int remote_port=ntohs(src_addr.sin_port);
+            set_remote(remote_ip,remote_port);
+            process_data(buffer,recv_len);
+        }
+    }
+    // TODO close socket
+    // set the remote back to unknown
+    clear_remote();
 }
 
 std::optional<UDPConnection::Remote> UDPConnection::get_current_remote()
@@ -156,5 +189,11 @@ void UDPConnection::set_remote(const std::string ip, int port)
         qDebug()<<"Got remote "<<new_remote.to_string().c_str();
         m_curr_remote=new_remote;
     }
+}
+
+void UDPConnection::clear_remote()
+{
+    std::lock_guard<std::mutex> lock(m_remote_nutex);
+    m_curr_remote=std::nullopt;
 }
 

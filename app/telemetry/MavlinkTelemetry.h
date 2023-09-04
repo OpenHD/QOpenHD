@@ -12,6 +12,7 @@
 #include "../common/TimeHelper.hpp"
 
 #include "connection/udp_connection.h"
+#include "connection/tcp_connection.h"
 
 /**
  * Changed: Used to have custom UDP and TCP stuff, but now just uses MAVSDK - MAVSDK already has both TCP and UDP support.
@@ -59,10 +60,6 @@ private:
     void process_broadcast_message_fc(const mavlink_message_t& msg);
     // timesync is handled extra independently
     void process_message_timesync(const mavlink_message_t &msg);
-    // The mavsdk tcp connect does block, we therefore need to do it in its own thread
-    // (not block the UI thread)
-    void tcp_only_establish_connection();
-    std::unique_ptr<std::thread> m_tcp_connect_thread= nullptr;
     int64_t m_tele_received_bytes=0;
     int64_t m_tele_received_packets=0;
     BitrateCalculator2 m_tele_bitrate_in;
@@ -85,7 +82,8 @@ public:
 public:
     Q_INVOKABLE void add_tcp_connection_handler(QString ip);
 private:
-    std::unique_ptr<UDPConnection> m_udp_connection;
+    std::unique_ptr<UDPConnection> m_udp_connection=nullptr;
+    std::unique_ptr<TCPConnection> m_tcp_connection=nullptr;
     bool m_fc_found=false;
     int m_fc_sys_id=-1;
     int m_fc_comp_id=-1;

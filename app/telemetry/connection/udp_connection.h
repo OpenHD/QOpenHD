@@ -21,8 +21,9 @@ class UDPConnection
 public:
     typedef std::function<void(mavlink_message_t msg)> MAV_MSG_CB;
     UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb);
+    ~UDPConnection();
 
-    bool start();
+    void start();
 
     void stop();
 
@@ -31,6 +32,8 @@ private:
     void process_data(const uint8_t* data,int data_len);
     void process_mavlink_message(mavlink_message_t msg);
     void loop_receive();
+    bool setup_socket();
+    void connect_once();
     struct Remote{
         std::string ip;
         int port;
@@ -42,6 +45,7 @@ private:
     };
     std::optional<Remote> get_current_remote();
     void set_remote(const std::string ip,int port);
+    void clear_remote();
 private:
     const std::string m_local_ip;
     const int m_local_port;

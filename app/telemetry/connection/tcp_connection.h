@@ -16,6 +16,7 @@ class TCPConnection
 public:
     typedef std::function<void(mavlink_message_t msg)> MAV_MSG_CB;
     TCPConnection(const std::string remote_ip,const int remote_port,MAV_MSG_CB cb);
+    ~TCPConnection();
 
     void start();
     void stop();
