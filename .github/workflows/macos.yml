@@ -1,0 +1,44 @@
+name: Build MacOS
+
+on:
+  push:
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    defaults:
+      run:
+        working-directory: src
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+
+    - name: Install create-dmg
+      run: brew install create-dmg
+    
+
+    - name: Build
+      # Build your program with the given configuration
+      run: |
+        mkdir build
+        cd build
+        qmake CONFIG+=release ..\QOpenHD.pro
+        ls -a
+        create-dmg QOpenHD.dmg QOpenHD.app
+
+
+    - name: Upload to Github  
+      uses: 'actions/upload-artifact@v3'
+      with:
+        name: "OpenHD Image Writer"
+        path: |
+          /Users/runner/work/OpenHD-ImageWriter/OpenHD-ImageWriter/build/QOpenHD.dmg
+        if-no-files-found: error
