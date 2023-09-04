@@ -21,8 +21,8 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
 
-    - name: Install create-dmg
-      run: brew install create-dmg
+    # - name: Install create-dmg
+    #   run: brew install create-dmg
     
 
     - name: Build
@@ -32,7 +32,6 @@ jobs:
         cd build
         qmake CONFIG+=release ..\QOpenHD.pro
         ls -a
-        create-dmg QOpenHD.dmg QOpenHD.app
 
 
     - name: Upload to Github  
@@ -40,5 +39,4 @@ jobs:
       with:
         name: "OpenHD Image Writer"
         path: |
-          /Users/runner/work/OpenHD-ImageWriter/OpenHD-ImageWriter/build/QOpenHD.dmg
-        if-no-files-found: error
+          *.app
