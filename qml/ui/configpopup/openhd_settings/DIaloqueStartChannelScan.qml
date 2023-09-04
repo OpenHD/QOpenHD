@@ -162,6 +162,9 @@ Card {
             anchors.fill: parent
             visible: m_curr_index==1
             Button{
+                Layout.preferredWidth: 140
+                Layout.alignment: Qt.AlignLeft
+                Layout.leftMargin: 12
                 text:  qsTr("Cancel")
                 visible: m_curr_index==1
                 onPressed: {
@@ -169,6 +172,9 @@ Card {
                 }
             }
             Button{
+                Layout.preferredWidth: 140
+                Layout.alignment: Qt.AlignRight
+                Layout.rightMargin: 12
                 text:  qsTr("Initiate")
                 onPressed: {
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
@@ -188,6 +194,9 @@ Card {
             anchors.fill: parent
             visible: m_curr_index==2
             Button{
+                Layout.preferredWidth: 140
+                Layout.alignment: Qt.AlignRight
+                Layout.rightMargin: 12
                 text:  qsTr("Close")
                 onPressed: {
                     dialoqueStartChannelScan.visible=false;
