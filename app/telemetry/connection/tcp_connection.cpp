@@ -83,15 +83,15 @@ void TCPConnection::process_mavlink_message(mavlink_message_t message)
 void TCPConnection::loop_receive()
 {
     while (m_keep_receiving) {
+        qDebug()<<"TCP start on "<<m_remote_ip.c_str()<<":"<<m_remote_port;
         connect_once();
-        if(m_keep_receiving)std::this_thread::sleep_for(std::chrono::seconds(1));// try again in 1 second
+        if(m_keep_receiving)std::this_thread::sleep_for(std::chrono::seconds(2));// try again in X seconds
     }
 }
 
 
 void TCPConnection::connect_once()
 {
-    qDebug()<<"TCP start on "<<m_remote_ip.c_str()<<":"<<m_remote_port;
     m_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (m_socket_fd < 0) {

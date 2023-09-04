@@ -91,7 +91,7 @@ void UDPConnection::loop_receive()
     while(m_keep_receiving){
         qDebug()<<"UDP start receiving on "<<m_local_ip.c_str()<<":"<<m_local_port;
         connect_once();
-        if(m_keep_receiving)std::this_thread::sleep_for(std::chrono::seconds(1));// try again in 1 second
+        if(m_keep_receiving)std::this_thread::sleep_for(std::chrono::seconds(2));// try again in X seconds
     }
 }
 
