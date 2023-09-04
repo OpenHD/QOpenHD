@@ -8,10 +8,10 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #endif
 
 #include <qdebug.h>
-#include <unistd.h>
 
 #ifdef WINDOWS
 #define GET_ERROR(_x) WSAGetLastError()

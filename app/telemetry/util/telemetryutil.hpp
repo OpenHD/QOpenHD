@@ -10,6 +10,7 @@
 #include "mavlink_enum_to_string.h"
 #include <cstring>
 #include <optional>
+#include <array>
 
 // Various utility methods for telemetry that are static and take simple imputs.
 namespace Telemetryutil{
@@ -518,7 +519,12 @@ struct StbcLpdcShortGuardBitfield {
     unsigned int lpdc:1;
     unsigned int short_guard:1;
     unsigned int unused:5;
-}__attribute__ ((packed));
+}
+#ifdef __windows__
+;
+#else
+__attribute__ ((packed));
+#endif
 // TODO FIX WINDOWS
 #ifdef __windows__
 #else

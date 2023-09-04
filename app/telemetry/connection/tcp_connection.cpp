@@ -4,9 +4,9 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #endif
 #include <qdebug.h>
-#include <unistd.h>
 
 
 TCPConnection::TCPConnection(const std::string remote_ip, const int remote_port, MAV_MSG_CB cb)
