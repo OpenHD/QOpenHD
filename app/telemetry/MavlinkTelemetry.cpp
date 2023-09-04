@@ -55,6 +55,7 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     }else{
         if(m_tcp_connection){
             m_tcp_connection->send_message(msg);
+            return true;
         }
     }
     return false;
@@ -217,12 +218,11 @@ void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
 
 void MavlinkTelemetry::add_tcp_connection_handler(QString ip)
 {
+    qDebug()<<"MavlinkTelemetry::add_tcp_connection_handler"<<ip;
     QSettings settings;
-    //settings.setValue("dev_mavlink_via_tcp",true);
     settings.setValue("dev_mavlink_tcp_ip",ip);
-    if(m_udp_connection!=nullptr){
-        m_udp_connection=nullptr;
-    }
+    // Stop udp (if currently running)
+    m_udp_connection=nullptr;
     auto cb_tcp=[this](mavlink_message_t msg){
         process_mavlink_message(msg);
     };
