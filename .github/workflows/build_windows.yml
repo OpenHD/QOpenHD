@@ -59,7 +59,7 @@ jobs:
       #   with:
       #     name: "QOpenHD"
       #     path: |
-      #       *.7z
+      #       *.exe
 
               
               
