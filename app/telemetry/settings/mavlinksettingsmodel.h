@@ -100,6 +100,17 @@ private:
     SetParamResult try_set_param_int_impl(const QString param_id,int value);
     SetParamResult try_set_param_string_impl(const QString param_id,QString value);
 public:
+    struct ParamIntEnum{
+        bool valid;
+        QStringList keys;
+        QList<int>  values;
+    };
+    struct ParamStringEnum{
+        bool valid;
+        QStringList keys;
+        QStringList values;
+    };
+public:
     // These are for the UI to query more data about a specific params
     Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;
     Q_INVOKABLE QString string_enum_get_readable(QString param_id,QString value)const;
@@ -116,11 +127,13 @@ public:
     // Should only be called when we actually have an enum mapping for this param
     Q_INVOKABLE QStringList int_param_get_enum_keys(QString param_id)const;
     Q_INVOKABLE QList<int> int_param_get_enum_values(QString param_id)const;
+    Q_INVOKABLE ParamIntEnum int_param_get_enum(QString param_id)const;
 
     // similar to above, find a better solution
     Q_INVOKABLE bool string_param_has_enum(QString param_id)const;
     Q_INVOKABLE QStringList string_param_get_enum_keys(QString param_id)const;
     Q_INVOKABLE QStringList string_param_get_enum_values(QString param_id)const;
+    Q_INVOKABLE ParamStringEnum string_param_get_enum(QString param_id)const;
 
     // For some parameters, we have a string that is displayed to the user when he wants to edit this param
     // just too be sure he understands the risks
@@ -151,6 +164,8 @@ private:
     std::atomic_bool m_is_currently_busy=false;
 };
 
+Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamIntEnum);
+Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamStringEnum);
 Q_DECLARE_METATYPE(MavlinkSettingsModel::QtParamValue);
 Q_DECLARE_METATYPE(MavlinkSettingsModel::QtParamSet);
 

@@ -214,8 +214,11 @@ Only enable if you want to quickly change your ground unit's frequency to the al
 Only enable if you want to quickly change your ground unit's channel width to the already set channel width of a running air unit (And know both frequency and channel width on top of your head)"
 
 
-    property string more_info_text: "After flashing,openhd uses the same default frequency, and your air and ground unit automatically connect."+
+    /*property string more_info_text: "After flashing,openhd uses the same default frequency, and your air and ground unit automatically connect."+
     "If you change the frequency / channel width here, both air and ground unit are set to the new frequency."+
+"If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."*/
+    property string more_info_text: "Here you can easily change the openhd link frequency/bandwidth of you air and ground unit."+
+"After flashing, both air and ground unit start on the same frequency and automatically connect."+
 "If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
 
     property string find_air_unit_text:"Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels, and we need to listen on each of them for a short timespan)"
@@ -247,6 +250,17 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
     function change_frequency_or_channel_width_sync_otherwise_handle_error(frequency_mhz,channel_width_mhz){
         if(frequency_mhz>0 && channel_width_mhz>0){
             console.log("Use this method to change either of both !");
+            return;
+        }
+        // Ground needs to be alive and well
+        if(!_ohdSystemGround.is_alive){
+            _messageBoxInstance.set_text_and_show("Ground unit not alive",5);
+            return;
+        }
+        // FC needs to be disarmed (unless disabled)
+        if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
+            var text="Cannot change channel width while FC is armed.";
+            _messageBoxInstance.set_text_and_show(text,5);
             return;
         }
         var result=-100;
@@ -315,18 +329,18 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
             width: parent.width
             height: rowHeight*7
 
-            ChannelScanDialoque{
+            DIaloqueStartChannelScan{
                 id: dialoqueStartChannelScan
             }
-            FrequencyChangeDialoque{
+            DialoqueFreqChangeFailure{
                 id: dialoqueChangeFrequencyGroundOnly
             }
 
-            DialoqueAnalyzeChannels{
+            DialoqueStartAnalyzeChannels{
                 id: dialoqueAnalyzeChannels
             }
 
-            TxPowerDialoque{
+            DialoqueChangeTxPower{
                 id: txPowerDialoque
             }
 
@@ -520,17 +534,6 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             id: buttonSwitchChannelWidth
                             enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0
                             onClicked: {
-                                // Ground needs to be alive and well
-                                if(!_ohdSystemGround.is_alive){
-                                    _messageBoxInstance.set_text_and_show("Ground unit not alive",5);
-                                    return;
-                                }
-                                // FC needs to be disarmed (unless disabled)
-                                if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change channel width while FC is armed.";
-                                    _messageBoxInstance.set_text_and_show(text,5);
-                                    return;
-                                }
                                 var selectedValue=channel_width_model.get(comboBoxChannelWidth.currentIndex).value
                                 if(!(selectedValue===10 || selectedValue===20 || selectedValue===40 || selectedValue===80)){
                                     _messageBoxInstance.set_text_and_show("Please select a valid channel width",5);
@@ -603,8 +606,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             text: "Find Air unit"
                             enabled: _ohdSystemGround.is_alive
                             onClicked: {
-                                dialoqueStartChannelScan.m_curr_index=0
-                                dialoqueStartChannelScan.visible=true
+                                dialoqueStartChannelScan.open_channel_scan_dialoque()
                             }
                         }
                         ProgressBar{

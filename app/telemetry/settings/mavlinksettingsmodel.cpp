@@ -1,6 +1,5 @@
 ﻿#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
-#include "param_names.h"
 #include "documentedparam.h"
 
 #include "../../util/WorkaroundMessageBox.h"
@@ -59,6 +58,9 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
     : QAbstractListModel(parent),m_sys_id(sys_id),m_comp_id(comp_id)
 {
+    qRegisterMetaType<MavlinkSettingsModel::ParamIntEnum>("ParamIntEnum");
+    qRegisterMetaType<MavlinkSettingsModel::ParamStringEnum>("ParamStringEnum");
+
     qRegisterMetaType<MavlinkSettingsModel::QtParamValue>("QtParamValue");
     qRegisterMetaType<MavlinkSettingsModel::QtParamSet>("QtParamSet");
     //m_data.push_back({"VIDEO_WIDTH",0});
@@ -388,6 +390,21 @@ QList<int> MavlinkSettingsModel::int_param_get_enum_values(QString param_id) con
     return ret;
 }
 
+MavlinkSettingsModel::ParamIntEnum MavlinkSettingsModel::int_param_get_enum(QString param_id) const
+{
+    ParamIntEnum ret{false,{},{}};
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        auto improved=improved_opt.value();
+        ret.values=improved.int_enum_values();
+        ret.keys=improved.int_enum_keys();
+        ret.valid=true;
+        return ret;
+    }
+    qDebug()<<"Error no enum mapping for this int param";
+    return ret;
+}
+
 
 bool MavlinkSettingsModel::string_param_has_enum(QString param_id) const
 {
@@ -417,6 +434,21 @@ QStringList MavlinkSettingsModel::string_param_get_enum_values(QString param_id)
     }
     qDebug()<<"Error no enum mapping for this int param";
     QStringList ret{"ERROR_VALUES"};
+    return ret;
+}
+
+MavlinkSettingsModel::ParamStringEnum MavlinkSettingsModel::string_param_get_enum(QString param_id) const
+{
+    ParamStringEnum ret{false,{},{}};
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
+    if(improved_opt.has_value()){
+        auto improved=improved_opt.value();
+        ret.values=improved.enum_values();
+        ret.keys=improved.enum_keys();
+        ret.valid=true;
+        return ret;
+    }
+    qDebug()<<"Error no enum mapping for this int param";
     return ret;
 }
 

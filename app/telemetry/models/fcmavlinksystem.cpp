@@ -12,7 +12,6 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 
-#include "fcmavlinkmissionitemsmodel.h"
 #include "util/qopenhdmavlinkhelper.hpp"
 #include "util/telemetryutil.hpp"
 

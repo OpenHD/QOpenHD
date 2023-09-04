@@ -62,6 +62,7 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
         m_udp_connection->send_message(msg);
         return true;
     }
+    return false;
 }
 
 static int get_message_size(const mavlink_message_t& msg){

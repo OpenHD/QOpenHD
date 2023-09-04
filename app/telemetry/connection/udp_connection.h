@@ -12,7 +12,7 @@
 #include <functional>
 
 /**
- * @brief Mavlink udp link - follows the semi-established pattern
+ * @brief Mavlink udp connection  - follows the semi-established pattern
  * of using udp, listening but sending responses to whoever supplied
  * us with data
  */
@@ -30,16 +30,7 @@ public:
 private:
     void process_data(const uint8_t* data,int data_len);
     void process_mavlink_message(mavlink_message_t msg);
-
-    std::unique_ptr<std::thread> m_receive_thread=nullptr;
-    std::atomic<bool> m_keep_receiving=false;
     void loop_receive();
-    const std::string m_local_ip;
-    const int m_local_port;
-    int m_socket_fd=-1;
-    mavlink_status_t m_recv_status{};
-    const MAV_MSG_CB m_cb;
-private:
     struct Remote{
         std::string ip;
         int port;
@@ -51,6 +42,14 @@ private:
     };
     std::optional<Remote> get_current_remote();
     void set_remote(const std::string ip,int port);
+private:
+    const std::string m_local_ip;
+    const int m_local_port;
+    const MAV_MSG_CB m_cb;
+    int m_socket_fd=-1;
+    mavlink_status_t m_recv_status{};
+    std::unique_ptr<std::thread> m_receive_thread=nullptr;
+    std::atomic<bool> m_keep_receiving=false;
     std::mutex m_remote_nutex;
     std::optional<Remote> m_curr_remote;
 };

@@ -32,14 +32,6 @@ Rectangle {
 
     property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
 
-    // When we show this UI to the user, and the param set has never been fetched yet, fetch it
-    function fetch_unless_already_visible(){
-        if(m_instanceCheckIsAvlie.is_alive && m_instanceMavlinkSettingsModel.rowCount()<=0 ){
-            console.log("Param set not fetched, fetch");
-            m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async(false)
-        }
-    }
-
     SimpleProgressBar{
         id: fetch_all_progress
         width: parent.width

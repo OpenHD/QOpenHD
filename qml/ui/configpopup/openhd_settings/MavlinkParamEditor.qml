@@ -200,6 +200,9 @@ Rectangle{
             if(instanceMavlinkSettingsModel.string_param_has_enum(parameterId)){
                 console.log(parameterId+" has string enum mapping")
                 // Populate the model with the key,value pairs for this enum
+                //const enum_mapping_string=instanceMavlinkSettingsModel.string_param_get_enum(parameterId);
+                //const keys=enum_mapping_string.keys;
+                //const values=enum_mapping_string.values;
                 const keys=instanceMavlinkSettingsModel.string_param_get_enum_keys(parameterId)
                 const values=instanceMavlinkSettingsModel.string_param_get_enum_values(parameterId);
                 stringEnumDynamicListModel.clear();

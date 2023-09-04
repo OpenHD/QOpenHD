@@ -214,14 +214,13 @@
         <file>ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
-        <file>ui/configpopup/openhd_settings/MavlinkSetupPiCameraPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkExtraWBParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkAllSettingsPanel.qml</file>
-        <file>ui/configpopup/openhd_settings/FrequencyChangeDialoque.qml</file>
-        <file>ui/configpopup/openhd_settings/DialoqueAnalyzeChannels.qml</file>
-        <file>ui/configpopup/openhd_settings/ChannelScanDialoque.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueFreqChangeFailure.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueStartAnalyzeChannels.qml</file>
+        <file>ui/configpopup/openhd_settings/DIaloqueStartChannelScan.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
         <file>ui/configpopup/rc/RcInfoScreen.qml</file>
         <file>ui/configpopup/rc/RcInfoPanel.qml</file>
@@ -236,7 +235,7 @@
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
-        <file>ui/configpopup/openhd_settings/TxPowerDialoque.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueChangeTxPower.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapWidget.qml</file>
@@ -257,5 +256,6 @@
         <file>ui/elements/ArmDisarmSlider.qml</file>
         <file>ui/configpopup/status/QOpenHDServiceDialoque.qml</file>
         <file>ui/elements/SimpleProgressBar.qml</file>
+        <file>ui/elements/ButtonGreen.qml</file>
     </qresource>
 </RCC>
