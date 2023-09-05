@@ -54,8 +54,9 @@ jobs:
               cd
               cd D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\bin\
               cp *.dll D:\a\QOpenHD\QOpenHD\build\release\
+              cd D:\a\QOpenHD\QOpenHD\build\release\
+              mkdir platforms
               cd D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\plugins\platforms\
-              mkdir D:\a\QOpenHD\QOpenHD\build\release\platforms\
               cp *.dll D:\a\QOpenHD\QOpenHD\build\release\platforms\
               cd D:\a\QOpenHD\QOpenHD\build\release\
               ls -a
