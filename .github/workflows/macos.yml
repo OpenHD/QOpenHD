@@ -33,7 +33,7 @@ jobs:
         mkdir build
         cd build
         ls ../
-        qmake CONFIG+=release QOpenHD.pro
+        qmake CONFIG+=release ../QOpenHD.pro
         ls -a
 
 
