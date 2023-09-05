@@ -59,7 +59,7 @@ jobs:
               cd D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\plugins\platforms\
               cp *.dll D:\a\QOpenHD\QOpenHD\build\release\platforms\
               cd D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\qml\
-              cp -r * D:\a\QOpenHD\QOpenHD\build\release\platforms\
+              cp -r * D:\a\QOpenHD\QOpenHD\build\release\
               cd D:\a\QOpenHD\QOpenHD\build\release\
               rm -Rf Qt3D
               rm -Rf QtBluetooth
