@@ -60,6 +60,8 @@ jobs:
           name: "QOpenHD"
           path: |
             ../release/*.exe
+            build/*.exe
+            
 
               
               
