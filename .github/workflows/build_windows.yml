@@ -60,6 +60,7 @@ jobs:
         with:
           name: "QOpenHD"
           path: |
+            D:\a\QOpenHD\QOpenHD\build\*
             D:\a\QOpenHD\QOpenHD\build\release\*.exe
 
 
