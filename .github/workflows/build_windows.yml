@@ -54,12 +54,12 @@ jobs:
               cd ../release
               ls -a
 
-      # - name: Upload to Github
-      #   uses: 'actions/upload-artifact@v2'
-      #   with:
-      #     name: "QOpenHD"
-      #     path: |
-      #       *.exe
+      - name: Upload to Github
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: "QOpenHD"
+          path: |
+            *.exe
 
               
               
