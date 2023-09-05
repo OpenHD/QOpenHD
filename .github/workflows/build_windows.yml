@@ -43,6 +43,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Build
         run:  |
+              ls D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\bin\
               rm -rf build
               mkdir build
               cd build
