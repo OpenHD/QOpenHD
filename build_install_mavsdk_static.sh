@@ -3,9 +3,5 @@
 # NOTE: requires cloning with --recurse-submodules
 # Build and install MAVSDK - this needs to be done only once
 
-cd lib/MAVSDK || exit
-cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -H.
-cmake --build build/default -j4
-sudo cmake --build build/default --target install
-
+echo "we're MAVSDK free since September 2023"
 # Now the static libs are installed and can be found and statically linked by qmake
