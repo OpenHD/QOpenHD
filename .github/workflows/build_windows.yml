@@ -76,6 +76,40 @@ jobs:
               rm -Rf QtWebSockets
               rm -Rf QtWebView
               rm -Rf QtWinExtras
+              rm Qt5Bluetooth.dll
+              rm Qt5Bluetoothd.dll
+              rm QtGamepad.dll
+              rm QtGamepadd.dll
+              rm QtWebChannel.dll
+              rm QtWebChanneld.dll
+              rm Qt5WebSockets.dll
+              rm Qt5WebSocketsd.dll
+              rm Qt5WebView.dll
+              rm Qt5WebViewd.dll
+              rm Qt53DAnimation.dll
+              rm Qt53DAnimationd.dll
+              rm Qt53DACore.dll
+              rm Qt53DACored.dll
+              rm Qt53DExtras.dll
+              rm Qt53DExtrasd.dll
+              rm Qt53DInput.dll
+              rm Qt53DInputd.dll
+              rm Qt53DLogic.dll
+              rm Qt53DLogicd.dll
+              rm Qt53DQuick.dll
+              rm Qt53DQuickd.dll
+              rm Qt53DQuickAnimation.dll
+              rm Qt53DQuickAnimationd.dll
+              rm Qt53DQuickExtras.dll
+              rm Qt53DQuickExtrasd.dll
+              rm Qt53DQuickInput.dll
+              rm Qt53DQuickInputd.dll
+              rm Qt53DQuickRender.dll
+              rm Qt53DQuickRenderd.dll
+              rm Qt53DQuickScene2D.dll
+              rm Qt53DQuickScene2Dd.dll
+              rm Qt53DRender.dll
+              rm Qt53DRenderd.dll
               ls -a
               cd
               
