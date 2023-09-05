@@ -53,15 +53,15 @@ jobs:
               ls -a
               cd ../release
               ls -a
+              cd
 
       - name: Upload to Github
         uses: 'actions/upload-artifact@v2'
         with:
           name: "QOpenHD"
           path: |
-            ../release/*.exe
             build/*.exe
-            
+
 
               
               
