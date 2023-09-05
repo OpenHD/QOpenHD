@@ -423,6 +423,7 @@ void WBLinkSettingsHelper::update_pollution(int frequency, int n_foreign_packets
     for(int i=0;i<m_pollution_elements.size();i++){
        if(m_pollution_elements.at(i).frequency_mhz==frequency){
             m_pollution_elements[i].n_foreign_packets=n_foreign_packets;
+            return;
        }
     }
     m_pollution_elements.push_back(PollutionElement{frequency,40,n_foreign_packets});

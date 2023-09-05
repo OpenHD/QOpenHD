@@ -1,14 +1,10 @@
 #include "MavlinkTelemetry.h"
 
-#include "common/openhd-util.hpp"
-
 #include "models/aohdsystem.h"
 #include "models/fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
-#include "../logging/logmessagesmodel.h"
 #include "util/qopenhdmavlinkhelper.hpp"
-#include "models/fcmavlinkmissionitemsmodel.h"
 
 #include "action/fcmissionhandler.h"
 #include "action/impl/cmdsender.h"

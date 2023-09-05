@@ -90,7 +90,7 @@ PLEASE DO NOT CHANGE SETTINGS WHILE ANALYZING."
         RowLayout{
             anchors.fill: parent
             visible: m_index==1
-            ButtonRed{
+            Button{
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignLeft
                 Layout.leftMargin: 12
@@ -99,7 +99,7 @@ PLEASE DO NOT CHANGE SETTINGS WHILE ANALYZING."
                     dialoqueAnalyzeChannels.visible=false;
                 }
             }
-            ButtonGreen{
+            Button{
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignLeft
                 Layout.leftMargin: 12
