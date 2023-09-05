@@ -30,11 +30,7 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: |
-        mkdir build
-        cd build
-        ls ../
-        qmake CONFIG+=release ../QOpenHD.pro
-        ls -a
+        qmake CONFIG+=release QOpenHD.pro
 
 
     - name: Upload to Github  
