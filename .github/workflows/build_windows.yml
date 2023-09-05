@@ -54,14 +54,17 @@ jobs:
               cd ../release
               ls -a
               cd
+              
+      - name: Copy DLLs
+        run: |
+          cp "C:\Qt\5.15.2\msvc2019_64\bin\*.dll" D:\a\QOpenHD\QOpenHD\build\release\
 
       - name: Upload to Github
         uses: 'actions/upload-artifact@v2'
         with:
           name: "QOpenHD"
           path: |
-            D:\a\QOpenHD\QOpenHD\build\*
-            D:\a\QOpenHD\QOpenHD\build\release\*.exe
+            D:\a\QOpenHD\QOpenHD\build\release\
 
 
               
