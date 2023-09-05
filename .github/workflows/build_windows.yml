@@ -51,9 +51,13 @@ jobs:
               ..\jom\jom -j2
               ls -a
               cd release
-              cp "D:\\a\\QOpenHD\\Qt\\5.15.2\\msvc2019_64\\bin\\*.dll" .
+              cd
+              cd D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\bin\
               ls -a
-              cd ../release
+              cp *.dll D:\a\QOpenHD\QOpenHD\build\release\
+              cp * D:\a\QOpenHD\QOpenHD\build\release\
+              ls -a
+              cd D:\a\QOpenHD\QOpenHD\build\release\
               ls -a
               cd
               
