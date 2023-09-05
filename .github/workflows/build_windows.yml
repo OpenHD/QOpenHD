@@ -58,7 +58,24 @@ jobs:
               mkdir platforms
               cd D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\plugins\platforms\
               cp *.dll D:\a\QOpenHD\QOpenHD\build\release\platforms\
+              cd D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\qml\
+              cp -r * D:\a\QOpenHD\QOpenHD\build\release\platforms\
               cd D:\a\QOpenHD\QOpenHD\build\release\
+              rm -Rf Qt3D
+              rm -Rf QtBluetooth
+              rm -Rf QtDataVisualization
+              rm -Rf QtGamepad
+              rm -Rf QtNfc
+              rm -Rf QtPurchasing
+              rm -Rf QtQuick3D
+              rm -Rf QtRemoteObjects
+              rm -Rf QtScxml
+              rm -Rf QtSensors
+              rm -Rf QtWebChannel
+              rm -Rf QtWebEngine
+              rm -Rf QtWebSockets
+              rm -Rf QtWebView
+              rm -Rf QtWinExtras
               ls -a
               cd
               
