@@ -51,6 +51,7 @@ jobs:
               ..\jom\jom -j2
               ls -a
               cd release
+              cp "D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\bin\*.dll" .
               ls -a
               cd ../release
               ls -a
@@ -58,7 +59,8 @@ jobs:
               
       - name: Copy DLLs
         run: |
-          cp "D:\a\QOpenHD\Qt\5.15.2\msvc2019_64\bin\*.dll" D:\a\QOpenHD\QOpenHD\build\release\
+          
+
 
       - name: Upload to Github
         uses: 'actions/upload-artifact@v2'
