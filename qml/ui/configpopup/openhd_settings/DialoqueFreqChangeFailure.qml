@@ -14,7 +14,7 @@ Card {
     height: 340
     z: 5.0
     anchors.centerIn: parent
-    cardName: qsTr("Frequency "+m_wanted_frequency+"Mhz")
+    cardName: get_card_title_string()
     cardNameColor: "black"
     visible: false
 
@@ -65,6 +65,11 @@ AS WELL AS YOUR BIND PHRASE"
 
     property string m_last_warning_frequency: "WARNING: This changes your ground unit frequency without changing your air unit frequency !"
     property string m_last_warning_channel_width: "WARNING: This changes your ground unit channel width without changing your air unit channel width !"
+
+    function get_card_title_string(){
+        if(m_type==0)return "Frequency "+m_wanted_frequency+"Mhz"
+        return "Bandwidth "+m_wanted_channel_width+"Mhz"
+    }
 
     function get_card_body_string(){
         if(m_index==0){
@@ -120,7 +125,7 @@ AS WELL AS YOUR BIND PHRASE"
                 }
             }
         }
-         RowLayout{
+        RowLayout{
             anchors.fill: parent
             visible: m_index==1
             ButtonGreen{

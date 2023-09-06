@@ -1,11 +1,16 @@
 #include "tcp_connection.h"
+
 #ifdef __windows__
+#define _WIN32_WINNT 0x0600 //TODO dirty
+#include <winsock2.h>
+#include <Ws2tcpip.h> // For InetPton
 #else
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #endif
+
 #include <qdebug.h>
 
 
@@ -30,6 +35,11 @@ void TCPConnection::stop()
 {
     m_keep_receiving=false;
 #ifdef __windows__
+    shutdown(m_socket_fd, SD_BOTH);
+
+    closesocket(m_socket_fd);
+
+    WSACleanup();
 #else
     // This should interrupt a recv/recvfrom call.
     shutdown(m_socket_fd, SHUT_RDWR);
@@ -44,8 +54,6 @@ void TCPConnection::stop()
 
 void TCPConnection::send_message(const mavlink_message_t &msg)
 {
-#ifdef __windows__
-#else
     struct sockaddr_in dest_addr {};
     dest_addr.sin_family = AF_INET;
     inet_pton(AF_INET, m_remote_ip.c_str(), &dest_addr.sin_addr.s_addr);
@@ -68,7 +76,6 @@ void TCPConnection::send_message(const mavlink_message_t &msg)
     if (send_len != buffer_len) {
         qDebug()<<"Cannot send message";
     }
-#endif
 }
 
 void TCPConnection::process_data(const uint8_t *data, int data_len)

@@ -21,7 +21,8 @@ Card {
     property int m_index: 0
 
     function setup_and_show(){
-        if(!_fcMavlinkSystem.armed){
+        var is_armed= _fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed
+        if(is_armed){
             m_index=0;
         }else{
             m_index=1;

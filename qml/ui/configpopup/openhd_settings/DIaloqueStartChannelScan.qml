@@ -21,7 +21,8 @@ Card {
     property int m_curr_index: 0
 
     function open_channel_scan_dialoque(){
-        if(!_fcMavlinkSystem.armed){
+        var is_armed= _fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed
+        if(is_armed){
             m_curr_index=0;
         }else{
             m_curr_index=1;

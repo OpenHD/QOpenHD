@@ -34,7 +34,7 @@ Card {
     }
 
     function open_tx_power_dialoque(ground){
-        var is_armed=true // fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed
+        var is_armed= _fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed
         if(is_armed){
             // User has to click proceed anyways on armed warning
             m_curr_index=0;
@@ -56,8 +56,8 @@ Card {
 You can still use the RAW OpenHD AIR / GROUND Parameters to change your tx power.");
                 return;
             }
-            //wifi_card_chip_type=_wifi_card_gnd0.card_type;
-            wifi_card_chip_type=1
+            wifi_card_chip_type=_wifi_card_gnd0.card_type;
+            //wifi_card_chip_type=1
         }else{
            wifi_card_chip_type=_wifi_card_air.card_type;
         }
@@ -93,8 +93,8 @@ the card driver and/or the linux kernel doesn't support changing it.");
     // Chip type is automatically refered from OpenHD
     property int m_card_chip_type: -1;
     function get_card_chip_type_as_string(){
-        if(m_card_chip_type==0) return "RTL8812AU";
-        if(m_card_chip_type==1) return "RTL8812BU";
+        if(m_card_chip_type==0) return "RTL88XXAU";
+        if(m_card_chip_type==1) return "RTL88XXBU";
         return "UNKNOWN";
     }
 
@@ -147,28 +147,28 @@ the card driver and/or the linux kernel doesn't support changing it.");
     ListModel{
         id: model_rtl8812au_manufacturer_asus_txpower
         ListElement {title: "Please select"; value: -1}
-        ListElement {title: "LOW(~25mW)[22]"; value: 22}
-        ListElement {title: "MEDIUM [37]"; value: 37}
-        ListElement {title: "HIGH [53]"; value: 53}
-        ListElement {title: "MAX1(<=MCS2 only)[58]"; value: 58}
-        ListElement {title: "MAX2(<=MCS2 only)[63]"; value: 63}
+        ListElement {title: "LOW    [22] ~20mW (DEFAULT) "; value: 22}
+        ListElement {title: "MEDIUM [37] ~100mW          "; value: 37}
+        ListElement {title: "HIGH   [53] ~320mW          "; value: 53}
+        ListElement {title: "MAX1   [58] ~420mW (MCS<=2!)"; value: 58}
+        ListElement {title: "MAX2   [63] ~500mW (MCS<=2!)"; value: 63}
     }
     ListModel{
         id: model_rtl8812au_manufacturer_aliexpress_hp
         ListElement {title: "Please select"; value: -1}
-        ListElement {title: "LOW [16]"; value: 16}
+        ListElement {title: "LOW    [16]"; value: 16}
         ListElement {title: "MEDIUM [22]"; value: 22}
-        ListElement {title: "HIGH [24]"; value: 24}
-        ListElement {title: "MAX [26]"; value: 26}
+        ListElement {title: "HIGH   [24]"; value: 24}
+        ListElement {title: "MAX    [26]"; value: 26}
     }
     ListModel{
         id: model_rtl8812au_manufacturer_generic
         ListElement {title: "Please select"; value: -1}
-        ListElement {title: "[22] (DANGER)"; value: 22}
-        ListElement {title: "[37] (DANGER)"; value: 37}
-        ListElement {title: "[53] (DANGER)"; value: 53}
-        ListElement {title: "[58] (DANGER)"; value: 58}
-        ListElement {title: "[63] (DANGER)"; value: 63}
+        ListElement {title: "[22] (DANGER,ARBITRARY)"; value: 22}
+        ListElement {title: "[37] (DANGER,ARBITRARY)"; value: 37}
+        ListElement {title: "[53] (DANGER,ARBITRARY)"; value: 53}
+        ListElement {title: "[58] (DANGER,ARBITRARY)"; value: 58}
+        ListElement {title: "[63] (DANGER,ARBITRARY)"; value: 63}
     }
     // RTL8812BU begin
     ListModel{
@@ -208,16 +208,41 @@ the card driver and/or the linux kernel doesn't support changing it.");
         return plcaeholder_model;
     }
 
-    cardBody: Item{
-        height: 200
-        width: 320
+    function get_text_select_card_manufacturer(){
+        var ret="";
+        ret+="Your chipset: "+get_card_chip_type_as_string()+"\n";
+        ret+="Please select your card manufacturer from the list below.";
+        if(m_card_chip_type==0){
+            ret+="\nWARNING: IF YOU SELECT THE WRONG MANUFACTURER,YOU CAN EASILY DESTROY YOUR CARD - this card doesn't take tx power in mW, but a tx power index value "+
+                    "in arbitrary unit(s) depending on your manufacturer.";
+        }else if(m_card_chip_type==1){
+            ret+="\nINFO: If you select any tx power in mW, depending on your manufacturer, your actual tx power will always be <= than the selected value.";
+        }
+
+        return ret;
+    }
+
+    function get_text_select_tx_power(){
+       var ret="";
+       ret += "Your chipset: "+get_card_chip_type_as_string()+"\n";
+       ret += "Selected manufacturer: "+get_card_manufacturer_type_as_string()+"\n";
+       ret+="Please select your wanted TX power applied when:\n"+get_change_armed_as_string()+" state"+"\n";
+       return ret;
+    }
+
+    cardBody: Rectangle{
+        /*height: 340 - 100
+        width: 360-10*/
+        color: "orange"
+        //anchors.centerIn: parent
+        anchors.fill: parent
         Item{
-            id: itemArmedWarning
             width: parent.width
             height: parent.height
             visible: m_curr_index==0
             Text{
-                text: "WARNING ! Changing TX power while FC is armed is not recommended, due to the risk of loosing power to the WiFi card, in which case your drone won't be able to recover !"
+                text: ("WARNING ! Changing TX power while FC is armed is not recommended -\n"+
+                      " Validate / test your setup while disarmed, then set the apropate tx power for armed / disarmed state. !")
                 width: parent.width
                 height: parent.height / 2
                 leftPadding: 12
@@ -225,27 +250,23 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 wrapMode: Text.WordWrap
             }
         }
-        Item{
-            id: item1
+        ColumnLayout{
             width: parent.width
             height: parent.height
             visible: m_curr_index==1
-
             Text{
-                id: card_select_armed_disarmed_description
-                text: "Do you want to change the TX power in armed / disarmed state ?
-(RECOMMENDED: Only change armed tx power, such that your card(s) do not overheat on the bench)"
-                width: parent.width
-                height: parent.height / 2
+                Layout.fillWidth: true
                 leftPadding: 12
                 rightPadding: 12
+                text: ("Do you want to set the TX power in armed / disarmed state ?\n"+
+"NOTE: TX power armed is only applied when the FC is armed, TX power disarmed is applied when the FC is disarmed.")
                 wrapMode: Text.WordWrap
             }
             ComboBox {
+                Layout.fillWidth: true
+                leftPadding: 12
+                rightPadding: 12
                 id: comboBoxSelectedArmedDisarmed
-                width: parent.width
-                //height: 100
-                anchors.top: card_select_armed_disarmed_description.bottom
                 model: armed_or_disarmed_model
                 textRole: "title"
                 onCurrentIndexChanged: {
@@ -254,26 +275,23 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 }
             }
         }
-        Item{
-            id: item2
+        ColumnLayout{
             width: parent.width
             height: parent.height
             visible: m_curr_index==2
-
             Text{
-                id: card_select_manufcturer_description
-                text: "Select your card manufacturer from the list below"
-                width: parent.width
-                height: (parent.height-100) / 2
+                Layout.fillWidth: true
                 leftPadding: 12
                 rightPadding: 12
+                id: card_select_manufcturer_description
+                text: get_text_select_card_manufacturer()
                 wrapMode: Text.WordWrap
             }
             ComboBox {
+                Layout.fillWidth: true
+                leftPadding: 12
+                rightPadding: 12
                 id: comboBoxCardSelectManufacturer
-                width: parent.width
-                //height: 100
-                anchors.top: card_select_manufcturer_description.bottom
                 model: get_model_manufacturer_for_chip_type()
                 textRole: "title"
                 onCurrentIndexChanged: {
@@ -284,26 +302,22 @@ the card driver and/or the linux kernel doesn't support changing it.");
             }
         }
 
-        Item{
-            id: item3
+        ColumnLayout{
             width: parent.width
             height: parent.height
             visible: m_curr_index==3
-
             Text{
-                id: card_select_txpower_description
-                text: "Please select your TX power for:\n"+get_change_armed_as_string()+" state"+"\n"+get_card_chip_type_as_string()+"\n"+get_card_manufacturer_type_as_string()+"\n";
-                width: parent.width
-                height: parent.height / 2
+                Layout.fillWidth: true
                 leftPadding: 12
                 rightPadding: 12
+                text: get_text_select_tx_power()
                 wrapMode: Text.WordWrap
             }
             ComboBox {
+                Layout.fillWidth: true
+                leftPadding: 12
+                rightPadding: 12
                 id: comboBoxCardSelectTxPower
-                width: parent.width
-                //height: 100
-                anchors.top: card_select_txpower_description.bottom
                 model: get_model_select_tx_power_index_for_card_chip_type_and_manufacturer()
                 textRole: "title"
                 onCurrentIndexChanged: {
