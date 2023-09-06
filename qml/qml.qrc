@@ -218,7 +218,7 @@
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkExtraWBParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkAllSettingsPanel.qml</file>
-        <file>ui/configpopup/openhd_settings/DialoqueFreqChangeFailure.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueStartAnalyzeChannels.qml</file>
         <file>ui/configpopup/openhd_settings/DIaloqueStartChannelScan.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
@@ -256,5 +256,6 @@
         <file>ui/configpopup/status/QOpenHDServiceDialoque.qml</file>
         <file>ui/elements/SimpleProgressBar.qml</file>
         <file>ui/elements/ButtonGreen.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueFreqChangeArmed.qml</file>
     </qresource>
 </RCC>

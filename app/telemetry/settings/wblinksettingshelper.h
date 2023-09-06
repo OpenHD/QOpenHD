@@ -69,11 +69,9 @@ private:
     static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;
     // Returns 0 on success, error code otherwise.
     // Viable error code(s):
-    // -1 : gnd unit not alive
-    // -2 : gnd unit alive, but air unit not alive
-    // -3 : cannot set value on air - not reachable
-    // -4 : cannot set value on air - reached, but param was rejected
-    // -5 : succesfully set value on air, but ground doesn't support - really bad
+    // -1 : air unit reached, but rejected the value (value unsupported)
+    // -2 : air unit not reached
+    // -3 : really bad, we changed the value on air, but ground rejected
     int change_param_air_and_ground_blocking(QString param_id,int value);
     bool change_param_ground_only_blocking(QString param_id,int value);
     void change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag);

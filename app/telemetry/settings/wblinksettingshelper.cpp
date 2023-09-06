@@ -143,15 +143,6 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
 int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,int value)
 {
     qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;
-    // sanity checking
-    if(!AOHDSystem::instanceGround().is_alive()){
-        qDebug()<<"Precondition: Ground running and alive not given. Change not possible.";
-        return -1;
-    }
-    if(!AOHDSystem::instanceAir().is_alive()){
-        qDebug()<<"Precondition: Air running and alive not given. Change not possible.";
-        return -2;
-    }
     // First change it on the air and wait for ack - if failed, return. We do a lot of retransmissions to make it unlikely that fails
     const auto command_air=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
     const bool air_success=XParam::instance().try_set_param_blocking(command_air,std::chrono::milliseconds(100),20);
@@ -159,7 +150,8 @@ int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" air not reached";
         qDebug()<<ss.str().c_str();
-        return -3;
+         // TODO handle ack, but rejected
+        return -2;
     }
     // we have changed the value on air, now change the ground
     // It is highly unlikely that fauls - if it does, we have an issue !
@@ -170,7 +162,7 @@ int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" (gnd failed)";
         qWarning("%s", ss.str().c_str());
-        return -5;
+        return -3;
     }
     std::stringstream ss;
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
