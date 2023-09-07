@@ -26,6 +26,7 @@ private:
     void process_data(const uint8_t* data,int data_len);
     void process_mavlink_message(mavlink_message_t msg);
     void loop_receive();
+    bool setup_socket();
     void connect_once();
 private:
     const std::string m_remote_ip;
@@ -35,6 +36,7 @@ private:
     mavlink_status_t m_recv_status{};
     std::unique_ptr<std::thread> m_receive_thread=nullptr;
     std::atomic<bool> m_keep_receiving=false;
+    std::atomic<bool> m_is_connected=false;
 };
 
 #endif // TCPCONNECTION_H

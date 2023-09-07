@@ -42,6 +42,20 @@ public:
      * @return true on success (this does not mean the message was received, but rather the message was sent out via the lossy connection)
      */
     bool sendMessage(mavlink_message_t msg);
+    struct FCMavId{
+        int comp_id;
+        int sys_id;
+    };
+    // Returns default FC sys / comp id until FC is successfully discovered.
+    FCMavId get_fc_mav_id();
+public:
+    // ping all the systems (using timesync, since "ping" is deprecated)
+    Q_INVOKABLE void ping_all_systems();
+    // re-apply all FC telemetry rate(s)
+    Q_INVOKABLE void re_apply_rates();
+    // Switch from UDP to TCP
+    Q_INVOKABLE void add_tcp_connection_handler(QString ip);
+public:
     // A couple of stats exposed as QT properties
     L_RO_PROP(int,telemetry_pps_in,set_telemetry_pps_in,-1)
     L_RO_PROP(int,telemetry_bps_in,set_telemetry_bps_in,-1)
@@ -49,10 +63,7 @@ private:
     // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
     // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
-    // change requires restart, udp is used by default (not tcp)
-    bool dev_use_tcp=false;
-    //std::string dev_tcp_server_ip="0.0.0.0";
-    // workaround systems discovery is not thread safe
+    static constexpr auto QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT=5760;
     // Called every time we get a mavlink message (from any system).
     void process_mavlink_message(const mavlink_message_t& msg);
     void process_broadcast_message_openhd_air(const mavlink_message_t& msg);
@@ -60,33 +71,18 @@ private:
     void process_broadcast_message_fc(const mavlink_message_t& msg);
     // timesync is handled extra independently
     void process_message_timesync(const mavlink_message_t &msg);
+private:
+    std::unique_ptr<UDPConnection> m_udp_connection=nullptr;
+    std::unique_ptr<TCPConnection> m_tcp_connection=nullptr;
+    int64_t m_last_timesync_out_us=0;
+    bool m_fc_found=false;
+    int m_fc_sys_id=-1;
+    int m_fc_comp_id=-1;
+    // For calculating input pps / bps
     int64_t m_tele_received_bytes=0;
     int64_t m_tele_received_packets=0;
     BitrateCalculator2 m_tele_bitrate_in;
     PacketsPerSecondCalculator m_tele_pps_in;
-public:
-    // ping all the systems (using timesync, since "ping" is deprecated)
-    Q_INVOKABLE void ping_all_systems();
-public:
-    struct FCMavId{
-        int comp_id;
-        int sys_id;
-    };
-    // Returns default FC sys / comp id until FC is successfully discovered.
-    FCMavId get_fc_mav_id();
-private:
-    int pingSequenceNumber=0;
-    int64_t lastTimeSyncOut=0;
-public:
-    Q_INVOKABLE void re_apply_rates();
-public:
-    Q_INVOKABLE void add_tcp_connection_handler(QString ip);
-private:
-    std::unique_ptr<UDPConnection> m_udp_connection=nullptr;
-    std::unique_ptr<TCPConnection> m_tcp_connection=nullptr;
-    bool m_fc_found=false;
-    int m_fc_sys_id=-1;
-    int m_fc_comp_id=-1;
 };
 
 #endif // OHDMAVLINKCONNECTION_H

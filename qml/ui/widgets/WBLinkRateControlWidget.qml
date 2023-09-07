@@ -137,8 +137,20 @@ BaseWidget {
     }
 
     function set_channel_width(channel_width_mhz){
+        if(!_ohdSystemGround.is_alive){
+            _hudLogMessagesModel.add_message_warning("GND not alive,cannot set "+channel_width_mhz+"Mhz Bandwidth")
+            return
+        }
+        if(!_ohdSystemAir.is_alive){
+            _hudLogMessagesModel.add_message_warning("AIR not alive,cannot set "+channel_width_mhz+"Mhz Bandwidth")
+            return;
+        }
+        if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
+            _hudLogMessagesModel.add_message_warning("FC armed,cannot set "+channel_width_mhz+"Mhz Bandwidth")
+            return;
+        }
         var result = _wbLinkSettingsHelper.change_param_air_and_ground_channel_width(channel_width_mhz)
-        if(result != 0){
+        if(result !== 0){
             _hudLogMessagesModel.add_message_warning("Cannot set "+channel_width_mhz+"Mhz Bandwidth")
         }
     }

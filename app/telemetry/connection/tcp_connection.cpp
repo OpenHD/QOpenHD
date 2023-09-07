@@ -54,6 +54,9 @@ void TCPConnection::stop()
 
 void TCPConnection::send_message(const mavlink_message_t &msg)
 {
+    if(!m_is_connected){
+        return; // Otherwise sendto blocks
+    }
     struct sockaddr_in dest_addr {};
     dest_addr.sin_family = AF_INET;
     inet_pton(AF_INET, m_remote_ip.c_str(), &dest_addr.sin_addr.s_addr);
@@ -103,16 +106,20 @@ void TCPConnection::loop_receive()
     }
 }
 
-
-void TCPConnection::connect_once()
+bool TCPConnection::setup_socket()
 {
 #ifdef __windows__
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        qDebug() << "Error: Winsock failed, error: %d", WSAGetLastError();
+        return false;
+    }
 #else
     m_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (m_socket_fd < 0) {
         qDebug()<<"Cannot create socket"<<strerror(errno);
-        return;
+        return false;
     }
 
     struct sockaddr_in remote_addr {};
@@ -122,27 +129,38 @@ void TCPConnection::connect_once()
 
     if (connect(m_socket_fd, reinterpret_cast<sockaddr*>(&remote_addr), sizeof(struct sockaddr_in)) <0) {
         qDebug()<<"Socket connect failed: "<<strerror(errno);
-        return;
-    }
-    // Enough for MTU 1500 bytes.
-    uint8_t buffer[2048];
-    while (m_keep_receiving) {
-        const auto recv_len = recv(m_socket_fd, buffer, sizeof(buffer), 0);
-
-        if (recv_len == 0) {
-            // This can happen when shutdown is called on the socket,
-            // therefore we check _should_exit again.
-            continue;
-        }
-
-        if (recv_len < 0) {
-            // This happens on desctruction when close(_socket_fd) is called,
-            // therefore be quiet.
-            // LogErr() << "recvfrom error: " << GET_ERROR(errno);
-            // Something went wrong, we should try to re-connect in next iteration.
-            continue;
-        }
-        process_data(buffer,recv_len);
+        return false;
     }
 #endif
+}
+
+
+void TCPConnection::connect_once()
+{
+    const bool success=setup_socket();
+    if(success){
+        // TCP connection established,  receive data until error / stop() is called
+        m_is_connected=true;
+        // Enough for MTU 1500 bytes.
+        uint8_t buffer[2048];
+        while (m_keep_receiving) {
+            const auto recv_len = recv(m_socket_fd, buffer, sizeof(buffer), 0);
+
+            if (recv_len == 0) {
+                // This can happen when shutdown is called on the socket,
+                // therefore we check _should_exit again.
+                continue;
+            }
+
+            if (recv_len < 0) {
+                // This happens on desctruction when close(_socket_fd) is called,
+                // therefore be quiet.
+                // LogErr() << "recvfrom error: " << GET_ERROR(errno);
+                // Something went wrong, we should try to re-connect in next iteration.
+                continue;
+            }
+            process_data(buffer,recv_len);
+        }
+    }
+    m_is_connected=false;
 }

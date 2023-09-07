@@ -14,7 +14,7 @@
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
     QSettings settings;
-    dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
+    const bool dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
     if(dev_use_tcp){
         // TODO
     }else{
@@ -194,8 +194,8 @@ void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
         // someone (most likely the FC) wants to timesync with us, but we ignore it to save uplink bandwidth.
         return;
     }
-    if(timesync.ts1==lastTimeSyncOut){
-        qDebug()<<"Got timesync response with we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
+    if(timesync.ts1==m_last_timesync_out_us){
+        qDebug()<<"Got timesync response with we:"<<m_last_timesync_out_us<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
         const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-timesync.ts1;
         const auto delta_readable=QOpenHDMavlinkHelper::time_microseconds_readable(delta);
         if(msg.sysid==OHD_SYS_ID_AIR){
@@ -208,7 +208,7 @@ void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
             FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(delta_readable.c_str());
         }
     }else{
-        qDebug()<<"Got timesync but it doesn't match: we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
+        qDebug()<<"Got timesync but it doesn't match: we:"<<m_last_timesync_out_us<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
     }
 }
 
@@ -222,7 +222,7 @@ void MavlinkTelemetry::add_tcp_connection_handler(QString ip)
     auto cb_tcp=[this](mavlink_message_t msg){
         process_mavlink_message(msg);
     };
-    m_tcp_connection=std::make_unique<TCPConnection>(ip.toStdString(),OHD_GROUND_SERVER_TCP_PORT,cb_tcp);
+    m_tcp_connection=std::make_unique<TCPConnection>(ip.toStdString(),QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT,cb_tcp);
     m_tcp_connection->start();
 }
 
@@ -232,8 +232,8 @@ void MavlinkTelemetry::ping_all_systems()
     mavlink_timesync_t timesync{};
     timesync.tc1=0;
     // NOTE: MAVSDK does time in nanoseconds by default
-    lastTimeSyncOut=QOpenHDMavlinkHelper::getTimeMicroseconds();
-    timesync.ts1=lastTimeSyncOut;
+    m_last_timesync_out_us=QOpenHDMavlinkHelper::getTimeMicroseconds();
+    timesync.ts1=m_last_timesync_out_us;
     mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),&msg,&timesync);
     sendMessage(msg);
 }
