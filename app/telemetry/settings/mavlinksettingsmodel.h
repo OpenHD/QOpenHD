@@ -45,9 +45,9 @@ public:
     // re-fetches the complete param set - any changed values, types, ... are catched from it
     Q_INVOKABLE void try_refetch_all_parameters_async(bool log_result=true);
 
-    // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
+    // first updates the parameter on the server via XParam (unless server rejects / rare timeout)
     // then updates the internal cached parameter
-    // Kinda dirty, but since we use it from QML - returns an empty string "" on success, an error code otherwise
+    // return is kinda dirty, but since we use it from QML - returns an empty string "" on success, an error code otherwise
     Q_INVOKABLE QString try_update_parameter_int(const QString param_id,int value);
     Q_INVOKABLE QString try_update_parameter_string(const QString param_id,QString value);
 
@@ -141,9 +141,6 @@ public:
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
-private:
-    std::mutex m_update_all_async_mutex;
-    std::unique_ptr<std::thread> m_update_all_async_thread=nullptr;
 private:
     void remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t>& param_set);
 public:

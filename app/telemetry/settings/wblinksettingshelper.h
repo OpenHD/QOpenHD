@@ -101,8 +101,6 @@ public:
     // Extra
     Q_INVOKABLE bool set_param_tx_power(bool ground,bool is_tx_power_index,bool is_for_armed_state,int value);
 private:
-    void log_result_message(const std::string& result_message,bool use_hud);
-private:
     std::vector<uint16_t> m_supported_channels;
     void update_channels_on_success();
     bool m_valid_channel_channel_width_once=false;

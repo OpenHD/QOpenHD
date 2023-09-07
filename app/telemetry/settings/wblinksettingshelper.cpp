@@ -262,12 +262,11 @@ static FrequencyItem find_frequency_item(const int frequency){
 }
 
 
-
 int WBLinkSettingsHelper::get_next_supported_frequency(int index)
 {
     const auto tmp=m_supported_channels;
-    if(index<m_supported_channels.size()){
-        const auto frequency=m_supported_channels[index];
+    if(index<tmp.size()){
+        const auto frequency=tmp[index];
         //qDebug()<<"Index:"<<index<<" freq"<<frequency;
         return frequency;
     }
@@ -398,15 +397,6 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
     if(!enqueue_success){
         HUDLogMessagesModel::instance().add_message_warning("Busy - cannot change "+QString(tag.c_str())+", try again later");
         return;
-    }
-}
-
-void WBLinkSettingsHelper::log_result_message(const std::string &result_message, bool use_hud)
-{
-    if(use_hud){
-        HUDLogMessagesModel::instance().add_message_info(result_message.c_str());
-    }else{
-       WorkaroundMessageBox::makePopupMessage(result_message.c_str());
     }
 }
 
