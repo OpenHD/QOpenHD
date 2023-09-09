@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 #remove custom QT
-sudo apt remove -y openhd-qt-jammy
+dpkg -r openhd-qt-jammy || true
