@@ -38,13 +38,13 @@ Rectangle {
                 text: "192.168.178.36" //settings.dev_mavlink_tcp_ip
             }
             ButtonIconInfoText{
-                m_info_text: "Enter your grund station IP, then click connect"
+                m_info_text: "Enter your grund station IP, then click 'CONNECT TCP'"
             }
         }
 
         Button{
             Layout.alignment: Qt.AlignTop
-            text: "Connect TCP"
+            text: "CONNECT TCP"
             onClicked: {
                 var ip_address=textFieldip.text
                 if(_qopenhd.is_valid_ip(ip_address)){
@@ -55,12 +55,11 @@ Rectangle {
             }
         }
         Button{
-            text: "Re-enable UDP"
+            text: "RE-ENABLE UDP"
             onClicked: {
                 _mavlinkTelemetry.enable_udp()
             }
         }
-
         // padding to bottom
         Item{
             Layout.fillHeight: true

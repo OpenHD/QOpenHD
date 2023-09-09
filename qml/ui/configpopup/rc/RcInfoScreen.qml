@@ -39,7 +39,7 @@ Item {
                 Text {
                 width: parent.width
                 height: parent.height
-                text: qsTr("To enable RC over wifibroadcast go to OpenHD / Ground(TMP) and set ENABLE_JOY_RC=ENABLED,"+
+                text: qsTr("To enable RC over wifibroadcast go to OpenHD / Ground (Ground parameters set) and set 'ENABLE_JOY_RC' to 'ENABLED',"+
 "connect a joystick (or a RC in joystick mode) and (optionally) reboot.\n"+
 "You can use the other screens to validate/debug your setup.\n"+
 "INFO: Channel mapping is not intuitive, but it works when done correctly.\n"+

@@ -51,7 +51,7 @@ Rectangle{
         id: channel_width_model
         ListElement {title: "Unknown"; value: -1}
         ListElement {title: "20MHz (default)"; value: 20}
-        ListElement {title: "40MHz (rtl8812au only)"; value: 40}
+        ListElement {title: "40MHz (2x Bandwidth)"; value: 40}
     }
 
     property bool m_simplify_enable:true
