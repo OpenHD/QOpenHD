@@ -45,7 +45,7 @@ Rectangle{
 
     ListModel{
         id: supported_frequencies_model
-        ListElement {title: "Unknown"; value:-1; pollution: -1}
+        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; pollution: -1}
     }
     ListModel{
         id: channel_width_model
@@ -54,15 +54,28 @@ Rectangle{
         ListElement {title: "40MHz (rtl8812au only)"; value: 40}
     }
 
+    property bool m_simplify_enable:true
     function create_list_model_supported(){
         supported_frequencies_model.clear()
         //supported_frequencies_model.append({title: "Unknown", value: -1})
-        for(var i=0;i<100;i++){
-            var frequency=_wbLinkSettingsHelper.get_next_supported_frequency(i);
-            if(frequency<=0)break; // no more supported frequences
-            var text=_wbLinkSettingsHelper.get_frequency_description(frequency)
-            var v_pollution= _wbLinkSettingsHelper.get_frequency_pollution(frequency)
-            supported_frequencies_model.append({title: text, value: frequency, pollution: v_pollution })
+        const supported_frequencies=_wbLinkSettingsHelper.get_supported_frequencies();
+        for(var i=0;i<supported_frequencies.length;i++){
+            const frequency=supported_frequencies[i];
+            const text=_wbLinkSettingsHelper.get_frequency_description(frequency)
+            const v_pollution= _wbLinkSettingsHelper.get_frequency_pollution(frequency)
+            const simple=_wbLinkSettingsHelper.get_frequency_simplify(frequency)
+            const radar=_wbLinkSettingsHelper.get_frequency_radar(frequency)
+            const recommended=_wbLinkSettingsHelper.get_frequency_reccommended(frequency)
+            var append_this_value=true;
+            if(m_simplify_enable){
+                // only add if it is a "simple" channel
+                append_this_value = simple;
+            }else{
+                append_this_value=true;
+            }
+            if(append_this_value){
+                supported_frequencies_model.append({title: text, value: frequency, radar:radar, recommended: recommended, pollution: v_pollution })
+            }
         }
         var index=find_index(supported_frequencies_model,_wbLinkSettingsHelper.curr_channel_mhz);
         comboBoxFreq.model=supported_frequencies_model
@@ -87,7 +100,12 @@ Rectangle{
     // We get notified every time we should re-build the model(s) and their current selection
     property int m_ui_rebuild_models : _wbLinkSettingsHelper.ui_rebuild_models
     onM_ui_rebuild_modelsChanged: {
-        console.log("Rebuilding models "+_wbLinkSettingsHelper.ui_rebuild_models);
+        console.log(" onM_ui_rebuild_modelsChanged: "+_wbLinkSettingsHelper.ui_rebuild_models);
+        function_rebuild_ui()
+    }
+
+    function function_rebuild_ui(){
+        console.log("function_rebuild_ui");
         create_list_model_supported();
         update_channel_width()
     }
@@ -444,6 +462,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                         anchors.fill: parent
                                         color: "transparent"
                                         //border.color: "red"
+                                        //color: "red"
                                     }
                                     RowLayout{
                                         width:parent.width
@@ -452,7 +471,9 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                             //anchors.fill: parent
                                             //anchors.centerIn: parent
                                             //Layout.fillHeight: true
-                                            Layout.fillWidth: true
+                                            //Layout.fillWidth: true
+                                            Layout.alignment: Qt.AlignLeft
+                                            Layout.preferredWidth: 110
                                             text: title
                                             //color: "#21be2b"
                                             //color: comboBoxFreq.currentIndex === index ? "blue" : "black"
@@ -462,12 +483,37 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                             //verticalAlignment: Text.AlignVCenter
                                         }
                                         Text{
+                                            Layout.alignment: Qt.AlignLeft
+                                            text: value > 3000 ? "5.8G" : "2.4G"
+                                            //color: value > 3000 ? "green" : "#ff8c00" //"orange"
+                                            color: "#706F1D" // dark green
+                                        }
+                                        Text { // Radar icon
+                                            Layout.alignment: Qt.AlignLeft
+                                            text: qsTr("\uf7c0");
+                                            font.family: "Font Awesome 5 Free"
+                                            color: "red"
+                                            visible: radar
+                                        }
+                                        Item{
+                                            Layout.fillWidth: true
+                                            // filler
+                                        }
+                                        Text{ // smiley icon - indicates good channel
+                                            Layout.alignment: Qt.AlignRight
+                                            Layout.preferredWidth: 30
+                                            text: qsTr("\uf585")
+                                            visible: recommended
+                                            font.family: "Font Awesome 5 Free"
+                                            color: "green"
+                                        }
+                                        Text{
+                                            Layout.alignment: Qt.AlignRight
+                                            Layout.preferredWidth: 60
                                             text: get_text_pollution(pollution)
                                             color: get_color_pollution(pollution)
+                                            font.family: "Font Awesome 5 Free"
                                         }
-                                        /*Text{
-                                            text: "Y";
-                                        }*/
                                     }
                                 }
                                 highlighted: comboBoxFreq.highlightedIndex === index
@@ -495,6 +541,16 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                             enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0
+                        }
+                        Switch{
+                            text: "Simplify"
+                            checked: true
+                            onCheckedChanged: {
+                                if(m_simplify_enable!=checked){
+                                    m_simplify_enable=checked;
+                                    function_rebuild_ui();
+                                }
+                            }
                         }
                     }
                 }
@@ -551,17 +607,17 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             }
                         }
                         Button{
-                            text: "GND TX PWR"
-                            enabled: _ohdSystemGround.is_alive
-                            onClicked: {
-                                txPowerDialoque.open_tx_power_dialoque(true)
-                            }
-                        }
-                        Button{
                             text: "AIR TX PWR"
                             enabled: _ohdSystemAir.is_alive
                             onClicked: {
                                 txPowerDialoque.open_tx_power_dialoque(false)
+                            }
+                        }
+                        Button{
+                            text: "GND TX PWR"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                txPowerDialoque.open_tx_power_dialoque(true)
                             }
                         }
                         ColumnLayout{

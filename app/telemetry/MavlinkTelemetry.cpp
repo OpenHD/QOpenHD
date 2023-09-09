@@ -226,6 +226,19 @@ void MavlinkTelemetry::add_tcp_connection_handler(QString ip)
     m_tcp_connection->start();
 }
 
+void MavlinkTelemetry::enable_udp()
+{
+    m_tcp_connection=nullptr;
+    m_udp_connection=nullptr;
+    // default, udp, passive (like QGC)
+    auto cb_udp=[this](mavlink_message_t msg){
+        process_mavlink_message(msg);
+    };
+    const auto ip="0.0.0.0"; //"127.0.0.1"
+    m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
+    m_udp_connection->start();
+}
+
 void MavlinkTelemetry::ping_all_systems()
 {
     mavlink_message_t msg;

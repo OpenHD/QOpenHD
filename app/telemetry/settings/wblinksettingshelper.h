@@ -56,6 +56,7 @@ public:
     void validate_and_set_channel_mhz(int channel);
     void validate_and_set_channel_width_mhz(int channel_width_mhz);
 public:
+    Q_INVOKABLE void set_simplify_channels(bool enable);
     //Q_INVOKABLE void fetch_channels_if_needed();
     Q_INVOKABLE bool start_analyze_channels();
     // freq_bands:
@@ -88,9 +89,12 @@ public:
     Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
-    Q_INVOKABLE int get_next_supported_frequency(int index);
+    Q_INVOKABLE QList<int> get_supported_frequencies();
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
     Q_INVOKABLE int get_frequency_pollution(int frequency_mhz);
+    Q_INVOKABLE bool get_frequency_radar(int frequency_mhz);
+    Q_INVOKABLE bool get_frequency_simplify(int frequency_mhz);
+    Q_INVOKABLE bool get_frequency_reccommended(int frequency_mhz);
     // These params can be changed "on the fly" and are additionally their value(s) are broadcasted
     // so we can update them completely async, log the result to the user
     // and use the broadcasted value(s) to update the UI
@@ -104,6 +108,7 @@ private:
     std::vector<uint16_t> m_supported_channels;
     void update_channels_on_success();
     bool m_valid_channel_channel_width_once=false;
+    std::atomic<bool> m_simplify_channels=false;
 private:
     struct PollutionElement{
         int frequency_mhz;

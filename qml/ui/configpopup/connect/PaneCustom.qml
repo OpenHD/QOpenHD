@@ -44,7 +44,7 @@ Rectangle {
 
         Button{
             Layout.alignment: Qt.AlignTop
-            text: "Connect"
+            text: "Connect TCP"
             onClicked: {
                 var ip_address=textFieldip.text
                 if(_qopenhd.is_valid_ip(ip_address)){
@@ -54,6 +54,13 @@ Rectangle {
                 }
             }
         }
+        Button{
+            text: "Re-enable UDP"
+            onClicked: {
+                _mavlinkTelemetry.enable_udp()
+            }
+        }
+
         // padding to bottom
         Item{
             Layout.fillHeight: true

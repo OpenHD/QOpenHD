@@ -75,6 +75,11 @@ void WBLinkSettingsHelper::validate_and_set_channel_width_mhz(int channel_width_
     }
 }
 
+void WBLinkSettingsHelper::set_simplify_channels(bool enable)
+{
+    m_simplify_channels=enable;
+}
+
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t &msg)
 {
     std::vector<uint16_t> channels;
@@ -184,71 +189,71 @@ bool WBLinkSettingsHelper::change_param_ground_only_blocking(QString param_id, i
 
 
 struct FrequencyItem{
-    int channel_nr=0;
-    int frequency=0;
-    bool radar=false;
+    int channel_nr;
+    int frequency;
+    bool radar;
+    bool simple;
+    bool recommended;
 };
 static std::vector<FrequencyItem> get_freq_descr(){
     std::vector<FrequencyItem> ret{
-        FrequencyItem{-1,2312},
-        FrequencyItem{-1,2332},
-        FrequencyItem{-1,2352},
-        FrequencyItem{-1,2372},
-        FrequencyItem{-1,2392},
+        FrequencyItem{-1,2312,false,false,false},
+        FrequencyItem{-1,2332,false,false,false},
+        FrequencyItem{-1,2352,false,false,false},
+        FrequencyItem{-1,2372,false,false,false},
+        FrequencyItem{-1,2392,false,false,false},
         // ACTUAL 2G
-        FrequencyItem{1,2412},
-        FrequencyItem{5,2432},
-        FrequencyItem{9,2452},
-        FrequencyItem{13,2472},
-        FrequencyItem{14,2484},
+        FrequencyItem{1 ,2412,false,true,false},
+        FrequencyItem{5 ,2432,false,true,false},
+        FrequencyItem{9 ,2452,false,true,false},
+        FrequencyItem{13,2472,false,true,false},
+        FrequencyItem{14,2484,false,false,false},
         // ACTUAL 2G end
-        FrequencyItem{-1,2492},
-        FrequencyItem{-1,2512},
-        FrequencyItem{-1,2532},
-        FrequencyItem{-1,2572},
-        FrequencyItem{-1,2592},
-        FrequencyItem{-1,2612},
-        FrequencyItem{-1,2632},
-        FrequencyItem{-1,2652},
-        FrequencyItem{-1,2672},
-        FrequencyItem{-1,2692},
-        FrequencyItem{-1, 2712},
+        FrequencyItem{-1,2492,false,false,false},
+        FrequencyItem{-1,2512,false,false,false},
+        FrequencyItem{-1,2532,false,false,false},
+        FrequencyItem{-1,2572,false,false,false},
+        FrequencyItem{-1,2592,false,false,false},
+        FrequencyItem{-1,2612,false,false,false},
+        FrequencyItem{-1,2632,false,false,false},
+        FrequencyItem{-1,2652,false,false,false},
+        FrequencyItem{-1,2672,false,false,false},
+        FrequencyItem{-1,2692,false,false,false},
+        FrequencyItem{-1, 2712,false,false,false},
         // 5G begin
-        FrequencyItem{ 32,5160},
-        FrequencyItem{ 36,5180},
-        FrequencyItem{40,5200},
-        FrequencyItem{ 44,5220},
-        FrequencyItem{ 48,5240},
-        FrequencyItem{ 52,5260,true},
-        FrequencyItem{ 56,5280,true},
-        FrequencyItem{ 60,5300,true},
-        FrequencyItem{ 64,5320,true},
-        // exp - probably illegal part
-        //FrequencyItem{"5380Mhz [76]  (NOT ALLOWED)",5380},
-        //
-        FrequencyItem{100,5500,true},
-        FrequencyItem{104,5520,true},
-        FrequencyItem{108,5540,true},
-        FrequencyItem{112,5560,true},
-        FrequencyItem{116,5580,true},
-        FrequencyItem{120,5600,true},
-        FrequencyItem{124,5620,true},
-        FrequencyItem{128,5640,true},
-        FrequencyItem{132,5660,true},
-        FrequencyItem{136,5680,true},
-        FrequencyItem{140,5700,true},
-        FrequencyItem{144,5720,true},
+        FrequencyItem{ 32,5160,false,false,false},
+        FrequencyItem{ 36,5180,false,true ,false},
+        FrequencyItem{ 40,5200,false,false,false},
+        FrequencyItem{ 44,5220,false,true,false},
+        FrequencyItem{ 48,5240,false,false,false},
+        FrequencyItem{ 52,5260,true,true ,false},
+        FrequencyItem{ 56,5280,true,false,false},
+        FrequencyItem{ 60,5300,true,true,false},
+        FrequencyItem{ 64,5320,true,false,false},
+        // big break / part that is not allowed
+        FrequencyItem{100,5500,true,true,false},
+        FrequencyItem{104,5520,true,false,false},
+        FrequencyItem{108,5540,true,true,false},
+        FrequencyItem{112,5560,true,false,false},
+        FrequencyItem{116,5580,true,true,false},
+        FrequencyItem{120,5600,true,false,false},
+        FrequencyItem{124,5620,true,true,false},
+        FrequencyItem{128,5640,true,false,false},
+        FrequencyItem{132,5660,true,true,false},
+        FrequencyItem{136,5680,true,false,false},
+        FrequencyItem{140,5700,true,true,false},
+        FrequencyItem{144,5720,true,false,false},
         // Here is the weird break
-        FrequencyItem{149,5745},
-        FrequencyItem{153,5765},
-        FrequencyItem{157,5785},
-        FrequencyItem{161,5805},
-        FrequencyItem{165,5825},
+        FrequencyItem{149,5745,false,true,true},
+        FrequencyItem{153,5765,false,false,false},
+        FrequencyItem{157,5785,false,true,true},
+        FrequencyItem{161,5805,false,false,false},
+        FrequencyItem{165,5825,false,true,true},
         // Depends
-        FrequencyItem{169,5845},
-        FrequencyItem{173,5865},
-        FrequencyItem{177,5885},
-        FrequencyItem{181,5905}
+        FrequencyItem{169,5845,false,false,false},
+        FrequencyItem{173,5865,false,true,true},
+        FrequencyItem{177,5885,false,false,false},
+        FrequencyItem{181,5905,false,false,true}
     };
     return ret;
 }
@@ -258,19 +263,7 @@ static FrequencyItem find_frequency_item(const int frequency){
     for(const auto& item:frequency_items){
         if(item.frequency==frequency)return item;
     }
-    return FrequencyItem{-1,-1,false};
-}
-
-
-int WBLinkSettingsHelper::get_next_supported_frequency(int index)
-{
-    const auto tmp=m_supported_channels;
-    if(index<tmp.size()){
-        const auto frequency=tmp[index];
-        //qDebug()<<"Index:"<<index<<" freq"<<frequency;
-        return frequency;
-    }
-    return -1;
+    return FrequencyItem{-1,-1,false,false,false};
 }
 
 static std::string spaced_string(int number){
@@ -283,7 +276,7 @@ static std::string spaced_string(int number){
 
 QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
 {
-    auto frequency_item=find_frequency_item(frequency_mhz);
+    const auto frequency_item=find_frequency_item(frequency_mhz);
     std::stringstream ss;
     const bool is_2g=frequency_mhz<3000;
     if(is_2g){
@@ -296,9 +289,9 @@ QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
     //if(frequency_item.channel_nr==-1){
     //    ss<<"(ATH) ";
     //}
-    if(frequency_item.radar){
-        ss<<"(DFS RADAR)";
-    }
+    //if(frequency_item.radar){
+    //    ss<<"(DFS RADAR)";
+    //}
     return ss.str().c_str();
 }
 
@@ -309,6 +302,24 @@ int WBLinkSettingsHelper::get_frequency_pollution(int frequency_mhz)
         return pollution.value().n_foreign_packets;
     }
     return -1;
+}
+
+bool WBLinkSettingsHelper::get_frequency_radar(int frequency_mhz)
+{
+    const auto frequency_item=find_frequency_item(frequency_mhz);
+    return frequency_item.radar;
+}
+
+bool WBLinkSettingsHelper::get_frequency_simplify(int frequency_mhz)
+{
+    const auto frequency_item=find_frequency_item(frequency_mhz);
+    return frequency_item.simple;
+}
+
+bool WBLinkSettingsHelper::get_frequency_reccommended(int frequency_mhz)
+{
+    const auto frequency_item=find_frequency_item(frequency_mhz);
+    return frequency_item.recommended;
 }
 
 void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
@@ -398,6 +409,16 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
         HUDLogMessagesModel::instance().add_message_warning("Busy - cannot change "+QString(tag.c_str())+", try again later");
         return;
     }
+}
+
+QList<int> WBLinkSettingsHelper::get_supported_frequencies()
+{
+    const auto tmp=m_supported_channels;
+    QList<int> ret;
+    for(auto& channel:tmp){
+        ret.push_back(channel);
+    }
+    return ret;
 }
 
 void WBLinkSettingsHelper::update_pollution(int frequency, int n_foreign_packets)

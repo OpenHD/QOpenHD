@@ -55,6 +55,8 @@ public:
     Q_INVOKABLE void re_apply_rates();
     // Switch from UDP to TCP
     Q_INVOKABLE void add_tcp_connection_handler(QString ip);
+    // Back to udp
+    Q_INVOKABLE void enable_udp();
 public:
     // A couple of stats exposed as QT properties
     L_RO_PROP(int,telemetry_pps_in,set_telemetry_pps_in,-1)
