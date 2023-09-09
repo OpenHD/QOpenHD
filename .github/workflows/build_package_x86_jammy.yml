@@ -33,7 +33,7 @@ jobs:
         sudo rm -rf /var/lib/apt/lists/*
         sudo apt upgrade -y
         sudo add-apt-repository universe
-        sudo ./install_build_dep.sh ubuntu-x86 custom
+        sudo ./install_build_dep.sh ubuntu-x86
 
         
         

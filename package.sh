@@ -85,11 +85,20 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
 cp rock_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 fi
 
-VERSION="2.3-evo-$(date '+%Y%m%d%H%M')-${VER2}"
+VERSION="2.5-evo-$(date '+%Y%m%d%H%M')-${VER2}"
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 ls -a
+
+if [[ "${DISTRO}" == "jammy" ]] && [[ "${OS}" == "ubuntu" ]] ; then
+fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
+  -p qopenhd_VERSION_ARCH.deb \
+  --after-install after-install.sh \
+  --before-install before-install.sh \
+  ${PLATFORM_PACKAGES} || exit 1
+else
 fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
   -p qopenhd_VERSION_ARCH.deb \
   --after-install after-install.sh \
   ${PLATFORM_PACKAGES} || exit 1
+fi
