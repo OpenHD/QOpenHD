@@ -61,6 +61,7 @@ public:
     // A couple of stats exposed as QT properties
     L_RO_PROP(int,telemetry_pps_in,set_telemetry_pps_in,-1)
     L_RO_PROP(int,telemetry_bps_in,set_telemetry_bps_in,-1)
+    //
 private:
     // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
     // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication

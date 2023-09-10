@@ -4,6 +4,14 @@
 
 #include "../../logging/hudlogmessagesmodel.h"
 
+
+static QString card_driver_type_as_string(int type){
+    if(type==0)return "UNSUPPORTED";
+    if(type==1)return "RTL88X2AU";
+    if(type==2)return "RTL88X2BU";
+    return "N/A?";
+}
+
 WiFiCard::WiFiCard(bool is_air,int card_idx,QObject *parent)
     : QObject{parent},m_is_air_card(is_air),m_card_idx(card_idx)
 {
@@ -85,6 +93,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         }
     }
     set_card_type(msg.card_type);
+    set_card_type_as_string(card_driver_type_as_string(msg.card_type));
 }
 
 int WiFiCard::helper_get_gnd_curr_best_rssi()

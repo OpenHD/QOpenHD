@@ -221,12 +221,12 @@ Rectangle {
         instanceMavlinkSettingsModel: m_instanceMavlinkSettingsModel
     }
 
-    /*BusyIndicator{
-        width: 48
-        height: 48
+    BusyIndicator{
+        width: 96
+        height: 96
         anchors.centerIn: parent
-        running: _xParamUI.is_busy
+        running: m_instanceMavlinkSettingsModel.ui_is_busy
         //visible: _xParamUI.is_busy
-    }*/
+    }
 
 }

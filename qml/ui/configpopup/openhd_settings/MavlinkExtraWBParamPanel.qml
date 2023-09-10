@@ -433,7 +433,6 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             model: supported_frequencies_model
                             textRole: "title"
                             implicitWidth:  elementComboBoxWidth
-                            // 5.8G is generally recommended and much more commonly used than 2.4G. Default to it when unknown, just like openhd does
                             currentIndex: 0
                             // Customization
                             // https://stackoverflow.com/questions/31411844/how-to-limit-the-size-of-drop-down-of-a-combobox-in-qml
@@ -451,79 +450,20 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                   __menuItemType: "comboboxitem" //not 100% sure if this is needed
                                 } //Component __dropDownStyle: MenuStyle
                             } //style: ComboBoxStyle */
-
                             delegate: ItemDelegate {
                                 width: comboBoxFreq.width
-                                contentItem: Rectangle{
-                                    color: "transparent"
-                                    anchors.fill: parent
-                                    anchors.margins: 6
-                                    Rectangle{
-                                        anchors.fill: parent
-                                        color: "transparent"
-                                        //border.color: "red"
-                                        //color: "red"
-                                    }
-                                    RowLayout{
-                                        width:parent.width
-                                        height:parent.height
-                                        Text {
-                                            //anchors.fill: parent
-                                            //anchors.centerIn: parent
-                                            //Layout.fillHeight: true
-                                            //Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignLeft
-                                            Layout.preferredWidth: 110
-                                            text: title
-                                            //color: "#21be2b"
-                                            //color: comboBoxFreq.currentIndex === index ? "blue" : "black"
-                                            color: get_combobox_text_color(comboBoxFreq.currentIndex,index,value)
-                                            font: comboBoxFreq.font
-                                            //elide: comboBoxFreq
-                                            //verticalAlignment: Text.AlignVCenter
-                                        }
-                                        Text{
-                                            Layout.alignment: Qt.AlignLeft
-                                            text: value > 3000 ? "5.8G" : "2.4G"
-                                            //color: value > 3000 ? "green" : "#ff8c00" //"orange"
-                                            color: "#706F1D" // dark green
-                                        }
-                                        Text { // Radar icon
-                                            Layout.alignment: Qt.AlignLeft
-                                            text: qsTr("\uf7c0");
-                                            font.family: "Font Awesome 5 Free"
-                                            color: "red"
-                                            visible: radar
-                                        }
-                                        Item{
-                                            Layout.fillWidth: true
-                                            // filler
-                                        }
-                                        Text{ // smiley icon - indicates good channel
-                                            Layout.alignment: Qt.AlignRight
-                                            Layout.preferredWidth: 30
-                                            text: qsTr("\uf585")
-                                            visible: recommended
-                                            font.family: "Font Awesome 5 Free"
-                                            color: "green"
-                                        }
-                                        Text{
-                                            Layout.alignment: Qt.AlignRight
-                                            Layout.preferredWidth: 60
-                                            text: get_text_pollution(pollution)
-                                            color: get_color_pollution(pollution)
-                                            font.family: "Font Awesome 5 Free"
-                                        }
-                                    }
+                                contentItem: FreqComboBoxRow{
+                                    m_main_text: title
+                                    m_selection_tpye: (value===_wbLinkSettingsHelper.curr_channel_mhz) ? 1 : 0
+                                    m_is_2G: value > 3000 ? "5.8G" : "2.4G"
+                                    m_2G_5G_show: value > 100
+                                    m_show_radar: radar
+                                    m_show_good_channel: recommended
+                                    m_pollution_text: get_text_pollution(pollution)
+                                    m_pollution_color: get_color_pollution(pollution)
                                 }
                                 highlighted: comboBoxFreq.highlightedIndex === index
                             }
-                            /*background: Rectangle {
-                                visible: control.enabled && control.editable && !control.flat
-                                border.width: parent && parent.activeFocus ? 2 : 1
-                                border.color: parent && parent.activeFocus ? control.palette.highlight : control.palette.button
-                                color: "green"
-                            }*/
                         }
 
 

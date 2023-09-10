@@ -25,6 +25,7 @@ class WiFiCard : public QObject
     L_RO_PROP(int,curr_rx_rssi_dbm_antenna2,set_curr_rx_rssi_dbm_antenna2,-128)
     //
     L_RO_PROP(int,card_type,set_card_type,-1) // -1 = no info available yet, otherwise, openhd card type (0..?)
+    L_RO_PROP(QString,card_type_as_string,set_card_type_as_string,"N/A")
 public:
     explicit WiFiCard(bool is_air,int card_idx,QObject *parent = nullptr);
     static constexpr int N_CARDS=4;

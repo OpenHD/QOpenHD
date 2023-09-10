@@ -37,6 +37,8 @@ public:
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 public:
     L_RO_PROP(int, curr_get_all_progress_perc,set_curr_get_all_progress_perc,-1);
+    // NOTE: This is only for the UI, not for c++ usage (non-atomic)
+    L_RO_PROP(bool,ui_is_busy,set_ui_is_busy,false)
 public:
     void set_ready();
 public:

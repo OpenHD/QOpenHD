@@ -32,13 +32,38 @@ ColumnLayout {
         return m_is_alive ? "green" : "black"
     }
 
+    function get_cards_text(){
+        if(!m_is_ground){
+            return _wifi_card_air.card_type_as_string;
+        }
+        // Ground
+        var ret="";
+        if(_wifi_card_gnd0.alive){
+            ret+="[1]"+_wifi_card_gnd0.card_type_as_string;
+        }
+        if(_wifi_card_gnd1.alive){
+            ret+="\n"+"[2]"+_wifi_card_gnd1.card_type_as_string;
+        }
+        if(_wifi_card_gnd2.alive){
+            ret+="\n"+"[3]"+_wifi_card_gnd2.card_type_as_string;
+        }
+        if(_wifi_card_gnd3.alive){
+            ret+="\n"+"[4]"+_wifi_card_gnd3.card_type_as_string;
+        }
+        if(ret.length==0)return "N/A";
+        return ret;
+    }
+
     property int text_minHeight: 30
+
+    property int left_part_preferred_with: 120
 
     RowLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: text_minHeight
         spacing: 6
         Text {
+            Layout.preferredWidth: left_part_preferred_with
             text: qsTr("OpenHD Version:")
         }
         Text {
@@ -56,6 +81,7 @@ ColumnLayout {
         Layout.minimumHeight: text_minHeight
         spacing: 6
         Text {
+            Layout.preferredWidth: left_part_preferred_with
             text: qsTr("Last Ping:")
         }
         Text {
@@ -67,6 +93,7 @@ ColumnLayout {
         Layout.minimumHeight: text_minHeight
         spacing: 6
         Text {
+            Layout.preferredWidth: left_part_preferred_with
             text: qsTr("Alive: ")
         }
         Text {
@@ -74,6 +101,19 @@ ColumnLayout {
             color: get_alive_text_color()
         }
     }
+    RowLayout{
+        Layout.fillWidth: true
+        Layout.minimumHeight: text_minHeight
+        spacing: 6
+        Text {
+            Layout.preferredWidth: left_part_preferred_with
+            text: qsTr(m_is_ground ? "WB Card(s): " : "WB Card:")
+        }
+        Text {
+            text: get_cards_text()
+        }
+    }
+
     // Padding
     Item{
         Layout.fillWidth: true

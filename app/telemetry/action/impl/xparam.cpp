@@ -216,12 +216,12 @@ bool XParam::handle_param_ext_ack(const mavlink_param_ext_ack_t &ack,int sender_
 
 bool XParam::handle_param_ext_value(const mavlink_param_ext_value_t &response, int sender_sysid, int sender_compid)
 {
-    qDebug()<<"Got mavlink_param_ext_value_t";
+    //qDebug()<<"Got mavlink_param_ext_value_t";
     auto opt_finished=find_remove_running_command_get_all_threadsafe(response,sender_sysid,sender_compid);
     if(opt_finished.has_value()){
-        qDebug()<<"Finished get_all command";
+        //qDebug()<<"Finished get_all command";
         auto finished=opt_finished.value();
-        qDebug()<<"Got "<<finished.server_param_set.size()<<" params";
+        //qDebug()<<"Got "<<finished.server_param_set.size()<<" params";
         std::vector<mavlink_param_ext_value_t> valid_param_set;
         for(auto& param:finished.server_param_set){
             assert(param.has_value());

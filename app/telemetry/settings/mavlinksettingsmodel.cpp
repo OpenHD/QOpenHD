@@ -96,6 +96,7 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
         WorkaroundMessageBox::makePopupMessage("Fetch all failed",2);
     }*/
     m_is_currently_busy=true;
+    set_ui_is_busy(true);
     set_curr_get_all_progress_perc(0);
     auto cb=[this,log_result](XParam::GetAllParamResult result){
         if(result.success){
@@ -106,11 +107,12 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
             if(log_result)WorkaroundMessageBox::makePopupMessage("Fetch all failed, please check your up / downlink.",2);
         }
         m_is_currently_busy=false;
+        set_ui_is_busy(false);
     };
     auto cb_progress=[this](float progress){
         const int progress_int=std::lroundf(progress);
         set_curr_get_all_progress_perc(progress_int);
-        qDebug()<<"Progress:"<<progress<<"%";
+        //qDebug()<<"Progress:"<<progress<<"%";
     };
     const auto command=XParam::create_cmd_get_all(m_sys_id,m_comp_id);
     XParam::instance().try_get_param_all_async(command,cb,cb_progress);
