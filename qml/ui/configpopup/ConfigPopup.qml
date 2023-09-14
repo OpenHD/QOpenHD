@@ -146,6 +146,8 @@ Rectangle {
                     mainStackLayout.currentIndex=tmp_index;
                 }else if(event.key == Qt.Key_Left){
                     close_all()
+                }else if(event.key == Qt.Key_Right){
+                    //mainStackLayout.childAt(mainStackLayout.currentIndex).focus=true
                 }
             }
 

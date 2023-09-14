@@ -48,7 +48,7 @@
         <file>ui/widgets/FlightTimeWidget.qml</file>
         <file>ui/HUDOverlayGrid.qml</file>
         <file>ui/widgets/BaseWidget.qml</file>
-        <file>ui/widgets/BaseWidgetForm.ui.qml</file>
+        <file>ui/widgets/BaseWidgetForm.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
         <file>ui/widgets/HeadingWidget.qml</file>
         <file>ui/widgets/SpeedWidget.qml</file>

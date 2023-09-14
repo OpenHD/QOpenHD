@@ -106,6 +106,10 @@ BaseWidgetForm {
     function dirty_open_action_popup(){
         widgetAction.open()
     }
+    function dirty_close_action_popup(){
+        widgetAction.close()
+    }
+
     function dirty_open_close_action_popup(){
         if(widgetAction.opened){
             widgetAction.close()

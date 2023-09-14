@@ -84,15 +84,13 @@ Item {
             // Now the user can move around
             return;
         }
+        close_popup_all_items();
         if(m_highlight_index==0){
             stop_keyboard_navigation()
             return;
         }
         goto_previous_visible_item();
         highlight_specific_item(m_highlight_index);
-        /*m_highlight_index--;
-        if(m_highlight_index<0)m_highlight_index=0;
-        highlight_specific_item(m_highlight_index);*/
     }
     function dummy_joystick_right(){
         if(!m_keyboard_navigation_active){
@@ -101,13 +99,22 @@ Item {
             // Now the user can move around
             return;
         }
-        /*m_highlight_index++;
-        if(m_highlight_index>m_MAX_ITEM_INDEX)m_highlight_index=0;
-        highlight_specific_item(m_highlight_index);*/
+        close_popup_all_items()
         goto_next_visible_item();
         highlight_specific_item(m_highlight_index);
     }
+    function dummy_joystick_up(){
+        if(m_keyboard_navigation_active){
+            stop_keyboard_navigation();
+        }
+    }
+    function dummy_joystick_down(){
+        if(m_keyboard_navigation_active){
+            stop_keyboard_navigation();
+        }
+    }
 
+    // Goes to the next item in order, but skipping invisible widgets
     function goto_next_visible_item(){
         m_highlight_index++;
         if(m_highlight_index>m_MAX_ITEM_INDEX){
@@ -119,6 +126,7 @@ Item {
         }
         goto_next_visible_item()
     }
+    // Goes to the previous item in order, but skipping invisible widgets
     function goto_previous_visible_item(){
         m_highlight_index--;
         if(m_highlight_index<0){
@@ -162,6 +170,11 @@ Item {
             dirty_get_item_by_index(i).m_special_highlight=false;
         }
     }
+    function close_popup_all_items(){
+        for(let i = 1; i <= m_MAX_ITEM_INDEX; i++){
+            dirty_get_item_by_index(i).dirty_close_action_popup()
+        }
+    }
 
     function highlight_specific_item(index_to_highlight){
         unhighlight_all_items()
@@ -193,6 +206,14 @@ Item {
             //console.log("right was pressed")
             event.accepted=true;
             dummy_joystick_right();
+        }else if(event.key == Qt.Key_Up){
+            //console.log("up was pressed")
+            event.accepted=true;
+            dummy_joystick_up()
+        }else if(event.key == Qt.Key_Down){
+            //console.log("down was pressed")
+            event.accepted=true;
+            dummy_joystick_down()
         }
     }
 
