@@ -17,7 +17,7 @@ Item {
     focus: true
     //signal settingsButtonClicked
     property int m_highlight_index : 0
-    property int m_MAX_ITEM_INDEX: 13
+    property int m_MAX_ITEM_INDEX: 15
     property bool m_keyboard_navigation_active: false
     onM_keyboard_navigation_activeChanged: {
         if(m_keyboard_navigation_active){
@@ -94,6 +94,18 @@ Item {
         highlight_specific_item(m_highlight_index);
     }
 
+    function next_visible_item(){
+        if(m_highlight_index>m_MAX_ITEM_INDEX){
+            m_highlight_index=0;
+            return;
+        }
+        m_highlight_index++;
+        if(dirty_get_item_by_index(m_highlight_index).visible){
+            return;
+        }
+        next_visible_item()
+    }
+
     function dirty_get_item_by_index(index){
         var ret=downlink
         if(index==1)return downlink;
@@ -107,7 +119,10 @@ Item {
         if(index==9)return uplink;
         if(index==10)return air_battery;
         if(index==11)return flight_mode;
-        if(index==12)return home_distance;
+        if(index==12)return throttleWidget;
+        if(index==13)return missionWidget;
+        if(index==14)return gps;
+        if(index==15)return home_distance;
         //if(index==13)return uplink;
         console.log("Invalid index");
         return ret;
