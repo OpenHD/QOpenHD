@@ -28,12 +28,12 @@ Rectangle {
     property int rowHeight: 64
     property int elementHeight: 48
 
-    Keys.onPressed: (event)=> {
+    /*Keys.onPressed: (event)=> {
                         if (event.key == Qt.Key_Return) {
                             console.log("enter was pressed from menu");
                             event.accepted = true;
                         }
-                    }
+                    }*/
 
     TabBar {
         id: appSettingsBar

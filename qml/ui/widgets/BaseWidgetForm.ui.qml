@@ -13,8 +13,8 @@ import OpenHD 1.0
 Rectangle {
     color: "#00000000"
 
-    border.width: dragging ? 1 : 0
-    border.color: dragging ? "white" : "#00000000"
+    border.width: m_special_highlight ? 3 : (dragging ? 1 : 0)
+    border.color: m_special_highlight ? "green" : (dragging ? "white" : "#00000000")
 
     //property alias widgetControls: widgetControls
     property alias widgetDetail: widgetDetail
@@ -38,6 +38,8 @@ Rectangle {
     property Popup widgetPopup: Popup {}
     property bool hasWidgetPopup: false
 
+    // Highlight in a special way if this widget has focus
+    property bool m_special_highlight: activeFocus
 
     Behavior on width {
         NumberAnimation { duration: 200 }

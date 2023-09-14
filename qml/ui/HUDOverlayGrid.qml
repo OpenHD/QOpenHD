@@ -13,13 +13,146 @@ import "./widgets/map"
 import "../resources" as Resources
 
 Item {
-    signal settingsButtonClicked
+    id: hudOverlayGrid
+    focus: true
+    //signal settingsButtonClicked
+    property int m_highlight_index : 0
+    property int m_MAX_ITEM_INDEX: 13
+    property bool m_keyboard_navigation_active: false
+    onM_keyboard_navigation_activeChanged: {
+        if(m_keyboard_navigation_active){
+            _hudLogMessagesModel.add_message_info("KEYBOARD NAVIGATION ENABLED");
+        }else{
+            _hudLogMessagesModel.add_message_info("KEYBOARD NAVIGATION DISABLED");
+        }
+    }
 
     property bool globalDragLock: false
 
     // Called by the config popup when closed to give focus back
     function regain_focus(){
-        settingsButton.focus=true
+        hudOverlayGrid.focus = true;
+    }
+    // Opens the config popup and gives it focus
+    function open_config_popup(){
+        settings_panel.openSettings();
+    }
+
+    function start_keyboard_navigation(){
+        // Enable keyboard navigation (highlight), then return
+        m_keyboard_navigation_active=true
+        // Reset index
+        m_highlight_index=0;
+        highlight_specific_item(m_highlight_index)
+        // Now the user can move around
+    }
+    function stop_keyboard_navigation(){
+        m_keyboard_navigation_active=false
+        m_highlight_index=0;
+        unhighlight_all_items();
+    }
+
+    function dummy_joystick_enter(){
+        if(!m_keyboard_navigation_active){
+            // Enable keyboard navigation (highlight), then return
+            start_keyboard_navigation();
+            // Now the user can move around
+            return;
+        }
+        if(m_highlight_index==0){
+            open_config_popup();
+        }else{
+            // Open the popup of the currently "highlighted" widget
+            open_close_configpopup_for_current_item()
+
+        }
+    }
+    function dummy_joystick_left(){
+        if(!m_keyboard_navigation_active){
+            // Enable keyboard navigation (highlight), then return
+            start_keyboard_navigation();
+            // Now the user can move around
+            return;
+        }
+        if(m_highlight_index==0){
+            stop_keyboard_navigation()
+            return;
+        }
+        m_highlight_index--;
+        if(m_highlight_index<0)m_highlight_index=0;
+        highlight_specific_item(m_highlight_index);
+    }
+    function dummy_joystick_right(){
+        if(!m_keyboard_navigation_active){
+            // Enable keyboard navigation (highlight), then return
+            start_keyboard_navigation();
+            // Now the user can move around
+            return;
+        }
+        m_highlight_index++;
+        if(m_highlight_index>m_MAX_ITEM_INDEX)m_highlight_index=0;
+        highlight_specific_item(m_highlight_index);
+    }
+
+    function dirty_get_item_by_index(index){
+        var ret=downlink
+        if(index==1)return downlink;
+        if(index==2)return record_video_widget;
+        if(index==3)return wBLinkRateControlWidget;
+        if(index==4)return qRenderStatsWidget;
+        if(index==5)return bitrate1;
+        if(index==6)return bitrate2;
+        if(index==7)return air_status;
+        if(index==8)return ground_status;
+        if(index==9)return uplink;
+        if(index==10)return air_battery;
+        if(index==11)return flight_mode;
+        if(index==12)return home_distance;
+        //if(index==13)return uplink;
+        console.log("Invalid index");
+        return ret;
+    }
+
+    function unhighlight_all_items(){
+        // Un-highlight the settings button
+        settingsButtonHighlight.visible=false;
+        // Un-highlight all BaseWidget items
+        for(let i = 1; i <= m_MAX_ITEM_INDEX; i++){
+            dirty_get_item_by_index(i).m_special_highlight=false;
+        }
+    }
+
+    function highlight_specific_item(index_to_highlight){
+        unhighlight_all_items()
+        if(index_to_highlight==0){
+            settingsButtonHighlight.visible=true;
+            return;
+        }
+        // highlight the item to highlight
+        dirty_get_item_by_index(m_highlight_index).m_special_highlight=true;
+    }
+
+    function open_close_configpopup_for_current_item(){
+        var tmp=dirty_get_item_by_index(m_highlight_index)
+        // Is of type BaseWidget
+        tmp.dirty_open_close_action_popup()
+    }
+
+    Keys.onPressed: (event)=> {
+        console.log("Key was pressed:"+event);
+        if (event.key == Qt.Key_Return) {
+            console.log("enter was pressed");
+            event.accepted = true;
+            dummy_joystick_enter()
+        }else if(event.key == Qt.Key_Left){
+            console.log("left was pressed")
+            event.accepted=true;
+            dummy_joystick_left();
+        }else if(event.key == Qt.Key_Right){
+            console.log("right was pressed")
+            event.accepted=true;
+            dummy_joystick_right();
+        }
     }
 
     Image {
@@ -34,32 +167,56 @@ Item {
         anchors.leftMargin: 8
         anchors.top: parent.top
         anchors.topMargin: 0
-        focus: true
-        Keys.onPressed: (event)=> {
-                console.log("Key was pressed:"+event);
-                if (event.key == Qt.Key_Return) {
-                    console.log("enter was pressed");
-                    event.accepted = true;
-                    hudOverlayGrid.settingsButtonClicked();
-                    //settingsButton.focus=false;
-                }
-            }
+
         MouseArea {
             id: settingsButtonMouseArea
             anchors.fill: parent
-
             onClicked: {
-                hudOverlayGrid.settingsButtonClicked()
+                open_config_popup()
             }
         }
+        Rectangle{
+            id: settingsButtonHighlight
+            border.width: 5
+            border.color: "green"
+            anchors.fill: parent
+            visible: false
+            color: "transparent"
+        }
     }
-    /*BusyIndicator{
-        width: 48
-        height: 48
-        anchors.top: settingsButton.bottom
-        anchors.topMargin: 5
-        //running: false
-    }*/
+    // By default on top row
+    // --------------------------------------------------------------------------
+    LinkDownRSSIWidget {
+        id: downlink
+        m_next_item: record_video_widget
+    }
+    RecordVideoWidget {
+        id: record_video_widget
+    }
+    WBLinkRateControlWidget{
+        id: wBLinkRateControlWidget
+    }
+    // exp
+    QRenderStatsWidget {
+        id: qRenderStatsWidget
+    }
+    VideoBitrateWidgetPrimary {
+        id: bitrate1
+    }
+    VideoBitrateWidgetSecondary {
+        id: bitrate2
+    }
+    SOCStatusWidgetAir {
+        id: air_status
+    }
+    SOCStatusWidgetGround {
+        id: ground_status
+    }
+    LinkUpRSSIWidget {
+        id: uplink
+    }
+    // ----------------------------------------------------------------------------
+    // TODO SORT ME
 
     // + 0% cpu
     MessageHUD {
@@ -110,19 +267,6 @@ Item {
         id: flight_mah_km
     }
 
-
-    VideoBitrateWidgetPrimary {
-        id: bitrate1
-    }
-    VideoBitrateWidgetSecondary {
-        id: bitrate2
-    }
-
-    // exp
-    QRenderStatsWidget {
-        id: qRenderStatsWidget
-    }
-
     // + 0% cpu
     ImuTempWidget {
         id: imu_temp
@@ -143,26 +287,6 @@ Item {
     // + 0% cpu
     EscTempWidget {
         id: esc_temp
-    }
-
-    // + 0% cpu
-    SOCStatusWidgetAir {
-        id: air_status
-    }
-
-    // + 0% cpu
-    SOCStatusWidgetGround {
-        id: ground_status
-    }
-
-    // + 0% cpu
-    LinkDownRSSIWidget {
-        id: downlink
-    }
-
-    // + 0% cpu
-    LinkUpRSSIWidget {
-        id: uplink
     }
 
     // + 12% cpu
@@ -262,13 +386,6 @@ Item {
     ExampleWidget {
         id: exampleWidget
     }
-    RecordVideoWidget {
-        id: record_video_widget
-    }
-
-    WBLinkRateControlWidget{
-        id: wBLinkRateControlWidget
-    }
 
     DistanceSensorWidget{
         id: distancesensorwidget
@@ -276,6 +393,20 @@ Item {
 
     UAVTimeWiget{
         id: uavtimewidget
+    }
+
+    Label{
+        text: "JOSTICK NAVIGATION ENABLED"
+        anchors.centerIn: parent
+        visible: m_keyboard_navigation_active
+        // style
+        color: settings.color_text
+        horizontalAlignment: Text.AlignVCenter
+        verticalAlignment: Text.AlignVCenter
+        font.pixelSize: 20
+        wrapMode: Text.NoWrap
+        style: Text.Outline
+        styleColor: settings.color_glow
     }
 }
 

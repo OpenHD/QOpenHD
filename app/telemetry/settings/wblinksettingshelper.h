@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "../util/mavlink_include.h"
+#include "util/openhd_defines.hpp"
 
 
 // DON'T ASK, THIS CLASS IS HUGE AND REALLY HARD TO DESCRIBE
@@ -81,7 +82,9 @@ public:
         return change_param_air_and_ground_blocking(PARAM_ID_WB_FREQ,value);
     }
     Q_INVOKABLE int change_param_air_and_ground_channel_width(int value){
-        return change_param_air_and_ground_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
+        //return change_param_air_and_ground_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
+        change_param_air_async(OHD_COMP_ID_LINK_PARAM,PARAM_ID_WB_CHANNEL_WIDTH,static_cast<int32_t>(value),"BWIDTH");
+        return 0;
     }
     Q_INVOKABLE bool change_param_ground_only_frequency(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_FREQ,value);

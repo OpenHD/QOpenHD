@@ -254,8 +254,7 @@ Higher GND TX power results in more range on the uplink (mavlink up). You can se
 but it is not possible to change the TX power during flight (due to the risk of misconfiguration / power outage)."+
     " ! OPENHD DOESN'T HAVE ANY RESTRICTIONS ON TX POWER - It is your responsibility to use a tx power allowed in your country. !"
 
-    property string m_warning_text_no_gnd_unit: "If you are running QOpenHD (the UI application) on your ground station itself, make sure OpenHD core is running. Otherwise, if you
-are running QOpenHD on an external device, connect it to your ground station."
+    property string m_warning_text_no_gnd_unit: "GROUND not alive, settings uavailable. Please check status view."
     property string m_warning_text_no_air_unit: "Make sure your air unit hardware is functioning properly. If you freshly flashed your air and ground unit, they use the same frequency
 and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan all channels for your air unit."
 

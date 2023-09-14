@@ -128,9 +128,9 @@ ApplicationWindow {
             id: hudOverlayGrid
             anchors.fill: parent
             z: 3.0
-            onSettingsButtonClicked: {
-                settings_panel.openSettings();
-            }
+            //onSettingsButtonClicked: {
+            //    settings_panel.openSettings();
+            //}
             // Performance seems to be better on embedded devices like
             // rpi with layers disabled (aka default) but this is not exact science
             layer.enabled: false
@@ -200,6 +200,10 @@ ApplicationWindow {
                 anchors.fill: parent
             }
         }*/
+        Component.onCompleted: {
+            console.log("Completed");
+            hudOverlayGrid.regain_focus()
+        }
     }
 }
 

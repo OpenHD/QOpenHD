@@ -41,7 +41,7 @@ Item {
             if(!(_ohdSystemGround.is_alive && _ohdSystemAir.is_alive)){
                 text="Please make sure your air and ground unit are alive first."
             }else{
-                text="Please check baud and telemetry connection under OpenHD settings / AIR. Your air unit needs to be connected to the FC via UART."
+                text="No FC detected - your FC needs to be connected to your AIR UNIT via UART and you have to set the matching baud rate / FC_UART_CONN type in the OpenHD AIR UNIT parameters set."
             }
             _messageBoxInstance.set_text_and_show(text)
         }

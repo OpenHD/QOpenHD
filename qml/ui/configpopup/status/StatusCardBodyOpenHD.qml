@@ -54,7 +54,21 @@ ColumnLayout {
         return ret;
     }
 
+    function gnd_uplink_state(){
+        if(!_ohdSystemGround.is_alive)return 0;
+        if(!_ohdSystemAir.is_alive)return 0;
+        if(_ohdSystemAir.curr_rx_packet_loss_perc<0)return -1;
+        return 1;
+    }
+    function gnd_uplink_state_text(){
+        var curr_gnd_uplink_state=gnd_uplink_state();
+        if(curr_gnd_uplink_state==0)return "N/A";
+        if(curr_gnd_uplink_state==1) return "OK";
+        return "ERROR";
+    }
+
     property int text_minHeight: 30
+    property int column_preferred_height: 50
 
     property int left_part_preferred_with: 120
 
@@ -74,6 +88,9 @@ ColumnLayout {
             text: "N/A"
             onClicked: _ohdAction.request_openhd_version_async()
             visible: (m_version==="N/A")
+            Layout.preferredHeight: text_minHeight
+            Layout.minimumHeight: text_minHeight
+            height: text_minHeight
         }
     }
     RowLayout{
@@ -111,6 +128,30 @@ ColumnLayout {
         }
         Text {
             text: get_cards_text()
+        }
+    }
+    RowLayout{
+        Layout.fillWidth: true
+        Layout.minimumHeight: text_minHeight
+        spacing: 6
+        visible: m_is_ground
+        Text{
+            Layout.preferredWidth: left_part_preferred_with
+            text: "Uplink:"
+        }
+        Text{
+            text: gnd_uplink_state_text()
+            visible: {
+                var gnd_up_state=gnd_uplink_state()
+                if(gnd_up_state===0 || gnd_up_state===1)return true;
+                return false;
+            }
+        }
+        ButtonIconWarning{
+            onClicked: {
+                _messageBoxInstance.set_text_and_show("Looks like your uplink (GND to AIR) is not functional - is your ground station using a supported wifi card ?")
+            }
+            visible: gnd_uplink_state()===2;
         }
     }
 

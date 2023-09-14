@@ -27,8 +27,9 @@ Rectangle {
     property int left_sidebar_elements_height: 46
 
     function openSettings() {
-        visible = true
-        focus = true
+        settings_form.visible=true
+        settings_form.focus=true;
+        sidebar.focus=true
     }
 
     function close_all(){
@@ -40,6 +41,21 @@ Rectangle {
     function showAppSettings(i) {
         console.log("TEST show app settings:"+i);
     }
+
+    function side_bar_regain_focus(){
+        sidebar.focus = true;
+    }
+
+    /*Keys.onPressed: (event)=> {
+        console.log("ConfigPopup Key was pressed:"+event);
+        if (event.key == Qt.Key_Return) {
+            console.log("enter was pressed");
+            event.accepted = true;
+            close_all()
+            //hudOverlayGrid.settingsButtonClicked();
+            //settingsButton.focus=false;
+        }
+    }*/
 
     //anchors.fill: parent
     width: parent.width * settings.screen_settings_overlay_size_percent / 100;
@@ -116,6 +132,23 @@ Rectangle {
 
         clip: true
 
+        Keys.onPressed: (event)=> {
+                console.log("Sidebar Key was pressed:"+event);
+                var tmp_index=mainStackLayout.currentIndex;
+                if(event.key==Qt.Key_Up){
+                    tmp_index--;
+                    if(tmp_index<0)tmp_index=0;
+                    mainStackLayout.currentIndex=tmp_index;
+                }else if (event.key == Qt.Key_Down) {
+                    console.log("Down arrow");
+                    tmp_index++;
+                    if(tmp_index>=mainStackLayout.count)tmp_index=0;
+                    mainStackLayout.currentIndex=tmp_index;
+                }else if(event.key == Qt.Key_Left){
+                    close_all()
+                }
+            }
+
         Column {
             width: parent.width
 
@@ -131,12 +164,20 @@ Rectangle {
                 m_selection_index: 0
             }
 
+            // Status
+            ConfigPopupSidebarButton{
+                id:  power
+                m_icon_text: "\uf21e" //"\uf011"
+                m_description_text: "Status"
+                m_selection_index: 1
+            }
+
             // QOpenHD Settings - AppSettingsPanel
             ConfigPopupSidebarButton{
                 id:  qopenhd_button
                 m_icon_text: "\uf013"
                 m_description_text: "QOpenHD"
-                m_selection_index: 1
+                m_selection_index: 2
             }
 
             // OpenHD Settings - MavlinkAllSettingsPanel
@@ -144,14 +185,6 @@ Rectangle {
                 id:  openhd_button
                 m_icon_text: "\uf085"
                 m_description_text: "OpenHD"
-                m_selection_index: 2
-            }
-
-            // Power
-            ConfigPopupSidebarButton{
-                id:  power
-                m_icon_text: "\uf21e" //"\uf011"
-                m_description_text: "Status"
                 m_selection_index: 3
             }
 
@@ -209,16 +242,16 @@ Rectangle {
             id: connectPanel
         }
 
+        PanelStatus {
+            id: statusPanel
+        }
+
         AppSettingsPanel {
             id: appSettingsPanel
         }
 
         MavlinkAllSettingsPanel {
             id:  mavlinkAllSettingsPanel //this is "openhd" menu
-        }
-
-        PanelStatus {
-            id: statusPanel
         }
 
         LogMessagesStatusView{

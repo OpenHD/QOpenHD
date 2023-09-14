@@ -88,7 +88,7 @@ Item {
         width: 500
         height: 300
         modal: true
-        focus: true
+        //focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         /*background: Rectangle {
             color: "gray"
