@@ -68,6 +68,19 @@ BaseWidgetForm {
     property string bw_opacity_identifier: "%1_opacity".arg(widgetIdentifier);
     // Default opacity is 1, the value is persistent
     property double bw_current_opacity : settings.value(bw_opacity_identifier,1.0);
+    // Feature persist opacity end
+    // Feature: Show grid when dragging
+    property bool m_show_grid_when_dragging: false
+    onDraggingChanged: {
+        if(dragging && m_show_grid_when_dragging){
+            hudOverlayGrid.m_show_horizontal_center_indicator=true;
+            hudOverlayGrid.m_show_vertical_center_indicator=true
+        }else{
+            hudOverlayGrid.m_show_horizontal_center_indicator=false;
+            hudOverlayGrid.m_show_vertical_center_indicator=false;
+        }
+    }
+
     // Updates the current base widget scale (unique per widgetIdentifier) and persist the value for later use
     function bw_set_current_opacity(opacity){
         if(opacity <=0 || opacity>1){

@@ -11,19 +11,25 @@ import Qt.labs.settings 1.0
 import "./widgets"
 import "./widgets/map"
 import "../resources" as Resources
+import "./elements"
 
 Item {
     id: hudOverlayGrid
     focus: true
+    // cross to indicate horizontal / vertical center
+    // used by BaseWidget
+    property bool m_show_vertical_center_indicator: false
+    property bool m_show_horizontal_center_indicator: false
+
     //signal settingsButtonClicked
     property int m_highlight_index : 0
     property int m_MAX_ITEM_INDEX: 15
     property bool m_keyboard_navigation_active: false
     onM_keyboard_navigation_activeChanged: {
         if(m_keyboard_navigation_active){
-            _hudLogMessagesModel.add_message_info("KEYBOARD NAVIGATION ENABLED");
+            _hudLogMessagesModel.add_message_info("JOYSTICK NAVIGATION ENABLED");
         }else{
-            _hudLogMessagesModel.add_message_info("KEYBOARD NAVIGATION DISABLED");
+            _hudLogMessagesModel.add_message_info("JOYSTICK NAVIGATION DISABLED");
         }
     }
 
@@ -32,9 +38,13 @@ Item {
     // Called by the config popup when closed to give focus back
     function regain_focus(){
         hudOverlayGrid.focus = true;
+        // Receive key events
+        hudOverlayGrid.enabled =true;
     }
     // Opens the config popup and gives it focus
     function open_config_popup(){
+        // The HUD becomes not interactable while configpopup is opened
+        hudOverlayGrid.enabled = false;
         settings_panel.openSettings();
     }
 
@@ -78,9 +88,11 @@ Item {
             stop_keyboard_navigation()
             return;
         }
-        m_highlight_index--;
-        if(m_highlight_index<0)m_highlight_index=0;
+        goto_previous_visible_item();
         highlight_specific_item(m_highlight_index);
+        /*m_highlight_index--;
+        if(m_highlight_index<0)m_highlight_index=0;
+        highlight_specific_item(m_highlight_index);*/
     }
     function dummy_joystick_right(){
         if(!m_keyboard_navigation_active){
@@ -89,25 +101,39 @@ Item {
             // Now the user can move around
             return;
         }
-        m_highlight_index++;
+        /*m_highlight_index++;
         if(m_highlight_index>m_MAX_ITEM_INDEX)m_highlight_index=0;
+        highlight_specific_item(m_highlight_index);*/
+        goto_next_visible_item();
         highlight_specific_item(m_highlight_index);
     }
 
-    function next_visible_item(){
+    function goto_next_visible_item(){
+        m_highlight_index++;
         if(m_highlight_index>m_MAX_ITEM_INDEX){
             m_highlight_index=0;
             return;
         }
-        m_highlight_index++;
         if(dirty_get_item_by_index(m_highlight_index).visible){
             return;
         }
-        next_visible_item()
+        goto_next_visible_item()
+    }
+    function goto_previous_visible_item(){
+        m_highlight_index--;
+        if(m_highlight_index<0){
+            m_highlight_index=0;
+            return;
+        }
+        if(dirty_get_item_by_index(m_highlight_index).visible){
+            return;
+        }
+        goto_previous_visible_item()
     }
 
     function dirty_get_item_by_index(index){
         var ret=downlink
+        if(index==0)return settingsButtonHighlight;
         if(index==1)return downlink;
         if(index==2)return record_video_widget;
         if(index==3)return wBLinkRateControlWidget;
@@ -154,17 +180,17 @@ Item {
     }
 
     Keys.onPressed: (event)=> {
-        console.log("Key was pressed:"+event);
+        console.log("HUDOverlayGrid::Key was pressed:"+event);
         if (event.key == Qt.Key_Return) {
-            console.log("enter was pressed");
+            //console.log("enter was pressed");
             event.accepted = true;
             dummy_joystick_enter()
         }else if(event.key == Qt.Key_Left){
-            console.log("left was pressed")
+            //console.log("left was pressed")
             event.accepted=true;
             dummy_joystick_left();
         }else if(event.key == Qt.Key_Right){
-            console.log("right was pressed")
+            //console.log("right was pressed")
             event.accepted=true;
             dummy_joystick_right();
         }
@@ -410,6 +436,23 @@ Item {
         id: uavtimewidget
     }
 
+    // Extra element - allows customizing the OSD color(s) and more
+    OSDCustomizer {
+        id: osdCustomizer
+        anchors.centerIn: parent
+        visible: false
+        z: 5.0
+    }
+    TapHandler {
+        acceptedButtons: Qt.AllButtons
+        onTapped: {
+        }
+        onLongPressed: {
+            osdCustomizer.visible = true
+        }
+        grabPermissions: PointerHandler.CanTakeOverFromAnything
+    }
+
     Label{
         text: "JOSTICK NAVIGATION ENABLED"
         anchors.centerIn: parent
@@ -422,6 +465,23 @@ Item {
         wrapMode: Text.NoWrap
         style: Text.Outline
         styleColor: settings.color_glow
+    }
+    // Shows center while dragging widgets
+    Rectangle{
+        width: 1
+        height: parent.height
+        color: "white"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        visible: m_show_horizontal_center_indicator
+    }
+    Rectangle{
+        width: parent.width
+        height: 1
+        color: "white"
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        visible: m_show_vertical_center_indicator
     }
 }
 

@@ -136,12 +136,6 @@ ApplicationWindow {
             layer.enabled: false
         }
 
-        OSDCustomizer {
-            id: osdCustomizer
-            anchors.centerIn: parent
-            visible: false
-            z: 5.0
-        }
 
         ConfigPopup {
             id: settings_panel
@@ -162,22 +156,6 @@ ApplicationWindow {
             sequence: "Ctrl+F12"
             onActivated: {
                 _qopenhd.disable_service_and_quit()
-            }
-        }
-
-        Item {
-            anchors.fill: parent
-            z: 1.0
-
-            TapHandler {
-                enabled: settings_panel.visible == false
-                acceptedButtons: Qt.AllButtons
-                onTapped: {
-                }
-                onLongPressed: {
-                    osdCustomizer.visible = true
-                }
-                grabPermissions: PointerHandler.CanTakeOverFromAnything
             }
         }
 
