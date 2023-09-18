@@ -14,7 +14,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
-#ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/action/fcaction.h"
 #include "telemetry/action/ohdaction.h"
@@ -27,8 +26,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/models/rcchannelsmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/wblinksettingshelper.h"
-#endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
-
 #include "osd/speedladder.h"
 #include "osd/altitudeladder.h"
 #include "osd/headingladder.h"
@@ -265,25 +262,25 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
+    write_platform_context_properties(engine);
 
     // Regster all the QT Mavlink system model(s)
     // it is a common practice for QT to prefix models from c++ with an underscore
+    // Needs to be registered first, otherwise we can have threading issue(s)
+    engine.rootContext()->setContextProperty("_messageBoxInstance", &WorkaroundMessageBox::instance());
+    engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
 
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
-    write_platform_context_properties(engine);
     engine.rootContext()->setContextProperty("_ohdlogMessagesModel", &LogMessagesModel::instanceOHD());
     engine.rootContext()->setContextProperty("_fclogMessagesModel", &LogMessagesModel::instanceFC());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
-#ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
     // Telemetry
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
     engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_ohdSystemAirSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGroundSettings", &MavlinkSettingsModel::instanceGround());
-    // exp
-    //engine.rootContext()->setContextProperty("_fcSettingsModel", &MavlinkSettingsModel::instanceFC());
     engine.rootContext()->setContextProperty("_wbLinkSettingsHelper", &WBLinkSettingsHelper::instance());
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
@@ -302,7 +299,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
     engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
-#endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
 // Platform - dependend video begin -----------------------------------------------------------------
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
@@ -347,9 +343,6 @@ int main(int argc, char *argv[]) {
 // Platform - dependend video end  -----------------------------------------------------------------
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
-    // dirty
-    engine.rootContext()->setContextProperty("_messageBoxInstance", &WorkaroundMessageBox::instance());
-    engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
 
     // This allows to use the defines as strings in qml
     engine.rootContext()->setContextProperty("QOPENHD_GIT_VERSION",

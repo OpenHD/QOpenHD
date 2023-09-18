@@ -83,7 +83,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_air_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_injected_bitrate,msg.curr_injected_pps).c_str());
 }
 
-void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_camera_status_t &msg)
+void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_camera_status_air_t &msg)
 {
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);

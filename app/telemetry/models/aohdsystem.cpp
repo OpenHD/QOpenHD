@@ -36,6 +36,28 @@ static int get_required_dbm_for_rate(int channel_width,int mcs_index){
     }
     return 0;
 }
+// Bit field for boolean only value(s)
+struct MonitorModeLinkBitfield {
+    unsigned int stbc:1;
+    unsigned int lpdc:1;
+    unsigned int short_guard:1;
+    unsigned int curr_rx_last_packet_status_good:1;
+    unsigned int unused:4;
+}
+#ifdef __windows__
+;
+#else
+__attribute__ ((packed));
+static_assert(sizeof(MonitorModeLinkBitfield)==1);
+#endif
+static MonitorModeLinkBitfield parse_monitor_link_bitfield(uint8_t bitfield){
+    MonitorModeLinkBitfield ret{};
+#ifdef __windows__
+#else
+    std::memcpy((uint8_t*)&ret,&bitfield,1);
+#endif
+    return ret;
+}
 
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},m_is_air(is_air)
@@ -110,9 +132,9 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_x3b(parsedMsg);
             consumed=true;
         }break;
-        case MAVLINK_MSG_ID_OPENHD_CAMERA_STATUS:{
-            mavlink_openhd_camera_status_t parsedMsg;
-            mavlink_msg_openhd_camera_status_decode(&msg,&parsedMsg);
+        case MAVLINK_MSG_ID_OPENHD_CAMERA_STATUS_AIR:{
+            mavlink_openhd_camera_status_air_t parsedMsg;
+            mavlink_msg_openhd_camera_status_air_decode(&msg,&parsedMsg);
             if(msg.compid==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
                 CameraStreamModel::instance(0).update_mavlink_openhd_camera_stats(parsedMsg);
             }else if(msg.compid==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
@@ -271,7 +293,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_count_tx_inj_error_hint(msg.count_tx_inj_error_hint);
     set_count_tx_dropped_packets(msg.count_tx_dropped_packets);
     // only on ground
-    if(! m_is_air){
+    /*ABCif(! m_is_air){
         for(int i=0;i<WiFiCard::N_CARDS;i++){
             WiFiCard::instance_gnd(i).set_is_active_tx(false);
         }
@@ -280,7 +302,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
             WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
         }
         set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
-    }
+    }*/
     const int new_mcs_index=msg.curr_tx_mcs_index;
     if(m_is_air){
         // We are only interested in the mcs index of the air unit
@@ -301,11 +323,13 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_n_rate_adjustments(msg.curr_n_rate_adjustments);
     set_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_tx_bps,msg.curr_tx_pps).c_str());
     set_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_rx_bps,msg.curr_rx_pps).c_str());
-    const auto stbc_lpdc_gi=Telemetryutil::get_stbc_lpdc_shortguard_bitfield(msg.curr_tx_stbc_lpdc_shortguard_bitfield);
-    set_wb_stbc_enabled(stbc_lpdc_gi.stbc);
-    set_wb_lpdc_enabled(stbc_lpdc_gi.lpdc);
-    set_wb_short_guard_enabled(stbc_lpdc_gi.short_guard);
-    if(m_is_air && !stbc_lpdc_gi.stbc){
+    const auto bitfield=parse_monitor_link_bitfield(msg.bitfield);
+    set_wb_stbc_enabled(bitfield.stbc);
+    set_wb_lpdc_enabled(bitfield.lpdc);
+    set_wb_short_guard_enabled(bitfield.short_guard);
+    set_curr_rx_last_packet_status_good(bitfield.curr_rx_last_packet_status_good);
+
+    if(m_is_air && !bitfield.stbc){
         if(m_stbc_warning_shown)return;
         //  If your ground unit uses card(s) with 2 antennas, enable STBC on your air unit (transmitting part)."
         // "If your air unit uses card(s) with 2 antennas, enable STBC on your ground unit (transmitting part).

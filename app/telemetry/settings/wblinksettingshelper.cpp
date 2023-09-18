@@ -98,12 +98,11 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channe
         qDebug()<<"Got valid ground channel data";
         signal_ui_rebuild_model_when_possible();
     }
-
 }
 
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
 {
-    {
+    /*ABC{
         std::stringstream ss;
         ss<<"Analyzed "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
         //ss<<" Foreign:"<<(int)msg.foreign_packets<<"packets";
@@ -124,7 +123,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
     set_text_for_qml(ss.str().c_str());
     update_pollution(msg.channel_mhz,msg.foreign_packets);
     // signal to the UI to rebuild model
-    signal_ui_rebuild_model_when_possible();
+    signal_ui_rebuild_model_when_possible();*/
 }
 
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t &msg)

@@ -57,7 +57,7 @@ ColumnLayout {
     function gnd_uplink_state(){
         if(!_ohdSystemGround.is_alive)return 0;
         if(!_ohdSystemAir.is_alive)return 0;
-        if(_ohdSystemAir.curr_rx_packet_loss_perc<0)return -1;
+        if(!_ohdSystemAir.curr_rx_last_packet_status_good)return -1;
         return 1;
     }
     function gnd_uplink_state_text(){
@@ -149,9 +149,14 @@ ColumnLayout {
         }
         ButtonIconWarning{
             onClicked: {
-                _messageBoxInstance.set_text_and_show("Looks like your uplink (GND to AIR) is not functional - is your ground station using a supported wifi card ?")
+                var message="Looks like your uplink (GND to AIR) is not functional - please use a supported card on your GND station"+
+                " and make sure passive (listen only) mode is disabled on your ground station."
+                _messageBoxInstance.set_text_and_show(message)
             }
-            visible: gnd_uplink_state()===2;
+            visible: gnd_uplink_state()===-1;
+            Layout.preferredHeight: text_minHeight
+            Layout.minimumHeight: text_minHeight
+            height: text_minHeight
         }
     }
 

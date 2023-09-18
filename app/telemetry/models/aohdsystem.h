@@ -98,6 +98,7 @@ public: // public for QT
     L_RO_PROP(bool,wb_stbc_enabled,set_wb_stbc_enabled,false)
     L_RO_PROP(bool,wb_lpdc_enabled,set_wb_lpdc_enabled,false)
     L_RO_PROP(bool,wb_short_guard_enabled,set_wb_short_guard_enabled,false)
+    L_RO_PROP(bool,curr_rx_last_packet_status_good,set_curr_rx_last_packet_status_good,false)
     //
     L_RO_PROP(QString,tx_packets_per_second_and_bits_per_second,set_tx_packets_per_second_and_bits_per_second,"N/A")
     L_RO_PROP(QString,rx_packets_per_second_and_bits_per_second,set_rx_packets_per_second_and_bits_per_second,"N/A")

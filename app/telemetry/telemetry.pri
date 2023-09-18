@@ -54,8 +54,6 @@ HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
     app/telemetry/models/fcmavlinkmissionitemsmodel.h \
 
-DEFINES += QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
-
 WindowsBuild{
     LIBS += -lws2_32
 }

@@ -34,7 +34,6 @@
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>ui/widgets/MessageHUD.qml</file>
-        <file>LICENSE_UI.txt</file>
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>
         <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
         <file>ui/widgets/LinkUpRSSIWidget.qml</file>

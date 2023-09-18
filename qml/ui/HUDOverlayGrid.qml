@@ -60,6 +60,7 @@ Item {
         m_keyboard_navigation_active=false
         m_highlight_index=0;
         unhighlight_all_items();
+        close_popup_all_items();
     }
 
     function dummy_joystick_enter(){

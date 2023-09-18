@@ -87,7 +87,7 @@ Rectangle{
         }
     }
 
-    function update_channel_width(){
+    /*function update_channel_width(){
         var index=find_index(channel_width_model,_wbLinkSettingsHelper.curr_channel_width_mhz);
         if(index>=0){
             comboBoxChannelWidth.currentIndex=index;
@@ -95,7 +95,7 @@ Rectangle{
             comboBoxChannelWidth.currentIndex=0;
             console.log("Seems not to be a valid channel width"+_wbLinkSettingsHelper.curr_channel_width_mhz)
         }
-    }
+    }*/
 
     // We get notified every time we should re-build the model(s) and their current selection
     property int m_ui_rebuild_models : _wbLinkSettingsHelper.ui_rebuild_models
@@ -107,7 +107,7 @@ Rectangle{
     function function_rebuild_ui(){
         console.log("function_rebuild_ui");
         create_list_model_supported();
-        update_channel_width()
+        //update_channel_width()
     }
 
     // Re-set the "disable sync" on init
@@ -246,8 +246,9 @@ Only enable if you want to quickly change your ground unit's channel width to th
      property string m_info_text_change_frequency: "Frequency in Mhz and channel number. (DFS-RADAR) - also used by commercial plane(s) weather radar (not recommended unless you have ADSB). "+
 " ! OPENHD DOESN'T HAVE ANY RESTRICTIONS ! - It is your responsibility to use channels (frequencies) allowed in your country."
 
-    property string m_info_text_change_channel_width: "A channel width of 40Mhz (40Mhz bandwitdh) gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of "+
-"interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only supported on rtl8812au/bu on air."
+    property string m_info_text_change_channel_width: "A channel width of 40Mhz (40Mhz bandwitdh) gives almost double the bandwidth (2x video bitrate/image quality), but uses 2x 20Mhz channels and therefore the likeliness of "+
+"interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. In general, we recommend 40Mhz unless you are flying ultra long range "+
+"or in a highly polluted (urban) environment."
 
     property string m_info_text_change_tx_power: "Change GND / AIR TX power. Higher Air TX power results in more range on the downlink (video,telemetry).
 Higher GND TX power results in more range on the uplink (mavlink up). You can set different tx power for armed / disarmed state (requres FC),
@@ -327,6 +328,11 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
         }
         // Really really bad
         _messageBoxInstance.set_text_and_show("Something went wrong - please use 'FIND AIR UNIT' to fix");
+    }
+
+    function get_text_current_frequency(){
+        if(!_ohdSystemGround.is_alive)return "N/A";
+        return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+"Mhz";
     }
 
     ScrollView {
@@ -506,7 +512,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 _messageBoxInstance.set_text_and_show(m_info_text_change_channel_width)
                             }
                         }
-                        ComboBox {
+                        /*ComboBox {
                             id: comboBoxChannelWidth
                             model: channel_width_model
                             textRole: "title"
@@ -527,6 +533,25 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                             //Material.background: Material.Light;
+                        }*/
+                        Text{
+                            text: "Curr:"+get_text_current_frequency();
+                        }
+                        Button{
+                            text: "20Mhz"
+                            onClicked: {
+                                set_channel_width(20)
+                            }
+                            highlighted: _wbLinkSettingsHelper.curr_channel_width_mhz==20
+                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0
+                        }
+                        Button{
+                            text: "40Mhz"
+                            onClicked: {
+                               set_channel_width(40)
+                            }
+                            highlighted:  _wbLinkSettingsHelper.curr_channel_width_mhz==40
+                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0
                         }
                     }
                 }

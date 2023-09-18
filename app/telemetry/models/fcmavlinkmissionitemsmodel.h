@@ -5,7 +5,6 @@
 #include <QVector>
 #include <map>
 #include <mutex>
-#include <qtimer.h>
 #include <utility>
 #include <vector>
 #include <mutex>

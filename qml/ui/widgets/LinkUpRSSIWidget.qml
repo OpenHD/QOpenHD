@@ -33,9 +33,15 @@ BaseWidget {
             return "TX UNSUPPORTED";
         }
         if(_ohdSystemGround.tx_operating_mode==2){
-            return "LISTEN ONLY";
+            return "UPLINK DISABLED";
         }
-        return ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+        if(_ohdSystemAir.is_alive){
+            if(_ohdSystemAir.curr_rx_last_packet_status_good){
+                return ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+            }
+            return "NO UPLINK";
+        }
+        return "N/A";
     }
 
     function get_text_dbm(){
