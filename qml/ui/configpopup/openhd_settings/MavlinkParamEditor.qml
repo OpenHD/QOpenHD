@@ -281,7 +281,7 @@ Rectangle{
             color: "white"
             font.bold: true
             font.pixelSize: 18
-            horizontalAlignment: Qt.AlignCenter
+            horizontalAlignment: Qt.AlignHCenter
             Layout.alignment: Qt.AlignCenter
         }
 
@@ -291,8 +291,8 @@ Rectangle{
             font.pixelSize: 12
             text: qsTr(parameterId+" "+get_param_type_readable())
             color: "white"
-            horizontalAlignment: Qt.AlignCenter
             // dafuq https://stackoverflow.com/questions/35799944/text-type-alignment
+            horizontalAlignment: Qt.AlignHCenter
             Layout.alignment: Qt.AlignCenter
         }
         Button {
@@ -452,10 +452,12 @@ Rectangle{
                         if(instanceMavlinkSettingsModel.get_param_requires_manual_reboot(parameterId)){
                             _messageBoxInstance.set_text_and_show("Please reboot to apply")
                         }
+                        var argh=paramValueType==0 ? (""+value_int) : (""+value_string);
                         parameterEditor.visible=false
+                        _qopenhd.show_toast("Set "+parameterId+" to ["+argh+"]");
                     }else{
                         console.log("Update failed")
-                        _messageBoxInstance.set_text_and_show(res);
+                        _qopenhd.show_toast(res,true);
                     }
                     set_description_enabled(false)
                 }

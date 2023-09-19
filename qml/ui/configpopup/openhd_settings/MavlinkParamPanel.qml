@@ -126,7 +126,7 @@ Rectangle {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     //font.pixelSize: 20
-                    width:150
+                    width:160
                     text: model.unique_id
                     font.bold: true
                     //color: settings.screen_settings_openhd_parameters_transparent ? "green" : "black"
@@ -135,7 +135,7 @@ Rectangle {
                     styleColor: settings.color_glow
                 }
                 Text {
-                    width:150
+                    width:160
                     //font.pixelSize: 20
                     text: model.extraValue
                     font.bold: true

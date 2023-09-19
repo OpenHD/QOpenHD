@@ -34,12 +34,14 @@ Rectangle {
         width: parent.width
         height: parent.height
         contentHeight: mainItem.height
+        //contentWidth: mainItem.width
         clip: true
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
 
         Item {
             id: mainItem
+            //width: 1024
             width: parent.width
             height: 500
 

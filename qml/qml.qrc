@@ -251,5 +251,6 @@
         <file>ui/configpopup/openhd_settings/FreqComboBoxRow.qml</file>
         <file>ui/configpopup/status/QOpenHDVersionCard.qml</file>
         <file>ui/elements/CardToast.qml</file>
+        <file>ui/elements/ButtonYellow.qml</file>
     </qresource>
 </RCC>

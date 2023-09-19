@@ -15,8 +15,8 @@ static QString card_driver_type_as_string(int type){
 WiFiCard::WiFiCard(bool is_air,int card_idx,QObject *parent)
     : QObject{parent},m_is_air_card(is_air),m_card_idx(card_idx)
 {
-
 }
+
 
 WiFiCard &WiFiCard::instance_gnd(int index)
 {
@@ -94,6 +94,10 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     }
     set_card_type(msg.card_type);
     set_card_type_as_string(card_driver_type_as_string(msg.card_type));
+    const int card_type=msg.card_type;
+    bool supported = false;
+    if(card_type==1 || card_type==3)supported=true;
+    set_card_type_supported(supported);
 }
 
 int WiFiCard::helper_get_gnd_curr_best_rssi()
