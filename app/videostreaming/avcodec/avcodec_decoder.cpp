@@ -11,7 +11,6 @@
 #include "texturerenderer.h"
 #include "decodingstatistcs.h"
 #include "common/SchedulingHelper.hpp"
-#include "util/WorkaroundMessageBox.h"
 #include "logging/hudlogmessagesmodel.h"
 #include "logging/logmessagesmodel.h"
 

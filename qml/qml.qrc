@@ -221,7 +221,6 @@
         <file>ui/configpopup/status/StatusCardBodyOpenHD.qml</file>
         <file>ui/configpopup/status/PowerActionDialoque.qml</file>
         <file>ui/configpopup/status/PanelStatus.qml</file>
-        <file>ui/configpopup/status/QOpenHDVersionCard.qml</file>
         <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
         <file>ui/configpopup/log/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
@@ -250,5 +249,7 @@
         <file>ui/elements/ButtonGreen.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeArmed.qml</file>
         <file>ui/configpopup/openhd_settings/FreqComboBoxRow.qml</file>
+        <file>ui/configpopup/status/QOpenHDVersionCard.qml</file>
+        <file>ui/elements/CardToast.qml</file>
     </qresource>
 </RCC>

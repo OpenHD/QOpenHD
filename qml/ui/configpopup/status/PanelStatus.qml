@@ -48,6 +48,11 @@ Rectangle {
                 height: 80
                 //anchors.top: airBox.bottom
             }
+            /*Item{
+                id: qopenhdversioncard
+                width: parent.width
+                height: 80
+            }*/
 
             StatusCardsColumn{
                 width: parent.width

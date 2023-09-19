@@ -6,6 +6,7 @@
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 #include "param_names.h"
 
+#include <mutex>
 #include <optional>
 
 #include "../util/mavlink_include.h"
@@ -108,9 +109,15 @@ public:
     // Extra
     Q_INVOKABLE bool set_param_tx_power(bool ground,bool is_tx_power_index,bool is_for_armed_state,int value);
 private:
+    struct SupportedChannel{
+        uint16_t frequency;
+        int n_foreign_packets;
+    };
+    // Written by telemetry, read by UI
+    std::mutex m_supported_channels_mutex;
     std::vector<uint16_t> m_supported_channels;
-    void update_channels_on_success();
-    bool m_valid_channel_channel_width_once=false;
+    bool update_supported_channels(const std::vector<uint16_t> supported_channels);
+    bool has_valid_reported_channel_data();
     std::atomic<bool> m_simplify_channels=false;
 private:
     struct PollutionElement{
@@ -118,11 +125,11 @@ private:
         int width_mhz;
         int n_foreign_packets;
     };
-    std::vector<PollutionElement> m_pollution_elements;
+    // Written by telemetry, read by UI
+    std::map<int,PollutionElement> m_pollution_elements;
+    std::mutex m_pollution_elements_mutex;
     void update_pollution(int frequency,int n_foreign_packets);
-    std::optional<PollutionElement> get_pollution_for_frequency_channel_width(int frequency,int width);
-private:
-    std::atomic<bool> m_has_valid_ground_channel_data=false;
+    std::optional<PollutionElement> get_pollution_for_frequency(int frequency);
     void signal_ui_rebuild_model_when_possible();
 };
 

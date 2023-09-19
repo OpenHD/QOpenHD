@@ -2,7 +2,7 @@
 #include "qdebug.h"
 #include "documentedparam.h"
 
-#include "../../util/WorkaroundMessageBox.h"
+#include "../../util/qopenhd.h"
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
 #include "util/openhd_defines.hpp"
@@ -79,22 +79,17 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(!m_is_ready){
         // not discovered yet
-        if(log_result)WorkaroundMessageBox::makePopupMessage("OHD System not found",2);
+        if(log_result){
+            QOpenHD::instance().show_toast("OHD System not found",false);
+        }
         return;
     }
     if(m_is_currently_busy){
-        if(log_result)WorkaroundMessageBox::makePopupMessage("Busy, please try again later",2);
+        if(log_result){
+            QOpenHD::instance().show_toast("Busy, please try again later",false);
+        }
         return;
     }
-    // Fetch the full param set from the server (defined by sys / comp id)
-    /*auto param_set_opt=XParam::instance().try_get_param_all_blocking(m_sys_id,m_comp_id);
-    if(param_set_opt.has_value()){
-        const auto param_set=param_set_opt.value();
-        remove_and_replace_param_set(param_set);
-        WorkaroundMessageBox::makePopupMessage("Fetch all success",2);
-    }else{
-        WorkaroundMessageBox::makePopupMessage("Fetch all failed",2);
-    }*/
     m_is_currently_busy=true;
     set_ui_is_busy(true);
     set_curr_get_all_progress_perc(0);
@@ -102,9 +97,13 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
         if(result.success){
             const auto param_set=result.param_set;
             remove_and_replace_param_set(param_set);
-            if(log_result)WorkaroundMessageBox::makePopupMessage("Fetch all success",2);
+            if(log_result){
+                QOpenHD::instance().show_toast("Fetch all success",false);
+            }
         }else{
-            if(log_result)WorkaroundMessageBox::makePopupMessage("Fetch all failed, is your uplink working ? Use the status view for more info..",2);
+            if(log_result){
+                QOpenHD::instance().show_toast("Fetch all failed, is your uplink working ? Use the status view for more info..",true);
+            }
         }
         m_is_currently_busy=false;
         set_ui_is_busy(false);

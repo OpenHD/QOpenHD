@@ -83,7 +83,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_air_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_injected_bitrate,msg.curr_injected_pps).c_str());
 }
 
-void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_camera_status_air_t &msg)
+void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_openhd_camera_status_air_t &msg)
 {
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
@@ -166,8 +166,6 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performa
 
 void CameraStreamModel::set_curr_recommended_bitrate_from_message(const int64_t curr_recommended_bitrate_kbits)
 {
-    // We use the fact that the current recommended bitrate is updated regularily to notify the user of
-    // changing rate(s) during flight
     if(m_curr_recomended_video_bitrate_kbits!= 0 && curr_recommended_bitrate_kbits!=0 && m_curr_recomended_video_bitrate_kbits != curr_recommended_bitrate_kbits){
         QString message=m_camera_index==0 ? "Cam1 encoder:" : "Cam2 encoder:";
         message+=Telemetryutil::bitrate_kbits_to_qstring(curr_recommended_bitrate_kbits);

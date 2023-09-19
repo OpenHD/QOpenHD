@@ -20,70 +20,36 @@ Card {
 
     property int m_wanted_frequency: -1
 
-    property int m_wanted_channel_width:-1
-
-    // TYPE = 0 == change frequency, 1 == change channel width
-    property int m_type: 0
-
     // Set to 1 to show the final warning message after which channel frequency or channel width are applied
     property int m_index: 0
 
     property string m_original_error_message: ""
 
-
     function initialize_and_show_frequency(frequency,error_message){
         m_wanted_frequency=frequency
-        m_wanted_channel_width=-1
-        m_type=0;
-        m_index=0
-        m_original_error_message=error_message;
-        dialoqueChangeFrequency.visible=true
-    }
-    function initialize_and_show_channel_width(channel_width,error_message){
-        m_wanted_channel_width=channel_width
-        m_wanted_frequency=-1
-        m_type=1;
         m_index=0
         m_original_error_message=error_message;
         dialoqueChangeFrequency.visible=true
     }
 
-
-    property string m_info_string_frequency: "Please use the channel scan to find your air unit, then change frequency.
-Otherwise, you can manually change your ground station frequency,
-leaving your air unit untouched -
-NOTE: BOTH CHANNEL AND CHANNEL WIDTH NEED TO MACTCH,
-AS WELL AS YOUR BIND PHRASE"
-
-    property string m_info_string_chanel_width: "Please use the channel scan to find your air unit, then change channel width (bandwidth).
-Otherwise, you can manually change your ground station channel width,
-leaving your air unit untouched -
-NOTE: BOTH CHANNEL AND CHANNEL WIDTH NEED TO MACTCH,
-AS WELL AS YOUR BIND PHRASE"
+    property string m_info_string_frequency: "Please use the channel scan to find your air unit, then change frequency."+
+"Otherwise, you can manually change your ground station frequency,"+
+"leaving your air unit untouched - thiis can be quicker than a channel scan if you know your air unit frequency."
 
     property string m_info_ground_only: "WARNING: This changes your ground unit frequency without changing your air unit frequency !"
 
     property string m_last_warning_frequency: "WARNING: This changes your ground unit frequency without changing your air unit frequency !"
-    property string m_last_warning_channel_width: "WARNING: This changes your ground unit channel width without changing your air unit channel width !"
 
     function get_card_title_string(){
-        if(m_type==0)return "Frequency "+m_wanted_frequency+"Mhz"
-        return "Bandwidth "+m_wanted_channel_width+"Mhz"
+        return "Frequency "+m_wanted_frequency+"Mhz"
     }
 
     function get_card_body_string(){
         if(m_index==0){
             // In Info mode
-            if(m_type==0){
-                return m_original_error_message +"\n"+ m_info_string_frequency;
-            }
-            return m_original_error_message +"\n"+ m_info_string_chanel_width;
+            return m_original_error_message +"\n"+ m_info_string_frequency;
         }
-        // In last warning mode
-        if(m_type==0){
-            return m_last_warning_frequency
-        }
-        return m_last_warning_channel_width;
+        return m_last_warning_frequency
     }
 
     cardBody: Item{
@@ -134,24 +100,13 @@ AS WELL AS YOUR BIND PHRASE"
                 Layout.leftMargin: 12
                 text:  qsTr("YES,GND ONLY")
                 onPressed: {
-                    if(m_type==0){
-                        console.log("Try changing ground only to frequency "+m_wanted_frequency)
-                        var result = _wbLinkSettingsHelper.change_param_ground_only_frequency(m_wanted_frequency);
-                        if(result){
-                            _messageBoxInstance.set_text_and_show("GND set to frequency "+m_wanted_frequency+"Mhz",3);
-                            dialoqueChangeFrequency.visible=false;
-                        }else{
-                            _messageBoxInstance.set_text_and_show("Failed, GND busy,please try again later",3);
-                        }
+                    console.log("Try changing ground only to frequency "+m_wanted_frequency)
+                    var result = _wbLinkSettingsHelper.change_param_ground_only_frequency(m_wanted_frequency);
+                    if(result){
+                        _qopenhd.show_toast("GND set to frequency "+m_wanted_frequency+"Mhz",false);
+                        dialoqueChangeFrequency.visible=false;
                     }else{
-                        console.log("Try changing ground only to channel width "+m_wanted_channel_width)
-                        var result = _wbLinkSettingsHelper.change_param_ground_only_channel_width(m_wanted_channel_width);
-                        if(result){
-                            _messageBoxInstance.set_text_and_show("GND set to channel width "+m_wanted_channel_width+"Mhz",3);
-                            dialoqueChangeFrequency.visible=false;
-                        }else{
-                            _messageBoxInstance.set_text_and_show("Failed, GND busy,please try again later",3);
-                        }
+                        _qopenhd.show_toast("Failed, GND busy,please try again later",true);
                     }
                 }
             }

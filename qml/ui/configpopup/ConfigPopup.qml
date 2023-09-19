@@ -148,6 +148,7 @@ Rectangle {
                     close_all()
                 }else if(event.key == Qt.Key_Right){
                     //mainStackLayout.childAt(mainStackLayout.currentIndex).focus=true
+                    _qopenhd.show_toast("No joystick navigation for this panel");
                 }
             }
 

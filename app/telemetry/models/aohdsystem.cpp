@@ -136,9 +136,9 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             mavlink_openhd_camera_status_air_t parsedMsg;
             mavlink_msg_openhd_camera_status_air_decode(&msg,&parsedMsg);
             if(msg.compid==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-                CameraStreamModel::instance(0).update_mavlink_openhd_camera_stats(parsedMsg);
+                CameraStreamModel::instance(0).update_mavlink_openhd_camera_status_air(parsedMsg);
             }else if(msg.compid==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
-                CameraStreamModel::instance(1).update_mavlink_openhd_camera_stats(parsedMsg);
+                CameraStreamModel::instance(1).update_mavlink_openhd_camera_status_air(parsedMsg);
                 // Feature - tell user to enable 2 cameras in qopenhd
                 set_n_openhd_cameras(2);
                 const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();

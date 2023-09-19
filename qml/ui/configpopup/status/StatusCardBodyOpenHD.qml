@@ -23,6 +23,7 @@ ColumnLayout {
     property string m_version: m_model.openhd_version
     property string m_last_ping: m_model.last_ping_result_openhd
     property bool m_is_alive: m_model.is_alive
+    property string m_qopenhd_version: "TODO"
 
     function get_alive_text(){
         return m_is_alive ? "Yes" : "NOT ALIVE !"
@@ -67,6 +68,17 @@ ColumnLayout {
         return "ERROR";
     }
 
+    function get_text_qopenhd_openhd_ground_version_mismatch(){
+        var ret="Your version of QOpenHD ["+m_qopenhd_version+"] is incompatible with your ground station OpenHD version: ["+m_version+"]"+
+                "\nPlease update QOpenHD / your Ground station.";
+        return ret;
+    }
+    function get_show_warning_qopenhd_openhd_ground_version_mismatch(){
+        if(m_version==="N/A")return false;
+        if(m_version!==m_qopenhd_version)return true;
+        return false;
+    }
+
     property int text_minHeight: 30
     property int column_preferred_height: 50
 
@@ -88,6 +100,15 @@ ColumnLayout {
             text: "N/A"
             onClicked: _ohdAction.request_openhd_version_async()
             visible: (m_version==="N/A")
+            Layout.preferredHeight: text_minHeight
+            Layout.minimumHeight: text_minHeight
+            height: text_minHeight
+        }
+        ButtonIconWarning{
+            onClicked: {
+                _messageBoxInstance.set_text_and_show(get_text_qopenhd_openhd_ground_version_mismatch())
+            }
+            visible: m_is_ground && get_show_warning_qopenhd_openhd_ground_version_mismatch()
             Layout.preferredHeight: text_minHeight
             Layout.minimumHeight: text_minHeight
             height: text_minHeight

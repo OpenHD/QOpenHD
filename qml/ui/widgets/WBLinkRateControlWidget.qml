@@ -145,10 +145,6 @@ BaseWidget {
             _hudLogMessagesModel.add_message_warning("AIR not alive,cannot set "+channel_width_mhz+"Mhz Bandwidth")
             return;
         }
-        if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
-            _hudLogMessagesModel.add_message_warning("FC armed,cannot set "+channel_width_mhz+"Mhz Bandwidth")
-            return;
-        }
         var result = _wbLinkSettingsHelper.change_param_air_and_ground_channel_width(channel_width_mhz)
         if(result !== 0){
             _hudLogMessagesModel.add_message_warning("Cannot set "+channel_width_mhz+"Mhz Bandwidth")
@@ -156,10 +152,9 @@ BaseWidget {
     }
 
     property string m_DESCRIPTION_CHANNEL_WIDTH: "
-A higher channel width (40Mhz) increases the bitrate significantly, but reduces the maximum range of the system.
-In cntrast to the MCS index (see below), it can only be changed while disarmed (not during flight),
-It is recommended to use a 40Mhz channel width if your hardware supports it,
-and controll the MCS index for fine adjustments."
+A higher bandwidth / 40Mhz channel width increases the bitrate significantly, but also increases interference and reduces the maximum range."+
+"It is recommended to use a 40Mhz channel width if possible,"+
+"and controll the MCS index for fine adjustments."
 
     property string m_DESCRIPTION_MCS: "
 The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data."+
@@ -346,15 +341,6 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                                 highlighted:  m_curr_channel_width==40
                                 enabled: !m_is_armed
                             }
-                        }
-                        Text{
-                            text: "ARMED - not available"
-                            width: parent.width
-                            height: parent.height
-                            visible : m_is_armed
-                            color: "red"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
                         }
                     }
                 }

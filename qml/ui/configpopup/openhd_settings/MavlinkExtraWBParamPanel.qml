@@ -42,16 +42,13 @@ Rectangle{
         return _fcMavlinkSystem.armed
     }
 
-
     ListModel{
         id: supported_frequencies_model
         ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; pollution: -1}
     }
-    ListModel{
-        id: channel_width_model
-        ListElement {title: "Unknown"; value: -1}
-        ListElement {title: "20MHz (default)"; value: 20}
-        ListElement {title: "40MHz (2x Bandwidth)"; value: 40}
+
+    function show_popup_message(message){
+        _messageBoxInstance.set_text_and_show(message)
     }
 
     property bool m_simplify_enable:true
@@ -87,16 +84,6 @@ Rectangle{
         }
     }
 
-    /*function update_channel_width(){
-        var index=find_index(channel_width_model,_wbLinkSettingsHelper.curr_channel_width_mhz);
-        if(index>=0){
-            comboBoxChannelWidth.currentIndex=index;
-        }else{
-            comboBoxChannelWidth.currentIndex=0;
-            console.log("Seems not to be a valid channel width"+_wbLinkSettingsHelper.curr_channel_width_mhz)
-        }
-    }*/
-
     // We get notified every time we should re-build the model(s) and their current selection
     property int m_ui_rebuild_models : _wbLinkSettingsHelper.ui_rebuild_models
     onM_ui_rebuild_modelsChanged: {
@@ -105,15 +92,16 @@ Rectangle{
     }
 
     function function_rebuild_ui(){
-        console.log("function_rebuild_ui");
+        console.log("function_rebuild_ui:"+_wbLinkSettingsHelper.ui_rebuild_models);
+        if(_wbLinkSettingsHelper.ui_rebuild_models<=0)return
         create_list_model_supported();
-        //update_channel_width()
     }
 
-    // Re-set the "disable sync" on init
+    //
     Component.onCompleted: {
 
     }
+    //
 
     // ------------------- PART HELPER FOR CURRENT LOSS / POLLUTION / THROTTLE BEGIN -------------------
     property bool m_is_ground_and_air_alive: _ohdSystemGround.is_alive && _ohdSystemAir.is_alive
@@ -264,14 +252,9 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
 the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Europe, since it only allows 25mW."
 
     // Changes either the frequency or channel width
-    // These 2 need to be synced, so we have ( a bit complicated, but quite natural for the user) dialoque for the cases where we need to handle errors / show a warning
-    function change_frequency_or_channel_width_sync_otherwise_handle_error(frequency_mhz,channel_width_mhz,ignore_armed_state){
-        if(frequency_mhz>0 && channel_width_mhz>0){
-            console.log("Use this method to change either of both !");
-            return;
-        }
-        const change_frequency=frequency_mhz > 0 ? true : false;
-        console.log("change_frequency_or_channel_width_sync_otherwise_handle_error: "+(change_frequency ? ("FREQ:"+frequency_mhz) : ("BWIDTH:"+channel_width_mhz))+"Mhz");
+    // This one need to be synced, so we have ( a bit complicated, but quite natural for the user) dialoque for the cases where we need to handle errors / show a warning
+    function change_frequency_sync_otherwise_handle_error(frequency_mhz,ignore_armed_state){
+        console.log("change_frequency_sync_otherwise_handle_error: "+"FREQ:"+frequency_mhz+"Mhz");
         // Ground needs to be alive and well
         if(!_ohdSystemGround.is_alive){
             _messageBoxInstance.set_text_and_show("Ground unit not alive",5);
@@ -280,36 +263,18 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
         // Air needs to be alive and well - otherwise we show the "do you want to change gnd only" dialoque
         if(!_ohdSystemAir.is_alive){
             var error_message_not_alive="AIR Unit not alive -"
-            if(change_frequency){
-                dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
-            }else{
-                dialoqueFreqChangeGndOnly.initialize_and_show_channel_width(channel_width_mhz,error_message_not_alive);
-            }
+            dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
             return;
         }
         // FC needs to be disarmed - otherwise show warning
         const fc_currently_armed = (_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed)// || true;
         if(fc_currently_armed && ignore_armed_state===false){
-            if(frequency_mhz>0){
-                dialoqueFreqChangeArmed.initialize_and_show_frequency(frequency_mhz)
-            }else{
-                dialoqueFreqChangeArmed.initialize_and_show_channel_width(channel_width_mhz)
-            }
+            dialoqueFreqChangeArmed.initialize_and_show_frequency(frequency_mhz)
             return;
         }
-        var result=-100;
-        if(change_frequency){
-            result= _wbLinkSettingsHelper.change_param_air_and_ground_frequency(frequency_mhz);
-        }else{
-            result = _wbLinkSettingsHelper.change_param_air_and_ground_channel_width(channel_width_mhz);
-        }
+        var result= _wbLinkSettingsHelper.change_param_air_and_ground_frequency(frequency_mhz);
         if(result==0){
-            var message="";
-            if(change_frequency){
-                message = "Succesfully set air and ground to FREQUENCY: "+frequency_mhz+"Mhz"
-            }else{
-                message = "Succesfully set air and ground to BANDWIDTH: "+channel_width_mhz+"Mhz"
-            }
+            var message="Succesfully set air and ground to FREQUENCY: "+frequency_mhz+"Mhz";
             _messageBoxInstance.set_text_and_show(message,5);
             return;
         }else if(result==-1){
@@ -318,12 +283,8 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
             return;
         }else if(result==-2){
             // Couldn't reach air unit
-            var error_message_not_alive="Couldn't reach air unit -"
-            if(change_frequency){
-                dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
-            }else{
-                dialoqueFreqChangeGndOnly.initialize_and_show_channel_width(channel_width_mhz,error_message_not_alive);
-            }
+            var error_message_not_reachable="Couldn't reach air unit -"
+            dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_reachable);
             return;
         }
         // Really really bad
@@ -334,6 +295,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
         if(!_ohdSystemGround.is_alive)return "N/A";
         return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+"Mhz";
     }
+
 
     ScrollView {
         id:mavlinkExtraWBParamPanel
@@ -460,7 +422,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 contentItem: FreqComboBoxRow{
                                     m_main_text: title
                                     m_selection_tpye: (value===_wbLinkSettingsHelper.curr_channel_mhz) ? 1 : 0
-                                    m_is_2G: value > 3000 ? "5.8G" : "2.4G"
+                                    m_is_2G: value > 3000
                                     m_2G_5G_show: value > 100
                                     m_show_radar: radar
                                     m_show_good_channel: recommended
@@ -470,8 +432,6 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 highlighted: comboBoxFreq.highlightedIndex === index
                             }
                         }
-
-
                         Button{
                             text: "APPLY FREQ"
                             id: buttonSwitchFreq
@@ -482,10 +442,10 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                     _messageBoxInstance.set_text_and_show("Please select a valid frequency",5);
                                     return;
                                 }
-                                change_frequency_or_channel_width_sync_otherwise_handle_error(selectedValue,-1,false);
+                                change_frequency_sync_otherwise_handle_error(selectedValue,-1,false);
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
-                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0
+                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0 && _ohdSystemGround.is_alive;
                         }
                         Switch{
                             text: "Simplify"
@@ -512,28 +472,11 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 _messageBoxInstance.set_text_and_show(m_info_text_change_channel_width)
                             }
                         }
-                        /*ComboBox {
-                            id: comboBoxChannelWidth
-                            model: channel_width_model
-                            textRole: "title"
-                            implicitWidth:  elementComboBoxWidth
-                        }
-                        Button{
-                            text: "APPLY BW"
-                            id: buttonSwitchChannelWidth
-                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0
-                            onClicked: {
-                                // Ground needs to be alive and well
-                                var selectedValue=channel_width_model.get(comboBoxChannelWidth.currentIndex).value
-                                if(!(selectedValue===10 || selectedValue===20 || selectedValue===40 || selectedValue===80)){
-                                    _messageBoxInstance.set_text_and_show("Please select a valid channel width",5);
-                                    return;
-                                }
-                                change_frequency_or_channel_width_sync_otherwise_handle_error(-1,selectedValue,false);
-                            }
-                            //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
-                            //Material.background: Material.Light;
+
+                        /*FreqComboBoxRow{
+                            m_main_text: _fcM
                         }*/
+
                         Text{
                             text: "Curr:"+get_text_current_frequency();
                         }
@@ -543,7 +486,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 set_channel_width(20)
                             }
                             highlighted: _wbLinkSettingsHelper.curr_channel_width_mhz==20
-                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0
+                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0 && _ohdSystemAir.is_alive
                         }
                         Button{
                             text: "40Mhz"
@@ -551,7 +494,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                set_channel_width(40)
                             }
                             highlighted:  _wbLinkSettingsHelper.curr_channel_width_mhz==40
-                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0
+                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0 && _ohdSystemAir.is_alive
                         }
                     }
                 }
@@ -612,7 +555,8 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             }
                         }
                         Button{
-                            text: "Find Air unit"
+                            id: buttonFindAirUnitId
+                            text: "FIND AIR UNIT"
                             enabled: _ohdSystemGround.is_alive
                             onClicked: {
                                 dialoqueStartChannelScan.open_channel_scan_dialoque()
@@ -629,6 +573,14 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             value: _wbLinkSettingsHelper.progress_scan_channels_perc
                         }
                     }
+                    // Highlight the button for the user
+                    /*Rectangle{
+                        width: 100
+                        height: buttonFindAirUnitId.height
+                        color: "red"
+                        anchors.left: buttonFindAirUnitId.right
+                        anchors.top: buttonFindAirUnitId.top
+                    }*/
                 }
 
                 Rectangle {

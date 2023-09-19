@@ -50,7 +50,7 @@ Rectangle {
                 if(_qopenhd.is_valid_ip(ip_address)){
                     _mavlinkTelemetry.add_tcp_connection_handler(ip_address)
                 }else{
-                    _messageBoxInstance.set_text_and_show("Please enter a valid ip");
+                    _qopenhd.show_toast("Please enter a valid ip")
                 }
             }
         }

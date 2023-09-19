@@ -373,7 +373,7 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 text: "Continue"
                 onClicked: {
                     if(comboBoxSelectedArmedDisarmed.currentIndex<=0){
-                        _messageBoxInstance.set_text_and_show("Please specify armed / disarmed",5);
+                        _qopenhd.show_toast("Please specify armed / disarmed",false);
                     }else{
                         m_curr_index=2;
                     }
@@ -399,7 +399,7 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 text: "CONTINUE"
                 onClicked: {
                     if(m_card_manufacturer_type<0){
-                        _messageBoxInstance.set_text_and_show("Please select your card manufacturer",5);
+                        _qopenhd.show_toast("Please select your card manufacturer",false);
                     }else{
                         m_curr_index=3;
                     }
@@ -425,7 +425,7 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 text: "APPLY"
                 onClicked: {
                     if(tx_power_index_or_mw<0){
-                        _messageBoxInstance.set_text_and_show("Please select a valid tx power",5);
+                        _qopenhd.show_toast("Please select a valid tx power",false);
                         return;
                     }
                     var success=false
@@ -445,7 +445,7 @@ the card driver and/or the linux kernel doesn't support changing it.");
                         }
                         _messageBoxInstance.set_text_and_show(message, 10);
                     }else{
-                        _messageBoxInstance.set_text_and_show("Cannot change TX power, please try again",5);
+                        _qopenhd.show_toast("Cannot change TX power, please try again",true);
                     }
                 }
             }

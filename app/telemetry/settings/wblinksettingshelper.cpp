@@ -3,7 +3,6 @@
 
 #include "../models/aohdsystem.h"
 
-#include "../../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
 #include <qsettings.h>
 #include <sstream>
@@ -47,10 +46,6 @@ void WBLinkSettingsHelper::validate_and_set_channel_mhz(int channel_mhz)
         qDebug()<<"Invalid channel "<<channel_mhz<<"Mhz";
         return;
     }
-    if(!m_has_valid_ground_channel_data){
-        // Ground channel data not available yet
-        return;
-    }
     if(m_curr_channel_mhz!=channel_mhz){
         qDebug()<<"Changing channel from "<<m_curr_channel_mhz<<" to "<<channel_mhz;
         set_curr_channel_mhz(channel_mhz);
@@ -62,10 +57,6 @@ void WBLinkSettingsHelper::validate_and_set_channel_width_mhz(int channel_width_
 {
     if(!(channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
         qDebug()<<"Invalid channel width "<<channel_width_mhz<<" Mhz";
-        return;
-    }
-    if(!m_has_valid_ground_channel_data){
-        // Ground channel data not available yet
         return;
     }
     if(m_curr_channel_width_mhz!=channel_width_mhz){
@@ -91,39 +82,52 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channe
         qDebug()<<"No valid channels from ground station - should never happen";
         return;
     }
-    // We have valid supported channels datat
-    if(m_has_valid_ground_channel_data==false){
-        m_supported_channels=channels;
-        m_has_valid_ground_channel_data=true;
-        qDebug()<<"Got valid ground channel data";
+    if(update_supported_channels(channels)){
+        qDebug()<<"Supported channels changed";
         signal_ui_rebuild_model_when_possible();
     }
 }
 
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
 {
-    /*ABC{
+    std::vector<std::pair<uint16_t,uint16_t>> analyzed_channels;
+    for(int i=0;i<30;i++){
+        if(msg.channels_mhz[i]==0){
+            break;
+        }
+        analyzed_channels.push_back(std::make_pair(msg.channels_mhz[i],msg.foreign_packets[i]));
+    }
+    if(analyzed_channels.size()==0){
+        qDebug()<<"Perhaps malformed message analyze channels";
+        return;
+    }
+    const uint16_t curr_channel_mhz=analyzed_channels[analyzed_channels.size()-1].first;
+    const uint16_t curr_channel_width_mhz=40;
+    const uint16_t curr_foreign_packets=analyzed_channels[analyzed_channels.size()-1].second;
+    {
         std::stringstream ss;
-        ss<<"Analyzed "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
-        //ss<<" Foreign:"<<(int)msg.foreign_packets<<"packets";
-        ss<<" Progress:"<<(int)msg.progress<<"%";
+        ss<<"Analyzed "<<(int)curr_channel_mhz<<"@"<<(int)curr_channel_width_mhz;
+        //ss<<" Foreign:"<<(int)curr_foreign_packets<<"packets";
+        ss<<" Progress:"<<(int)msg.progress_perc<<"%";
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
     }
     //qDebug()<<"Got progress "<<msg.channel_mhz<<"@"<<msg.channel_width_mhz<<"Mhz "<<msg.progress<<"%";
     std::stringstream ss;
-    ss<<"Analyzed "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz<<"Mhz, ";
-    ss<<" Foreign packets:"<<msg.foreign_packets<<" ";
-    if(msg.progress>=100){
+    ss<<"Analyzed "<<(int)curr_channel_mhz<<"@"<<(int)curr_channel_width_mhz<<"Mhz, ";
+    ss<<" Foreign packets:"<<curr_foreign_packets<<" ";
+    if(msg.progress_perc>=100){
         ss<<"100%, Done";
     }else{
-        ss<<(int)msg.progress<<"%";
+        ss<<(int)msg.progress_perc<<"%";
     }
     qDebug()<<ss.str().c_str();
-    set_progress_analyze_channels_perc(msg.progress);
+    set_progress_analyze_channels_perc(msg.progress_perc);
     set_text_for_qml(ss.str().c_str());
-    update_pollution(msg.channel_mhz,msg.foreign_packets);
+    for(auto& analyzed: analyzed_channels){
+        update_pollution(analyzed.first,analyzed.second);
+    }
     // signal to the UI to rebuild model
-    signal_ui_rebuild_model_when_possible();*/
+    signal_ui_rebuild_model_when_possible();
 }
 
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t &msg)
@@ -296,7 +300,7 @@ QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
 
 int WBLinkSettingsHelper::get_frequency_pollution(int frequency_mhz)
 {
-    auto pollution=get_pollution_for_frequency_channel_width(frequency_mhz,40);
+    auto pollution=get_pollution_for_frequency(frequency_mhz);
     if(pollution.has_value()){
         return pollution.value().n_foreign_packets;
     }
@@ -367,6 +371,22 @@ bool WBLinkSettingsHelper::set_param_tx_power(bool ground,bool is_tx_power_index
     return result;
 }
 
+bool WBLinkSettingsHelper::update_supported_channels(const std::vector<uint16_t> supported_channels)
+{
+    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
+    if(m_supported_channels!=supported_channels){
+        m_supported_channels=supported_channels;
+        return true;
+    }
+    return false;
+}
+
+bool WBLinkSettingsHelper::has_valid_reported_channel_data()
+{
+    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
+    return !m_supported_channels.empty();
+}
+
 void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag)
 {
     mavlink_param_ext_set_t command;
@@ -412,9 +432,9 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
 
 QList<int> WBLinkSettingsHelper::get_supported_frequencies()
 {
-    const auto tmp=m_supported_channels;
+    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
     QList<int> ret;
-    for(auto& channel:tmp){
+    for(auto& channel:m_supported_channels){
         ret.push_back(channel);
     }
     return ret;
@@ -422,31 +442,33 @@ QList<int> WBLinkSettingsHelper::get_supported_frequencies()
 
 void WBLinkSettingsHelper::update_pollution(int frequency, int n_foreign_packets)
 {
-    for(int i=0;i<m_pollution_elements.size();i++){
-       if(m_pollution_elements.at(i).frequency_mhz==frequency){
-            m_pollution_elements[i].n_foreign_packets=n_foreign_packets;
-            return;
-       }
+    std::lock_guard<std::mutex> lock(m_pollution_elements_mutex);
+    auto search = m_pollution_elements.find(frequency);
+    if(search != m_pollution_elements.end()){
+        m_pollution_elements[frequency].n_foreign_packets=n_foreign_packets;
+    }else{
+        PollutionElement element{frequency,40,n_foreign_packets};
+        m_pollution_elements.insert({frequency,element});
     }
-    m_pollution_elements.push_back(PollutionElement{frequency,40,n_foreign_packets});
 }
 
-std::optional<WBLinkSettingsHelper::PollutionElement> WBLinkSettingsHelper::get_pollution_for_frequency_channel_width(int frequency, int width)
+std::optional<WBLinkSettingsHelper::PollutionElement> WBLinkSettingsHelper::get_pollution_for_frequency(int frequency)
 {
-    for(int i=0;i<m_pollution_elements.size();i++){
-       if(m_pollution_elements.at(i).frequency_mhz==frequency){
-            return m_pollution_elements[i];
-       }
+    std::lock_guard<std::mutex> lock(m_pollution_elements_mutex);
+    auto search = m_pollution_elements.find(frequency);
+    if(search != m_pollution_elements.end()){
+        return search->second;
     }
     return std::nullopt;
 }
 
 void WBLinkSettingsHelper::signal_ui_rebuild_model_when_possible()
 {
-    if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0 && m_has_valid_ground_channel_data){
-       qDebug()<<"Signal UI Ready & should rebuild "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz "<<m_has_valid_ground_channel_data;
+    const bool valid_ground_channel_data=has_valid_reported_channel_data();
+    if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0 && valid_ground_channel_data){
+       qDebug()<<"Signal UI Ready & should rebuild "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz valid channels:"<<valid_ground_channel_data;
        set_ui_rebuild_models(m_ui_rebuild_models+1);
     }else{
-       qDebug()<<"Signal UI Not ready yet "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz "<<m_has_valid_ground_channel_data;
+       qDebug()<<"Signal UI Not ready yet "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz valid channels:"<<valid_ground_channel_data;
     }
 }

@@ -31,7 +31,8 @@ Item {
         }else if(m_type==1){
             var text=""
             if(_ohdSystemGround.is_alive){
-                text="Looks like you are not receiving any messages from your OpenHD air unit - please go to OpenHD settings and connect to your air unit (FIND AIR UNIT)."
+                text="Looks like you are not receiving any messages from your OpenHD air unit - please go to OpenHD settings (WB Link) and connect to your air unit "+
+                        "by performing a channel scan (FIND AIR UNIT)."
             }else{
                 text="Please make sure your ground unit is alive first."
             }

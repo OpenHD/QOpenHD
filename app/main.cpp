@@ -276,13 +276,12 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_fclogMessagesModel", &LogMessagesModel::instanceFC());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
-    // Telemetry
+    // Telemetry - first all the models
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
     engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_ohdSystemAirSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGroundSettings", &MavlinkSettingsModel::instanceGround());
     engine.rootContext()->setContextProperty("_wbLinkSettingsHelper", &WBLinkSettingsHelper::instance());
-    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkAction", &FCAction::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkMissionItemsModel", &FCMavlinkMissionItemsModel::instance());
@@ -299,6 +298,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
     engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
+    // And then the main part
+    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
 
 // Platform - dependend video begin -----------------------------------------------------------------
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
@@ -367,6 +368,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     qDebug() << "Running QML";
+    // Now we start mavlink for the first time
+    MavlinkTelemetry::instance().start();
 
     QRenderStats::instance().register_to_root_window(engine);
 

@@ -13,6 +13,16 @@
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
+}
+
+MavlinkTelemetry &MavlinkTelemetry::instance()
+{
+    static MavlinkTelemetry instance{};
+    return instance;
+}
+
+void MavlinkTelemetry::start()
+{
     QSettings settings;
     const bool dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
     if(dev_use_tcp){
@@ -26,12 +36,6 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
         m_udp_connection->start();
     }
-}
-
-MavlinkTelemetry &MavlinkTelemetry::instance()
-{
-    static MavlinkTelemetry instance{};
-    return instance;
 }
 
 bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){

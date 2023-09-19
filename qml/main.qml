@@ -145,6 +145,13 @@ ApplicationWindow {
         WorkaroundMessageBox{
             id: workaroundmessagebox
         }
+
+        CardToast{
+            id: card_toast
+            m_text: _qopenhd.toast_text
+            visible: _qopenhd.toast_visible
+        }
+
         // Used by settings that require a restart
         RestartQOpenHDMessageBox{
             id: restartQOpenHDMessageBox

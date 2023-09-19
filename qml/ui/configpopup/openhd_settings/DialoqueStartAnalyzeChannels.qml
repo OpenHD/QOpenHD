@@ -108,7 +108,7 @@ PLEASE DO NOT CHANGE SETTINGS WHILE ANALYZING."
                 onPressed: {
                     var result=_wbLinkSettingsHelper.start_analyze_channels()
                     if(result!==true){
-                        _messageBoxInstance.set_text_and_show("Busy,please try again later",3)
+                        _qopenhd.show_toast("Busy,please try again later",true);
                     }else{
                         dialoqueAnalyzeChannels.visible=false;
                     }

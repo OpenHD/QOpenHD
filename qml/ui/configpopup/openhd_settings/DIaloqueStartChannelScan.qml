@@ -186,7 +186,7 @@ Card {
                         m_curr_index=2;
                     }else{
                         console.log("Cannot initiate channel scan");
-                        _messageBoxInstance.set_text_and_show("Busy,please try again later",3)
+                        _qopenhd.show_toast("Busy,please try again later",true)
                     }
                 }
             }
