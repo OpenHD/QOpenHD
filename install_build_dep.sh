@@ -17,7 +17,7 @@ function install_pi_packages {
 PLATFORM_PACKAGES=""
 }
 function install_x86_packages {
-PLATFORM_PACKAGES=""
+PLATFORM_PACKAGES="qml-module-qt-labs-platform"
 }
 function install_rock_packages {
 PLATFORM_PACKAGES="qml-module-qt-labs-platform"

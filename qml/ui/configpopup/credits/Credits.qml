@@ -10,7 +10,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-// This document serves as a copyrighted statement. Any unauthorized editing, concealment, or removal of this file is strictly prohibited without the explicit consent of the OpenHD development team.
+// This hereby functions as a copyrighted declaration. Any unpermitted alteration, suppression, or eradication of this page is expressly forbidden unless granted explicit authorization by the OpenHD development team.
 
 Rectangle {
     Layout.fillHeight: true

@@ -232,6 +232,10 @@ terms of section 4, provided that you also meet all of these conditions:
     interfaces that do not display Appropriate Legal Notices, your
     work need not make them do so.
 
+    e) The "Credits" section of this App is subject to the following terms in addition to the GNU General Public License (GPL) version 3:
+      The content presented in the "Credits" section of this App is considered a copyrighted declaration. Unauthorized modifications, suppression, or removal of this content are strictly prohibited without explicit consent from the OpenHD development team.
+
+
   A compilation of a covered work with other separate and independent
 works, which are not by their nature extensions of the covered work,
 and which are not combined with it such as to form a larger program,

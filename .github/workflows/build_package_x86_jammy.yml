@@ -33,21 +33,10 @@ jobs:
         sudo rm -rf /var/lib/apt/lists/*
         sudo apt upgrade -y
         sudo add-apt-repository universe
-        sudo ./install_build_dep.sh ubuntu-x86 custom
-
-        
-        
+        sudo ./install_build_dep.sh ubuntu-x86
 
     - name: Build with make
       run: |
-        sudo rm -f /etc/ld.so.conf.d/qt.conf
-        sudo touch /etc/ld.so.conf.d/qt.conf
-        sudo sh -c 'echo "/opt/Qt5.15.7/lib/" >/etc/ld.so.conf.d/qt.conf'
-        sudo ldconfig
-        export PATH="$PATH:/opt/Qt5.15.7/bin/"
-        sudo rm -f /usr/bin/qmake
-        sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake
-        echo "QT successfully linked"   
         sudo ./package.sh x86_64 ubuntu jammy
     
     - name: Push
