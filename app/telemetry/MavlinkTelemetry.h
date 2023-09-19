@@ -16,8 +16,8 @@
 
 /**
  *
- * @brief This is the one and only (mavlink telemetry) connection of QOpenHD to OpenHD
- * (More specific, the OpenHD Ground Station - but since the Ground station forwards messages to the air pi,
+ * @brief Main entry / exit point for all mavlink telemetry
+ * (More specific, to / from the OpenHD Ground Station - but since the Ground station forwards messages to/from the air pi,
  * one can indirectly also reach the air pi via the ground pi, as well as the mavlink FC connected to the air pi).
  * Its functionalities are simple:
  * 1) "Connecting to the ground unit (either UDP or TCP)"
