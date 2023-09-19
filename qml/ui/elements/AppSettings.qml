@@ -383,7 +383,7 @@ Settings {
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
-    // FC discovery - annoying mavsdk
+    // FC discovery - can be annoying / tricky
     property bool dirty_enable_mavlink_fc_sys_id_check: false
 
     property int custom_cursor_type: 0

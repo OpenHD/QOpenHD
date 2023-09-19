@@ -248,7 +248,7 @@ void MavlinkTelemetry::ping_all_systems()
     mavlink_message_t msg;
     mavlink_timesync_t timesync{};
     timesync.tc1=0;
-    // NOTE: MAVSDK does time in nanoseconds by default
+    // Ardupilot seems to use us
     m_last_timesync_out_us=QOpenHDMavlinkHelper::getTimeMicroseconds();
     timesync.ts1=m_last_timesync_out_us;
     mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),&msg,&timesync);

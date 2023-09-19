@@ -143,7 +143,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_PARAM_VALUE:{
-        // handled by params mavsdk
+        // handled by XParam
         break;
     }
     case MAVLINK_MSG_ID_GPS_RAW_INT:{
@@ -452,7 +452,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_EXTENDED_SYS_STATE:{
         break;
     }
-        // Commands and Params are done by mavsdk
+        // Commands and Params are done by XParam / XCommand
     case MAVLINK_MSG_ID_PARAM_EXT_ACK:
     case MAVLINK_MSG_ID_PARAM_EXT_VALUE:
     case MAVLINK_MSG_ID_COMMAND_ACK:

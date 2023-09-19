@@ -22,9 +22,6 @@ PLATFORM_PACKAGES=""
 function install_rock_packages {
 PLATFORM_PACKAGES="qml-module-qt-labs-platform"
 }
-function install_mavsdk {
-bash build_install_mavsdk_static.sh || exit 1
-}
 
  # Add OpenHD Repository platform-specific packages
  apt install -y curl
@@ -66,7 +63,4 @@ bash build_install_mavsdk_static.sh || exit 1
 
 # Installing python packages
 gem install fpm
-
-# Building MAVSDK
-install_mavsdk
 

@@ -15,15 +15,15 @@
 #include "connection/tcp_connection.h"
 
 /**
- * Changed: Used to have custom UDP and TCP stuff, but now just uses MAVSDK - MAVSDK already has both TCP and UDP support.
  *
  * @brief This is the one and only (mavlink telemetry) connection of QOpenHD to OpenHD
  * (More specific, the OpenHD Ground Station - but since the Ground station forwards messages to the air pi,
  * one can indirectly also reach the air pi via the ground pi, as well as the mavlink FC connected to the air pi).
  * Its functionalities are simple:
+ * 1) "Connecting to the ground unit (either UDP or TCP)"
  * 1) sending mavlink messages to OpenHD
  * 2) receiving mavlink messages from OpenHD
- * 3) Handling the mavsdk "system discovery" for our OpenHD mavlink network, which is defined by
+ * 3) Handling the "system discovery" for our OpenHD mavlink network, which is defined by
  *      a) OHD Air unit (own sys id)
  *      b) OHD Ground unit (own sys id)
  *      c) Optional FC connected to the air unit

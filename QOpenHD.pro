@@ -76,7 +76,7 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
-# QOpenHD telemetry (mavlink, partially based on MAVSDK) features
+# QOpenHD telemetry (mavlink)
 # REQUIRED - without it QOpenHD will compile, but be pretty much non functional
 include(app/telemetry/telemetry.pri)
 
@@ -231,7 +231,7 @@ JetsonBuild {
 }
 
 WindowsBuild {
-    # This aparently makes qt use absolute paths, otherwise we get problems with mavsdk
+    # This aparently makes qt use absolute paths, otherwise we get compile issues ?
     QMAKE_PROJECT_DEPTH = 0
 }
 
