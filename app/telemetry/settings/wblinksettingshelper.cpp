@@ -7,6 +7,15 @@
 #include <qsettings.h>
 #include <sstream>
 #include "../action/ohdaction.h"
+#include "../../util/qopenhd.h"
+
+static void tmp_log_result(bool enable,const std::string message){
+    if(enable){
+        HUDLogMessagesModel::instance().add_message_info(message.c_str());
+    }else{
+        qDebug()<<"Not logged to HUD:"<<message.c_str();
+    }
+}
 
 WBLinkSettingsHelper::WBLinkSettingsHelper(QObject *parent)
     : QObject{parent}
@@ -428,6 +437,15 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
         HUDLogMessagesModel::instance().add_message_warning("Busy - cannot change "+QString(tag.c_str())+", try again later");
         return;
     }
+}
+
+void WBLinkSettingsHelper::change_param_air_channel_width_async(int value, bool log_result)
+{
+    if(!AOHDSystem::instanceAir().is_alive()){
+        tmp_log_result(true,"Cannot change BW, AIR not alive");
+        return;
+    }
+    change_param_air_async(OHD_COMP_ID_LINK_PARAM,PARAM_ID_WB_CHANNEL_WIDTH,static_cast<int32_t>(value),"BWIDTH");
 }
 
 QList<int> WBLinkSettingsHelper::get_supported_frequencies()

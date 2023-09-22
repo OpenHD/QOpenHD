@@ -61,13 +61,13 @@ You can still use the RAW OpenHD AIR / GROUND Parameters to change your tx power
         }else{
            wifi_card_chip_type=_wifi_card_air.card_type;
         }
-        if(wifi_card_chip_type<=0){
-            _messageBoxInstance.set_text_and_show("Card type unknown - please use a supported card. You can still change the tx power manually via the param set, but probably
+        if(!(wifi_card_chip_type==0 || wifi_card_chip_type==1)){
+            _messageBoxInstance.set_text_and_show("Card type unknown / unsupported - please use a supported card. You can still change the tx power manually via the param set, but probably
 the card driver and/or the linux kernel doesn't support changing it.");
             return;
         }
-        // OpenHD has 0 for unknown, we do not allow 0
-        m_card_chip_type=wifi_card_chip_type-1;
+        // 0 is RTL8812AU, 1 is RTL8812BU
+        m_card_chip_type=wifi_card_chip_type;
         //m_card_chip_type=0; // RTL8812AU
         dialoqueTxPower.visible=true
     }

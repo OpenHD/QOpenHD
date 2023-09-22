@@ -3,18 +3,44 @@
 #include <sstream>
 
 #include "../../logging/hudlogmessagesmodel.h"
+#include "util/qopenhdmavlinkhelper.hpp"
 
 
-static QString card_driver_type_as_string(int type){
-    if(type==0)return "UNSUPPORTED";
-    if(type==1)return "RTL88X2AU";
-    if(type==2)return "RTL88X2BU";
-    return "N/A?";
+static std::string wifi_card_type_to_string(const int card_type) {
+    switch (card_type) {
+    case 0:
+        return "RTL88X2AU_OHD";
+    case 1:
+        return "RTL88X2BU_OHD";
+    case 2:
+        return "RTL_88X2AU";
+    case 3:
+        return "RTL_88X2BU";
+    case 4:
+        return "ATHEROS";
+    case 5:
+        return "MT_7921u";
+    case 6:
+        return "RALINK";
+    case 7:
+        return "INTEL";
+    case 8:
+        return "BROADCOM";
+    case 9:
+    default:
+        return "UNKNOWN";
+    }
 }
+
 
 WiFiCard::WiFiCard(bool is_air,int card_idx,QObject *parent)
     : QObject{parent},m_is_air_card(is_air),m_card_idx(card_idx)
 {
+    if(!m_is_air_card){
+        m_alive_timer = std::make_unique<QTimer>(this);
+        QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &WiFiCard::update_alive);
+        m_alive_timer->start(1000);
+    }
 }
 
 
@@ -44,6 +70,7 @@ WiFiCard &WiFiCard::instance_air()
 
 void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg)
 {
+    m_last_mavlink_message=QOpenHDMavlinkHelper::getTimeMilliseconds();
     set_alive(true);
     set_curr_rx_rssi_dbm(msg.rx_rssi);
     set_curr_rx_rssi_dbm_antenna1(msg.rx_rssi_1);
@@ -93,10 +120,10 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         }
     }
     set_card_type(msg.card_type);
-    set_card_type_as_string(card_driver_type_as_string(msg.card_type));
+    set_card_type_as_string(wifi_card_type_to_string(msg.card_type).c_str());
     const int card_type=msg.card_type;
     bool supported = false;
-    if(card_type==1 || card_type==3)supported=true;
+    if(card_type==0 || card_type==1)supported=true;
     set_card_type_supported(supported);
 }
 
@@ -111,5 +138,13 @@ int WiFiCard::helper_get_gnd_curr_best_rssi()
         }
     }
     return best_rssi;
+}
+
+void WiFiCard::update_alive()
+{
+    const auto elapsed_since_last_message=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_mavlink_message;
+    if(elapsed_since_last_message>5*1000){
+        set_alive(false);
+    }
 }
 

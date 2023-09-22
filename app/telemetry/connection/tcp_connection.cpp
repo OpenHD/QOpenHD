@@ -132,6 +132,7 @@ bool TCPConnection::setup_socket()
         return false;
     }
 #endif
+    return true;
 }
 
 

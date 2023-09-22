@@ -1,7 +1,9 @@
 #ifndef WIFICARD_H
 #define WIFICARD_H
 
+#include <memory>
 #include <qobject.h>
+#include <qtimer.h>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 #include "../util/mavlink_include.h"
@@ -46,6 +48,10 @@ private:
     // On the OSD, we show how many packets were received on each card in X seconds intervals
     std::chrono::steady_clock::time_point m_last_packets_in_X_second_recalculation=std::chrono::steady_clock::now();
     int64_t m_last_packets_in_X_second_value=-1;
+    // Card alive - ONLY USED FOR GROUND CARD(s)
+    std::unique_ptr<QTimer> m_alive_timer = nullptr;
+    std::atomic<int> m_last_mavlink_message=0;
+    void update_alive();
 };
 
 #endif // WIFICARD_H

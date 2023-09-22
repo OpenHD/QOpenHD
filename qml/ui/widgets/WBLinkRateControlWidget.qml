@@ -136,19 +136,12 @@ BaseWidget {
         _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
     }
 
-    function set_channel_width(channel_width_mhz){
-        if(!_ohdSystemGround.is_alive){
-            _hudLogMessagesModel.add_message_warning("GND not alive,cannot set "+channel_width_mhz+"Mhz Bandwidth")
-            return
-        }
+    function set_channel_width_async(channel_width_mhz){
         if(!_ohdSystemAir.is_alive){
-            _hudLogMessagesModel.add_message_warning("AIR not alive,cannot set "+channel_width_mhz+"Mhz Bandwidth")
+            _hudLogMessagesModel.add_message_warning("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive");
             return;
         }
-        var result = _wbLinkSettingsHelper.change_param_air_and_ground_channel_width(channel_width_mhz)
-        if(result !== 0){
-            _hudLogMessagesModel.add_message_warning("Cannot set "+channel_width_mhz+"Mhz Bandwidth")
-        }
+        _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
     }
 
     property string m_DESCRIPTION_CHANNEL_WIDTH: "
@@ -328,18 +321,18 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                             Button{
                                 text: "20Mhz"
                                 onClicked: {
-                                    set_channel_width(20)
+                                    set_channel_width_async(20)
                                 }
                                 highlighted: m_curr_channel_width==20
-                                enabled: !m_is_armed
+                                //enabled: _ohdSystemAir.is_alive
                             }
                             Button{
                                 text: "40Mhz"
                                 onClicked: {
-                                   set_channel_width(40)
+                                   set_channel_width_async(40)
                                 }
                                 highlighted:  m_curr_channel_width==40
-                                enabled: !m_is_armed
+                                //enabled: _ohdSystemAir.is_alive
                             }
                         }
                     }

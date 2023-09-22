@@ -82,16 +82,16 @@ public:
     Q_INVOKABLE int change_param_air_and_ground_frequency(int value){
         return change_param_air_and_ground_blocking(PARAM_ID_WB_FREQ,value);
     }
-    Q_INVOKABLE int change_param_air_and_ground_channel_width(int value){
-        //return change_param_air_and_ground_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
-        change_param_air_async(OHD_COMP_ID_LINK_PARAM,PARAM_ID_WB_CHANNEL_WIDTH,static_cast<int32_t>(value),"BWIDTH");
-        return 0;
-    }
+    //
+    // Changing the channel width (bandwidth) is a bit special - read the documentation in openhd
+    // wb_link for more info.
+    // This method won't return any success / error message, since we update the UI not depending on the result,
+    // but what channel width the ground reports via broadcast
+    //
+    Q_INVOKABLE void change_param_air_channel_width_async(int value,bool log_result);
+
     Q_INVOKABLE bool change_param_ground_only_frequency(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_FREQ,value);
-    }
-    Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
-        return change_param_ground_only_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
     Q_INVOKABLE QList<int> get_supported_frequencies();
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);

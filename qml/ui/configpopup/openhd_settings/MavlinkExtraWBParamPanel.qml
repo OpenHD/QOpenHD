@@ -213,6 +213,14 @@ Rectangle{
         return ret;
     }
 
+    function set_channel_width_async(channel_width_mhz){
+        if(!_ohdSystemAir.is_alive){
+            _qopenhd.show_toast("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive")
+            return;
+        }
+        _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,false);
+    }
+
     property string m_text_warning_nosync_frequency: "WARNING: THIS CHANGES YOUR GROUND UNIT FREQUENCY WITHOUT CHANGING YOUR AIR UNIT FREQUENCY !
 Only enable if you want to quickly change your ground unit's frequency to the already set frequency of a running air unit (And know both frequency and channel width on top of your head)";
 
@@ -472,18 +480,16 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 _messageBoxInstance.set_text_and_show(m_info_text_change_channel_width)
                             }
                         }
-
                         /*FreqComboBoxRow{
                             m_main_text: _fcM
                         }*/
-
                         Text{
                             text: "Curr:"+get_text_current_frequency();
                         }
                         Button{
                             text: "20Mhz"
                             onClicked: {
-                                set_channel_width(20)
+                                set_channel_width_async(20);
                             }
                             highlighted: _wbLinkSettingsHelper.curr_channel_width_mhz==20
                             enabled: _wbLinkSettingsHelper.ui_rebuild_models>0 && _ohdSystemAir.is_alive
@@ -491,7 +497,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         Button{
                             text: "40Mhz"
                             onClicked: {
-                               set_channel_width(40)
+                               set_channel_width_async(40);
                             }
                             highlighted:  _wbLinkSettingsHelper.curr_channel_width_mhz==40
                             enabled: _wbLinkSettingsHelper.ui_rebuild_models>0 && _ohdSystemAir.is_alive

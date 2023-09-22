@@ -92,17 +92,9 @@ ColumnLayout {
             Layout.preferredWidth: left_part_preferred_with
             text: qsTr("OHD Version:")
         }
-        Button{
-            text: "N/A"
-            onClicked: _ohdAction.request_openhd_version_async()
-            visible: (m_version==="N/A")
-            Layout.preferredHeight: text_minHeight
-            Layout.minimumHeight: text_minHeight
-            height: text_minHeight
-        }
         Text {
             text: m_version
-            visible: !(m_version==="N/A") && !b_version_warning.visible
+            visible: !b_version_warning.visible
         }
         ButtonYellow{
             text: m_version
