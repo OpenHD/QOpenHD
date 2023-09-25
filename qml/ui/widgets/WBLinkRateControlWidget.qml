@@ -467,17 +467,17 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                                 text: "POLLUTED"
                                 onClicked: {
                                     set_keyframe_interval(2)
-                                    set_fec_percentage(50)
+                                    set_fec_percentage(30)
                                 }
-                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==50
+                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==30
                             }
                             Button{
                                 text: "CITY"
                                 onClicked: {
                                     set_keyframe_interval(3)
-                                    set_fec_percentage(30)
+                                    set_fec_percentage(20)
                                 }
-                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==30
+                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==20
                             }
                             Button{
                                 text: "DEFAULT"
@@ -499,7 +499,6 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     }
                 }
             }
-
         }
     }
 
