@@ -365,7 +365,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "TX PWR Air: "+_wifi_card_air.tx_power;
+                text: "TX PWR Air: "+_wifi_card_air.tx_power +" "+ _wifi_card_air.tx_power_unit;
                 color: "white"
                 font.bold: true
                 height: parent.height

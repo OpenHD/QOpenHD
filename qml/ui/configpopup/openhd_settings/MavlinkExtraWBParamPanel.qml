@@ -194,7 +194,15 @@ Rectangle{
         return "P:"+pollution;
     }
     function get_text_current_disarmed_armed(pwr_current,pwr_disarmed,pwr_armed){
-        return "Curr:"+pwr_current+" Arm:"+pwr_armed+" Disarm:"+pwr_disarmed;
+        var ret= "Curr:"+pwr_current;
+        if(pwr_armed==0){ // Same power regardless if armed or not
+            ret += " Armed/Disarmed:"+pwr_disarmed;
+        }else{
+            ret +=" Disarm:"+pwr_disarmed;
+            ret+=" Arm:"+pwr_armed;
+
+        }
+        return ret;
     }
 
     function get_text_tx_power(ground){
@@ -206,16 +214,8 @@ Rectangle{
             ret+="No info";
             return ret;
         }
-        if(card_type==1){
-            ret+=get_text_current_disarmed_armed(card.tx_power,card.tx_power_disarmed,card.tx_power_armed);
-            ret+=" (unitless)"
-            return ret;
-        }
         ret+=get_text_current_disarmed_armed(card.tx_power,card.tx_power_disarmed,card.tx_power_armed);
-        ret+=" MW";
-        if(card_type<=0){
-            ret+=" (maybe,unreliable)";
-        }
+        ret+=" "+card.tx_power_unit
         return ret;
     }
 
@@ -252,7 +252,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
 "interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. In general, we recommend 40Mhz unless you are flying ultra long range "+
 "or in a highly polluted (urban) environment."
 
-    property string m_info_text_change_tx_power: "Change GND / AIR TX power. Higher Air TX power results in more range on the downlink (video,telemetry).
+    property string m_info_text_change_tx_power: "Change GND / AIR TX power. Higher AIR TX power results in more range on the downlink (video,telemetry).
 Higher GND TX power results in more range on the uplink (mavlink up). You can set different tx power for armed / disarmed state (requres FC),
 but it is not possible to change the TX power during flight (due to the risk of misconfiguration / power outage)."+
     " ! OPENHD DOESN'T HAVE ANY RESTRICTIONS ON TX POWER - It is your responsibility to use a tx power allowed in your country. !"
@@ -542,10 +542,10 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         ColumnLayout{
                             Layout.fillWidth: true
                             Text{
-                                text: get_text_tx_power(true)
+                                text: get_text_tx_power(false)
                             }
                             Text{
-                                text: get_text_tx_power(false)
+                                text: get_text_tx_power(true)
                             }
                         }
                     }

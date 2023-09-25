@@ -31,6 +31,16 @@ static std::string wifi_card_type_to_string(const int card_type) {
         return "UNKNOWN";
     }
 }
+static QString tx_power_unit_for_card(const int card_type){
+    std::stringstream ss;
+    if(card_type==0){
+        // OpenHD RTL8812AU
+        return "TPI";
+    }else if(card_type==1){
+        return "mW";
+    }
+    return " ?mW";
+}
 
 
 WiFiCard::WiFiCard(bool is_air,int card_idx,QObject *parent)
@@ -96,6 +106,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     set_tx_power(msg.tx_power_current);
     set_tx_power_armed(msg.tx_power_armed);
     set_tx_power_disarmed(msg.tx_power_disarmed);
+    set_tx_power_unit(tx_power_unit_for_card(msg.card_type));
     const bool disconnected=msg.curr_status==1;
     if(disconnected){
         const auto elapsed=std::chrono::steady_clock::now()-m_last_disconnected_warning;

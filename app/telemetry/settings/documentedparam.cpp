@@ -79,12 +79,9 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                "Enable passive mode if you want to use your GCS as a passive listener to an existing openhd air-ground link. E.g. if you want to tune into"
                "someone elses openhd link (if encryption is enabled, you need his encryption key) but not interfere with any RC/MAVLINK control."
                );
-    append_int(ret,openhd::WB_VIDEO_ENCRYPTION_ENABLE,
+    append_int(ret,openhd::WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT,
                ImprovedIntSetting::createEnumEnableDisable(),
-               "Enable video encryption - by default, video is not encrypted (only validated) to save CPU performance (Telemetry is always encrypted though)."
-               "It is recommended to leave video encryption off unless you are using at least RPI 4 on air and are TOTALLY worried about someone listening to your video"
-               " - even with encryption disabled, it is not easy for an attacker to listen in on your openhd video "
-               "(and impossible to attack your video due to always on secure packet validation)."
+               "DEV ONLY - DO NOT TOUCH (LEAVE DISABLED). Sets a wifi param that needs to be investigated."
                );
     {
         // Measurements of @Marcel Essers:
@@ -488,6 +485,13 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                                                     }),
                        "Libcamera exposure value, [-10,10]");
         }
+        append_int(ret,"HIGH_ENCRYPTION",
+                   ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable ultra secure - but expensive - video encryption - by default, video is not encrypted (only validated) to save CPU performance (Telemetry is always encrypted though)."
+                   "It is recommended to leave video encryption off unless you are using at least RPI 4 on air and are TOTALLY worried about someone listening to your video"
+                   " - even with encryption disabled, it is not easy for an attacker to listen in on your openhd video "
+                   "(and impossible to attack your video due to always on secure packet validation)."
+                   );
         append_documented_read_only(ret,"V_CAM_TYPE","Detected camera type");
         append_documented_read_only(ret,"V_CAM_SENSOR","Detected camera sensor (might not work)");
         append_documented_read_only(ret,"V_CAM_NAME","Detected camera name (might not work)");
@@ -703,6 +707,7 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret[openhd::WB_MCS_INDEX]=nullptr;
     ret["CONFIG_BOOT_AIR"]=nullptr;
     ret[openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM]=nullptr;
+    ret[openhd::WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }

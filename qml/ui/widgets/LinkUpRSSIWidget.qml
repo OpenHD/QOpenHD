@@ -127,7 +127,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power;
+                text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit
                 color: "white"
                 font.bold: true
                 height: parent.height

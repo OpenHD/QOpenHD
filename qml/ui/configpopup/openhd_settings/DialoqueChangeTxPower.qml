@@ -182,11 +182,11 @@ the card driver and/or the linux kernel doesn't support changing it.");
     ListModel{
         id: model_rtl8812bu_manufacturer_generic
         ListElement {title: "Please select"; value: -1}
-        ListElement {title: "25mW"; value: 25}
-        ListElement {title: "100mW"; value: 100}
-        ListElement {title: "<=300mW"; value: 300}
-        ListElement {title: "<=1000mW"; value: 1000}
-        ListElement {title: "<=20000mW"; value: 2000}
+        ListElement {title: "25mW (maybe)"; value: 25}
+        ListElement {title: "100mW (maybe)"; value: 100}
+        ListElement {title: "<=300mW (maybe)"; value: 300}
+        ListElement {title: "<=1000mW (maybe)"; value: 1000}
+        ListElement {title: "<=20000mW (maybe)"; value: 2000}
     }
 
     function get_model_select_tx_power_index_for_card_chip_type_and_manufacturer(){
