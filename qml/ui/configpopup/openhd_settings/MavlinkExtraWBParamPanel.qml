@@ -14,6 +14,8 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
+import QtCharts 2.0
+
 // This is an extra screen for changing the frequency / channel width -
 // They both need to match !
 Rectangle{
@@ -95,6 +97,10 @@ Rectangle{
         console.log("function_rebuild_ui:"+_wbLinkSettingsHelper.ui_rebuild_models);
         if(_wbLinkSettingsHelper.ui_rebuild_models<=0)return
         create_list_model_supported();
+    }
+
+    function update_pollution_graph(){
+
     }
 
     //
@@ -629,6 +635,21 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         text: _wbLinkSettingsHelper.text_for_qml
                     }
                 }
+                ChartView {
+                      title: "Bar series"
+                      width: parent.width
+                      height: rowHeight * 3
+                      legend.alignment: Qt.AlignBottom
+                      antialiasing: true
+
+                      PercentBarSeries {
+                          id: hm_bar_series
+                             axisX: BarCategoryAxis { categories: ["2007", "2008", "2009", "2010", "2011", "2012" ] }
+                             BarSet { label: "Bob"; values: [2, 2, 3, 4, 5, 6] }
+                             BarSet { label: "Susan"; values: [5, 1, 2, 4, 1, 7] }
+                             BarSet { label: "James"; values: [3, 5, 8, 13, 5, 8] }
+                        }
+                  }
             }
         }
     }

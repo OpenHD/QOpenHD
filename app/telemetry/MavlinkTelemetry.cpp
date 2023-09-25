@@ -24,18 +24,8 @@ MavlinkTelemetry &MavlinkTelemetry::instance()
 void MavlinkTelemetry::start()
 {
     QSettings settings;
-    const bool dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
-    if(dev_use_tcp){
-        // TODO
-    }else{
-        // default, udp, passive (like QGC)
-        auto cb_udp=[this](mavlink_message_t msg){
-            process_mavlink_message(msg);
-        };
-        const auto ip="0.0.0.0"; //"127.0.0.1"
-        m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
-        m_udp_connection->start();
-    }
+    // By default, we always use UDP / localhost mode.
+    enable_udp();
 }
 
 bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
@@ -228,6 +218,7 @@ void MavlinkTelemetry::add_tcp_connection_handler(QString ip)
     };
     m_tcp_connection=std::make_unique<TCPConnection>(ip.toStdString(),QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT,cb_tcp);
     m_tcp_connection->start();
+    set_udp_localhost_mode_enabled(false);
 }
 
 void MavlinkTelemetry::enable_udp()
@@ -238,6 +229,7 @@ void MavlinkTelemetry::enable_udp()
     auto cb_udp=[this](mavlink_message_t msg){
         process_mavlink_message(msg);
     };
+    set_udp_localhost_mode_enabled(true);
     const auto ip="0.0.0.0"; //"127.0.0.1"
     m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
     m_udp_connection->start();

@@ -232,7 +232,6 @@
         <file>ui/widgets/map/MapWidget.qml</file>
         <file>ui/configpopup/status/StatusCardsColumn.qml</file>
         <file>ui/configpopup/status/ActionsColumn.qml</file>
-        <file>ui/configpopup/connect/InfoPane.qml</file>
         <file>ui/configpopup/connect/PaneUSBTether.qml</file>
         <file>ui/configpopup/connect/PaneWIFI.qml</file>
         <file>ui/configpopup/connect/PaneCustom.qml</file>
@@ -252,5 +251,8 @@
         <file>ui/configpopup/status/QOpenHDVersionCard.qml</file>
         <file>ui/elements/CardToast.qml</file>
         <file>ui/elements/ButtonYellow.qml</file>
+        <file>ui/configpopup/connect/PaneLocalhost.qml</file>
+        <file>ui/configpopup/connect/PaneInfo.qml</file>
+        <file>ui/configpopup/connect/GenericInfoPane.qml</file>
     </qresource>
 </RCC>

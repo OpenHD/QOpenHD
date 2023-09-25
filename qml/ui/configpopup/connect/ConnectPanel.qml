@@ -29,6 +29,9 @@ Item {
         TabButton {
             text: qsTr("INFO")
         }
+        TabButton{
+            text: "LOCAL"
+        }
         TabButton {
             text: qsTr("USB Tether")
         }
@@ -55,53 +58,18 @@ Item {
         anchors.bottom: parent.bottom
         currentIndex: selectItemInStackLayoutBar.currentIndex
 
-        Rectangle{
-            width: parent.width
-            height: parent.height
-            ColumnLayout{
-                anchors.fill: parent
-                spacing: 6
-                Text{
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignTop
-                    Layout.preferredHeight: 50
-                    //width:parent.width
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignTop
-                    text: "When running QOpenHD on an external device (e.g. android phone)\n"+
-                          "you have to use one of the given choices to connect the device to the OpenHD ground station"
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    text: "You are already connected to your ground station - nothing to do."
-                    color: "#706F1D" // dark green
-                    visible: m_is_connected_gnd
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    text: "Looks like you are not connected to your ground station - please use one of the given choices to connect."
-                    color: "red"
-                    visible: !m_is_connected_gnd
-                }
-                Item{
-                    Layout.fillHeight: true
-                    // filler
-                }
-            }
-        }
 
-        /*InfoPane{
-            m_info_text: {
-                return "When running QOpenHD on an external device (e.g. android phone)\n"+
-                        "you have to use one of the given choices to connect the device to the OpenHD ground station"
-            }
-        }*/
+       PaneInfo{
+       }
+
+        PaneLocalhost{
+        }
 
         PaneUSBTether{
             id: pane_usb_tether
         }
 
-        InfoPane{
+        GenericInfoPane{
             m_info_text: {
                 return"1) Make sure ETH_HOTSPOT_E is disabled (Ground param)\n\n"+
                         "2) Enable ETH_PASSIVE_F on your openhd ground unit (Ground param)\n\n"+
@@ -110,7 +78,7 @@ Item {
                         "Video and telemetry forwarding should start automatically, and your GCS can get internet from your phone."
             }
         }
-        InfoPane{
+        GenericInfoPane{
             m_info_text: {
                 return "1) Make sure ETH_PASSIVE_F is disabled (Ground param)\n\n"+
                         "2) Enable ETH_HOTSPOT_E on your openhd ground unit (Ground param)\n\n"+

@@ -16,12 +16,14 @@ Rectangle {
     height: parent.height
     //color: "green"
 
-    property string m_info_text: "CUSTOM"
+    property string m_info_text: "ADVANCED - Connect to a ground station (running OpenHD core) located anywhere in your network using TCP.\n"+
+                                 "After connecting (mavlink) via TCP, video will also be streamed to this device (using UDP)."
 
     ColumnLayout{
         anchors.fill: parent
 
         spacing: 6
+
         Text{
             Layout.alignment: Qt.AlignTop
             width:parent.width
