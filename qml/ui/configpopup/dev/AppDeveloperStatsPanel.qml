@@ -79,7 +79,7 @@ Rectangle {
         // air
         Text {
             id: test2
-            text: qsTr("video0 FEC encode:  "+_cameraStreamModelPrimary.curr_video0_fec_encode_time_avg_min_max)
+            text: qsTr("video0 FEC encode:  "+_cameraStreamModelPrimary.curr_fec_encode_time_avg_min_max)
         }
         Text {
             id: testX
@@ -87,12 +87,12 @@ Rectangle {
         }
         Text {
             id: test4
-            text: qsTr("video0 FEC block length:  "+_cameraStreamModelPrimary.curr_video0_fec_block_length_min_max_avg)
+            text: qsTr("video0 FEC block length:  "+_cameraStreamModelPrimary.curr_fec_block_length_min_max_avg)
         }
         // ground
         Text {
             id: test3
-            text: qsTr("video0 FEC decode:  "+_cameraStreamModelPrimary.curr_video0_fec_decode_time_avg_min_max)
+            text: qsTr("video0 FEC decode:  "+_cameraStreamModelPrimary.curr_fec_decode_time_avg_min_max)
         }
         Text {
             id: test5

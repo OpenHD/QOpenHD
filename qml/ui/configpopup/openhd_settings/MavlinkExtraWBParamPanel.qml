@@ -14,7 +14,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-import QtCharts 2.0
+//simport QtCharts 2.0
 
 // This is an extra screen for changing the frequency / channel width -
 // They both need to match !
@@ -97,11 +97,18 @@ Rectangle{
         console.log("function_rebuild_ui:"+_wbLinkSettingsHelper.ui_rebuild_models);
         if(_wbLinkSettingsHelper.ui_rebuild_models<=0)return
         create_list_model_supported();
+        //update_pollution_graph();
     }
 
+    /*property BarCategoryAxis m_bar_category_axis;
     function update_pollution_graph(){
-
-    }
+        const supported_frequencies=_wbLinkSettingsHelper.get_supported_frequencies();
+        m_bar_category_axis.categories.clear();
+        for(var i=0;i<supported_frequencies.length;i++){
+            m_bar_category_axis.categories.append(""+supported_frequencies.at(i));
+        }
+        hm_bar_series.axisX = m_bar_category_axis
+    }*/
 
     //
     Component.onCompleted: {
@@ -635,7 +642,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         text: _wbLinkSettingsHelper.text_for_qml
                     }
                 }
-                ChartView {
+                /*ChartView {
                       title: "Bar series"
                       width: parent.width
                       height: rowHeight * 3
@@ -649,7 +656,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                              BarSet { label: "Susan"; values: [5, 1, 2, 4, 1, 7] }
                              BarSet { label: "James"; values: [3, 5, 8, 13, 5, 8] }
                         }
-                  }
+                }*/
             }
         }
     }

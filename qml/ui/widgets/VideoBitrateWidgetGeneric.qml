@@ -52,6 +52,11 @@ BaseWidget {
             _wbLinkSettingsHelper.set_param_video_resolution_framerate_async(false,resolution_str)
         }
     }
+    function get_drop_str_tx_rx(){
+        //return _cameraStreamModelPrimary.total_n_tx_dropped_frames+":"+_cameraStreamModelPrimary.count_blocks_lost;
+        //return m_camera_stream_model.curr_delta_tx_dropped_frames+":"+m_camera_stream_model.total_n_tx_dropped_frames
+        return m_camera_stream_model.total_n_tx_dropped_frames+":"+m_camera_stream_model.count_blocks_lost;
+    }
 
 
     //----------------------------- DETAIL BELOW ----------------------------------
@@ -169,7 +174,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("TX drop (tot/curr):")
+                    text: qsTr("TX Dropped/RX lost:")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -178,7 +183,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: m_camera_stream_model.curr_delta_tx_dropped_frames+":"+m_camera_stream_model.total_n_tx_dropped_frames
+                    text: get_drop_str_tx_rx()
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -280,7 +285,7 @@ BaseWidget {
             width: 84
             height: 32
             color: bitrate_color(m_camera_stream_model.curr_set_and_measured_bitrate_mismatch)
-            text: m_camera_stream_model.curr_video0_received_bitrate_with_fec
+            text: m_camera_stream_model.curr_received_bitrate_with_fec
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6

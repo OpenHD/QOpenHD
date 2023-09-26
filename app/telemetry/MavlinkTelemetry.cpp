@@ -26,6 +26,8 @@ void MavlinkTelemetry::start()
     QSettings settings;
     // By default, we always use UDP / localhost mode.
     enable_udp();
+    m_heartbeat_thread_run=true;
+    m_heartbeat_thread=std::make_unique<std::thread>(&MavlinkTelemetry::send_heartbeat_loop,this);
 }
 
 bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
@@ -206,6 +208,7 @@ void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
     }
 }
 
+
 void MavlinkTelemetry::add_tcp_connection_handler(QString ip)
 {
     qDebug()<<"MavlinkTelemetry::add_tcp_connection_handler"<<ip;
@@ -258,4 +261,17 @@ MavlinkTelemetry::FCMavId MavlinkTelemetry::get_fc_mav_id()
 void MavlinkTelemetry::re_apply_rates()
 {
     FCMsgIntervalHandler::instance().restart();
+}
+
+void MavlinkTelemetry::send_heartbeat_loop()
+{
+    mavlink_message_t msg;
+    mavlink_heartbeat_t heartbeat{};
+    heartbeat.type=MAV_TYPE_GCS;
+    heartbeat.autopilot=MAV_AUTOPILOT_INVALID;
+    while(m_heartbeat_thread_run){
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        mavlink_msg_heartbeat_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),&msg,&heartbeat);
+        sendMessage(msg);
+    }
 }

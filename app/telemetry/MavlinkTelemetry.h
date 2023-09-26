@@ -88,6 +88,9 @@ private:
     int64_t m_tele_received_packets=0;
     BitrateCalculator2 m_tele_bitrate_in;
     PacketsPerSecondCalculator m_tele_pps_in;
+    std::unique_ptr<std::thread> m_heartbeat_thread;
+    std::atomic_bool m_heartbeat_thread_run;
+    void send_heartbeat_loop();
 };
 
 #endif // OHDMAVLINKCONNECTION_H
