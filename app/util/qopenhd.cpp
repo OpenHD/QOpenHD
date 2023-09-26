@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <qapplication.h>
+#include <QTimer>
 
 #include<iostream>
 #include<fstream>
