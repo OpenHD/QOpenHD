@@ -129,6 +129,7 @@ bool TCPConnection::setup_socket()
 
     if (connect(m_socket_fd, reinterpret_cast<sockaddr*>(&remote_addr), sizeof(struct sockaddr_in)) <0) {
         qDebug()<<"Socket connect failed: "<<strerror(errno);
+        close(m_socket_fd);
         return false;
     }
 #endif

@@ -146,6 +146,7 @@ bool UDPConnection::setup_socket()
     }*/
     if (bind(m_socket_fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
         qDebug()<<"Cannot bind port "<<strerror(errno);
+        close(m_socket_fd);
         return false;
     }
 #endif
