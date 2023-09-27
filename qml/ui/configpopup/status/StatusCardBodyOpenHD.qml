@@ -23,7 +23,7 @@ ColumnLayout {
     property string m_version: m_model.openhd_version
     property string m_last_ping: m_model.last_ping_result_openhd
     property bool m_is_alive: m_model.is_alive
-    property string m_qopenhd_version: "TODO"
+    property string m_qopenhd_version: "2.5.0-beta4X"
 
     function get_alive_text(){
         return m_is_alive ? "Yes" : "NOT ALIVE !"
@@ -74,7 +74,7 @@ ColumnLayout {
         return ret;
     }
     function get_text_openhd_air_ground_version_mismatch(){
-        var ret="Your version of OpenHD AIR ["+m_qopenhd_version+"] is incompatible with OpenHD GROUND: ["+_ohdSystemGround.openhd_version+"]"+
+        var ret="Your version of OpenHD AIR ["+_ohdSystemAir.openhd_version+"] is incompatible with OpenHD GROUND: ["+_ohdSystemGround.openhd_version+"]"+
                 "\nPlease update your AIR / GROUND unit.";
         return ret;
     }
