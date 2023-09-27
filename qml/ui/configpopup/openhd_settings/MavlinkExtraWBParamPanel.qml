@@ -504,16 +504,16 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             onClicked: {
                                 set_channel_width_async(20);
                             }
-                            highlighted: _wbLinkSettingsHelper.curr_channel_width_mhz==20
-                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0 && _ohdSystemAir.is_alive
+                            highlighted: _wbLinkSettingsHelper.curr_air_channel_width_mhz==20
+                            enabled: _ohdSystemAir.is_alive
                         }
                         Button{
                             text: "40Mhz"
                             onClicked: {
                                set_channel_width_async(40);
                             }
-                            highlighted:  _wbLinkSettingsHelper.curr_channel_width_mhz==40
-                            enabled: _wbLinkSettingsHelper.ui_rebuild_models>0 && _ohdSystemAir.is_alive
+                            highlighted:  _wbLinkSettingsHelper.curr_air_channel_width_mhz==40
+                            enabled: _ohdSystemAir.is_alive
                         }
                     }
                 }

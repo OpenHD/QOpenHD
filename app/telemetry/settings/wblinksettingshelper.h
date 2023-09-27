@@ -42,6 +42,7 @@ public:
     // These are also in aohdsystem, their usage (and correct setting of them) is required here, too
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
+    L_RO_PROP(int,curr_air_channel_width_mhz,set_curr_air_channel_width_mhz,-1);
 
     // Set to true once the channels from the ground have been succesfully fetched
     //L_RO_PROP(bool,has_fetched_channels,set_has_fetched_channels,false);
@@ -55,8 +56,9 @@ public:
     void process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t& msg);
     void process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t& msg);
     void process_message_openhd_wifibroadcast_scan_channels_progress(const mavlink_openhd_wifbroadcast_scan_channels_progress_t& msg);
-    void validate_and_set_channel_mhz(int channel);
-    void validate_and_set_channel_width_mhz(int channel_width_mhz);
+    void validate_and_set_gnd_channel_mhz(int channel);
+    void validate_and_set_gnd_channel_width_mhz(int channel_width_mhz);
+    void validate_and_set_air_channel_width_mhz(int channel_width_mhz);
 public:
     Q_INVOKABLE void set_simplify_channels(bool enable);
     //Q_INVOKABLE void fetch_channels_if_needed();

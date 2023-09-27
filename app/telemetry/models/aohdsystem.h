@@ -140,19 +140,13 @@ private:
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end
 private:
-     int64_t x_last_dropped_packets=-1;
-     void send_message_hud_connection(bool connected);
-public:
-     // Ditry, until we have send command with retransmissions
-     // request version if not set yet, but no more than x times
-     bool should_request_version();
-private:
-     int m_n_times_version_has_been_requested=0;
+    int64_t x_last_dropped_packets=-1;
 private:
      // do not completely pollute the HUD with this error message
     std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point m_last_n_cameras_message=std::chrono::steady_clock::now();
     bool m_stbc_warning_shown=false;
+    void update_alive_status_with_hud_message(bool alive);
 };
 
 

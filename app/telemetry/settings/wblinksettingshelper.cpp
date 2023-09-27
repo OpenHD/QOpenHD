@@ -49,7 +49,7 @@ bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths
 }
 
 
-void WBLinkSettingsHelper::validate_and_set_channel_mhz(int channel_mhz)
+void WBLinkSettingsHelper::validate_and_set_gnd_channel_mhz(int channel_mhz)
 {
     if(channel_mhz<=1000 || channel_mhz>=8000){
         qDebug()<<"Invalid channel "<<channel_mhz<<"Mhz";
@@ -62,7 +62,7 @@ void WBLinkSettingsHelper::validate_and_set_channel_mhz(int channel_mhz)
     }
 }
 
-void WBLinkSettingsHelper::validate_and_set_channel_width_mhz(int channel_width_mhz)
+void WBLinkSettingsHelper::validate_and_set_gnd_channel_width_mhz(int channel_width_mhz)
 {
     if(!(channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
         qDebug()<<"Invalid channel width "<<channel_width_mhz<<" Mhz";
@@ -73,6 +73,15 @@ void WBLinkSettingsHelper::validate_and_set_channel_width_mhz(int channel_width_
         set_curr_channel_width_mhz(channel_width_mhz);
         signal_ui_rebuild_model_when_possible();
     }
+}
+
+void WBLinkSettingsHelper::validate_and_set_air_channel_width_mhz(int channel_width_mhz)
+{
+    if(!(channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
+        qDebug()<<"Invalid channel width "<<channel_width_mhz<<" Mhz";
+        return;
+    }
+    set_curr_air_channel_width_mhz(channel_width_mhz);
 }
 
 void WBLinkSettingsHelper::set_simplify_channels(bool enable)

@@ -315,9 +315,11 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_mcs_index(new_mcs_index);
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
     set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
-    if(!m_is_air){
-        WBLinkSettingsHelper::instance().validate_and_set_channel_mhz(msg.curr_tx_channel_mhz);
-        WBLinkSettingsHelper::instance().validate_and_set_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+    if(m_is_air){
+        WBLinkSettingsHelper::instance().validate_and_set_air_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+    }else{
+        WBLinkSettingsHelper::instance().validate_and_set_gnd_channel_mhz(msg.curr_tx_channel_mhz);
+        WBLinkSettingsHelper::instance().validate_and_set_gnd_channel_width_mhz(msg.curr_tx_channel_w_mhz);
     }
     set_curr_bitrate_kbits(msg.curr_rate_kbits);
     set_curr_n_rate_adjustments(msg.curr_n_rate_adjustments);
@@ -453,46 +455,38 @@ void AOHDSystem::process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_perf
 
 void AOHDSystem::update_alive()
 {
-    // On the air unit, we consider it alive if "any" message has come in, not only the mavlink heartbeat
-    const int32_t last_heartbeat_or_message = m_is_air ? m_last_message_ms : m_last_heartbeat_ms;
-    if(last_heartbeat_or_message==-1){
-        set_is_alive(false);
-    }else{
-        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-last_heartbeat_or_message;
-        // after X seconds, consider as "not alive"
-        const bool alive=elapsed_since_last_heartbeat< 3*1000;
-        if(alive != m_is_alive){
-            // message when state changes
-            send_message_hud_connection(alive);
-            //
-            set_is_alive(alive);
-        }
+    // NOTE: Since we are really resourcefully with the link, we consider the system alive if any message coming from it has
+    // come through, not only a heartbeat
+    // AIR: Quite lossy, and r.n we send about 2 to 3 telemetry packets per second
+    // GROUND: OpenHD (can) send a lot of data to QOpenHD, since there are no bw constraints
+    const int tmp=m_last_message_ms;
+    if(tmp<=-1){
+        update_alive_status_with_hud_message(false);
+        return;
     }
+    const auto elapsed_ms=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_message_ms;
+    const bool alive=elapsed_ms < (m_is_air ? 3*1000 : 2*1000);
+    update_alive_status_with_hud_message(alive);
 }
 
-void AOHDSystem::send_message_hud_connection(bool connected){
-    std::stringstream message;
-    if(m_is_air){
-        message << "Air unit ";
-    }else{
-        message << "Ground unit ";
-    }
-    if(connected){
-        message << "connected";
-        HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
-        //QOpenHD::instance().textToSpeech_sayMessage(message.str().c_str());
-    }else{
-        message << "disconnected";
-        HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
-    }
-}
-
-bool AOHDSystem::should_request_version()
+void AOHDSystem::update_alive_status_with_hud_message(bool alive)
 {
-    if(m_openhd_version=="N/A" &&  m_n_times_version_has_been_requested<10){
-         m_n_times_version_has_been_requested++;
-        return true;
+    if(alive != m_is_alive){
+        // message when state changes
+        std::stringstream message;
+        if(m_is_air){
+            message << "Air unit ";
+        }else{
+            message << "Ground unit ";
+        }
+        if(alive){
+            message << "connected";
+            HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
+            //QOpenHD::instance().textToSpeech_sayMessage(message.str().c_str());
+        }else{
+            message << "disconnected";
+            HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
+        }
+        set_is_alive(alive);
     }
-    return false;
 }
-

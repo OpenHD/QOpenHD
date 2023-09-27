@@ -40,7 +40,7 @@ Card {
                 id: title
                 height: 48
                 color: "#ff3a3a3a"
-                text: qsTr("QOpenHD-evo-2.5.0-beta3")
+                text: qsTr("QOpenHD-evo-2.5.0-beta4X")
                 font.pixelSize: 36
             }
         }

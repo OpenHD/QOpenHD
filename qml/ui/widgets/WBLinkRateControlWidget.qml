@@ -36,8 +36,7 @@ BaseWidget {
     widgetActionWidth: m_widget_action_w
     widgetActionHeight: m_widget_action_h
 
-    property int m_curr_channel_width: _ohdSystemGround.curr_channel_width_mhz
-
+    property int m_curr_channel_width: _ohdSystemAir.curr_channel_width_mhz
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
     property int m_curr_bitrate_kbits: _ohdSystemAir.curr_bitrate_kbits
 
@@ -324,7 +323,6 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                                     set_channel_width_async(20)
                                 }
                                 highlighted: m_curr_channel_width==20
-                                //enabled: _ohdSystemAir.is_alive
                             }
                             Button{
                                 text: "40Mhz"
@@ -332,7 +330,6 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                                    set_channel_width_async(40)
                                 }
                                 highlighted:  m_curr_channel_width==40
-                                //enabled: _ohdSystemAir.is_alive
                             }
                         }
                     }
