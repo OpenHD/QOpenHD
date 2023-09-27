@@ -1,7 +1,17 @@
 name: build_android_signed
 
-on: [push]
-
+on:
+  push:
+   branches:
+      - "2.5-evo"
+      - "dev-release"
+      - "release"
+   paths-ignore:
+      - '**.md'
+      - '**.asciidoc'
+      - '**.adoc'
+      - '.gitignore'
+      - 'LICENSE'
 
 defaults:
   run:

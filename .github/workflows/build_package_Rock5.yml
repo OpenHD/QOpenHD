@@ -2,10 +2,16 @@ name: build_package_rock5_debian
 
 on:
   push:
-    branches: [ "2.5-evo" ]
-  pull_request:
-    branches: [ "2.5-evo" ]
-
+   branches:
+      - "2.5-evo"
+      - "dev-release"
+      - "release"
+   paths-ignore:
+      - '**.md'
+      - '**.asciidoc'
+      - '**.adoc'
+      - '.gitignore'
+      - 'LICENSE'
 jobs:
   build:
     #runs-on: ubuntu-18.04
@@ -36,7 +42,7 @@ jobs:
       - name: Build Package
         run: |
           git clone https://github.com/OpenHD/ChrootCompilationTest /opt/ChrootCompilationTest
-          git clone -b 2.5-evo https://github.com/OpenHD/QOpenHD --recursive /opt/ChrootCompilationTest/additionalFiles
+          git clone -b ${{ github.ref_name }} https://github.com/OpenHD/QOpenHD --recursive /opt/ChrootCompilationTest/additionalFiles
           echo $CLOUDSMITH_API_KEY > /opt/ChrootCompilationTest/additionalFiles/cloudsmith_api_key.txt
           cd /opt/ChrootCompilationTest/
           sudo apt update

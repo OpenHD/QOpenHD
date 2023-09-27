@@ -11,8 +11,8 @@ cp -v *.dep /opt/out/
 echo "copied deb file"
 echo "push to cloudsmith"
 git describe --exact-match HEAD >/dev/null 2>&1
-echo "Pushing the package to OpenHD 2.4 repository"
+echo "Pushing the package to OpenHD release repository"
 ls -a
 API_KEY=$(cat cloudsmith_api_key.txt)
-cloudsmith push deb --api-key "$API_KEY" openhd/openhd-2-3-evo/debian/bullseye *.deb || exit 1
+cloudsmith push deb --api-key "$API_KEY" openhd/release/debian/bullseye *.deb || exit 1
 
