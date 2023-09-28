@@ -525,9 +525,9 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                        "RPI HW UART baud rate, needs to match the UART baud rate set on your FC");
         }
         append_int(ret,"CONFIG_BOOT_AIR",ImprovedIntSetting::createEnumEnableDisable(),"DEV, change boot as air / ground",true);
-        append_int(ret,"WIFI_HOTSPOT_E",ImprovedIntSetting::createEnumEnableDisable(),
+        append_int(ret,"WIFI_HOTSPOT_E",ImprovedIntSetting::createEnum({"AUTO","ALWAYS_OFF","ALWAYS_ON"}),
                    "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
-                   "2.4G if your wb link is 5.8G and opposite. Wifi hotspot is automatically disabled when you arm your FC (to avoid interference) !");
+                   "2.4G if your wb link is 5.8G and opposite. In AUTO (default), the wifi hotspot is automatically disarmed when you arm your FC (to avoid interference).");
 
         append_int(ret,"ETH_HOTSPOT_E",ImprovedIntSetting::createEnumEnableDisable(),
                    "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."
