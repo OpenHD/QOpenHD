@@ -227,33 +227,6 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
-            // Quality and pollution on the uplink are not usable due to not enough packets in most cases
-            /*Text {
-                visible: settings.downlink_signal_quality_show
-                text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemAir.current_rx_signal_quality+ "%") : ""
-                color:  settings.color_text
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 12
-                font.family: settings.font_text
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.NoWrap
-                elide: Text.ElideRight
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }*/
-            /*Text {
-                visible: settings.downlink_pollution_show
-                text: settings.downlink_pollution_show ? ("Pollution: "+_ohdSystemAir.wb_link_pollution+ "%") : ""
-                color:  settings.color_text
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 12
-                font.family: settings.font_text
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.NoWrap
-                elide: Text.ElideRight
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }*/
         }
     }
 }

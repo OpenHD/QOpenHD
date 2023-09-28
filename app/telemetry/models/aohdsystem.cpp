@@ -371,7 +371,8 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     }else{
         set_dbm_too_low_warning(0);
     }
-    set_wb_link_pollution(msg.dummy0);
+    set_wb_link_pollution_perc(msg.pollution_perc);
+    set_wb_link_curr_foreign_pps(msg.dummy1);
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)

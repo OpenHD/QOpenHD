@@ -93,7 +93,7 @@ Card {
                 onCurrentIndexChanged: {
                 }
             }
-            ComboBox {
+            /*ComboBox {
                 width: parent.width
                 //height: 100
                 anchors.top: comboBoxWhichFrequencyToScan.bottom
@@ -105,7 +105,7 @@ Card {
                 }
                 onCurrentIndexChanged: {
                 }
-            }
+            }*/
         }
         // after initiate dialoque
         Item{
@@ -179,7 +179,9 @@ Card {
                 text:  qsTr("Initiate")
                 onPressed: {
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
-                    var how_many_bandwidths=comboBoxWhichChannelWidthsToScan.currentIndex
+                    // Changed: We now (only) support scanning in 40Mhz mode, since this way, we are quicker and catch both 20Mhz and 40Mhz air unit(s)
+                    //var how_many_bandwidths=comboBoxWhichChannelWidthsToScan.currentIndex
+                    var how_many_bandwidths = 2;
                     console.log("Initate channel scan "+how_many_freq_bands+","+how_many_bandwidths)
                     var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands,how_many_bandwidths)
                     if(result){

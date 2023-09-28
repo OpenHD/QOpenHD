@@ -470,7 +470,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_pollution_show
-                text: settings.downlink_pollution_show? ("Pollution: "+_ohdSystemGround.wb_link_pollution+ "%") : ""
+                text: settings.downlink_pollution_show? ("Pollution: "+_ohdSystemGround.wb_link_curr_foreign_pps+ " pps") : ""
                 color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

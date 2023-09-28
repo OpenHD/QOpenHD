@@ -109,7 +109,8 @@ public: // public for QT
     // 0==no warning, 1== orange 2==red
     L_RO_PROP(int,dbm_too_low_warning,set_dbm_too_low_warning,0)
     //
-    L_RO_PROP(int,wb_link_pollution,set_wb_link_pollution,-1)
+    L_RO_PROP(int,wb_link_pollution_perc,set_wb_link_pollution_perc,-1)
+    L_RO_PROP(int,wb_link_curr_foreign_pps,set_wb_link_curr_foreign_pps,-1)
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{

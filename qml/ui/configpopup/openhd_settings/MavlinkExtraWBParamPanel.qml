@@ -127,10 +127,10 @@ Rectangle{
     }
 
     property int m_pollution_warning_level: {
-        if(!_ohdSystemAir.is_alive)return 0; // Info not available
-        var wb_link_pollution=_ohdSystemGround.wb_link_pollution;
-        if(wb_link_pollution>=8)return 2;
-        if(wb_link_pollution>=3)return 1;
+        if(!_ohdSystemGround.is_alive)return 0; // Info not available
+        var wb_link_curr_foreign_pps=_ohdSystemGround.wb_link_curr_foreign_pps;
+        if(wb_link_curr_foreign_pps>=50)return 2;
+        if(wb_link_curr_foreign_pps>=10)return 1;
         return 0;
     }
 
@@ -149,20 +149,19 @@ Rectangle{
 
     function get_text_current_loss(){
         if(!_ohdSystemGround.is_alive){
-            return "No Ground unit"
+            return "Loss: -1%";
         }
         if(!_ohdSystemAir.is_alive){
-            return "No air unit";
+            return "Loss: -1%";
         }
-        return "Curr Loss:"+_ohdSystemGround.curr_rx_packet_loss_perc+"%";
+        return "Loss:"+_ohdSystemGround.curr_rx_packet_loss_perc+"%";
     }
 
     function get_text_current_pollution(){
-        if(!m_is_ground_and_air_alive){
-            return "";
-        }
-        var wb_link_pollution=_ohdSystemGround.wb_link_pollution;
-        return "Pollution:"+wb_link_pollution+" %";
+        if(!_ohdSystemGround.is_alive)return "";
+        var wb_link_pollution_perc=_ohdSystemAir.is_alive ? _ohdSystemGround.wb_link_pollution_perc : -1;
+        var wb_link_pollution_pps = _ohdSystemGround.wb_link_curr_foreign_pps;
+        return "Pollution:"+wb_link_pollution_perc+" % / "+wb_link_pollution_pps+"pps";
     }
     function get_text_current_throttle(){
         if(!m_is_ground_and_air_alive){
@@ -226,14 +225,6 @@ Rectangle{
         return ret;
     }
 
-    function set_channel_width_async(channel_width_mhz){
-        if(!_ohdSystemAir.is_alive){
-            _qopenhd.show_toast("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive")
-            return;
-        }
-        _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,false);
-    }
-
     property string m_text_warning_nosync_frequency: "WARNING: THIS CHANGES YOUR GROUND UNIT FREQUENCY WITHOUT CHANGING YOUR AIR UNIT FREQUENCY !
 Only enable if you want to quickly change your ground unit's frequency to the already set frequency of a running air unit (And know both frequency and channel width on top of your head)";
 
@@ -265,12 +256,13 @@ but it is not possible to change the TX power during flight (due to the risk of 
     " ! OPENHD DOESN'T HAVE ANY RESTRICTIONS ON TX POWER - It is your responsibility to use a tx power allowed in your country. !"
 
     property string m_warning_text_no_gnd_unit: "GROUND not alive, settings uavailable. Please check status view."
-    property string m_warning_text_no_air_unit: "Make sure your air unit hardware is functioning properly. If you freshly flashed your air and ground unit, they use the same frequency
+    property string m_warning_text_no_air_unit: "NO AIR UNIT - Make sure your air unit hardware is functioning properly. If you freshly flashed your air and ground unit, they use the same frequency
 and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan all channels for your air unit."
 
-    property string m_warning_info_text_polluted_channel: "OpenHD is broadcast and works best on a channel free of noise and interference. Sometimes you cannot find such a channel
-(e.g. in urban environments), in which case you might want to use the city preset from WBLink widget. To find a free channel, use a frequency analyzer on your phone,
-the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Europe, since it only allows 25mW."
+    property string m_warning_info_text_polluted_channel: "OpenHD is broadcast and works best on a channel free of noise and interference. A high pollution (non-openhd wifi packets) hints at"+
+                                                          " a polluted channel, but there are also non-wifi devices that can pollute a channel. You can use the 'analyze channels' feature"+
+                                                          " and/or a frequency analyzer on your phone to find the best channel for you - [149] 5745Mhz is a good bet in Europe,"+
+                                                          " since it only allows 25mW for normal wifi."
 
     // Changes either the frequency or channel width
     // This one need to be synced, so we have ( a bit complicated, but quite natural for the user) dialoque for the cases where we need to handle errors / show a warning
@@ -314,9 +306,22 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
 
     function get_text_current_frequency(){
         if(!_ohdSystemGround.is_alive)return "N/A";
-        return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+"Mhz";
+        var ret=_wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+"Mhz";
+        if(!_ohdSystemAir.is_alive)ret+=" (GND only)";
+        return ret;
     }
 
+    function get_text_current_frequency_info(){
+        if(!_ohdSystemGround.is_alive){
+            if(_ohdSystemAir.is_alive){
+                // User is connected directly to the air unit
+                return "Current frequency of your air unit - you can only change the frequency using / when connected to your ground station."
+            }else{
+                return "You need to connect to your ground station to change the frequency."
+            }
+        }
+        return "You can change the frequency of both your air and ground unit above - bandwidth is automatically synchronized (broadcast).";
+    }
 
     ScrollView {
         id:mavlinkExtraWBParamPanel
@@ -368,18 +373,6 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                                 _messageBoxInstance.set_text_and_show(more_info_text)
                             }
                         }
-                        Text{
-                            text: get_text_current_loss()
-                            color: warning_level_to_color(m_loss_warning_level)
-                        }
-                        Text{
-                            text: get_text_current_pollution()
-                            color: warning_level_to_color(m_pollution_warning_level)
-                        }
-                        Text{
-                            text: get_text_current_throttle()
-                            color: warning_level_to_color(m_throttle_warning_level)
-                        }
                         ButtonIconWarning{
                             visible: !_ohdSystemGround.is_alive
                             onClicked: {
@@ -391,6 +384,18 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show(m_warning_text_no_air_unit)
                             }
+                        }
+                        Text{
+                            text: get_text_current_loss()
+                            color: warning_level_to_color(m_loss_warning_level)
+                        }
+                        Text{
+                            text: get_text_current_pollution()
+                            color: warning_level_to_color(m_pollution_warning_level)
+                        }
+                        Text{
+                            text: get_text_current_throttle()
+                            color: warning_level_to_color(m_throttle_warning_level)
                         }
                         ButtonIconWarning{
                             visible: m_loss_warning_level>0 || m_pollution_warning_level>0 || m_throttle_warning_level>0;
@@ -490,30 +495,14 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                         anchors.verticalCenter: parent.verticalCenter
                         ButtonIconInfo{
                             onClicked: {
-                                _messageBoxInstance.set_text_and_show(m_info_text_change_channel_width)
+                                _messageBoxInstance.set_text_and_show(get_text_current_frequency_info())
                             }
                         }
-                        /*FreqComboBoxRow{
-                            m_main_text: _fcM
-                        }*/
+                        //FreqComboBoxRow{
+                        //    m_main_text: _fcM
+                        //}
                         Text{
                             text: "Curr:"+get_text_current_frequency();
-                        }
-                        Button{
-                            text: "20Mhz"
-                            onClicked: {
-                                set_channel_width_async(20);
-                            }
-                            highlighted: _wbLinkSettingsHelper.curr_air_channel_width_mhz==20
-                            enabled: _ohdSystemAir.is_alive
-                        }
-                        Button{
-                            text: "40Mhz"
-                            onClicked: {
-                               set_channel_width_async(40);
-                            }
-                            highlighted:  _wbLinkSettingsHelper.curr_air_channel_width_mhz==40
-                            enabled: _ohdSystemAir.is_alive
                         }
                     }
                 }
@@ -558,90 +547,7 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                     }
                 }
 
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                    color: "#00000000"
 
-                    RowLayout{
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width
-                        height: parent.height
-                        ButtonIconInfo{
-                            onClicked: {
-                                _messageBoxInstance.set_text_and_show(find_air_unit_text)
-                            }
-                        }
-                        Button{
-                            id: buttonFindAirUnitId
-                            text: "FIND AIR UNIT"
-                            enabled: _ohdSystemGround.is_alive
-                            onClicked: {
-                                dialoqueStartChannelScan.open_channel_scan_dialoque()
-                            }
-                        }
-                        ProgressBar{
-                            Layout.fillWidth: true
-                            Layout.rightMargin: 15
-                            Layout.leftMargin: 15
-                            height: parent.height
-                            //indeterminate: true
-                            from: 0
-                            to: 100
-                            value: _wbLinkSettingsHelper.progress_scan_channels_perc
-                        }
-                    }
-                    // Highlight the button for the user
-                    /*Rectangle{
-                        width: 100
-                        height: buttonFindAirUnitId.height
-                        color: "red"
-                        anchors.left: buttonFindAirUnitId.right
-                        anchors.top: buttonFindAirUnitId.top
-                    }*/
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                    color: "#00000000"
-                    RowLayout{
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width
-                        height: parent.height
-                        ButtonIconInfo{
-                            onClicked: {
-                                _messageBoxInstance.set_text_and_show(analyze_channels_text)
-                            }
-                        }
-                        Button{
-                            text: "ANALYZE"
-                            enabled: _ohdSystemGround.is_alive
-                            onClicked: {
-                                dialoqueAnalyzeChannels.setup_and_show();
-                            }
-                        }
-                        ProgressBar{
-                            Layout.fillWidth: true
-                            Layout.rightMargin: 15
-                            Layout.leftMargin: 15
-                            height: parent.height
-                            //indeterminate: true
-                            from: 0
-                            to: 100
-                            value: _wbLinkSettingsHelper.progress_analyze_channels_perc
-                        }
-                    }
-                }
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    Text{
-                        text: _wbLinkSettingsHelper.text_for_qml
-                    }
-                }
                 /*ChartView {
                       title: "Bar series"
                       width: parent.width
@@ -657,6 +563,78 @@ the analyze channels feature or experience -  [169] 5845Mhz is a good bet in Eur
                              BarSet { label: "James"; values: [3, 5, 8, 13, 5, 8] }
                         }
                 }*/
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    color: "#8cbfd7f3"
+                    RowLayout{
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width
+                        height: parent.height
+                        RowLayout{
+                            ButtonIconInfo{
+                                onClicked: {
+                                    _messageBoxInstance.set_text_and_show(find_air_unit_text)
+                                }
+                            }
+                            Button{
+                                text: "FIND AIR UNIT"
+                                enabled: _ohdSystemGround.is_alive
+                                onClicked: {
+                                    dialoqueStartChannelScan.open_channel_scan_dialoque()
+                                }
+                            }
+                        }
+                        RowLayout{
+                            ButtonIconInfo{
+                                onClicked: {
+                                    _messageBoxInstance.set_text_and_show(analyze_channels_text)
+                                }
+                            }
+                            Button{
+                                text: "ANALYZE"
+                                enabled: _ohdSystemGround.is_alive
+                                onClicked: {
+                                    dialoqueAnalyzeChannels.setup_and_show();
+                                }
+                            }
+                        }
+                    }
+                }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    //color: "#8cbfd7f3"
+                    color: "#00000000"
+
+                    RowLayout{
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width
+                        height: parent.height
+
+                        Text{
+                            text: _wbLinkSettingsHelper.text_for_qml
+                            //text: "BLAAAAAAAAAAA"
+                            height: parent.height
+                            Layout.preferredWidth: 50
+                            Layout.fillWidth: true
+                        }
+                        ProgressBar{
+                            from: 0
+                            to: 100
+                            value: _wbLinkSettingsHelper.gnd_progress_perc
+                            height: parent.height
+                            Layout.preferredWidth: 50
+                            Layout.fillWidth: true
+                            Layout.rightMargin: 15
+                            Layout.leftMargin: 15
+                            //indeterminate: true
+                        }
+                    }
+                }
             }
         }
     }

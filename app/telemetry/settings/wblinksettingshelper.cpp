@@ -31,7 +31,7 @@ WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
 bool WBLinkSettingsHelper::start_analyze_channels()
 {
     if(OHDAction::instance().send_command_analyze_channels_blocking()){
-        set_progress_analyze_channels_perc(0);
+        set_gnd_progress_perc(0);
         set_text_for_qml("Analyzing");
         return true;
     }
@@ -41,7 +41,7 @@ bool WBLinkSettingsHelper::start_analyze_channels()
 bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths)
 {
     if(OHDAction::instance().send_command_start_scan_channels_blocking(freq_bands,channel_widths)){
-        set_progress_scan_channels_perc(0);
+        set_gnd_progress_perc(0);
         set_text_for_qml("Scanning");
         return true;
     }
@@ -139,7 +139,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
         ss<<(int)msg.progress_perc<<"%";
     }
     qDebug()<<ss.str().c_str();
-    set_progress_analyze_channels_perc(msg.progress_perc);
+    set_gnd_progress_perc(msg.progress_perc);
     set_text_for_qml(ss.str().c_str());
     for(auto& analyzed: analyzed_channels){
         update_pollution(analyzed.first,analyzed.second);
@@ -163,7 +163,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
         qDebug()<<ss.str().c_str();
         set_text_for_qml(ss.str().c_str());
     }
-    set_progress_scan_channels_perc(msg.progress);
+    set_gnd_progress_perc(msg.progress);
 }
 
 int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,int value)

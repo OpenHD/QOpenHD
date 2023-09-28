@@ -45,10 +45,7 @@ public:
     L_RO_PROP(int,curr_air_channel_width_mhz,set_curr_air_channel_width_mhz,-1);
 
     // Set to true once the channels from the ground have been succesfully fetched
-    //L_RO_PROP(bool,has_fetched_channels,set_has_fetched_channels,false);
-    // Dirty
-    L_RO_PROP(int,progress_scan_channels_perc,set_progress_scan_channels_perc,-1);
-    L_RO_PROP(int,progress_analyze_channels_perc,set_progress_analyze_channels_perc,-1);
+    L_RO_PROP(int,gnd_progress_perc,set_gnd_progress_perc,-1);
     L_RO_PROP(QString,text_for_qml,set_text_for_qml,"NONE");
     // Dirty, incremented to signal to the UI that it should rebuild the model(s)
     L_RO_PROP(int,ui_rebuild_models,set_ui_rebuild_models,0)
