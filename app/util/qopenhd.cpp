@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <qapplication.h>
+#include <QTimer>
 
 #include<iostream>
 #include<fstream>
@@ -17,6 +18,7 @@
 #include <QTextToSpeech>
 #include <QVoice>
 #include <qsettings.h>
+#include <qtimer.h>
 #endif
 
 #if defined(__android__)
@@ -34,6 +36,8 @@ QOpenHD &QOpenHD::instance()
 QOpenHD::QOpenHD(QObject *parent)
     : QObject{parent}
 {
+    connect(this, &QOpenHD::signal_toast_add, this, &QOpenHD::do_not_call_toast_add);
+
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
     QStringList engines = QTextToSpeech::availableEngines();
@@ -326,6 +330,15 @@ void QOpenHD::sysctl_openhd(int task)
     // not supported
 }
 
+bool QOpenHD::is_valid_ip(QString ip)
+{
+#ifdef __windows__
+    //TODO fix windows
+    return true;
+#else
+    return OHDUtil::is_valid_ip(ip.toStdString());
+#endif
+}
 
 
 void QOpenHD::keep_screen_on(bool on)
@@ -352,4 +365,44 @@ void QOpenHD::keep_screen_on(bool on)
     });
   // Not needed on any other platform so far
 #endif //defined(__android__)
+}
+
+void QOpenHD::show_toast(QString message,bool long_toast)
+{
+    emit signal_toast_add(message,long_toast);
+}
+
+
+void QOpenHD::handle_toast_timeout()
+{
+    if(m_toast_message_queue.empty()){
+       set_toast_text("I SHOULD NEVER APPEAR");
+       set_toast_visible(false);
+    }else{
+       auto front=m_toast_message_queue.front();
+       m_toast_message_queue.pop_front();
+       show_toast_and_add_remove_timer(front.text,front.long_toast);
+    }
+}
+
+void QOpenHD::do_not_call_toast_add(QString text,bool long_toast)
+{
+    qDebug()<<"do_not_call_toast_add"<<text;
+    if(m_toast_message_queue.empty() && !m_toast_visible){
+       show_toast_and_add_remove_timer(text,long_toast);
+    }else{
+       m_toast_message_queue.push_back(ToastMessage{text,long_toast});
+    }
+}
+
+void QOpenHD::show_toast_and_add_remove_timer(QString text,bool long_toast)
+{
+    set_toast_text(text);
+    set_toast_visible(true);
+    // Android uses:
+    // https://stackoverflow.com/questions/7965135/what-is-the-duration-of-a-toast-length-long-and-length-short
+    // 2 / 3.5 seconds respective
+    //const int timeout_ms = long_toast ? 8*1000 : 3*1000;
+    const int timeout_ms = long_toast ? 3500 : 2000;
+    QTimer::singleShot(timeout_ms, this, &QOpenHD::handle_toast_timeout);
 }

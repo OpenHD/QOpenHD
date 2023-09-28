@@ -57,7 +57,7 @@ Item {
             color: "#AAAAAA";
             selectionColor: "#FF7777AA"
             font.pixelSize: 14
-            focus: true
+            //focus: true
             onEditingFinished: {
                 var newText = ColorUtils.clamp(parseFloat(inputBox.text), root.min, root.max).toString()
                 if (newText != root.value) {

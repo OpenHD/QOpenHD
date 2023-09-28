@@ -106,6 +106,7 @@ void HUDLogMessagesModel::handle_cleanup()
         const auto age=std::chrono::steady_clock::now()-el.added_time_point;
         if(age>std::chrono::seconds(5)){
             removeData(i);
+            i--;
         }
     }
 }

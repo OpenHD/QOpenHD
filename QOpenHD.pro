@@ -68,7 +68,6 @@ LinuxBuild {
 # (aka all these really should come with pretty much any qt install)
 # In general, parts of QOpenHD that need additional libraries should have their code in a subdirectory with a .pri where those
 # dependencies are added such that you can easily compile the project even on systems that might lack some of those qt functionalities
-# see app/adsb/adsb_lib.pri for an example
 QT +=core quick qml gui \
     widgets
 QT += opengl
@@ -77,7 +76,7 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
-# QOpenHD telemetry (mavlink, partially based on MAVSDK) features
+# QOpenHD telemetry (mavlink)
 # REQUIRED - without it QOpenHD will compile, but be pretty much non functional
 include(app/telemetry/telemetry.pri)
 
@@ -97,12 +96,6 @@ LinuxBuild {
     # Gstreamer / qmlglsink decode and display, all sources
     # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
     include(app/videostreaming/gstreamer/gst_video.pri)
-}
-
-# adsb library
-# Only tested on linux so far, but might work on other platforms already / with minimal effort, too
-LinuxBuild {
-    include(app/adsb/adsb_lib.pri)
 }
 
 # All Generic files / files that literally have 0!! dependencies other than qt
@@ -139,7 +132,6 @@ SOURCES += \
     app/osd/horizonladder.cpp \
     app/osd/speedladder.cpp \
     app/osd/altitudeladder.cpp \
-    app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/osd/aoagauge.cpp \
     app/osd/performancehorizonladder.cpp \
@@ -149,7 +141,6 @@ HEADERS += \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \
     app/osd/altitudeladder.h \
-    app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/osd/debug_overdraw.hpp \
     app/osd/aoagauge.h \
@@ -182,15 +173,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     android/src/org/openhd/IsConnected.java \
     android/src/org/openhd/LiveVideoPlayerWrapper.java \
-    app/adsb/adsb_lib.pri \
-    app/logging/README.txt \
-    app/openhd_systems/README.md \
-    app/osd_extra/Readme.txt \
-    app/platform/README.md \
     app/telemetry/telemetry.pri \
-    app/util/README.md \
-    app/videostreaming/README.md \
-    app/videostreaming/README.txt \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
     app/videostreaming/vscommon/vscommon.pri \
     app/vs_android/videostreamingandroid.pri \
@@ -248,7 +231,7 @@ JetsonBuild {
 }
 
 WindowsBuild {
-    # This aparently makes qt use absolute paths, otherwise we get problems with mavsdk
+    # This aparently makes qt use absolute paths, otherwise we get compile issues ?
     QMAKE_PROJECT_DEPTH = 0
 }
 

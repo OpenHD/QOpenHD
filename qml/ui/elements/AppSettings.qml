@@ -205,6 +205,7 @@ Settings {
 
     property bool show_ground_status: true
     property bool ground_status_declutter: false
+    property bool ground_status_show_undervolt_icon: true
     property double ground_status_cpu_caution: 50
     property double ground_status_cpu_warn: 70
     property double ground_status_temp_caution: 60
@@ -212,6 +213,7 @@ Settings {
 
     property bool show_air_status: true
     property bool air_status_declutter: false
+    property bool air_status_show_undervolt_icon: true
     property double air_status_cpu_caution: 50
     property double air_status_cpu_warn: 70
     property double air_status_temp_caution: 60
@@ -327,14 +329,7 @@ Settings {
     property bool bank_angle_indicator_widget_show_numbers: true
     property bool bank_angle_indicator_widget_sky_pointer: false
 
-    property bool show_adsb: false
-    property int adsb_distance_limit: 15000//meters. Bound box for api from map center (so x2)
-    //property int adsb_sdr_distance: 20
-    property bool adsb_api_sdr: false
-    property bool adsb_api_openskynetwork: false
-    property bool adsb_show_unknown_or_zero_alt: false
-
-    property bool show_mission: false
+    property bool show_mission: true
 
     property bool show_record_widget: true
     property double recordTextSize: 14
@@ -388,7 +383,7 @@ Settings {
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
-    // FC discovery - annoying mavsdk
+    // FC discovery - can be annoying / tricky
     property bool dirty_enable_mavlink_fc_sys_id_check: false
 
     property int custom_cursor_type: 0
@@ -403,10 +398,6 @@ Settings {
 
     property int screen_settings_overlay_size_percent : 100
     property bool screen_settings_openhd_parameters_transparent: false
-
-    // dangerous, but neccessary
-    property bool qopenhd_allow_changing_ground_unit_frequency_no_sync: false
-    property bool qopenhd_allow_changing_ground_unit_channel_width_no_sync: false
 
     property double hide_identity_latitude_offset: 0.0
     property double hide_identity_longitude_offset: 0.0

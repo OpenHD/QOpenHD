@@ -10,6 +10,8 @@
 #include <QTextToSpeech>
 #endif
 
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
+
 /**
  * Dirty, but for some reason stephen made translation(s) and a bit more work this way.
  * This singleton is for handling Appplication (QOpenHD, NOT OpenHD) - specific things that
@@ -60,6 +62,16 @@ public:
     // runs systemctl start/stop/enable/disable openhd
     // opens error message if the openhd service file does not exist (e.g. false on all non linux platforms)
     Q_INVOKABLE void sysctl_openhd(int task);
+
+    Q_INVOKABLE bool is_valid_ip(QString ip);
+    //
+    // Tries to mimic android toast as much as possible
+    //
+    Q_INVOKABLE void show_toast(QString message,bool long_toast=false);
+public:
+    L_RO_PROP(QString,toast_text,set_toast_text,"NONE");
+    L_RO_PROP(bool,toast_visible,set_toast_visible,false);
+public:
 signals:
     void fontFamilyChanged(QString fontFamily);
 private:
@@ -74,6 +86,19 @@ public:
     // We always want the screen to be kept "On" while QOpenHD is running -
     // but how to do that depends highly on the platform
     Q_INVOKABLE void keep_screen_on(bool on);
+private:
+    struct ToastMessage{
+        QString text;
+        bool long_toast;
+    };
+    std::list<ToastMessage> m_toast_message_queue;
+    void handle_toast_timeout();
+public:
+signals:
+    void signal_toast_add(QString text,bool long_toast);
+private:
+    void do_not_call_toast_add(QString text,bool long_toast);
+    void show_toast_and_add_remove_timer(QString text,bool long_toast);
 };
 
 #endif // QOPENHD_H

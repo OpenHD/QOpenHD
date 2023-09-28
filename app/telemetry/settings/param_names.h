@@ -16,7 +16,7 @@ static constexpr auto WB_VIDEO_FEC_PERCENTAGE="WB_V_FEC_PERC";
 static constexpr auto WB_VIDEO_RATE_FOR_MCS_ADJUSTMENT_PERC="WB_V_RATE_PERC"; //wb_video_rate_for_mcs_adjustment_percent
 static constexpr auto WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM="WB_MAX_D_BZ";
 static constexpr auto WB_TX_POWER_MILLI_WATT="TX_POWER_MW";
-static constexpr auto WB_VIDEO_ENCRYPTION_ENABLE="WB_VIDEO_ENCRYPT";
+static constexpr auto WB_TX_POWER_MILLI_WATT_ARMED="TX_POWER_MW_ARM";
 // annoying 16 char settings limit
 static constexpr auto WB_RTL8812AU_TX_PWR_IDX_OVERRIDE="TX_POWER_I";
 static constexpr auto WB_RTL8812AU_TX_PWR_IDX_ARMED="TX_POWER_I_ARMED";
@@ -28,6 +28,8 @@ static constexpr auto WB_ENABLE_LDPC="WB_E_LDPC";
 static constexpr auto WB_ENABLE_SHORT_GUARD="WB_E_SHORT_GUARD";
 static constexpr auto WB_MCS_INDEX_VIA_RC_CHANNEL="MCS_VIA_RC";
 static constexpr auto WB_PASSIVE_MODE ="WB_PASSIVE_MODE";
+static constexpr auto WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT="DEV_HIGH_RETR";
+
 
 }
 

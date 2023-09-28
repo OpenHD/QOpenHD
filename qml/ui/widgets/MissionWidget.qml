@@ -64,34 +64,6 @@ BaseWidget {
                 }
             }
 
-            ConfirmSliderEnableDisable {
-                id: confirmSliderEnableUpdates
-                visible: _fcMavlinkSystem.supports_basic_commands
-                text_off: qsTr("Enable updates")
-                text_on: qsTr("Disable updates");
-
-                onCheckedChanged: {
-                    if(error_last){
-                        error_last=false;
-                        return;
-                    }
-                    var res=false
-                    if (checked == true) {
-                        res=_fcMavlinkSystem.enable_disable_mission_updates(true);
-                        if(res===false){
-                            error_last=true;
-                            checked = !checked;
-                        }
-                    }else{
-                        res=_fcMavlinkSystem.enable_disable_mission_updates(false);
-                        if(res===false){
-                            error_last=true;
-                            checked = !checked;
-                        }
-                    }
-                }
-            }
-
             Item {
                 width: parent.width
                 height: 20
@@ -105,7 +77,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: qsTr(_fcMavlinkSystem.mission_waypoints_current+"/"+_fcMavlinkSystem.mission_waypoints_current_total)
+                    text: qsTr(_fcMavlinkMissionHandler.mission_waypoints_current+"/"+_fcMavlinkMissionHandler.mission_waypoints_current_total)
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -127,13 +99,45 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: qsTr(_fcMavlinkSystem.mission_current_type)
+                    text: qsTr(_fcMavlinkMissionHandler.mission_current_type)
                     color: "white"
                     font.bold: true
                     height: parent.height
                     font.pixelSize: detailPanelFontPixels
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 20
+                Text {
+                    text: qsTr("Sync status:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: qsTr(_fcMavlinkMissionHandler.current_status)
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 20
+                Button{
+                    text: "RESYNC";
+                    onClicked: {
+                        _fcMavlinkMissionHandler.resync()
+                    }
                 }
             }
         }
@@ -156,7 +160,7 @@ BaseWidget {
                 height: 14
                 color: settings.color_text
                 text: qsTr(
-                          "Mission") + ": " + qsTr(_fcMavlinkSystem.mission_waypoints_current+"/"+_fcMavlinkSystem.mission_waypoints_current_total)
+                          "Mission") + ": " + qsTr(_fcMavlinkMissionHandler.mission_waypoints_current+"/"+_fcMavlinkMissionHandler.mission_waypoints_current_total)
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom

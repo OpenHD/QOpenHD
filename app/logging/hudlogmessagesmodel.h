@@ -51,7 +51,7 @@ private:
     QVector<HUDLogMessagesModel::Element> m_data;
     QTimer* m_cleanup_timer;
     void handle_cleanup();
-    static constexpr int MAX_N_ELEMENTS=5;
+    static constexpr int MAX_N_ELEMENTS=6;
 public:
 signals:
     void signalAddLogMessage(int severity,QString message);

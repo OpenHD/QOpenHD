@@ -1,7 +1,6 @@
 #include "camerastreammodel.h"
 #include "qdebug.h"
-#include "telemetryutil.hpp"
-#include "util/WorkaroundMessageBox.h"
+#include "../util/telemetryutil.hpp"
 #include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
 #include <qsettings.h>
@@ -41,8 +40,19 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_curr_recommended_bitrate_from_message(curr_recommended_bitrate_kbits);
     set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
     set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
-    set_curr_video0_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
-    set_curr_video0_dropped_packets(msg.curr_dropped_frames);
+    set_curr_video_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
+    set_total_n_tx_dropped_frames(msg.curr_dropped_frames);
+    if(m_last_tx_frame_drop_calculation_count<0){
+        m_last_tx_frame_drop_calculation_count=msg.curr_dropped_frames;
+    }else{
+        const auto elapsed=std::chrono::steady_clock::now()-m_last_tx_frame_drop_calculation;
+        if(elapsed>std::chrono::seconds(1)){
+            const int diff=msg.curr_dropped_frames-m_last_tx_frame_drop_calculation_count;
+            m_last_tx_frame_drop_calculation_count=msg.curr_dropped_frames;
+            set_curr_delta_tx_dropped_frames(diff);
+        }
+    }
+
     if(msg.curr_recommended_bitrate>1 && msg.curr_measured_encoder_bitrate>1 ){ //check for valid measured / set values
         const double recommended_kbits=static_cast<float>(msg.curr_recommended_bitrate);
         // Measured and set encoder bitrate should match on a 20% basis
@@ -73,16 +83,18 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_air_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_injected_bitrate,msg.curr_injected_pps).c_str());
 }
 
-void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_camera_status_t &msg)
+void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_openhd_camera_status_air_t &msg)
 {
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
     set_camera_type(msg.cam_type);
-    std::stringstream ss;
-    ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
-    set_curr_set_video_format(ss.str().c_str());
-    ss<<", "<<video_codec_to_string(msg.encoding_format);
-    set_curr_set_video_format_and_codec(ss.str().c_str());
+    {
+        std::stringstream ss;
+        ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
+        set_curr_set_video_format(ss.str().c_str());
+        ss<<", "<<video_codec_to_string(msg.encoding_format);
+        set_curr_set_video_format_and_codec(ss.str().c_str());
+    }
     auto new_res_fps=ResolutionFramerate{msg.stream_w,msg.stream_h,msg.stream_fps};
     if(new_res_fps.is_any_invalid()){
         qDebug()<<"Invalid data from air unit:"<<resolution_framerate_to_string(new_res_fps).c_str();
@@ -115,11 +127,12 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     // Feature - log in the HUD if the camera is restarting
     set_camera_status(msg.cam_status);
     if(msg.cam_status==2){
-        const auto elapsed=std::chrono::steady_clock::now()-m_last_hud_message_camera_restarting;
+        const auto elapsed=std::chrono::steady_clock::now()-m_last_hud_message_camera_status;
         if(elapsed>=std::chrono::seconds(3)){
-           m_last_hud_message_camera_restarting=std::chrono::steady_clock::now();
+           m_last_hud_message_camera_status=std::chrono::steady_clock::now();
            std::stringstream log;
-           log<<(secondary ? "CAM2" : "CAM1")<<" is restarting, please wait";
+           log<<(secondary ? "CAM2" : "CAM1");
+           log<<" is restarting, please wait";
            HUDLogMessagesModel::instance().add_message_info(log.str().c_str());
         }
     }
@@ -127,32 +140,32 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
 {
-    set_curr_video0_fec_encode_time_avg_min_max(
+    set_curr_fec_encode_time_avg_min_max(
         Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
-    set_curr_video0_fec_block_length_min_max_avg(
+    set_curr_fec_block_length_min_max_avg(
         Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
+    set_curr_time_until_tx_min_max_avg(
+        Telemetryutil::us_min_max_avg_to_string(msg.curr_tx_delay_min_us,msg.curr_tx_delay_max_us,msg.curr_tx_delay_avg_us));
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
 {
-    set_curr_video0_received_bitrate_with_fec(Telemetryutil::bitrate_bps_to_qstring(msg.curr_incoming_bitrate));
-    set_video0_count_blocks_lost(msg.count_blocks_lost);
-    set_video0_count_blocks_recovered(msg.count_blocks_recovered);
-    set_video0_count_fragments_recovered(msg.count_fragments_recovered);
-    set_video0_count_blocks_total(msg.count_blocks_total);
+    set_curr_received_bitrate_with_fec(Telemetryutil::bitrate_bps_to_qstring(msg.curr_incoming_bitrate));
+    set_count_blocks_lost(msg.count_blocks_lost);
+    set_count_blocks_recovered(msg.count_blocks_recovered);
+    set_count_fragments_recovered(msg.count_fragments_recovered);
+    set_count_blocks_total(msg.count_blocks_total);
     //set_gnd_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_incoming_bitrate,msg.cur_).c_str());
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performance(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
 {
-    set_curr_video0_fec_decode_time_avg_min_max(
+    set_curr_fec_decode_time_avg_min_max(
         Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
 }
 
 void CameraStreamModel::set_curr_recommended_bitrate_from_message(const int64_t curr_recommended_bitrate_kbits)
 {
-    // We use the fact that the current recommended bitrate is updated regularily to notify the user of
-    // changing rate(s) during flight
     if(m_curr_recomended_video_bitrate_kbits!= 0 && curr_recommended_bitrate_kbits!=0 && m_curr_recomended_video_bitrate_kbits != curr_recommended_bitrate_kbits){
         QString message=m_camera_index==0 ? "Cam1 encoder:" : "Cam2 encoder:";
         message+=Telemetryutil::bitrate_kbits_to_qstring(curr_recommended_bitrate_kbits);

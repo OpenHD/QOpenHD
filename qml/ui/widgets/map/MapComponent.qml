@@ -25,9 +25,11 @@ Map {
     property double userLon: 0.0
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
-    property int track_count: 0;
-    property int track_skip: 1;
-    property int track_limit: 100; //max number of drone track points before it starts averaging
+
+    property int track_limit: 200; //max number of drone track points before it starts averaging
+    // We start with a minimum distance of 3m, each time we perform a track reduction, the minimum distance is increased
+    property int min_distance_between_points_m: 3.0
+
 
     center {
         latitude: _fcMavlinkSystem.lat == 0.0 ? userLat : followDrone ? _fcMavlinkSystem.lat : 9000
@@ -62,9 +64,6 @@ Map {
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("Map component: center",center_coord.latitude, center_coord.longitude);
-
-        AdsbVehicleManager.newMapCenter(center_coord);
-
     }
 
     PositionSource {
@@ -78,33 +77,42 @@ Map {
         }
     }
 
+    //this function keeps recycling points to preserve memory
     function addDroneTrack() {
-        //this function keeps recycling points to preserve memory
-
-        // always remove last point unless it was significant
-        if (track_count != 0) {
-            droneTrack.removeCoordinate(droneTrack.pathLength());
-            //console.log("Map component: total points=", droneTrack.pathLength());
+        //console.log("Add drone track")
+        // only add track while armed
+        if(!_fcMavlinkSystem.armed){
+            return;
         }
-
-        // always add the current location so drone looks like its connected to line
-        droneTrack.addCoordinate(QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon));
-
-        track_count = track_count + 1;
-
-        if (track_count == track_skip) {
-            track_count = 0;
+        var new_coordinate=QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+        if(droneTrack.pathLength()<=1){
+            // first ever 2 points
+            droneTrack.addCoordinate(new_coordinate);
+            return;
         }
-
-        if (droneTrack.pathLength() === track_limit) {
-            //make line more coarse
-            track_skip = track_skip * 2;
-            //cut the points in the list by half
-            for (var i = 0; i < track_limit; ++i) {
-                if (i % 2) {
-                    // it's odd
-                    droneTrack.removeCoordinate(i);
+        var coordinate_prev1=droneTrack.coordinateAt(droneTrack.pathLength()-1);
+        var coordinate_prev2=droneTrack.coordinateAt(droneTrack.pathLength()-2);
+        var distance = coordinate_prev1.distanceTo(coordinate_prev2);
+        //console.log("Distance is:"+distance+"m");
+        if(distance<min_distance_between_points_m){
+            // distance is insignificant - just replace the last coordinate
+            droneTrack.replaceCoordinate(droneTrack.pathLength()-1,new_coordinate);
+        }else{
+            // add new coordinate
+            droneTrack.addCoordinate(new_coordinate);
+            //console.log("Track points:"+droneTrack.pathLength());
+            if(droneTrack.pathLength()>track_limit){
+                console.log("Track limit reached");
+                // make the line more coarse by removing every 2nd element, beginning from the end of the track (front of the list)
+                // but keep first and last point intact
+                for(var i=droneTrack.pathLength()-2;i>=1;i--){
+                    if(i % 2 == 1){
+                        droneTrack.removeCoordinate(i);
+                    }
                 }
+                // increase the min distance between points
+                min_distance_between_points_m+=3.0;
+                console.log("New min distance:"+min_distance_between_points_m+"m");
             }
         }
     }
@@ -140,140 +148,14 @@ Map {
             source: "qrc:/resources/homemarker.png"
         }
     }
-    // ? ADSB stuff ?
-    MapRectangle {
-        id: adsbSquare
-        topLeft : AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0)
-        bottomRight: AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0)
-        //enabled: false
-        visible: settings.adsb_api_openskynetwork
-        color: "white"
-        border.color: "red"
-        border.width: 5
-        smooth: true
-        opacity: .3
-    }
-    // ? ADSB stuff ?
-    MapItemView {
-        id: markerMapView
-    //TODO ADSB needs refactor
-        model: AdsbVehicleManager.adsbVehicles
-        delegate: markerComponentDelegate
-        //visible: false
 
-        Component {
-            id: markerComponentDelegate
-
-            MapItemGroup {
-                id: delegateGroup
-
-                MapQuickItem {
-                    id: marker
-
-                    anchorPoint.x: 0
-                    anchorPoint.y: 0
-                    width: 260
-                    height: 260
-
-
-                    sourceItem:
-
-                        DrawingCanvas {
-                        id: icon
-                        anchors.centerIn: parent
-
-                        width: 260
-                        height: 260
-
-                        color: settings.color_shape
-                        glow: settings.color_glow
-
-                        name: object.callsign
-
-                        drone_heading: OpenHD.hdg; //need this to adjust orientation
-
-                        drone_alt: OpenHD.alt_msl;
-
-                        heading: object.heading;
-
-                        speed: object.velocity
-
-                        alt: object.altitude
-
-//                          {
-/*                          check if traffic is a threat.. this should not be done here. Left as REF
-                                if (object.altitude - OpenHD.alt_msl < 300 && model.distance < 2){
-                                    //console.log("TRAFFIC WARNING");
-
-                                    //image.source="/airplanemarkerwarn.png";
-                                    background.border.color = "red";
-                                    background.border.width = 5;
-                                    background.opacity = 0.5;
-                                } else if (object.altitude - OpenHD.alt_msl < 500 && model.distance < 5){
-                                    //console.log("TRAFFIC ALERT");
-
-                                    //image.source="/airplanemarkeralert.png";
-                                    background.border.color = "yellow";
-                                    background.border.width = 5;
-                                    background.opacity = 0.5;
-                                }
-*/
-
-/*                          *discovered issues when the object is referenced multiple times
-                            *last attempt at putting altitude into a var still resulted in "nulls"
-
-                            var _adsb_alt;
-
-                            _adsb_alt=object.altitude;
-
-                            if ( _adsb_alt> 9999) {
-                                //console.log("qml: model alt or vertical undefined")
-                               return "---";
-                            } else {
-                                if(object.verticalVel > .2){ //climbing
-                                    if (settings.enable_imperial === false){
-                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\ue696"
-                                    }
-                                    else{
-                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue696"
-                                    }
-                                }
-                                else if (object.verticalVel < -.2){//descending
-                                    if (settings.enable_imperial === false){
-                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\ue697"
-                                    }
-                                    else{
-                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue697"
-                                    }
-                                }
-                                else {
-                                    if (settings.enable_imperial === false){//level
-                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\u2501"
-                                    }
-                                    else{
-                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\u2501"
-                                    }
-                                }
-                            }
-                        }
-  */
-                    }
-                    //position everything
-                    coordinate: object.coordinate;
-
-                }
-                //Component.onCompleted: map.addMapItemGroup(this);
-            }
-        }
-    }
 
     //get coordinates on click... for future use
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            var coord = map.toCoordinate(Qt.point(mouse.x,
-                                                  mouse.y))
-            console.log(coord.latitude, coord.longitude)
+            var coord = map.toCoordinate(Qt.point(mouse.x,mouse.y))
+            console.log("Map clicked, "+coord.latitude+":"+coord.longitude)
             configureLargeMap()
         }
     }
@@ -387,6 +269,13 @@ Map {
                     // We cannot do waypoint track until we have proper sorting
                     //waypointTrack.addCoordinate(coordinate);
                 }
+                /*TapHandler {
+                    id: tapHandler
+                    //anchors.fill: sourceItem
+                    onTapped: {
+                        console.log("Clicked mission item"+model.index)
+                    }
+                }*/
             }
             /*MapCircle {
                 id: innerCircle

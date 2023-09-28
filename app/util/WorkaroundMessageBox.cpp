@@ -28,7 +28,6 @@ void WorkaroundMessageBox::do_not_call_me_set_text_and_show(QString text,int opt
     if(optional_time_until_autoremove>0){
         set_remaining_time_seconds(optional_time_until_autoremove);
         m_remove_after_delay_timer=std::make_unique<QTimer>(this);
-        //QTimer* timer_p=m_remove_after_delay_timer.get();
         QObject::connect(m_remove_after_delay_timer.get(), &QTimer::timeout, this, &WorkaroundMessageBox::update_remaining_time);
         m_remove_after_delay_timer->start(1000);
     }else{

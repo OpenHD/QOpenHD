@@ -7,27 +7,55 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "connect"
+import "credits"
+import "dev"
+import "log"
+import "qopenhd_settings"
+import "openhd_settings"
+import "rc"
+import "status"
+
 // Contains the selector on the left and a stack view for the panels on the right
 Rectangle {
     id: settings_form
 
-    property int eeInt : 0
+    // The connect is only needed when qopenhd is not running on the ground system itself (e.g. android)
+    property bool m_show_connect_option: true // _qopenhd.is_android()
+
     // size of the elements in the left bar - e.g. what allows switching between all the tabs
     property int left_sidebar_elements_height: 46
 
     function openSettings() {
-        visible = true
-        focus = true
+        settings_form.visible=true
+        settings_form.focus=true;
+        sidebar.focus=true
     }
 
     function close_all(){
         visible = false;
         focus=false;
+        hudOverlayGrid.regain_focus();
     }
 
     function showAppSettings(i) {
         console.log("TEST show app settings:"+i);
     }
+
+    function side_bar_regain_focus(){
+        sidebar.focus = true;
+    }
+
+    /*Keys.onPressed: (event)=> {
+        console.log("ConfigPopup Key was pressed:"+event);
+        if (event.key == Qt.Key_Return) {
+            console.log("enter was pressed");
+            event.accepted = true;
+            close_all()
+            //hudOverlayGrid.settingsButtonClicked();
+            //settingsButton.focus=false;
+        }
+    }*/
 
     //anchors.fill: parent
     width: parent.width * settings.screen_settings_overlay_size_percent / 100;
@@ -37,11 +65,6 @@ Rectangle {
 
     color: "transparent"
 
-
-    MouseArea {
-        anchors.fill: parent
-        propagateComposedEvents: false
-    }
     Rectangle {
         id: spacerTopSpacer
         width: 132
@@ -82,7 +105,7 @@ Rectangle {
                         color: closeButton.hovered ? "grey" : "white" // I update background color by this
                     }
                     onClicked: {
-                        settings_form.visible=false
+                        close_all();
                     }
                 }
             }
@@ -109,496 +132,98 @@ Rectangle {
 
         clip: true
 
+        Keys.onPressed: (event)=> {
+                console.log("Sidebar Key was pressed:"+event);
+                var tmp_index=mainStackLayout.currentIndex;
+                if(event.key==Qt.Key_Up){
+                    tmp_index--;
+                    if(tmp_index<0)tmp_index=0;
+                    mainStackLayout.currentIndex=tmp_index;
+                }else if (event.key == Qt.Key_Down) {
+                    console.log("Down arrow");
+                    tmp_index++;
+                    if(tmp_index>=mainStackLayout.count)tmp_index=0;
+                    mainStackLayout.currentIndex=tmp_index;
+                }else if(event.key == Qt.Key_Left){
+                    close_all()
+                }else if(event.key == Qt.Key_Right){
+                    //mainStackLayout.childAt(mainStackLayout.currentIndex).focus=true
+                    _qopenhd.show_toast("No joystick navigation for this panel");
+                }
+            }
+
         Column {
             width: parent.width
+
             anchors.top: parent.top
 
-            // We only need the connect panel on android (external device)
-            // On localhost, QOpenHD "automatically" connects due to udp localhost method
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                // only show on android to not confuse users
-                visible: _qopenhd.is_android()
-                Button{
-                    id: connectB
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: connectIcon
-                        text: "\uf6ff"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: connectBX
-                        text: qsTr("Connect")
-                        height: parent.height
-                        anchors.left: connectIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: connectB.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 0
-                    }
-                }
+            // Status
+            ConfigPopupSidebarButton{
+                id:  power
+                m_icon_text: "\uf21e" //"\uf011"
+                m_description_text: "Status"
+                m_selection_index: 0
             }
 
             // QOpenHD Settings - AppSettingsPanel
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-
-                Button{
-                    id: appSettingsBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: appIcon
-                        text: "\uf013"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-                    Text {
-                        id: appButton
-                        text: qsTr("QOpenHD")
-                        height: parent.height
-                        anchors.left: appIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: appSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 1
-                    }
-                }
+            ConfigPopupSidebarButton{
+                id:  qopenhd_button
+                m_icon_text: "\uf013"
+                m_description_text: "QOpenHD"
+                m_selection_index: 1
             }
 
             // OpenHD Settings - MavlinkAllSettingsPanel
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: openhdSettingsBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: groundIcon
-                        text: "\uf085"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-                    Text {
-                        id: groundButton
-                        text: qsTr("OpenHD")
-                        height: parent.height
-                        anchors.left: groundIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: openhdSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 2
-                    }
-                }
+            ConfigPopupSidebarButton{
+                id:  openhd_button
+                m_icon_text: "\uf085"
+                m_description_text: "OpenHD"
+                m_selection_index: 2
             }
 
             // Log
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                visible: true
-                Button{
-                    id: logBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: logIcon
-                        text: "\uf0c9"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: logButton
-                        text: qsTr("Log")
-                        height: parent.height
-                        anchors.left: logIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: logBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 3
-                    }
-                }
-            }
-
-            // Power
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: powerSettingsBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: powerIcon
-                        text: "\uf011"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: powerButton
-                        text: qsTr("Power")
-                        height: parent.height
-                        anchors.left: powerIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: powerSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 4
-                    }
-                }
+            ConfigPopupSidebarButton{
+                id:  log_button
+                m_icon_text: "\uf0c9"
+                m_description_text: "Log"
+                m_selection_index: 3
             }
 
             // RC
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: rcSettingsBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: rcIcon
-                        text: "\uf11b"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: rcButton
-                        text: qsTr("RC")
-                        height: parent.height
-                        anchors.left: rcIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: rcSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 6
-                    }
-                }
+            ConfigPopupSidebarButton{
+                id:  rc
+                m_icon_text: "\uf11b"
+                m_description_text: "RC"
+                m_selection_index: 4
             }
 
-            // FC Setup
-            /*Item {
-                id: fcSetup
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: fcSetupButton
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: fcSetupIcon
-                        text: "\uf05a"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: fcSetupButtonText
-                        text: qsTr("FC Setup")
-                        height: parent.height
-                        anchors.left: fcSetupIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: fcSetupButton.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 6
-                    }
-                }
-            }*/
-
-            // Developer stats
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: devStatsBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: developerStatsIcon
-                        text: "\uf0ad"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: developerStatsButton
-                        text: qsTr("DEV")
-                        height: parent.height
-                        anchors.left: developerStatsIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: devStatsBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 7
-                    }
-                }
-            }
-            // About
-            Item {
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: aboutBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: aboutIcon
-                        text: "\uf05a"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: aboutButton
-                        text: qsTr("About")
-                        height: parent.height
-                        anchors.left: aboutIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: aboutBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 5
-                        }
-                }
-            }
 
             // Credits and copyright
-            Item {
-                id: credits
-                visible: true
-                height: left_sidebar_elements_height
-                width: parent.width
-                Button{
-                    id: creditsBtn
-
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: creditsIcon
-                        text: "\uf005"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: creditsButton
-                        height: parent.height
-                        anchors.left: creditsIcon.right
-                        anchors.leftMargin: 6
-
-                        text: qsTr("Credits")
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 8 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: creditsBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 8
-                    }
-                }
+            ConfigPopupSidebarButton{
+                id:  credits
+                m_icon_text: "\uf005"
+                m_description_text: "Credits"
+                m_selection_index: 5
             }
+
+            // Developer stats
+            ConfigPopupSidebarButton{
+                id:  developerstats
+                m_icon_text: "\uf0ad"
+                m_description_text: "DEV"
+                m_selection_index: 6
+            }
+
+            // We only need the connect panel on android (external device)
+            // On localhost, QOpenHD "automatically" connects due to udp localhost method
+            ConfigPopupSidebarButton{
+                visible: m_show_connect_option
+                id:  connect_button
+                m_icon_text: "\uf6ff"
+                m_description_text: "Connect"
+                m_selection_index: 7
+            }
+
         }
     }
 
@@ -615,10 +240,10 @@ Rectangle {
         anchors.topMargin: 0
 
         // default index
-        currentIndex: _qopenhd.is_android() ? 0 : 1
+        currentIndex: 0
 
-        ConnectPanel{
-            id: connectPanel
+        PanelStatus {
+            id: statusPanel
         }
 
         AppSettingsPanel {
@@ -633,25 +258,19 @@ Rectangle {
             id: logMessagesStatusView
         }
 
-        PowerPanel {
-            id: powerPanel
-        }
-
-        AboutPanel {
-            id: aboutPanel
-        }
-
         RcInfoPanel {
             id: rcInfoPanel
+        }
+
+        Credits {
+            id: creditspanel
         }
 
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
         }
-        
-        // This Credits functions as a copyrighted declaration. Any unpermitted alteration, suppression, or eradication of this page is expressly forbidden unless granted explicit authorization by the OpenHD development team.
-        Credits {
-            id: creditspanel
+        ConnectPanel{
+            id: connectPanel
         }
     }
 }

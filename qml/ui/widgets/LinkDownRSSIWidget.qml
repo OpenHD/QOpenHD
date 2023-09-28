@@ -103,6 +103,9 @@ BaseWidget {
         return settings.color_text;
     }
 
+    function get_tx_error_text(){
+        return "TX hint/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
+    }
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -290,7 +293,7 @@ BaseWidget {
             width:200
             Text {
                 //Layout.alignment: left
-                text: "TX error/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
+                text: get_tx_error_text();
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -299,7 +302,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks lost: "+_cameraStreamModelPrimary.video0_count_blocks_lost
+                text: "Blocks lost: "+_cameraStreamModelPrimary.count_blocks_lost
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -308,7 +311,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks recovered: "+_cameraStreamModelPrimary.video0_count_blocks_recovered;
+                text: "Blocks recovered: "+_cameraStreamModelPrimary.count_blocks_recovered;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -317,7 +320,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Fragments recovered: "+_cameraStreamModelPrimary.video0_count_fragments_recovered;
+                text: "Fragments recovered: "+_cameraStreamModelPrimary.count_fragments_recovered;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -362,7 +365,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "TX PWR Air: "+_wifi_card_air.tx_power;
+                text: "TX PWR Air: "+_wifi_card_air.tx_power +" "+ _wifi_card_air.tx_power_unit;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -467,7 +470,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_pollution_show
-                text: settings.downlink_pollution_show? ("Pollution: "+_ohdSystemGround.wb_link_pollution+ "%") : ""
+                text: settings.downlink_pollution_show? ("Pollution: "+_ohdSystemGround.wb_link_curr_foreign_pps+ " pps") : ""
                 color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

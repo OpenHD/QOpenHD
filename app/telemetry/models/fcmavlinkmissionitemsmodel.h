@@ -5,26 +5,30 @@
 #include <QVector>
 #include <map>
 #include <mutex>
-#include <qtimer.h>
 #include <utility>
+#include <vector>
+#include <mutex>
+#include <optional>
 
-
-// To not pollute the FCMavlinkSystem model class too much, we have an extra model for managing the
-// dynamically sized mission waypoints. ("Map stuff)
-// This model pretty much only exposes mission items (dynamic size) such that we can make use of them
-// (draw them in .qml) for the map.
-// each mission item is pretty much really easy to define - a lattitude, longitude and mission index
-// NOTE: Elements in this model are by increasing mission index - if we don't have the data for a given mission index (yet),
-// valid is set to false (aka if valid=false this is just a dummy waiting to be filled with valid mission data)
+// NOTE: Even though placed here, this model is updated by mission handler (which deals with all the nasty reordering, requesting, ...) stuff
+// This model INTENTIONALLY only offers the following public functionalities:
+// initialize: Set a new size / count of mission (waypoints / items), resets all elements
+// update: update a (valid) mission item by index.
+// This way the changes that need to be propagated via QT are minimal - a reset only happens once the total mission count is known / changes (rarely)
+// And an update is a relatively light operation.
 class FCMavlinkMissionItemsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
     explicit FCMavlinkMissionItemsModel(QObject *parent = nullptr);
     static FCMavlinkMissionItemsModel& instance();
-    // This emits the proper signal in which we either update the mission
-    // or add as many elements as needed, then update the mission
-    void update_mission(int mission_index,double lat,double lon,double alt_m,bool currently_active);
+    // This model INTENTIONALLY only offers the following public functionalities:
+    // initialize: Set a new size / count of mission (waypoints / items), resets all elements
+    // update: update a (valid) mission item by index.
+    // This way the changes that need to be propagated via QT are minimal - a reset only happens once the total mission count is known / changes (rarely)
+    // And an update is a relatively light operation.
+    void p_initialize(int total_mission_count);
+    void p_update(int mission_index,double lat,double lon,double alt_m);
 private:
     struct Element{
         int mission_index=0;
@@ -59,13 +63,13 @@ private:
 public:
 signals:
     void signal_qt_ui_update_element(int mission_index,double lat,double lon,double alt_m,bool currently_active);
+    void signal_qt_ui_resize(int total_mission_count);
 private:
     // NOTE: NEEDS TO BE CALLED FROM QT UI THREAD (via signal)
     void qt_ui_update_element(int mission_index,double lat,double lon,double alt_m,bool currently_active);
+    void qt_ui_resize(int total_mission_count);
     // Memory safety check
     static constexpr int MAX_N_ELEMENTS=200;
-    // save performance if map is not enabled
-    bool show_map=false;
 };
 
 #endif // FCMAVLINKMISSIONSMODEL_H

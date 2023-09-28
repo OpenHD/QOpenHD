@@ -4,13 +4,14 @@
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
-#include "../mavsdk_include.h"
-#include "../openhd_defines.hpp"
 #include <array>
 #include <QQmlContext>
 #include <atomic>
 
+#include "../util/mavlink_include.h"
+
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/openhd_defines.hpp"
 
 /**
  * Abstract OHD (Mavlink) system.
@@ -29,13 +30,9 @@ public:
     // Singletons for accessing the models from c++
     static AOHDSystem& instanceAir();
     static AOHDSystem& instanceGround();
-    // Called in main.cpp to egister the models for qml
-    static void register_for_qml(QQmlContext* qml_context);
     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
     // Returns true if the passed message was processed (known message id), false otherwise
     bool process_message(const mavlink_message_t& msg);
-    // Set the mavlink system reference, once discovered
-    void set_system(std::shared_ptr<mavsdk::System> system);
 public: // public for QT
     // NOTE: I wrote this class before I knew about the lqutils macros, which is why they are used sparingly here
     //
@@ -66,6 +63,8 @@ public: // public for QT
     L_RO_PROP(int,curr_space_left_mb,set_curr_space_left_mb,0)
     L_RO_PROP(int,ram_usage_perc,set_ram_usage_perc,0)
     L_RO_PROP(int,ram_total,set_ram_total,0)
+    // RPI only
+    L_RO_PROP(bool,rpi_undervolt_error,set_rpi_undervolt_error,false)
     // needs ina219 sensor
     L_RO_PROP(int,ina219_voltage_millivolt,set_ina219_voltage_millivolt,0)
     L_RO_PROP(int,ina219_current_milliamps,set_ina219_current_milliamps,0)
@@ -99,6 +98,7 @@ public: // public for QT
     L_RO_PROP(bool,wb_stbc_enabled,set_wb_stbc_enabled,false)
     L_RO_PROP(bool,wb_lpdc_enabled,set_wb_lpdc_enabled,false)
     L_RO_PROP(bool,wb_short_guard_enabled,set_wb_short_guard_enabled,false)
+    L_RO_PROP(bool,curr_rx_last_packet_status_good,set_curr_rx_last_packet_status_good,false)
     //
     L_RO_PROP(QString,tx_packets_per_second_and_bits_per_second,set_tx_packets_per_second_and_bits_per_second,"N/A")
     L_RO_PROP(QString,rx_packets_per_second_and_bits_per_second,set_rx_packets_per_second_and_bits_per_second,"N/A")
@@ -109,11 +109,12 @@ public: // public for QT
     // 0==no warning, 1== orange 2==red
     L_RO_PROP(int,dbm_too_low_warning,set_dbm_too_low_warning,0)
     //
-    L_RO_PROP(int,wb_link_pollution,set_wb_link_pollution,-1)
+    L_RO_PROP(int,wb_link_pollution_perc,set_wb_link_pollution_perc,-1)
+    L_RO_PROP(int,wb_link_curr_foreign_pps,set_wb_link_curr_foreign_pps,-1)
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
-         return m_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
+        return m_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
      }
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
@@ -135,31 +136,18 @@ private:
      //
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
-    QTimer* m_alive_timer = nullptr;
+    std::unique_ptr<QTimer> m_alive_timer = nullptr;
     void update_alive();
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end
 private:
-     // NOTE: nullptr until discovered !!
-     std::shared_ptr<mavsdk::System> _system=nullptr;
-     std::shared_ptr<mavsdk::Action> _action=nullptr;
-     bool send_command_long(mavsdk::Action::CommandLong command);
-public:
-     Q_INVOKABLE bool send_command_reboot(bool reboot);
-private:
-     int64_t x_last_dropped_packets=-1;
-     void send_message_hud_connection(bool connected);
-public:
-     // Ditry, until we have send command with retransmissions
-     // request version if not set yet, but no more than x times
-     bool should_request_version();
-private:
-     int m_n_times_version_has_been_requested=0;
+    int64_t x_last_dropped_packets=-1;
 private:
      // do not completely pollute the HUD with this error message
     std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point m_last_n_cameras_message=std::chrono::steady_clock::now();
     bool m_stbc_warning_shown=false;
+    void update_alive_status_with_hud_message(bool alive);
 };
 
 

@@ -1,7 +1,4 @@
 
-[submodule "lib/MAVSDK"]
-	path = lib/MAVSDK
-	url = https://github.com/OpenHD/MAVSDK.git
-[submodule "lib/mavsdk_prebuilts"]
-	path = lib/mavsdk_prebuilts
-	url = https://github.com/OpenHD/mavsdk_prebuilts.git
+[submodule "lib/mavlink-headers"]
+	path = lib/mavlink-headers
+	url = https://github.com/OpenHD/mavlink-headers.git
