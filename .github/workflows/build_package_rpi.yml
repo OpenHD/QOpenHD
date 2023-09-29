@@ -34,7 +34,7 @@ jobs:
       id: qemu
       uses: pguyot/arm-runner-action@v2.5.2
       with:
-        base_image: https://openhdfpv.org/wp-content/BaseImages/OpenHD-image-2022-05-28_1033.zip
+        base_image: https://fra1.digitaloceanspaces.com/openhd-images/BaseImages/OpenHD-image-2022-05-28_1033.zip
         copy_repository_path: /opt
         copy_artifact_path: QOpenHD
         import_github_env: true
