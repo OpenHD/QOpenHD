@@ -278,6 +278,9 @@ Item {
     LinkUpRSSIWidget {
         id: uplink
     }
+     Sidebar{
+        id: sidebar
+    }
     // ----------------------------------------------------------------------------
     // TODO SORT ME
 

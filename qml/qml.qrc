@@ -144,6 +144,7 @@
         <file>ui/widgets/ImuTempWidget.qml</file>
         <file>ui/widgets/FlightMahKmWidget.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
+        <file>ui/widgets/Sidebar.qml</file>
         <file>resources/osdicons.ttf</file>
         <file>resources/materialdesignicons-webfont.ttf</file>
         <file>resources/ic128.png</file>
