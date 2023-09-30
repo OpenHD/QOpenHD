@@ -58,7 +58,7 @@ Rectangle {
 
             StatusCardsColumn{
                 width: parent.width
-                height: 300
+                height: 250
 
                 anchors.leftMargin: 12
                 anchors.rightMargin: 12

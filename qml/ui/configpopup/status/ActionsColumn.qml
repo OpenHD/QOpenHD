@@ -26,6 +26,11 @@ Item{
 
     ColumnLayout{
         // 2 Rows
+        anchors.left: parent.left
+        anchors.leftMargin: 12
+        anchors.top: parent.top
+        anchors.topMargin: 12
+
         RowLayout{
             id: actions_1
             width: parent.width

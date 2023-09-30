@@ -23,7 +23,7 @@ ColumnLayout {
     property string m_version: m_model.openhd_version
     property string m_last_ping: m_model.last_ping_result_openhd
     property bool m_is_alive: m_model.is_alive
-    property string m_qopenhd_version: "2.5.0-beta4X"
+    property string m_qopenhd_version: "2.5.1-alpha"
 
     function get_alive_text(){
         return m_is_alive ? "Yes" : "NOT ALIVE !"
@@ -87,10 +87,12 @@ ColumnLayout {
     RowLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: text_minHeight
-        spacing: 6
+        Layout.leftMargin: 12
+        spacing: 3
         Text {
             Layout.preferredWidth: left_part_preferred_with
             text: qsTr("OHD Version:")
+            font.bold: true
         }
         Text {
             text: m_version
@@ -126,10 +128,12 @@ ColumnLayout {
     RowLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: text_minHeight
-        spacing: 6
+        Layout.leftMargin: 12
+        spacing: 3
         Text {
             Layout.preferredWidth: left_part_preferred_with
             text: qsTr("Last Ping:")
+            font.bold: true
         }
         Text {
             text: m_last_ping
@@ -138,10 +142,12 @@ ColumnLayout {
     RowLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: text_minHeight
-        spacing: 6
+        Layout.leftMargin: 12
+        spacing: 3
         Text {
             Layout.preferredWidth: left_part_preferred_with
             text: qsTr("Alive: ")
+            font.bold: true
         }
         Text {
             text: get_alive_text()
@@ -151,10 +157,12 @@ ColumnLayout {
     RowLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: text_minHeight
-        spacing: 6
+        Layout.leftMargin: 12
+        spacing: 3
         Text {
             Layout.preferredWidth: left_part_preferred_with
             text: qsTr(m_is_ground ? "WB Card(s): " : "WB Card:")
+            font.bold: true
         }
         Text {
             text: get_cards_text()
@@ -188,11 +196,13 @@ ColumnLayout {
     RowLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: text_minHeight
-        spacing: 6
+        Layout.leftMargin: 12
+
         visible: m_is_ground
         Text{
             Layout.preferredWidth: left_part_preferred_with
             text: "Uplink:"
+            font.bold: true
         }
         Text{
             text: gnd_uplink_state_text()

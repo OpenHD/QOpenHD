@@ -72,7 +72,7 @@ Item {
             font.bold: true
             font.pixelSize: 16
             verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignLeft
+            horizontalAlignment: Text.AlignHCenter
             anchors.top: parent.top
             anchors.left: cardHeaderImage.right
             leftPadding: 12
@@ -84,6 +84,7 @@ Item {
         id: cardBodyHolder
         anchors.top: cardID.bottom
         anchors.topMargin: 6
+        anchors.leftMargin: 12
         //anchors.bottom: cardFooterInner.top
         //anchors.bottomMargin: 3
         width: parent.width
@@ -107,7 +108,7 @@ Item {
 
         children: cardFooter
         visible: hasFooter
-        height: 64
+        height: 52
         color: "#f6f6f6"
         border.width: 1
         border.color: borderColor
