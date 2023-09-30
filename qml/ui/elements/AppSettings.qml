@@ -401,4 +401,6 @@ Settings {
 
     property double hide_identity_latitude_offset: 0.0
     property double hide_identity_longitude_offset: 0.0
+
+    property bool show_sidebar: false
 }

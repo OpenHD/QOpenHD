@@ -14,7 +14,7 @@ import "../elements"
 BaseWidget {
     id: sidebar
     y: (applicationWindow.height/2) - (googleUI.height/2)
-    visible: true
+    visible: settings.show_sidebar
     widgetIdentifier: "sidebar"
     bw_verbose_name: "SIDEBAR"
     property int secondaryUiWidth: 335

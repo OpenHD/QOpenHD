@@ -67,7 +67,11 @@ void TCPConnection::send_message(const mavlink_message_t &msg)
 
     // TODO: remove this assert again
     assert(buffer_len <= MAVLINK_MAX_PACKET_LEN);
+    #ifdef MSG_NOSIGNAL
     auto flags = MSG_NOSIGNAL;
+    #else
+    auto flags = 0; // No MSG_NOSIGNAL available, handle it accordingly
+    #endif
     const auto send_len = sendto(
         m_socket_fd,
         reinterpret_cast<char*>(buffer),
@@ -146,7 +150,7 @@ void TCPConnection::connect_once()
         // Enough for MTU 1500 bytes.
         uint8_t buffer[2048];
         while (m_keep_receiving) {
-            const auto recv_len = recv(m_socket_fd, buffer, sizeof(buffer), 0);
+            const auto recv_len = recv(m_socket_fd, reinterpret_cast<char*>(buffer), sizeof(buffer), 0);
 
             if (recv_len == 0) {
                 // This can happen when shutdown is called on the socket,
