@@ -82,7 +82,7 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
 cp rock_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 fi
 
-VERSION="2.5-evo-$(date '+%Y%m%d%H%M')-${VER2}"
+VERSION="2.5.1-evo-alpha-$(date '+%Y%m%d%H%M')-${VER2}"
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 ls -a
