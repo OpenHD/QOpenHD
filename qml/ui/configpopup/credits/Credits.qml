@@ -42,9 +42,7 @@ Rectangle {
                             Image {
                                 id: ee1
                                 visible: true
-                                source: "../../../resources/master1.png"
-                                width: consti.height * 0.7
-                                height: consti.height * 0.7
+                                source: "../../../resources/noconnection.svg"
                             }
                         }
                     }

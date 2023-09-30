@@ -159,6 +159,7 @@
         <file>resources/master3.png</file>
         <file>resources/master4.png</file>
         <file>resources/master5.png</file>
+        <file>resources/noconnection.svg</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>

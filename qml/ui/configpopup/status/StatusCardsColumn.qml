@@ -79,6 +79,34 @@ Item {
                     m_type: 2
                 }
             }
-        } // end RowLayout
-    } // end ColumnLayout
-}
+            Card {
+                id: ncBox
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.maximumWidth: ohdCards.maximumWidth / 3
+                cardName: qsTr("No Connection")
+                visible: !_ohdSystemGround.is_alive && !_ohdSystemAir.is_alive && !_fcMavlinkSystem.is_alive
+                cardBody: ColumnLayout {
+
+                    RowLayout {
+                        Layout.fillWidth: true
+
+                        Item {
+                            width: ncBox.width
+                            height: ncBox.height
+
+                            Image {
+                                id: ee1
+                                visible: true
+                                source: "../../../resources/noconnection.svg"
+                                height: ncBox.width
+                                width: ncBox.width
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } // end RowLayout
+} // end ColumnLayout
+
