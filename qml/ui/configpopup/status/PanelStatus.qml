@@ -11,6 +11,7 @@ import "../../../ui" as Ui
 import "../../elements"
 
 Rectangle {
+    id:mainRect
     width: parent.width
     height: parent.height
 
@@ -68,11 +69,11 @@ Rectangle {
                 anchors.top: qopenhdversioncard.bottom
             }
 
-            ActionsColumn{
-                width:parent.width
+            ActionsColumn {
+                width: parent.width
                 height: 80
-                anchors.top: status_openhd_fc.bottom
-                anchors.topMargin: 2
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 50
             }
         }
     }
