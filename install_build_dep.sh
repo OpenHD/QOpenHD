@@ -5,14 +5,11 @@ PLATFORM="$1"
 QTTYPE="$2"
 
 
-BASE_PACKAGES="gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev"
+BASE_PACKAGES="gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libsdl2-dev libsdl1.2-dev"
 VIDEO_PACKAGES="libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good libavcodec-dev libavformat-dev"
 BUILD_PACKAGES="ruby-dev meson build-essential cmake git ruby-dev python3-pip python3-future"
 
 
-function install_jetson_packages {
-PLATFORM_PACKAGES=""
-}
 function install_pi_packages {
 PLATFORM_PACKAGES=""
 }
@@ -22,13 +19,10 @@ PLATFORM_PACKAGES="qml-module-qt-labs-platform"
 function install_rock_packages {
 PLATFORM_PACKAGES="qml-module-qt-labs-platform"
 }
-function install_mavsdk {
-bash build_install_mavsdk_static.sh || exit 1
-}
 
  # Add OpenHD Repository platform-specific packages
  apt install -y curl
- curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh'| sudo -E bash
+ curl -1sLf 'https://dl.cloudsmith.io/public/openhd/release/setup.deb.sh'| sudo -E bash
  apt update
 
 # Main function
@@ -37,8 +31,6 @@ bash build_install_mavsdk_static.sh || exit 1
     install_pi_packages
     # Repairing MMAL-Graph-Lib
     sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
- elif [[ "${PLATFORM}" == "jetson" ]] ; then
-    install_jetson_packages
  elif [[ "${PLATFORM}" == "ubuntu-x86" ]] ; then
     install_x86_packages
  elif [[ "${PLATFORM}" == "rock5" ]] ; then
@@ -66,7 +58,4 @@ bash build_install_mavsdk_static.sh || exit 1
 
 # Installing python packages
 gem install fpm
-
-# Building MAVSDK
-install_mavsdk
 

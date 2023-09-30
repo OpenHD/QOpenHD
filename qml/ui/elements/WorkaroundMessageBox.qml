@@ -51,6 +51,7 @@ Card {
             text:  qsTr("Okay")
             onPressed: {
                 _messageBoxInstance.okay_button_clicked()
+                hudOverlayGrid.regain_focus()
             }
             // In case the message is removed automatically after 1 or less seconds, we don't show it
             visible: (_messageBoxInstance.remaining_time_seconds==-1) || (_messageBoxInstance.remaining_time_seconds>1)

@@ -76,13 +76,11 @@ We have a CI setup that checks compilation on Ubuntu. You can review the steps i
 4. Download Qt 5.15.0+ for Android (not for the OS you're building on).
 5. Clone the source code as mentioned earlier.
 
-### Building MAVSDK (REQUIRED)
+### Building QOpenHD
 
-QOpenHD relies on the MAVSDK library. After recursively cloning qopenhd, build and install it:
-```
-./build_install_mavsdk_static.sh
-```
-You can then build QOpenHD by opening it in QT Creator or building it with the following commands:
+Step 1) clone this repository with --recurse-submodules
+Step 2) install all dependencies 
+Step 3) recommended - open in QT creator. Otherwise, you can build QOpenHD via the command line:
 ```
 mkdir build
 cd build

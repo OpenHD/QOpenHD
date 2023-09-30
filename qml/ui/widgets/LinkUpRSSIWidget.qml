@@ -33,9 +33,15 @@ BaseWidget {
             return "TX UNSUPPORTED";
         }
         if(_ohdSystemGround.tx_operating_mode==2){
-            return "LISTEN ONLY";
+            return "UPLINK DISABLED";
         }
-        return ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+        if(_ohdSystemAir.is_alive){
+            if(_ohdSystemAir.curr_rx_last_packet_status_good){
+                return ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+            }
+            return "NO UPLINK";
+        }
+        return "N/A";
     }
 
     function get_text_dbm(){
@@ -121,7 +127,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power;
+                text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -221,33 +227,6 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
-            // Quality and pollution on the uplink are not usable due to not enough packets in most cases
-            /*Text {
-                visible: settings.downlink_signal_quality_show
-                text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemAir.current_rx_signal_quality+ "%") : ""
-                color:  settings.color_text
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 12
-                font.family: settings.font_text
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.NoWrap
-                elide: Text.ElideRight
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }*/
-            /*Text {
-                visible: settings.downlink_pollution_show
-                text: settings.downlink_pollution_show ? ("Pollution: "+_ohdSystemAir.wb_link_pollution+ "%") : ""
-                color:  settings.color_text
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 12
-                font.family: settings.font_text
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.NoWrap
-                elide: Text.ElideRight
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }*/
         }
     }
 }

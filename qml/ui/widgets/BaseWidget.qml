@@ -68,6 +68,19 @@ BaseWidgetForm {
     property string bw_opacity_identifier: "%1_opacity".arg(widgetIdentifier);
     // Default opacity is 1, the value is persistent
     property double bw_current_opacity : settings.value(bw_opacity_identifier,1.0);
+    // Feature persist opacity end
+    // Feature: Show grid when dragging
+    property bool m_show_grid_when_dragging: false
+    onDraggingChanged: {
+        if(dragging && m_show_grid_when_dragging){
+            hudOverlayGrid.m_show_horizontal_center_indicator=true;
+            hudOverlayGrid.m_show_vertical_center_indicator=true
+        }else{
+            hudOverlayGrid.m_show_horizontal_center_indicator=false;
+            hudOverlayGrid.m_show_vertical_center_indicator=false;
+        }
+    }
+
     // Updates the current base widget scale (unique per widgetIdentifier) and persist the value for later use
     function bw_set_current_opacity(opacity){
         if(opacity <=0 || opacity>1){
@@ -85,6 +98,56 @@ BaseWidgetForm {
     // Needed for the HUD log messages element, since it sits above the secondary video and disabling its "mouse area"
     // Was the easiest fix
     property bool disable_dragging: false
+    // ---------------------------------------------------------------------
+    // Custom keyboard KeyNavigation
+    // Must be also of type BaseWidget
+    property var m_next_item:
+    // DIRTY
+    function dirty_open_action_popup(){
+        widgetAction.open()
+    }
+    function dirty_close_action_popup(){
+        widgetAction.close()
+    }
+
+    function dirty_open_close_action_popup(){
+        if(widgetAction.opened){
+            widgetAction.close()
+        }else{
+            widgetAction.open()
+        }
+    }
+
+
+    // Can be called by the imp. to manually close the action popup
+    function bw_manually_close_action_popup(){
+        widgetAction.close()
+    }
+
+    // react to the user opening the (currently focused) widget
+    Keys.onPressed: (event)=> {
+        console.log("BaseWidget "+widgetIdentifier+" Key was pressed:"+event);
+        if (event.key == Qt.Key_Return) {
+            console.log("enter was pressed");
+            event.accepted = true;
+            dirty_open_action_popup()
+        }else if(event.key == Qt.Key_Left){
+            console.log("left was pressed")
+            event.accepted=true;
+            // TODO: Go to the next item
+            event.accepted=true;
+        }else if(event.key == Qt.Key_Right){
+            console.log("right was pressed")
+            event.accepted=true;
+            // TODO: Go to the next item
+        }
+    }
+    function set_focus_next_item(){
+        if(m_next_item==undefined){
+            console.log("Next item undefined")
+            return;
+        }
+    }
 
     //layer.enabled: false
 

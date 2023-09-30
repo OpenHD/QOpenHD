@@ -26,6 +26,7 @@ BaseWidget {
     hasWidgetDetail: true
 
     widgetDetailHeight: 250+150
+    m_show_grid_when_dragging: true
 
     function get_speed_number(){
         var speed_m_per_second=settings.speed_ladder_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;

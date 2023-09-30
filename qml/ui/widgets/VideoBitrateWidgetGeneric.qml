@@ -47,20 +47,15 @@ BaseWidget {
 
     function set_camera_resolution(resolution_str){
         if(m_is_for_primary_camera){
-           var success= _airCameraSettingsModel.set_param_video_resolution_framerate(resolution_str)
-            if(!success){
-                _hudLogMessagesModel.add_message_warning("Cannot change camera 1 resolutin");
-            }else{
-                m_curr_video_format=resolution_str;
-            }
+           _wbLinkSettingsHelper.set_param_video_resolution_framerate_async(true,resolution_str)
         }else{
-            var success= _airCameraSettingsModel2.set_param_video_resolution_framerate(resolution_str)
-             if(!success){
-                _hudLogMessagesModel.add_message_warning("Cannot change camera 2 resolutin");
-            }else{
-                m_curr_video_format=resolution_str;
-            }
+            _wbLinkSettingsHelper.set_param_video_resolution_framerate_async(false,resolution_str)
         }
+    }
+    function get_drop_str_tx_rx(){
+        //return _cameraStreamModelPrimary.total_n_tx_dropped_frames+":"+_cameraStreamModelPrimary.count_blocks_lost;
+        //return m_camera_stream_model.curr_delta_tx_dropped_frames+":"+m_camera_stream_model.total_n_tx_dropped_frames
+        return m_camera_stream_model.total_n_tx_dropped_frames+":"+m_camera_stream_model.count_blocks_lost;
     }
 
 
@@ -175,6 +170,28 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("TX Dropped/RX lost:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: get_drop_str_tx_rx()
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
             Item{
                 width: parent.width
                 height: 150
@@ -268,7 +285,7 @@ BaseWidget {
             width: 84
             height: 32
             color: bitrate_color(m_camera_stream_model.curr_set_and_measured_bitrate_mismatch)
-            text: m_camera_stream_model.curr_video0_received_bitrate_with_fec
+            text: m_camera_stream_model.curr_received_bitrate_with_fec
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6

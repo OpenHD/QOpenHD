@@ -5,8 +5,8 @@
 #include <vector>
 #include <limits>
 #include <assert.h>
-#include <qdebug.h>
 #include <sstream>
+#include <qlist.h>
 
 
 // This is a "one type fits many class" where we can make changing specific int setting(s)
@@ -25,9 +25,8 @@ public:
         std::string name;
         int value;
     };
-
     ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<Item> values_enum1);
-    ImprovedIntSetting()=default;
+    ImprovedIntSetting(const ImprovedIntSetting& other);
 public:
     // helper to create a mapping where first element =0,second element =1, ...
     static std::vector<Item> convert_to_default_items(const std::vector<std::string>& values);
@@ -47,33 +46,14 @@ public:
    }
    // enum mapping, returns the int value as a string (wrapped in ?{..}) if we cannot find
    // a mapping for it
-   std::string value_to_string(int value)const{
-       for(const auto& item:values_enum){
-           if(item.value==value)return item.name;
-       }
-       std::stringstream ss;
-       ss<<"?{"<<value<<"}?";
-       return ss.str();
-   }
-   QStringList int_enum_keys()const{
-       QStringList ret{};
-       for(const auto& item:values_enum){
-            ret.append(QString{item.name.c_str()});
-       }
-       return ret;
-   }
-   QList<int> int_enum_values()const{
-       QList<int> ret;
-       for(const auto& item:values_enum){
-            ret.append(item.value);
-       }
-       return ret;
-   }
+   std::string value_to_string(int value)const;
+   QStringList int_enum_keys()const;
+   QList<int> int_enum_values()const;
 public:
    int min_value_int;
    int max_value_int;
    // wrapped int enum
-   std::vector<Item> values_enum;
+   std::vector<Item> values_enum{};
 };
 
 

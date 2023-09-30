@@ -5,6 +5,10 @@ ImprovedStringSetting::ImprovedStringSetting(std::vector<Item> values):m_values_
 
 }
 
+ImprovedStringSetting::ImprovedStringSetting(const ImprovedStringSetting &other):m_values_enum(other.m_values_enum)
+{
+}
+
 ImprovedStringSetting ImprovedStringSetting::create_from_keys_only(const std::vector<std::string> &keys){
     std::vector<Item> values{};
     for(const auto& key:keys){

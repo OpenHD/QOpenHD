@@ -36,8 +36,7 @@ BaseWidget {
     widgetActionWidth: m_widget_action_w
     widgetActionHeight: m_widget_action_h
 
-    property int m_curr_channel_width: _ohdSystemGround.curr_channel_width_mhz
-
+    property int m_curr_channel_width: _ohdSystemAir.curr_channel_width_mhz
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
     property int m_curr_bitrate_kbits: _ohdSystemAir.curr_bitrate_kbits
 
@@ -127,37 +126,37 @@ BaseWidget {
     }
 
     function set_keyframe_interval(interval){
-        var success=_airCameraSettingsModel.set_param_keyframe_interval(interval)
-        if(success!==true){
-             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam1 keyframe interval")
-            return;
-        }
-        if(settings.dev_qopenhd_n_cameras==2){
-            _airCameraSettingsModel2.set_param_keyframe_interval(interval)
-             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam2 keyframe interval")
-        }
+        _wbLinkSettingsHelper.set_param_keyframe_interval_async(interval)
     }
     function set_fec_percentage(percentage){
-        var success=_airPiSettingsModel.set_param_fec_percentage(percentage)
-        if(success!==true){
-             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set fec percentage")
+        _wbLinkSettingsHelper.set_param_fec_percentage_async(percentage)
+    }
+    function set_air_only_mcs(mcs_index){
+        _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
+    }
+
+    function set_channel_width_async(channel_width_mhz){
+        if(!_ohdSystemAir.is_alive){
+            _hudLogMessagesModel.add_message_warning("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive");
+            return;
         }
+        _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
     }
 
     property string m_DESCRIPTION_CHANNEL_WIDTH: "
-A higher channel width (40Mhz) increases the bitrate significantly, but reduces the maximum range of the system.
-In cntrast to the MCS index (see below), it can only be changed while disarmed (not during flight),
-It is recommended to use a 40Mhz channel width if your hardware supports it,
-and controll the MCS index for fine adjustments."
+A higher bandwidth / 40Mhz channel width increases the bitrate significantly, but also increases interference and reduces the maximum range."+
+"It is recommended to use a 40Mhz channel width if possible,"+
+"and controll the MCS index for fine adjustments."
 
     property string m_DESCRIPTION_MCS: "
-The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data. If you want to, you can change this value using the RC channel switcher -
-this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)"
+The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data."+
+"This means that with a lower MCS index, you have a much greater range (but less bitrate).If you want to, you can change this value using the RC channel switcher -"+
+"this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)"
 
     property string m_DESCRIPTION_STABILITY: "
-Make the video more stable (less microfreezes) on the cost of less image quality.
-Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability
-and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel."
+Make the video more stable (less microfreezes) on the cost of less image quality."+
+"Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability"+
+"and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel."
 
     widgetDetailComponent: ScrollView {
 
@@ -321,28 +320,17 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                             Button{
                                 text: "20Mhz"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_and_ground_channel_width(20,true)
+                                    set_channel_width_async(20)
                                 }
                                 highlighted: m_curr_channel_width==20
-                                enabled: !m_is_armed
                             }
                             Button{
                                 text: "40Mhz"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_and_ground_channel_width(40,true)
+                                   set_channel_width_async(40)
                                 }
                                 highlighted:  m_curr_channel_width==40
-                                enabled: !m_is_armed
                             }
-                        }
-                        Text{
-                            text: "ARMED - not available"
-                            width: parent.width
-                            height: parent.height
-                            visible : m_is_armed
-                            color: "red"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
                         }
                     }
                 }
@@ -398,28 +386,28 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                             Button{
                                 text: "MCS0"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(0,true)
+                                    set_air_only_mcs(0)
                                 }
                                 highlighted: m_curr_mcs_index==0
                             }
                             Button{
                                 text: "MCS1"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(1,true)
+                                    set_air_only_mcs(1)
                                 }
                                 highlighted: m_curr_mcs_index==1
                             }
                             Button{
-                                text: "MCS2"
+                                text: "MCS2\n(DEFAULT)"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(2,true)
+                                    set_air_only_mcs(2)
                                 }
                                 highlighted: m_curr_mcs_index==2
                             }
                             Button{
                                 text: "MCS3"
                                 onClicked: {
-                                    _synchronizedSettings.change_param_air_only_mcs(3,true)
+                                    set_air_only_mcs(3)
                                 }
                                 highlighted: m_curr_mcs_index==3
                             }
@@ -476,17 +464,17 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                                 text: "POLLUTED"
                                 onClicked: {
                                     set_keyframe_interval(2)
-                                    set_fec_percentage(50)
+                                    set_fec_percentage(30)
                                 }
-                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==50
+                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==30
                             }
                             Button{
                                 text: "CITY"
                                 onClicked: {
                                     set_keyframe_interval(3)
-                                    set_fec_percentage(40)
+                                    set_fec_percentage(20)
                                 }
-                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==40
+                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==20
                             }
                             Button{
                                 text: "DEFAULT"
@@ -508,7 +496,6 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                     }
                 }
             }
-
         }
     }
 

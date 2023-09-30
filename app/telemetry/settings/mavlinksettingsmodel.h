@@ -8,8 +8,8 @@
 #include <thread>
 #include <mutex>
 
-#include "../mavsdk_include.h"
-
+#include "../util/mavlink_include.h"
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
 // (the side that changes parameter(s) provided by a specific system & component).
@@ -34,59 +34,22 @@ public:
     // TODO theoretically, we could allow the user to change parameters on the FC itself
     // (aka what for example mission planner would show)
     //static MavlinkSettingsModel& instanceFC();
-
-    // parameters that need to be synchronized are white-listed
-    static std::map<std::string,void*> get_whitelisted_params();
-    bool is_param_whitelisted(const std::string param_id)const;
-    // workaround read only
-    bool is_param_read_only(const std::string param_id)const;
-
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 public:
-    // any instance of this class is only usable as soon as its corresponding system is set
-    void set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params=true);
-private:
-    std::shared_ptr<mavsdk::Param> param_client=nullptr;
-    std::shared_ptr<mavsdk::System> m_system=nullptr;
+    L_RO_PROP(int, curr_get_all_progress_perc,set_curr_get_all_progress_perc,-1);
+    // NOTE: This is only for the UI, not for c++ usage (non-atomic)
+    L_RO_PROP(bool,ui_is_busy,set_ui_is_busy,false)
 public:
-    // Fetch a param value using mavsdk. Returns std::nullopt on failure,
-    // The param value otherwise.
-    // Does not update the cached parameter !
-    std::optional<int> try_get_param_int_impl(const QString param_id);
-    std::optional<std::string> try_get_param_string_impl(const QString param_id);
-
+    void set_ready();
+public:
     // callable from QT.
-    // re-fetch all parameters from the server. Clears the cache, then re-fetches the whole parameter set.
-    Q_INVOKABLE bool try_fetch_all_parameters();
+    // async with progress bar and result being prompted to the user
+    // re-fetches the complete param set - any changed values, types, ... are catched from it
+    Q_INVOKABLE void try_refetch_all_parameters_async(bool log_result=true);
 
-    Q_INVOKABLE bool try_fetch_all_parameters_long_running();
-
-    // re-fetch a specific parameter from the server, Updates the parameter set accordingly.
-    Q_INVOKABLE bool try_refetch_parameter_int(QString param_id);
-    Q_INVOKABLE bool try_refetch_parameter_string(QString param_id);
-
-    // Set a param value using mavsdk. This means we send the "SET" command to the server
-    // and get its response (ok or rejected) or - in rare -cases - timeout.
-    // Returns true on success, false otherwise
-    // NOTE: This does not update the value cached in the QT model on the ground, use try_update_parameter..() instead
-    struct ExtraRetransmitParams{
-        std::chrono::nanoseconds retransmit_timeout=std::chrono::milliseconds(500);
-        int n_retransmissions=3;
-    };
-    // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
-    enum class SetParamResult{
-        UNKNOWN, // Hints at a programmer's error
-        NO_CONNECTION, // Most likely all retransmitts failed, cannot be completely avoided
-        VALUE_UNSUPPORTED, // (openhd) rejected the param value, it is not valid / not supported by the HW
-        SUCCESS, //Param was successfully updated
-    };
-    static std::string set_param_result_as_string(const SetParamResult& res);
-    SetParamResult try_set_param_int_impl(const QString param_id,int value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
-    SetParamResult try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
-
-    // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
-    // then updates the internal cached parameter (if previous update was successfull).
-    // Kinda dirty, but since we use it from QML - returns an empty string "" on success, an error code otherwise
+    // first updates the parameter on the server via XParam (unless server rejects / rare timeout)
+    // then updates the internal cached parameter
+    // return is kinda dirty, but since we use it from QML - returns an empty string "" on success, an error code otherwise
     Q_INVOKABLE QString try_update_parameter_int(const QString param_id,int value);
     Q_INVOKABLE QString try_update_parameter_string(const QString param_id,QString value);
 
@@ -127,6 +90,27 @@ private:
     QVector<MavlinkSettingsModel::SettingData> m_data;
     const uint8_t m_sys_id;
     const uint8_t m_comp_id;
+    bool is_param_whitelisted(const std::string param_id)const;
+    enum class SetParamResult{
+        BUSY, // Too many params queued up
+        NO_CONNECTION, // Most likely all retransmitts failed, cannot be completely avoided
+        VALUE_UNSUPPORTED, // (openhd) rejected the param value, it is not valid / not supported by the HW
+        SUCCESS, //Param was successfully updated
+    };
+    static std::string set_param_result_as_string(const SetParamResult& res);
+    SetParamResult try_set_param_int_impl(const QString param_id,int value);
+    SetParamResult try_set_param_string_impl(const QString param_id,QString value);
+public:
+    struct ParamIntEnum{
+        bool valid;
+        QStringList keys;
+        QList<int>  values;
+    };
+    struct ParamStringEnum{
+        bool valid;
+        QStringList keys;
+        QStringList values;
+    };
 public:
     // These are for the UI to query more data about a specific params
     Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;
@@ -144,11 +128,13 @@ public:
     // Should only be called when we actually have an enum mapping for this param
     Q_INVOKABLE QStringList int_param_get_enum_keys(QString param_id)const;
     Q_INVOKABLE QList<int> int_param_get_enum_values(QString param_id)const;
+    Q_INVOKABLE ParamIntEnum int_param_get_enum(QString param_id)const;
 
     // similar to above, find a better solution
     Q_INVOKABLE bool string_param_has_enum(QString param_id)const;
     Q_INVOKABLE QStringList string_param_get_enum_keys(QString param_id)const;
     Q_INVOKABLE QStringList string_param_get_enum_values(QString param_id)const;
+    Q_INVOKABLE ParamStringEnum string_param_get_enum(QString param_id)const;
 
     // For some parameters, we have a string that is displayed to the user when he wants to edit this param
     // just too be sure he understands the risks
@@ -156,18 +142,29 @@ public:
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
-
-    // We have a special UI for changing the keyframe interval (a camera specific param)
-    // and for the fec percentage (a WB param)
-    Q_INVOKABLE bool set_param_keyframe_interval(int keyframe_interval);
-    Q_INVOKABLE bool set_param_fec_percentage(int percent);
-    Q_INVOKABLE bool set_param_video_resolution_framerate(QString res_str);
-
 private:
-    QString get_short_description(QString param_id)const;
-    std::mutex m_update_all_async_mutex;
-    std::unique_ptr<std::thread> m_update_all_async_thread=nullptr;
-
+    void remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t>& param_set);
+public:
+    struct QtParamValue{
+        QString param_id;
+        QVariant param_value;
+        int type;
+    };
+    struct QtParamSet{
+        QVector<QtParamValue> param_set;
+    };
+    //void ui_thread_replace_param_set(QVector<QtParamValue> param_set);
+    void ui_thread_replace_param_set(QtParamSet param_set);
+signals:
+    void signal_ui_thread_replace_param_set(QtParamSet param_set);
+private:
+    std::atomic<bool> m_is_ready=false;
+    std::atomic_bool m_is_currently_busy=false;
 };
+
+Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamIntEnum);
+Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamStringEnum);
+Q_DECLARE_METATYPE(MavlinkSettingsModel::QtParamValue);
+Q_DECLARE_METATYPE(MavlinkSettingsModel::QtParamSet);
 
 #endif // MavlinkSettingsModel_H

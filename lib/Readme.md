@@ -1,9 +1,10 @@
 Here are all the external libraries for QOpenHD
 
-MAVSDK needs to be built and installed on your system to compile QOpenHD
-The other libraries are built and included directly during the QOpenHD compilation process (qmake-compatible).
+(Github submodules)
+
+Since QT is really bad at linking to non-qt libraries, we do not use any code / libraries we cannot build
+diectly in this application (except ffmpeg / gstreamer for video)
 
 NOTE on mavlink:
 
-We use a custom mavlink flavour (openhd). However, we also use MAVSDK for QOpenHD, and mavlink comes with MAVSDK by default.
-Therefore, we don't have mavlink as a submodule here, but rather MAVSDK.
+We use a custom mavlink flavour (openhd).

@@ -18,7 +18,7 @@ public:
         std::string value;
     };
     ImprovedStringSetting(std::vector<Item> values);
-    ImprovedStringSetting()=default;
+    ImprovedStringSetting(const ImprovedStringSetting& other);
     // if key and value are the same
     static ImprovedStringSetting create_from_keys_only(const std::vector<std::string>& keys);
 public:

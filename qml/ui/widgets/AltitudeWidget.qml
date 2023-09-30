@@ -28,6 +28,7 @@ BaseWidget {
 
     hasWidgetDetail: true
     widgetDetailHeight: 250+100
+    m_show_grid_when_dragging: true
 
     function get_altitude_value(){
         var altitude_m_or_foot = settings.altitude_ladder_use_msl ? _fcMavlinkSystem.altitude_msl_m : _fcMavlinkSystem.altitude_rel_m;

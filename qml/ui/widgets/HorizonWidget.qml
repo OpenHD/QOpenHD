@@ -22,6 +22,8 @@ BaseWidget {
     hasWidgetDetail: true
     widgetDetailHeight: 250+250
 
+    m_show_grid_when_dragging : true
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height

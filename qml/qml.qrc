@@ -33,13 +33,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>ui/delegates/TextSettingDelegate.ui.qml</file>
-        <file>ui/delegates/SwitchSettingDelegate.ui.qml</file>
-        <file>ui/delegates/NumberSettingDelegate.ui.qml</file>
-        <file>ui/delegates/ChoiceSettingDelegate.ui.qml</file>
-        <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
-        <file>LICENSE_UI.txt</file>
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>
         <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
         <file>ui/widgets/LinkUpRSSIWidget.qml</file>
@@ -53,7 +47,7 @@
         <file>ui/widgets/FlightTimeWidget.qml</file>
         <file>ui/HUDOverlayGrid.qml</file>
         <file>ui/widgets/BaseWidget.qml</file>
-        <file>ui/widgets/BaseWidgetForm.ui.qml</file>
+        <file>ui/widgets/BaseWidgetForm.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
         <file>ui/widgets/HeadingWidget.qml</file>
         <file>ui/widgets/SpeedWidget.qml</file>
@@ -61,7 +55,6 @@
         <file>ui/widgets/AltitudeSecondWidget.qml</file>
         <file>ui/widgets/ThrottleWidget.qml</file>
         <file>ui/widgets/ArrowWidget.qml</file>
-        <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
         <file>ui/widgets/GroundPowerWidget.qml</file>
@@ -80,7 +73,6 @@
         <file>ui/elements/LanguageSelectForm.ui.qml</file>
         <file alias="round.png">../icons/round.png</file>
         <file>ui/elements/Card.qml</file>
-        <file>ui/elements/CardForm.ui.qml</file>
         <file>ui/widgets/SpeedSecondWidget.qml</file>
         <file>osdfonts/Acme-Regular.ttf</file>
         <file>osdfonts/Aldrich-Regular.ttf</file>
@@ -145,55 +137,31 @@
         <file>ui/elements/colorwheel/VerticalSlider.qml</file>
         <file>ui/elements/colorwheel/Wheel.qml</file>
         <file>ui/elements/colorwheel/mathUtils.js</file>
-        <file>ui/elements/RestartDialog.qml</file>
         <file>ui/elements/ColorPicker.qml</file>
         <file>ui/elements/AppSettings.qml</file>
         <file>ui/widgets/EscTempWidget.qml</file>
         <file>ui/widgets/PressTempWidget.qml</file>
         <file>ui/widgets/ImuTempWidget.qml</file>
         <file>ui/widgets/FlightMahKmWidget.qml</file>
-        <file>ui/elements/ConfirmSlider.qml</file>
-        <file>ui/elements/ConfirmSliderForm.ui.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
-        <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
-        <file>ui/configpopup/PowerPanelForm.qml</file>
-        <file>ui/configpopup/PowerPanel.qml</file>
-        <file>ui/configpopup/AppSettingsPanel.qml</file>
-        <file>ui/configpopup/AboutPanel.qml</file>
+        <file>ui/widgets/Sidebar.qml</file>
         <file>resources/osdicons.ttf</file>
         <file>resources/materialdesignicons-webfont.ttf</file>
         <file>resources/ic128.png</file>
         <file>resources/ic.png</file>
         <file>resources/homemarker.png</file>
         <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
-        <file>ui/configpopup/LogMessagesStatusView.qml</file>
-        <file>ui/configpopup/MavlinkAllSettingsPanel.qml</file>
-        <file>ui/configpopup/MavlinkParamPanel.qml</file>
-        <file>ui/configpopup/MavlinkExtraWBParamPanel.qml</file>
-        <file>ui/configpopup/MavlinkParamEditor.qml</file>
-        <file>ui/configpopup/AppDeveloperStatsPanel.qml</file>
         <file>ui/widgets/QRenderStatsWidget.qml</file>
-        <file>ui/widgets/MapWidget.qml</file>
-        <file>ui/widgets/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapComponent.qml</file>
-        <file>ui/configpopup/RcDebugScreenOpenHD.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
         <file>resources/master1.png</file>
         <file>resources/master2.png</file>
         <file>resources/master3.png</file>
         <file>resources/master4.png</file>
         <file>resources/master5.png</file>
-        <file>ui/configpopup/Credits.qml</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>
-        <file>ui/widgets/AdsbWidget.qml</file>
-        <file>ui/configpopup/ChannelScanDialoque.qml</file>
-        <file>ui/configpopup/MavlinkSetupPiCameraPanel.qml</file>
-        <file>ui/configpopup/PiCameraConfigListOriginal.qml</file>
-        <file>ui/configpopup/PiCameraConfigListArducam.qml</file>
-        <file>ui/configpopup/PiCameraConfigListVeye.qml</file>
-        <file>ui/configpopup/PiCameraConfigListOther.qml</file>
         <file>resources/cameras/ArduIMX462.png</file>
         <file>resources/cameras/ArduIMX477.png</file>
         <file>resources/cameras/ArduIMX519.png</file>
@@ -209,40 +177,83 @@
         <file>resources/cameras/veyeIMX462.png</file>
         <file>resources/cameras/veyeIMX307.png</file>
         <file>resources/cameras/veyeSC132.png</file>
-        <file>ui/configpopup/AppGeneralSettingsView.qml</file>
-        <file>ui/configpopup/AppVehicleSettingsView.qml</file>
-        <file>ui/configpopup/AppWidgetSettingsView.qml</file>
-        <file>ui/configpopup/AppScreenSettingsView.qml</file>
-        <file>ui/configpopup/AppVideoSettingsView.qml</file>
-        <file>ui/configpopup/AppDevSettingsView.qml</file>
         <file>video/MainVideoGStreamer.qml</file>
         <file>video/SecondaryVideoGStreamer.qml</file>
         <file>video/MainVideoQSG.qml</file>
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
         <file>ui/widgets/RecordVideoWidget.qml</file>
-        <file>ui/configpopup/RcInfoPanel.qml</file>
-        <file>ui/configpopup/RcDebugScreenFC.qml</file>
-        <file>ui/configpopup/RcInfoScreen.qml</file>
         <file>ui/widgets/RCRssiWidget.qml</file>
         <file>video/ExpMainVideoAndroid.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
-        <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
         <file>ui/widgets/BaseWidgetDefaultUiControlElements.qml</file>
-        <file>ui/elements/ConfirmSliderEnableDisable.qml</file>
         <file>resources/cursors/arrow_512_transparent.png</file>
         <file>resources/cursors/arrow_512_green.png</file>
         <file>resources/cursors/arrow_512_white.png</file>
         <file>resources/cursors/hand_white.png</file>
-        <file>ui/configpopup/ConnectPanel.qml</file>
-        <file>ui/configpopup/PanelFCSetup.qml</file>
         <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
         <file>ui/widgets/DistanceSensorWidget.qml</file>
         <file>ui/widgets/UAVTimeWiget.qml</file>
         <file>ui/widgets/VerticalSpeedGaugeWidget.qml</file>
         <file>ui/widgets/ControlWidgetSubElement.qml</file>
         <file>ui/elements/XDecimalSpinBox.qml</file>
+        <file>ui/elements/ButtonIconWarning.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppVehicleSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppSettingsPanel.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkExtraWBParamPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkAllSettingsPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueStartAnalyzeChannels.qml</file>
+        <file>ui/configpopup/openhd_settings/DIaloqueStartChannelScan.qml</file>
+        <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
+        <file>ui/configpopup/rc/RcInfoScreen.qml</file>
+        <file>ui/configpopup/rc/RcInfoPanel.qml</file>
+        <file>ui/configpopup/rc/RcDebugScreenOpenHD.qml</file>
+        <file>ui/configpopup/rc/RcDebugScreenFC.qml</file>
+        <file>ui/configpopup/status/StatusCardBodyOpenHD.qml</file>
+        <file>ui/configpopup/status/PowerActionDialoque.qml</file>
+        <file>ui/configpopup/status/PanelStatus.qml</file>
+        <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
+        <file>ui/configpopup/log/LogMessagesStatusView.qml</file>
+        <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
+        <file>ui/configpopup/credits/Credits.qml</file>
+        <file>ui/configpopup/connect/ConnectPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueChangeTxPower.qml</file>
+        <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
+        <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
+        <file>ui/widgets/map/MapWidget.qml</file>
+        <file>ui/configpopup/status/StatusCardsColumn.qml</file>
+        <file>ui/configpopup/status/ActionsColumn.qml</file>
+        <file>ui/configpopup/connect/PaneUSBTether.qml</file>
+        <file>ui/configpopup/connect/PaneWIFI.qml</file>
+        <file>ui/configpopup/connect/PaneCustom.qml</file>
+        <file>ui/elements/ButtonRed.qml</file>
+        <file>ui/elements/ButtonOrange.qml</file>
+        <file>ui/configpopup/status/StatusCardFooterGenericOHDFC.qml</file>
+        <file>ui/elements/ButtonIconInfoText.qml</file>
+        <file>ui/elements/ButtonIconInfo.qml</file>
+        <file>ui/elements/PillSlider.qml</file>
+        <file>ui/elements/FlightModeSlider.qml</file>
+        <file>ui/elements/ArmDisarmSlider.qml</file>
+        <file>ui/configpopup/status/QOpenHDServiceDialoque.qml</file>
+        <file>ui/elements/SimpleProgressBar.qml</file>
+        <file>ui/elements/ButtonGreen.qml</file>
+        <file>ui/configpopup/openhd_settings/DialoqueFreqChangeArmed.qml</file>
+        <file>ui/configpopup/openhd_settings/FreqComboBoxRow.qml</file>
+        <file>ui/configpopup/status/QOpenHDVersionCard.qml</file>
+        <file>ui/elements/CardToast.qml</file>
+        <file>ui/elements/ButtonYellow.qml</file>
+        <file>ui/configpopup/connect/PaneLocalhost.qml</file>
+        <file>ui/configpopup/connect/PaneInfo.qml</file>
+        <file>ui/configpopup/connect/GenericInfoPane.qml</file>
     </qresource>
 </RCC>

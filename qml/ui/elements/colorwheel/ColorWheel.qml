@@ -12,7 +12,7 @@ import "ColorUtils.js" as ColorUtils
 
 Item {
     id: root
-    focus: true
+    //focus: true
 
     // Color value in RGBA with floating point values between 0.0 and 1.0.
 

@@ -74,6 +74,10 @@ BaseWidget {
             camModel=_airCameraSettingsModel2;
             camString="CAM2"
         }
+        if(!_ohdSystemAir.is_alive){
+            _hudLogMessagesModel.signalAddLogMessage(6,"Air unit not alive, cannot set recording for "+camString)
+            return;
+        }
         if(mode===0){ //mode off
             var result=camModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
             if(result){

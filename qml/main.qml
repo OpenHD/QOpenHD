@@ -122,47 +122,37 @@ ApplicationWindow {
             anchors.centerIn: parent
         }
 
-        RestartDialog {
-            id: restartDialog
-            height: 240
-            width: 400
-            z: 5.0
-            anchors.centerIn: parent
-        }
-
         // UI areas
 
         HUDOverlayGrid {
             id: hudOverlayGrid
             anchors.fill: parent
             z: 3.0
-            onSettingsButtonClicked: {
-                settings_panel.openSettings();
-            }
+            //onSettingsButtonClicked: {
+            //    settings_panel.openSettings();
+            //}
             // Performance seems to be better on embedded devices like
             // rpi with layers disabled (aka default) but this is not exact science
             layer.enabled: false
         }
 
-        OSDCustomizer {
-            id: osdCustomizer
-            anchors.centerIn: parent
-            visible: false
-            z: 5.0
-        }
 
         ConfigPopup {
             id: settings_panel
             visible: false
         }
 
-        ChannelScanDialoque{
-             id: dialoqueStartChannelScan
-        }
-
         WorkaroundMessageBox{
             id: workaroundmessagebox
         }
+
+        CardToast{
+            id: card_toast
+            m_text: _qopenhd.toast_text
+            visible: _qopenhd.toast_visible
+        }
+
+        // Used by settings that require a restart
         RestartQOpenHDMessageBox{
             id: restartQOpenHDMessageBox
         }
@@ -173,22 +163,6 @@ ApplicationWindow {
             sequence: "Ctrl+F12"
             onActivated: {
                 _qopenhd.disable_service_and_quit()
-            }
-        }
-
-        Item {
-            anchors.fill: parent
-            z: 1.0
-
-            TapHandler {
-                enabled: settings_panel.visible == false
-                acceptedButtons: Qt.AllButtons
-                onTapped: {
-                }
-                onLongPressed: {
-                    osdCustomizer.visible = true
-                }
-                grabPermissions: PointerHandler.CanTakeOverFromAnything
             }
         }
 
@@ -211,6 +185,10 @@ ApplicationWindow {
                 anchors.fill: parent
             }
         }*/
+        Component.onCompleted: {
+            console.log("Completed");
+            hudOverlayGrid.regain_focus()
+        }
     }
 }
 

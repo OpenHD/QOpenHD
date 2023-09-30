@@ -29,8 +29,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          
-          sudo ./build_install_mavsdk_static.sh
+          # TODO ?
           
       - name: Build with make
         run: |

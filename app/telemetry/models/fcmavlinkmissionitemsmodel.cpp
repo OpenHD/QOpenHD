@@ -1,6 +1,5 @@
 #include "fcmavlinkmissionitemsmodel.h"
 #include "qdebug.h"
-
 #include <qsettings.h>
 
 
@@ -8,8 +7,7 @@ FCMavlinkMissionItemsModel::FCMavlinkMissionItemsModel(QObject *parent)
     :  QAbstractListModel(parent)
 {
     connect(this, &FCMavlinkMissionItemsModel::signal_qt_ui_update_element, this, &FCMavlinkMissionItemsModel::qt_ui_update_element);
-    QSettings settings;
-    show_map=settings.value("show_map",false).toBool();
+    connect(this, &FCMavlinkMissionItemsModel::signal_qt_ui_resize, this, &FCMavlinkMissionItemsModel::qt_ui_resize);
 }
 
 FCMavlinkMissionItemsModel& FCMavlinkMissionItemsModel::instance()
@@ -19,12 +17,16 @@ FCMavlinkMissionItemsModel& FCMavlinkMissionItemsModel::instance()
 }
 
 
-void FCMavlinkMissionItemsModel::update_mission(int mission_index,double lat,double lon,double alt_m,bool currently_active)
+void FCMavlinkMissionItemsModel::p_initialize(int total_mission_count)
 {
-    // save performance if map is not enabled
-    if(!show_map)return;
-    emit signal_qt_ui_update_element(mission_index,lat,lon,alt_m,currently_active);
+    emit signal_qt_ui_resize(total_mission_count);
 }
+
+void FCMavlinkMissionItemsModel::p_update(int mission_index, double lat, double lon, double alt_m)
+{
+    emit signal_qt_ui_update_element(mission_index,lat,lon,alt_m,false);
+}
+
 
 int FCMavlinkMissionItemsModel::rowCount( const QModelIndex& parent) const
 {
@@ -73,17 +75,6 @@ QHash<int, QByteArray> FCMavlinkMissionItemsModel::roleNames() const
     return mapping;
 }
 
-/*void FCMavlinkMissionItemsModel::removeData(int row)
-{
-    if (row < 0 || row >= m_data.count())
-        return;
-
-    //qDebug()<<"Removing "<<row;
-    beginRemoveRows(QModelIndex(), row, row);
-    m_data.removeAt(row);
-    endRemoveRows();
-}*/
-
 void FCMavlinkMissionItemsModel::addData(FCMavlinkMissionItemsModel::Element data)
 {
     //qDebug()<<"FCMavlinkMissionItemsModel::addData"<<data.latitude<<","<<data.longitude<<","<<data.mission_index;
@@ -105,22 +96,19 @@ void FCMavlinkMissionItemsModel::updateData(int row,FCMavlinkMissionItemsModel::
 
 void FCMavlinkMissionItemsModel::qt_ui_update_element(int mission_index,double lat,double lon,double alt_m,bool currently_active)
 {
-    if(mission_index>MAX_N_ELEMENTS){
-        qDebug()<<"We only support up to "<<MAX_N_ELEMENTS<<" missions:"<<mission_index;
-        return;
-    }
-    if(mission_index<0){
-        qDebug()<<"Invalid mission index "<<mission_index;
-        return;
-    }
-    const auto n_elements=m_data.size();
-    if(mission_index>=n_elements){
-        // add as many (dummy) elements as we need
-        for(int i=n_elements;i<=mission_index;i++){
-            addData(FCMavlinkMissionItemsModel::Element{i,0,0,0,false,false});
-        }
-    }
-    assert(mission_index<m_data.size());
+    //qDebug()<<"FCMavlinkMissionItemsModel:::qt_ui_update_element:"<<mission_index;
     updateData(mission_index,FCMavlinkMissionItemsModel::Element{mission_index,lat,lon,alt_m,true,currently_active});
+}
+
+void FCMavlinkMissionItemsModel::qt_ui_resize(int total_mission_count)
+{
+    //qDebug()<<"FCMavlinkMissionItemsModel:::qt_ui_resize:"<<total_mission_count;
+    beginResetModel();
+    m_data.resize(0);
+    endResetModel();
+    for(int i=0;i<total_mission_count;i++){
+        auto element=FCMavlinkMissionItemsModel::Element{i,0,0,0,false};
+        addData(element);
+    }
 }
 
