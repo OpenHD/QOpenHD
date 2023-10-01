@@ -487,13 +487,13 @@ std::optional<uint8_t> FCMavlinkSystem::get_fc_sys_id()
         return std::nullopt;
     }
     auto sys_id=m_sys_id;
-    assert(sys_id>0);
+    assert(sys_id>=0);
     return sys_id;
 }
 
 bool FCMavlinkSystem::set_system_id(int sys_id)
 {
-    if(sys_id<=0 || sys_id >= UINT8_MAX){
+    if(sys_id<0 || sys_id >= UINT8_MAX){
         qWarning()<<"Invalid sys id";
         return false;
     }
