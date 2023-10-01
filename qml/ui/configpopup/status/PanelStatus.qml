@@ -49,38 +49,33 @@ Rectangle {
             QOpenHDVersionCard{
                 id: qopenhdversioncard
                 height: 80
-                //anchors.top: airBox.bottom
-            }
-            /*Item{
-                id: qopenhdversioncard
-                width: parent.width
-                height: 80
-            }*/
 
-            StatusCardsColumn{
-                width: parent.width
-                height: 250
+                StatusCardsColumn{
+                    width: parent.width
+                    height: 250
 
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                anchors.topMargin: 12
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    anchors.topMargin: 12
 
-                id: status_openhd_fc
-                anchors.top: qopenhdversioncard.bottom
-            }
+                    id: status_openhd_fc
+                    anchors.top: qopenhdversioncard.bottom
+                }
 
-            ActionsColumn {
-                width: parent.width
-                height: 80
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 50
+                ActionsColumn {
+                    id:actionsButtonMenu
+                    width: parent.width
+                    height: 80
+                    y: (applicationWindow.height-(actionsButtonMenu.height*1.5))
+
+                }
             }
         }
-    }
-    PowerActionDialoque{
-        id: powerDialog
-    }
-    QOpenHDServiceDialoque{
-        id: qopenhdservicedialoque
+        PowerActionDialoque{
+            id: powerDialog
+        }
+        QOpenHDServiceDialoque{
+            id: qopenhdservicedialoque
+        }
     }
 }

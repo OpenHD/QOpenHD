@@ -81,7 +81,7 @@ Item {
             }
             Image {
                     id: ee1
-                    visible: true
+                    visible: !_ohdSystemAir.is_alive && !_ohdSystemGround.is_alive && !_ohdSystemGround.is_alive
                     source: "../../../resources/noconnection.svg"
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.topMargin: Layout.preferredWidth * -0.15

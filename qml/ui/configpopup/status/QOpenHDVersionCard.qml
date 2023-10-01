@@ -54,7 +54,8 @@ Card {
             Layout.leftMargin: 75
             height: 48
             color: "#ff3a3a3a"
-            text: qsTr(QOPENHD_GIT_VERSION)
+            //text: qsTr(QOPENHD_GIT_VERSION)
+            text: "2.5.1-evo-alpha"
             font.pixelSize: 12
         }
     }
