@@ -48,6 +48,8 @@ Rectangle {
         height: 48
         anchors.top: fetch_all_progress.bottom
         anchors.topMargin: 1
+        anchors.left: parent.left
+        anchors.leftMargin: 12
         ButtonIconWarning{
             onClicked: {
                 _messageBoxInstance.set_text_and_show(""+m_name+ " not alive, parameters unavailable. Please check status view.");
