@@ -254,7 +254,7 @@
         <file>ui/elements/CardToast.qml</file>
         <file>ui/elements/ButtonYellow.qml</file>
         <file>ui/configpopup/connect/PaneLocalhost.qml</file>
-        <file>ui/configpopup/connect/PaneInfo.qml</file>
+        <file>ui/configpopup/connect/PaneTethering.qml</file>
         <file>ui/configpopup/connect/GenericInfoPane.qml</file>
         <file>ui/elements/ButtonSimple.qml</file>
     </qresource>
