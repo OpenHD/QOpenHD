@@ -17,7 +17,7 @@ Item {
     property bool hasHeaderImage: false
 
     property int cardRadius: 6
-    property color cardNameColor: "black"
+    property color cardNameColor: "#33aaff"
     property color borderColor: "#3a000000"
 
     property bool m_style_error: false

@@ -23,7 +23,7 @@ ColumnLayout {
     property string m_version: m_model.openhd_version
     property string m_last_ping: m_model.last_ping_result_openhd
     property bool m_is_alive: m_model.is_alive
-    property string m_qopenhd_version: "2.5.1-evo-alpha"
+    property string m_qopenhd_version: "2.5.1-alpha"
 
     function get_alive_text(){
         return m_is_alive ? "Yes" : "NOT ALIVE !"
@@ -33,38 +33,26 @@ ColumnLayout {
         return m_is_alive ? "green" : "black"
     }
 
-    function get_cards_text() {
-      if (!m_is_ground) {
-        var airCardType = _wifi_card_air.card_type_as_string;
-        airCardType = airCardType.substring(3);
-        return airCardType;
-      }
-
-
-      // Ground
-      var ret = "";
-
-      if (_wifi_card_gnd0.alive) {
-        ret += _wifi_card_gnd0.card_type_as_string;
-      }
-      if (_wifi_card_gnd1.alive) {
-        ret += "\n" + _wifi_card_gnd1.card_type_as_string;
-      }
-      if (_wifi_card_gnd2.alive) {
-        ret += "\n" + _wifi_card_gnd2.card_type_as_string;
-      }
-      if (_wifi_card_gnd3.alive) {
-        ret += "\n" + _wifi_card_gnd3.card_type_as_string;
-      }
-
-      if (ret.length == 0) return "N/A";
-
-      // Remove the first 3 characters if ret is not "N/A"
-      if (ret !== "N/A") {
-        ret = ret.substring(3);
-      }
-
-      return ret;
+    function get_cards_text(){
+        if(!m_is_ground){
+            return _wifi_card_air.card_type_as_string;
+        }
+        // Ground
+        var ret="";
+        if(_wifi_card_gnd0.alive){
+            ret+="[1]"+_wifi_card_gnd0.card_type_as_string;
+        }
+        if(_wifi_card_gnd1.alive){
+            ret+="\n"+"[2]"+_wifi_card_gnd1.card_type_as_string;
+        }
+        if(_wifi_card_gnd2.alive){
+            ret+="\n"+"[3]"+_wifi_card_gnd2.card_type_as_string;
+        }
+        if(_wifi_card_gnd3.alive){
+            ret+="\n"+"[4]"+_wifi_card_gnd3.card_type_as_string;
+        }
+        if(ret.length==0)return "N/A";
+        return ret;
     }
 
     function gnd_uplink_state(){
@@ -108,10 +96,9 @@ ColumnLayout {
         }
         Text {
             text: m_version
-            color: "green"
             visible: !b_version_warning.visible
         }
-        ButtonSimple{
+        ButtonYellow{
             text: m_version
             id: b_version_warning
             onClicked: {
@@ -150,7 +137,6 @@ ColumnLayout {
         }
         Text {
             text: m_last_ping
-            color: m_last_ping === "N/A" ? "#DC143C" : "green"
         }
     }
     RowLayout{
@@ -180,10 +166,9 @@ ColumnLayout {
         }
         Text {
             text: get_cards_text()
-            color: get_cards_text().endsWith("OHD") ? "green" : "DC143C"
             visible: !b_unsupported_cards_warning.visible
         }
-        ButtonSimple{
+        ButtonYellow{
             id: b_unsupported_cards_warning
             text: get_cards_text()
             onClicked: {
@@ -221,14 +206,13 @@ ColumnLayout {
         }
         Text{
             text: gnd_uplink_state_text()
-            color: "green"
             visible: {
                 var gnd_up_state=gnd_uplink_state()
                 if(gnd_up_state===0 || gnd_up_state===1)return true;
                 return false;
             }
         }
-        ButtonSimple{
+        ButtonYellow{
             text: gnd_uplink_state_text()
             onClicked: {
                 var message="Looks like your uplink (GND to AIR) is not functional - please use a supported card on your GND station"+

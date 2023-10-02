@@ -24,6 +24,7 @@ Item {
 
         RowLayout {
             width: parent.width - 24
+            height: parent.height
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
             Card {
