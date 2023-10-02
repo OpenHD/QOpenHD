@@ -39,7 +39,7 @@ Rectangle {
         anchors.top: parent.top
         visible: m_progress_perc>=0 && m_progress_perc<=100
         impl_curr_progress_perc: m_progress_perc
-        //impl_curr_color: m_progress_perc>=100 ? "green" : "blue"
+        impl_curr_color: "#333c4c"
     }
 
     RowLayout{
@@ -118,13 +118,15 @@ Rectangle {
             //height: 64
             //width: 200
             height: 64
-            width: listView.width
+            width: listView.width-12
             Row {
                 id: elementsRow
                 //anchors.fill: parent
                 spacing: 5
                 //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                 height: 64
+                anchors.left: parent.left
+                anchors.leftMargin: 12
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     //font.pixelSize: 20
