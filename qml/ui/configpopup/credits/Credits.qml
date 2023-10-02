@@ -42,7 +42,7 @@ Rectangle {
                             Image {
                                 id: ee1
                                 visible: true
-                                source: "../../../resources/noconnection.svg"
+                                source: "../../../resources/master1.svg"
                             }
                         }
                     }
