@@ -54,7 +54,7 @@ Item {
                 ListView {
                     id: logMessagesModelParentListView
                     width: parent.width
-                    height: parent.height
+                    height: parent.height-12
                     model: _ohdlogMessagesModel
                     delegate:
                         Rectangle {
