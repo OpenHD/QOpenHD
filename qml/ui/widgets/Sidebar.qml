@@ -89,7 +89,7 @@ BaseWidget {
                     width: parent.width
                     height: parent.height
                     focus: true
-                    snapMode: ListView.SnapOneItem
+                    //snapMode: ListView.SnapOneItem
                     model: ListModel {
                         ListElement { text: " \uf1eb"; subText: "link" }
                         ListElement { text: " \uf03d"; subText: "video" }
@@ -215,7 +215,7 @@ BaseWidget {
                             from: 0
                             to: 3
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -246,7 +246,7 @@ BaseWidget {
                                 from: 22
                                 to: 58
                                 stepSize: 4
-                                snapMode: Slider.SnapToStep
+                                //snapMode: Slider.SnapToStep
                                 value: 22 // Initial value
                                 Material.accent: Material.Grey
                                 onValueChanged: {
@@ -320,7 +320,7 @@ BaseWidget {
                             from: 0
                             to: 2
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -339,7 +339,7 @@ BaseWidget {
                             from: 0
                             to: 2
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -358,7 +358,7 @@ BaseWidget {
                             from: 2
                             to: 18
                             stepSize: 2
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 8 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -396,7 +396,7 @@ BaseWidget {
                             from: 0
                             to: 2
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -415,7 +415,7 @@ BaseWidget {
                             from: 0
                             to: 2
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -434,7 +434,7 @@ BaseWidget {
                             from: 0
                             to: 2
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -472,7 +472,7 @@ BaseWidget {
                             from: 0
                             to: 2
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -489,9 +489,9 @@ BaseWidget {
                         Slider {
                             id: recFramerateSlider
                             from: 0
-                            to: 2
+                            to: 3
                             stepSize: 1
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
@@ -510,7 +510,7 @@ BaseWidget {
                             from: 2
                             to: 18
                             stepSize: 2
-                            snapMode: Slider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 8 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
