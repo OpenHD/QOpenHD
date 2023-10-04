@@ -258,31 +258,6 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 Layout.fillWidth: true
                 leftPadding: 12
                 rightPadding: 12
-                text: ("Do you want to set the TX power in armed / disarmed state ?\n"+
-"NOTE: TX power armed is only applied when the FC is armed, TX power disarmed is applied when the FC is disarmed.")
-                wrapMode: Text.WordWrap
-            }
-            ComboBox {
-                Layout.fillWidth: true
-                leftPadding: 12
-                rightPadding: 12
-                id: comboBoxSelectedArmedDisarmed
-                model: armed_or_disarmed_model
-                textRole: "title"
-                onCurrentIndexChanged: {
-                    if(comboBoxSelectedArmedDisarmed.currentIndex==1)m_change_armed=false;
-                    if(comboBoxSelectedArmedDisarmed.currentIndex==2)m_change_armed=true;
-                }
-            }
-        }
-        ColumnLayout{
-            width: parent.width
-            height: parent.height
-            visible: m_curr_index==2
-            Text{
-                Layout.fillWidth: true
-                leftPadding: 12
-                rightPadding: 12
                 id: card_select_manufcturer_description
                 text: get_text_select_card_manufacturer()
                 wrapMode: Text.WordWrap
@@ -298,6 +273,31 @@ the card driver and/or the linux kernel doesn't support changing it.");
                     var manufacturer=comboBoxCardSelectManufacturer.model.get(comboBoxCardSelectManufacturer.currentIndex).value;
                     console.log("Selected manufacturerer "+get_card_chip_type_as_string()+" :"+manufacturer);
                     m_card_manufacturer_type=manufacturer;
+                }
+            }
+        }
+        ColumnLayout{
+            width: parent.width
+            height: parent.height
+            visible: m_curr_index==2
+            Text{
+                Layout.fillWidth: true
+                leftPadding: 12
+                rightPadding: 12
+                text: ("Do you want to set the TX power in armed / disarmed state ?\n"+
+"NOTE: TX power armed is only applied when the FC is armed, TX power disarmed is applied when the FC is disarmed.")
+                wrapMode: Text.WordWrap
+            }
+            ComboBox {
+                Layout.fillWidth: true
+                leftPadding: 12
+                rightPadding: 12
+                id: comboBoxSelectedArmedDisarmed
+                model: armed_or_disarmed_model
+                textRole: "title"
+                onCurrentIndexChanged: {
+                    if(comboBoxSelectedArmedDisarmed.currentIndex==1)m_change_armed=false;
+                    if(comboBoxSelectedArmedDisarmed.currentIndex==2)m_change_armed=true;
                 }
             }
         }
@@ -370,10 +370,10 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: 12
-                text: "Continue"
+                text: "CONTINUE"
                 onClicked: {
-                    if(comboBoxSelectedArmedDisarmed.currentIndex<=0){
-                        _qopenhd.show_toast("Please specify armed / disarmed",false);
+                    if(m_card_manufacturer_type<0){
+                        _qopenhd.show_toast("Please select your card manufacturer",false);
                     }else{
                         m_curr_index=2;
                     }
@@ -396,10 +396,10 @@ the card driver and/or the linux kernel doesn't support changing it.");
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: 12
-                text: "CONTINUE"
+                text: "Continue"
                 onClicked: {
-                    if(m_card_manufacturer_type<0){
-                        _qopenhd.show_toast("Please select your card manufacturer",false);
+                    if(comboBoxSelectedArmedDisarmed.currentIndex<=0){
+                        _qopenhd.show_toast("Please specify armed / disarmed",false);
                     }else{
                         m_curr_index=3;
                     }

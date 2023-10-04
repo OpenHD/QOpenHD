@@ -84,6 +84,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                "DEV ONLY - DO NOT TOUCH (LEAVE DISABLED). Sets a wifi param that needs to be investigated."
                );
     {
+// ---------- TX POWER - only as placeholders, wizzard is recommended !
         // Measurements of @Marcel Essers:
         //19: 10-12 mW
         //25: 25-30 mW
@@ -95,40 +96,40 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         //50: 280- 320 mW
         //55: 380-400 mW
         //58: 420-450 mW
-        auto values_WB_TX_PWR_LEVEL=std::vector<ImprovedIntSetting::Item>{
-                                                                            {"LOW(~25mW)[22]",22},
-                                                                            {"MEDIUM [37]",37},
-                                                                            {"HIGH [53]",53},
-                                                                            {"MAX1(!DANGER!)[58]",58},
-                                                                            // Intentionally disabled, since it creates unusably high packet loss
-                                                                            // (e.g. the rf circuit is over-amplified)
-                                                                            //{"MAX2(!DANGER!)[63]",63},
-                                                                            };
+        // NOTE: We now have the tx power wizzard !
+        auto values_WB_TX_PWR_INDEX=std::vector<ImprovedIntSetting::Item>{
+            {"Unitless [3]",3},
+            {"Unitless [6]",6},
+            {"Unitless [10]",10},
+            {"Unitless [20]",20},
+            {"Unitless [40]",40},
+            {"Unitless [60]",60},
+            {"Unitless [63]",63},                                                                   };
+        auto values_WB_TX_PWR_INDEX_ARMED=std::vector<ImprovedIntSetting::Item>{
+            {"Disabled [0]",0},
+            {"Unitless [3]",3},
+            {"Unitless [6]",6},
+            {"Unitless [10]",10},
+            {"Unitless [20]",20},
+            {"Unitless [40]",40},
+            {"Unitless [60]",60},
+            {"Unitless [63]",63},
+        };
         append_int(ret,openhd::WB_RTL8812AU_TX_PWR_IDX_OVERRIDE,
-                   ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL),
-                   "NEW: Recommended to change TX_POWER_I_ARMED instead ! RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
-                   " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power."
-                   " NOTE2: For high power cards, it is recommended to leave this param default and change TX_POWER_ARMED instead to avoid overheating on the bench."
+                   ImprovedIntSetting(0,63,values_WB_TX_PWR_INDEX),
+                   "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! Unitless Tx power index value applied when the FC is disarmed and no specific armed"
+                   "tx power value is set."
                    );
-    }
-    {
-        auto values_WB_TX_PWR_LEVEL_ARMED=std::vector<ImprovedIntSetting::Item>{
-                                                                                  {"Disabled[0]",0},
-                                                                                  {"LOW(~25mW)[22]",22},
-                                                                                  {"MEDIUM [37]",37},
-                                                                                  {"HIGH [53]",53},
-                                                                                  {"MAX1(!DANGER!)[58]",58},
-                                                                                  // Intentionally disabled, since it creates unusably high packet loss
-                                                                                  // (e.g. the rf circuit is over-amplified)
-                                                                                  //{"MAX2(!DANGER!)[63]",63},
-                                                                                  };
         append_int(ret,openhd::WB_RTL8812AU_TX_PWR_IDX_ARMED,
-                   ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL_ARMED),
-                   "TX Power (in override indices units) that is applied when the FC is armed. When the FC is not armed, TX_POWER_I is applied."
-                   "When this param is disabled, TX_POWER_I is applied regardless if armed or not (default)."
-                   " This helps to avoid overheating of the WIFI card while openhd is powered on the bench / without airflow on the cards."
+                   ImprovedIntSetting(0,63,values_WB_TX_PWR_INDEX_ARMED),
+                   "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! Unitless Tx power index value applied when the FC is armed, off by default"
                    );
+        append_only_documented(ret,openhd::WB_TX_POWER_MILLI_WATT,
+                               "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! tx power in mW when FC is disarmed and no specific armed tx power value is set. Actual tx power depends on the manufacturer.");
+        append_only_documented(ret,openhd::WB_TX_POWER_MILLI_WATT_ARMED,
+                               "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! tx power in mW when FC is armed, off by default. Actual tx power depends on the manufacturer.");
     }
+// -----------------------------------------------------------------------------------------------------------
     {
         auto default_values=std::vector<ImprovedIntSetting::Item>{
                                                                     {"AUTO (Default)",0},
@@ -196,8 +197,6 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                );
     append_only_documented(ret,openhd::WB_FREQUENCY,"!!!Editing this param manually without care will result in a broken link!!!");
     append_only_documented(ret,openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM,"Developer only, FEC auto internal.");
-    append_only_documented(ret,openhd::WB_TX_POWER_MILLI_WATT,
-                           "TX power in mW (milli Watt), changing this value might or might not have any effect, depending on your card & driver. 1000mW=1W");
     const auto descr_wifi_card="Detected wifi card type used for wifibroadcast.";
     append_documented_read_only(ret,"WIFI_CARD0",descr_wifi_card);
     append_documented_read_only(ret,"WIFI_CARD1",descr_wifi_card);

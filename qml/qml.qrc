@@ -245,7 +245,6 @@
         <file>ui/elements/PillSlider.qml</file>
         <file>ui/elements/FlightModeSlider.qml</file>
         <file>ui/elements/ArmDisarmSlider.qml</file>
-        <file>ui/configpopup/status/QOpenHDServiceDialoque.qml</file>
         <file>ui/elements/SimpleProgressBar.qml</file>
         <file>ui/elements/ButtonGreen.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeArmed.qml</file>
@@ -257,5 +256,6 @@
         <file>ui/configpopup/connect/PaneTethering.qml</file>
         <file>ui/configpopup/connect/GenericInfoPane.qml</file>
         <file>ui/elements/ButtonSimple.qml</file>
+        <file>ui/configpopup/dev/QOpenHDServiceDialoque.qml</file>
     </qresource>
 </RCC>
