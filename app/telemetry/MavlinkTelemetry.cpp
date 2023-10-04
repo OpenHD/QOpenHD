@@ -105,6 +105,17 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
                 m_fc_comp_id=source_compid;
                 m_fc_found=true;
             }
+            else if(source_sysid==0){
+                qDebug()<<"Found betaflight FC:"<<source_sysid;
+                FCMavlinkSystem::instance().set_system_id(source_sysid);
+                m_fc_sys_id=source_sysid;
+                m_fc_comp_id=source_compid;
+                m_fc_found=true;
+            }
+            else
+            {
+                qDebug()<<"Got weird system:"<<source_sysid;
+            }
         }
 
     }

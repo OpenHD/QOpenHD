@@ -1,0 +1,14 @@
+[Unit]
+Description=rock_mjpeg_decode
+
+[Service]
+User=root
+
+# Video decode via mpp, started by QOpenHD if needed (and stopped if needed)
+ExecStart=/bin/sh -c "gst-launch-1.0 udpsrc port=5600 caps='application/x-rtp, payload=(int)26, clock-rate=(int)90000, media=(string)video, encoding-name=(string)JPEG' ! rtpjpegdepay ! jpegdec ! queue ! kmssink plane-id=54"
+
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
