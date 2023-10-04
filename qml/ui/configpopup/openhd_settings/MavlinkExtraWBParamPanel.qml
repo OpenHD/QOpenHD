@@ -325,8 +325,9 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
 
     ScrollView {
         id:mavlinkExtraWBParamPanel
-        width: parent.width
-        height: parent.height
+        width: parent.width-24
+        height: parent.height-24
+        anchors.centerIn: parent
         contentHeight: mainItem.height
         clip: true
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn

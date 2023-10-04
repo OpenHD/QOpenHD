@@ -15,64 +15,78 @@ import "../../elements"
 // next to each other
 Item {
 
-    RowLayout {
-        width: parent.width
+    ColumnLayout {
+        id: ohdCards
+        width: parent.width - 24
         height: parent.height
+        anchors.centerIn: parent
+        property int maximumWidth: width
 
-        Card {
-            id: groundBox
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            cardName: qsTr("OHD Ground station")
+        RowLayout {
+            width: parent.width - 24
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
-            m_style_error: !_ohdSystemGround.is_alive
-            //m_style_error: false
+            Card {
+                id: groundBox
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.maximumWidth: ohdCards.maximumWidth/3
+                cardName: qsTr("Ground station")
 
-            cardBody: StatusCardBodyOpenHD{
-                m_is_ground: true
+                visible: _ohdSystemGround.is_alive
+
+                cardBody: StatusCardBodyOpenHD{
+                    m_is_ground: true
+                }
+
+                hasFooter: true
+                cardFooter: StatusCardFooterGenericOHDFC{
+                    m_type: 0
+                }
             }
 
-            hasFooter: true
-            cardFooter: StatusCardFooterGenericOHDFC{
-                m_type: 0
+            Card {
+                id: airBox
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.maximumWidth: ohdCards.maximumWidth/3
+                cardName: qsTr("Air unit")
+                visible: _ohdSystemAir.is_alive
+                cardBody: StatusCardBodyOpenHD{
+                    m_is_ground: false
+                }
+
+                hasFooter: true
+                cardFooter: StatusCardFooterGenericOHDFC{
+                    m_type: 1
+                }
             }
+
+
+            Card {
+                id: fcBox
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                cardName: qsTr("Flight Controller")
+                visible: _fcMavlinkSystem.is_alive
+                cardBody: StatusCardBodyFC{
+
+                }
+
+                hasFooter: true
+                cardFooter: StatusCardFooterGenericOHDFC{
+                    m_type: 2
+                }
+            }
+            Image {
+                    id: ee1
+                    visible: !_ohdSystemAir.is_alive && !_ohdSystemGround.is_alive && !_ohdSystemGround.is_alive
+                    source: "../../../resources/noconnection.svg"
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    Layout.topMargin: Layout.preferredWidth * -0.15
+                    Layout.preferredWidth: ohdCards.width * 0.5
+                    Layout.preferredHeight: Layout.preferredWidth
+                }
         }
-
-        Card {
-            id: airBox
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            cardName: qsTr("OHD Air unit")
-            m_style_error: !_ohdSystemAir.is_alive
-            //m_style_error: false
-            cardBody: StatusCardBodyOpenHD{
-                m_is_ground: false
-            }
-
-            hasFooter: true
-            cardFooter: StatusCardFooterGenericOHDFC{
-                m_type: 1
-            }
-        }
-
-
-        Card {
-            id: fcBox
-            visible: true
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            cardName: qsTr("Flight Controller")
-            m_style_error: !_fcMavlinkSystem.is_alive
-            //m_style_error: false
-            cardBody: StatusCardBodyFC{
-
-            }
-
-            hasFooter: true
-            cardFooter: StatusCardFooterGenericOHDFC{
-                m_type: 2
-            }
-        }
-    } // end OpenHD air, ground, FC status cards layout
-
+    }
 }

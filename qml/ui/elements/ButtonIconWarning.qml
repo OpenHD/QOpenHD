@@ -8,5 +8,6 @@ import QtQuick.Controls.Material 2.12
 Button {
     text: "\uf071"
     font.family: "Font Awesome 5 Free"
-    Material.background:Material.Lime
+    font.pixelSize: 14
+    Material.background: "#fffc4c"
 }

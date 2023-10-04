@@ -11,6 +11,7 @@ import "../../../ui" as Ui
 import "../../elements"
 
 Rectangle {
+    id:mainRect
     width: parent.width
     height: parent.height
 
@@ -48,38 +49,33 @@ Rectangle {
             QOpenHDVersionCard{
                 id: qopenhdversioncard
                 height: 80
-                //anchors.top: airBox.bottom
-            }
-            /*Item{
-                id: qopenhdversioncard
-                width: parent.width
-                height: 80
-            }*/
 
-            StatusCardsColumn{
-                width: parent.width
-                height: 300
+                StatusCardsColumn{
+                    width: parent.width
+                    height: 250
 
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                anchors.topMargin: 12
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
+                    anchors.topMargin: 12
 
-                id: status_openhd_fc
-                anchors.top: qopenhdversioncard.bottom
-            }
+                    id: status_openhd_fc
+                    anchors.top: qopenhdversioncard.bottom
+                }
 
-            ActionsColumn{
-                width:parent.width
-                height: 80
-                anchors.top: status_openhd_fc.bottom
-                anchors.topMargin: 2
+                ActionsColumn {
+                    id:actionsButtonMenu
+                    width: parent.width
+                    height: 80
+                    y: (applicationWindow.height-(actionsButtonMenu.height*1.5))
+
+                }
             }
         }
-    }
-    PowerActionDialoque{
-        id: powerDialog
-    }
-    QOpenHDServiceDialoque{
-        id: qopenhdservicedialoque
+        PowerActionDialoque{
+            id: powerDialog
+        }
+        QOpenHDServiceDialoque{
+            id: qopenhdservicedialoque
+        }
     }
 }

@@ -10,9 +10,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-// Holds the ping, fetch, ... buttons for this panel
-// NOTE : Not the power action buttons
-Item{
+Item {
 
     Timer {
         id: autopingTimer
@@ -20,39 +18,40 @@ Item{
         interval: 1000
         repeat: true
         onTriggered: {
-           _mavlinkTelemetry.ping_all_systems()
+            _mavlinkTelemetry.ping_all_systems()
         }
     }
 
-    ColumnLayout{
+    ColumnLayout {
         // 2 Rows
-        RowLayout{
+        anchors.left: parent.left
+        anchors.leftMargin: 12
+
+        RowLayout {
             id: actions_1
             width: parent.width
-            ButtonIconInfo{
+            ButtonIconInfo {
                 onClicked: {
-                    _messageBoxInstance.set_text_and_show("Ping all systems, aka check if they respond to the mavlink ping command. Both OpenHD air and ground support
- this command, FC only ardupilot / px4 support this command. The command is lossy, aka you might need to use it more than once to get a response from all systems.
- No response after >10 tries is a hint that one of your systems is not functioning properly.")
+                    _messageBoxInstance.set_text_and_show("Ping all systems, aka check if they respond to the mavlink ping command. Both OpenHD air and ground support this command, FC only ardupilot / px4 support this command. The command is lossy, aka you might need to use it more than once to get a response from all systems. No response after >10 tries is a hint that one of your systems is not functioning properly.")
                 }
             }
-            Button{
+            Button {
                 text: "Ping all systems"
                 onClicked: _mavlinkTelemetry.ping_all_systems()
             }
-            Switch{
+            Switch {
                 text: "Auto-ping"
                 onCheckedChanged: {
-                    if(checked){
+                    if (checked) {
                         autopingTimer.start()
-                    }else{
+                    } else {
                         autopingTimer.stop()
                     }
                 }
             }
             // Padding
-            Item{
-
+            Item {
+                // Padding
             }
         }
 
@@ -60,23 +59,21 @@ Item{
             width: parent.width
 
             Button {
-                //font.pixelSize: 14
                 font.capitalization: Font.MixedCase
                 text: qsTr("DEV-Restart QOpenHD")
                 onPressed: {
                     qopenhdservicedialoque.open_dialoque(0)
                 }
             }
-            Button{
-                //font.pixelSize: 14
+            Button {
                 font.capitalization: Font.MixedCase
                 text: qsTr("DEV-Cancel QOpenHD")
                 onPressed: {
                     qopenhdservicedialoque.open_dialoque(1)
                 }
             }
-            Item{
-                // padding
+            Item {
+                // Padding
             }
         }
     }

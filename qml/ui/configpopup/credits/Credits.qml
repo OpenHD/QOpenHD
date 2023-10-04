@@ -43,8 +43,8 @@ Rectangle {
                                 id: ee1
                                 visible: true
                                 source: "../../../resources/master1.png"
-                                width: consti.height * 0.7
-                                height: consti.height * 0.7
+                                width: max.height * 0.7
+                                height: max.height * 0.7
                             }
                         }
                     }

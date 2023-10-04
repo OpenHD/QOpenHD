@@ -72,6 +72,7 @@ Item {
         ButtonIconWarning{
             visible: !get_show_power_actions()
             Layout.alignment: Qt.AlignCenter
+            height:12
             onPressed: {
                 open_warning();
             }

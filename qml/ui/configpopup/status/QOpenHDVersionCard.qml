@@ -22,10 +22,13 @@ Card {
 
     hasHeader: false
 
-    cardBody: ColumnLayout {
+    cardBody:
+        ColumnLayout {
+        anchors.centerIn: parent
+
         Row {
             spacing: 12
-            leftPadding: 18
+            topPadding: 60
 
             Image {
                 id: image
@@ -40,36 +43,34 @@ Card {
                 id: title
                 height: 48
                 color: "#ff3a3a3a"
-                text: qsTr("QOpenHD-evo-2.5.1-alpha")
+                text: qsTr("QOpenHD")
                 font.pixelSize: 36
             }
         }
 
-        RowLayout{
-            height: 14
-            width: parent.width
-            anchors.leftMargin: 18
-            anchors.rightMargin: 18
-            Text {
-                id: qopenhd_version
-                color: "#ff3a3a3a"
-                text: qsTr(QOPENHD_GIT_VERSION)
-            }
+        Text {
+            id: qopenhd_version
+            Layout.fillWidth: true
+            Layout.leftMargin: 75
+            height: 48
+            color: "#ff3a3a3a"
+            //text: qsTr(QOPENHD_GIT_VERSION)
+            text: "2.5.1-evo-alpha"
+            font.pixelSize: 12
+        }
+    }
 
-            Text {
-                id: license
-                color: "#ff3a3a3a"
-                text: qsTr("License: GPLv3")
-                onLinkActivated: {
-                    Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
-                }
-            }
-
-            Text {
-                id: qopenhd_commit_hash
-                color: "#ff3a3a3a"
-                text: qsTr(QOPENHD_GIT_COMMIT_HASH)
-            }
+    Text {
+        text: qsTr("GPLv3")
+        height: 60
+        color: "#ff3a3a3a"
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -35
+        anchors.right: parent.right
+        rightPadding: 12
+        font.pixelSize: 12
+        onLinkActivated: {
+            Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
         }
     }
 }
