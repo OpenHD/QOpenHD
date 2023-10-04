@@ -18,18 +18,6 @@ OHDAction& OHDAction::instance()
     return instance;
 }
 
-/*void OHDAction::request_openhd_version_async()
-{
-    if(AOHDSystem::instanceAir().is_alive()){
-        auto cmd_air=cmd::helper::create_cmd_request_openhd_version(OHD_SYS_ID_AIR,0);
-        CmdSender::instance().send_command_long_async(cmd_air,nullptr);
-    }
-    if(AOHDSystem::instanceGround().is_alive()){
-        auto cmd_gnd=cmd::helper::create_cmd_request_openhd_version(OHD_SYS_ID_GROUND,0);
-        CmdSender::instance().send_command_long_async(cmd_gnd,nullptr);
-    }
-}*/
-
 bool OHDAction::send_command_reboot_air(bool reboot)
 {
     auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_AIR,MAV_COMP_ID_ONBOARD_COMPUTER,reboot);

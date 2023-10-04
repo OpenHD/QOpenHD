@@ -168,12 +168,13 @@ Card {
                    result =  _fcMavlinkAction.send_command_reboot(true);
                 }
                 if(result){
-                    settings_panel.visible = false;
+                    settings_panel.close_all();
                     powerDialog.visible = false
+                    _qopenhd.show_toast(messageForHUD);
                 }else{
                     console.log("Reboot/Shutdown failed, no response.")
                     messageForHUD="Reboot/Shutdown failed, no response"
-                    _hudLogMessagesModel.add_message_warning(messageForHUD)
+                    _qopenhd.show_toast(messageForHUD);
                 }
             }
         }
