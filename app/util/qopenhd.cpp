@@ -10,7 +10,7 @@
 #include<fstream>
 #include<string>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__macos__)
 #include "common/openhd-util.hpp"
 #endif
 
@@ -220,7 +220,10 @@ bool QOpenHD::reset_settings()
 QString QOpenHD::show_local_ip()
 {
 #ifdef __linux__
-    auto res=OHDUtil::run_command_out("hostname -I");
+    auto res=OHDUtil::run_command_out("hostname");
+    return QString(res->c_str());
+#elif defined(__macos__)
+    auto res=OHDUtil::run_command_out("ipconfig getifaddr en0");
     return QString(res->c_str());
 #else
     return QString("Only works on linux");
@@ -289,6 +292,15 @@ bool QOpenHD::is_linux()
     return true;
 #endif
     return false;
+}
+
+bool QOpenHD::is_mac()
+{
+#if defined(__macos__)
+    return true;
+#else
+    return false;
+#endif
 }
 
 bool QOpenHD::is_android()
