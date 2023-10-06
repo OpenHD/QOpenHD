@@ -220,7 +220,7 @@ bool QOpenHD::reset_settings()
 QString QOpenHD::show_local_ip()
 {
 #ifdef __linux__
-    auto res=OHDUtil::run_command_out("hostname");
+    auto res=OHDUtil::run_command_out("hostname -I");
     return QString(res->c_str());
 #elif defined(__macos__)
     auto res=OHDUtil::run_command_out("ipconfig getifaddr en0");
