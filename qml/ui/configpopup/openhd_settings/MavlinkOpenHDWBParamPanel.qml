@@ -333,7 +333,7 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
         Item {
             id: mainItem
             width: parent.width
-            height: rowHeight*7
+            height: rowHeight*(7+4)
 
             DIaloqueStartChannelScan{
                 id: dialoqueStartChannelScan

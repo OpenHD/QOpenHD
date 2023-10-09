@@ -32,9 +32,10 @@ Card {
 
     ListModel{
         id: model_chann_2G_or_5G
-        ListElement {title: "All 2.4G and 5.8G channels (slow)"; value: 0}
-        ListElement {title: "All 2.4G channels"; value: 1}
-        ListElement {title: "All 5.8G channels"; value: 2}
+        //ListElement {title: "All 2.4G and 5.8G channels (slow)"; value: 0}
+        ListElement {title: "OpenHD [1-5] only (fast)"; value: 0}
+        ListElement {title: "All 2.4G channels (slow)"; value: 1}
+        ListElement {title: "All 5.8G channels (slow)"; value: 2}
     }
 
     // like dji, we use 20 or 40Mhz bandwidth(s) but never 5 or 10

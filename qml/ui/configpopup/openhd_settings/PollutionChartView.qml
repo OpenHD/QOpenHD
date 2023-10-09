@@ -49,11 +49,14 @@ ChartView {
         axisX: BarCategoryAxis {
             id: bar_axis_x
             categories: ["DUMMY0", "DUMMY1", "DUMMY3", "DUMMY4" ]
+            //min: "0"
+            //max: "500"
         }
         BarSet {
             id: bar_set
             label: "Pollution (pps)";
             values: [5,10,3,100]
+            //values: [0,0,0,0]
             color: "red"
         }
     }
