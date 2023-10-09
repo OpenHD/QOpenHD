@@ -27,12 +27,14 @@ Rectangle{
     property bool m_2G_5G_show: false
     property bool m_show_radar: false
     property bool m_show_good_channel: false
-    property string m_pollution_text: "P:XX"
-    property color m_pollution_color: "green"
+
+    property int m_openhd_race_band: -1
+
 
     color: "transparent"
     anchors.fill: parent
     anchors.margins: 6
+
     // Background
     Rectangle{
         anchors.fill: parent
@@ -58,7 +60,7 @@ Rectangle{
             text: m_is_2G ? "5.8G" : "2.4G"
             //color: value > 3000 ? "green" : "#ff8c00" //"orange"
             color: "#706F1D" // dark green
-            visible: m_2G_5G_show
+            visible: m_2G_5G_show && m_openhd_race_band<0
         }
         Text { // Radar icon
             Layout.alignment: Qt.AlignLeft
@@ -71,20 +73,32 @@ Rectangle{
             Layout.fillWidth: true
             // filler
         }
-        Text{ // smiley icon - indicates good channel
+        /*Text{ // smiley icon - indicates good channel
             Layout.alignment: Qt.AlignRight
             Layout.preferredWidth: 30
             text: qsTr("\uf585")
             visible: m_show_good_channel
             font.family: "Font Awesome 5 Free"
             color: "green"
-        }
+        }*/
         Text{
+            Layout.alignment: Qt.AlignLeft
+            Layout.preferredWidth: 90
+            text: "Default"
+            font.family: "Font Awesome 5 Free"
+            color: "green"
+            visible: m_openhd_race_band==2
+        }
+
+        Text{ // recommended / openhd race band channel
             Layout.alignment: Qt.AlignRight
             Layout.preferredWidth: 60
-            text: m_pollution_text
-            color: m_pollution_color
+            text: {
+                qsTr("OHD "+m_openhd_race_band)
+            }
+            visible: m_openhd_race_band>=0
             font.family: "Font Awesome 5 Free"
+            color: "green"
         }
     }
 }

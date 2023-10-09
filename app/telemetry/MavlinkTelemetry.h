@@ -33,6 +33,7 @@ class MavlinkTelemetry : public QObject
     Q_OBJECT
 public:
     MavlinkTelemetry(QObject *parent = nullptr);
+    ~MavlinkTelemetry();
     static MavlinkTelemetry& instance();
     void start();
     /**

@@ -26,6 +26,12 @@ Rectangle {
     //color: "green"
     color: "transparent"
 
+
+    function user_quidance_animate_channel_scan(){
+        selectItemInStackLayoutBar.currentIndex=0;
+        xX_WBLinkSettings.user_quidance_animate_channel_scan();
+    }
+
     // Tab bar for selecting items in stack layout
     TabBar {
           id: selectItemInStackLayoutBar
@@ -57,7 +63,7 @@ Rectangle {
           anchors.bottom: parent.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
 
-          MavlinkExtraWBParamPanel{
+          MavlinkOpenHDWBParamPanel{
           //WBFrequencyPanel{
               id: xX_WBLinkSettings
           }

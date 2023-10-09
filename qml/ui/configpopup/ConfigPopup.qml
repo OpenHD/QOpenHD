@@ -46,6 +46,17 @@ Rectangle {
         sidebar.focus = true;
     }
 
+    function user_quidance_open_connect_screen(){
+        openSettings();
+        mainStackLayout.currentIndex=7;
+    }
+
+    function user_guidance_open_openhd_settings_find_air_unit_location(){
+        openSettings();
+        mainStackLayout.currentIndex=2;
+        mavlinkAllSettingsPanel.user_quidance_animate_channel_scan();
+    }
+
     /*Keys.onPressed: (event)=> {
         console.log("ConfigPopup Key was pressed:"+event);
         if (event.key == Qt.Key_Return) {

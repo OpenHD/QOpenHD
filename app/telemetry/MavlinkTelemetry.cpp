@@ -15,6 +15,15 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
 }
 
+MavlinkTelemetry::~MavlinkTelemetry()
+{
+    if(m_heartbeat_thread){
+        m_heartbeat_thread_run=false;
+        m_heartbeat_thread->join();
+        m_heartbeat_thread=nullptr;
+    }
+}
+
 MavlinkTelemetry &MavlinkTelemetry::instance()
 {
     static MavlinkTelemetry instance{};

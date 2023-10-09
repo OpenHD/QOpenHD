@@ -9,6 +9,8 @@
 #include "../action/ohdaction.h"
 #include "../../util/qopenhd.h"
 
+#include "pollutionhelper.h"
+
 static void tmp_log_result(bool enable,const std::string message){
     if(enable){
         HUDLogMessagesModel::instance().add_message_info(message.c_str());
@@ -108,20 +110,23 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channe
 
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t &msg)
 {
-    std::vector<std::pair<uint16_t,uint16_t>> analyzed_channels;
+    std::vector<PollutionHelper::PollutionElement> analyzed_channels;
     for(int i=0;i<30;i++){
         if(msg.channels_mhz[i]==0){
             break;
         }
-        analyzed_channels.push_back(std::make_pair(msg.channels_mhz[i],msg.foreign_packets[i]));
+        PollutionHelper::PollutionElement tmp;
+        tmp.frequency_mhz=msg.channels_mhz[i];
+        tmp.n_foreign_packets=msg.foreign_packets[i];
+        analyzed_channels.push_back(tmp);
     }
     if(analyzed_channels.size()==0){
         qDebug()<<"Perhaps malformed message analyze channels";
         return;
     }
-    const uint16_t curr_channel_mhz=analyzed_channels[analyzed_channels.size()-1].first;
+    const uint16_t curr_channel_mhz=analyzed_channels[analyzed_channels.size()-1].frequency_mhz;
     const uint16_t curr_channel_width_mhz=40;
-    const uint16_t curr_foreign_packets=analyzed_channels[analyzed_channels.size()-1].second;
+    const uint16_t curr_foreign_packets=analyzed_channels[analyzed_channels.size()-1].n_foreign_packets;
     {
         std::stringstream ss;
         ss<<"Analyzed "<<(int)curr_channel_mhz<<"@"<<(int)curr_channel_width_mhz;
@@ -141,9 +146,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
     qDebug()<<ss.str().c_str();
     set_gnd_progress_perc(msg.progress_perc);
     set_text_for_qml(ss.str().c_str());
-    for(auto& analyzed: analyzed_channels){
-        update_pollution(analyzed.first,analyzed.second);
-    }
+    PollutionHelper::instance().threadsafe_update(analyzed_channels);
     // signal to the UI to rebuild model
     signal_ui_rebuild_model_when_possible();
 }
@@ -215,66 +218,67 @@ struct FrequencyItem{
     bool radar;
     bool simple;
     bool recommended;
+    int openhd_raceband;
 };
 static std::vector<FrequencyItem> get_freq_descr(){
     std::vector<FrequencyItem> ret{
-        FrequencyItem{-1,2312,false,false,false},
-        FrequencyItem{-1,2332,false,false,false},
-        FrequencyItem{-1,2352,false,false,false},
-        FrequencyItem{-1,2372,false,false,false},
-        FrequencyItem{-1,2392,false,false,false},
+        FrequencyItem{-1,2312,false,false,false,-1},
+        FrequencyItem{-1,2332,false,false,false,-1},
+        FrequencyItem{-1,2352,false,false,false,-1},
+        FrequencyItem{-1,2372,false,false,false,-1},
+        FrequencyItem{-1,2392,false,false,false,-1},
         // ACTUAL 2G
-        FrequencyItem{1 ,2412,false,true,false},
-        FrequencyItem{5 ,2432,false,true,false},
-        FrequencyItem{9 ,2452,false,true,false},
-        FrequencyItem{13,2472,false,true,false},
-        FrequencyItem{14,2484,false,false,false},
+        FrequencyItem{1 ,2412,false,true,false,-1},
+        FrequencyItem{5 ,2432,false,true,false,-1},
+        FrequencyItem{9 ,2452,false,true,false,-1},
+        FrequencyItem{13,2472,false,true,false,-1},
+        FrequencyItem{14,2484,false,false,false,-1},
         // ACTUAL 2G end
-        FrequencyItem{-1,2492,false,false,false},
-        FrequencyItem{-1,2512,false,false,false},
-        FrequencyItem{-1,2532,false,false,false},
-        FrequencyItem{-1,2572,false,false,false},
-        FrequencyItem{-1,2592,false,false,false},
-        FrequencyItem{-1,2612,false,false,false},
-        FrequencyItem{-1,2632,false,false,false},
-        FrequencyItem{-1,2652,false,false,false},
-        FrequencyItem{-1,2672,false,false,false},
-        FrequencyItem{-1,2692,false,false,false},
-        FrequencyItem{-1, 2712,false,false,false},
+        FrequencyItem{-1,2492,false,false,false,-1},
+        FrequencyItem{-1,2512,false,false,false,-1},
+        FrequencyItem{-1,2532,false,false,false,-1},
+        FrequencyItem{-1,2572,false,false,false,-1},
+        FrequencyItem{-1,2592,false,false,false,-1},
+        FrequencyItem{-1,2612,false,false,false,-1},
+        FrequencyItem{-1,2632,false,false,false,-1},
+        FrequencyItem{-1,2652,false,false,false,-1},
+        FrequencyItem{-1,2672,false,false,false,-1},
+        FrequencyItem{-1,2692,false,false,false,-1},
+        FrequencyItem{-1, 2712,false,false,false,-1},
         // 5G begin
-        FrequencyItem{ 32,5160,false,false,false},
-        FrequencyItem{ 36,5180,false,true ,false},
-        FrequencyItem{ 40,5200,false,false,false},
-        FrequencyItem{ 44,5220,false,true,false},
-        FrequencyItem{ 48,5240,false,false,false},
-        FrequencyItem{ 52,5260,true,true ,false},
-        FrequencyItem{ 56,5280,true,false,false},
-        FrequencyItem{ 60,5300,true,true,false},
-        FrequencyItem{ 64,5320,true,false,false},
+        FrequencyItem{ 32,5160,false,false,false,-1},
+        FrequencyItem{ 36,5180,false,true ,false,-1},
+        FrequencyItem{ 40,5200,false,false,false,-1},
+        FrequencyItem{ 44,5220,false,true,false,-1},
+        FrequencyItem{ 48,5240,false,false,false,-1},
+        FrequencyItem{ 52,5260,true,true ,false,-1},
+        FrequencyItem{ 56,5280,true,false,false,-1},
+        FrequencyItem{ 60,5300,true,true,false,-1},
+        FrequencyItem{ 64,5320,true,false,false,-1},
         // big break / part that is not allowed
-        FrequencyItem{100,5500,true,true,false},
-        FrequencyItem{104,5520,true,false,false},
-        FrequencyItem{108,5540,true,true,false},
-        FrequencyItem{112,5560,true,false,false},
-        FrequencyItem{116,5580,true,true,false},
-        FrequencyItem{120,5600,true,false,false},
-        FrequencyItem{124,5620,true,true,false},
-        FrequencyItem{128,5640,true,false,false},
-        FrequencyItem{132,5660,true,true,false},
-        FrequencyItem{136,5680,true,false,false},
-        FrequencyItem{140,5700,true,true,false},
-        FrequencyItem{144,5720,true,false,false},
+        FrequencyItem{100,5500,true,true,false,-1},
+        FrequencyItem{104,5520,true,false,false,-1},
+        FrequencyItem{108,5540,true,true,false,-1},
+        FrequencyItem{112,5560,true,false,false,-1},
+        FrequencyItem{116,5580,true,true,false,-1},
+        FrequencyItem{120,5600,true,false,false,-1},
+        FrequencyItem{124,5620,true,true,false,-1},
+        FrequencyItem{128,5640,true,false,false,-1},
+        FrequencyItem{132,5660,true,true,false,-1},
+        FrequencyItem{136,5680,true,false,false,-1},
+        FrequencyItem{140,5700,false,true,false,1},
+        FrequencyItem{144,5720,false,false,false,-1},
         // Here is the weird break
-        FrequencyItem{149,5745,false,true,true},
-        FrequencyItem{153,5765,false,false,false},
-        FrequencyItem{157,5785,false,true,true},
-        FrequencyItem{161,5805,false,false,false},
-        FrequencyItem{165,5825,false,true,true},
+        FrequencyItem{149,5745,false,true,true,2},
+        FrequencyItem{153,5765,false,false,false,-1},
+        FrequencyItem{157,5785,false,true,true,3},
+        FrequencyItem{161,5805,false,false,false,-1},
+        FrequencyItem{165,5825,false,true,true,4},
         // Depends
-        FrequencyItem{169,5845,false,false,false},
-        FrequencyItem{173,5865,false,true,true},
-        FrequencyItem{177,5885,false,false,false},
-        FrequencyItem{181,5905,false,false,true}
+        FrequencyItem{169,5845,false,false,false,-1},
+        FrequencyItem{173,5865,false,true,true,5},
+        FrequencyItem{177,5885,false,false,false,-1},
+        FrequencyItem{181,5905,false,false,true,-1}
     };
     return ret;
 }
@@ -318,7 +322,7 @@ QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
 
 int WBLinkSettingsHelper::get_frequency_pollution(int frequency_mhz)
 {
-    auto pollution=get_pollution_for_frequency(frequency_mhz);
+    auto pollution=PollutionHelper::instance().threadsafe_get_pollution_for_frequency(frequency_mhz);
     if(pollution.has_value()){
         return pollution.value().n_foreign_packets;
     }
@@ -341,6 +345,12 @@ bool WBLinkSettingsHelper::get_frequency_reccommended(int frequency_mhz)
 {
     const auto frequency_item=find_frequency_item(frequency_mhz);
     return frequency_item.recommended;
+}
+
+int WBLinkSettingsHelper::get_frequency_openhd_race_band(int frequency_mhz)
+{
+    const auto frequency_item=find_frequency_item(frequency_mhz);
+    return frequency_item.openhd_raceband;
 }
 
 void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
@@ -467,27 +477,48 @@ QList<int> WBLinkSettingsHelper::get_supported_frequencies()
     return ret;
 }
 
-void WBLinkSettingsHelper::update_pollution(int frequency, int n_foreign_packets)
+QList<int> WBLinkSettingsHelper::get_supported_frequencies_filtered(int filter_level)
 {
-    std::lock_guard<std::mutex> lock(m_pollution_elements_mutex);
-    auto search = m_pollution_elements.find(frequency);
-    if(search != m_pollution_elements.end()){
-        m_pollution_elements[frequency].n_foreign_packets=n_foreign_packets;
-    }else{
-        PollutionElement element{frequency,40,n_foreign_packets};
-        m_pollution_elements.insert({frequency,element});
+    auto supported_frequencies=get_supported_frequencies();
+    if(filter_level<=0)return supported_frequencies;
+    QList<int> ret;
+    for(auto& frequency: supported_frequencies){
+        if(filter_level==1){
+            // 40Mhz spacing
+            auto info=find_frequency_item(frequency);
+            if(info.simple){
+                ret.push_back(frequency);
+            }
+        }
     }
+    return ret;
 }
 
-std::optional<WBLinkSettingsHelper::PollutionElement> WBLinkSettingsHelper::get_pollution_for_frequency(int frequency)
+QStringList WBLinkSettingsHelper::pollution_frequencies_int_to_qstringlist(QList<int> frequencies)
 {
-    std::lock_guard<std::mutex> lock(m_pollution_elements_mutex);
-    auto search = m_pollution_elements.find(frequency);
-    if(search != m_pollution_elements.end()){
-        return search->second;
+    QStringList ret;
+    for(auto& freq:frequencies){
+        std::stringstream ss;
+        ss<<freq<<"Mhz";
+        ret.push_back(QString(ss.str().c_str()));
     }
-    return std::nullopt;
+    return ret;
 }
+
+QVariantList WBLinkSettingsHelper::pollution_frequencies_int_get_pollution(QList<int> frequencies)
+{
+    QVariantList ret;
+    for(auto& freq: frequencies){
+        auto pollution=PollutionHelper::instance().threadsafe_get_pollution_for_frequency(freq);
+        if(pollution.has_value()){
+            ret.push_back(static_cast<int>(pollution.value().n_foreign_packets));
+        }else{
+            ret.push_back(static_cast<int>(0));
+        }
+    }
+    return ret;
+}
+
 
 void WBLinkSettingsHelper::signal_ui_rebuild_model_when_possible()
 {

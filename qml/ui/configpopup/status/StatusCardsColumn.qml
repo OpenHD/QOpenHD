@@ -33,14 +33,15 @@ Item {
                 Layout.maximumWidth: ohdCards.maximumWidth/3
                 cardName: qsTr("Ground station")
 
-                visible: _ohdSystemGround.is_alive
+                //visible: _ohdSystemGround.is_alive
+                m_style_error: !_ohdSystemGround.is_alive
 
                 cardBody: StatusCardBodyOpenHD{
                     m_is_ground: true
                 }
 
                 hasFooter: true
-                cardFooter: StatusCardFooterGenericOHDFC{
+                cardFooter: FooterRebootShutdownWarning{
                     m_type: 0
                 }
             }
@@ -51,13 +52,15 @@ Item {
                 Layout.fillWidth: true
                 Layout.maximumWidth: ohdCards.maximumWidth/3
                 cardName: qsTr("Air unit")
-                visible: _ohdSystemAir.is_alive
+                //visible: _ohdSystemAir.is_alive
+                m_style_error: !_ohdSystemAir.is_alive
+
                 cardBody: StatusCardBodyOpenHD{
                     m_is_ground: false
                 }
 
                 hasFooter: true
-                cardFooter: StatusCardFooterGenericOHDFC{
+                cardFooter: FooterRebootShutdownWarning{
                     m_type: 1
                 }
             }
@@ -68,17 +71,18 @@ Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 cardName: qsTr("Flight Controller")
-                visible: _fcMavlinkSystem.is_alive
+                //visible: _fcMavlinkSystem.is_alive
+                m_style_error: !_fcMavlinkSystem.is_alive
                 cardBody: StatusCardBodyFC{
 
                 }
 
                 hasFooter: true
-                cardFooter: StatusCardFooterGenericOHDFC{
+                cardFooter: FooterRebootShutdownWarning{
                     m_type: 2
                 }
             }
-            Image {
+            /*Image {
                     id: ee1
                     visible: !_ohdSystemAir.is_alive && !_ohdSystemGround.is_alive && !_ohdSystemGround.is_alive
                     source: "../../../resources/noconnection.svg"
@@ -86,7 +90,7 @@ Item {
                     Layout.topMargin: Layout.preferredWidth * -0.15
                     Layout.preferredWidth: ohdCards.width * 0.5
                     Layout.preferredHeight: Layout.preferredWidth
-                }
+                }*/
         }
     }
 }

@@ -14,7 +14,21 @@ PerformanceHorizonLadder::PerformanceHorizonLadder(QQuickItem *parent)
 
 PerformanceHorizonLadder::~PerformanceHorizonLadder()
 {
-
+    if(m_base_node){
+        delete m_base_node;
+    }
+    if(m_center_indicator){
+        delete m_center_indicator;
+    }
+    if(m_ladders_geom_node){
+        delete m_ladders_geom_node;
+    }
+    if(m_tf_node){
+        delete m_tf_node;
+    }
+    if(m_flat_color_material){
+        delete m_flat_color_material;
+    }
 }
 
 void PerformanceHorizonLadder::setRoll(int roll) {

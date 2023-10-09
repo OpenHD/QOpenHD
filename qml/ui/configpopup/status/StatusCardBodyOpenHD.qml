@@ -66,6 +66,14 @@ ColumnLayout {
 
       return ret;
     }
+    function get_gnd_active_cards(){
+        var ret=0;
+        if(_wifi_card_gnd0.alive) ret++;
+        if(_wifi_card_gnd1.alive) ret++;
+        if(_wifi_card_gnd2.alive) ret++;
+        if(_wifi_card_gnd3.alive) ret++;
+        return ret;
+    }
 
     function gnd_uplink_state(){
         if(!_ohdSystemGround.is_alive)return 0;
@@ -175,34 +183,46 @@ ColumnLayout {
         spacing: 3
         Text {
             Layout.preferredWidth: left_part_preferred_with
-            text: qsTr(m_is_ground ? "WB Card(s): " : "WB Card:")
+            text: qsTr(m_is_ground ? "OHD Card(s): " : "OHD Card:")
             font.bold: true
-        }
-        Text {
-            text: get_cards_text()
-            color: get_cards_text().endsWith("OHD") ? "green" : "DC143C"
-            visible: !b_unsupported_cards_warning.visible
         }
         ButtonSimple{
             id: b_unsupported_cards_warning
-            text: get_cards_text()
+            text: {
+                if(m_is_ground){
+                    if(!_ohdSystemGround.is_alive){
+                        return "N/A";
+                    }
+                    var alive_count=get_gnd_active_cards();
+                    if(alive_count==0) return "WAITING";
+                    if(alive_count==1) return _wifi_card_gnd0.card_type_as_string;
+                    return ""+alive_count+"x ARRAY";
+                }else{
+                    // On air, we always have only one card
+                    if(! _wifi_card_air.alive){
+                        return "N/A";
+                    }
+                    return _wifi_card_air.card_type_as_string
+                }
+            }
             onClicked: {
-                var message="Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned !";
-                _messageBoxInstance.set_text_and_show(message);
+                var show_message_card_unsupported=false;
+                if(m_is_ground){
+                    if(_wifi_card_gnd0.alive && !_wifi_card_gnd0.card_type_supported){
+                        show_message_card_unsupported=true;
+                    }
+                }else{
+                    if(_wifi_card_air.alive && ! _wifi_card_air.card_type_supported){
+                        show_message_card_unsupported=true;
+                    }
+                }
+                if(show_message_card_unsupported){
+                    var message="Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned !";
+                    _messageBoxInstance.set_text_and_show(message);
+                }
             }
             visible: {
-                if(m_is_ground){
-                    if(_wifi_card_gnd0.alive && !_wifi_card_gnd0.card_type_supported)return true;
-                    if(_wifi_card_gnd1.alive && !_wifi_card_gnd1.card_type_supported)return true;
-                    if(_wifi_card_gnd2.alive && !_wifi_card_gnd2.card_type_supported)return true;
-                    if(_wifi_card_gnd3.alive && !_wifi_card_gnd3.card_type_supported)return true;
-                    return false;
-                }
-                // On air, there is nonly one card´
-                if(_wifi_card_air.alive && !_wifi_card_air.card_type_supported){
-                    return true;
-                }
-                return false;
+                return true;
             }
             Layout.preferredHeight: text_minHeight
             Layout.minimumHeight: text_minHeight
@@ -241,7 +261,49 @@ ColumnLayout {
             height: text_minHeight
         }
     }
+    RowLayout{
+        Layout.fillWidth: true
+        Layout.minimumHeight: text_minHeight
+        Layout.leftMargin: 12
 
+        visible: true
+        Text{
+            Layout.preferredWidth: left_part_preferred_with
+            text: "WiFi Hotspot:"
+            font.bold: true
+        }
+        ButtonSimple{
+            id: b_wifi_hs
+            text: {
+                if(!m_model.is_alive || m_model.wifi_hotspot_state<0){
+                    return "N/A";
+                }
+                if(m_model.wifi_hotspot_state==0){
+                    return "UNAVAILABLE";
+                }
+                if(m_model.wifi_hotspot_state==1){
+                    return "DISABLED";
+                }
+                return "ENABLED";
+            }
+            onClicked: {
+                if(!m_model.is_alive || m_model.wifi_hotspot_state<0){
+                    return;
+                }
+                if(m_model.wifi_hotspot_state==0){
+                    var message="To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module. "
+                    _messageBoxInstance.set_text_and_show(message)
+                }
+                if(m_model.wifi_hotspot_state==1 || m_model.wifi_hotspot_state==2){
+                    var message="WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on";
+                     _messageBoxInstance.set_text_and_show(message)
+                }
+            }
+            Layout.preferredHeight: text_minHeight
+            Layout.minimumHeight: text_minHeight
+            height: text_minHeight
+        }
+    }
     // Padding
     Item{
         Layout.fillWidth: true

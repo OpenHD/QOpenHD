@@ -40,7 +40,7 @@ Rectangle {
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
 
-        Item {
+        Item{
             id: mainItem
             //width: 1024
             width: parent.width
@@ -49,30 +49,32 @@ Rectangle {
             QOpenHDVersionCard{
                 id: qopenhdversioncard
                 height: 80
+            }
+            StatusCardsColumn{
+                width: parent.width
+                height: 300
 
-                StatusCardsColumn{
-                    width: parent.width
-                    height: 250
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                anchors.topMargin: 12
 
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    anchors.topMargin: 12
+                id: status_openhd_fc
+                anchors.top: qopenhdversioncard.bottom
+            }
 
-                    id: status_openhd_fc
-                    anchors.top: qopenhdversioncard.bottom
-                }
+            ActionsColumn {
+                id:actionsButtonMenu
+                width: parent.width
+                height: 80
+                anchors.bottom: parent.bottom
 
-                ActionsColumn {
-                    id:actionsButtonMenu
-                    width: parent.width
-                    height: 80
-                    y: (applicationWindow.height-(actionsButtonMenu.height*1.5))
-
-                }
             }
         }
-        PowerActionDialoque{
-            id: powerDialog
-        }
+    }
+    PowerActionDialoque{
+        id: powerDialog
+    }
+    DialoqueNotAlive{
+        id: dialoqueNotAlive
     }
 }

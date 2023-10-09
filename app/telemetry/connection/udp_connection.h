@@ -28,6 +28,7 @@ public:
     void stop();
 
     void send_message(const mavlink_message_t& msg);
+
 private:
     void process_data(const uint8_t* data,int data_len);
     void process_mavlink_message(mavlink_message_t msg);

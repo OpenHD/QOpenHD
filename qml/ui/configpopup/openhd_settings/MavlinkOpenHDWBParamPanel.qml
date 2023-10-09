@@ -14,7 +14,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-//simport QtCharts 2.0
+import QtCharts 2.0
 
 // This is an extra screen for changing the frequency / channel width -
 // They both need to match !
@@ -25,6 +25,11 @@ Rectangle{
     //color: "transparent"
     //color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
     //opacity: settings.screen_settings_openhd_parameters_transparent ? 0.2 : 1
+
+    function user_quidance_animate_channel_scan(){
+        console.log("User guidance animate channel scan");
+        anim_find_air_unit.start()
+    }
 
     // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
     // For the models above (model with value) try to find the index of the first  item where model[i].value===value
@@ -46,7 +51,7 @@ Rectangle{
 
     ListModel{
         id: supported_frequencies_model
-        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; pollution: -1}
+        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; openhd_raceband_nr: -1}
     }
 
     function show_popup_message(message){
@@ -61,19 +66,20 @@ Rectangle{
         for(var i=0;i<supported_frequencies.length;i++){
             const frequency=supported_frequencies[i];
             const text=_wbLinkSettingsHelper.get_frequency_description(frequency)
-            const v_pollution= _wbLinkSettingsHelper.get_frequency_pollution(frequency)
             const simple=_wbLinkSettingsHelper.get_frequency_simplify(frequency)
             const radar=_wbLinkSettingsHelper.get_frequency_radar(frequency)
             const recommended=_wbLinkSettingsHelper.get_frequency_reccommended(frequency)
+            const openhd_raceband=_wbLinkSettingsHelper.get_frequency_openhd_race_band(frequency)
             var append_this_value=true;
             if(m_simplify_enable){
                 // only add if it is a "simple" channel
-                append_this_value = simple;
+                //append_this_value = simple;
+                append_this_value = openhd_raceband >= 0;
             }else{
                 append_this_value=true;
             }
             if(append_this_value){
-                supported_frequencies_model.append({title: text, value: frequency, radar:radar, recommended: recommended, pollution: v_pollution })
+                supported_frequencies_model.append({title: text, value: frequency, radar:radar, recommended: recommended, openhd_raceband_nr: openhd_raceband})
             }
         }
         var index=find_index(supported_frequencies_model,_wbLinkSettingsHelper.curr_channel_mhz);
@@ -98,17 +104,8 @@ Rectangle{
         if(_wbLinkSettingsHelper.ui_rebuild_models<=0)return
         create_list_model_supported();
         //update_pollution_graph();
+        pollution_chart_view.update();
     }
-
-    /*property BarCategoryAxis m_bar_category_axis;
-    function update_pollution_graph(){
-        const supported_frequencies=_wbLinkSettingsHelper.get_supported_frequencies();
-        m_bar_category_axis.categories.clear();
-        for(var i=0;i<supported_frequencies.length;i++){
-            m_bar_category_axis.categories.append(""+supported_frequencies.at(i));
-        }
-        hm_bar_series.axisX = m_bar_category_axis
-    }*/
 
     //
     Component.onCompleted: {
@@ -453,8 +450,7 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
                                     m_2G_5G_show: value > 100
                                     m_show_radar: radar
                                     m_show_good_channel: recommended
-                                    m_pollution_text: get_text_pollution(pollution)
-                                    m_pollution_color: get_color_pollution(pollution)
+                                    m_openhd_race_band: openhd_raceband_nr
                                 }
                                 highlighted: comboBoxFreq.highlightedIndex === index
                             }
@@ -548,23 +544,6 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
                     }
                 }
 
-
-                /*ChartView {
-                      title: "Bar series"
-                      width: parent.width
-                      height: rowHeight * 3
-                      legend.alignment: Qt.AlignBottom
-                      antialiasing: true
-
-                      PercentBarSeries {
-                          id: hm_bar_series
-                             axisX: BarCategoryAxis { categories: ["2007", "2008", "2009", "2010", "2011", "2012" ] }
-                             BarSet { label: "Bob"; values: [2, 2, 3, 4, 5, 6] }
-                             BarSet { label: "Susan"; values: [5, 1, 2, 4, 1, 7] }
-                             BarSet { label: "James"; values: [3, 5, 8, 13, 5, 8] }
-                        }
-                }*/
-
                 Rectangle {
                     width: parent.width
                     height: rowHeight
@@ -581,10 +560,32 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
                                 }
                             }
                             Button{
+                                id: b_find_air_unit
                                 text: "FIND AIR UNIT"
                                 enabled: _ohdSystemGround.is_alive
                                 onClicked: {
                                     dialoqueStartChannelScan.open_channel_scan_dialoque()
+                                }
+                                SequentialAnimation {
+                                    running: true
+                                    loops: 4
+                                    id: anim_find_air_unit
+                                    // Expand the button
+                                    PropertyAnimation {
+                                        target: b_find_air_unit
+                                        property: "scale"
+                                        to: 1.5
+                                        duration: 200
+                                        easing.type: Easing.InOutQuad
+                                    }
+                                    // Shrink back to normal
+                                    PropertyAnimation {
+                                        target: b_find_air_unit
+                                        property: "scale"
+                                        to: 1.0
+                                        duration: 200
+                                        easing.type: Easing.InOutQuad
+                                    }
                                 }
                             }
                         }
@@ -635,6 +636,11 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
                             //indeterminate: true
                         }
                     }
+                }
+                PollutionChartView{
+                    width: parent.width
+                    height: rowHeight * 4;
+                    id: pollution_chart_view
                 }
             }
         }

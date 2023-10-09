@@ -212,6 +212,11 @@ void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point
         m_out_file->write((const char*)nalu_data,nalu_data_size);
         m_out_file->flush();
     }
+    /*int random=rand();
+    if(random % 10 == 0){
+        qDebug()<<"Dropping frame";
+        return;
+    }*/
     queue_data(nalu_data,nalu_data_size);
 }
 

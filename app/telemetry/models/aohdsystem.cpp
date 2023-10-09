@@ -223,6 +223,12 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             }
             consumed=true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_SYS_STATUS1:{
+            mavlink_openhd_sys_status1_t parsed;
+            mavlink_msg_openhd_sys_status1_decode(&msg,&parsed);
+            process_sys_status1(parsed);
+            consumed=true;
+        }break;
         default:{
 
         }break;
@@ -283,7 +289,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
     }
     // TODO: r.n we don't differentiate signal quality per card
     if(msg.card_index==0){
-        set_current_rx_signal_quality(msg.rx_signal_quality);
+        set_current_rx_signal_quality(msg.rx_signal_quality_adapter);
     }
 }
 
@@ -452,6 +458,12 @@ void AOHDSystem::process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_perf
         auto& cam=CameraStreamModel::instance(msg.link_index);
         cam.update_mavlink_openhd_stats_wb_video_ground_fec_performance(msg);
     }
+}
+
+void AOHDSystem::process_sys_status1(const mavlink_openhd_sys_status1_t &msg)
+{
+    set_wifi_hotspot_state(msg.wifi_hotspot_state);
+    set_wifi_hotspot_frequency(msg.wifi_hotspot_frequency);
 }
 
 void AOHDSystem::update_alive()

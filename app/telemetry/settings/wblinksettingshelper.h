@@ -93,11 +93,17 @@ public:
         return change_param_ground_only_blocking(PARAM_ID_WB_FREQ,value);
     }
     Q_INVOKABLE QList<int> get_supported_frequencies();
+    // To not overload the user, we filter the frequencies a bit
+    Q_INVOKABLE QList<int> get_supported_frequencies_filtered(int filter_level);
+    Q_INVOKABLE QStringList pollution_frequencies_int_to_qstringlist(QList<int> frequencies);
+    Q_INVOKABLE QVariantList pollution_frequencies_int_get_pollution(QList<int> frequencies);
+
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
     Q_INVOKABLE int get_frequency_pollution(int frequency_mhz);
     Q_INVOKABLE bool get_frequency_radar(int frequency_mhz);
     Q_INVOKABLE bool get_frequency_simplify(int frequency_mhz);
     Q_INVOKABLE bool get_frequency_reccommended(int frequency_mhz);
+    Q_INVOKABLE int get_frequency_openhd_race_band(int frequency_mhz);
     // These params can be changed "on the fly" and are additionally their value(s) are broadcasted
     // so we can update them completely async, log the result to the user
     // and use the broadcasted value(s) to update the UI
@@ -119,16 +125,6 @@ private:
     bool has_valid_reported_channel_data();
     std::atomic<bool> m_simplify_channels=false;
 private:
-    struct PollutionElement{
-        int frequency_mhz;
-        int width_mhz;
-        int n_foreign_packets;
-    };
-    // Written by telemetry, read by UI
-    std::map<int,PollutionElement> m_pollution_elements;
-    std::mutex m_pollution_elements_mutex;
-    void update_pollution(int frequency,int n_foreign_packets);
-    std::optional<PollutionElement> get_pollution_for_frequency(int frequency);
     void signal_ui_rebuild_model_when_possible();
 };
 
