@@ -272,8 +272,11 @@ int main(int argc, char *argv[]) {
 
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
-    engine.rootContext()->setContextProperty("_ohdlogMessagesModel", &LogMessagesModel::instanceOHD());
-    engine.rootContext()->setContextProperty("_fclogMessagesModel", &LogMessagesModel::instanceFC());
+    //engine.rootContext()->setContextProperty("_ohdlogMessagesModel", &LogMessagesModel::instanceOHD());
+    //engine.rootContext()->setContextProperty("_fclogMessagesModel", &LogMessagesModel::instanceFC());
+    engine.rootContext()->setContextProperty("_logGround", &LogMessagesModel::instanceGround());
+    engine.rootContext()->setContextProperty("_logOpenhdAir", &LogMessagesModel::instanceOHDAir());
+    engine.rootContext()->setContextProperty("_logFC", &LogMessagesModel::instanceFC());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
     // Telemetry - first all the models
@@ -373,7 +376,7 @@ int main(int argc, char *argv[]) {
 
     QRenderStats::instance().register_to_root_window(engine);
 
-    LogMessagesModel::instanceOHD().addLogMessage("QOpenHD","running");
+    LogMessagesModel::instanceGround().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
 
     return retval;

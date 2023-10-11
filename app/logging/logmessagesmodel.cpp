@@ -7,16 +7,23 @@
 
 #include "hudlogmessagesmodel.h"
 
-LogMessagesModel &LogMessagesModel::instanceOHD()
+
+LogMessagesModel &LogMessagesModel::instanceGround()
 {
-    static LogMessagesModel* instance=new LogMessagesModel();
-    return *instance;
+    static LogMessagesModel instance;
+    return instance;
+}
+
+LogMessagesModel &LogMessagesModel::instanceOHDAir()
+{
+    static LogMessagesModel instance;
+    return instance;
 }
 
 LogMessagesModel &LogMessagesModel::instanceFC()
 {
-    static LogMessagesModel* instance_fc=new LogMessagesModel();
-    return *instance_fc;
+    static LogMessagesModel instance;
+    return instance;
 }
 
 LogMessagesModel::LogMessagesModel(QObject *parent) :

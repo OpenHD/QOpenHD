@@ -192,7 +192,11 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              mavlink_statustext_t parsedMsg;
              mavlink_msg_statustext_decode(&msg,&parsedMsg);
              auto tmp=Telemetryutil::statustext_convert(parsedMsg);
-             LogMessagesModel::instanceOHD().addLogMessage(m_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
+             if(m_is_air){
+                LogMessagesModel::instanceOHDAir().addLogMessage("OHD[A]",tmp.message.c_str(),tmp.level);
+             }else{
+                LogMessagesModel::instanceGround().addLogMessage("OHD[G]",tmp.message.c_str(),tmp.level);
+             }
              // Notify user in HUD of external device connect / disconnect events
              if(tmp.message.find("External device") != std::string::npos){
                 HUDLogMessagesModel::instance().add_message(tmp.level,tmp.message.c_str());
@@ -500,6 +504,12 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
             message << "disconnected";
             HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
         }
+        if(!m_is_air){
+            LogMessagesModel::instanceGround().add_message_debug("QOpenHD",message.str().c_str());
+        }else{
+            LogMessagesModel::instanceOHDAir().add_message_debug("QOpenHD",message.str().c_str());
+        }
+
         set_is_alive(alive);
     }
 }
