@@ -447,15 +447,15 @@ Rectangle{
         }
     }
 
-    PollutionChartView{
+    PopupAnalyzeChannels{
         id: pollution_chart_view
     }
 
-    ChannelScanProgressView{
+    PopupScanChannels{
         id: channel_scan_progress_view
     }
 
-    ChangeTxPowerPopup{
+    PopupTxPowerEditor{
         id: change_tx_power_popup
     }
 

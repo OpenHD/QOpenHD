@@ -240,6 +240,20 @@ Rectangle{
         Button{
             text: "APPLY"
             enabled: m_user_selected_card_manufacturer>=0;
+            onClicked: {
+                var tx_power_index_or_mw = combo_box_txpower_disarmed.model.get(combo_box_txpower_disarmed.currentIndex).value;
+                if(tx_power_index_or_mw<0){
+                    _qopenhd.show_toast("Please select a valid tx power",false);
+                    return;
+                }
+                var is_tx_power_index_unit = get_chipset_type()==0;
+                var success = _wbLinkSettingsHelper.set_param_tx_power(m_is_ground,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
+                if(success==true){
+                    _qopenhd.show_toast("SUCCESS");
+                }else{
+                    _qopenhd.show_toast("Cannot change TX power, please try again",true);
+                }
+            }
         }
     }
     ColumnLayout{
@@ -269,6 +283,20 @@ Rectangle{
         Button{
             text: "APPLY"
             enabled: m_user_selected_card_manufacturer>=0;
+            onClicked: {
+                var tx_power_index_or_mw = combo_box_txpower_armed.model.get(combo_box_txpower_armed.currentIndex).value;
+                if(tx_power_index_or_mw<0){
+                    _qopenhd.show_toast("Please select a valid tx power",false);
+                    return;
+                }
+                var is_tx_power_index_unit = get_chipset_type()==0;
+                var success = _wbLinkSettingsHelper.set_param_tx_power(m_is_ground,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
+                if(success==true){
+                    _qopenhd.show_toast("SUCCESS");
+                }else{
+                    _qopenhd.show_toast("Cannot change TX power, please try again",true);
+                }
+            }
         }
     }
 

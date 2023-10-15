@@ -213,8 +213,6 @@
         <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkAllSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
-        <file>ui/configpopup/openhd_settings/DialoqueStartAnalyzeChannels.qml</file>
-        <file>ui/configpopup/openhd_settings/DIaloqueStartChannelScan.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
         <file>ui/configpopup/rc/RcInfoScreen.qml</file>
         <file>ui/configpopup/rc/RcInfoPanel.qml</file>
@@ -228,7 +226,6 @@
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
-        <file>ui/configpopup/openhd_settings/DialoqueChangeTxPower.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapWidget.qml</file>
@@ -259,10 +256,10 @@
         <file>ui/configpopup/dev/QOpenHDServiceDialoque.qml</file>
         <file>ui/elements/ButtonDisconnected.qml</file>
         <file>ui/configpopup/status/DialoqueNotAlive.qml</file>
-        <file>ui/configpopup/openhd_settings/PollutionChartView.qml</file>
+        <file>ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml</file>
         <file>ui/configpopup/log/LogMessagesView.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel2.qml</file>
-        <file>ui/configpopup/openhd_settings/ChannelScanProgressView.qml</file>
-        <file>ui/configpopup/openhd_settings/ChangeTxPowerPopup.qml</file>
+        <file>ui/configpopup/openhd_settings/PopupScanChannels.qml</file>
+        <file>ui/configpopup/openhd_settings/PopupTxPowerEditor.qml</file>
     </qresource>
 </RCC>
