@@ -63,7 +63,7 @@ Rectangle {
           anchors.bottom: parent.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
 
-          MavlinkOpenHDWBParamPanel{
+          MavlinkOpenHDWBParamPanel2{
           //WBFrequencyPanel{
               id: xX_WBLinkSettings
           }

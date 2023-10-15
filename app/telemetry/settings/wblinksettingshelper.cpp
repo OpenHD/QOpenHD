@@ -33,8 +33,7 @@ WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
 bool WBLinkSettingsHelper::start_analyze_channels()
 {
     if(OHDAction::instance().send_command_analyze_channels_blocking()){
-        set_gnd_progress_perc(0);
-        set_text_for_qml("Analyzing");
+        set_analyze_progress_perc(0);
         return true;
     }
     return false;
@@ -43,8 +42,8 @@ bool WBLinkSettingsHelper::start_analyze_channels()
 bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths)
 {
     if(OHDAction::instance().send_command_start_scan_channels_blocking(freq_bands,channel_widths)){
-        set_gnd_progress_perc(0);
-        set_text_for_qml("Scanning");
+        set_scan_progress_perc(0);
+        set_scanning_text_for_ui("SCANNING");
         return true;
     }
     return false;
@@ -144,8 +143,6 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
         ss<<(int)msg.progress_perc<<"%";
     }
     qDebug()<<ss.str().c_str();
-    set_gnd_progress_perc(msg.progress_perc);
-    set_text_for_qml(ss.str().c_str());
     PollutionHelper::instance().threadsafe_update(analyzed_channels);
     // signal to the UI to rebuild model
     signal_ui_rebuild_model_when_possible();
@@ -164,9 +161,9 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
         }
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
         qDebug()<<ss.str().c_str();
-        set_text_for_qml(ss.str().c_str());
+        set_scanning_text_for_ui(ss.str().c_str());
     }
-    set_gnd_progress_perc(msg.progress);
+    set_scan_progress_perc(msg.progress);
 }
 
 int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,int value)

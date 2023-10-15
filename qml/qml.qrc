@@ -261,5 +261,8 @@
         <file>ui/configpopup/status/DialoqueNotAlive.qml</file>
         <file>ui/configpopup/openhd_settings/PollutionChartView.qml</file>
         <file>ui/configpopup/log/LogMessagesView.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel2.qml</file>
+        <file>ui/configpopup/openhd_settings/ChannelScanProgressView.qml</file>
+        <file>ui/configpopup/openhd_settings/ChangeTxPowerPopup.qml</file>
     </qresource>
 </RCC>

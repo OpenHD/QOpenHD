@@ -43,12 +43,13 @@ public:
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
     L_RO_PROP(int,curr_air_channel_width_mhz,set_curr_air_channel_width_mhz,-1);
-
-    // Set to true once the channels from the ground have been succesfully fetched
-    L_RO_PROP(int,gnd_progress_perc,set_gnd_progress_perc,-1);
-    L_RO_PROP(QString,text_for_qml,set_text_for_qml,"NONE");
     // Dirty, incremented to signal to the UI that it should rebuild the model(s)
     L_RO_PROP(int,ui_rebuild_models,set_ui_rebuild_models,0)
+    // Scanning
+    L_RO_PROP(QString,scanning_text_for_ui,set_scanning_text_for_ui,"NONE");
+    L_RO_PROP(int,scan_progress_perc,set_scan_progress_perc,0)
+    // Analyzing
+    L_RO_PROP(int,analyze_progress_perc,set_analyze_progress_perc,0)
 public:
     void process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t& msg);
     void process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t& msg);

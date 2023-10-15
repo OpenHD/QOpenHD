@@ -233,8 +233,15 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_sys_status1(parsed);
             consumed=true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_GND_OPERATING_MODE:{
+            if(m_is_air) qDebug()<<"Message mismatch"; // only ground reports operating mode
+            mavlink_openhd_wifbroadcast_gnd_operating_mode_t parsed;
+            mavlink_msg_openhd_wifbroadcast_gnd_operating_mode_decode(&msg,&parsed);
+            process_op_mode(parsed);
+            consumed=true;
+        }break;
         default:{
-
+            qDebug()<<"Unknown openhd message type";
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
@@ -302,17 +309,6 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_rx_packet_loss_perc(msg.curr_rx_packet_loss_perc);
     set_count_tx_inj_error_hint(msg.count_tx_inj_error_hint);
     set_count_tx_dropped_packets(msg.count_tx_dropped_packets);
-    // only on ground
-    /*ABCif(! m_is_air){
-        for(int i=0;i<WiFiCard::N_CARDS;i++){
-            WiFiCard::instance_gnd(i).set_is_active_tx(false);
-        }
-        const auto active_tx_idx=msg.curr_tx_card_idx;
-        if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
-            WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
-        }
-        set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
-    }*/
     const int new_mcs_index=msg.curr_tx_mcs_index;
     if(m_is_air){
         // We are only interested in the mcs index of the air unit
@@ -468,6 +464,12 @@ void AOHDSystem::process_sys_status1(const mavlink_openhd_sys_status1_t &msg)
 {
     set_wifi_hotspot_state(msg.wifi_hotspot_state);
     set_wifi_hotspot_frequency(msg.wifi_hotspot_frequency);
+}
+
+void AOHDSystem::process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t &msg)
+{
+    set_wb_gnd_operating_mode(msg.operating_mode);
+    set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
 }
 
 void AOHDSystem::update_alive()

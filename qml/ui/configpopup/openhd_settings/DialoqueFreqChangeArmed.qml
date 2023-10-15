@@ -20,11 +20,17 @@ Card {
 
     property int m_wanted_frequency: -1
 
+    function close(){
+        visible=false;
+        enabled=false;
+    }
+
     function initialize_and_show_frequency(frequency){
         m_wanted_frequency=frequency
         m_wanted_channel_width=-1
         m_type=0;
-        dialoqueFreqChangeArmed.visible=true
+        visible=true;
+        enabled=true;
     }
 
     function get_card_title_string(){

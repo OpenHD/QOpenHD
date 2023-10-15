@@ -114,6 +114,8 @@ public: // public for QT
     // ---------- WIFI HOTSPOT ----------------------
     L_RO_PROP(int,wifi_hotspot_state,set_wifi_hotspot_state,-1) // 0 - not available, 1 - off, 2 - on
     L_RO_PROP(int,wifi_hotspot_frequency,set_wifi_hotspot_frequency,-1)
+    //
+    L_RO_PROP(int,wb_gnd_operating_mode,set_wb_gnd_operating_mode,-1)
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
@@ -131,6 +133,7 @@ private:
      void process_x4(const mavlink_openhd_stats_wb_video_ground_t& msg);
      void process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t& msg);
      void process_sys_status1(const mavlink_openhd_sys_status1_t& msg);
+     void process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t& msg);
 private:
      std::atomic<int32_t> m_last_heartbeat_ms = -1;
      std::atomic<int32_t> m_last_message_ms= -1;

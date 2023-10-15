@@ -335,23 +335,6 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
             width: parent.width
             height: rowHeight*(7+4)
 
-            DIaloqueStartChannelScan{
-                id: dialoqueStartChannelScan
-            }
-            DialoqueFreqChangeGndOnly{
-                id: dialoqueFreqChangeGndOnly
-            }
-            DialoqueFreqChangeArmed{
-                id: dialoqueFreqChangeArmed
-            }
-            DialoqueStartAnalyzeChannels{
-                id: dialoqueAnalyzeChannels
-            }
-
-            DialoqueChangeTxPower{
-                id: txPowerDialoque
-            }
-
             Column {
                 id:wbParamColumn
                 spacing: 0
@@ -644,5 +627,21 @@ and automatically connect. Otherwise, use the 'FIND AIR UNIT' feature to scan al
                 }
             }
         }
+    }
+    DIaloqueStartChannelScan{
+        id: dialoqueStartChannelScan
+    }
+    DialoqueFreqChangeGndOnly{
+        id: dialoqueFreqChangeGndOnly
+    }
+    DialoqueFreqChangeArmed{
+        id: dialoqueFreqChangeArmed
+    }
+    DialoqueStartAnalyzeChannels{
+        id: dialoqueAnalyzeChannels
+    }
+
+    DialoqueChangeTxPower{
+        id: txPowerDialoque
     }
 }
