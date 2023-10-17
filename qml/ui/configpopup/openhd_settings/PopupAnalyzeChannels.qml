@@ -21,7 +21,8 @@ Rectangle{
     height: parent.height /2
     anchors.bottom: parent.bottom
     anchors.left: parent.left
-    color: "#8cbfd7f3"
+    //color: "#8cbfd7f3"
+    color: "#ADD8E6"
 
     function open(){
         visible=true

@@ -161,7 +161,21 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
         }
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
         qDebug()<<ss.str().c_str();
-        set_scanning_text_for_ui(ss.str().c_str());
+        if(msg.progress==100){
+            if(msg.success){
+                std::stringstream ss2;
+                ss2<<"Found air unit "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
+                set_scanning_text_for_ui(ss2.str().c_str());
+            }else{
+                std::stringstream ss2;
+                ss2<<"Couldn't find air unit";
+                set_scanning_text_for_ui(ss2.str().c_str());
+            }
+        }else{
+            std::stringstream ss2;
+            ss2<<"Scanning "<<(int)msg.channel_mhz<<"@"<<(int)msg.channel_width_mhz;
+            set_scanning_text_for_ui(ss2.str().c_str());
+        }
     }
     set_scan_progress_perc(msg.progress);
 }

@@ -27,6 +27,9 @@ Item {
         id: selectItemInStackLayoutBar
         width: parent.width
         TabButton {
+            text: qsTr("HMM")
+        }
+        TabButton {
             text: qsTr("TCP")
         }
         TabButton{
@@ -58,6 +61,10 @@ Item {
         anchors.bottom: parent.bottom
         currentIndex: selectItemInStackLayoutBar.currentIndex
 
+
+        PaneX{
+
+        }
 
        PaneCustom{
        }

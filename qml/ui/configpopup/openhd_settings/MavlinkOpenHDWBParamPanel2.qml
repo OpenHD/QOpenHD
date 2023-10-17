@@ -21,7 +21,8 @@ import QtCharts 2.0
 Rectangle{
     width: parent.width
     height: parent.height
-    property color m_background_color: "#8cbfd7f3"
+    //property color m_background_color: "#8cbfd7f3"
+    property color m_background_color: "#ADD8E6"
 
     function user_quidance_animate_channel_scan(){
         console.log("User guidance animate channel scan");
@@ -243,7 +244,7 @@ Rectangle{
                             change_frequency_sync_otherwise_handle_error(selectedValue,-1,false);
                         }
                         //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
-                        enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0 && _ohdSystemGround.is_alive;
+                        enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0 && (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0);
                         Layout.row: 1
                         Layout.column: 1
                     }

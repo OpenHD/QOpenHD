@@ -261,5 +261,8 @@
         <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel2.qml</file>
         <file>ui/configpopup/openhd_settings/PopupScanChannels.qml</file>
         <file>ui/configpopup/openhd_settings/PopupTxPowerEditor.qml</file>
+        <file>ui/elements/TextOrWarningButton.qml</file>
+        <file>ui/configpopup/status/StatusCardRow.qml</file>
+        <file>ui/configpopup/connect/PaneX.qml</file>
     </qresource>
 </RCC>

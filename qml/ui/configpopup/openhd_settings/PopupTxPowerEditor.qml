@@ -21,7 +21,8 @@ Rectangle{
     height: parent.height /2
     anchors.bottom: parent.bottom
     anchors.left: parent.left
-    color: "#8cbfd7f3"
+    //color: "#8cbfd7f3"
+    color: "#ADD8E6"
 
     property bool m_is_air: false
 
@@ -72,7 +73,8 @@ Rectangle{
         ListElement {title: "SELECT MANUFACTURER"; value: -1}
         ListElement {title: "ASUS"; value: 0}
         ListElement {title: "ALIEXPRESS"; value: 1}
-        ListElement {title: "OTHER"; value: 2}
+        ListElement {title: "OpenHD HW"; value: 2}
+        ListElement {title: "OTHER"; value: 3}
     }
     ListModel{
         id: model_rtl8812bu_manufacturers
@@ -110,8 +112,17 @@ Rectangle{
         ListElement {title: "MAX    [26]"; value: 26}
     }
     ListModel{
+            id: model_rtl8812au_manufacturer_openhd
+            ListElement {title: "Please select"; value: -1}
+            ListElement {title: "LOW    [3]   ~25mW"; value: 3}
+            ListElement {title: "MEDIUM [5]   ~200mW"; value: 5}
+            ListElement {title: "HIGH   [10]  ~1W"; value: 10}
+            ListElement {title: "MAX    [12]  ~2W"; value: 12}
+        }
+    ListModel{
         id: model_rtl8812au_manufacturer_generic
         ListElement {title: "Please select"; value: -1}
+        ListElement {title: "[10] (DANGER,ARBITRARY)"; value: 10}
         ListElement {title: "[22] (DANGER,ARBITRARY)"; value: 22}
         ListElement {title: "[37] (DANGER,ARBITRARY)"; value: 37}
         ListElement {title: "[53] (DANGER,ARBITRARY)"; value: 53}
@@ -137,39 +148,39 @@ Rectangle{
         ListElement {title: "<=20000mW (maybe)"; value: 2000}
     }
 
-    function get_model_txpower_for_chip_type_manufacturer(){
+    function get_model_txpower_for_chip_type_manufacturer(add_selection_disable){
         var chip_type=get_chipset_type();
         var manufacturer=m_user_selected_card_manufacturer;
         if(manufacturer<0){
             return model_error;
         }
+        var ret;
         if(chip_type==0){
             // RTL8812AU
             if(manufacturer==0){
-                return model_rtl8812au_manufacturer_asus_txpower;
+                ret=model_rtl8812au_manufacturer_asus_txpower;
             }else if(manufacturer==1){
-                return model_rtl8812au_manufacturer_aliexpress_hp;
+                ret=model_rtl8812au_manufacturer_aliexpress_hp;
+            }else if(manufacturer==2){
+                ret=model_rtl8812au_manufacturer_openhd;
+            }else{
+                ret=model_rtl8812au_manufacturer_generic;
             }
-            return model_rtl8812au_manufacturer_generic;
         }else if(chip_type==1){
             // RTL8812BU
             if(m_card_manufacturer_type==0){
-                return model_rtl8812bu_manufacturer_comfast;
+               ret= model_rtl8812bu_manufacturer_comfast;
+            }else{
+                ret = model_rtl8812bu_manufacturer_generic;
             }
-            return model_rtl8812bu_manufacturer_generic;
+        }else{
+            ret = model_error;
         }
-        return model_error;
-    }
-
-
-    function get_text_wifi_tx_power(){
-        // "99 TPI DISARM: XX ARM: XX";
-        if(m_is_air){
-            if(!_wifi_card_air.alive) return "N/A";
-            return ""+_wifi_card_air.tx_power+" "+_wifi_card_air.tx_power_unit+" DISARM:"+_wifi_card_air.tx_power_disarmed+" ARM:"+_wifi_card_air.tx_power_armed
-        }
-        if(!_wifi_card_gnd0.alive) return "N/A";
-        return ""+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit+" DISARM:"+_wifi_card_gnd0.tx_power_disarmed+" ARM:"+_wifi_card_gnd0.tx_power_armed
+        // Armed has the extra option of tx power==0, which means the disarmed tx power is applied regardless if armed or not
+        //if(add_selection_disable){
+        //    ret.insert(1,{title: "DISABLE", value: 0});
+        //}
+        return ret;
     }
 
     // state 0: current state 1: disarmed state 2: armed
@@ -233,7 +244,7 @@ Rectangle{
             leftPadding: 12
             rightPadding: 12
             id: combo_box_txpower_disarmed
-            model: get_model_txpower_for_chip_type_manufacturer()
+            model: get_model_txpower_for_chip_type_manufacturer(false)
             textRole: "title"
             enabled: m_user_selected_card_manufacturer>=0;
         }
@@ -247,7 +258,7 @@ Rectangle{
                     return;
                 }
                 var is_tx_power_index_unit = get_chipset_type()==0;
-                var success = _wbLinkSettingsHelper.set_param_tx_power(m_is_ground,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
+                var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air,is_tx_power_index_unit,false,tx_power_index_or_mw)
                 if(success==true){
                     _qopenhd.show_toast("SUCCESS");
                 }else{
@@ -275,7 +286,7 @@ Rectangle{
             leftPadding: 12
             rightPadding: 12
             id: combo_box_txpower_armed
-            model: get_model_txpower_for_chip_type_manufacturer()
+            model: get_model_txpower_for_chip_type_manufacturer(true)
             textRole: "title"
             enabled: m_user_selected_card_manufacturer>=0;
         }
@@ -290,7 +301,7 @@ Rectangle{
                     return;
                 }
                 var is_tx_power_index_unit = get_chipset_type()==0;
-                var success = _wbLinkSettingsHelper.set_param_tx_power(m_is_ground,is_tx_power_index_unit,m_change_armed,tx_power_index_or_mw)
+                var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air,is_tx_power_index_unit,true,tx_power_index_or_mw)
                 if(success==true){
                     _qopenhd.show_toast("SUCCESS");
                 }else{

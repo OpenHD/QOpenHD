@@ -35,7 +35,9 @@ ScrollView {
             cardName: qsTr("Info")
             cardBody:
                 Text {
-                text: qsTr("Enable OpenHD-RC: \n\n1.Set 'ENABLE_JOY_RC' to 'ENABLED',\n2.Connect a joystick\n3.Reboot\n\nYou can use the other screens to validate/debug your setup.\n\n")
+                text: qsTr("Enable OpenHD-RC: \n\n1. OpenHD GND: Set 'ENABLE_JOY_RC' to 'ENABLED',\n2.Connect a joystick via USB to GND Station\n3.Optionally reboot\n\nYou can use the other screens to validate/debug your setup.\n"+
+                           "NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !\n"
+                           )
                 height: 24
                 font.pixelSize: 14
                 leftPadding: 12

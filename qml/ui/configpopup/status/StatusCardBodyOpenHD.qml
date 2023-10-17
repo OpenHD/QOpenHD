@@ -25,6 +25,9 @@ ColumnLayout {
     property bool m_is_alive: m_model.is_alive
     property string m_qopenhd_version: "2.5.1-evo-alpha"
 
+    //fucking hell qt
+    property int m_font_pixel_size: 13
+
     function get_alive_text(){
         return m_is_alive ? "Yes" : "NOT ALIVE !"
     }
@@ -104,206 +107,139 @@ ColumnLayout {
 
     property int left_part_preferred_with: 100
 
-    RowLayout{
-        Layout.fillWidth: true
-        Layout.minimumHeight: text_minHeight
-        Layout.leftMargin: 12
-        spacing: 3
-        Text {
-            Layout.preferredWidth: left_part_preferred_with
-            text: qsTr("OHD Version:")
-            font.bold: true
-        }
-        Text {
-            text: m_version
-            color: "green"
-            visible: !b_version_warning.visible
-        }
-        ButtonSimple{
-            text: m_version
-            id: b_version_warning
-            onClicked: {
-                var text_warning= m_is_ground ? get_text_qopenhd_openhd_ground_version_mismatch() : get_text_openhd_air_ground_version_mismatch()
-                _messageBoxInstance.set_text_and_show(text_warning)
-            }
-            visible: {
-                if(m_is_ground){
-                    // Show if ground reported version is valid and there is a mismatch OpenHD ground / QOpenHD
-                    if(_ohdSystemGround.openhd_version=="N/A"){
-                        return false;
-                    }
-                    return _ohdSystemGround.openhd_version != m_qopenhd_version;
-                }else{
-                    // Show if ground and air reported version is valid and there is a mismatch
-                    if(_ohdSystemGround.openhd_version=="N/A" || _ohdSystemAir.openhd_version=="N/A"){
-                        return false;
-                    }
-                    return _ohdSystemGround.openhd_version != _ohdSystemAir.openhd_version
+    StatusCardRow{
+        m_left_text: qsTr("Version:")
+        m_right_text: m_version
+        m_has_error: {
+            if(m_is_ground){
+                // Show if ground reported version is valid and there is a mismatch OpenHD ground / QOpenHD
+                if(_ohdSystemGround.openhd_version=="N/A"){
+                    return false;
                 }
-            }
-            Layout.preferredHeight: text_minHeight
-            Layout.minimumHeight: text_minHeight
-            height: text_minHeight
-        }
-    }
-    RowLayout{
-        Layout.fillWidth: true
-        Layout.minimumHeight: text_minHeight
-        Layout.leftMargin: 12
-        spacing: 3
-        Text {
-            Layout.preferredWidth: left_part_preferred_with
-            text: qsTr("Last Ping:")
-            font.bold: true
-        }
-        Text {
-            text: m_last_ping
-            color: m_last_ping === "N/A" ? "#DC143C" : "green"
-        }
-    }
-    RowLayout{
-        Layout.fillWidth: true
-        Layout.minimumHeight: text_minHeight
-        Layout.leftMargin: 12
-        spacing: 3
-        Text {
-            Layout.preferredWidth: left_part_preferred_with
-            text: qsTr("Alive: ")
-            font.bold: true
-        }
-        Text {
-            text: get_alive_text()
-            color: get_alive_text_color()
-        }
-    }
-    RowLayout{
-        Layout.fillWidth: true
-        Layout.minimumHeight: text_minHeight
-        Layout.leftMargin: 12
-        spacing: 3
-        Text {
-            Layout.preferredWidth: left_part_preferred_with
-            text: qsTr(m_is_ground ? "OHD Card(s): " : "OHD Card:")
-            font.bold: true
-        }
-        ButtonSimple{
-            id: b_unsupported_cards_warning
-            text: {
-                if(m_is_ground){
-                    if(!_ohdSystemGround.is_alive){
-                        return "N/A";
-                    }
-                    var alive_count=get_gnd_active_cards();
-                    if(alive_count==0) return "WAITING";
-                    if(alive_count==1) return _wifi_card_gnd0.card_type_as_string;
-                    return ""+alive_count+"x ARRAY";
-                }else{
-                    // On air, we always have only one card
-                    if(! _wifi_card_air.alive){
-                        return "N/A";
-                    }
-                    return _wifi_card_air.card_type_as_string
+                return _ohdSystemGround.openhd_version != m_qopenhd_version;
+            }else{
+                // Show if ground and air reported version is valid and there is a mismatch
+                if(_ohdSystemGround.openhd_version=="N/A" || _ohdSystemAir.openhd_version=="N/A"){
+                    return false;
                 }
+                return _ohdSystemGround.openhd_version != _ohdSystemAir.openhd_version
             }
-            onClicked: {
-                var show_message_card_unsupported=false;
-                if(m_is_ground){
-                    if(_wifi_card_gnd0.alive && !_wifi_card_gnd0.card_type_supported){
-                        show_message_card_unsupported=true;
-                    }
-                }else{
-                    if(_wifi_card_air.alive && ! _wifi_card_air.card_type_supported){
-                        show_message_card_unsupported=true;
-                    }
-                }
-                if(show_message_card_unsupported){
-                    var message="Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned !";
-                    _messageBoxInstance.set_text_and_show(message);
-                }
-            }
-            visible: {
-                return true;
-            }
-            Layout.preferredHeight: text_minHeight
-            Layout.minimumHeight: text_minHeight
+        }
+        m_error_text: {
+            var text_warning= m_is_ground ? get_text_qopenhd_openhd_ground_version_mismatch() : get_text_openhd_air_ground_version_mismatch()
+            return text_warning;
         }
     }
-    RowLayout{
-        Layout.fillWidth: true
-        Layout.minimumHeight: text_minHeight
-        Layout.leftMargin: 12
-
-        visible: m_is_ground
-        Text{
-            Layout.preferredWidth: left_part_preferred_with
-            text: "Uplink:"
-            font.bold: true
-        }
-        Text{
-            text: gnd_uplink_state_text()
-            color: "green"
-            visible: {
-                var gnd_up_state=gnd_uplink_state()
-                if(gnd_up_state===0 || gnd_up_state===1)return true;
-                return false;
-            }
-        }
-        ButtonSimple{
-            text: gnd_uplink_state_text()
-            onClicked: {
-                var message="Looks like your uplink (GND to AIR) is not functional - please use a supported card on your GND station"+
-                " and make sure passive (listen only) mode is disabled on your ground station."
-                _messageBoxInstance.set_text_and_show(message)
-            }
-            visible: gnd_uplink_state()===-1;
-            Layout.preferredHeight: text_minHeight
-            Layout.minimumHeight: text_minHeight
-            height: text_minHeight
-        }
+    StatusCardRow{
+        m_left_text: qsTr("Ping:")
+        m_right_text:  m_last_ping
+        m_right_text_color: m_last_ping === "N/A" ? "#DC143C" : "green"
     }
-    RowLayout{
-        Layout.fillWidth: true
-        Layout.minimumHeight: text_minHeight
-        Layout.leftMargin: 12
-
-        visible: true
-        Text{
-            Layout.preferredWidth: left_part_preferred_with
-            text: "WiFi Hotspot:"
-            font.bold: true
-        }
-        ButtonSimple{
-            id: b_wifi_hs
-            text: {
-                if(!m_model.is_alive || m_model.wifi_hotspot_state<0){
+    StatusCardRow{
+        m_left_text: qsTr("Alive: ")
+        m_right_text: get_alive_text()
+        m_right_text_color: get_alive_text_color()
+    }
+    StatusCardRow{
+        m_left_text: qsTr(m_is_ground ? "Link HW: " : "Link HW:")
+        m_right_text: {
+            if(m_is_ground){
+                if(!_ohdSystemGround.is_alive){
                     return "N/A";
                 }
-                if(m_model.wifi_hotspot_state==0){
-                    return "UNAVAILABLE";
+                var alive_count=get_gnd_active_cards();
+                if(alive_count==0) return "WAITING";
+                if(alive_count==1) return _wifi_card_gnd0.card_type_as_string;
+                return ""+alive_count+"x ARRAY";
+            }else{
+                // On air, we always have only one card
+                if(! _wifi_card_air.alive){
+                    return "N/A";
                 }
-                if(m_model.wifi_hotspot_state==1){
-                    return "DISABLED";
-                }
-                return "ENABLED";
+                return _wifi_card_air.card_type_as_string
             }
-            onClicked: {
-                if(!m_model.is_alive || m_model.wifi_hotspot_state<0){
-                    return;
+        }
+        m_has_error: {
+            var show_message_card_unsupported=false;
+            if(m_is_ground){
+                if(_wifi_card_gnd0.alive && !_wifi_card_gnd0.card_type_supported){
+                    show_message_card_unsupported=true;
                 }
-                if(m_model.wifi_hotspot_state==0){
-                    var message="To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module. "
-                    _messageBoxInstance.set_text_and_show(message)
-                }
-                if(m_model.wifi_hotspot_state==1 || m_model.wifi_hotspot_state==2){
-                    var message="WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on";
-                     _messageBoxInstance.set_text_and_show(message)
+            }else{
+                if(_wifi_card_air.alive && ! _wifi_card_air.card_type_supported){
+                    show_message_card_unsupported=true;
                 }
             }
-            Layout.preferredHeight: text_minHeight
-            Layout.minimumHeight: text_minHeight
-            height: text_minHeight
+            return show_message_card_unsupported;
+        }
+        m_error_text: {
+            var message="Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned !";
+            return message;
         }
     }
+    StatusCardRow{
+        visible: m_is_ground
+        m_left_text: "Uplink:"
+        m_right_text: {
+            return gnd_uplink_state_text()
+        }
+        m_has_error: {
+            return m_right_text=="ERROR"
+        }
+        m_error_text: {
+            var message="Looks like your uplink (GND to AIR) is not functional - please use a supported card on your GND station"+
+            " and make sure passive (listen only) mode is disabled on your ground station."
+            return message;
+        }
+    }
+    StatusCardRow{
+        visible: !m_is_ground
+        m_left_text: "AIR FC:"
+        m_right_text: {
+            var air_fc_sys_id=-1;
+            if(air_fc_sys_id==-1){
+                return "NOT FOUND"
+            }
+            return ""+air_fc_sys_id;
+        }
+        m_right_text_color: {
+            var air_fc_sys_id=-1;
+            if(air_fc_sys_id==-1) return "orange";
+            return "green";
+        }
+    }
+    StatusCardRow{
+        m_left_text: "WiFi HS:"
+        m_right_text: {
+            if(!m_model.is_alive || m_model.wifi_hotspot_state<0){
+                return "N/A";
+            }
+            if(m_model.wifi_hotspot_state==0){
+                return "UNAVAILABLE";
+            }
+            if(m_model.wifi_hotspot_state==1){
+                return "DISABLED";
+            }
+            return "ENABLED";
+        }
+        m_right_text_color: "black";
+        m_right_text_color_error: "black";
+        m_error_text: {
+            if(m_model.wifi_hotspot_state==0){
+                var message="To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module. "
+                return message;
+            }
+            if(m_model.wifi_hotspot_state==1 || m_model.wifi_hotspot_state==2){
+                var message="WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on";
+                return message;
+            }
+            return "I should not appear";
+        }
+        m_has_error: {
+            return m_right_text=="UNAVAILABLE";
+        }
+    }
+
     // Padding
     Item{
         Layout.fillWidth: true
