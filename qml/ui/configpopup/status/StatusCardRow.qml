@@ -19,13 +19,13 @@ import "../../elements"
 // The general idea behind this element is to be green / pretty when everything is okay
 // and red if something is wrong (in which case the user should click on it for more info)
 Item {
-    /*Layout.fillWidth: true
-    Layout.minimumWidth: 50
-    Layout.minimumHeight: 30
+    //Layout.fillWidth: true
+    //Layout.minimumWidth: 50
+    //Layout.minimumHeight: 30
     //
-    Layout.preferredWidth: 250
-    Layout.preferredHeight: 30*/
-    Layout.minimumWidth: 250
+    //Layout.preferredWidth: 250
+    //Layout.preferredHeight: 30
+    //Layout.minimumWidth: 250
     width: parent.width
     height: 50
 
@@ -63,7 +63,7 @@ Item {
     }*/
     // Actual item,centered
     Item{
-        width: 250
+        width: 260
         height: main_item.height
         anchors.centerIn: parent
 

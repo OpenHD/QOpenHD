@@ -220,10 +220,8 @@ Rectangle{
                             contentItem: FreqComboBoxRow{
                                 m_main_text: title
                                 m_selection_tpye: (value===_wbLinkSettingsHelper.curr_channel_mhz) ? 1 : 0
-                                m_is_2G: value > 3000
-                                m_2G_5G_show: value > 100
+                                m_is_2G: value < 3000 && value > 100
                                 m_show_radar: radar
-                                m_show_good_channel: recommended
                                 m_openhd_race_band: openhd_raceband_nr
                             }
                             highlighted: comboBoxFreq.highlightedIndex === index

@@ -34,24 +34,24 @@ Rectangle {
 
     // Tab bar for selecting items in stack layout
     TabBar {
-          id: selectItemInStackLayoutBar
-          width: parent.width
-          TabButton {
-              text: qsTr("WB Link")
-          }
-          TabButton {
-              text: qsTr("Air Camera 1")
-          }
-          TabButton {
-              text: qsTr("Air Camera 2")
-              enabled: settings.dev_qopenhd_n_cameras>1
-          }
-          TabButton {
-              text: qsTr("Air")
-          }
-          TabButton {
-              text: qsTr("Ground")
-          }
+        id: selectItemInStackLayoutBar
+        width: parent.width
+        TabButton {
+            text: qsTr("LINK/QUICK")
+        }
+        TabButton {
+            text: qsTr("AIR CAM 1")
+        }
+        TabButton {
+            text: qsTr("AIR CAM 2")
+            enabled: settings.dev_qopenhd_n_cameras>1
+        }
+        TabButton {
+            text: qsTr("AIR")
+        }
+        TabButton {
+            text: qsTr("GROUND")
+        }
     }
 
     // placed right below the top bar

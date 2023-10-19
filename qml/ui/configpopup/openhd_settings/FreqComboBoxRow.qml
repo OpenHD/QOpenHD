@@ -24,9 +24,7 @@ Rectangle{
     property int m_selection_tpye: 0
 
     property bool m_is_2G: false
-    property bool m_2G_5G_show: false
     property bool m_show_radar: false
-    property bool m_show_good_channel: false
 
     property int m_openhd_race_band: -1
 
@@ -57,10 +55,11 @@ Rectangle{
         }
         Text{
             Layout.alignment: Qt.AlignLeft
-            text: m_is_2G ? "5.8G" : "2.4G"
+            text: "2.4G"
             //color: value > 3000 ? "green" : "#ff8c00" //"orange"
             color: "#706F1D" // dark green
-            visible: m_2G_5G_show && m_openhd_race_band<0
+            visible: m_is_2G
+            font.pixelSize: comboBoxFreq.font.pixelSize
         }
         Text { // Radar icon
             Layout.alignment: Qt.AlignLeft
@@ -68,6 +67,7 @@ Rectangle{
             font.family: "Font Awesome 5 Free"
             color: "red"
             visible: m_show_radar
+            font.pixelSize: comboBoxFreq.font.pixelSize
         }
         Item{
             Layout.fillWidth: true
@@ -88,6 +88,7 @@ Rectangle{
             font.family: "Font Awesome 5 Free"
             color: "green"
             visible: m_openhd_race_band==2
+            font.pixelSize: comboBoxFreq.font.pixelSize
         }
 
         Text{ // recommended / openhd race band channel
@@ -99,6 +100,7 @@ Rectangle{
             visible: m_openhd_race_band>=0
             font.family: "Font Awesome 5 Free"
             color: "green"
+            font.pixelSize: comboBoxFreq.font.pixelSize
         }
     }
 }
