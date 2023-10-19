@@ -75,6 +75,8 @@ Item {
             anchors.top: parent.top
             text: m_left_text
             verticalAlignment: Qt.AlignVCenter
+            font.bold: true
+            font.pixelSize: 20
         }
 
         Text{
@@ -87,6 +89,7 @@ Item {
             verticalAlignment: Qt.AlignVCenter
             color: m_has_error ? m_right_text_color_error : m_right_text_color
             visible: !right_part_button.visible
+            font.pixelSize: 20
         }
         MouseArea {
             enabled: m_has_error && !m_look_shit_on_error
