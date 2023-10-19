@@ -44,29 +44,29 @@ Rectangle {
             id: mainItem
             //width: 1024
             width: parent.width
-            height: 500
+            height: 40+400+80
 
             QOpenHDVersionCard{
                 id: qopenhdversioncard
-                height: 80
+                height: 40
             }
             StatusCardsColumn{
+                id: statuscardscolumn
                 width: parent.width
-                height: 300
+                height: 400
 
                 anchors.leftMargin: 12
                 anchors.rightMargin: 12
                 anchors.topMargin: 12
 
-                id: status_openhd_fc
                 anchors.top: qopenhdversioncard.bottom
             }
 
-            ActionsColumn {
+            PingUtilColumn {
                 id:actionsButtonMenu
                 width: parent.width
                 height: 80
-                anchors.bottom: parent.bottom
+                anchors.top: statuscardscolumn.bottom
 
             }
         }

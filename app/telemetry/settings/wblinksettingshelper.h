@@ -97,10 +97,9 @@ public:
     // To not overload the user, we filter the frequencies a bit
     Q_INVOKABLE QList<int> get_supported_frequencies_filtered(int filter_level);
     Q_INVOKABLE QStringList pollution_frequencies_int_to_qstringlist(QList<int> frequencies);
-    Q_INVOKABLE QVariantList pollution_frequencies_int_get_pollution(QList<int> frequencies);
+    Q_INVOKABLE QVariantList pollution_frequencies_int_get_pollution(QList<int> frequencies,bool normalize=false);
 
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
-    Q_INVOKABLE int get_frequency_pollution(int frequency_mhz);
     Q_INVOKABLE bool get_frequency_radar(int frequency_mhz);
     Q_INVOKABLE bool get_frequency_simplify(int frequency_mhz);
     Q_INVOKABLE bool get_frequency_reccommended(int frequency_mhz);

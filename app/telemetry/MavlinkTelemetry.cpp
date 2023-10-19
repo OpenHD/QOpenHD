@@ -1,5 +1,6 @@
 #include "MavlinkTelemetry.h"
 
+#include "common/openhd-util.hpp"
 #include "models/aohdsystem.h"
 #include "models/fcmavlinksystem.h"
 
@@ -17,6 +18,12 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 
 void MavlinkTelemetry::start()
 {
+    QSettings settings;
+    int mavlink_connection_mode=settings.value("qopenhd_mavlink_connection_mode",0).toInt();
+    if(mavlink_connection_mode<0 || mavlink_connection_mode>2)mavlink_connection_mode=0;
+    m_connection_mode=mavlink_connection_mode;
+    QString tcp_manual_ip=settings.value("qopenhd_mavlink_connection_manual_tcp_ip","192.168.178.36").toString();
+    m_connction_manual_tcp_ip=std::make_shared<std::string>(tcp_manual_ip.toStdString());
     auto cb_udp=[this](mavlink_message_t msg){
         process_mavlink_message(msg);
     };
@@ -261,6 +268,20 @@ void MavlinkTelemetry::re_apply_rates()
     FCMsgIntervalHandler::instance().restart();
 }
 
+void MavlinkTelemetry::change_telemetry_connection_mode(int mavlink_connection_mode)
+{
+    if(mavlink_connection_mode<0 || mavlink_connection_mode>2)mavlink_connection_mode=0;
+    m_connection_mode=mavlink_connection_mode;
+}
+
+bool MavlinkTelemetry::change_manual_tcp_ip(QString ip)
+{
+    if(!OHDUtil::is_valid_ip(ip.toStdString())){
+        return false;
+    }
+    m_connction_manual_tcp_ip=std::make_shared<std::string>(ip.toStdString());
+}
+
 void MavlinkTelemetry::send_heartbeat_loop()
 {
     while(true){
@@ -281,10 +302,7 @@ void MavlinkTelemetry::send_heartbeat_loop()
 
 void MavlinkTelemetry::perform_connection_management()
 {
-    QSettings settings;
-    int mavlink_connection_mode=settings.value("mavlink_connection_mode",0).toInt();
-    if(mavlink_connection_mode<0 || mavlink_connection_mode>2)mavlink_connection_mode=0;
-    mavlink_connection_mode=0;
+    const int mavlink_connection_mode=m_connection_mode;
     if(mavlink_connection_mode==0){
         // AUTO
         if(m_udp_connection->threadsafe_is_alive()){
@@ -292,10 +310,13 @@ void MavlinkTelemetry::perform_connection_management()
             m_tcp_connection->stop_receiving();
             set_telemetry_connection_status("AUTO-CONNECTED(UDP,LOCALHOST)");
         }else{
+            if(!m_tcp_connection->threadsafe_is_alive()){
+                set_telemetry_connection_status("AUTO-CONNECTING");
+            }
             // UPP is not working, try TCP
             const std::string IP_CONSTI_TEST="192.168.178.36";
-            //const std::string IP_OPENHD_WIFI_HOTSPOT="192.168.3.1";
-            const std::string IP_OPENHD_WIFI_HOTSPOT=IP_CONSTI_TEST;
+            const std::string IP_OPENHD_WIFI_HOTSPOT="192.168.3.1";
+            //const std::string IP_OPENHD_WIFI_HOTSPOT=IP_CONSTI_TEST;
             const std::string IP_OPENHD_ETHERNET_HOTSPOT="192.168.2.1";
             if(m_tcp_connection->try_connect_and_receive(IP_OPENHD_WIFI_HOTSPOT,QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT)){
                 set_telemetry_connection_status("AUTO-CONNECTED (WIFI,TCP)");
@@ -313,16 +334,22 @@ void MavlinkTelemetry::perform_connection_management()
         set_telemetry_connection_status(ss.str().c_str());
     }else if(mavlink_connection_mode==2){
         // Explicit TCP
-        const std::string user_ip="192.168.178.36";
+        auto tmp=m_connction_manual_tcp_ip;
+        const std::string user_ip=*tmp;
         const int user_port=5760;
-        if(m_tcp_connection->m_remote_ip==user_ip && m_tcp_connection->m_remote_port==user_port){
+        if(m_tcp_connection->m_remote_ip!=user_ip || m_tcp_connection->m_remote_port!=user_port){
             if(!m_tcp_connection->threadsafe_is_alive()){
                 m_tcp_connection->stop_receiving();
                 m_tcp_connection->try_connect_and_receive(user_ip,user_port);
             }
         }
         std::stringstream ss;
-        ss<<"MANUAL TCP -"<<(m_udp_connection->threadsafe_is_alive() ? "CONNECTED" : "WRONG IP?");
+        ss<<"MANUAL TCP -";
+        if(m_udp_connection->threadsafe_is_alive()){
+            ss<<"CONNECTED";
+        }else{
+            ss<<"WRONG IP ? ["<<user_ip<<"]";
+        }
         set_telemetry_connection_status(ss.str().c_str());
     }else{
 

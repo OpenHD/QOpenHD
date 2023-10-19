@@ -116,6 +116,8 @@ public: // public for QT
     L_RO_PROP(int,wifi_hotspot_frequency,set_wifi_hotspot_frequency,-1)
     //
     L_RO_PROP(int,wb_gnd_operating_mode,set_wb_gnd_operating_mode,-1)
+    //
+    L_RO_PROP(int,air_reported_fc_sys_id,set_air_reported_fc_sys_id,-1)
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{

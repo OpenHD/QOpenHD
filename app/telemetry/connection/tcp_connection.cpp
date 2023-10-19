@@ -160,7 +160,7 @@ void TCPConnection::process_data(const uint8_t *data, int data_len)
 {
     for (int i = 0; i < data_len; i++) {
         mavlink_message_t msg;
-        uint8_t res = mavlink_parse_char(1, (uint8_t)data[i], &msg, &m_recv_status);
+        uint8_t res = mavlink_parse_char(1,data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);
         }
@@ -179,7 +179,7 @@ void TCPConnection::receive_until_stopped()
     // Enough for MTU 1500 bytes.
     uint8_t buffer[2048];
     while (m_keep_receiving) {
-        const auto recv_len = recv(m_socket_fd, reinterpret_cast<char*>(buffer), sizeof(buffer), 0);
+        const auto recv_len = recv(m_socket_fd, reinterpret_cast<char*>(&buffer), sizeof(buffer), 0);
 
         if (recv_len == 0) {
             // This can happen when shutdown is called on the socket,

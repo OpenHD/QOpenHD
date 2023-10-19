@@ -19,12 +19,15 @@ import "../../elements"
 // The general idea behind this element is to be green / pretty when everything is okay
 // and red if something is wrong (in which case the user should click on it for more info)
 Item {
+    /*Layout.fillWidth: true
     Layout.minimumWidth: 50
     Layout.minimumHeight: 30
     //
-    Layout.preferredWidth: 300
-    Layout.preferredHeight: 30
-
+    Layout.preferredWidth: 250
+    Layout.preferredHeight: 30*/
+    Layout.minimumWidth: 250
+    width: parent.width
+    height: 50
 
     id: main_item
     property string m_left_text: "LEFT"
@@ -38,6 +41,11 @@ Item {
 
     property string m_error_text: "NONE"
 
+    // If this is set to true, the UI looks intentionally shit
+    // because it is an error that should be resolved by the user
+    // as quick as possible
+    property bool m_look_shit_on_error: false
+
     // For debugging
     /*Rectangle{
         implicitWidth: main_item.width
@@ -46,32 +54,63 @@ Item {
         border.width: 3
         border.color: "black"
     }*/
+    /*Rectangle{
+        implicitWidth: main_item.width
+        implicitHeight: main_item.height
+        color: "transparent"
+        border.width: 3
+        border.color: "red"
+    }*/
+    // Actual item,centered
+    Item{
+        width: 250
+        height: main_item.height
+        anchors.centerIn: parent
 
-    Text{
-        id: left_part
-        width: parent.width/3
-        height: parent.height
-        anchors.left: parent.left
-        anchors.top: parent.top
-        text: m_left_text
-    }
+        Text{
+            id: left_part
+            width: parent.width/3
+            height: parent.height
+            anchors.left: parent.left
+            anchors.top: parent.top
+            text: m_left_text
+            verticalAlignment: Qt.AlignVCenter
+        }
 
-    Text{
-        id: right_part
-        width: parent.width/3*2;
-        height: parent.height
-        anchors.left: left_part.right
-        anchors.top: left_part.top
-        text: m_right_text
-        color: m_has_error ? m_right_text_color_error : m_right_text_color
-    }
-    MouseArea {
-        enabled: m_has_error
-        anchors.fill: parent
-        onClicked: {
-            _messageBoxInstance.set_text_and_show(m_error_text)
+        Text{
+            id: right_part
+            width: parent.width/3*2;
+            height: parent.height
+            anchors.left: left_part.right
+            anchors.top: left_part.top
+            text: m_right_text
+            verticalAlignment: Qt.AlignVCenter
+            color: m_has_error ? m_right_text_color_error : m_right_text_color
+            visible: !right_part_button.visible
+        }
+        MouseArea {
+            enabled: m_has_error && !m_look_shit_on_error
+            anchors.fill: parent
+            onClicked: {
+                _messageBoxInstance.set_text_and_show(m_error_text)
+            }
+        }
+        Button{
+            id: right_part_button
+            width: parent.width/3*2;
+            height: parent.height
+            anchors.left: left_part.right
+            anchors.top: left_part.top
+            text: m_right_text
+            //Material.accent: Material.Red
+            //highlighted: true
+            visible: m_has_error && m_look_shit_on_error
+            onClicked: {
+                _messageBoxInstance.set_text_and_show(m_error_text)
+            }
+            //palette.buttonText: "red"
+            Material.foreground: "red"
         }
     }
-
 
 }

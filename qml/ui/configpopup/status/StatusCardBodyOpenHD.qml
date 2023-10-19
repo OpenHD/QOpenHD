@@ -12,9 +12,13 @@ import "../../../ui" as Ui
 import "../../elements"
 
 ColumnLayout {
+    //Layout.fillWidth: true
+    //Layout.fillHeight: true
     // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
-    anchors.fill: parent
-    spacing: 2
+    //anchors.fill: parent
+    width: parent.width
+    height: parent.height
+    spacing: 1
 
     property bool m_is_ground: false
 
@@ -129,6 +133,7 @@ ColumnLayout {
             var text_warning= m_is_ground ? get_text_qopenhd_openhd_ground_version_mismatch() : get_text_openhd_air_ground_version_mismatch()
             return text_warning;
         }
+        m_look_shit_on_error: true
     }
     StatusCardRow{
         m_left_text: qsTr("Ping:")
@@ -176,6 +181,7 @@ ColumnLayout {
             var message="Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned !";
             return message;
         }
+        m_look_shit_on_error: true;
     }
     StatusCardRow{
         visible: m_is_ground
@@ -194,19 +200,33 @@ ColumnLayout {
     }
     StatusCardRow{
         visible: !m_is_ground
-        m_left_text: "AIR FC:"
+        m_left_text: "FC SYSID:"
         m_right_text: {
-            var air_fc_sys_id=-1;
+            var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
             if(air_fc_sys_id==-1){
                 return "NOT FOUND"
             }
             return ""+air_fc_sys_id;
         }
-        m_right_text_color: {
-            var air_fc_sys_id=-1;
-            if(air_fc_sys_id==-1) return "orange";
-            return "green";
+        m_error_text: {
+            var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
+            if(air_fc_sys_id==-1){
+                return "Your AIR Unit cannot find your FC (UART). Please check:\n"+
+                        "1) Wiring\n"+
+                        "2) Right serial port enabled (OpenHD AIR param set)\n"+
+                        "3) MAVLINK selected on your FC uart";
+            }
+            return "Please make sure:\n"+
+                    "1) ARDUPILOT / PX4: FC sys id needs to be set to 1 (DEFAULT ARDUPILOT SYSID)\n"+
+                    "2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0";
         }
+        m_has_error: {
+            var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
+            // We allow 0 (Betaflight / inav / ... ) and 1 (Arupilot)
+            if(air_fc_sys_id==0 || air_fc_sys_id==1)return false;
+            return true;
+        }
+        m_look_shit_on_error: true;
     }
     StatusCardRow{
         m_left_text: "WiFi HS:"
@@ -222,7 +242,12 @@ ColumnLayout {
             }
             return "ENABLED";
         }
-        m_right_text_color: "black";
+        m_right_text_color: {
+            if(m_right_text=="DISABLED" || m_right_text=="ENABLED"){
+                return "green"
+            }
+            return "black";
+        }
         m_right_text_color_error: "black";
         m_error_text: {
             if(m_model.wifi_hotspot_state==0){

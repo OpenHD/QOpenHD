@@ -21,7 +21,8 @@ static std::vector<PollutionHelper::PollutionElement> normalize(const std::vecto
     if(max==0)return values;
     std::vector<PollutionHelper::PollutionElement> ret;
     for(auto value:values){
-        value.n_foreign_packets=value.n_foreign_packets*100 / max;
+        value.n_foreign_packets_normalized=value.n_foreign_packets*100 / max;
+        //value.n_foreign_packets=value.n_foreign_packets*100 / max;
         ret.push_back(value);
     }
     return ret;

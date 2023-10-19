@@ -17,12 +17,12 @@ import "../../elements"
 import QtCharts 2.0
 
 Rectangle{
-    width: parent.width
-    height: parent.height /2
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    //color: "#8cbfd7f3"
+    width: parent.width-12
+    height: parent.height*2/3;
+    anchors.centerIn: parent
     color: "#ADD8E6"
+    border.color: "black"
+    border.width: 3
 
     property bool m_is_air: false
 
@@ -33,7 +33,7 @@ Rectangle{
             _qopenhd.show_toast("WARNING: Changing TX power while armed is not recommended !");
         }
         var card_chipset_type=get_chipset_type();
-        if(!card_chipset_type==0 || card_chipset_type==1){
+        if(!(card_chipset_type==0 || card_chipset_type==1)){
             _messageBoxInstance.set_text_and_show("Changing tx power is only possible on openhd supported cards.");
             return;
         }
@@ -112,13 +112,13 @@ Rectangle{
         ListElement {title: "MAX    [26]"; value: 26}
     }
     ListModel{
-            id: model_rtl8812au_manufacturer_openhd
-            ListElement {title: "Please select"; value: -1}
-            ListElement {title: "LOW    [3]   ~25mW"; value: 3}
-            ListElement {title: "MEDIUM [5]   ~200mW"; value: 5}
-            ListElement {title: "HIGH   [10]  ~1W"; value: 10}
-            ListElement {title: "MAX    [12]  ~2W"; value: 12}
-        }
+        id: model_rtl8812au_manufacturer_openhd
+        ListElement {title: "Please select"; value: -1}
+        ListElement {title: "LOW    [3]   ~25mW"; value: 3}
+        ListElement {title: "MEDIUM [5]   ~200mW"; value: 5}
+        ListElement {title: "HIGH   [10]  ~1W"; value: 10}
+        ListElement {title: "MAX    [12]  ~2W"; value: 12}
+    }
     ListModel{
         id: model_rtl8812au_manufacturer_generic
         ListElement {title: "Please select"; value: -1}
@@ -168,8 +168,8 @@ Rectangle{
             }
         }else if(chip_type==1){
             // RTL8812BU
-            if(m_card_manufacturer_type==0){
-               ret= model_rtl8812bu_manufacturer_comfast;
+            if(manufacturer==0){
+                ret= model_rtl8812bu_manufacturer_comfast;
             }else{
                 ret = model_rtl8812bu_manufacturer_generic;
             }
@@ -199,57 +199,80 @@ Rectangle{
         return _wifi_card_gnd0.tx_power_unit;
     }
 
-    ColumnLayout{
-        id: bla1
-        width: parent.width /3
-        anchors.top: parent.top
-        anchors.left: parent.left
-        Text{
-            text: m_is_air ? "AIR TX Power" : "GND TX power";
-        }
-        Text{
-            text: "YOUR CHIPSET:" +get_card_chipset_str()
-        }
+    GridLayout{
+        id: main_row_layout
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.leftMargin: 5
+        Layout.rightMargin: 5
+        //anchors.top: parent.top
+        //anchors.bottom: parent.bottom
+        //anchors.left: parent.left
+        //anchors.right: parent.right
+        //Layout.minimumWidth: 300
+        //Layout.preferredWidth: 600
 
+        Text{
+            Layout.row: 0
+            Layout.column: 0
+            text: m_is_air ? "AIR TX Power" : "GND TX power";
+            font.bold: true
+            horizontalAlignment: Qt.AlignHCenter
+            font.pixelSize: 14
+        }
+        //
+        Text{
+            Layout.row: 1
+            Layout.column: 0
+            text: "RF CHIP:\n" +get_card_chipset_str()
+            horizontalAlignment: Qt.AlignHCenter
+            font.pixelSize: 14
+        }
         ComboBox {
-            Layout.fillWidth: true
-            leftPadding: 12
-            rightPadding: 12
+            Layout.row: 1
+            Layout.column: 1
             id: comboBoxCardSelectManufacturer
+            Layout.minimumWidth: 100
+            Layout.preferredWidth: 350
             model: get_model_manufacturer_for_chip_type()
             textRole: "title"
             onCurrentIndexChanged: {
                 var manufacturer=comboBoxCardSelectManufacturer.model.get(comboBoxCardSelectManufacturer.currentIndex).value;
                 m_user_selected_card_manufacturer=manufacturer;
             }
+            font.pixelSize: 14
         }
-        Text{
-            text: "CURRENT:"+get_current_tx_power_int(0)+" "+get_tx_power_unit();
+        // FILLER
+        Item{
+            Layout.row: 1
+            Layout.column: 3
+            Layout.fillWidth: true
         }
-    }
-
-    ColumnLayout{
-        id: bla2
-        width: parent.width /3
-        anchors.left: bla1.right
-        anchors.top: parent.top
+        // ----------------
         Text{
-            text: "DISARMED"
-        }
-        Text{
-            text: ""+get_current_tx_power_int(1)+" "+get_tx_power_unit();
+            Layout.row: 2
+            Layout.column: 0
+            text: "DISARMED:\n"+get_current_tx_power_int(1)+" "+get_tx_power_unit();
+            Layout.fillWidth: true
+            horizontalAlignment: Qt.AlignHCenter
+            font.pixelSize: 14
         }
         ComboBox {
+            Layout.row: 2
+            Layout.column: 1
             Layout.fillWidth: true
-            leftPadding: 12
-            rightPadding: 12
+            Layout.minimumWidth: 100
+            Layout.preferredWidth: 350
             id: combo_box_txpower_disarmed
             model: get_model_txpower_for_chip_type_manufacturer(false)
             textRole: "title"
             enabled: m_user_selected_card_manufacturer>=0;
+            font.pixelSize: 14
         }
         Button{
-            text: "APPLY"
+            Layout.row: 2
+            Layout.column: 2
+            text: "SAVE"
             enabled: m_user_selected_card_manufacturer>=0;
             onClicked: {
                 var tx_power_index_or_mw = combo_box_txpower_disarmed.model.get(combo_box_txpower_disarmed.currentIndex).value;
@@ -265,34 +288,43 @@ Rectangle{
                     _qopenhd.show_toast("Cannot change TX power, please try again",true);
                 }
             }
+            font.pixelSize: 14
         }
-    }
-    ColumnLayout{
-        width: parent.width /3
-        anchors.right: parent.right
-        anchors.top: parent.top
-        Text{
-            text: "ARMED"
+        // FILLER
+        Item{
+            Layout.row: 2
+            Layout.column: 3
+            Layout.fillWidth: true
         }
+        // ----------------
         Text{
+            Layout.row: 3
+            Layout.column: 0
             text: {
                 var power_int=get_current_tx_power_int(2);
                 if(power_int==0) return "DISABLED";
-                return ""+get_current_tx_power_int(2)+" "+get_tx_power_unit();
+                return "ARMED:\n"+get_current_tx_power_int(2)+" "+get_tx_power_unit();
             }
+            Layout.fillWidth: true
+            horizontalAlignment: Qt.AlignHCenter
+            font.pixelSize: 14
         }
         ComboBox {
+            Layout.row: 3
+            Layout.column: 1
             Layout.fillWidth: true
-            leftPadding: 12
-            rightPadding: 12
+            Layout.minimumWidth: 100
+            Layout.preferredWidth: 350
             id: combo_box_txpower_armed
             model: get_model_txpower_for_chip_type_manufacturer(true)
             textRole: "title"
             enabled: m_user_selected_card_manufacturer>=0;
+            font.pixelSize: 14
         }
-
         Button{
-            text: "APPLY"
+            Layout.row: 3
+            Layout.column: 2
+            text: "SAVE"
             enabled: m_user_selected_card_manufacturer>=0;
             onClicked: {
                 var tx_power_index_or_mw = combo_box_txpower_armed.model.get(combo_box_txpower_armed.currentIndex).value;
@@ -308,7 +340,46 @@ Rectangle{
                     _qopenhd.show_toast("Cannot change TX power, please try again",true);
                 }
             }
+            font.pixelSize: 14
         }
+        // FILLER
+        Item{
+            Layout.row: 3
+            Layout.column: 3
+            Layout.fillWidth: true
+        }
+        Text{
+            Layout.row: 4
+            Layout.column: 0
+            text: "CURRENT:\n"+get_current_tx_power_int(0)+" "+get_tx_power_unit();
+            horizontalAlignment: Qt.AlignHCenter
+            font.pixelSize: 14
+        }
+        Text{
+            Layout.row: 4
+            Layout.column: 1
+            Layout.columnSpan: 2
+            text: "WARNING: ARMING WILL REDUCE YOUR TX POWER"
+            visible: {
+                var txpower_disarmed=get_current_tx_power_int(1);
+                var txpower_armed=get_current_tx_power_int(2);
+                if(txpower_armed==0)return false;
+                return txpower_armed<txpower_disarmed;
+            }
+            color: "red"
+            font.pixelSize: 14
+        }
+        Text{
+            Layout.row: 5
+            Layout.column: 0
+            Layout.columnSpan: 3
+            text: "WARNING: Selecting the wrong manufacturer and applying a tx power can destroy your card !\n";
+            color: "black"
+            wrapMode: Text.WordWrap
+            verticalAlignment: Qt.AlignBottom
+            font.pixelSize: 14
+        }
+        // ----------------
     }
 
     Button{
@@ -319,18 +390,6 @@ Rectangle{
             close()
         }
     }
-    Text{
-        width: parent.width
-        height: parent.height / 2;
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        text: "WARNING: Selecting the wrong manufacturer and applying a tx power can destroy your card !";
-        color: "red"
-        // Only on rtl8812au
-        //visible: get_chipset_type()==0;
-        fontSizeMode: Text.Fit
-        minimumPointSize: 10
-        font.pointSize: 60
-    }
+
 
 }

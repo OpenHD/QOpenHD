@@ -17,12 +17,12 @@ import "../../elements"
 import QtCharts 2.0
 
 Rectangle{
-    width: parent.width
-    height: parent.height /2
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    //color: "#8cbfd7f3"
+    width: parent.width-12
+    height: parent.height*2/3;
+    anchors.centerIn: parent
     color: "#ADD8E6"
+    border.color: "black"
+    border.width: 3
 
     function open(){
         visible=true
@@ -41,7 +41,14 @@ Rectangle{
         ListElement {title: "All 5.8G channels (slow)"; value: 2}
     }
 
+    /*Rectangle{
+        implicitWidth:main_grid_layout.width
+        implicitHeight: main_grid_layout.height
+        color: "#ADD8E6"
+    }*/
+
     GridLayout{
+        id: main_grid_layout
         Layout.fillWidth: true
         Layout.fillHeight: true
 
@@ -102,6 +109,7 @@ Rectangle{
             Layout.row: 2
             Layout.column: 0
             text: _wbLinkSettingsHelper.scanning_text_for_ui
+            font.pixelSize: 25
         }
     }
     Button{

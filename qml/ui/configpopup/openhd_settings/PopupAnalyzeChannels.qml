@@ -17,12 +17,14 @@ import "../../elements"
 import QtCharts 2.0
 
 Rectangle{
-    width: parent.width
-    height: parent.height /2
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    //color: "#8cbfd7f3"
+    width: parent.width-12
+    height: parent.height*2/3;
+    anchors.centerIn: parent
     color: "#ADD8E6"
+    border.color: "black"
+    border.width: 3
+
+    property bool m_normalize_data: false;
 
     function open(){
         visible=true
@@ -40,15 +42,60 @@ Rectangle{
 "NOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended."+
 "PLEASE DO NOT CHANGE SETTINGS WHILE ANALYZING."
 
-
+    RowLayout{
+        id: top_elements
+        Layout.fillWidth: true
+        Item{ //Spacer
+            Layout.fillWidth: true
+        }
+        Button{
+            Layout.alignment: Qt.AlignHCenter
+            text: "START"
+            onClicked: {
+                var result=_wbLinkSettingsHelper.start_analyze_channels()
+                if(result!==true){
+                    _qopenhd.show_toast("Busy,please try again later",true);
+                }else{
+                    _qopenhd.show_toast("STARTED, THIS MIGHT TAKE A WHILE !");
+                }
+            }
+            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+        }
+        Switch{
+            text: "NORMALIZE"
+            checked: m_normalize_data
+            onCheckedChanged: {
+                m_normalize_data=checked
+                pollution_chart.update_pollution_graph();
+            }
+        }
+        ButtonIconInfo{
+            Layout.alignment: Qt.AlignHCenter
+            onClicked: {
+                _messageBoxInstance.set_text_and_show(m_info_string)
+            }
+        }
+        Item{ //Spacer
+            Layout.fillWidth: true
+        }
+    }
+    // Argh, need to manually place the button
+    Button{
+        anchors.top: parent.top
+        anchors.right: parent.right
+        text: "CLOSE"
+        onClicked: {
+            close()
+        }
+    }
     ChartView {
+        anchors.top: top_elements.bottom
         title: "WiFi pollution estimate"
         width: parent.width
-        height: parent.height
+        height: parent.height-top_elements.height
         legend.alignment: Qt.AlignBottom
         antialiasing: true
 
-        anchors.centerIn: parent
         id: pollution_chart
 
         function update_pollution_graph(){
@@ -57,7 +104,7 @@ Rectangle{
             //const supported_frequencies = _wbLinkSettingsHelper.get_supported_frequencies();
             const supported_frequencies = _wbLinkSettingsHelper.get_supported_frequencies_filtered(1);
             var categories = _wbLinkSettingsHelper.pollution_frequencies_int_to_qstringlist(supported_frequencies);
-            var values = _wbLinkSettingsHelper.pollution_frequencies_int_get_pollution(supported_frequencies);
+            var values = _wbLinkSettingsHelper.pollution_frequencies_int_get_pollution(supported_frequencies,m_normalize_data);
             bar_axis_x.categories=categories;
             bar_set.values=values;
             /*const supported_frequencies=_wbLinkSettingsHelper.get_supported_frequencies();
@@ -84,35 +131,6 @@ Rectangle{
             }
         }
     }
-    Button{
-        text: "CLOSE"
-        anchors.top: parent.top
-        anchors.right: parent.right
-        onClicked: {
-            close()
-        }
-    }
 
-    RowLayout{
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        Button{
-            text: "START"
-            onClicked: {
-                var result=_wbLinkSettingsHelper.start_analyze_channels()
-                if(result!==true){
-                    _qopenhd.show_toast("Busy,please try again later",true);
-                }else{
-                    _qopenhd.show_toast("Analyze channels started, please wait");
-                }
-            }
-            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-        }
-        ButtonIconInfo{
-            onClicked: {
-                _messageBoxInstance.set_text_and_show(m_info_string)
-            }
-        }
-    }
 }
 

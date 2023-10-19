@@ -331,15 +331,6 @@ QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
     return ss.str().c_str();
 }
 
-int WBLinkSettingsHelper::get_frequency_pollution(int frequency_mhz)
-{
-    auto pollution=PollutionHelper::instance().threadsafe_get_pollution_for_frequency(frequency_mhz);
-    if(pollution.has_value()){
-        return pollution.value().n_foreign_packets;
-    }
-    return -1;
-}
-
 bool WBLinkSettingsHelper::get_frequency_radar(int frequency_mhz)
 {
     const auto frequency_item=find_frequency_item(frequency_mhz);
@@ -516,13 +507,18 @@ QStringList WBLinkSettingsHelper::pollution_frequencies_int_to_qstringlist(QList
     return ret;
 }
 
-QVariantList WBLinkSettingsHelper::pollution_frequencies_int_get_pollution(QList<int> frequencies)
+QVariantList WBLinkSettingsHelper::pollution_frequencies_int_get_pollution(QList<int> frequencies,bool normalize)
 {
     QVariantList ret;
     for(auto& freq: frequencies){
         auto pollution=PollutionHelper::instance().threadsafe_get_pollution_for_frequency(freq);
         if(pollution.has_value()){
-            ret.push_back(static_cast<int>(pollution.value().n_foreign_packets));
+            if(normalize){
+                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets_normalized));
+            }else{
+                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets));
+            }
+
         }else{
             ret.push_back(static_cast<int>(0));
         }

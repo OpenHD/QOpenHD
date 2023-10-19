@@ -164,13 +164,12 @@ Rectangle{
     }
 
     function get_text_wifi_tx_power(air){
-        // "99 TPI DISARM: XX ARM: XX";
         if(air){
             if(!_wifi_card_air.alive) return "N/A";
-            return ""+_wifi_card_air.tx_power+" "+_wifi_card_air.tx_power_unit+" DISARM:"+_wifi_card_air.tx_power_disarmed+" ARM:"+_wifi_card_air.tx_power_armed
+            return ""+_wifi_card_air.tx_power+" "+_wifi_card_air.tx_power_unit;
         }
         if(!_wifi_card_gnd0.alive) return "N/A";
-        return ""+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit+" DISARM:"+_wifi_card_gnd0.tx_power_disarmed+" ARM:"+_wifi_card_gnd0.tx_power_armed
+        return ""+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit;
     }
 
     ScrollView {

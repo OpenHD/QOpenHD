@@ -20,6 +20,7 @@ public:
         int frequency_mhz;
         int width_mhz;
         int n_foreign_packets;
+        int n_foreign_packets_normalized;
     };
     void threadsafe_update(const std::vector<PollutionElement>& values);
     std::optional<PollutionElement> threadsafe_get_pollution_for_frequency(int frequency);
