@@ -285,7 +285,7 @@ bool MavlinkTelemetry::change_manual_tcp_ip(QString ip)
 void MavlinkTelemetry::send_heartbeat_loop()
 {
     while(true){
-        qDebug()<<"send_heartbeat_loop";
+        //qDebug()<<"send_heartbeat_loop";
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         perform_connection_management();
     }

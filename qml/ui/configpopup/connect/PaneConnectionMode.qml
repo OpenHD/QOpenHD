@@ -107,6 +107,19 @@ Rectangle{
                 }
                 RowLayout {
                     Button{
+                        text: "Wifi tethering"
+                        Layout.preferredWidth: 180
+                        //TODO enable hotspot
+                    }
+                    ButtonIconInfoText {
+                        m_info_text: "1) Check status if your air / ground unit supports WiFi hotspot\n\n"+
+                                     "2) Make sure your FC is disarmed\n\n"+
+                                     "3) Connect this device to your AIR / GND unit wifi hotspot.\n\n"+
+                                     "NOTE: It is not recommended to use WiFi hotspot during flight (automatically disabled on arm by default)"
+                    }
+                }
+                RowLayout {
+                    Button{
                         text: "Passive Eth tethering"
                         Layout.preferredWidth: 180
                         //TODO disable active tethering and enable passive when clicking the button
@@ -129,19 +142,6 @@ Rectangle{
                                      "2) Connect your external device to your ground station via ethernet.\n\n"+
                                      "You might need to disable wifi and cellular on your phone\n\n"+
                                      "Video and telemetry forwarding should start automatically, internet will not be available."
-                    }
-                }
-                RowLayout {
-                    Button{
-                        text: "Wifi tethering"
-                        Layout.preferredWidth: 180
-                        //TODO enable hotspot
-                    }
-                    ButtonIconInfoText {
-                        m_info_text: "1) Enable WIFI_HOTSPOT_E\n\n"+
-                                     "2) Connect to WiFi: openhd pw openhdopenhd\n\n"+
-                                     "3) Press 'Connect' button.\n\n"+
-                                     "NOTE: You cannot use WIFI hotspot during flight (while armed)"
                     }
                 }
                 // padding to bottom

@@ -19,6 +19,7 @@ import QtCharts 2.0
 // This is an extra screen for changing the frequency / channel width -
 // They both need to match !
 Rectangle{
+    id: main_background
     width: parent.width
     height: parent.height
     //property color m_background_color: "#8cbfd7f3"
@@ -173,9 +174,9 @@ Rectangle{
     }
 
     ScrollView {
-        id:mavlinkExtraWBParamPanel
-        width: parent.width-24
-        height: parent.height-24
+        id: main_scroll_view
+        width: parent.width
+        height: parent.height
         anchors.centerIn: parent
         contentHeight: main_column_layout.height
         contentWidth: main_column_layout.width
@@ -191,7 +192,7 @@ Rectangle{
             Rectangle {
                 id: frequency_area_layout_background
                 color: m_background_color
-                implicitWidth: frequency_area_layout.implicitWidth+5
+                implicitWidth: main_scroll_view.width
                 implicitHeight: frequency_area_layout.implicitHeight+5
                 radius: 10
 
@@ -384,7 +385,7 @@ Rectangle{
                 }
             }
             Rectangle {
-                implicitWidth: tx_power_layout.implicitWidth
+                implicitWidth: main_scroll_view.width
                 implicitHeight: tx_power_layout.implicitHeight
                 id: tx_power_layout_background
                 color: m_background_color

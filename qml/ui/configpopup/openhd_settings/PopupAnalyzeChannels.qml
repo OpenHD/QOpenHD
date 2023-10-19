@@ -48,6 +48,14 @@ Rectangle{
         Item{ //Spacer
             Layout.fillWidth: true
         }
+        Switch{
+            text: "NORMALIZE"
+            checked: m_normalize_data
+            onCheckedChanged: {
+                m_normalize_data=checked
+                pollution_chart.update_pollution_graph();
+            }
+        }
         Button{
             Layout.alignment: Qt.AlignHCenter
             text: "START"
@@ -60,14 +68,6 @@ Rectangle{
                 }
             }
             enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-        }
-        Switch{
-            text: "NORMALIZE"
-            checked: m_normalize_data
-            onCheckedChanged: {
-                m_normalize_data=checked
-                pollution_chart.update_pollution_graph();
-            }
         }
         ButtonIconInfo{
             Layout.alignment: Qt.AlignHCenter
