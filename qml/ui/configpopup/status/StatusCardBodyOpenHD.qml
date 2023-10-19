@@ -221,6 +221,7 @@ ColumnLayout {
                     "2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0";
         }
         m_has_error: {
+            if(!_ohdSystemAir.is_alive)return false;
             var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
             // We allow 0 (Betaflight / inav / ... ) and 1 (Arupilot)
             if(air_fc_sys_id==0 || air_fc_sys_id==1)return false;

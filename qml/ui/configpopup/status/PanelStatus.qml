@@ -35,15 +35,14 @@ Rectangle {
         width: parent.width
         height: parent.height
         contentHeight: mainItem.height
-        //contentWidth: mainItem.width
+        contentWidth: mainItem.width
         clip: true
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
 
         Item{
             id: mainItem
-            //width: 1024
-            width: parent.width
+            width: 800
             height: 40+400+80
 
             QOpenHDVersionCard{
