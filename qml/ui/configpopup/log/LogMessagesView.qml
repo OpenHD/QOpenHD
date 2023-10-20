@@ -13,6 +13,7 @@ import "../../elements"
 
 // Uses the c++ logmessagemodel under app/logging/logmessagesmodel
 Rectangle{
+    id: main_item
     width: parent.width
     height: parent.height
     //color: Qt.rgba(0.2, 0.2, 0.2, 1.0)
@@ -27,13 +28,14 @@ Rectangle{
         height: parent.height
         anchors.top: parent.top
         contentHeight: baseLogMessagesView.height
+        contentWidth: baseLogMessagesView.width
         clip: true
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
 
         ListView {
             id: baseLogMessagesView
-            width: parent.width
+            width: main_item.width
             //height: parent.height
             model: m_log_model
 

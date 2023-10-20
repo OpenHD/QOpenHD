@@ -107,11 +107,6 @@ Rectangle{
             var values = _wbLinkSettingsHelper.pollution_frequencies_int_get_pollution(supported_frequencies,m_normalize_data);
             bar_axis_x.categories=categories;
             bar_set.values=values;
-            /*const supported_frequencies=_wbLinkSettingsHelper.get_supported_frequencies();
-            bar_axis_x.categories.clear();
-            for(var i=0;i<supported_frequencies.length;i++){
-                bar_axis_x.categories.append(""+supported_frequencies.at(i));
-            }*/
         }
 
         BarSeries {
@@ -131,6 +126,5 @@ Rectangle{
             }
         }
     }
-
 }
 

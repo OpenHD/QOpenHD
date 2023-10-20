@@ -14,8 +14,6 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-import QtCharts 2.0
-
 Rectangle{
     width: parent.width-12
     height: parent.height*2/3;

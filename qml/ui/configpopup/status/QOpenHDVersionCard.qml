@@ -22,6 +22,8 @@ Card {
 
     hasHeader: false
 
+    property string m_qopenhd_version: _qopenhd.version_string
+
     /*Item{
         width: 200
         height: 50
@@ -67,7 +69,7 @@ Card {
         }
     }
     Text {
-        text: qsTr("v2.5.1-alpha")
+        text: qsTr(m_qopenhd_version)
         height: 60
         color: "#ff3a3a3a"
         anchors.bottom: parent.bottom

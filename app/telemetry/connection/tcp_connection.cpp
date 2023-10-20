@@ -103,6 +103,7 @@ TCPConnection::~TCPConnection()
 
 bool TCPConnection::try_connect_and_receive(const std::string remote_ip, const int remote_port)
 {
+    assert(m_receive_thread==nullptr);
     m_remote_ip=remote_ip;
     m_remote_port=remote_port;
     m_socket_fd=linux_tcp_socket_try_connect(remote_ip,remote_port,2);
@@ -158,6 +159,7 @@ bool TCPConnection::threadsafe_is_alive()
 
 void TCPConnection::process_data(const uint8_t *data, int data_len)
 {
+    m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
     for (int i = 0; i < data_len; i++) {
         mavlink_message_t msg;
         uint8_t res = mavlink_parse_char(1,data[i], &msg, &m_recv_status);
@@ -171,7 +173,6 @@ void TCPConnection::process_mavlink_message(mavlink_message_t message)
 {
     m_cb(message);
 }
-
 
 
 void TCPConnection::receive_until_stopped()

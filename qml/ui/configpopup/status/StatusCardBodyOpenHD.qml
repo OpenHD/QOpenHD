@@ -27,7 +27,7 @@ ColumnLayout {
     property string m_version: m_model.openhd_version
     property string m_last_ping: m_model.last_ping_result_openhd
     property bool m_is_alive: m_model.is_alive
-    property string m_qopenhd_version: "2.5.1-evo-alpha"
+    property string m_qopenhd_version: _qopenhd.version_string
 
     //fucking hell qt
     property int m_font_pixel_size: 13

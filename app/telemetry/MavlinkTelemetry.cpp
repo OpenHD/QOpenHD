@@ -64,11 +64,12 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
     }
-    if(m_udp_connection){
+    // Prefer udp
+    if(m_udp_connection->threadsafe_is_alive()){
         m_udp_connection->send_message(msg);
         return true;
     }else{
-        if(m_tcp_connection){
+        if(m_tcp_connection->threadsafe_is_alive()){
             m_tcp_connection->send_message(msg);
             return true;
         }
@@ -318,12 +319,18 @@ void MavlinkTelemetry::perform_connection_management()
             const std::string IP_OPENHD_WIFI_HOTSPOT="192.168.3.1";
             //const std::string IP_OPENHD_WIFI_HOTSPOT=IP_CONSTI_TEST;
             const std::string IP_OPENHD_ETHERNET_HOTSPOT="192.168.2.1";
-            if(m_tcp_connection->try_connect_and_receive(IP_OPENHD_WIFI_HOTSPOT,QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT)){
-                set_telemetry_connection_status("AUTO-CONNECTED (WIFI,TCP)");
-            }else if(m_tcp_connection->try_connect_and_receive(IP_OPENHD_ETHERNET_HOTSPOT,QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT)){
-                set_telemetry_connection_status("AUTO-CONNECTED (ETH,TCP)");
+            if(m_tcp_connection->m_keep_receiving && m_tcp_connection->threadsafe_is_alive()){
+                // Already connected
+                set_telemetry_connection_status("AUTO-CONNECTED");
             }else{
-                set_telemetry_connection_status("AUTO-NOT CONNECTED");
+                m_tcp_connection->stop_receiving();
+                if(m_tcp_connection->try_connect_and_receive(IP_OPENHD_WIFI_HOTSPOT,QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT)){
+                    set_telemetry_connection_status("AUTO-CONNECTED (WIFI,TCP)");
+                }else if(m_tcp_connection->try_connect_and_receive(IP_OPENHD_ETHERNET_HOTSPOT,QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT)){
+                    set_telemetry_connection_status("AUTO-CONNECTED (ETH,TCP)");
+                }else{
+                    set_telemetry_connection_status("AUTO-NOT CONNECTED");
+                }
             }
         }
     }else if(mavlink_connection_mode==1){
