@@ -232,12 +232,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
-        // Seems to be outdated
+        // Seems to be outdated. Apart from Betaflight, where this is life
         //qDebug()<<"Got message RC channels raw";
         mavlink_rc_channels_raw_t rc_channels_raw;
         mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
-        //const auto tmp=Telemetryutil::mavlink_msg_rc_channels_raw_to_array(rc_channels_raw);
-        //RCChannelsModel::instanceFC().update_all_channels(tmp);
+        const auto tmp=Telemetryutil::mavlink_msg_rc_channels_raw_to_array(rc_channels_raw);
+        RCChannelsModel::instanceFC().update_all_channels(tmp);
         set_rc_rssi_percentage( Telemetryutil::mavlink_rc_rssi_to_percent(rc_channels_raw.rssi));
         break;
     }
