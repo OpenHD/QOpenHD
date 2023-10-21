@@ -14,8 +14,6 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-import QtCharts 2.0
-
 Rectangle{
     width: parent.width-12
     height: parent.height*2/3;
@@ -97,7 +95,8 @@ Rectangle{
     ListModel{
         id: model_rtl8812au_manufacturer_asus_txpower
         ListElement {title: "Please select"; value: -1}
-        ListElement {title: "LOW    [22] ~20mW (DEFAULT) "; value: 22}
+        ListElement {title: "LOW    [10] ~5mW (DEFAULT)  "; value: 10}
+        ListElement {title: "LOW    [22] ~20mW           "; value: 22}
         ListElement {title: "MEDIUM [37] ~100mW          "; value: 37}
         ListElement {title: "HIGH   [53] ~320mW          "; value: 53}
         ListElement {title: "MAX1   [58] ~420mW (MCS<=2!)"; value: 58}
@@ -106,6 +105,7 @@ Rectangle{
     ListModel{
         id: model_rtl8812au_manufacturer_aliexpress_hp
         ListElement {title: "Please select"; value: -1}
+        ListElement {title: "LOW    [10]"; value: 10}
         ListElement {title: "LOW    [16]"; value: 16}
         ListElement {title: "MEDIUM [22]"; value: 22}
         ListElement {title: "HIGH   [24]"; value: 24}
@@ -116,14 +116,16 @@ Rectangle{
         ListElement {title: "Please select"; value: -1}
         ListElement {title: "LOW    [3]   ~25mW"; value: 3}
         ListElement {title: "MEDIUM [5]   ~200mW"; value: 5}
-        ListElement {title: "HIGH   [10]  ~1W"; value: 10}
-        ListElement {title: "MAX    [12]  ~2W"; value: 12}
+        ListElement {title: "HIGH   [14]  ~800mW"; value: 14}
+        ListElement {title: "MAX1   [18]   >1W"; value: 18}
+        ListElement {title: "MAX2   [20]   >1W"; value: 20}
     }
     ListModel{
         id: model_rtl8812au_manufacturer_generic
         ListElement {title: "Please select"; value: -1}
         ListElement {title: "[10] (DANGER,ARBITRARY)"; value: 10}
         ListElement {title: "[22] (DANGER,ARBITRARY)"; value: 22}
+        ListElement {title: "[30] (DANGER,ARBITRARY)"; value: 30}
         ListElement {title: "[37] (DANGER,ARBITRARY)"; value: 37}
         ListElement {title: "[53] (DANGER,ARBITRARY)"; value: 53}
         ListElement {title: "[58] (DANGER,ARBITRARY)"; value: 58}
@@ -147,6 +149,12 @@ Rectangle{
         ListElement {title: "<=1000mW (maybe)"; value: 1000}
         ListElement {title: "<=20000mW (maybe)"; value: 2000}
     }
+
+    // Such that we can copy and add the extra value for "NOT ENABLED"
+    ListModel{
+        id: model_txpower_for_chip_type_manufacturer_armed
+    }
+
 
     function get_model_txpower_for_chip_type_manufacturer(add_selection_disable){
         var chip_type=get_chipset_type();
@@ -177,9 +185,14 @@ Rectangle{
             ret = model_error;
         }
         // Armed has the extra option of tx power==0, which means the disarmed tx power is applied regardless if armed or not
-        //if(add_selection_disable){
-        //    ret.insert(1,{title: "DISABLE", value: 0});
-        //}
+        if(add_selection_disable){
+            model_txpower_for_chip_type_manufacturer_armed.clear();
+            for(var i = 0; i < ret.count; ++i){
+                model_txpower_for_chip_type_manufacturer_armed.insert(i,ret.get(i));
+            }
+            model_txpower_for_chip_type_manufacturer_armed.insert(1,{title: "DISABLE [0]", value: 0});
+            return model_txpower_for_chip_type_manufacturer_armed;
+        }
         return ret;
     }
 
@@ -302,7 +315,7 @@ Rectangle{
             Layout.column: 0
             text: {
                 var power_int=get_current_tx_power_int(2);
-                if(power_int==0) return "DISABLED";
+                if(power_int==0) return "ARMED:\nDISABLED";
                 return "ARMED:\n"+get_current_tx_power_int(2)+" "+get_tx_power_unit();
             }
             Layout.fillWidth: true

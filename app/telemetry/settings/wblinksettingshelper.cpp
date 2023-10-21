@@ -401,6 +401,27 @@ bool WBLinkSettingsHelper::set_param_tx_power(bool ground,bool is_tx_power_index
     return result;
 }
 
+bool WBLinkSettingsHelper::set_param_stbc_ldpc_enable_air_ground()
+{
+    qDebug()<<"set_param_stbc_ldpc_enable_air_ground";
+    const std::string param_id_stbc=openhd::WB_ENABLE_STBC;
+    const std::string param_id_ldpc=openhd::WB_ENABLE_LDPC;
+    auto command=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id_stbc,1);
+    auto result= XParam::instance().try_set_param_blocking(command);
+    if(!result)return false;
+    command=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id_ldpc,1);
+    result= XParam::instance().try_set_param_blocking(command);
+    if(!result)return false;
+    // air
+    command=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,param_id_stbc,1);
+    result= XParam::instance().try_set_param_blocking(command);
+    if(!result)return false;
+    command=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,param_id_ldpc,1);
+    result= XParam::instance().try_set_param_blocking(command);
+    if(!result)return false;
+    return true;
+}
+
 bool WBLinkSettingsHelper::update_supported_channels(const std::vector<uint16_t> supported_channels)
 {
     std::lock_guard<std::mutex> lock(m_supported_channels_mutex);

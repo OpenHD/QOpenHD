@@ -184,6 +184,10 @@ Rectangle{
                         }
                     }
                 }
+                Text{
+                    Layout.columnSpan: 2
+                    text: "TCP PORT: 5760"
+                }
             }
         }
 

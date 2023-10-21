@@ -107,15 +107,6 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
-            /*Text {
-                //Layout.alignment: left
-                text: "GND RX vid0: "+_cameraStreamModelPrimary.
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                verticalAlignment: Text.AlignVCenter
-            }*/
             Text {
                 //Layout.alignment: left
                 text: "GND RX tele: "+_ohdSystemAir.rx_tele_packets_per_second_and_bits_per_second
@@ -128,15 +119,6 @@ BaseWidget {
             Text {
                 //Layout.alignment: left
                 text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                //Layout.alignment: left
-                text: "STBC/LPDC/SGI: "+_ohdSystemGround.wb_stbc_enabled+"/"+_ohdSystemGround.wb_lpdc_enabled+"/"+_ohdSystemGround.wb_short_guard_enabled
                 color: "white"
                 font.bold: true
                 height: parent.height

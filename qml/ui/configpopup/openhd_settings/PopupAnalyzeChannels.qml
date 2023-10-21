@@ -85,6 +85,10 @@ Rectangle{
         anchors.right: parent.right
         text: "CLOSE"
         onClicked: {
+            if(_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==2){
+                _qopenhd.show_toast("STILL ANALYZING",);
+                return;
+            }
             close()
         }
     }

@@ -32,47 +32,6 @@ ColumnLayout {
     //fucking hell qt
     property int m_font_pixel_size: 13
 
-    function get_alive_text(){
-        return m_is_alive ? "Yes" : "NOT ALIVE !"
-    }
-    function get_alive_text_color(){
-        //return m_is_alive ? "green" : "red"
-        return m_is_alive ? "green" : "black"
-    }
-
-    function get_cards_text() {
-      if (!m_is_ground) {
-        var airCardType = _wifi_card_air.card_type_as_string;
-        airCardType = airCardType.substring(3);
-        return airCardType;
-      }
-
-
-      // Ground
-      var ret = "";
-
-      if (_wifi_card_gnd0.alive) {
-        ret += _wifi_card_gnd0.card_type_as_string;
-      }
-      if (_wifi_card_gnd1.alive) {
-        ret += "\n" + _wifi_card_gnd1.card_type_as_string;
-      }
-      if (_wifi_card_gnd2.alive) {
-        ret += "\n" + _wifi_card_gnd2.card_type_as_string;
-      }
-      if (_wifi_card_gnd3.alive) {
-        ret += "\n" + _wifi_card_gnd3.card_type_as_string;
-      }
-
-      if (ret.length == 0) return "N/A";
-
-      // Remove the first 3 characters if ret is not "N/A"
-      if (ret !== "N/A") {
-        ret = ret.substring(3);
-      }
-
-      return ret;
-    }
     function get_gnd_active_cards(){
         var ret=0;
         if(_wifi_card_gnd0.alive) ret++;
@@ -139,11 +98,6 @@ ColumnLayout {
         m_left_text: qsTr("Ping:")
         m_right_text:  m_last_ping
         m_right_text_color: m_last_ping === "N/A" ? "#DC143C" : "green"
-    }
-    StatusCardRow{
-        m_left_text: qsTr("Alive: ")
-        m_right_text: get_alive_text()
-        m_right_text_color: get_alive_text_color()
     }
     StatusCardRow{
         m_left_text: qsTr(m_is_ground ? "Link HW: " : "Link HW:")

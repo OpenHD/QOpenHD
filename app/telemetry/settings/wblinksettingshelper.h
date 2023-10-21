@@ -113,6 +113,7 @@ public:
     Q_INVOKABLE void set_param_air_only_mcs_async(int value);
     // Extra
     Q_INVOKABLE bool set_param_tx_power(bool ground,bool is_tx_power_index,bool is_for_armed_state,int value);
+    Q_INVOKABLE bool set_param_stbc_ldpc_enable_air_ground();
 private:
     struct SupportedChannel{
         uint16_t frequency;

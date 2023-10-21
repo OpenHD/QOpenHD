@@ -339,26 +339,6 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_wb_short_guard_enabled(bitfield.short_guard);
     set_curr_rx_last_packet_status_good(bitfield.curr_rx_last_packet_status_good);
 
-    if(m_is_air && !bitfield.stbc){
-        if(m_stbc_warning_shown)return;
-        //  If your ground unit uses card(s) with 2 antennas, enable STBC on your air unit (transmitting part)."
-        // "If your air unit uses card(s) with 2 antennas, enable STBC on your ground unit (transmitting part).
-        /*auto message="Please check: Enable WB_E_STBC on AIR unit IF your rtl8812au TX/RX both have more than one antenna"
-                       " (NOTE: Without 2 populated rf paths, enabling this option results in"
-                       " no connection !!! OpenHD cannot automatically check how many rf paths are populated on your adapter(s). ASUS has 1 external and "
-                       "1 internal antenna (STBC should be used). If you wish to not see this "
-                       "prompt again, you can disable it in QOpenHD - DEV - dev_wb_show_no_stbc_enabled_warning.";*/
-        auto message="Please check: STBC is not enabled on your air unit. "
-                       "If your air unit has 2 or more antennas (ONLY IF!), enable STBC to use them both and increase range significantly."
-                       "See the wiki for more info."
-                       "You can disable this prompt by going to QOpenHD - DEV and set dev_wb_show_no_stbc_enabled_warning=off.";
-        QSettings settings;
-        const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
-        if(!dev_wb_show_no_stbc_enabled_warning){
-            WorkaroundMessageBox::makePopupMessage(message,10);
-            m_stbc_warning_shown=true;
-        }
-    }
     // Feature: Warning if dBm falls below minimum threshold for current MCS index on packets that need to be received
     // We need to get the mcs index from the other system (aka from air if we are running on ground) since that's whats being injected
     const int mcs_index_other=m_is_air ? AOHDSystem::instanceGround().m_curr_mcs_index : AOHDSystem::instanceAir().m_curr_mcs_index;

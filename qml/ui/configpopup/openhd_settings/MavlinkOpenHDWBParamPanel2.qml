@@ -25,6 +25,8 @@ Rectangle{
     //property color m_background_color: "#8cbfd7f3"
     property color m_background_color: "#ADD8E6"
 
+    property int m_small_width: 200
+
     function user_quidance_animate_channel_scan(){
         console.log("User guidance animate channel scan");
         anim_find_air_unit.start()
@@ -113,6 +115,16 @@ Rectangle{
         change_tx_power_popup.close();
         dialoqueFreqChangeGndOnly.close();
         dialoqueFreqChangeArmed.close();
+        popup_enable_stbc_ldpc.close();
+    }
+
+    function get_text_stbc_ldpc(air){
+        if(air){
+            if(!_ohdSystemAir.is_alive)return "N/A";
+            return ""+(_ohdSystemAir.wb_stbc_enabled ? "YES" : "NO")+"/"+(_ohdSystemAir.wb_lpdc_enabled ? "YES" : "NO");
+        }
+        if(!_ohdSystemGround.is_alive)return "N/A";
+        return ""+(_ohdSystemGround.wb_stbc_enabled ? "YES" : "NO")+"/"+(_ohdSystemGround.wb_lpdc_enabled ? "YES" : "NO");
     }
 
     Component.onCompleted: {
@@ -306,7 +318,7 @@ Rectangle{
                             channel_scan_progress_view.open()
                         }
                         SequentialAnimation {
-                            running: true
+                            running: false
                             loops: 4
                             id: anim_find_air_unit
                             // Expand the button
@@ -396,22 +408,18 @@ Rectangle{
                     Text{
                         Layout.row: 0
                         Layout.column: 0
+                        Layout.columnSpan: 2
                         text: "TX POWER"
                         font.bold: true
                     }
                     Text{
                         Layout.row: 1
                         Layout.column: 0
-                        text: "AIR"
-                    }
-                    Text{
-                        Layout.row: 1
-                        Layout.column: 1
-                        text: get_text_wifi_tx_power(true)
+                        text: "AIR:\n "+get_text_wifi_tx_power(true)
                     }
                     Button{
                         Layout.row: 1
-                        Layout.column: 2
+                        Layout.column: 1
                         text: "CHANGE"
                         enabled: _ohdSystemAir.is_alive
                         onClicked: {
@@ -423,22 +431,58 @@ Rectangle{
                     Text{
                         Layout.row: 2
                         Layout.column: 0
-                        text: "GND"
-                    }
-                    Text{
-                        Layout.row: 2
-                        Layout.column: 1
-                        text: get_text_wifi_tx_power(false)
+                        text: "GND:\n"+get_text_wifi_tx_power(false)
                     }
                     Button{
                         Layout.row: 2
-                        Layout.column: 2
+                        Layout.column: 1
                         text: "CHANGE"
                         enabled: _ohdSystemGround.is_alive
                         onClicked: {
                             close_all_dialoques();
                             change_tx_power_popup.m_is_air=false;
                             change_tx_power_popup.open()
+                        }
+                    }
+                    // STBC / LDPC
+                    Text{
+                        width: 200
+                        Layout.row: 0
+                        Layout.column: 3
+                        Layout.columnSpan: 2
+                        text: "ADVANCED (STBC,LDPC)"
+                        font.bold: true
+                        horizontalAlignment: Qt.AlignHCenter
+                    }
+                    Text{
+                        Layout.row: 1
+                        Layout.column: 3
+                        text: "AIR:\n"+get_text_stbc_ldpc(true);
+                        horizontalAlignment: Qt.AlignHCenter
+                    }
+                    Text{
+                        Layout.row: 2
+                        Layout.column: 3
+                        text: "GND:\n"+get_text_stbc_ldpc(false);
+                        horizontalAlignment: Qt.AlignHCenter
+                    }
+                    ButtonIconInfo{
+                        Layout.row: 1
+                        Layout.column: 4
+                        onClicked: {
+                            _messageBoxInstance.set_text_and_show("STBC / LDPC : Greatly increases range, but requires 2 RF paths (2 Antennas) on BOTH your air and ground station."+
+                                                                  "WARNING: Enabling STBC with the wrong hardware (only 1 antenna / only one rf path) results in no connectivity "+
+                                                                  "and you need to re-flash your air / ground unit to recover !");
+                        }
+                    }
+                    Button{
+                        Layout.row: 2
+                        Layout.column: 4
+                        text: "EDIT";
+                        enabled: true //_ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
+                                //(_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
+                        onClicked: {
+                            popup_enable_stbc_ldpc.open()
                         }
                     }
                 }
@@ -456,6 +500,9 @@ Rectangle{
 
     PopupTxPowerEditor{
         id: change_tx_power_popup
+    }
+    PopupEnableSTBCLDPC{
+        id: popup_enable_stbc_ldpc
     }
 
     DialoqueFreqChangeGndOnly{
