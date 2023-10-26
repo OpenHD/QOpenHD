@@ -366,9 +366,10 @@ Rectangle{
                         Layout.columnSpan: 3
                         Text{
                             text:{
-                                "LOSS %:"+_ohdSystemGround.curr_rx_packet_loss_perc;
+                                "LOSS %:"+_ohdSystemGround.curr_rx_packet_loss_perc
                             }
                             color: _ohdSystemGround.curr_rx_packet_loss_perc > 5 ? "red" : "black"
+                            verticalAlignment: Qt.AlignVCenter
                         }
                         Text{
                             text: {
@@ -479,8 +480,9 @@ Rectangle{
                         Layout.row: 2
                         Layout.column: 4
                         text: "EDIT";
-                        enabled: true //_ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
-                                //(_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
+                        //enabled: true
+                        enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
+                                (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
                         onClicked: {
                             popup_enable_stbc_ldpc.open()
                         }

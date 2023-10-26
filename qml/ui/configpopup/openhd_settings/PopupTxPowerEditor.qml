@@ -303,10 +303,18 @@ Rectangle{
             }
             font.pixelSize: 14
         }
+        ButtonIconInfo{
+            Layout.row: 2
+            Layout.column: 3
+            onClicked: {
+                _messageBoxInstance.set_text_and_show("TX Power applied when FC is disarmed");
+            }
+        }
+
         // FILLER
         Item{
             Layout.row: 2
-            Layout.column: 3
+            Layout.column: 4
             Layout.fillWidth: true
         }
         // ----------------
@@ -355,10 +363,18 @@ Rectangle{
             }
             font.pixelSize: 14
         }
+        ButtonIconInfo{
+            Layout.row: 3
+            Layout.column: 3
+            onClicked: {
+                _messageBoxInstance.set_text_and_show("TX Power applied when FC is armed. By default, set to 0 (DISABLE) which means the same tx power (tx power disarmed) is applied regardless"+
+                                                      "if armed or not.");
+            }
+        }
         // FILLER
         Item{
             Layout.row: 3
-            Layout.column: 3
+            Layout.column: 4
             Layout.fillWidth: true
         }
         Text{

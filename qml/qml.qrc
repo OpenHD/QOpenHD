@@ -187,7 +187,6 @@
         <file>video/ExpMainVideoAndroid.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
-        <file>ui/widgets/PerformanceHorizonWidget.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
         <file>ui/widgets/BaseWidgetDefaultUiControlElements.qml</file>
         <file>resources/cursors/arrow_512_transparent.png</file>
@@ -259,5 +258,6 @@
         <file>ui/configpopup/status/StatusCardRow.qml</file>
         <file>ui/configpopup/connect/PaneConnectionMode.qml</file>
         <file>ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml</file>
+        <file>ui/widgets/PerformanceHorizonWidget2.qml</file>
     </qresource>
 </RCC>

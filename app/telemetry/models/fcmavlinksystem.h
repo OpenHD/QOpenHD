@@ -87,7 +87,7 @@ public: // Stuff needs to be public for qt
 
     // roll, pitch and yaw
     L_RO_PROP(double, pitch, set_pitch, 0)
-    L_RO_PROP(double, roll, set_roll, 0)
+    L_RO_PROP(double, roll, set_roll, 20)
     L_RO_PROP(double, yaw, set_yaw, 0)
     // mixed
     L_RO_PROP(double, throttle, set_throttle, 0)

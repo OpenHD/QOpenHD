@@ -126,7 +126,7 @@ Rectangle{
             Layout.row: 3
             Layout.column: 0
             text: "ENABLE"
-            visible: comboBoxNAntennasAir.currentIndex==2 && comboBoxNAntennasGnd.currentIndex==2;
+            enabled: comboBoxNAntennasAir.currentIndex==2 && comboBoxNAntennasGnd.currentIndex==2;
             font.pixelSize: 14
             onClicked: {
                 if(_wbLinkSettingsHelper.set_param_stbc_ldpc_enable_air_ground()){
@@ -140,8 +140,8 @@ Rectangle{
         Text{
             Layout.row: 4
             Layout.column: 0
-            visible: !button_enable.visible
-            text: "CAN ONLY BE ENABLED IF BOTH AIR AND GN UNIT HAVE 2 RF PATHS / ANTENNAS";
+            visible: !button_enable.enabled
+            text: "CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS";
             font.pixelSize: 14
         }
         // ----------------
