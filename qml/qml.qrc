@@ -259,5 +259,6 @@
         <file>ui/configpopup/connect/PaneConnectionMode.qml</file>
         <file>ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget2.qml</file>
+        <file>ui/configpopup/status/StatusCardsColumn2.qml</file>
     </qresource>
 </RCC>

@@ -79,7 +79,7 @@ Item{
 
     Rectangle{
         id: background3
-        //width: m_card_width
+        width: m_card_width
         height: parent.height
         anchors.rightMargin: m_padding_between
         anchors.leftMargin: m_padding_between

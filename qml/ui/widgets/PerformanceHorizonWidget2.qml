@@ -25,6 +25,13 @@ BaseWidget {
 
     m_show_grid_when_dragging : true
 
+    //property color line_fill_color: "green"
+    //property color line_outline_color: "yellow"
+    //property color middle_element_color: "green"
+    property color line_fill_color: settings.color_shape
+    property color line_outline_color: settings.color_glow
+    property color middle_element_color: settings.color_shape
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -36,6 +43,7 @@ BaseWidget {
 
             show_vertical_lock: true
             show_horizontal_lock: true
+            show_transparency: true
 
         }
     }
@@ -43,7 +51,10 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        // There is no point in making this one opaque
+        opacity: 1.0
+        //opacity: bw_current_opacity
+        scale: bw_current_scale
 
         // actual horizon
         Item{
@@ -53,35 +64,40 @@ BaseWidget {
             anchors.centerIn: parent
             // Left line
             Rectangle{
-                width: parent.width/3
+                id: left_line
+                width: (parent.width/2) - 20
                 height: parent.height
                 anchors.left: parent.left
-                color: "green"
-                //color:  settings.color_text
-                //border.color: settings.color_glow
-                //border.width: 1
+                color: line_fill_color
+                border.color: line_outline_color
+                border.width: 1
+                antialiasing: true
             }
             //
             // Here is the middle, which isn't rotated and therefore not placed in here
             //
             // Right line
             Rectangle{
-                width: parent.width/3
+                id: right_line
+                width: left_line.width
                 height: parent.height
                 anchors.right: parent.right
-                color: "green"
+                color: line_fill_color
+                border.color: line_outline_color
+                border.width: 1
+                antialiasing: true
             }
             transform: [
                 // First rotate (roll)
                 Rotation {
                     origin.x: horizon_item.width/2;
                     origin.y: horizon_item.height/2;
-                    //angle: _fcMavlinkSystem.roll*-1
-                    angle: 0
+                    angle: _fcMavlinkSystem.roll*-1
+                    //angle: 0
                 },
                 // Then translate (pitch)
                 Translate{
-                    y: 0
+                    y: _fcMavlinkSystem.pitch*4
                 }
             ]
         }
@@ -93,7 +109,8 @@ BaseWidget {
            radius: width/2;
            anchors.centerIn: parent
            color: "transparent"
-           border.color: "green"
+           //border.color: "green"
+           border.color: middle_element_color
            border.width: 2
         }
         Rectangle{
@@ -101,7 +118,7 @@ BaseWidget {
             height: 2;
             width: 30
             anchors.centerIn: parent
-            color: "green"
+            color: middle_element_color
         }
 
         /*Rectangle{

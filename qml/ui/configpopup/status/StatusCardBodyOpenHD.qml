@@ -65,11 +65,6 @@ ColumnLayout {
         return ret;
     }
 
-    property int text_minHeight: 30
-    property int column_preferred_height: 50
-
-    property int left_part_preferred_with: 100
-
     StatusCardRow{
         m_left_text: qsTr("Version:")
         m_right_text: m_version

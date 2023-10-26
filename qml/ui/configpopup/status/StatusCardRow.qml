@@ -27,7 +27,7 @@ Item {
     //Layout.preferredHeight: 30
     //Layout.minimumWidth: 250
     width: parent.width
-    height: 50
+    height: 48
 
     id: main_item
     property string m_left_text: "LEFT"
@@ -75,8 +75,10 @@ Item {
             anchors.top: parent.top
             text: m_left_text
             verticalAlignment: Qt.AlignVCenter
+            horizontalAlignment: Qt.AlignRight
             font.bold: true
-            font.pixelSize: 20
+            font.pixelSize: 19
+            clip: true
         }
 
         Text{
@@ -87,9 +89,10 @@ Item {
             anchors.top: left_part.top
             text: m_right_text
             verticalAlignment: Qt.AlignVCenter
+            horizontalAlignment: Qt.AlignCenter
             color: m_has_error ? m_right_text_color_error : m_right_text_color
             visible: !right_part_button.visible
-            font.pixelSize: 20
+            font.pixelSize: 19
         }
         MouseArea {
             enabled: m_has_error && !m_look_shit_on_error

@@ -43,16 +43,19 @@ Rectangle {
         Item{
             id: mainItem
             width: 800
-            height: 40+400+80
+            height: 40+350+80
 
             QOpenHDVersionCard{
                 id: qopenhdversioncard
                 height: 40
             }
-            StatusCardsColumn{
+
+            // The 3 status cards (OpenHD AIR & GND, FC)
+            // next to each other
+            StatusCardsColumn2{
                 id: statuscardscolumn
                 width: parent.width
-                height: 400
+                height: 350
 
                 anchors.leftMargin: 12
                 anchors.rightMargin: 12
@@ -60,6 +63,7 @@ Rectangle {
 
                 anchors.top: qopenhdversioncard.bottom
             }
+
 
             PingUtilColumn {
                 id:actionsButtonMenu
