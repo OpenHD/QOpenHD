@@ -368,7 +368,7 @@ Item {
         id: horizonWidget
     }
 
-    PerformanceHorizonWidget{
+    PerformanceHorizonWidget2{
         id: performanceHorizonWidget
     }
 
