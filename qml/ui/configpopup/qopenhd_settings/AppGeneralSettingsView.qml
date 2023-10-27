@@ -30,33 +30,6 @@ ScrollView {
             anchors.right: parent.right
 
             SettingBaseElement{
-                m_short_description: "Mavlink sys id"
-                m_long_description: "Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart."
-
-                SpinBox {
-                    id: mavlinkSysIDSpinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 1
-                    to: 255
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.qopenhd_mavlink_sysid
-                    onValueChanged: {
-                        if(value==100 || value==101){
-                            // openhd air and ground unit sys id are hard coded, one should never use them
-                            _messageBoxInstance.set_text_and_show("Do not use 100 or 101 for QOpenHD sys id")
-                        }
-                        settings.qopenhd_mavlink_sysid = value
-                    }
-                }
-            }
-
-            SettingBaseElement{
                 m_short_description: "Enable speech"
                 m_long_description: "Enable text to speech - events like flight mode change are given as audio messages"
 
@@ -201,6 +174,32 @@ ScrollView {
                         if(actually_changed){
                             _restartqopenhdmessagebox.show()
                         }
+                    }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Mavlink sys id"
+                m_long_description: "Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart."
+
+                SpinBox {
+                    id: mavlinkSysIDSpinBox
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    from: 1
+                    to: 255
+                    stepSize: 1
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                    value: settings.qopenhd_mavlink_sysid
+                    onValueChanged: {
+                        if(value==100 || value==101){
+                            // openhd air and ground unit sys id are hard coded, one should never use them
+                            _messageBoxInstance.set_text_and_show("Do not use 100 or 101 for QOpenHD sys id")
+                        }
+                        settings.qopenhd_mavlink_sysid = value
                     }
                 }
             }

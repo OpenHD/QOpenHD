@@ -52,15 +52,16 @@ Rectangle {
 
             // The 3 status cards (OpenHD AIR & GND, FC)
             // next to each other
-            StatusCardsColumn2{
+            StatusCardsColumn{
                 id: statuscardscolumn
                 width: parent.width
                 height: 350
 
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                anchors.topMargin: 12
 
+                anchors.leftMargin: 4
+                anchors.topMargin: 4
+
+                anchors.left: parent.left
                 anchors.top: qopenhdversioncard.bottom
             }
 

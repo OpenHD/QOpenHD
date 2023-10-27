@@ -487,10 +487,10 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                             Button{
                                 text: "DESERT"
                                 onClicked: {
-                                    set_keyframe_interval(8)
+                                    set_keyframe_interval(5)
                                     set_fec_percentage(10)
                                 }
-                                highlighted:  m_curr_keyframe_i == 8 && m_curr_fec_perc==10
+                                highlighted:  m_curr_keyframe_i == 5 && m_curr_fec_perc==10
                             }
                         }
                     }

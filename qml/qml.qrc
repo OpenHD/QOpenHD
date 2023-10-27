@@ -209,7 +209,6 @@
         <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
-        <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkAllSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
@@ -228,7 +227,6 @@
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapWidget.qml</file>
-        <file>ui/configpopup/status/StatusCardsColumn.qml</file>
         <file>ui/configpopup/status/PingUtilColumn.qml</file>
         <file>ui/elements/ButtonRed.qml</file>
         <file>ui/elements/ButtonOrange.qml</file>
@@ -251,7 +249,7 @@
         <file>ui/configpopup/status/DialoqueNotAlive.qml</file>
         <file>ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml</file>
         <file>ui/configpopup/log/LogMessagesView.qml</file>
-        <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel2.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/PopupScanChannels.qml</file>
         <file>ui/configpopup/openhd_settings/PopupTxPowerEditor.qml</file>
         <file>ui/elements/TextOrWarningButton.qml</file>
@@ -259,6 +257,6 @@
         <file>ui/configpopup/connect/PaneConnectionMode.qml</file>
         <file>ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget2.qml</file>
-        <file>ui/configpopup/status/StatusCardsColumn2.qml</file>
+        <file>ui/configpopup/status/StatusCardsColumn.qml</file>
     </qresource>
 </RCC>

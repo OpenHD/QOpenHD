@@ -41,6 +41,8 @@ Rectangle{
         ColumnLayout{
             id: main_layout
             width: main_item.width
+            anchors.left: parent.left
+            anchors.leftMargin: 4
             //Layout.fillWidth: true
             Layout.fillHeight: true
             Text{

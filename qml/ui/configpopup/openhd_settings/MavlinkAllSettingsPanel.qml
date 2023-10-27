@@ -29,7 +29,7 @@ Rectangle {
 
     function user_quidance_animate_channel_scan(){
         selectItemInStackLayoutBar.currentIndex=0;
-        xX_WBLinkSettings.user_quidance_animate_channel_scan();
+        mavlink_openhd_wb_param_panel.user_quidance_animate_channel_scan();
     }
 
     // Tab bar for selecting items in stack layout
@@ -56,45 +56,40 @@ Rectangle {
 
     // placed right below the top bar
     StackLayout {
-          width: parent.width
-          height: parent.height-selectItemInStackLayoutBar.height
-          anchors.top: selectItemInStackLayoutBar.bottom
-          anchors.left: selectItemInStackLayoutBar.left
-          anchors.bottom: parent.bottom
-          currentIndex: selectItemInStackLayoutBar.currentIndex
+        width: parent.width
+        height: parent.height-selectItemInStackLayoutBar.height
+        anchors.top: selectItemInStackLayoutBar.bottom
+        anchors.left: selectItemInStackLayoutBar.left
+        anchors.bottom: parent.bottom
+        currentIndex: selectItemInStackLayoutBar.currentIndex
 
-          MavlinkOpenHDWBParamPanel2{
-          //WBFrequencyPanel{
-              id: xX_WBLinkSettings
-          }
-        //   MavlinkSetupPiCameraPanel{
-        //       id: x1_WBPiCameraSettings
-        //   }
-          MavlinkParamPanel{
-              id: x1_AirCameraSettingsPanel
-              m_name: "CAMERA1"
-              m_instanceMavlinkSettingsModel: _airCameraSettingsModel
-              m_instanceCheckIsAvlie: _ohdSystemAir
-          }
-          // exp
-          MavlinkParamPanel{
-              id: x1_AirCameraSettingsPanel2
-              m_name: "CAMERA2"
-              m_instanceMavlinkSettingsModel: _airCameraSettingsModel2
-              m_instanceCheckIsAvlie: _ohdSystemAir
-          }
-          MavlinkParamPanel{
-              id: x2_AirSettingsPanel
-              m_name: "AIR"
-              m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
-              m_instanceCheckIsAvlie: _ohdSystemAir
-          }
-          MavlinkParamPanel{
-              id: x3_GroundSettingsPanel
-              m_name: "GROUND"
-              m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
-              m_instanceCheckIsAvlie: _ohdSystemGround
-          }
-      }
+        MavlinkOpenHDWBParamPanel{
+            id: mavlink_openhd_wb_param_panel
+        }
+        MavlinkParamPanel{
+            id: x1_AirCameraSettingsPanel
+            m_name: "CAMERA1"
+            m_instanceMavlinkSettingsModel: _airCameraSettingsModel
+            m_instanceCheckIsAvlie: _ohdSystemAir
+        }
+        MavlinkParamPanel{
+            id: x1_AirCameraSettingsPanel2
+            m_name: "CAMERA2"
+            m_instanceMavlinkSettingsModel: _airCameraSettingsModel2
+            m_instanceCheckIsAvlie: _ohdSystemAir
+        }
+        MavlinkParamPanel{
+            id: x2_AirSettingsPanel
+            m_name: "AIR"
+            m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
+            m_instanceCheckIsAvlie: _ohdSystemAir
+        }
+        MavlinkParamPanel{
+            id: x3_GroundSettingsPanel
+            m_name: "GROUND"
+            m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
+            m_instanceCheckIsAvlie: _ohdSystemGround
+        }
+    }
 
 }
