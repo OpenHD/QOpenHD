@@ -17,6 +17,7 @@ ColumnLayout{
     // (aka it makes sense that the user wishes to place this widget vertically / horizontally in the center)
     property bool show_vertical_lock: false
     property bool show_horizontal_lock: false
+    property bool show_transparency: true
 
     Item {
         width: parent.width
@@ -44,6 +45,7 @@ ColumnLayout{
     Item {
         width: parent.width
         height: 32
+        visible: show_transparency
         Text {
             id: opacityTitle
             text: qsTr("Transparency")

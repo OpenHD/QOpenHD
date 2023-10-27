@@ -9,13 +9,13 @@
 static std::string wifi_card_type_to_string(const int card_type) {
     switch (card_type) {
     case 0:
-        return "RTL88X2AU_OHD";
+        return "RTL88X2AU";
     case 1:
-        return "RTL88X2BU_OHD";
+        return "RTL88X2BU";
     case 2:
-        return "RTL_88X2AU";
+        return "ERR_RTL_88X2AU";
     case 3:
-        return "RTL_88X2BU";
+        return "ERR_RTL_88X2BU";
     case 4:
         return "ATHEROS";
     case 5:

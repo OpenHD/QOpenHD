@@ -70,7 +70,7 @@ static void start_service_if_exists(const std::string& name){
     }else{
         std::stringstream message;
         message<<"Cannot start video decode service "<<name;
-        LogMessagesModel::instanceOHD().add_message_warn("QOpenHD",message.str().c_str());
+        LogMessagesModel::instanceGround().add_message_warn("QOpenHD",message.str().c_str());
         HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
         qDebug()<<message.str().c_str();
     }

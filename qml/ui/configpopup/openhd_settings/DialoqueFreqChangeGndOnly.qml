@@ -25,11 +25,17 @@ Card {
 
     property string m_original_error_message: ""
 
+    function close(){
+        visible=false;
+        enabled=false;
+    }
+
     function initialize_and_show_frequency(frequency,error_message){
         m_wanted_frequency=frequency
         m_index=0
         m_original_error_message=error_message;
-        dialoqueChangeFrequency.visible=true
+        visible=true;
+        enabled=true;
     }
 
     property string m_info_string_frequency: "Please use the channel scan to find your air unit, then change frequency."+

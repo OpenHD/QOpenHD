@@ -33,6 +33,7 @@ class MavlinkTelemetry : public QObject
     Q_OBJECT
 public:
     MavlinkTelemetry(QObject *parent = nullptr);
+    ~MavlinkTelemetry();
     static MavlinkTelemetry& instance();
     void start();
     /**
@@ -54,16 +55,17 @@ public:
     Q_INVOKABLE void ping_all_systems();
     // re-apply all FC telemetry rate(s)
     Q_INVOKABLE void re_apply_rates();
-    // Switch from UDP to TCP
-    Q_INVOKABLE void add_tcp_connection_handler(QString ip);
-    // Back to udp
-    Q_INVOKABLE void enable_udp();
+    // Change the conenction mode
+    Q_INVOKABLE void change_telemetry_connection_mode(int mode);
+    Q_INVOKABLE bool change_manual_tcp_ip(QString ip);
 public:
     // A couple of stats exposed as QT properties
     L_RO_PROP(int,telemetry_pps_in,set_telemetry_pps_in,-1)
     L_RO_PROP(int,telemetry_bps_in,set_telemetry_bps_in,-1)
     L_RO_PROP(bool,udp_localhost_mode_enabled,set_udp_localhost_mode_enabled,true)
     //
+    L_RO_PROP(QString,telemetry_connection_status,set_telemetry_connection_status,"N/A");
+
 private:
     // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
     // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
@@ -90,7 +92,10 @@ private:
     PacketsPerSecondCalculator m_tele_pps_in;
     std::unique_ptr<std::thread> m_heartbeat_thread;
     std::atomic_bool m_heartbeat_thread_run;
+    std::atomic<int> m_connection_mode;
+    std::shared_ptr<std::string> m_connction_manual_tcp_ip;
     void send_heartbeat_loop();
+    void perform_connection_management();
 };
 
 #endif // OHDMAVLINKCONNECTION_H

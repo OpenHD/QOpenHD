@@ -46,6 +46,17 @@ Rectangle {
         sidebar.focus = true;
     }
 
+    function user_quidance_open_connect_screen(){
+        openSettings();
+        mainStackLayout.currentIndex=5;
+    }
+
+    function user_guidance_open_openhd_settings_find_air_unit_location(){
+        openSettings();
+        mainStackLayout.currentIndex=1;
+        mavlinkAllSettingsPanel.user_quidance_animate_channel_scan();
+    }
+
     /*Keys.onPressed: (event)=> {
         console.log("ConfigPopup Key was pressed:"+event);
         if (event.key == Qt.Key_Return) {
@@ -165,19 +176,20 @@ Rectangle {
                 m_selection_index: 0
             }
 
-            // QOpenHD Settings - AppSettingsPanel
-            ConfigPopupSidebarButton{
-                id:  qopenhd_button
-                m_icon_text: "\uf013"
-                m_description_text: "QOpenHD"
-                m_selection_index: 1
-            }
-
             // OpenHD Settings - MavlinkAllSettingsPanel
             ConfigPopupSidebarButton{
                 id:  openhd_button
                 m_icon_text: "\uf085"
                 m_description_text: "OpenHD"
+                m_selection_index: 1
+            }
+
+            // (QOpenHD Settings - AppSettingsPanel)
+            // OSD
+            ConfigPopupSidebarButton{
+                id:  qopenhd_button
+                m_icon_text: "\uf013"
+                m_description_text: "OSD"
                 m_selection_index: 2
             }
 
@@ -197,23 +209,6 @@ Rectangle {
                 m_selection_index: 4
             }
 
-
-            // Credits and copyright
-            ConfigPopupSidebarButton{
-                id:  credits
-                m_icon_text: "\uf005"
-                m_description_text: "Credits"
-                m_selection_index: 5
-            }
-
-            // Developer stats
-            ConfigPopupSidebarButton{
-                id:  developerstats
-                m_icon_text: "\uf0ad"
-                m_description_text: "DEV"
-                m_selection_index: 6
-            }
-
             // We only need the connect panel on android (external device)
             // On localhost, QOpenHD "automatically" connects due to udp localhost method
             ConfigPopupSidebarButton{
@@ -221,9 +216,24 @@ Rectangle {
                 id:  connect_button
                 m_icon_text: "\uf6ff"
                 m_description_text: "Connect"
-                m_selection_index: 7
+                m_selection_index: 5
             }
 
+            // Credits and copyright
+            ConfigPopupSidebarButton{
+                id:  credits
+                m_icon_text: "\uf005"
+                m_description_text: "Credits"
+                m_selection_index: 6
+            }
+
+            // Developer stats
+            ConfigPopupSidebarButton{
+                id:  developerstats
+                m_icon_text: "\uf0ad"
+                m_description_text: "DEV"
+                m_selection_index: 7
+            }
         }
     }
 
@@ -246,12 +256,13 @@ Rectangle {
             id: statusPanel
         }
 
-        AppSettingsPanel {
-            id: appSettingsPanel
+         //this is "openhd" menu
+        MavlinkAllSettingsPanel {
+            id:  mavlinkAllSettingsPanel
         }
 
-        MavlinkAllSettingsPanel {
-            id:  mavlinkAllSettingsPanel //this is "openhd" menu
+        AppSettingsPanel {
+            id: appSettingsPanel
         }
 
         LogMessagesStatusView{
@@ -262,6 +273,10 @@ Rectangle {
             id: rcInfoPanel
         }
 
+        ConnectPanel{
+            id: connectPanel
+        }
+
         Credits {
             id: creditspanel
         }
@@ -269,9 +284,7 @@ Rectangle {
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
         }
-        ConnectPanel{
-            id: connectPanel
-        }
+
     }
 }
 

@@ -1,4 +1,5 @@
 #include "udp_connection.h"
+#include "util/qopenhdmavlinkhelper.hpp"
 
 #ifdef __windows__
 #define _WIN32_WINNT 0x0600 //TODO dirty
@@ -90,6 +91,12 @@ void UDPConnection::send_message(const mavlink_message_t &msg)
             qDebug()<<"Cannot send data to "<<remote.to_string().c_str();
         }
     }
+}
+
+bool UDPConnection::threadsafe_is_alive(){
+    const int32_t now_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();;
+    const auto elapsed=now_ms-m_last_data_ms;
+    return elapsed <= 3*1000;
 }
 
 void UDPConnection::process_data(const uint8_t *data, int data_len)
@@ -187,6 +194,7 @@ void UDPConnection::connect_once()
             const std::string remote_ip=inet_ntoa(src_addr.sin_addr);
             const int remote_port=ntohs(src_addr.sin_port);
             set_remote(remote_ip,remote_port);
+            m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
             process_data(buffer,recv_len);
         }
     }

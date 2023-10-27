@@ -40,11 +40,14 @@ Item {
         hudOverlayGrid.focus = true;
         // Receive key events
         hudOverlayGrid.enabled =true;
+        // argh
+        actual_hud_elements.visible=true;
     }
     // Opens the config popup and gives it focus
     function open_config_popup(){
         // The HUD becomes not interactable while configpopup is opened
         hudOverlayGrid.enabled = false;
+        actual_hud_elements.visible=false;
         settings_panel.openSettings();
     }
 
@@ -247,6 +250,11 @@ Item {
             color: "transparent"
         }
     }
+    Item{
+        id: actual_hud_elements
+        width: parent.width
+        height: parent.height
+
     // By default on top row
     // --------------------------------------------------------------------------
     LinkDownRSSIWidget {
@@ -360,7 +368,7 @@ Item {
         id: horizonWidget
     }
 
-    PerformanceHorizonWidget{
+    PerformanceHorizonWidget2{
         id: performanceHorizonWidget
     }
 
@@ -459,6 +467,7 @@ Item {
 
     UAVTimeWiget{
         id: uavtimewidget
+    }
     }
 
     // Extra element - allows customizing the OSD color(s) and more

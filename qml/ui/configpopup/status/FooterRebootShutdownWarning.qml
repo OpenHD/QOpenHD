@@ -25,18 +25,14 @@ Item {
 
     function open_warning(){
         if(m_type==0){
-            var text="Looks like you are not receiving any messages from your OpenHD ground unit - when running on an external device,"+
-                    "please use the connect tab to connect to your ground unit. Otherwise, please make sure OpenHD core is running on your ground station."
-            _messageBoxInstance.set_text_and_show(text)
+            dialoqueNotAlive.open_ground();
         }else if(m_type==1){
-            var text=""
             if(_ohdSystemGround.is_alive){
-                text="Looks like you are not receiving any messages from your OpenHD air unit - please go to OpenHD settings (WB Link) and connect to your air unit "+
-                        "by performing a channel scan (FIND AIR UNIT)."
+                dialoqueNotAlive.open_air();
             }else{
-                text="Please make sure your ground unit is alive first."
+                var text="Please make sure your ground unit is alive first."
+                _messageBoxInstance.set_text_and_show(text)
             }
-            _messageBoxInstance.set_text_and_show(text)
         }else{
             var text=""
             if(!(_ohdSystemGround.is_alive && _ohdSystemAir.is_alive)){

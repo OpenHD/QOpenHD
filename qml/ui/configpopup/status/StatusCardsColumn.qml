@@ -13,80 +13,64 @@ import "../../elements"
 //
 // The 3 status cards (OpenHD AIR & GND, FC)
 // next to each other
-Item {
+RowLayout{
+    width: parent.width
+    height: parent.height
 
-    ColumnLayout {
-        id: ohdCards
-        width: parent.width - 24
-        height: parent.height
-        anchors.centerIn: parent
-        property int maximumWidth: width
+    property int m_card_width: parent.width/3;
+    property int m_card_height: 350
 
-        RowLayout {
-            width: parent.width - 24
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+    Card {
+        width: m_card_width
+        height:m_card_height
+        id: groundBox
+        cardName: qsTr("Ground station")
 
-            Card {
-                id: groundBox
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                Layout.maximumWidth: ohdCards.maximumWidth/3
-                cardName: qsTr("Ground station")
+        //visible: _ohdSystemGround.is_alive
+        m_style_error: !_ohdSystemGround.is_alive
 
-                visible: _ohdSystemGround.is_alive
+        cardBody: StatusCardBodyOpenHD{
+            m_is_ground: true
+        }
 
-                cardBody: StatusCardBodyOpenHD{
-                    m_is_ground: true
-                }
+        hasFooter: true
+        cardFooter: FooterRebootShutdownWarning{
+            m_type: 0
+        }
+    }
+    Card {
+        width: m_card_width
+        height:m_card_height
+        id: airBox
+        cardName: qsTr("Air unit")
+        //visible: _ohdSystemAir.is_alive
+        m_style_error: !_ohdSystemAir.is_alive
 
-                hasFooter: true
-                cardFooter: StatusCardFooterGenericOHDFC{
-                    m_type: 0
-                }
-            }
+        cardBody: StatusCardBodyOpenHD{
+            m_is_ground: false
+        }
 
-            Card {
-                id: airBox
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                Layout.maximumWidth: ohdCards.maximumWidth/3
-                cardName: qsTr("Air unit")
-                visible: _ohdSystemAir.is_alive
-                cardBody: StatusCardBodyOpenHD{
-                    m_is_ground: false
-                }
+        hasFooter: true
+        cardFooter: FooterRebootShutdownWarning{
+            m_type: 1
+        }
+    }
 
-                hasFooter: true
-                cardFooter: StatusCardFooterGenericOHDFC{
-                    m_type: 1
-                }
-            }
+    Card {
+        width: m_card_width
+        height:m_card_height
+        id: fcBox
+        cardName: qsTr("Flight Controller")
+        //visible: _fcMavlinkSystem.is_alive
+        m_style_error: !_fcMavlinkSystem.is_alive
+        cardBody: StatusCardBodyFC{
 
+        }
 
-            Card {
-                id: fcBox
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                cardName: qsTr("Flight Controller")
-                visible: _fcMavlinkSystem.is_alive
-                cardBody: StatusCardBodyFC{
-
-                }
-
-                hasFooter: true
-                cardFooter: StatusCardFooterGenericOHDFC{
-                    m_type: 2
-                }
-            }
-            Image {
-                    id: ee1
-                    visible: !_ohdSystemAir.is_alive && !_ohdSystemGround.is_alive && !_ohdSystemGround.is_alive
-                    source: "../../../resources/noconnection.svg"
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.topMargin: Layout.preferredWidth * -0.15
-                    Layout.preferredWidth: ohdCards.width * 0.5
-                    Layout.preferredHeight: Layout.preferredWidth
-                }
+        hasFooter: true
+        cardFooter: FooterRebootShutdownWarning{
+            m_type: 2
         }
     }
 }
+

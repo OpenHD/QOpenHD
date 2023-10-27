@@ -134,7 +134,6 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/flightpathvector.cpp \
     app/osd/aoagauge.cpp \
-    app/osd/performancehorizonladder.cpp \
 
 HEADERS += \
     app/osd/headingladder.h \
@@ -144,7 +143,6 @@ HEADERS += \
     app/osd/flightpathvector.h \
     app/osd/debug_overdraw.hpp \
     app/osd/aoagauge.h \
-    app/osd/performancehorizonladder.h \
 
 
 RESOURCES += qml/qml.qrc

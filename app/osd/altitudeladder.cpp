@@ -19,8 +19,6 @@ void AltitudeLadder::paint(QPainter* painter) {
         setFillColor(QColor::fromRgb(0,255,0,128));
     }
 
-    QFont font("sans-serif", 10, QFont::Bold, false);
-
     painter->setFont(m_font);
 
     auto alt = m_altitude;
@@ -121,6 +119,6 @@ void AltitudeLadder::setAltitudeRange(int altitudeRange) {
 void AltitudeLadder::setFontFamily(QString fontFamily) {
     m_fontFamily = fontFamily;
     emit fontFamilyChanged(m_fontFamily);
-    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
+    m_font = QFont(m_fontFamily, 13, QFont::Bold, false);
     update();
 }

@@ -27,26 +27,8 @@ Item {
         id: selectItemInStackLayoutBar
         width: parent.width
         TabButton {
-            text: qsTr("TCP")
+            text: qsTr("CONNECT TO OPENHD GND / AIR UNIT")
         }
-        TabButton{
-            text: "Tethering"
-        }
-        // TabButton {
-        //     text: qsTr("USB Tether")
-        // }
-        // TabButton {
-        //     text: qsTr("(USB) Ethernet passive")
-        // }
-        // TabButton {
-        //     text: qsTr("(USB) Ethernet active")
-        // }
-        // TabButton {
-        //     text: qsTr("WiFi")
-        // }
-        // TabButton {
-        //     text: qsTr("Custom (TCP)")
-        // }
     }
 
     // placed right below the top bar
@@ -58,42 +40,8 @@ Item {
         anchors.bottom: parent.bottom
         currentIndex: selectItemInStackLayoutBar.currentIndex
 
+        PaneConnectionMode{
 
-       PaneCustom{
-       }
-
-       PaneTethering{
-       }
-
-        // PaneUSBTether{
-        //     id: pane_usb_tether
-        // }
-
-        // GenericInfoPane{
-        //     m_info_text: {
-        //         return"1) Make sure ETH_HOTSPOT_E is disabled (Ground param)\n\n"+
-        //                 "2) Enable ETH_PASSIVE_F on your openhd ground unit (Ground param)\n\n"+
-        //                 "3) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n\n"+
-        //                 "4) Make sure to select 'share my internet with ...' when the android connection setup pops up\n\n"+
-        //                 "Video and telemetry forwarding should start automatically, and your GCS can get internet from your phone."
-        //     }
-        // }
-        // GenericInfoPane{
-        //     m_info_text: {
-        //         return "1) Make sure ETH_PASSIVE_F is disabled (Ground param)\n\n"+
-        //                 "2) Enable ETH_HOTSPOT_E on your openhd ground unit (Ground param)\n\n"+
-        //                 "3) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n\n"+
-        //                 "You might have to disable wifi and cellular on your phone !.\n\n"+
-        //                 "Video and telemetry forwarding should start automatically."
-        //     }
-        // }
-
-        // PaneWIFI{
-        //     id:  wifi
-        // }
-
-        // PaneCustom{
-        //     id: pane_custom
-        // }
+        }
     }
 }

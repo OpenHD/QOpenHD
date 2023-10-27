@@ -70,7 +70,7 @@ static void init_qmlglsink_and_log(){
         qWarning("qmlglsink not found - check your gstreamer installation");
         // We display this as an openhd log, just because it has happened so often now that people complain about secondary video not working,
         // which almost always is the missing gst package
-        LogMessagesModel::instanceOHD().add_message_warn("QOpenHD","QMLGLSINK not found (secondary video won't work)");
+        LogMessagesModel::instanceGround().add_message_warn("QOpenHD","QMLGLSINK not found (secondary video won't work)");
     }
 }
 

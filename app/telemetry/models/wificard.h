@@ -22,6 +22,8 @@ class WiFiCard : public QObject
     L_RO_PROP(QString,tx_power_unit,set_tx_power_unit,"N/A");
     L_RO_PROP(QString,tx_power_current_str,set_tx_power_current_str,"N/A");
     L_RO_PROP(int,tx_power_armed,set_tx_power_armed,-1)
+    // Shows disabled if no special armed tx power is set
+    L_RO_PROP(QString,tx_power_armed_str,set_tx_power_armed_str,"DISABLED")
     L_RO_PROP(int,tx_power_disarmed,set_tx_power_disarmed,-1)
     L_RO_PROP(int,n_received_packets_rolling,set_n_received_packets_rolling,0)
     // A card might have more than one antenna

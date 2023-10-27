@@ -67,6 +67,7 @@ bool CmdSender::send_command_long_async(mavlink_command_long_t cmd, RESULT_CB re
     RunningCommand running_cmd{cmd,result_cb,n_wanted_retransmissions,retransmit_delay};
     m_running_commands.push_back(running_cmd);
     send_command(m_running_commands.back());
+    //qDebug()<<"Sent command"<<m_running_commands.size();
     return true;
 }
 
@@ -92,7 +93,9 @@ CmdSender::Result CmdSender::send_command_long_blocking(const mavlink_command_lo
     if(!send_command_long_async(cmd,cb,retransmit_delay,n_wanted_retransmissions)){
         return CmdSender::QUEUE_FULL;
     }
-    return fut.get();
+    auto tmp=fut.get();
+    qDebug()<<"send_command_long_blocking end";
+    return tmp;
 }
 
 bool CmdSender::handle_cmd_ack(const mavlink_command_ack_t &ack)
@@ -102,6 +105,7 @@ bool CmdSender::handle_cmd_ack(const mavlink_command_ack_t &ack)
     auto opt_running_command=find_remove_running_command_threadsafe(ack.command);
     if(opt_running_command.has_value()){
         auto running_command=opt_running_command.value();
+        qDebug()<<"Got ack for command:"<<(int)running_command.cmd.command;
         RunCommandResult result{ack,running_command.n_transmissions};
         running_command.cb(result);
         return true;
@@ -117,9 +121,11 @@ void CmdSender::handle_timeout()
     std::vector<std::pair<RunningCommand,RunCommandResult>> timed_out_commands{};
     {
         std::lock_guard<std::mutex> lock(m_mutex);
+        //qDebug()<<"CmdSender::handle_timeou::CommandQueue"<<m_running_commands.size();
         for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
             RunningCommand& running_cmd=*it;
             const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
+            //qDebug()<<"Elapsed:"<<elapsed.count();
             if(elapsed>running_cmd.retransmit_delay){
                 qDebug()<<"CMD Timeout";
                 if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){

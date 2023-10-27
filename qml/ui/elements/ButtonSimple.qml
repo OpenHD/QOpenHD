@@ -8,7 +8,7 @@ Button {
     background: Rectangle {
         opacity:0
     }
-    contentItem: Text {
+    /*contentItem: Text {
             text: control.text
             font: control.font
             opacity: enabled ? 1.0 : 0.3
@@ -16,6 +16,6 @@ Button {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
-        }
+        }*/
 
 }

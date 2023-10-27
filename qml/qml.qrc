@@ -187,7 +187,6 @@
         <file>video/ExpMainVideoAndroid.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
-        <file>ui/widgets/PerformanceHorizonWidget.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
         <file>ui/widgets/BaseWidgetDefaultUiControlElements.qml</file>
         <file>resources/cursors/arrow_512_transparent.png</file>
@@ -210,11 +209,8 @@
         <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
-        <file>ui/configpopup/openhd_settings/MavlinkExtraWBParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkAllSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
-        <file>ui/configpopup/openhd_settings/DialoqueStartAnalyzeChannels.qml</file>
-        <file>ui/configpopup/openhd_settings/DIaloqueStartChannelScan.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
         <file>ui/configpopup/rc/RcInfoScreen.qml</file>
         <file>ui/configpopup/rc/RcInfoPanel.qml</file>
@@ -228,24 +224,18 @@
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
-        <file>ui/configpopup/openhd_settings/DialoqueChangeTxPower.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapWidget.qml</file>
-        <file>ui/configpopup/status/StatusCardsColumn.qml</file>
-        <file>ui/configpopup/status/ActionsColumn.qml</file>
-        <file>ui/configpopup/connect/PaneUSBTether.qml</file>
-        <file>ui/configpopup/connect/PaneWIFI.qml</file>
-        <file>ui/configpopup/connect/PaneCustom.qml</file>
+        <file>ui/configpopup/status/PingUtilColumn.qml</file>
         <file>ui/elements/ButtonRed.qml</file>
         <file>ui/elements/ButtonOrange.qml</file>
-        <file>ui/configpopup/status/StatusCardFooterGenericOHDFC.qml</file>
+        <file>ui/configpopup/status/FooterRebootShutdownWarning.qml</file>
         <file>ui/elements/ButtonIconInfoText.qml</file>
         <file>ui/elements/ButtonIconInfo.qml</file>
         <file>ui/elements/PillSlider.qml</file>
         <file>ui/elements/FlightModeSlider.qml</file>
         <file>ui/elements/ArmDisarmSlider.qml</file>
-        <file>ui/configpopup/status/QOpenHDServiceDialoque.qml</file>
         <file>ui/elements/SimpleProgressBar.qml</file>
         <file>ui/elements/ButtonGreen.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeArmed.qml</file>
@@ -253,9 +243,20 @@
         <file>ui/configpopup/status/QOpenHDVersionCard.qml</file>
         <file>ui/elements/CardToast.qml</file>
         <file>ui/elements/ButtonYellow.qml</file>
-        <file>ui/configpopup/connect/PaneLocalhost.qml</file>
-        <file>ui/configpopup/connect/PaneTethering.qml</file>
-        <file>ui/configpopup/connect/GenericInfoPane.qml</file>
         <file>ui/elements/ButtonSimple.qml</file>
+        <file>ui/configpopup/dev/QOpenHDServiceDialoque.qml</file>
+        <file>ui/elements/ButtonDisconnected.qml</file>
+        <file>ui/configpopup/status/DialoqueNotAlive.qml</file>
+        <file>ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml</file>
+        <file>ui/configpopup/log/LogMessagesView.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/PopupScanChannels.qml</file>
+        <file>ui/configpopup/openhd_settings/PopupTxPowerEditor.qml</file>
+        <file>ui/elements/TextOrWarningButton.qml</file>
+        <file>ui/configpopup/status/StatusCardRow.qml</file>
+        <file>ui/configpopup/connect/PaneConnectionMode.qml</file>
+        <file>ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml</file>
+        <file>ui/widgets/PerformanceHorizonWidget2.qml</file>
+        <file>ui/configpopup/status/StatusCardsColumn.qml</file>
     </qresource>
 </RCC>

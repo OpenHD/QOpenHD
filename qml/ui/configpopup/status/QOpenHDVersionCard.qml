@@ -22,42 +22,37 @@ Card {
 
     hasHeader: false
 
-    cardBody:
-        ColumnLayout {
+    property string m_qopenhd_version: _qopenhd.version_string
+
+    /*Item{
+        width: 200
+        height: 50
         anchors.centerIn: parent
-
-        Row {
-            spacing: 12
-            topPadding: 60
-
-            Image {
-                id: image
-                width: 48
-                height: 48
-                source: "qrc:/round.png"
-                fillMode: Image.PreserveAspectFit
-                anchors.verticalCenter: title.verticalCenter
-            }
-
-            Text {
-                id: title
-                height: 48
-                color: "#ff3a3a3a"
-                text: qsTr("QOpenHD")
-                font.pixelSize: 36
-            }
+        Image{
+            anchors.top: parent.top
+            anchors.left: parent.left
+            width: parent.height
+            height: parent.height
+            source: "qrc:/round.png"
+            fillMode: Image.PreserveAspectFit
         }
-
-        Text {
-            id: qopenhd_version
-            Layout.fillWidth: true
-            Layout.leftMargin: 75
-            height: 48
-            color: "#ff3a3a3a"
-            //text: qsTr(QOPENHD_GIT_VERSION)
-            text: "2.5.1-evo-alpha"
-            font.pixelSize: 12
+        Text{
+            anchors.top: parent.top
+            anchors.right: parent.right
+            width: parent.width * 2/3
+            text: "QOpenHD"
+            font.pixelSize: 20
+            verticalAlignment: Qt.AlignCenter
         }
+    }*/
+    Text{
+        width: parent.width
+        height: parent.height
+        text: "QOpenHD"
+        font.pixelSize: 20
+        anchors.centerIn: parent
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Qt.AlignHCenter
     }
 
     Text {
@@ -72,5 +67,15 @@ Card {
         onLinkActivated: {
             Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
         }
+    }
+    Text {
+        text: qsTr(m_qopenhd_version)
+        height: 60
+        color: "#ff3a3a3a"
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -35
+        anchors.left: parent.left
+        rightPadding: 12
+        font.pixelSize: 12
     }
 }

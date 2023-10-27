@@ -17,8 +17,8 @@ class LogMessagesModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    // Instance for all OpenHD air / ground messages
-    static LogMessagesModel& instanceOHD();
+    static LogMessagesModel& instanceGround();
+    static LogMessagesModel& instanceOHDAir();
     // We have a seperate model for the FC log messages
     static LogMessagesModel& instanceFC();
 

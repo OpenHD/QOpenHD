@@ -54,27 +54,5 @@ Item {
                 // Padding
             }
         }
-
-        RowLayout {
-            width: parent.width
-
-            Button {
-                font.capitalization: Font.MixedCase
-                text: qsTr("DEV-Restart QOpenHD")
-                onPressed: {
-                    qopenhdservicedialoque.open_dialoque(0)
-                }
-            }
-            Button {
-                font.capitalization: Font.MixedCase
-                text: qsTr("DEV-Cancel QOpenHD")
-                onPressed: {
-                    qopenhdservicedialoque.open_dialoque(1)
-                }
-            }
-            Item {
-                // Padding
-            }
-        }
     }
 }

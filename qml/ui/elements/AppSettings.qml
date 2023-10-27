@@ -403,4 +403,7 @@ Settings {
     property double hide_identity_longitude_offset: 0.0
 
     property bool show_sidebar: false
+
+    property int qopenhd_mavlink_connection_mode: 0;
+    property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.178.36"
 }
