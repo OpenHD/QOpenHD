@@ -98,7 +98,13 @@ Rectangle{
                     Button{
                         text: "Android Tethering"
                         Layout.preferredWidth: 180
-                        onClicked: _qopenhd.android_open_tethering_settings()
+                        onClicked: {
+                            if(_qopenhd.is_android()){
+                                _qopenhd.android_open_tethering_settings()
+                            }else{
+                                _qopenhd.show_toast("Only available on android");
+                            }
+                        }
                     }
                     ButtonIconInfoText {
                         m_info_text: "1) Connect your phone via high quality USB cable to your ground station.\n\n"+
@@ -112,6 +118,9 @@ Rectangle{
                         text: "Wifi tethering"
                         Layout.preferredWidth: 180
                         //TODO enable hotspot
+                        onClicked: {
+                            _messageBoxInstance.set_text_and_show("Please connect:\nWiFi Name: openhd_air/openhd_ground.\n PW: openhdopenhd")
+                        }
                     }
                     ButtonIconInfoText {
                         m_info_text: "1) Check status if your air / ground unit supports WiFi hotspot\n\n"+
@@ -125,6 +134,9 @@ Rectangle{
                         text: "Passive Eth tethering"
                         Layout.preferredWidth: 180
                         //TODO disable active tethering and enable passive when clicking the button
+                        onClicked: {
+                            _qopenhd.show_toast("Please read info");
+                        }
                     }
                     ButtonIconInfoText {
                         m_info_text: "1) Disable ETH_HOTSPOT_E and Enable ETH_PASSIVE_F\n\n"+
@@ -138,6 +150,9 @@ Rectangle{
                         text: "Active Eth tethering"
                         Layout.preferredWidth: 180
                         //TODO disable passive tethering and enable active when clicking the button
+                        onClicked: {
+                            _qopenhd.show_toast("Please read info");
+                        }
                     }
                     ButtonIconInfoText {
                         m_info_text: "1) Disable ETH_PASSIVE_F and Enable ETH_HOTSPOT_E\n\n"+
