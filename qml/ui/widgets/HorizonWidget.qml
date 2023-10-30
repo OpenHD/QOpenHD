@@ -35,6 +35,7 @@ BaseWidget {
 
             show_vertical_lock: true
             show_horizontal_lock: true
+            show_quickpainteditem_font_scale: true
 
             Item {
                 width: 230
@@ -402,6 +403,7 @@ BaseWidget {
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder
                 showHorizonHome: settings.show_horizon_home //you dont want a floating home icon
                 fontFamily: settings.font_text
+                custom_font_scale: bw_qquickpainteditem_font_scale
             }
             Rectangle{ // For debugging the area where the horizon clips
                 // debug

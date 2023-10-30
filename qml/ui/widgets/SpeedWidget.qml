@@ -69,6 +69,7 @@ BaseWidget {
 
             show_horizontal_lock: true
             show_vertical_lock: true
+            show_quickpainteditem_font_scale: true
 
             Item {
                 width: parent.width
@@ -252,6 +253,7 @@ BaseWidget {
                 Behavior on speed {NumberAnimation { duration: settings.smoothing }}
                 speed: get_speed_number()
                 fontFamily: settings.font_text
+                custom_font_scale: bw_qquickpainteditem_font_scale
             }
         }
 

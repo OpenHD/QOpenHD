@@ -37,6 +37,7 @@ BaseWidget {
             id: idBaseWidgetDefaultUiControlElements
             show_vertical_lock: true
             show_horizontal_lock: true
+            show_quickpainteditem_font_scale: true
 
             Item {
                 width: 230
@@ -120,6 +121,7 @@ BaseWidget {
                 color: settings.color_shape
                 glow: settings.color_glow
                 fontFamily: settings.font_text
+                custom_font_scale: bw_qquickpainteditem_font_scale
             }
         }
 

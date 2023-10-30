@@ -2,6 +2,8 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+
 class AltitudeLadder : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
@@ -10,7 +12,8 @@ class AltitudeLadder : public QQuickPaintedItem {
     // actual altitude, unit - less
     Q_PROPERTY(int altitude MEMBER m_altitude WRITE set_altitude NOTIFY altitude_changed)
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
-
+public:
+    Q_PROPERTY(double custom_font_scale WRITE set_custom_font_scale)
 public:
     explicit AltitudeLadder(QQuickItem* parent = nullptr);
 
@@ -25,6 +28,7 @@ public slots:
     void setAltitudeRange(int altitudeRange);
     void set_altitude(double alt);
     void setFontFamily(QString fontFamily);
+    void set_custom_font_scale(double custom_font_scale);
 signals:
     void colorChanged(QColor color);
     void glowChanged(QColor glow);
@@ -42,5 +46,7 @@ private:
 
     QString m_fontFamily;
     QFont m_font;
+
+    double m_custom_font_scale=1.0;
 
 };

@@ -2,6 +2,8 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+
 class HeadingLadder : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
@@ -16,8 +18,8 @@ class HeadingLadder : public QQuickPaintedItem {
 
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
 
-
-//show_horizon_heading_ladder
+public:
+    Q_PROPERTY(double custom_font_scale WRITE set_custom_font_scale)
 
 public:
     explicit HeadingLadder(QQuickItem* parent = nullptr);
@@ -39,7 +41,7 @@ public slots:
     void setHomeHeading(int homeHeading);
 
     void setFontFamily(QString fontFamily);
-
+    void set_custom_font_scale(double custom_font_scale);
 signals:
     void colorChanged(QColor color);
     void glowChanged(QColor glow);
@@ -69,4 +71,5 @@ private:
     QFont m_font;
 
     QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14, QFont::Bold, false);
+    double m_custom_font_scale=1.0;
 };

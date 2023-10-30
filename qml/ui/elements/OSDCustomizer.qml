@@ -9,11 +9,12 @@ import "colorwheel"
 Rectangle {
     id: osdCustomizer
 
-    width: 196
-    height: 312
+    //width: 196
+    //height: 312
+    width: 250
+    height: 350
 
     color: "#ffeaeaea"
-
 
     property bool stateVisible: visible
 
@@ -190,6 +191,17 @@ Rectangle {
                     anchors.right: parent.right
                 }
             }
+
+            /*Item{
+                height: 60
+                width: parent.width - 24
+                Slider{
+                    from: 0.5
+                    to: 1.5
+                    value: settings.hud_osd_qquickpainteditem_font_scale
+                    onValueChanged: settings.hud_osd_qquickpainteditem_font_scale=value
+                }
+            }*/
 
             Button {
                 height: 60

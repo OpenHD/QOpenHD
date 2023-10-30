@@ -64,11 +64,34 @@ BaseWidgetForm {
         settings.sync();
     }
     // Feature persist scale end   --------------------------------------------------------------------------------------
-    // Feature persist opacity begin
+
+    // Feature persist opacity begin ------------------------------------------------------------------------------------
     property string bw_opacity_identifier: "%1_opacity".arg(widgetIdentifier);
     // Default opacity is 1, the value is persistent
     property double bw_current_opacity : settings.value(bw_opacity_identifier,1.0);
-    // Feature persist opacity end
+    // Updates the current base widget scale (unique per widgetIdentifier) and persist the value for later use
+    function bw_set_current_opacity(opacity){
+        if(opacity <=0 || opacity>1){
+            console.warn("perhaps invalid widget opacity");
+        }
+        bw_current_opacity=opacity
+        settings.setValue(bw_opacity_identifier, bw_current_opacity);
+        settings.sync();
+    }
+    // Feature persist opacity end --------------------------------------------------------------------------------------
+
+    // Feature persist 'qquickpainteditem_font_scale' begin  ------------------------------------------------------------
+    // only for qquick painted items (few)
+    property string bw_qquickpainteditem_font_scale_identifier: "%1_qquickpainteditem_font_scale".arg(widgetIdentifier);
+    property double bw_qquickpainteditem_font_scale: settings.value(bw_qquickpainteditem_font_scale_identifier,1.0);
+    function bw_set_qquickpainteditem_font_scale(scale){
+        bw_qquickpainteditem_font_scale=scale;
+        settings.setValue(bw_qquickpainteditem_font_scale_identifier,bw_qquickpainteditem_font_scale);
+        settings.sync();
+    }
+    // Feature persist 'qquickpainteditem_font_scale' end  --------------------------------------------------------------
+
+
     // Feature: Show grid when dragging
     property bool m_show_grid_when_dragging: false
     onDraggingChanged: {
@@ -81,16 +104,6 @@ BaseWidgetForm {
         }
     }
 
-    // Updates the current base widget scale (unique per widgetIdentifier) and persist the value for later use
-    function bw_set_current_opacity(opacity){
-        if(opacity <=0 || opacity>1){
-            console.warn("perhaps invalid widget opacity");
-        }
-        bw_current_opacity=opacity
-        settings.setValue(bw_opacity_identifier, bw_current_opacity);
-        settings.sync();
-    }
-    // Feature persist opacity end
 
 
     // Added by Consti10 -

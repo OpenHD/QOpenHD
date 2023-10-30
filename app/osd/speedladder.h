@@ -2,6 +2,7 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 class SpeedLadder : public QQuickPaintedItem {
     Q_OBJECT
@@ -13,7 +14,8 @@ class SpeedLadder : public QQuickPaintedItem {
     Q_PROPERTY(int speed MEMBER m_speed WRITE setSpeed NOTIFY speedChanged)
 
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
-
+public:
+    Q_PROPERTY(double custom_font_scale WRITE set_custom_font_scale)
 public:
     explicit SpeedLadder(QQuickItem* parent = nullptr);
 
@@ -31,7 +33,7 @@ public slots:
 
     void setSpeed(int speed);
     void setFontFamily(QString fontFamily);
-
+    void set_custom_font_scale(double custom_font_scale);
 signals:
     void colorChanged(QColor color);
     void glowChanged(QColor glow);
@@ -51,5 +53,5 @@ private:
     QString m_fontFamily;
 
     QFont m_font;
-
+    double m_custom_font_scale=1.0;
 };

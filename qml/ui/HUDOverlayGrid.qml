@@ -21,6 +21,8 @@ Item {
     property bool m_show_vertical_center_indicator: false
     property bool m_show_horizontal_center_indicator: false
 
+    //scale: settings.dev_some_scale
+
     //signal settingsButtonClicked
     property int m_highlight_index : 0
     property int m_MAX_ITEM_INDEX: 15
