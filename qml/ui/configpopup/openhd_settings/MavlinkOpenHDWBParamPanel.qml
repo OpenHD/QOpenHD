@@ -53,7 +53,12 @@ Rectangle{
 
     ListModel{
         id: supported_frequencies_model
-        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; openhd_raceband_nr: -1}
+        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; openhd_raceband_nr: -1; pollution_pps: -1}
+    }
+
+    ListModel{
+        id: frequencies_model
+        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; openhd_raceband_nr: -1; pollution_pps: -1}
     }
 
     function show_popup_message(message){
@@ -72,6 +77,7 @@ Rectangle{
             const radar=_wbLinkSettingsHelper.get_frequency_radar(frequency)
             const recommended=_wbLinkSettingsHelper.get_frequency_reccommended(frequency)
             const openhd_raceband=_wbLinkSettingsHelper.get_frequency_openhd_race_band(frequency)
+            const pollution=_wbLinkSettingsHelper.pollution_get_last_scan_pollution_for_frequency(frequency);
             var append_this_value=true;
             if(m_simplify_enable){
                 // only add if it is a "simple" channel
@@ -81,7 +87,7 @@ Rectangle{
                 append_this_value=true;
             }
             if(append_this_value){
-                supported_frequencies_model.append({title: text, value: frequency, radar:radar, recommended: recommended, openhd_raceband_nr: openhd_raceband})
+                supported_frequencies_model.append({title: text, value: frequency, radar:radar, recommended: recommended, openhd_raceband_nr: openhd_raceband, pollution_pps: pollution})
             }
         }
         var index=find_index(supported_frequencies_model,_wbLinkSettingsHelper.curr_channel_mhz);
@@ -92,6 +98,10 @@ Rectangle{
             comboBoxFreq.currentIndex=0;
             console.log("Seems not to be a valid channel "+_wbLinkSettingsHelper.curr_channel_mhz)
         }
+    }
+    function create_list_model2(){
+        frequencies_model.clear();
+
     }
 
     // We get notified every time we should re-build the model(s) and their current selection
@@ -106,14 +116,14 @@ Rectangle{
         if(_wbLinkSettingsHelper.ui_rebuild_models<=0)return
         create_list_model_supported();
         //update_pollution_graph();
-        pollution_chart_view.update();
+        popup_analyze_channels.update();
     }
 
     //
     function close_all_dialoques(){
-        pollution_chart_view.close()
-        channel_scan_progress_view.close();
-        change_tx_power_popup.close();
+        popup_analyze_channels.close()
+        popup_scan_channels.close();
+        popup_change_tx_power.close();
         dialoqueFreqChangeGndOnly.close();
         dialoqueFreqChangeArmed.close();
         popup_enable_stbc_ldpc.close();
@@ -195,6 +205,7 @@ Rectangle{
         contentWidth: main_column_layout.width
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
+        visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible)
 
         ColumnLayout{
             Layout.fillWidth: true
@@ -236,11 +247,42 @@ Rectangle{
                                 m_is_2G: value < 3000 && value > 100
                                 m_show_radar: radar
                                 m_openhd_race_band: openhd_raceband_nr
+                                m_pollution_pps: pollution_pps
                             }
                             highlighted: comboBoxFreq.highlightedIndex === index
                         }
                         Layout.row: 1
                         Layout.column: 0
+                        /*displayText: {
+                            if(!_ohdSystemGround.is_alive)return "GND NOT ALIVE";
+                            if(_ohdSystemGround.wb_gnd_operating_mode==1){
+                                return "SCANNING";
+                            }
+                            if(_ohdSystemGround.wb_gnd_operating_mode==2){
+                                return "ANALYZING";
+                            }
+                            if(!_ohdSystemAir.is_alive){
+                                return _wbLinkSettingsHelper.curr_channel_mhz+"@"+"N/A"+" Mhz (NO AIR)";
+                            }
+                            return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+" Mhz";
+                        }
+                        onCurrentIndexChanged: {
+                            console.log("Index changed:"+currentIndex);
+                            if(currentIndex<0)return;
+                            var frequency_mhz=supported_frequencies_model.get(currentIndex).value
+                            console.log("Selected frequency: "+frequency_mhz);
+                            if(_wbLinkSettingsHelper.curr_channel_mhz==frequency_mhz){
+                                console.log("Already at frequency "+frequency_mhz);
+                                return;
+                            }
+                            if(!_ohdSystemAir.is_alive){
+                                var error_message_not_alive="AIR Unit not alive -"
+                                dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
+                                return;
+                            }
+                            // Change the freuquency
+                        }
+                        enabled: _ohdSystemGround.is_alive*/
                     }
                     Button{
                         text: "APPLY"
@@ -255,13 +297,15 @@ Rectangle{
                             change_frequency_sync_otherwise_handle_error(selectedValue,-1,false);
                         }
                         //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
-                        enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0 && (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0);
+                        enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0 && (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0) &&
+                                 (_wbLinkSettingsHelper.curr_channel_mhz!=comboBoxFreq.currentValue);
                         Layout.row: 1
                         Layout.column: 1
                     }
                     Switch{
                         Layout.row: 1
                         Layout.column: 2
+                        Layout.columnSpan: 1
                         text: "SIMPLIFY"
                         checked: true
                         onCheckedChanged: {
@@ -316,7 +360,7 @@ Rectangle{
                         enabled: _ohdSystemGround.is_alive
                         onClicked: {
                             close_all_dialoques();
-                            channel_scan_progress_view.open()
+                            popup_scan_channels.open()
                         }
                         SequentialAnimation {
                             running: false
@@ -347,7 +391,7 @@ Rectangle{
                         enabled: _ohdSystemGround.is_alive
                         onClicked: {
                             close_all_dialoques();
-                            pollution_chart_view.open()
+                            popup_analyze_channels.open()
                         }
                     }
                     ButtonIconInfo{
@@ -422,12 +466,12 @@ Rectangle{
                     Button{
                         Layout.row: 1
                         Layout.column: 1
-                        text: "CHANGE"
+                        text: "EDIT"
                         enabled: _ohdSystemAir.is_alive
                         onClicked: {
                             close_all_dialoques();
-                            change_tx_power_popup.m_is_air=true;
-                            change_tx_power_popup.open()
+                            popup_change_tx_power.m_is_air=true;
+                            popup_change_tx_power.open()
                         }
                     }
                     Text{
@@ -438,12 +482,12 @@ Rectangle{
                     Button{
                         Layout.row: 2
                         Layout.column: 1
-                        text: "CHANGE"
+                        text: "EDIT"
                         enabled: _ohdSystemGround.is_alive
                         onClicked: {
                             close_all_dialoques();
-                            change_tx_power_popup.m_is_air=false;
-                            change_tx_power_popup.open()
+                            popup_change_tx_power.m_is_air=false;
+                            popup_change_tx_power.open()
                         }
                     }
                     // STBC / LDPC
@@ -481,10 +525,11 @@ Rectangle{
                         Layout.row: 2
                         Layout.column: 4
                         text: "EDIT";
-                        //enabled: true
-                        enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
-                                (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
+                        enabled: true
+                        //enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
+                        //        (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
                         onClicked: {
+                            close_all_dialoques();
                             popup_enable_stbc_ldpc.open()
                         }
                     }
@@ -520,15 +565,15 @@ Rectangle{
     }
 
     PopupAnalyzeChannels{
-        id: pollution_chart_view
+        id: popup_analyze_channels
     }
 
     PopupScanChannels{
-        id: channel_scan_progress_view
+        id: popup_scan_channels
     }
 
     PopupTxPowerEditor{
-        id: change_tx_power_popup
+        id: popup_change_tx_power
     }
     PopupEnableSTBCLDPC{
         id: popup_enable_stbc_ldpc

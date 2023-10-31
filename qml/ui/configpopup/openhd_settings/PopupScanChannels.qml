@@ -15,8 +15,10 @@ import "../../../ui" as Ui
 import "../../elements"
 
 Rectangle{
-    width: parent.width-12
-    height: parent.height*2/3;
+    //width: parent.width-12
+    //height: parent.height*2/3;
+    width: parent.width
+    height: parent.height
     anchors.centerIn: parent
     color: "#ADD8E6"
     border.color: "black"
@@ -47,27 +49,48 @@ Rectangle{
 
     GridLayout{
         id: main_grid_layout
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+        anchors.fill: parent
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
 
-        ComboBox {
+        Text{ // TITLE
             Layout.row: 0
             Layout.column: 0
-            Layout.preferredWidth: 400
-            Layout.minimumWidth: 100
-            id: comboBoxWhichFrequencyToScan
-            model: model_chann_to_scan
-            textRole: "title"
-            Material.background: {
-                (comboBoxWhichFrequencyToScan.currentIndex===0) ? Material.Green : Material.Orange
-            }
-            onCurrentIndexChanged: {
-            }
-            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            Layout.minimumHeight: 20
+            text: "SCAN (FIND AIR UNIT)";
+            verticalAlignment: Qt.AlignVCenter
+            horizontalAlignment: Qt.AlignHCenter
         }
 
         Button{
+            Layout.alignment: Qt.AlignRight
             Layout.row: 0
+            Layout.column: 3
+            text: "CLOSE"
+            onClicked: {
+                if(_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==1){
+                    _qopenhd.show_toast("STILL SCANNING,PLEASE WAIT ...");
+                    return;
+                }
+                close()
+            }
+        }
+
+
+        SimpleProgressBar{
+            Layout.row: 1
+            Layout.column: 0
+            Layout.preferredWidth: 400
+            Layout.minimumWidth: 100
+            Layout.preferredHeight: 40
+            impl_curr_progress_perc: _wbLinkSettingsHelper.scan_progress_perc
+            impl_show_progress_text: true
+        }
+        Button{
+            Layout.row: 1
             Layout.column: 1
             text: "START"
             enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
@@ -84,17 +107,23 @@ Rectangle{
                 }
             }
         }
-        SimpleProgressBar{
-            Layout.row: 1
+        ComboBox {
+            Layout.row: 2
             Layout.column: 0
-            Layout.fillWidth: true
-            Layout.preferredHeight: 40
             Layout.preferredWidth: 400
             Layout.minimumWidth: 100
-            impl_curr_progress_perc: _wbLinkSettingsHelper.scan_progress_perc
+            id: comboBoxWhichFrequencyToScan
+            model: model_chann_to_scan
+            textRole: "title"
+            Material.background: {
+                (comboBoxWhichFrequencyToScan.currentIndex===0) ? Material.Green : Material.Orange
+            }
+            onCurrentIndexChanged: {
+            }
+            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
         }
         ButtonIconInfo{
-            Layout.row: 1
+            Layout.row: 2
             Layout.column: 1
             onClicked: {
                 _messageBoxInstance.set_text_and_show("Initiate Channel Scan (Find a running air unit). Similar to analogue TX / RX, this listens on each channel for a short time"+
@@ -104,15 +133,27 @@ Rectangle{
             }
         }
         Text{
-            Layout.row: 2
+            Layout.row: 3
             Layout.column: 0
             text: _wbLinkSettingsHelper.scanning_text_for_ui
             font.pixelSize: 25
         }
+        Item{ // Filler
+            Layout.row: 4
+            Layout.column: 0
+            Layout.columnSpan: 3
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
     }
-    Button{
+    /*Button{
+        //Layout.alignment: Qt.AlignRight
+        //Layout.row: 0
+        //Layout.column: 3
         anchors.top: parent.top
         anchors.right: parent.right
+        anchors.topMargin: 5
+        anchors.rightMargin: 10
         text: "CLOSE"
         onClicked: {
             if(_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==1){
@@ -121,5 +162,6 @@ Rectangle{
             }
             close()
         }
-    }
+    }*/
+
 }

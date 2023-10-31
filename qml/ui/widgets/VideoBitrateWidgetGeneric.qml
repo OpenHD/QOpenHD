@@ -7,6 +7,7 @@ import QtQuick.Shapes 1.0
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
+import "../elements"
 
 // Generic since we use the same widget for primary and secondary camera (allbei with different values, of course)
 BaseWidget {
@@ -58,6 +59,55 @@ BaseWidget {
         return m_camera_stream_model.total_n_tx_dropped_frames+":"+m_camera_stream_model.count_blocks_lost;
     }
 
+    // Complicated
+    // Set to true if the camera is currently doing recordng (the UI element(s) turn red in this case)
+    property bool m_camera_is_currently_recording: m_is_for_primary_camera ? _cameraStreamModelPrimary.air_recording_active :  _cameraStreamModelSecondary.air_recording_active
+
+    // THIS IS A MAVLINK PARAM, SYNCHRONIZATION THEREFORE IS HARD AND HERE NOT WORTH IT
+    property int m_camera_recording_mode: -1
+
+    function try_set_recording_mode(mode){
+        var camera_idx=m_is_for_primary_camera ? 0 : 1;
+        console.log("try_set_recording_mode "+camera_idx+" "+mode)
+        var camModel=_airCameraSettingsModel;
+        var camString="CAM1"
+        if(camera_idx===2){
+            camModel=_airCameraSettingsModel2;
+            camString="CAM2"
+        }
+        if(!_ohdSystemAir.is_alive){
+            _hudLogMessagesModel.signalAddLogMessage(6,"Air unit not alive, cannot set recording for "+camString)
+            return;
+        }
+        if(mode===0){ //mode off
+            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
+            if(result){
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" disabled")
+                m_camera_recording_mode=0;
+            }else{
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
+            }
+        }
+        if(mode===1){ //mode on
+            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",1)===""
+            if(result){
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" enabled")
+                m_camera_recording_mode=1;
+            }else{
+                _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
+            }
+        }
+        if(mode==2){ //mode auto
+            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",2)===""
+            if(result){
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" auto enabled")
+                m_camera_recording_mode=2;
+            }else{
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
+            }
+        }
+    }
+
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -82,116 +132,16 @@ BaseWidget {
 
         ColumnLayout{
             width:200
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Set(Enc):")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: m_camera_stream_model.curr_set_video_format_and_codec
-                    color: "white";
-                    font.bold: true;
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
+
+            SimpleLeftRightText{
+                m_left_text: qsTr("Res@Framerate:")
+                m_right_text:  m_camera_stream_model.curr_set_video_format_and_codec
             }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Set(Enc):")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: m_camera_stream_model.curr_recomended_video_bitrate_string
-                    color: "white";
-                    font.bold: true;
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Measured(Enc):")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: m_camera_stream_model.curr_video_measured_encoder_bitrate
-                    color: "white";
-                    font.bold: true;
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Injected(+FEC):")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: m_camera_stream_model.curr_video_injected_bitrate
-                    color: "white";
-                    font.bold: true;
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("TX Dropped/RX lost:")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: get_drop_str_tx_rx()
-                    color: "white";
-                    font.bold: true;
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+
+            //SimpleLeftRightText{
+            //    m_left_text: ""
+            //    m_right_text: ""
+            //}
             Item{
                 width: parent.width
                 height: 150
@@ -205,7 +155,7 @@ BaseWidget {
                     // 2 mmal
                     // 3 veye
                     // 4 libcamera
-                    enabled: (m_camera_stream_model.camera_type==1 || m_camera_stream_model.camera_type==2 || m_camera_stream_model.camera_type==4)
+                    //enabled: (m_camera_stream_model.camera_type==1 || m_camera_stream_model.camera_type==2 || m_camera_stream_model.camera_type==4)
                     Button{
                         text: "480p60(16:9)"
                         onClicked: set_camera_resolution("848x480@60")
@@ -238,6 +188,94 @@ BaseWidget {
                     }
                 }
             }
+            SimpleLeftRightText{
+                m_left_text: qsTr("Bitrate SET:")
+                m_right_text: m_camera_stream_model.curr_recomended_video_bitrate_string
+            }
+
+            SimpleLeftRightText{
+                m_left_text: qsTr("Bitrate MEASURED:")
+                m_right_text: m_camera_stream_model.curr_video_measured_encoder_bitrate
+            }
+
+            SimpleLeftRightText{
+                m_left_text: qsTr("Injected(+FEC):")
+                m_right_text: m_camera_stream_model.curr_video_injected_bitrate
+            }
+
+
+            SimpleLeftRightText{
+                m_left_text: qsTr("TX Dropped/RX lost:")
+                m_right_text: get_drop_str_tx_rx()
+            }
+
+            Item{
+                width: parent.width
+                height: 32
+                Text{
+                    width: parent.width
+                    height: parent.height
+                    verticalAlignment: Qt.AlignVCenter
+                    horizontalAlignment: Qt.AlignHCenter
+                    text: "AIR RECORDING"
+                    color: "white"
+                }
+            }
+            SimpleLeftRightText{
+                m_left_text:  qsTr("FREE SPACE:")
+                m_right_text: {
+                    if(!_ohdSystemAir.is_alive)return "N/A";
+                    return _ohdSystemAir.curr_space_left_mb+" MB"
+                }
+                m_right_text_color: {
+                    if(!_ohdSystemAir.is_alive)return "white"
+                    return (_ohdSystemAir.curr_space_left_mb < 500) ? "red" : "green"
+                }
+            }
+            SimpleLeftRightText{
+                m_left_text: qsTr("AIR RECORD:");
+                m_right_text: {
+                    if(!_ohdSystemAir.is_alive)return "N/A";
+                    if(m_camera_recording_mode){
+                        return "RECORDING";
+                    }
+                    return "NOT ACTIVE"
+                }
+            }
+            // For camera 1
+            Item{
+                width: parent.width
+                height: 50
+                //color:"green"
+                GridLayout{
+                    width: parent.width
+                    height: parent.height
+                    rows: 1
+                    columns: 3
+                    Button{
+                        text: "OFF"
+                        onClicked: {
+                            try_set_recording_mode(0)
+                        }
+                        highlighted: m_camera_recording_mode==0
+                    }
+                    Button{
+                        text: "ON"
+                        onClicked: {
+                            try_set_recording_mode(1)
+                        }
+                        highlighted: m_camera_recording_mode==1
+                    }
+                    Button{
+                        text: "AUTO"
+                        onClicked: {
+                            try_set_recording_mode(2)
+                        }
+                        highlighted: m_camera_recording_mode==2
+                    }
+                }
+            }
+
             /*Item{
                 id: placeholder
                 width:parent.width

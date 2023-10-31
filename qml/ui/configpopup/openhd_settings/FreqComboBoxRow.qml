@@ -28,6 +28,8 @@ Rectangle{
 
     property int m_openhd_race_band: -1
 
+    property int m_pollution_pps: -1
+
 
     color: "transparent"
     anchors.fill: parent
@@ -83,14 +85,13 @@ Rectangle{
         }*/
         Text{
             Layout.alignment: Qt.AlignLeft
-            Layout.preferredWidth: 90
+            Layout.preferredWidth: 60
             text: "Default"
             font.family: "Font Awesome 5 Free"
             color: "green"
             visible: m_openhd_race_band==2
             font.pixelSize: comboBoxFreq.font.pixelSize
         }
-
         Text{ // recommended / openhd race band channel
             Layout.alignment: Qt.AlignRight
             Layout.preferredWidth: 60
@@ -101,6 +102,30 @@ Rectangle{
             font.family: "Font Awesome 5 Free"
             color: "green"
             font.pixelSize: comboBoxFreq.font.pixelSize
+        }
+        // Channel occupancy estimate
+        Item{
+            Layout.preferredWidth: parent.height
+            Layout.preferredHeight: parent.height
+            height: parent.height
+            width: height
+            Layout.alignment: Qt.AlignRight
+            Rectangle{// Channel occupancy estimate
+                height: parent.height * 2/3;
+                width: height
+                radius: width
+                anchors.centerIn: parent
+                color: {
+                    if(m_pollution_pps<0){
+                        return "gray"
+                    }
+                    if(m_pollution_pps<1)return "green";
+                    if(m_pollution_pps<20) return "orange";
+                    return "red";
+                }
+                border.width: 2
+                border.color: "black"
+            }
         }
     }
 }

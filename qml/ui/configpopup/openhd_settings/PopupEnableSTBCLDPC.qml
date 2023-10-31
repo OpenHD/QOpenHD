@@ -16,8 +16,10 @@ import "../../elements"
 
 Rectangle{
     id: main_background
-    width: parent.width-12
-    height: parent.height*2/3;
+    //width: parent.width-12
+    //height: parent.height*2/3;
+    width: parent.width
+    height: parent.height
     anchors.centerIn: parent
     color: "#ADD8E6"
     border.color: "black"
@@ -52,10 +54,9 @@ Rectangle{
 
     GridLayout{
         id: main_row_layout
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.leftMargin: 5
-        Layout.rightMargin: 5
+        anchors.fill: parent
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
 
         Text{
             id: stbc_warning_text
@@ -96,7 +97,7 @@ Rectangle{
             Layout.column: 0
             id: comboBoxNAntennasAir
             Layout.minimumWidth: 100
-            Layout.preferredWidth: 350
+            Layout.preferredWidth: 450
             model: model_n_antennas_air
             textRole: "title"
             font.pixelSize: 14
@@ -111,7 +112,7 @@ Rectangle{
             Layout.column: 0
             id: comboBoxNAntennasGnd
             Layout.minimumWidth: 100
-            Layout.preferredWidth: 350
+            Layout.preferredWidth: 450
             model: model_n_antennas_gnd
             textRole: "title"
             font.pixelSize: 14
@@ -143,6 +144,13 @@ Rectangle{
             visible: !button_enable.enabled
             text: "CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS";
             font.pixelSize: 14
+        }
+        Item{ // Filler
+            Layout.row: 5
+            Layout.column: 0
+            Layout.columnSpan: 3
+            Layout.fillWidth: true
+            Layout.fillHeight: true
         }
         // ----------------
     }

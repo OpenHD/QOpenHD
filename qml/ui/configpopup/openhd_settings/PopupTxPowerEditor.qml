@@ -15,12 +15,16 @@ import "../../../ui" as Ui
 import "../../elements"
 
 Rectangle{
-    width: parent.width-12
-    height: parent.height*2/3;
+    //width: parent.width-12
+    //height: parent.height*2/3;
+    width: parent.width
+    height: parent.height
     anchors.centerIn: parent
     color: "#ADD8E6"
     border.color: "black"
     border.width: 3
+
+    property int m_margin: 10
 
     property bool m_is_air: false
 
@@ -214,10 +218,9 @@ Rectangle{
 
     GridLayout{
         id: main_row_layout
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.leftMargin: 5
-        Layout.rightMargin: 5
+        anchors.fill: parent
+        anchors.leftMargin: m_margin
+        anchors.rightMargin: m_margin
         //anchors.top: parent.top
         //anchors.bottom: parent.bottom
         //anchors.left: parent.left
@@ -225,13 +228,17 @@ Rectangle{
         //Layout.minimumWidth: 300
         //Layout.preferredWidth: 600
 
-        Text{
+        Text{ // TITLE
             Layout.row: 0
             Layout.column: 0
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            Layout.minimumHeight: 20
             text: m_is_air ? "AIR TX Power" : "GND TX power";
-            font.bold: true
+            verticalAlignment: Qt.AlignVCenter
             horizontalAlignment: Qt.AlignHCenter
-            font.pixelSize: 14
+            font.pixelSize: 18
         }
         //
         Text{
@@ -371,12 +378,6 @@ Rectangle{
                                                       "if armed or not.");
             }
         }
-        // FILLER
-        Item{
-            Layout.row: 3
-            Layout.column: 4
-            Layout.fillWidth: true
-        }
         Text{
             Layout.row: 4
             Layout.column: 0
@@ -408,6 +409,13 @@ Rectangle{
             verticalAlignment: Qt.AlignBottom
             font.pixelSize: 14
         }
+        Item{ // Filler
+            Layout.row: 6
+            Layout.column: 0
+            Layout.columnSpan: 3
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
         // ----------------
     }
 
@@ -415,6 +423,7 @@ Rectangle{
         text: "CLOSE"
         anchors.top: parent.top
         anchors.right: parent.right
+        anchors.rightMargin: m_margin
         onClicked: {
             close()
         }

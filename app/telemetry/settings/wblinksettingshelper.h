@@ -50,6 +50,7 @@ public:
     L_RO_PROP(int,scan_progress_perc,set_scan_progress_perc,0)
     // Analyzing
     L_RO_PROP(int,analyze_progress_perc,set_analyze_progress_perc,0)
+    L_RO_PROP(int,current_analyze_frequency,set_current_analyze_frequency,-1);
 public:
     void process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t& msg);
     void process_message_openhd_wifibroadcast_analyze_channels_progress(const mavlink_openhd_wifbroadcast_analyze_channels_progress_t& msg);
@@ -98,6 +99,7 @@ public:
     Q_INVOKABLE QList<int> get_supported_frequencies_filtered(int filter_level);
     Q_INVOKABLE QStringList pollution_frequencies_int_to_qstringlist(QList<int> frequencies);
     Q_INVOKABLE QVariantList pollution_frequencies_int_get_pollution(QList<int> frequencies,bool normalize=false);
+    Q_INVOKABLE int pollution_get_last_scan_pollution_for_frequency(int frequency);
 
     Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
     Q_INVOKABLE bool get_frequency_radar(int frequency_mhz);
