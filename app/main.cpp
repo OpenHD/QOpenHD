@@ -26,6 +26,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/models/rcchannelsmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/wblinksettingshelper.h"
+#include "telemetry/settings/frequencyhelper.h"
+#include "telemetry/settings/pollutionhelper.h"
 #include "osd/speedladder.h"
 #include "osd/altitudeladder.h"
 #include "osd/headingladder.h"
@@ -282,6 +284,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_ohdSystemAirSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGroundSettings", &MavlinkSettingsModel::instanceGround());
     engine.rootContext()->setContextProperty("_wbLinkSettingsHelper", &WBLinkSettingsHelper::instance());
+    engine.rootContext()->setContextProperty("_frequencyHelper", &FrequencyHelper::instance());
+    engine.rootContext()->setContextProperty("_pollutionHelper", &PollutionHelper::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkAction", &FCAction::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkMissionItemsModel", &FCMavlinkMissionItemsModel::instance());

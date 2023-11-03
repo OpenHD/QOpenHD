@@ -228,17 +228,28 @@ Rectangle{
         //Layout.minimumWidth: 300
         //Layout.preferredWidth: 600
 
-        Text{ // TITLE
+        Item{
             Layout.row: 0
             Layout.column: 0
-            Layout.columnSpan: 2
+            Layout.columnSpan: 4
             Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            Layout.minimumHeight: 20
-            text: m_is_air ? "AIR TX Power" : "GND TX power";
-            verticalAlignment: Qt.AlignVCenter
-            horizontalAlignment: Qt.AlignHCenter
-            font.pixelSize: 18
+            Layout.preferredHeight: 80
+            Text{ // TITLE
+                anchors.fill: parent
+                text: "TX POWER "+(m_is_air ? "AIR" : "GROUND");
+                verticalAlignment: Qt.AlignVCenter
+                horizontalAlignment: Qt.AlignHCenter
+                font.bold: true
+            }
+            Button{
+                text: "CLOSE"
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.rightMargin: m_margin
+                onClicked: {
+                    close()
+                }
+            }
         }
         //
         Text{
@@ -418,16 +429,4 @@ Rectangle{
         }
         // ----------------
     }
-
-    Button{
-        text: "CLOSE"
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.rightMargin: m_margin
-        onClicked: {
-            close()
-        }
-    }
-
-
 }

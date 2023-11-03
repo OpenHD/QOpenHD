@@ -1,79 +1,150 @@
 #include "frequencyhelper.h"
+#include "wifi_channel.h"
 
-FrequencyHelper::FrequencyHelper()
+FrequencyHelper::FrequencyHelper(QObject *parent) : QObject{parent}
 {
 
 }
 
-std::vector<FrequencyHelper::FrequencyItem> FrequencyHelper::get_known_frequency_items()
+FrequencyHelper &FrequencyHelper::instance()
 {
-    std::vector<FrequencyItem> ret{
-        FrequencyItem{-1,2312,false,false,false,-1},
-        FrequencyItem{-1,2332,false,false,false,-1},
-        FrequencyItem{-1,2352,false,false,false,-1},
-        FrequencyItem{-1,2372,false,false,false,-1},
-        FrequencyItem{-1,2392,false,false,false,-1},
-        // ACTUAL 2G
-        FrequencyItem{1 ,2412,false,true,false,-1},
-        FrequencyItem{5 ,2432,false,true,false,-1},
-        FrequencyItem{9 ,2452,false,true,false,-1},
-        FrequencyItem{13,2472,false,true,false,-1},
-        FrequencyItem{14,2484,false,false,false,-1},
-        // ACTUAL 2G end
-        FrequencyItem{-1,2492,false,false,false,-1},
-        FrequencyItem{-1,2512,false,false,false,-1},
-        FrequencyItem{-1,2532,false,false,false,-1},
-        FrequencyItem{-1,2572,false,false,false,-1},
-        FrequencyItem{-1,2592,false,false,false,-1},
-        FrequencyItem{-1,2612,false,false,false,-1},
-        FrequencyItem{-1,2632,false,false,false,-1},
-        FrequencyItem{-1,2652,false,false,false,-1},
-        FrequencyItem{-1,2672,false,false,false,-1},
-        FrequencyItem{-1,2692,false,false,false,-1},
-        FrequencyItem{-1, 2712,false,false,false,-1},
-        // 5G begin
-        FrequencyItem{ 32,5160,false,false,false,-1},
-        FrequencyItem{ 36,5180,false,true ,false,-1},
-        FrequencyItem{ 40,5200,false,false,false,-1},
-        FrequencyItem{ 44,5220,false,true,false,-1},
-        FrequencyItem{ 48,5240,false,false,false,-1},
-        FrequencyItem{ 52,5260,true,true ,false,-1},
-        FrequencyItem{ 56,5280,true,false,false,-1},
-        FrequencyItem{ 60,5300,true,true,false,-1},
-        FrequencyItem{ 64,5320,true,false,false,-1},
-        // big break / part that is not allowed
-        FrequencyItem{100,5500,true,true,false,-1},
-        FrequencyItem{104,5520,true,false,false,-1},
-        FrequencyItem{108,5540,true,true,false,-1},
-        FrequencyItem{112,5560,true,false,false,-1},
-        FrequencyItem{116,5580,true,true,false,-1},
-        FrequencyItem{120,5600,true,false,false,-1},
-        FrequencyItem{124,5620,true,true,false,-1},
-        FrequencyItem{128,5640,true,false,false,-1},
-        FrequencyItem{132,5660,true,true,false,-1},
-        FrequencyItem{136,5680,true,false,false,-1},
-        FrequencyItem{140,5700,false,true,false,1},
-        FrequencyItem{144,5720,false,false,false,-1},
-        // Here is the weird break
-        FrequencyItem{149,5745,false,true,true,2},
-        FrequencyItem{153,5765,false,false,false,-1},
-        FrequencyItem{157,5785,false,true,true,3},
-        FrequencyItem{161,5805,false,false,false,-1},
-        FrequencyItem{165,5825,false,true,true,4},
-        // Depends
-        FrequencyItem{169,5845,false,false,false,-1},
-        FrequencyItem{173,5865,false,true,true,5},
-        FrequencyItem{177,5885,false,false,false,-1},
-        FrequencyItem{181,5905,false,false,true,-1}
-    };
+    static FrequencyHelper instance{};
+    return instance;
+}
+
+QList<int> FrequencyHelper::get_frequencies(bool openhd_bands_only)
+{
+    QList<int> ret;
+    if(openhd_bands_only){
+        auto tmp=openhd::get_openhd_channels_1_to_5();
+        for(auto& channel:tmp){
+            ret.push_back(channel.frequency);
+        }
+    }else{
+        const auto frequency_items=openhd::get_all_channels_2G_5G();
+        for(auto& item:frequency_items){
+            if(item.is_legal_at_least_one_country){
+                ret.push_back(item.frequency);
+            }
+        }
+    }
     return ret;
 }
 
-FrequencyHelper::FrequencyItem FrequencyHelper::find_frequency_item(const int frequency)
+QList<int> FrequencyHelper::get_frequencies_all_40Mhz()
 {
-    const auto frequency_items=get_known_frequency_items();
-    for(const auto& item:frequency_items){
-        if(item.frequency==frequency)return item;
+    QList<int> ret;
+    const auto frequency_items=openhd::get_all_channels_2G_5G();
+    for(auto& item:frequency_items){
+        if(item.space==openhd::WifiSpace::G2_4){
+            if(item.is_legal_at_least_one_country){
+                ret.push_back(item.frequency);
+            }
+        }else{
+            if(item.is_legal_at_least_one_country && item.in_40Mhz_ht40_plus){
+                ret.push_back(item.frequency);
+            }
+        }
     }
-    return FrequencyItem{-1,-1,false,false,false};
+    return ret;
+}
+
+bool FrequencyHelper::get_frequency_radar(int frequency_mhz)
+{
+    if(frequency_mhz>=5260 && frequency_mhz<=5680){
+        return true;
+    }
+    return false;
+}
+
+int FrequencyHelper::get_frequency_openhd_race_band(int frequency_mhz)
+{
+    // 5700,5745,5785,5825,5865
+    if(frequency_mhz==5700){
+        return 1;
+    }
+    if(frequency_mhz==5745){
+        return 2;
+    }
+    if(frequency_mhz==5785){
+        return 3;
+    }
+    if(frequency_mhz==5825){
+        return 4;
+    }
+    if(frequency_mhz==5865){
+        return 5;
+    }
+    return -1;
+}
+
+int FrequencyHelper::get_frequency_channel_nr(int frequency_mhz)
+{
+    const auto frequency_item=openhd::channel_from_frequency(frequency_mhz);
+    if(frequency_item.has_value()){
+        return frequency_item.value().channel;
+    }
+    return -1;
+}
+
+bool FrequencyHelper::set_hw_supported_frequencies_threadsafe(const std::vector<uint16_t> supported_channels)
+{
+    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
+    if(m_supported_channels!=supported_channels){
+        m_supported_channels=supported_channels;
+        return true;
+    }
+    return false;
+}
+
+bool FrequencyHelper::has_valid_supported_frequencies_data()
+{
+    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
+    return !m_supported_channels.empty();
+}
+
+bool FrequencyHelper::hw_supports_frequency_threadsafe(int frequency_mhz)
+{
+    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
+    for(const auto supported_freq: m_supported_channels){
+        if(supported_freq==frequency_mhz)return true;
+    }
+    return false;
+}
+
+
+static std::string spaced_string(int number){
+    std::stringstream ss;
+    if(number<100)ss<<" ";
+    if(number<10)ss<<" ";
+    ss<<number;
+    return ss.str();
+}
+
+QString FrequencyHelper::get_frequency_description(int frequency_mhz)
+{
+    const auto frequency_item=openhd::channel_from_frequency(frequency_mhz);
+    std::stringstream ss;
+    ss<<"["<<spaced_string(frequency_item->channel)<<"] ";
+    ss<<frequency_mhz<<"Mhz ";
+    return ss.str().c_str();
+}
+
+QList<int> FrequencyHelper::filter_frequencies(QList<int> frequencies, int filter_level)
+{
+    QList<int> ret;
+    for(const auto& element:frequencies){
+        if(filter_level==2){
+            if(element> 3000){
+                ret.push_back(element);
+            }
+        }else if(filter_level==1){
+            if(element< 3000){
+                ret.push_back(element);
+            }
+        }else{
+            ret.push_back(element);
+        }
+    }
+    return ret;
 }

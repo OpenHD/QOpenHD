@@ -59,8 +59,6 @@ public:
     void validate_and_set_gnd_channel_width_mhz(int channel_width_mhz);
     void validate_and_set_air_channel_width_mhz(int channel_width_mhz);
 public:
-    Q_INVOKABLE void set_simplify_channels(bool enable);
-    //Q_INVOKABLE void fetch_channels_if_needed();
     Q_INVOKABLE bool start_analyze_channels();
     // freq_bands:
     // 0: 2.4G and 5.8G
@@ -94,18 +92,6 @@ public:
     Q_INVOKABLE bool change_param_ground_only_frequency(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_FREQ,value);
     }
-    Q_INVOKABLE QList<int> get_supported_frequencies();
-    // To not overload the user, we filter the frequencies a bit
-    Q_INVOKABLE QList<int> get_supported_frequencies_filtered(int filter_level);
-    Q_INVOKABLE QStringList pollution_frequencies_int_to_qstringlist(QList<int> frequencies);
-    Q_INVOKABLE QVariantList pollution_frequencies_int_get_pollution(QList<int> frequencies,bool normalize=false);
-    Q_INVOKABLE int pollution_get_last_scan_pollution_for_frequency(int frequency);
-
-    Q_INVOKABLE QString get_frequency_description(int frequency_mhz);
-    Q_INVOKABLE bool get_frequency_radar(int frequency_mhz);
-    Q_INVOKABLE bool get_frequency_simplify(int frequency_mhz);
-    Q_INVOKABLE bool get_frequency_reccommended(int frequency_mhz);
-    Q_INVOKABLE int get_frequency_openhd_race_band(int frequency_mhz);
     // These params can be changed "on the fly" and are additionally their value(s) are broadcasted
     // so we can update them completely async, log the result to the user
     // and use the broadcasted value(s) to update the UI
@@ -116,17 +102,6 @@ public:
     // Extra
     Q_INVOKABLE bool set_param_tx_power(bool ground,bool is_tx_power_index,bool is_for_armed_state,int value);
     Q_INVOKABLE bool set_param_stbc_ldpc_enable_air_ground();
-private:
-    struct SupportedChannel{
-        uint16_t frequency;
-        int n_foreign_packets;
-    };
-    // Written by telemetry, read by UI
-    std::mutex m_supported_channels_mutex;
-    std::vector<uint16_t> m_supported_channels;
-    bool update_supported_channels(const std::vector<uint16_t> supported_channels);
-    bool has_valid_reported_channel_data();
-    std::atomic<bool> m_simplify_channels=false;
 private:
     void signal_ui_rebuild_model_when_possible();
 };

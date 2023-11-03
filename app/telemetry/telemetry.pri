@@ -39,6 +39,7 @@ HEADERS += \
     $$PWD/action/impl/xparam.h \
     $$PWD/settings/frequencyhelper.h \
     $$PWD/settings/pollutionhelper.h \
+    $$PWD/settings/wifi_channel.h \
     $$PWD/util/geodesi_helper.h \
     $$PWD/util/mavlink_enum_to_string.h \
     $$PWD//util/openhd_defines.hpp \

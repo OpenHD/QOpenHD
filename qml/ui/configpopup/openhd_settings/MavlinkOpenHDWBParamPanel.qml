@@ -39,69 +39,55 @@ Rectangle{
         for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
         return -1
     }
-    // try and update the combobox to the retrieved value(value != index)
-    function update_combobox(_combobox,_value){
-        var _index=find_index(_combobox.model,_value)
-        if(_index >= 0){
-            _combobox.currentIndex=_index;
-        }
-    }
 
     function fc_is_armed(){
         return _fcMavlinkSystem.armed
     }
 
     ListModel{
-        id: supported_frequencies_model
-        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; openhd_raceband_nr: -1; pollution_pps: -1}
+        id: frequencies_model_all
+        ListElement {title: "Unknown"; value_frequency_mhz:-1}
     }
-
     ListModel{
-        id: frequencies_model
-        ListElement {title: "Unknown"; value:-1; radar: false; recommended: false; openhd_raceband_nr: -1; pollution_pps: -1}
+        id: frequencies_model_openhd_channels_only
+        ListElement {title: "Unknown"; value_frequency_mhz:-1}
     }
 
-    function show_popup_message(message){
-        _messageBoxInstance.set_text_and_show(message)
+    function create_list_models_frequency(){
+        frequencies_model_all.clear();
+        const frequencies_all=_frequencyHelper.get_frequencies(false);
+        for(var i=0;i<frequencies_all.length;i++){
+            const frequency=frequencies_all[i];
+            const text=_frequencyHelper.get_frequency_description(frequency)
+            frequencies_model_all.append({title: text, value_frequency_mhz: frequency});
+        }
+        frequencies_model_openhd_channels_only.clear();
+        const frequencies_openhd=_frequencyHelper.get_frequencies(true);
+        for(var i=0;i<frequencies_openhd.length;i++){
+            const frequency=frequencies_openhd[i];
+            const text=_frequencyHelper.get_frequency_description(frequency)
+            frequencies_model_openhd_channels_only.append({title: text, value_frequency_mhz: frequency});
+        }
     }
 
     property bool m_simplify_enable:true
-    function create_list_model_supported(){
-        supported_frequencies_model.clear()
-        //supported_frequencies_model.append({title: "Unknown", value: -1})
-        const supported_frequencies=_wbLinkSettingsHelper.get_supported_frequencies();
-        for(var i=0;i<supported_frequencies.length;i++){
-            const frequency=supported_frequencies[i];
-            const text=_wbLinkSettingsHelper.get_frequency_description(frequency)
-            const simple=_wbLinkSettingsHelper.get_frequency_simplify(frequency)
-            const radar=_wbLinkSettingsHelper.get_frequency_radar(frequency)
-            const recommended=_wbLinkSettingsHelper.get_frequency_reccommended(frequency)
-            const openhd_raceband=_wbLinkSettingsHelper.get_frequency_openhd_race_band(frequency)
-            const pollution=_wbLinkSettingsHelper.pollution_get_last_scan_pollution_for_frequency(frequency);
-            var append_this_value=true;
-            if(m_simplify_enable){
-                // only add if it is a "simple" channel
-                //append_this_value = simple;
-                append_this_value = openhd_raceband >= 0;
-            }else{
-                append_this_value=true;
-            }
-            if(append_this_value){
-                supported_frequencies_model.append({title: text, value: frequency, radar:radar, recommended: recommended, openhd_raceband_nr: openhd_raceband, pollution_pps: pollution})
-            }
-        }
-        var index=find_index(supported_frequencies_model,_wbLinkSettingsHelper.curr_channel_mhz);
-        comboBoxFreq.model=supported_frequencies_model
-        if(index>=0){
-            comboBoxFreq.currentIndex=index;
+    function update_frequency_combobox(){
+        if(m_simplify_enable){
+            comboBoxFreq.model=frequencies_model_openhd_channels_only;
         }else{
-            comboBoxFreq.currentIndex=0;
-            console.log("Seems not to be a valid channel "+_wbLinkSettingsHelper.curr_channel_mhz)
+            comboBoxFreq.model=frequencies_model_all;
         }
-    }
-    function create_list_model2(){
-        frequencies_model.clear();
-
+        if(_wbLinkSettingsHelper.curr_channel_mhz>0){
+            var index=find_index(comboBoxFreq.model,_wbLinkSettingsHelper.curr_channel_mhz);
+            if(index>=0){
+                comboBoxFreq.currentIndex=index;
+            }else{
+                comboBoxFreq.currentIndex=0;
+                console.log("Seems not to be a valid channel "+_wbLinkSettingsHelper.curr_channel_mhz)
+            }
+        }else{
+            comboBoxFreq.currentIndex=-1;
+        }
     }
 
     // We get notified every time we should re-build the model(s) and their current selection
@@ -112,10 +98,9 @@ Rectangle{
     }
 
     function function_rebuild_ui(){
+        update_frequency_combobox();
         console.log("function_rebuild_ui:"+_wbLinkSettingsHelper.ui_rebuild_models);
         if(_wbLinkSettingsHelper.ui_rebuild_models<=0)return
-        create_list_model_supported();
-        //update_pollution_graph();
         popup_analyze_channels.update();
     }
 
@@ -125,7 +110,7 @@ Rectangle{
         popup_scan_channels.close();
         popup_change_tx_power.close();
         dialoqueFreqChangeGndOnly.close();
-        dialoqueFreqChangeArmed.close();
+        dialoqueFreqChangeAirGnd.close();
         popup_enable_stbc_ldpc.close();
     }
 
@@ -140,51 +125,8 @@ Rectangle{
 
     Component.onCompleted: {
         close_all_dialoques();
-    }
-    //
-
-    // ------------------- PART HELPER FOR CURRENT LOSS / POLLUTION / THROTTLE BEGIN -------------------
-    // ------------------- PART HELPER FOR CURRENT LOSS / POLLUTION / THROTTLE END -------------------
-
-
-    // Changes either the frequency or channel width
-    // This one need to be synced, so we have ( a bit complicated, but quite natural for the user) dialoque for the cases where we need to handle errors / show a warning
-    function change_frequency_sync_otherwise_handle_error(frequency_mhz,ignore_armed_state){
-        console.log("change_frequency_sync_otherwise_handle_error: "+"FREQ:"+frequency_mhz+"Mhz");
-        // Ground needs to be alive and well
-        if(!_ohdSystemGround.is_alive){
-            _messageBoxInstance.set_text_and_show("Ground unit not alive",5);
-            return;
-        }
-        // Air needs to be alive and well - otherwise we show the "do you want to change gnd only" dialoque
-        if(!_ohdSystemAir.is_alive){
-            var error_message_not_alive="AIR Unit not alive -"
-            dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
-            return;
-        }
-        // FC needs to be disarmed - otherwise show warning
-        const fc_currently_armed = (_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed)// || true;
-        if(fc_currently_armed && ignore_armed_state===false){
-            dialoqueFreqChangeArmed.initialize_and_show_frequency(frequency_mhz)
-            return;
-        }
-        var result= _wbLinkSettingsHelper.change_param_air_and_ground_frequency(frequency_mhz);
-        if(result==0){
-            var message="Succesfully set air and ground to FREQUENCY: "+frequency_mhz+"Mhz";
-            _messageBoxInstance.set_text_and_show(message,5);
-            return;
-        }else if(result==-1){
-            // Air unit rejected
-            _messageBoxInstance.set_text_and_show("Air unit does not support this value",5);
-            return;
-        }else if(result==-2){
-            // Couldn't reach air unit
-            var error_message_not_reachable="Couldn't reach air unit -"
-            dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_reachable);
-            return;
-        }
-        // Really really bad
-        _messageBoxInstance.set_text_and_show("Something went wrong - please use 'FIND AIR UNIT' to fix");
+        create_list_models_frequency();
+        update_frequency_combobox();
     }
 
     function get_text_wifi_tx_power(air){
@@ -220,7 +162,7 @@ Rectangle{
                 implicitHeight: frequency_area_layout.implicitHeight+5
                 radius: 10
 
-                GridLayout {
+                ColumnLayout {
                     id: frequency_area_layout
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -233,108 +175,29 @@ Rectangle{
                         font.bold: true
                     }
 
-                    ComboBox {
-                        id: comboBoxFreq
-                        model: supported_frequencies_model
-                        textRole: "title"
-                        implicitWidth:  elementComboBoxWidth
-                        currentIndex: 0
-                        delegate: ItemDelegate {
-                            width: comboBoxFreq.width
-                            contentItem: FreqComboBoxRow{
-                                m_main_text: title
-                                m_selection_tpye: (value===_wbLinkSettingsHelper.curr_channel_mhz) ? 1 : 0
-                                m_is_2G: value < 3000 && value > 100
-                                m_show_radar: radar
-                                m_openhd_race_band: openhd_raceband_nr
-                                m_pollution_pps: pollution_pps
-                            }
-                            highlighted: comboBoxFreq.highlightedIndex === index
-                        }
-                        Layout.row: 1
-                        Layout.column: 0
-                        /*displayText: {
-                            if(!_ohdSystemGround.is_alive)return "GND NOT ALIVE";
-                            if(_ohdSystemGround.wb_gnd_operating_mode==1){
-                                return "SCANNING";
-                            }
-                            if(_ohdSystemGround.wb_gnd_operating_mode==2){
-                                return "ANALYZING";
-                            }
-                            if(!_ohdSystemAir.is_alive){
-                                return _wbLinkSettingsHelper.curr_channel_mhz+"@"+"N/A"+" Mhz (NO AIR)";
-                            }
-                            return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+" Mhz";
-                        }
-                        onCurrentIndexChanged: {
-                            console.log("Index changed:"+currentIndex);
-                            if(currentIndex<0)return;
-                            var frequency_mhz=supported_frequencies_model.get(currentIndex).value
-                            console.log("Selected frequency: "+frequency_mhz);
-                            if(_wbLinkSettingsHelper.curr_channel_mhz==frequency_mhz){
-                                console.log("Already at frequency "+frequency_mhz);
-                                return;
-                            }
-                            if(!_ohdSystemAir.is_alive){
-                                var error_message_not_alive="AIR Unit not alive -"
-                                dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
-                                return;
-                            }
-                            // Change the freuquency
-                        }
-                        enabled: _ohdSystemGround.is_alive*/
-                    }
-                    Button{
-                        text: "APPLY"
-                        id: buttonSwitchFreq
-                        //enabled: false
-                        onClicked: {
-                            var selectedValue=supported_frequencies_model.get(comboBoxFreq.currentIndex).value
-                            if(selectedValue<=100){
-                                _messageBoxInstance.set_text_and_show("Please select a valid frequency",5);
-                                return;
-                            }
-                            change_frequency_sync_otherwise_handle_error(selectedValue,-1,false);
-                        }
-                        //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
-                        enabled: _wbLinkSettingsHelper.ui_rebuild_models>=0 && (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0) &&
-                                 (_wbLinkSettingsHelper.curr_channel_mhz!=comboBoxFreq.currentValue);
-                        Layout.row: 1
-                        Layout.column: 1
-                    }
-                    Switch{
-                        Layout.row: 1
-                        Layout.column: 2
-                        Layout.columnSpan: 1
-                        text: "SIMPLIFY"
-                        checked: true
-                        onCheckedChanged: {
-                            if(m_simplify_enable!=checked){
-                                m_simplify_enable=checked;
-                                function_rebuild_ui();
-                            }
-                        }
-                    }
-                    ButtonIconInfo{
-                        Layout.row: 1
-                        Layout.column: 3
-                        onClicked: {
-                            var text="SIMPLIFY: Show recommended channels only. These channels usually have the least amount of pollution by WiFi APs and most FPV antennas are tuned to those Frequncies.\n"+
-                                    "OpenHD works best on them in most scenarios,and you can use 20Mhz and 40Mhz dynamically without issues (40Mhz spacing by default).\n"+
-                                    "Otherwise, show all channels supported by harware (ADVANCED USERS ONLY).\n";
-                            _messageBoxInstance.set_text_and_show(text)
-                        }
-                    }
                     RowLayout{
-                        Layout.row: 2
-                        Layout.column: 0
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        id: gnd_op_mode_status
-                        //SimpleProgressBar{
-                        //}
-                        Text{
-                            text: {
+                        ComboBox {
+                            id: comboBoxFreq
+                            //model: supported_frequencies_model
+                            //model: frequencies_model_openhd_channels_only
+                            textRole: "title"
+                            implicitWidth:  elementComboBoxWidth
+                            currentIndex: 0
+                            delegate: ItemDelegate {
+                                width: comboBoxFreq.width
+                                contentItem: FreqComboBoxRow{
+                                    m_main_text: title
+                                    m_selection_tpye: (value_frequency_mhz===_wbLinkSettingsHelper.curr_channel_mhz) ? 1 : 0
+                                    m_is_2G: value_frequency_mhz < 3000 && value_frequency_mhz > 100
+                                    m_show_radar: _frequencyHelper.get_frequency_radar(value_frequency_mhz)
+                                    m_openhd_race_band: _frequencyHelper.get_frequency_openhd_race_band(value_frequency_mhz)
+                                    m_pollution_pps: _pollutionHelper.pollution_get_last_scan_pollution_for_frequency(value_frequency_mhz)
+                                }
+                                highlighted: comboBoxFreq.highlightedIndex === index
+                            }
+                            Layout.row: 1
+                            Layout.column: 0
+                            displayText: {
                                 if(!_ohdSystemGround.is_alive)return "GND NOT ALIVE";
                                 if(_ohdSystemGround.wb_gnd_operating_mode==1){
                                     return "SCANNING";
@@ -347,86 +210,151 @@ Rectangle{
                                 }
                                 return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+" Mhz";
                             }
+                            onActivated: {
+                                console.log("onActivated:"+currentIndex);
+                                if(currentIndex<0)return;
+                                const frequency_mhz=comboBoxFreq.model.get(currentIndex).value_frequency_mhz
+                                console.log("Selected frequency: "+frequency_mhz);
+                                if(!_frequencyHelper.hw_supports_frequency_threadsafe(frequency_mhz)){
+                                    _qopenhd.show_toast("your HW does not support "+frequency_mhz+" Mhz");
+                                    return;
+                                }
+                                if(_wbLinkSettingsHelper.curr_channel_mhz==frequency_mhz){
+                                    console.log("Already at frequency "+frequency_mhz);
+                                    return;
+                                }
+                                if(!_ohdSystemAir.is_alive){
+                                    var error_message_not_alive="AIR Unit not alive -"
+                                    dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
+                                    return;
+                                }
+                                // Change the freuquency
+                                dialoqueFreqChangeAirGnd.initialize_and_show_frequency(frequency_mhz);
+                            }
+                            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0;
+                        }
+                        Switch{
                             Layout.row: 1
-                            Layout.column: 0
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                    }
-                    Button{
-                        Layout.row: 2
-                        Layout.column: 1
-                        id: b_find_air_unit
-                        text: "SCAN"
-                        enabled: _ohdSystemGround.is_alive
-                        onClicked: {
-                            close_all_dialoques();
-                            popup_scan_channels.open()
-                        }
-                        SequentialAnimation {
-                            running: false
-                            loops: 4
-                            id: anim_find_air_unit
-                            // Expand the button
-                            PropertyAnimation {
-                                target: b_find_air_unit
-                                property: "scale"
-                                to: 1.5
-                                duration: 200
-                                easing.type: Easing.InOutQuad
+                            Layout.column: 1
+                            Layout.columnSpan: 1
+                            text: "SIMPLIFY"
+                            checked: true
+                            onCheckedChanged: {
+                                if(m_simplify_enable!=checked){
+                                    m_simplify_enable=checked;
+                                    function_rebuild_ui();
+                                }
                             }
-                            // Shrink back to normal
-                            PropertyAnimation {
-                                target: b_find_air_unit
-                                property: "scale"
-                                to: 1.0
-                                duration: 200
-                                easing.type: Easing.InOutQuad
+                        }
+                        ButtonIconInfo{
+                            Layout.row: 1
+                            Layout.column: 2
+                            onClicked: {
+                                var text="Please select a channel / frequency free of noise and interference. The current loss / pollution / throttle stats below can help,"+
+                                        "as well as the analyze channels feature or a frequency analyzer on your phone. SIMPLIFY: Show OpenHD standard channels [1-5] only - they "+
+                                        " often are free of wifi pollution and should be used. Only disable SIMPLIFY if you know exactly why."
+                                _messageBoxInstance.set_text_and_show(text)
                             }
                         }
                     }
-                    Button{
-                        Layout.row: 2
-                        Layout.column: 2
-                        text: "ANALYZE"
-                        enabled: _ohdSystemGround.is_alive
-                        onClicked: {
-                            close_all_dialoques();
-                            popup_analyze_channels.open()
-                        }
-                    }
-                    ButtonIconInfo{
-                        Layout.row: 2
-                        Layout.column: 3
-                        onClicked: {
-                            var text="SCAN: Scan for a running openhd air unit (required if you switch between different air / ground stations or re-flash the image.)\n"+
-                                    "ANALYZE: Analyze all channels for WiFi pollution. If any of the default openhd channels is not polluted, they should be used."+
-                                    "NOTE: Analogue FPV or other digital FPV systems won't show up during analyze - read the wiki for more info.";
-                            _messageBoxInstance.set_text_and_show(text)
-                        }
-                    }
-                    // Row 3
+
+
+
                     RowLayout{
-                        Layout.row: 3
+                        Layout.row: 2
                         Layout.column: 0
                         Layout.columnSpan: 3
+                        Button{
+                            Layout.preferredWidth: 150
+                            id: b_find_air_unit
+                            text: "SCAN"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                close_all_dialoques();
+                                popup_scan_channels.open()
+                            }
+                            SequentialAnimation {
+                                running: false
+                                loops: 4
+                                id: anim_find_air_unit
+                                // Expand the button
+                                PropertyAnimation {
+                                    target: b_find_air_unit
+                                    property: "scale"
+                                    to: 1.5
+                                    duration: 200
+                                    easing.type: Easing.InOutQuad
+                                }
+                                // Shrink back to normal
+                                PropertyAnimation {
+                                    target: b_find_air_unit
+                                    property: "scale"
+                                    to: 1.0
+                                    duration: 200
+                                    easing.type: Easing.InOutQuad
+                                }
+                            }
+                        }
+                        Item{ // FILLER
+                            Layout.preferredWidth: 50
+                            Layout.minimumWidth: 0
+                        }
+                        Button{
+                            Layout.preferredWidth: 150
+                            text: "ANALYZE"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                close_all_dialoques();
+                                popup_analyze_channels.open()
+                            }
+                        }
+                        ButtonIconInfo{
+                            onClicked: {
+                                var text="SCAN: Similar to analoque channel scan, find a running air unit by checking all possible channels (frequencies).\n\n"+
+                                        "ANALYZE: Analyze channels for WiFi pollution. Read the wiki for more info.";
+                                _messageBoxInstance.set_text_and_show(text)
+                            }
+                        }
+                    }
+                    RowLayout{
                         Text{
+                            Layout.preferredHeight: 50
+                            Layout.preferredWidth: 120
                             text:{
-                                "LOSS %:"+_ohdSystemGround.curr_rx_packet_loss_perc
+                                "LOSS:\n"+_ohdSystemGround.curr_rx_packet_loss_perc+"%"
                             }
                             color: _ohdSystemGround.curr_rx_packet_loss_perc > 5 ? "red" : "black"
                             verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: true
                         }
                         Text{
+                            Layout.preferredHeight: 50
+                            Layout.preferredWidth: 120
                             text: {
-                                return "POLLUTION pps:"+_ohdSystemGround.wb_link_curr_foreign_pps
+                                return "POLLUTION:\n"+_ohdSystemGround.wb_link_curr_foreign_pps+"pps"
                             }
                             color: _ohdSystemGround.wb_link_curr_foreign_pps > 20 ? "red" : "black"
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: true
                         }
                         Text{
+                            Layout.preferredHeight: 50
+                            Layout.preferredWidth: 120
                             text: {
-                                return "THROTTLE:"+_ohdSystemAir.curr_n_rate_adjustments
+                                return "THROTTLE:\n"+_ohdSystemAir.curr_n_rate_adjustments
                             }
                             color: _ohdSystemAir.curr_n_rate_adjustments > 0 ? "red" : "black"
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: true
+                        }
+                        ButtonIconInfo{
+                            onClicked: {
+                                var text="High Loss / Pollution / active throttle hint at a polluted channel."
+                                _messageBoxInstance.set_text_and_show(text)
+                            }
                         }
                         ButtonIconWarning{
                             visible: /*_ohdSystemAir.is_alive &&*/ (_ohdSystemGround.curr_rx_packet_loss_perc > 5 || _ohdSystemGround.wb_link_curr_foreign_pps > 20 || _ohdSystemAir.curr_n_rate_adjustments > 0)
@@ -447,25 +375,22 @@ Rectangle{
                 color: m_background_color
                 radius: 10
 
-                GridLayout {
+                RowLayout {
                     id: tx_power_layout
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Text{
-                        Layout.row: 0
-                        Layout.column: 0
-                        Layout.columnSpan: 2
                         text: "TX POWER"
                         font.bold: true
                     }
                     Text{
-                        Layout.row: 1
-                        Layout.column: 0
+                        Layout.preferredWidth: 120
                         text: "AIR:\n "+get_text_wifi_tx_power(true)
+                        verticalAlignment: Qt.AlignVCenter
+                        horizontalAlignment: Qt.AlignHCenter
+                        font.bold: true
                     }
                     Button{
-                        Layout.row: 1
-                        Layout.column: 1
                         text: "EDIT"
                         enabled: _ohdSystemAir.is_alive
                         onClicked: {
@@ -475,13 +400,13 @@ Rectangle{
                         }
                     }
                     Text{
-                        Layout.row: 2
-                        Layout.column: 0
+                        Layout.preferredWidth: 120
                         text: "GND:\n"+get_text_wifi_tx_power(false)
+                        verticalAlignment: Qt.AlignVCenter
+                        horizontalAlignment: Qt.AlignHCenter
+                        font.bold: true
                     }
                     Button{
-                        Layout.row: 2
-                        Layout.column: 1
                         text: "EDIT"
                         enabled: _ohdSystemGround.is_alive
                         onClicked: {
@@ -490,27 +415,50 @@ Rectangle{
                             popup_change_tx_power.open()
                         }
                     }
+                }
+            }
+            Rectangle {
+                implicitWidth: main_scroll_view.width
+                implicitHeight: stbc_ldpc_layout.implicitHeight
+                id: stbc_ldpc_background
+                color: m_background_color
+                radius: 10
+
+                RowLayout {
+                    id: stbc_ldpc_layout
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
                     // STBC / LDPC
                     Text{
                         width: 200
-                        Layout.row: 0
-                        Layout.column: 3
-                        Layout.columnSpan: 2
                         text: "ADVANCED (STBC,LDPC)"
                         font.bold: true
                         horizontalAlignment: Qt.AlignHCenter
                     }
                     Text{
-                        Layout.row: 1
-                        Layout.column: 3
+                        Layout.preferredWidth: 120
                         text: "AIR:\n"+get_text_stbc_ldpc(true);
+                        verticalAlignment: Qt.AlignVCenter
                         horizontalAlignment: Qt.AlignHCenter
+                        font.bold: true
                     }
                     Text{
-                        Layout.row: 2
-                        Layout.column: 3
+                        Layout.preferredWidth: 120
                         text: "GND:\n"+get_text_stbc_ldpc(false);
+                        verticalAlignment: Qt.AlignVCenter
                         horizontalAlignment: Qt.AlignHCenter
+                        font.bold: true
+                    }
+
+                    Button{
+                        text: "EDIT";
+                        //enabled: true
+                        enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
+                                (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
+                        onClicked: {
+                            close_all_dialoques();
+                            popup_enable_stbc_ldpc.open()
+                        }
                     }
                     ButtonIconInfo{
                         Layout.row: 1
@@ -521,46 +469,8 @@ Rectangle{
                                                                   "and you need to re-flash your air / ground unit to recover !");
                         }
                     }
-                    Button{
-                        Layout.row: 2
-                        Layout.column: 4
-                        text: "EDIT";
-                        enabled: true
-                        //enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
-                        //        (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
-                        onClicked: {
-                            close_all_dialoques();
-                            popup_enable_stbc_ldpc.open()
-                        }
-                    }
                 }
             }
-            //
-            /*Rectangle {
-                implicitWidth: main_scroll_view.width
-                implicitHeight: tx_power_layout.implicitHeight
-                id: rpi_cam_selector_layout_background
-                color: m_background_color
-                radius: 10
-
-                GridLayout {
-                    id: rpi_cam_selector_layout
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    Text{
-                        Layout.row: 0
-                        Layout.column: 0
-                        Layout.columnSpan: 2
-                        text: "RPI CAM SELECTOR"
-                        font.bold: true
-                    }
-                    Button{
-                        Layout.row: 1
-                        Layout.column: 0
-                        text: "EDIT"
-                    }
-                }
-            }*/
         }
     }
 
@@ -582,7 +492,7 @@ Rectangle{
     DialoqueFreqChangeGndOnly{
         id: dialoqueFreqChangeGndOnly
     }
-    DialoqueFreqChangeArmed{
-        id: dialoqueFreqChangeArmed
+    DialoqueFreqChangeAirGnd{
+        id: dialoqueFreqChangeAirGnd
     }
 }

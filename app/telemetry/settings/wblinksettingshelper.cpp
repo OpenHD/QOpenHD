@@ -86,11 +86,6 @@ void WBLinkSettingsHelper::validate_and_set_air_channel_width_mhz(int channel_wi
     set_curr_air_channel_width_mhz(channel_width_mhz);
 }
 
-void WBLinkSettingsHelper::set_simplify_channels(bool enable)
-{
-    m_simplify_channels=enable;
-}
-
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t &msg)
 {
     std::vector<uint16_t> channels;
@@ -102,7 +97,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channe
         qDebug()<<"No valid channels from ground station - should never happen";
         return;
     }
-    if(update_supported_channels(channels)){
+    if(FrequencyHelper::instance().set_hw_supported_frequencies_threadsafe(channels)){
         qDebug()<<"Supported channels changed";
         signal_ui_rebuild_model_when_possible();
     }
@@ -227,59 +222,6 @@ bool WBLinkSettingsHelper::change_param_ground_only_blocking(QString param_id, i
     return false;
 }
 
-static std::string spaced_string(int number){
-    std::stringstream ss;
-    if(number<100)ss<<" ";
-    if(number<10)ss<<" ";
-    ss<<number;
-    return ss.str();
-}
-
-QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
-{
-    const auto frequency_item=FrequencyHelper::find_frequency_item(frequency_mhz);
-    std::stringstream ss;
-    const bool is_2g=frequency_mhz<3000;
-    if(is_2g){
-        //ss<<"2.4G ";
-    }else{
-        //ss<<"5.8G ";
-    }
-    ss<<"["<<spaced_string(frequency_item.channel_nr)<<"] ";
-    ss<<frequency_mhz<<"Mhz ";
-    //if(frequency_item.channel_nr==-1){
-    //    ss<<"(ATH) ";
-    //}
-    //if(frequency_item.radar){
-    //    ss<<"(DFS RADAR)";
-    //}
-    return ss.str().c_str();
-}
-
-bool WBLinkSettingsHelper::get_frequency_radar(int frequency_mhz)
-{
-    const auto frequency_item=FrequencyHelper::find_frequency_item(frequency_mhz);
-    return frequency_item.radar;
-}
-
-bool WBLinkSettingsHelper::get_frequency_simplify(int frequency_mhz)
-{
-    const auto frequency_item=FrequencyHelper::find_frequency_item(frequency_mhz);
-    return frequency_item.simple;
-}
-
-bool WBLinkSettingsHelper::get_frequency_reccommended(int frequency_mhz)
-{
-    const auto frequency_item=FrequencyHelper::find_frequency_item(frequency_mhz);
-    return frequency_item.recommended;
-}
-
-int WBLinkSettingsHelper::get_frequency_openhd_race_band(int frequency_mhz)
-{
-    const auto frequency_item=FrequencyHelper::find_frequency_item(frequency_mhz);
-    return frequency_item.openhd_raceband;
-}
-
 void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
 {
     change_param_air_async(OHD_COMP_ID_AIR_CAMERA_PRIMARY,"V_KEYFRAME_I",static_cast<int32_t>(keyframe_interval),"KEYFRAME");
@@ -347,22 +289,6 @@ bool WBLinkSettingsHelper::set_param_stbc_ldpc_enable_air_ground()
     return true;
 }
 
-bool WBLinkSettingsHelper::update_supported_channels(const std::vector<uint16_t> supported_channels)
-{
-    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
-    if(m_supported_channels!=supported_channels){
-        m_supported_channels=supported_channels;
-        return true;
-    }
-    return false;
-}
-
-bool WBLinkSettingsHelper::has_valid_reported_channel_data()
-{
-    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
-    return !m_supported_channels.empty();
-}
-
 void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag)
 {
     mavlink_param_ext_set_t command;
@@ -415,76 +341,10 @@ void WBLinkSettingsHelper::change_param_air_channel_width_async(int value, bool 
     change_param_air_async(OHD_COMP_ID_LINK_PARAM,PARAM_ID_WB_CHANNEL_WIDTH,static_cast<int32_t>(value),"BWIDTH");
 }
 
-QList<int> WBLinkSettingsHelper::get_supported_frequencies()
-{
-    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
-    QList<int> ret;
-    for(auto& channel:m_supported_channels){
-        ret.push_back(channel);
-    }
-    return ret;
-}
-
-QList<int> WBLinkSettingsHelper::get_supported_frequencies_filtered(int filter_level)
-{
-    auto supported_frequencies=get_supported_frequencies();
-    if(filter_level<=0)return supported_frequencies;
-    QList<int> ret;
-    for(auto& frequency: supported_frequencies){
-        if(filter_level==1){
-            // 40Mhz spacing
-            auto info=FrequencyHelper::find_frequency_item(frequency);
-            if(info.simple){
-                ret.push_back(frequency);
-            }
-        }
-    }
-    return ret;
-}
-
-QStringList WBLinkSettingsHelper::pollution_frequencies_int_to_qstringlist(QList<int> frequencies)
-{
-    QStringList ret;
-    for(auto& freq:frequencies){
-        std::stringstream ss;
-        ss<<freq<<"Mhz";
-        ret.push_back(QString(ss.str().c_str()));
-    }
-    return ret;
-}
-
-QVariantList WBLinkSettingsHelper::pollution_frequencies_int_get_pollution(QList<int> frequencies,bool normalize)
-{
-    QVariantList ret;
-    for(auto& freq: frequencies){
-        auto pollution=PollutionHelper::instance().threadsafe_get_pollution_for_frequency(freq);
-        if(pollution.has_value()){
-            if(normalize){
-                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets_normalized));
-            }else{
-                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets));
-            }
-
-        }else{
-            ret.push_back(static_cast<int>(0));
-        }
-    }
-    return ret;
-}
-
-int WBLinkSettingsHelper::pollution_get_last_scan_pollution_for_frequency(int frequency)
-{
-    auto tmp=PollutionHelper::instance().threadsafe_get_pollution_for_frequency(frequency);
-    if(tmp.has_value()){
-        return tmp.value().n_foreign_packets;
-    }
-    return -1;
-}
-
 
 void WBLinkSettingsHelper::signal_ui_rebuild_model_when_possible()
 {
-    const bool valid_ground_channel_data=has_valid_reported_channel_data();
+    const bool valid_ground_channel_data=FrequencyHelper::instance().has_valid_supported_frequencies_data();
     if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0 && valid_ground_channel_data){
        qDebug()<<"Signal UI Ready & should rebuild "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz valid channels:"<<valid_ground_channel_data;
        set_ui_rebuild_models(m_ui_rebuild_models+1);
