@@ -2,7 +2,8 @@ import QtQuick 2.12
 
 Item {
     width: parent.width
-    height: 24
+    //height: 24
+    height: 20
 
     property string m_left_text: "FILL ME"
     property string m_right_text: "FILL ME"

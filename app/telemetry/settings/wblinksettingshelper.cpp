@@ -319,7 +319,7 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
             if(std::holds_alternative<int32_t>(param_value)){
                 ss<<std::get<int32_t>(param_value);
             }else{
-                ss<<std::get<int32_t>(param_value);
+                ss<<std::get<std::string>(param_value);
             }
             ss<<",please check uplink";
             HUDLogMessagesModel::instance().add_message_warning(ss.str().c_str());

@@ -29,7 +29,7 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
-    widgetActionHeight: 400
+    widgetActionHeight: 450
 
     property var m_camera_stream_model: m_is_for_primary_camera ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
 
@@ -108,6 +108,17 @@ BaseWidget {
         }
     }
 
+    ListModel{
+        id: resolutions_model
+        ListElement {title: "480p60(16:9)"; value: "848x480@60"}
+        ListElement {title: "480p60(4:3)"; value: "640x480@60"}
+        ListElement {title: "720p49(16:9)"; value: "1280x720@49"}
+        ListElement {title: "720p60(4:3)"; value: "960x720@60"}
+        ListElement {title: "1080p30(16:9)"; value: "1920x1080@30"}
+        ListElement {title: "1080p30(4:3)"; value: "1440x1080@30"}
+        ListElement {title: "1080p49(4:3)"; value: "1440x1080@49"}
+    }
+
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -120,6 +131,27 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements{
             id: idBaseWidgetDefaultUiControlElements
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Show RED recording active")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.camera_bitrate_widget_show_recording
+                    onCheckedChanged: settings.camera_bitrate_widget_show_recording = checked
+                }
+            }
         }
     }
 
@@ -134,15 +166,50 @@ BaseWidget {
             width:200
 
             SimpleLeftRightText{
-                m_left_text: qsTr("Res@Framerate:")
-                m_right_text:  m_camera_stream_model.curr_set_video_format_and_codec
+                m_left_text: qsTr("Status:")
+                m_right_text:  {
+                    if(!_ohdSystemAir.is_alive)return "no air";
+                    return _cameraStreamModelPrimary.camera_status_to_string(m_camera_stream_model.camera_status);
+                }
+            }
+            SimpleLeftRightText{
+                m_left_text: qsTr("Type:")
+                m_right_text: {
+                    if(!_ohdSystemAir.is_alive)return "n/a";
+                    return _cameraStreamModelPrimary.camera_type_to_string(m_camera_stream_model.camera_type);
+                }
+            }
+            SimpleLeftRightText{
+                m_left_text: qsTr("Codec:")
+                m_right_text: {
+                    if(!_ohdSystemAir.is_alive)return "n/a";
+                    return _cameraStreamModelPrimary.camera_codec_to_string(m_camera_stream_model.encoding_codec);
+                }
             }
 
-            //SimpleLeftRightText{
-            //    m_left_text: ""
-            //    m_right_text: ""
-            //}
-            Item{
+            ComboBox{
+                id: resolution_fps_cb
+                model: resolutions_model
+                textRole: "title"
+                width: 200
+                Layout.preferredWidth: 200
+                Layout.minimumWidth: 200
+                height: 50
+                currentIndex: 0
+                displayText: {
+                    if(!_ohdSystemAir.is_alive)return "Res@fps N/A";
+                    return m_curr_video_format;
+                }
+                onActivated: {
+                    console.log("onActivated:"+currentIndex);
+                    if(currentIndex<0)return;
+                    const resolution=model.get(currentIndex).value
+                    console.log("Selected resolution: "+resolution);
+                    set_camera_resolution(resolution);
+                }
+                enabled: _ohdSystemAir.is_alive;
+            }
+            /*Item{
                 width: parent.width
                 height: 150
                 //color: "green"
@@ -187,7 +254,7 @@ BaseWidget {
                         highlighted: m_curr_video_format=="1440x1080@30"
                     }
                 }
-            }
+            }*/
             SimpleLeftRightText{
                 m_left_text: qsTr("Bitrate SET:")
                 m_right_text: m_camera_stream_model.curr_recomended_video_bitrate_string
@@ -236,10 +303,7 @@ BaseWidget {
                 m_left_text: qsTr("AIR RECORD:");
                 m_right_text: {
                     if(!_ohdSystemAir.is_alive)return "N/A";
-                    if(m_camera_recording_mode){
-                        return "RECORDING";
-                    }
-                    return "NOT ACTIVE"
+                    return _cameraStreamModelPrimary.camera_recording_mode_to_string(m_camera_stream_model.air_recording_active);
                 }
             }
             // For camera 1
@@ -275,12 +339,6 @@ BaseWidget {
                     }
                 }
             }
-
-            /*Item{
-                id: placeholder
-                width:parent.width
-                height: 10
-            }*/
             Item {
                 width: parent.width
                 height: 32
@@ -338,5 +396,17 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+
+        Rectangle{
+            width: 12
+            height: width
+            radius: width
+            color: "red";
+            anchors.right: camera_icon.left
+            anchors.rightMargin: 2
+            anchors.verticalCenter: parent.verticalCenter
+            visible: settings.camera_bitrate_widget_show_recording && m_camera_is_currently_recording
+        }
+
     }
 }

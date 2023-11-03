@@ -137,6 +137,7 @@ Settings {
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
     property double bitrate_caution: 0
+    property bool camera_bitrate_widget_show_recording: true
     //
     property bool qrenderstats_show: false
     property bool qrenderstats_declutter: false
