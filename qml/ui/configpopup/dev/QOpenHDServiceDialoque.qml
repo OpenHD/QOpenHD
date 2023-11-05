@@ -49,8 +49,8 @@ Card {
 
     cardName: qsTr("QOpenHD")
     cardBody: Column {
-        height: powerDialog.height
-        width: powerDialog.width
+        height: qopenhdpowerdialoque.height
+        width: qopenhdpowerdialoque.width
 
         Text {
             text: get_info_text()

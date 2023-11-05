@@ -129,26 +129,21 @@ Rectangle {
                 anchors.leftMargin: 12
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    //font.pixelSize: 20
                     width:160
                     text: model.unique_id
                     font.bold: true
-                    //color: settings.screen_settings_openhd_parameters_transparent ? "green" : "black"
+                    font.pixelSize: 14
                     color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
                     style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
                     styleColor: settings.color_glow
                 }
                 Text {
                     width:160
-                    //font.pixelSize: 20
                     text: model.extraValue
                     font.bold: true
+                    font.pixelSize: 14
                     anchors.verticalCenter: parent.verticalCenter
                     color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
-                    //background: settings.screen_settings_openhd_parameters_transparent ? "white" : "transparent"
-                    //styleColor: settings.color_glow
-                    //background: "yellow"
-                    //opacity: 1.0
                     style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
                     styleColor: settings.color_glow
                 }

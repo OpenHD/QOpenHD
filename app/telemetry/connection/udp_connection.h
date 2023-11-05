@@ -28,6 +28,10 @@ public:
     void stop();
 
     void send_message(const mavlink_message_t& msg);
+
+    // Returns true if the last received message is not older than X seconds
+    bool threadsafe_is_alive();
+
 private:
     void process_data(const uint8_t* data,int data_len);
     void process_mavlink_message(mavlink_message_t msg);
@@ -56,6 +60,7 @@ private:
     std::atomic<bool> m_keep_receiving=false;
     std::mutex m_remote_nutex;
     std::optional<Remote> m_curr_remote;
+    std::atomic_int32_t m_last_data_ms=0;
 };
 
 #endif // MUDPLINK_H

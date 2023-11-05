@@ -6,7 +6,7 @@ After=multi-user.target
 Type=simple
 Environment="QT_QPA_EGLFS_KMS_ATOMIC=1"
 Environment="QT_LOGGING_RULES=qt.qpa.egl*=true"
-Environment="QT_QPA_EGLFS_KMS_PLANE_INDEX=5"
+Environment="QT_QPA_EGLFS_KMS_PLANE_INDEX=1"
 Environment="QT_QPA_EGLFS_FORCE888=1"
 Environment="QT_QPA_EGLFS_SWAPINTERVAL=0"
 Environment="QT_QPA_EGLFS_KMS_CONFIG=/usr/local/share/qopenhd/rock_qt_eglfs_kms_config.json"

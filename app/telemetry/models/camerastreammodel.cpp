@@ -74,7 +74,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
            if(m_n_mismatch_has_been_logged<10){
                std::stringstream ss;
                ss<<"Set/ Measured encoder bitrate mismatch >"<<max_perc_allowed<<"%";
-               LogMessagesModel::instanceOHD().add_message_warn("CAM",ss.str().c_str());
+               LogMessagesModel::instanceOHDAir().add_message_warn("CAM",ss.str().c_str());
                m_n_mismatch_has_been_logged++;
            }
         }

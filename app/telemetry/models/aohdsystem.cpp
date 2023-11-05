@@ -192,7 +192,11 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              mavlink_statustext_t parsedMsg;
              mavlink_msg_statustext_decode(&msg,&parsedMsg);
              auto tmp=Telemetryutil::statustext_convert(parsedMsg);
-             LogMessagesModel::instanceOHD().addLogMessage(m_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
+             if(m_is_air){
+                LogMessagesModel::instanceOHDAir().addLogMessage("OHD[A]",tmp.message.c_str(),tmp.level);
+             }else{
+                LogMessagesModel::instanceGround().addLogMessage("OHD[G]",tmp.message.c_str(),tmp.level);
+             }
              // Notify user in HUD of external device connect / disconnect events
              if(tmp.message.find("External device") != std::string::npos){
                 HUDLogMessagesModel::instance().add_message(tmp.level,tmp.message.c_str());
@@ -223,8 +227,21 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             }
             consumed=true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_SYS_STATUS1:{
+            mavlink_openhd_sys_status1_t parsed;
+            mavlink_msg_openhd_sys_status1_decode(&msg,&parsed);
+            process_sys_status1(parsed);
+            consumed=true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_GND_OPERATING_MODE:{
+            if(m_is_air) qDebug()<<"Message mismatch"; // only ground reports operating mode
+            mavlink_openhd_wifbroadcast_gnd_operating_mode_t parsed;
+            mavlink_msg_openhd_wifbroadcast_gnd_operating_mode_decode(&msg,&parsed);
+            process_op_mode(parsed);
+            consumed=true;
+        }break;
         default:{
-
+            qDebug()<<"Unknown openhd message type";
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
@@ -256,6 +273,8 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_ina219_current_milliamps(msg.storage_usage[3]);
     set_ram_usage_perc(msg.ram_usage);
     set_ram_total(msg.ram_total);
+    int16_t air_reported_sys_id=msg.fan_speed[0];
+    set_air_reported_fc_sys_id(air_reported_sys_id);
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
@@ -283,7 +302,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
     }
     // TODO: r.n we don't differentiate signal quality per card
     if(msg.card_index==0){
-        set_current_rx_signal_quality(msg.rx_signal_quality);
+        set_current_rx_signal_quality(msg.rx_signal_quality_adapter);
     }
 }
 
@@ -292,17 +311,6 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_rx_packet_loss_perc(msg.curr_rx_packet_loss_perc);
     set_count_tx_inj_error_hint(msg.count_tx_inj_error_hint);
     set_count_tx_dropped_packets(msg.count_tx_dropped_packets);
-    // only on ground
-    /*ABCif(! m_is_air){
-        for(int i=0;i<WiFiCard::N_CARDS;i++){
-            WiFiCard::instance_gnd(i).set_is_active_tx(false);
-        }
-        const auto active_tx_idx=msg.curr_tx_card_idx;
-        if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
-            WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
-        }
-        set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
-    }*/
     const int new_mcs_index=msg.curr_tx_mcs_index;
     if(m_is_air){
         // We are only interested in the mcs index of the air unit
@@ -331,26 +339,6 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_wb_short_guard_enabled(bitfield.short_guard);
     set_curr_rx_last_packet_status_good(bitfield.curr_rx_last_packet_status_good);
 
-    if(m_is_air && !bitfield.stbc){
-        if(m_stbc_warning_shown)return;
-        //  If your ground unit uses card(s) with 2 antennas, enable STBC on your air unit (transmitting part)."
-        // "If your air unit uses card(s) with 2 antennas, enable STBC on your ground unit (transmitting part).
-        /*auto message="Please check: Enable WB_E_STBC on AIR unit IF your rtl8812au TX/RX both have more than one antenna"
-                       " (NOTE: Without 2 populated rf paths, enabling this option results in"
-                       " no connection !!! OpenHD cannot automatically check how many rf paths are populated on your adapter(s). ASUS has 1 external and "
-                       "1 internal antenna (STBC should be used). If you wish to not see this "
-                       "prompt again, you can disable it in QOpenHD - DEV - dev_wb_show_no_stbc_enabled_warning.";*/
-        auto message="Please check: STBC is not enabled on your air unit. "
-                       "If your air unit has 2 or more antennas (ONLY IF!), enable STBC to use them both and increase range significantly."
-                       "See the wiki for more info."
-                       "You can disable this prompt by going to QOpenHD - DEV and set dev_wb_show_no_stbc_enabled_warning=off.";
-        QSettings settings;
-        const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
-        if(!dev_wb_show_no_stbc_enabled_warning){
-            WorkaroundMessageBox::makePopupMessage(message,10);
-            m_stbc_warning_shown=true;
-        }
-    }
     // Feature: Warning if dBm falls below minimum threshold for current MCS index on packets that need to be received
     // We need to get the mcs index from the other system (aka from air if we are running on ground) since that's whats being injected
     const int mcs_index_other=m_is_air ? AOHDSystem::instanceGround().m_curr_mcs_index : AOHDSystem::instanceAir().m_curr_mcs_index;
@@ -454,6 +442,18 @@ void AOHDSystem::process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_perf
     }
 }
 
+void AOHDSystem::process_sys_status1(const mavlink_openhd_sys_status1_t &msg)
+{
+    set_wifi_hotspot_state(msg.wifi_hotspot_state);
+    set_wifi_hotspot_frequency(msg.wifi_hotspot_frequency);
+}
+
+void AOHDSystem::process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t &msg)
+{
+    set_wb_gnd_operating_mode(msg.operating_mode);
+    set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
+}
+
 void AOHDSystem::update_alive()
 {
     // NOTE: Since we are really resourcefully with the link, we consider the system alive if any message coming from it has
@@ -488,6 +488,12 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
             message << "disconnected";
             HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
         }
+        if(!m_is_air){
+            LogMessagesModel::instanceGround().add_message_debug("QOpenHD",message.str().c_str());
+        }else{
+            LogMessagesModel::instanceOHDAir().add_message_debug("QOpenHD",message.str().c_str());
+        }
+
         set_is_alive(alive);
     }
 }

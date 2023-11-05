@@ -69,6 +69,7 @@ public:
     // Tries to mimic android toast as much as possible
     //
     Q_INVOKABLE void show_toast(QString message,bool long_toast=false);
+    L_RO_PROP(QString,version_string,set_version_string,"2.5.2-evo-alpha");
 public:
     L_RO_PROP(QString,toast_text,set_toast_text,"NONE");
     L_RO_PROP(bool,toast_visible,set_toast_visible,false);

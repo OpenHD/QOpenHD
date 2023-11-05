@@ -21,14 +21,18 @@ Card {
     cardName: qsTr("QOpenHD")+(_messageBoxInstance.remaining_time_seconds==-1 ? "" : ("   "+_messageBoxInstance.remaining_time_seconds+"s"))
     cardNameColor: "black"
     visible: _messageBoxInstance.visible
-    cardBody: Column {
+    cardBody: ScrollView {
+        contentHeight: workaroundMessageBox_text.height
+        contentWidth: workaroundMessageBox_text.width
+        ScrollBar.vertical.interactive: true
         height: 200
-        width: 320
+        width: 350
+        clip:true
+        anchors.centerIn: parent.Center
         Text {
             id: workaroundMessageBox_text
+            width: 320
             text: _messageBoxInstance.text
-            width: parent.width-24
-            height:parent.height
             leftPadding: 12
             rightPadding: 12
             wrapMode: Text.WordWrap

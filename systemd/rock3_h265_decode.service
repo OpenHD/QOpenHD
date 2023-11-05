@@ -5,7 +5,7 @@ Description=rock_h265_decode
 User=root
 
 # Video decode via mpp, started by QOpenHD if needed (and stopped if needed)
-ExecStart=/bin/sh -c "gst-launch-1.0 udpsrc port=5600 caps='application/x-rtp, payload=(int)96, clock-rate=(int)90000, media=(string)video, encoding-name=(string)H265' ! rtph265depay ! h265parse ! mppvideodec format=23 fast-mode=true ! queue ! kmssink plane-id=54"
+ExecStart=/bin/sh -c "gst-launch-1.0 udpsrc port=5600 caps='application/x-rtp, payload=(int)96, clock-rate=(int)90000, media=(string)video, encoding-name=(string)H265' ! rtph265depay ! h265parse ! mppvideodec format=23 fast-mode=true ! queue ! kmssink plane-id=54 force-modesetting=true"
 
 Restart=always
 RestartSec=1

@@ -32,7 +32,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/aoagauge.h"
-#include "osd/performancehorizonladder.h"
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
 #include "decodingstatistcs.h"
@@ -256,8 +255,6 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<HorizonLadder>("OpenHD", 1, 0, "HorizonLadder");
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
-    qmlRegisterType<PerformanceHorizonLadder>("OpenHD", 1, 0, "PerformanceHorizonLadder");
-
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
@@ -272,8 +269,11 @@ int main(int argc, char *argv[]) {
 
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
-    engine.rootContext()->setContextProperty("_ohdlogMessagesModel", &LogMessagesModel::instanceOHD());
-    engine.rootContext()->setContextProperty("_fclogMessagesModel", &LogMessagesModel::instanceFC());
+    //engine.rootContext()->setContextProperty("_ohdlogMessagesModel", &LogMessagesModel::instanceOHD());
+    //engine.rootContext()->setContextProperty("_fclogMessagesModel", &LogMessagesModel::instanceFC());
+    engine.rootContext()->setContextProperty("_logGround", &LogMessagesModel::instanceGround());
+    engine.rootContext()->setContextProperty("_logOpenhdAir", &LogMessagesModel::instanceOHDAir());
+    engine.rootContext()->setContextProperty("_logFC", &LogMessagesModel::instanceFC());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
     // Telemetry - first all the models
@@ -373,7 +373,7 @@ int main(int argc, char *argv[]) {
 
     QRenderStats::instance().register_to_root_window(engine);
 
-    LogMessagesModel::instanceOHD().addLogMessage("QOpenHD","running");
+    LogMessagesModel::instanceGround().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
 
     return retval;

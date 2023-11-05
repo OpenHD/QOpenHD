@@ -15,28 +15,34 @@ class TCPConnection
 {
 public:
     typedef std::function<void(mavlink_message_t msg)> MAV_MSG_CB;
-    TCPConnection(const std::string remote_ip,const int remote_port,MAV_MSG_CB cb);
+    TCPConnection(MAV_MSG_CB cb);
     ~TCPConnection();
+    // This returns after 3 max 3 seconds.
+    // On success, true is returned and the receive thread is started (runs untl stop_receiving is called)
+    // Otherwise, return false;
+    bool try_connect_and_receive(const std::string remote_ip,const int remote_port);
 
-    void start();
-    void stop();
+    // If currently receiving, terminate and clean up
+    // Otherwise, do nothing
+    void stop_receiving();
 
     void send_message(const mavlink_message_t& msg);
+
+    bool threadsafe_is_alive();
 private:
     void process_data(const uint8_t* data,int data_len);
     void process_mavlink_message(mavlink_message_t msg);
-    void loop_receive();
-    bool setup_socket();
-    void connect_once();
+    void receive_until_stopped();
 private:
-    const std::string m_remote_ip;
-    const int m_remote_port;
-    const MAV_MSG_CB m_cb;
+    MAV_MSG_CB m_cb;
     int m_socket_fd=-1;
     mavlink_status_t m_recv_status{};
     std::unique_ptr<std::thread> m_receive_thread=nullptr;
-    std::atomic<bool> m_keep_receiving=false;
-    std::atomic<bool> m_is_connected=false;
+    std::atomic_int32_t m_last_data_ms=0;
+public:
+    std::string m_remote_ip;
+    int m_remote_port;
+    std::atomic_bool m_keep_receiving=false;
 };
 
 #endif // TCPCONNECTION_H

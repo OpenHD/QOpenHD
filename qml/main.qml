@@ -33,8 +33,8 @@ ApplicationWindow {
     contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
     contentItem.rotation: settings.general_screen_rotation 
 
-    minimumWidth: 850
-    minimumHeight: 480
+    //minimumWidth: 850
+    //minimumHeight: 480
     title: qsTr("QOpenHD EVO")
     // Transparent background is needed when the video is not rendered via (OpenGL) inside QT,
     // but rather done independently by using a pipeline that directly goes to the HW composer (e.g. mmal on pi).

@@ -1,5 +1,6 @@
 #include "MavlinkTelemetry.h"
 
+#include "common/openhd-util.hpp"
 #include "models/aohdsystem.h"
 #include "models/fcmavlinksystem.h"
 
@@ -15,19 +16,41 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
 }
 
+void MavlinkTelemetry::start()
+{
+    QSettings settings;
+    int mavlink_connection_mode=settings.value("qopenhd_mavlink_connection_mode",0).toInt();
+    if(mavlink_connection_mode<0 || mavlink_connection_mode>2)mavlink_connection_mode=0;
+    m_connection_mode=mavlink_connection_mode;
+    QString tcp_manual_ip=settings.value("qopenhd_mavlink_connection_manual_tcp_ip","192.168.178.36").toString();
+    m_connction_manual_tcp_ip=std::make_shared<std::string>(tcp_manual_ip.toStdString());
+    auto cb_udp=[this](mavlink_message_t msg){
+        process_mavlink_message(msg);
+    };
+    const auto udp_ip="0.0.0.0"; //"127.0.0.1"
+    m_udp_connection=std::make_unique<UDPConnection>(udp_ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
+    m_udp_connection->start();
+    auto cb_tcp=[this](mavlink_message_t msg){
+        process_mavlink_message(msg);
+    };
+    m_tcp_connection=std::make_unique<TCPConnection>(cb_tcp);
+    m_heartbeat_thread_run=true;
+    m_heartbeat_thread=std::make_unique<std::thread>(&MavlinkTelemetry::send_heartbeat_loop,this);
+}
+
+MavlinkTelemetry::~MavlinkTelemetry()
+{
+    if(m_heartbeat_thread){
+        m_heartbeat_thread_run=false;
+        m_heartbeat_thread->join();
+        m_heartbeat_thread=nullptr;
+    }
+}
+
 MavlinkTelemetry &MavlinkTelemetry::instance()
 {
     static MavlinkTelemetry instance{};
     return instance;
-}
-
-void MavlinkTelemetry::start()
-{
-    QSettings settings;
-    // By default, we always use UDP / localhost mode.
-    enable_udp();
-    m_heartbeat_thread_run=true;
-    m_heartbeat_thread=std::make_unique<std::thread>(&MavlinkTelemetry::send_heartbeat_loop,this);
 }
 
 bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
@@ -41,11 +64,12 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
     }
-    if(m_udp_connection){
+    // Prefer udp
+    if(m_udp_connection->threadsafe_is_alive()){
         m_udp_connection->send_message(msg);
         return true;
     }else{
-        if(m_tcp_connection){
+        if(m_tcp_connection->threadsafe_is_alive()){
             m_tcp_connection->send_message(msg);
             return true;
         }
@@ -220,35 +244,6 @@ void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
 }
 
 
-void MavlinkTelemetry::add_tcp_connection_handler(QString ip)
-{
-    qDebug()<<"MavlinkTelemetry::add_tcp_connection_handler"<<ip;
-    QSettings settings;
-    settings.setValue("dev_mavlink_tcp_ip",ip);
-    // Stop udp (if currently running)
-    m_udp_connection=nullptr;
-    auto cb_tcp=[this](mavlink_message_t msg){
-        process_mavlink_message(msg);
-    };
-    m_tcp_connection=std::make_unique<TCPConnection>(ip.toStdString(),QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT,cb_tcp);
-    m_tcp_connection->start();
-    set_udp_localhost_mode_enabled(false);
-}
-
-void MavlinkTelemetry::enable_udp()
-{
-    m_tcp_connection=nullptr;
-    m_udp_connection=nullptr;
-    // default, udp, passive (like QGC)
-    auto cb_udp=[this](mavlink_message_t msg){
-        process_mavlink_message(msg);
-    };
-    set_udp_localhost_mode_enabled(true);
-    const auto ip="0.0.0.0"; //"127.0.0.1"
-    m_udp_connection=std::make_unique<UDPConnection>(ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
-    m_udp_connection->start();
-}
-
 void MavlinkTelemetry::ping_all_systems()
 {
     mavlink_message_t msg;
@@ -274,9 +269,28 @@ void MavlinkTelemetry::re_apply_rates()
     FCMsgIntervalHandler::instance().restart();
 }
 
+void MavlinkTelemetry::change_telemetry_connection_mode(int mavlink_connection_mode)
+{
+    if(mavlink_connection_mode<0 || mavlink_connection_mode>2)mavlink_connection_mode=0;
+    m_connection_mode=mavlink_connection_mode;
+}
+
+bool MavlinkTelemetry::change_manual_tcp_ip(QString ip)
+{
+    if(!OHDUtil::is_valid_ip(ip.toStdString())){
+        return false;
+    }
+    m_connction_manual_tcp_ip=std::make_shared<std::string>(ip.toStdString());
+}
+
 void MavlinkTelemetry::send_heartbeat_loop()
 {
-    mavlink_message_t msg;
+    while(true){
+        //qDebug()<<"send_heartbeat_loop";
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        perform_connection_management();
+    }
+    /*mavlink_message_t msg;
     mavlink_heartbeat_t heartbeat{};
     heartbeat.type=MAV_TYPE_GCS;
     heartbeat.autopilot=MAV_AUTOPILOT_INVALID;
@@ -284,5 +298,67 @@ void MavlinkTelemetry::send_heartbeat_loop()
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         mavlink_msg_heartbeat_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),&msg,&heartbeat);
         sendMessage(msg);
+    }*/
+}
+
+void MavlinkTelemetry::perform_connection_management()
+{
+    const int mavlink_connection_mode=m_connection_mode;
+    if(mavlink_connection_mode==0){
+        // AUTO
+        if(m_udp_connection->threadsafe_is_alive()){
+            // Stop TCP if it is running, we don't need it
+            m_tcp_connection->stop_receiving();
+            set_telemetry_connection_status("AUTO-CONNECTED(UDP,LOCALHOST)");
+        }else{
+            if(!m_tcp_connection->threadsafe_is_alive()){
+                set_telemetry_connection_status("AUTO-CONNECTING");
+            }
+            // UPP is not working, try TCP
+            const std::string IP_CONSTI_TEST="192.168.178.36";
+            const std::string IP_OPENHD_WIFI_HOTSPOT="192.168.3.1";
+            //const std::string IP_OPENHD_WIFI_HOTSPOT=IP_CONSTI_TEST;
+            const std::string IP_OPENHD_ETHERNET_HOTSPOT="192.168.2.1";
+            if(m_tcp_connection->m_keep_receiving && m_tcp_connection->threadsafe_is_alive()){
+                // Already connected
+                set_telemetry_connection_status("AUTO-CONNECTED");
+            }else{
+                m_tcp_connection->stop_receiving();
+                if(m_tcp_connection->try_connect_and_receive(IP_OPENHD_WIFI_HOTSPOT,QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT)){
+                    set_telemetry_connection_status("AUTO-CONNECTED (WIFI,TCP)");
+                }else if(m_tcp_connection->try_connect_and_receive(IP_OPENHD_ETHERNET_HOTSPOT,QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT)){
+                    set_telemetry_connection_status("AUTO-CONNECTED (ETH,TCP)");
+                }else{
+                    set_telemetry_connection_status("AUTO-NOT CONNECTED");
+                }
+            }
+        }
+    }else if(mavlink_connection_mode==1){
+        // Explicit UDP
+        m_tcp_connection->stop_receiving();
+        std::stringstream ss;
+        ss<<"MANUAL UDP-"<<(m_udp_connection->threadsafe_is_alive() ? "ALIVE" : "NO DATA");
+        set_telemetry_connection_status(ss.str().c_str());
+    }else if(mavlink_connection_mode==2){
+        // Explicit TCP
+        auto tmp=m_connction_manual_tcp_ip;
+        const std::string user_ip=*tmp;
+        const int user_port=5760;
+        if(m_tcp_connection->m_remote_ip!=user_ip || m_tcp_connection->m_remote_port!=user_port){
+            if(!m_tcp_connection->threadsafe_is_alive()){
+                m_tcp_connection->stop_receiving();
+                m_tcp_connection->try_connect_and_receive(user_ip,user_port);
+            }
+        }
+        std::stringstream ss;
+        ss<<"MANUAL TCP -";
+        if(m_udp_connection->threadsafe_is_alive()){
+            ss<<"CONNECTED";
+        }else{
+            ss<<"WRONG IP ? ["<<user_ip<<"]";
+        }
+        set_telemetry_connection_status(ss.str().c_str());
+    }else{
+
     }
 }

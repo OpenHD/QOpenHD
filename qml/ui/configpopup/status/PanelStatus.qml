@@ -35,47 +35,50 @@ Rectangle {
         width: parent.width
         height: parent.height
         contentHeight: mainItem.height
-        //contentWidth: mainItem.width
+        contentWidth: mainItem.width
         clip: true
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
 
-        Item {
+        Item{
             id: mainItem
-            //width: 1024
-            width: parent.width
-            height: 500
+            width: 800
+            height: 40+350+80
 
             QOpenHDVersionCard{
                 id: qopenhdversioncard
+                height: 40
+            }
+
+            // The 3 status cards (OpenHD AIR & GND, FC)
+            // next to each other
+            StatusCardsColumn{
+                id: statuscardscolumn
+                width: parent.width
+                height: 350
+
+
+                anchors.leftMargin: 4
+                anchors.topMargin: 4
+
+                anchors.left: parent.left
+                anchors.top: qopenhdversioncard.bottom
+            }
+
+
+            PingUtilColumn {
+                id:actionsButtonMenu
+                width: parent.width
                 height: 80
+                anchors.top: statuscardscolumn.bottom
 
-                StatusCardsColumn{
-                    width: parent.width
-                    height: 250
-
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    anchors.topMargin: 12
-
-                    id: status_openhd_fc
-                    anchors.top: qopenhdversioncard.bottom
-                }
-
-                ActionsColumn {
-                    id:actionsButtonMenu
-                    width: parent.width
-                    height: 80
-                    y: (applicationWindow.height-(actionsButtonMenu.height*1.5))
-
-                }
             }
         }
-        PowerActionDialoque{
-            id: powerDialog
-        }
-        QOpenHDServiceDialoque{
-            id: qopenhdservicedialoque
-        }
+    }
+    PowerActionDialoque{
+        id: powerDialog
+    }
+    DialoqueNotAlive{
+        id: dialoqueNotAlive
     }
 }
