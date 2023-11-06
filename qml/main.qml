@@ -93,26 +93,6 @@ ApplicationWindow {
             }
         }
 
-        // Loads the proper (platform-dependent) video widget for the secondary video, if enabled.
-        // r.n we only have a gstreamer - qmlglsink implementation for it
-        Loader {
-            anchors.fill: parent
-            z: 2.0
-            anchors.bottom: parent.bottom
-            source: {
-                if(settings.dev_qopenhd_n_cameras>1){
-                    // R.N the only implementation for secondary video
-                    if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
-                         return "../video/SecondaryVideoGStreamer.qml";
-                    }else{
-                        console.warn("No secondary video implementation")
-                    }
-                }else{
-                    console.debug("Scondary video disabled");
-                }
-                return "";
-            }
-        }
 
         ColorPicker {
             id: colorPicker

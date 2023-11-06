@@ -13,6 +13,8 @@ import "./widgets/map"
 import "../resources" as Resources
 import "./elements"
 
+import "../video"
+
 Item {
     id: hudOverlayGrid
     focus: true
@@ -199,29 +201,29 @@ Item {
     }
 
     Keys.onPressed: (event)=> {
-        console.log("HUDOverlayGrid::Key was pressed:"+event);
-        if (event.key == Qt.Key_Return) {
-            //console.log("enter was pressed");
-            event.accepted = true;
-            dummy_joystick_enter()
-        }else if(event.key == Qt.Key_Left){
-            //console.log("left was pressed")
-            event.accepted=true;
-            dummy_joystick_left();
-        }else if(event.key == Qt.Key_Right){
-            //console.log("right was pressed")
-            event.accepted=true;
-            dummy_joystick_right();
-        }else if(event.key == Qt.Key_Up){
-            //console.log("up was pressed")
-            event.accepted=true;
-            dummy_joystick_up()
-        }else if(event.key == Qt.Key_Down){
-            //console.log("down was pressed")
-            event.accepted=true;
-            dummy_joystick_down()
-        }
-    }
+                        console.log("HUDOverlayGrid::Key was pressed:"+event);
+                        if (event.key == Qt.Key_Return) {
+                            //console.log("enter was pressed");
+                            event.accepted = true;
+                            dummy_joystick_enter()
+                        }else if(event.key == Qt.Key_Left){
+                            //console.log("left was pressed")
+                            event.accepted=true;
+                            dummy_joystick_left();
+                        }else if(event.key == Qt.Key_Right){
+                            //console.log("right was pressed")
+                            event.accepted=true;
+                            dummy_joystick_right();
+                        }else if(event.key == Qt.Key_Up){
+                            //console.log("up was pressed")
+                            event.accepted=true;
+                            dummy_joystick_up()
+                        }else if(event.key == Qt.Key_Down){
+                            //console.log("down was pressed")
+                            event.accepted=true;
+                            dummy_joystick_down()
+                        }
+                    }
 
     Image {
         id: settingsButton
@@ -252,224 +254,227 @@ Item {
             color: "transparent"
         }
     }
+    SecondaryVideoGStreamer{
+        id: secondary_video
+    }
     Item{
         id: actual_hud_elements
         width: parent.width
         height: parent.height
 
-    // By default on top row
-    // --------------------------------------------------------------------------
-    LinkDownRSSIWidget {
-        id: downlink
-        m_next_item: record_video_widget
-    }
-    RecordVideoWidget {
-        id: record_video_widget
-    }
-    WBLinkRateControlWidget{
-        id: wBLinkRateControlWidget
-    }
-    // exp
-    QRenderStatsWidget {
-        id: qRenderStatsWidget
-    }
-    VideoBitrateWidgetPrimary {
-        id: bitrate1
-    }
-    VideoBitrateWidgetSecondary {
-        id: bitrate2
-    }
-    SOCStatusWidgetAir {
-        id: air_status
-    }
-    SOCStatusWidgetGround {
-        id: ground_status
-    }
-    LinkUpRSSIWidget {
-        id: uplink
-    }
-     Sidebar{
-        id: sidebar
-    }
-    // ----------------------------------------------------------------------------
-    // TODO SORT ME
+        // By default on top row
+        // --------------------------------------------------------------------------
+        LinkDownRSSIWidget {
+            id: downlink
+            m_next_item: record_video_widget
+        }
+        RecordVideoWidget {
+            id: record_video_widget
+        }
+        WBLinkRateControlWidget{
+            id: wBLinkRateControlWidget
+        }
+        // exp
+        QRenderStatsWidget {
+            id: qRenderStatsWidget
+        }
+        VideoBitrateWidgetPrimary {
+            id: bitrate1
+        }
+        VideoBitrateWidgetSecondary {
+            id: bitrate2
+        }
+        SOCStatusWidgetAir {
+            id: air_status
+        }
+        SOCStatusWidgetGround {
+            id: ground_status
+        }
+        LinkUpRSSIWidget {
+            id: uplink
+        }
+        Sidebar{
+            id: sidebar
+        }
+        // ----------------------------------------------------------------------------
+        // TODO SORT ME
 
-    // + 0% cpu
-    MessageHUD {
-        id: messageHUD
-    }
+        // + 0% cpu
+        MessageHUD {
+            id: messageHUD
+        }
 
-    GroundPowerWidget {
-        id: groundPowerWidget
-    }
+        GroundPowerWidget {
+            id: groundPowerWidget
+        }
 
-    // + 0% cpu
-    AirBatteryWidget {
-        id: air_battery
-    }
+        // + 0% cpu
+        AirBatteryWidget {
+            id: air_battery
+        }
 
-    // + 0% cpu
-    FlightModeWidget {
-        id: flight_mode
-    }
+        // + 0% cpu
+        FlightModeWidget {
+            id: flight_mode
+        }
 
-    // + 0% cpu
-    GPSWidget {
-        id: gps
-    }
+        // + 0% cpu
+        GPSWidget {
+            id: gps
+        }
 
-    // + 0% cpu
-    HomeDistanceWidget {
-        id: home_distance
-    }
+        // + 0% cpu
+        HomeDistanceWidget {
+            id: home_distance
+        }
 
-    // + 0% cpu
-    FlightTimeWidget {
-        id: flight_timer
-    }
+        // + 0% cpu
+        FlightTimeWidget {
+            id: flight_timer
+        }
 
-    // + 0% cpu
-    FlightDistanceWidget {
-        id: flight_distance
-    }
+        // + 0% cpu
+        FlightDistanceWidget {
+            id: flight_distance
+        }
 
-    // + 0% cpu
-    FlightMahWidget {
-        id: flight_mah
-    }
+        // + 0% cpu
+        FlightMahWidget {
+            id: flight_mah
+        }
 
-    // + 0% cpu
-    FlightMahKmWidget {
-        id: flight_mah_km
-    }
+        // + 0% cpu
+        FlightMahKmWidget {
+            id: flight_mah_km
+        }
 
-    // + 0% cpu
-    ImuTempWidget {
-        id: imu_temp
-    }
+        // + 0% cpu
+        ImuTempWidget {
+            id: imu_temp
+        }
 
-    // + 0% cpu
-    PressTempWidget {
-        id: press_temp
-    }
-    RCRssiWidget {
-        id: rc_rssi_widget
-    }
+        // + 0% cpu
+        PressTempWidget {
+            id: press_temp
+        }
+        RCRssiWidget {
+            id: rc_rssi_widget
+        }
 
-    AirspeedTempWidget {
-        id: airspeed_temp
-    }
+        AirspeedTempWidget {
+            id: airspeed_temp
+        }
 
-    // + 0% cpu
-    EscTempWidget {
-        id: esc_temp
-    }
+        // + 0% cpu
+        EscTempWidget {
+            id: esc_temp
+        }
 
-    // + 12% cpu
-    HorizonWidget {
-        id: horizonWidget
-    }
+        // + 12% cpu
+        HorizonWidget {
+            id: horizonWidget
+        }
 
-    PerformanceHorizonWidget2{
-        id: performanceHorizonWidget
-    }
+        PerformanceHorizonWidget2{
+            id: performanceHorizonWidget
+        }
 
-    // + 7% cpu
-    FpvWidget {
-        id: fpvWidget
-    }
+        // + 7% cpu
+        FpvWidget {
+            id: fpvWidget
+        }
 
-    // + 4% cpu
-    AltitudeWidget {
-        id: altitudeWidget
-    }
+        // + 4% cpu
+        AltitudeWidget {
+            id: altitudeWidget
+        }
 
-    // + 0% cpu
-    AltitudeSecondWidget {
-        id: altitudesecondWidget
-    }
+        // + 0% cpu
+        AltitudeSecondWidget {
+            id: altitudesecondWidget
+        }
 
-    // + 17% cpu
-    SpeedWidget {
-        id: speedWidget
-    }
+        // + 17% cpu
+        SpeedWidget {
+            id: speedWidget
+        }
 
-    SpeedSecondWidget {
-        id: speedSecondWidget
-    }
+        SpeedSecondWidget {
+            id: speedSecondWidget
+        }
 
-    // +3% cpu
-    HeadingWidget {
-        id: headingWidget
-    }
+        // +3% cpu
+        HeadingWidget {
+            id: headingWidget
+        }
 
-    // + 0% cpu
-    ArrowWidget {
-        id: arrowWidget
-    }
+        // + 0% cpu
+        ArrowWidget {
+            id: arrowWidget
+        }
 
-    // + 0% cpu
-    ThrottleWidget {
-        id: throttleWidget
-        scale: 0.7
-    }
+        // + 0% cpu
+        ThrottleWidget {
+            id: throttleWidget
+            scale: 0.7
+        }
 
-    // + 0% cpu
-    ControlWidget {
-        id: controlWidget
-        //   scale: 0.7
-    }
+        // + 0% cpu
+        ControlWidget {
+            id: controlWidget
+            //   scale: 0.7
+        }
 
-    // + 0% cpu
-    GPIOWidget {
-        id: gpioWidget
-    }
+        // + 0% cpu
+        GPIOWidget {
+            id: gpioWidget
+        }
 
-    // + 3% cpu
-    VibrationWidget {
-        id: vibrationWidget
-    }
+        // + 3% cpu
+        VibrationWidget {
+            id: vibrationWidget
+        }
 
-    VerticalSpeedSimpleWidget{
-        id: vssimpleWidget
-    }
-    VerticalSpeedGaugeWidget{
-        id: vsgaugewidget
-    }
+        VerticalSpeedSimpleWidget{
+            id: vssimpleWidget
+        }
+        VerticalSpeedGaugeWidget{
+            id: vsgaugewidget
+        }
 
-    // + 0% cpu
-    WindWidget {
-        id: windWidget
-    }
+        // + 0% cpu
+        WindWidget {
+            id: windWidget
+        }
 
-    // + 3% cpu
-    RollWidget {
-        id: rollWidget
-    }
+        // + 3% cpu
+        RollWidget {
+            id: rollWidget
+        }
 
-    MissionWidget {
-        id: missionWidget
-    }
+        MissionWidget {
+            id: missionWidget
+        }
 
-    AoaWidget {
-        id: aoaWidget
-    }
+        AoaWidget {
+            id: aoaWidget
+        }
 
-    MapWidget {
-        id: mapWidget
-    }
+        MapWidget {
+            id: mapWidget
+        }
 
-    ExampleWidget {
-        id: exampleWidget
-    }
+        ExampleWidget {
+            id: exampleWidget
+        }
 
-    DistanceSensorWidget{
-        id: distancesensorwidget
-    }
+        DistanceSensorWidget{
+            id: distancesensorwidget
+        }
 
-    UAVTimeWiget{
-        id: uavtimewidget
-    }
+        UAVTimeWiget{
+            id: uavtimewidget
+        }
     }
 
     // Extra element - allows customizing the OSD color(s) and more

@@ -259,5 +259,6 @@
         <file>ui/widgets/PerformanceHorizonWidget2.qml</file>
         <file>ui/configpopup/status/StatusCardsColumn.qml</file>
         <file>ui/elements/SimpleLeftRightText.qml</file>
+        <file>video/SecondaryVideoGstreamerPane.qml</file>
     </qresource>
 </RCC>
