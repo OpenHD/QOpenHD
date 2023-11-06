@@ -18,7 +18,6 @@ ScrollView {
     contentHeight: videoColumn.height
 
     clip: true
-    visible: appSettingsBar.currentIndex == 4
 
     Item {
         anchors.fill: parent

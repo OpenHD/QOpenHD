@@ -38,10 +38,6 @@ Rectangle {
         hudOverlayGrid.regain_focus();
     }
 
-    function showAppSettings(i) {
-        console.log("TEST show app settings:"+i);
-    }
-
     function side_bar_regain_focus(){
         sidebar.focus = true;
     }

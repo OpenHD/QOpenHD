@@ -16,7 +16,6 @@ ScrollView {
     width: parent.width
     height: parent.height
     contentHeight: generalColumn.height
-    visible: appSettingsBar.currentIndex == 0
 
     clip: true
 
