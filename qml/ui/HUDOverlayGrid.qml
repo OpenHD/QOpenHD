@@ -254,9 +254,13 @@ Item {
             color: "transparent"
         }
     }
+
+    // Dirty, in between a HUD element and not a HUD element
+    // placed here because of the focus issue
     SecondaryVideoGStreamer{
         id: secondary_video
     }
+
     Item{
         id: actual_hud_elements
         width: parent.width

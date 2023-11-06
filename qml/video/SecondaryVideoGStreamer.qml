@@ -61,12 +61,12 @@ Item {
             if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
                 return "WAITING FOR\nSECONDARY VIDEO";
             }
-            return "NOT\nAVAILABLE";
+            return "SECONDARY VIEO\nNOT AVAILABLE\nON THIS PLATFORM";
         }
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
-        font.pixelSize: 12
-        color: "black"
+        font.pixelSize: 14
+        color: "white"
     }
 
     Loader {
