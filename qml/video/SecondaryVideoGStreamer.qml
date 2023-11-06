@@ -13,6 +13,7 @@ import "../ui/elements"
 // Also, it is nice to automatically have all features needed for the secondary video like scaling, resizing ...
 
 Item {
+    id: secondary_video_item
     visible: settings.dev_qopenhd_n_cameras>1
     // We use the full screen since while usually small in the lower left corner, the secondary video can be resized
     anchors.fill: parent
@@ -23,23 +24,29 @@ Item {
     property bool has_been_maximized: false
 
     function get_video_width(){
+        var video_width = settings.secondary_video_minimized_width;
         if(has_been_maximized){
-            var maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
-            return settings.secondary_video_minimized_width * maximize_factor;
+            const maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
+            video_width = video_width * maximize_factor;
         }
-        return settings.secondary_video_minimized_width;
+        const screen_width = secondary_video_item.width;
+        return video_width < screen_width ? video_width : screen_width;
+        //return video_width;
     }
     function get_video_height(){
+        var video_height = settings.secondary_video_minimized_height;
         if(has_been_maximized){
-            var maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
-            return settings.secondary_video_minimized_height * maximize_factor;
+            const maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
+            video_height = video_height * maximize_factor;
         }
-        return settings.secondary_video_minimized_height;
+        const screen_height = secondary_video_item.height;
+        return video_height < screen_height ? video_height : screen_height;
+        //return video_height;
     }
 
     // This is for debugging / showing the video widget area at run time
     Rectangle{
-        z: 0.0
+        z: 1.0
         id: video_holder
         width: get_video_width()
         height: get_video_height()
@@ -53,6 +60,19 @@ Item {
         color: "gray"
         opacity: 0.1
         //visible: popup.visible
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                console.log("onClicked");
+                has_been_maximized = !has_been_maximized;
+            }
+            onPressAndHold: {
+                console.log("onPressAndHold");
+                // open the popup containing the settings
+                popup.open()
+            }
+        }
+
     }
 
     Text{
@@ -109,7 +129,7 @@ Item {
         }
         visible: has_been_maximized
     }*/
-    Text{
+    /*Text{
         id: button_maximize
         color: "white"
         text: "\uf31e"
@@ -147,7 +167,7 @@ Item {
                 popup.open()
             }
         }
-    }
+    }*/
 
     property int rowHeight: 64
     // This popup allows changing the settings for this element
