@@ -261,7 +261,7 @@ BaseWidget {
             }
 
             SimpleLeftRightText{
-                m_left_text: qsTr("Bitrate MEASURED:")
+                m_left_text: qsTr("MEASURED:")
                 m_right_text: m_camera_stream_model.curr_video_measured_encoder_bitrate
             }
 
