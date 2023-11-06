@@ -77,7 +77,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "Show video widget"
-                m_long_description: "More stats about each camera stream and quick resolution changes."
+                m_long_description: "More stats about each camera stream, quick resolution changes and quick air recording."
                 Switch {
                     width: 32
                     height: elementHeight

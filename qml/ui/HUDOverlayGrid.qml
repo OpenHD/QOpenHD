@@ -269,7 +269,6 @@ Item {
         // --------------------------------------------------------------------------
         LinkDownRSSIWidget {
             id: downlink
-            m_next_item: record_video_widget
         }
         WBLinkRateControlWidget{
             id: wBLinkRateControlWidget

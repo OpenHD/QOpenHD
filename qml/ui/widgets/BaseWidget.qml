@@ -113,8 +113,6 @@ BaseWidgetForm {
     property bool disable_dragging: false
     // ---------------------------------------------------------------------
     // Custom keyboard KeyNavigation
-    // Must be also of type BaseWidget
-    property var m_next_item:
     // DIRTY
     function dirty_open_action_popup(){
         widgetAction.open()
@@ -153,12 +151,6 @@ BaseWidgetForm {
             console.log("right was pressed")
             event.accepted=true;
             // TODO: Go to the next item
-        }
-    }
-    function set_focus_next_item(){
-        if(m_next_item==undefined){
-            console.log("Next item undefined")
-            return;
         }
     }
 
