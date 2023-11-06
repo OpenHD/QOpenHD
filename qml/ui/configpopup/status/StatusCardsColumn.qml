@@ -69,6 +69,7 @@ RowLayout{
 
         hasFooter: true
         cardFooter: FooterRebootShutdownWarning{
+            m_supports_reboot_actions: false
             m_type: 2
         }
     }
