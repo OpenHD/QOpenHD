@@ -151,20 +151,19 @@ Item {
         var ret=downlink
         if(index==0)return settingsButtonHighlight;
         if(index==1)return downlink;
-        if(index==2)return record_video_widget;
-        if(index==3)return wBLinkRateControlWidget;
-        if(index==4)return qRenderStatsWidget;
-        if(index==5)return bitrate1;
-        if(index==6)return bitrate2;
-        if(index==7)return air_status;
-        if(index==8)return ground_status;
-        if(index==9)return uplink;
-        if(index==10)return air_battery;
-        if(index==11)return flight_mode;
-        if(index==12)return throttleWidget;
-        if(index==13)return missionWidget;
-        if(index==14)return gps;
-        if(index==15)return home_distance;
+        if(index==2)return wBLinkRateControlWidget;
+        if(index==3)return qRenderStatsWidget;
+        if(index==4)return bitrate1;
+        if(index==5)return bitrate2;
+        if(index==6)return air_status;
+        if(index==7)return ground_status;
+        if(index==8)return uplink;
+        if(index==9)return air_battery;
+        if(index==10)return flight_mode;
+        if(index==11)return throttleWidget;
+        if(index==12)return missionWidget;
+        if(index==13)return gps;
+        if(index==14)return home_distance;
         //if(index==13)return uplink;
         console.log("Invalid index");
         return ret;
@@ -271,9 +270,6 @@ Item {
         LinkDownRSSIWidget {
             id: downlink
             m_next_item: record_video_widget
-        }
-        RecordVideoWidget {
-            id: record_video_widget
         }
         WBLinkRateControlWidget{
             id: wBLinkRateControlWidget

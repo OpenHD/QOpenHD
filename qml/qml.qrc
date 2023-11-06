@@ -182,7 +182,6 @@
         <file>video/SecondaryVideoGStreamer.qml</file>
         <file>video/MainVideoQSG.qml</file>
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
-        <file>ui/widgets/RecordVideoWidget.qml</file>
         <file>ui/widgets/RCRssiWidget.qml</file>
         <file>video/ExpMainVideoAndroid.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
@@ -260,5 +259,7 @@
         <file>ui/configpopup/status/StatusCardsColumn.qml</file>
         <file>ui/elements/SimpleLeftRightText.qml</file>
         <file>video/SecondaryVideoGstreamerPane.qml</file>
+        <file>ui/elements/SettingsHeaderElement.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml</file>
     </qresource>
 </RCC>

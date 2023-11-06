@@ -56,6 +56,13 @@ Rectangle {
         }
 
         TabButton {
+            text: qsTr("Style")
+            width: implicitWidth
+            height: 48
+            font.pixelSize: 13
+        }
+
+        TabButton {
             y: 0
             text: qsTr("General")
             width: implicitWidth
@@ -108,6 +115,9 @@ Rectangle {
 
         AppWidgetSettingsView{
             id: appWidgetSettingsView
+        }
+        AppWidgetStyleSettingsView{
+            id: appWidgetStyleSettingsView
         }
         AppGeneralSettingsView{
             id: appGeneralSettingsView
