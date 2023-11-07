@@ -26,6 +26,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/models/rcchannelsmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/wblinksettingshelper.h"
+#include "telemetry/settings/frequencyhelper.h"
+#include "telemetry/settings/pollutionhelper.h"
 #include "osd/speedladder.h"
 #include "osd/altitudeladder.h"
 #include "osd/headingladder.h"
@@ -168,6 +170,22 @@ static void write_platform_context_properties(QQmlApplicationEngine& engine){
 #endif
 }
 
+static void android_check_permissions(){
+#if defined(__android__)
+    qDebug()<<"Android request permissions";
+    for(const QString &permission : permissions) {
+        auto result = QtAndroid::checkPermission(permission);
+        if (result == QtAndroid::PermissionResult::Denied) {
+            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
+            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
+                LogMessagesModel::instanceGround().add_message_warn("QOpenHD","Android - missing permissions");
+                return;
+            }
+        }
+    }
+#endif
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -233,20 +251,8 @@ int main(int argc, char *argv[]) {
     applePlatform->registerNotifications();
 #endif
 
-  QOpenHD::instance().keep_screen_on(true);
-#if defined(__android__)
-    qDebug()<<"Android request permissions";
-    for(const QString &permission : permissions) {
-        auto result = QtAndroid::checkPermission(permission);
-        if (result == QtAndroid::PermissionResult::Denied) {
-            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
-            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
-                return 0;
-            }
-        }
-    }
-#endif
-
+    QOpenHD::instance().keep_screen_on(true);
+    android_check_permissions();
     load_fonts();
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
@@ -282,6 +288,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_ohdSystemAirSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGroundSettings", &MavlinkSettingsModel::instanceGround());
     engine.rootContext()->setContextProperty("_wbLinkSettingsHelper", &WBLinkSettingsHelper::instance());
+    engine.rootContext()->setContextProperty("_frequencyHelper", &FrequencyHelper::instance());
+    engine.rootContext()->setContextProperty("_pollutionHelper", &PollutionHelper::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkAction", &FCAction::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkMissionItemsModel", &FCMavlinkMissionItemsModel::instance());

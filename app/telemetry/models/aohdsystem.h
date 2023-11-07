@@ -118,6 +118,8 @@ public: // public for QT
     L_RO_PROP(int,wb_gnd_operating_mode,set_wb_gnd_operating_mode,-1)
     //
     L_RO_PROP(int,air_reported_fc_sys_id,set_air_reported_fc_sys_id,-1)
+    //
+     L_RO_PROP(bool,dirty_air_has_secondary_cam,set_dirty_air_has_secondary_cam,false)
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{

@@ -139,18 +139,16 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
                 CameraStreamModel::instance(0).update_mavlink_openhd_camera_status_air(parsedMsg);
             }else if(msg.compid==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
                 CameraStreamModel::instance(1).update_mavlink_openhd_camera_status_air(parsedMsg);
+                set_dirty_air_has_secondary_cam(true);
                 // Feature - tell user to enable 2 cameras in qopenhd
                 set_n_openhd_cameras(2);
                 const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
                 if(value_in_qopenhd!=2){
                     const auto elapsed=std::chrono::steady_clock::now()-m_last_n_cameras_message;
-                    if(elapsed>std::chrono::seconds(10)){
-                        auto message="QOpenHD is not configured for dual cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
-                        qDebug()<<message;
-                        WorkaroundMessageBox::makePopupMessage(message,8);
+                    if(elapsed>std::chrono::seconds(5)){
+                        LogMessagesModel::instanceGround().add_message_debug("QOpenHD","Please enable 2 camera control");
                         m_last_n_cameras_message=std::chrono::steady_clock::now();
                     }
-                    HUDLogMessagesModel::instance().add_message_info("QOpenHD only shows 1 camera");
                 }
 
             }

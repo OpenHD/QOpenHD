@@ -7,6 +7,8 @@
 
 #include "debug_overdraw.hpp"
 
+static constexpr int DEFAULT_FONT_PIXEL_SIZE=11;
+
 SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "SpeedLadder::SpeedLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
@@ -129,6 +131,13 @@ void SpeedLadder::setSpeed(int speed) {
 void SpeedLadder::setFontFamily(QString fontFamily) {
     m_fontFamily = fontFamily;
     emit fontFamilyChanged(m_fontFamily);
-    m_font = QFont(m_fontFamily, 10, QFont::Bold, false);
+    m_font = QFont(m_fontFamily, DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale, QFont::Bold, false);
+    update();
+}
+
+void SpeedLadder::set_custom_font_scale(double custom_font_scale)
+{
+    m_custom_font_scale=custom_font_scale;
+    m_font.setPointSize(DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale);
     update();
 }

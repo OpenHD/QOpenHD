@@ -16,7 +16,6 @@ ScrollView {
     width: parent.width
     height: parent.height
     contentHeight: vehicleColumn.height
-    visible: appSettingsBar.currentIndex == 1
 
     clip: true
 

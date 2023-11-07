@@ -14,6 +14,9 @@ Item {
     anchors.fill: parent
     property int m_type: 0 // 0 = ground, 1= air, 2=FC
 
+
+    property bool m_supports_reboot_actions: true
+
     function get_show_power_actions(){
         if(m_type==0){
             return _ohdSystemGround.is_alive
@@ -48,7 +51,7 @@ Item {
         anchors.fill: parent
         //visible: get_show_power_actions()
         Button{
-            visible: get_show_power_actions()
+            visible: get_show_power_actions() && m_supports_reboot_actions
             Layout.alignment: Qt.AlignLeft
             Layout.leftMargin: 10
             text: qsTr("REBOOT")
@@ -57,7 +60,7 @@ Item {
             }
         }
         Button{
-            visible: get_show_power_actions()
+            visible: get_show_power_actions() && m_supports_reboot_actions
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 10
             text: qsTr("SHUTDOWN")

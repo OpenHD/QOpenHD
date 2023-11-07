@@ -1,8 +1,9 @@
 #include "pollutionhelper.h"
 
 #include <qdebug.h>
+#include <sstream>
 
-PollutionHelper::PollutionHelper()
+PollutionHelper::PollutionHelper(QObject *parent) : QObject{parent}
 {
 
 }
@@ -50,4 +51,43 @@ std::optional<PollutionHelper::PollutionElement> PollutionHelper::threadsafe_get
     }
     //qDebug()<<"Cannot find pollution for "<<frequency;
     return std::nullopt;
+}
+
+QStringList PollutionHelper::pollution_frequencies_int_to_qstringlist(QList<int> frequencies)
+{
+    QStringList ret;
+    for(auto& freq:frequencies){
+        std::stringstream ss;
+        ss<<freq<<"Mhz";
+        ret.push_back(QString(ss.str().c_str()));
+    }
+    return ret;
+}
+
+QVariantList PollutionHelper::pollution_frequencies_int_get_pollution(QList<int> frequencies, bool normalize)
+{
+    QVariantList ret;
+    for(auto& freq: frequencies){
+        auto pollution=threadsafe_get_pollution_for_frequency(freq);
+        if(pollution.has_value()){
+            if(normalize){
+                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets_normalized));
+            }else{
+                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets));
+            }
+
+        }else{
+            ret.push_back(static_cast<int>(0));
+        }
+    }
+    return ret;
+}
+
+int PollutionHelper::pollution_get_last_scan_pollution_for_frequency(int frequency)
+{
+    auto tmp=threadsafe_get_pollution_for_frequency(frequency);
+    if(tmp.has_value()){
+        return tmp.value().n_foreign_packets;
+    }
+    return -1;
 }
