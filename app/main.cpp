@@ -170,6 +170,22 @@ static void write_platform_context_properties(QQmlApplicationEngine& engine){
 #endif
 }
 
+static void android_check_permissions(){
+#if defined(__android__)
+    qDebug()<<"Android request permissions";
+    for(const QString &permission : permissions) {
+        auto result = QtAndroid::checkPermission(permission);
+        if (result == QtAndroid::PermissionResult::Denied) {
+            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
+            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
+                LogMessagesModel::instanceGround().add_message_warn("QOpenHD","Android - missing permissions");
+                return;
+            }
+        }
+    }
+#endif
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -235,20 +251,8 @@ int main(int argc, char *argv[]) {
     applePlatform->registerNotifications();
 #endif
 
-  QOpenHD::instance().keep_screen_on(true);
-#if defined(__android__)
-    qDebug()<<"Android request permissions";
-    for(const QString &permission : permissions) {
-        auto result = QtAndroid::checkPermission(permission);
-        if (result == QtAndroid::PermissionResult::Denied) {
-            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
-            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
-                return 0;
-            }
-        }
-    }
-#endif
-
+    QOpenHD::instance().keep_screen_on(true);
+    android_check_permissions();
     load_fonts();
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
