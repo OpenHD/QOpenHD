@@ -20,7 +20,7 @@ import "../../elements"
 // Aligned to the right, and width can be set by total_width property manually
 Rectangle{
 
-    property int total_width: 300
+    property int total_width: 400
 
     width: total_width
     height: parent.height
