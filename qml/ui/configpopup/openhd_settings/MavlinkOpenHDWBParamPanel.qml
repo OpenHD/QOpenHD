@@ -264,6 +264,10 @@ Rectangle{
                         Layout.row: 2
                         Layout.column: 0
                         Layout.columnSpan: 3
+                        Item{ // FILLER
+                            Layout.preferredWidth: 30
+                            Layout.minimumWidth: 0
+                        }
                         Button{
                             Layout.preferredWidth: 150
                             id: b_find_air_unit
@@ -296,7 +300,7 @@ Rectangle{
                             }
                         }
                         Item{ // FILLER
-                            Layout.preferredWidth: 50
+                            Layout.preferredWidth: 30
                             Layout.minimumWidth: 0
                         }
                         Button{
@@ -307,6 +311,10 @@ Rectangle{
                                 close_all_dialoques();
                                 popup_analyze_channels.open()
                             }
+                        }
+                        Item{ // FILLER
+                            Layout.preferredWidth: 30
+                            Layout.minimumWidth: 0
                         }
                         ButtonIconInfo{
                             onClicked: {
