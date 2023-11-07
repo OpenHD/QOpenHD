@@ -165,9 +165,7 @@ Rectangle {
             Column {
                 id: navigation_buttons_column
                 width: parent.width
-
                 anchors.top: parent.top
-
                 // Status
                 ConfigPopupSidebarButton{
                     id:  power
