@@ -39,6 +39,11 @@ Rectangle{
             _messageBoxInstance.set_text_and_show("Changing tx power is only possible on openhd supported cards.");
             return;
         }
+        // The user has to enter the card type every time - otherwise, we have issues with air and ground
+        comboBoxCardSelectManufacturer.currentIndex=0;
+        combo_box_txpower_disarmed.currentIndex=0;
+        combo_box_txpower_armed.currentIndex=0;
+        m_user_selected_card_manufacturer=-1;
         visible=true;
         enabled=true;
     }
