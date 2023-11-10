@@ -27,8 +27,8 @@ ApplicationWindow {
 
     //width: 850
     //height: 480
-    width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_height : m_window_width
-    height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_width : m_window_height
+    width: 1920
+    height: 1080
 
     contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
     contentItem.rotation: settings.general_screen_rotation 
