@@ -136,6 +136,7 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
         opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Text {
             id: speedtext
@@ -144,32 +145,23 @@ BaseWidget {
             color: settings.color_text
             font.pixelSize: 14
             font.family: settings.font_text
-            transform: Scale {
-                origin.x: 12
-                origin.y: 12
-                xScale: bw_current_scale
-                yScale: bw_current_scale
-            }
-            text: get_text_vertical_speed()
+            text: get_text_vertical_speed();
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow
         }
+        // This is an 'icon' indication movement up / down
         Text{
+            height: parent.height
+            width: parent.width / 3;
             anchors.right: speedtext.left
             anchors.bottom: speedtext.bottom
-            color: settings.color_text
-            font.pixelSize: 28
-            font.family: settings.font_text
-            transform: Scale {
-                origin.x: 12
-                origin.y: 12
-                xScale: bw_current_scale
-                yScale: bw_current_scale
-            }
+            color: settings.color_shape
+            font.pixelSize: 14
+            font.family: "Font Awesome 5 Free"
             text: get_text_icon_vertical_speed()
-            horizontalAlignment: Text.AlignHCenter
+            horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow
