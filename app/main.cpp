@@ -204,16 +204,16 @@ int main(int argc, char *argv[]) {
     
     QSettings settings;
 
-    /*const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
+    const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
     if (screen_custom_font_dpi) {
         QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
         const std::string font_dpi_s = std::to_string(screen_custom_font_dpi);
         qputenv("QT_FONT_DPI", QByteArray(font_dpi_s.c_str(), font_dpi_s.length()));
     } else {
         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    }*/
+    }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-    QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+    //QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
 
     // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
     // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
