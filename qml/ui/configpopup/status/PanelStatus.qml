@@ -30,25 +30,37 @@ Rectangle {
         powerDialog.open_dialoque(system,reboot)
     }
 
+    TabBar {
+        // This screen doesn't tab, but we use the tab bar element for a consistent style
+        id: selectItemInStackLayoutBar
+        width: parent.width
+        TabButton {
+            text: qsTr("SYSTEM STATUS")
+        }
+    }
+
     ScrollView {
-        id:mavlinkExtraWBParamPanel
+        /*id:mavlinkExtraWBParamPanel
         width: parent.width
         height: parent.height
         contentHeight: mainItem.height
         contentWidth: mainItem.width
         clip: true
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+        ScrollBar.vertical.interactive: true*/
+        width: parent.width
+        anchors.top: selectItemInStackLayoutBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        clip: true
         ScrollBar.vertical.interactive: true
+        contentHeight: mainItem.height
 
         Item{
             id: mainItem
-            width: 800
-            height: 40+350+80
-
-            QOpenHDVersionCard{
-                id: qopenhdversioncard
-                height: 40
-            }
+            width: mainRect.width
+            height: 350+80
 
             // The 3 status cards (OpenHD AIR & GND, FC)
             // next to each other
@@ -57,12 +69,11 @@ Rectangle {
                 width: parent.width
                 height: 350
 
-
                 anchors.leftMargin: 4
                 anchors.topMargin: 4
 
                 anchors.left: parent.left
-                anchors.top: qopenhdversioncard.bottom
+               // anchors.top: qopenhdversioncard.bottom
             }
 
 

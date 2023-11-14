@@ -13,13 +13,13 @@ import "../../elements"
 //
 // The 3 status cards (OpenHD AIR & GND, FC)
 // next to each other
-RowLayout{
+Row{
     width: parent.width
     height: parent.height
 
-    property int m_card_width: parent.width/3;
+    property int m_card_width: parent.width/3-3;
     property int m_card_height: 350
-
+    padding: 3
     Card {
         width: m_card_width
         height:m_card_height

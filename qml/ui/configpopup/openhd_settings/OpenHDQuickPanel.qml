@@ -149,23 +149,23 @@ Rectangle{
         ScrollBar.vertical.interactive: true
         visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible)
 
-        Column{
-            width: parent.width
-            height: 900
-            id: main_column_layout
 
+        Column{
+            spacing: 0
+            anchors.left: parent.left
+            anchors.right: parent.right
+            id: main_colum_layout
             Text{
                 width: parent.width
-                height: 50
+                height: rowHeight
                 text: "FREQUENCY / TOOLKIT"
                 font.bold: true
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
             }
-
             Row{
                 width: parent.width
-                height: 50
+                height: rowHeight
                 ComboBox {
                     id: comboBoxFreq
                     //model: supported_frequencies_model
@@ -188,7 +188,7 @@ Rectangle{
                     Layout.row: 1
                     Layout.column: 0
                     displayText: {
-                        if(!_ohdSystemGround.is_alive)return "NO FREQUENCY"; // GND NOT ALIVE
+                        if(!_ohdSystemGround.is_alive)return "GND NOT ALIVE";
                         if(_ohdSystemGround.wb_gnd_operating_mode==1){
                             return "SCANNING";
                         }
@@ -237,10 +237,9 @@ Rectangle{
                     }
                 }
             }
-
             Row{
                 width: parent.width
-                height: 50
+                height: rowHeight
                 Button{
                     Layout.preferredWidth: 150
                     id: b_find_air_unit
@@ -282,14 +281,51 @@ Rectangle{
                     }
                 }
             }
-
+            Text{
+                width: parent.width
+                height: rowHeight
+                text: "TX POWER"
+                font.bold: true
+                horizontalAlignment: Qt.AlignHCenter
+                verticalAlignment: Qt.AlignVCenter
+            }
             Row{
                 width: parent.width
-                height: 50
+                height: rowHeight
                 Text{
-                    text: "TX POWER AIR"
+                    Layout.preferredWidth: 120
+                    text: "AIR:\n "+get_text_wifi_tx_power(true)
+                    verticalAlignment: Qt.AlignVCenter
+                    horizontalAlignment: Qt.AlignHCenter
+                    font.bold: true
+                }
+                Button{
+                    text: "EDIT"
+                    enabled: _ohdSystemAir.is_alive
+                    onClicked: {
+                        close_all_dialoques();
+                        popup_change_tx_power.m_is_air=true;
+                        popup_change_tx_power.open()
+                    }
+                }
+                Text{
+                    Layout.preferredWidth: 120
+                    text: "GND:\n"+get_text_wifi_tx_power(false)
+                    verticalAlignment: Qt.AlignVCenter
+                    horizontalAlignment: Qt.AlignHCenter
+                    font.bold: true
+                }
+                Button{
+                    text: "EDIT"
+                    enabled: _ohdSystemGround.is_alive
+                    onClicked: {
+                        close_all_dialoques();
+                        popup_change_tx_power.m_is_air=false;
+                        popup_change_tx_power.open()
+                    }
                 }
             }
+
         }
     }
 
