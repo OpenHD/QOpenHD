@@ -8,6 +8,11 @@ Item {
     property string m_text: "FILL ME"
 
     Rectangle{
+        anchors.fill: parent
+        color: "#8cbfd7f3"
+    }
+
+    Rectangle{
         width: parent.width
         height: 2
         color: "black"

@@ -45,38 +45,24 @@ Rectangle{
     }
 
     ListModel{
-        id: frequencies_model_all
-        ListElement {title: "Unknown"; value_frequency_mhz:-1}
-    }
-    ListModel{
-        id: frequencies_model_openhd_channels_only
+        id: frequencies_model
         ListElement {title: "Unknown"; value_frequency_mhz:-1}
     }
 
     function create_list_models_frequency(){
-        frequencies_model_all.clear();
-        const frequencies_all=_frequencyHelper.get_frequencies(false);
+        frequencies_model.clear();
+        const filter = filter_tab_bar.currentIndex;
+        const frequencies_all=_frequencyHelper.get_frequencies(filter);
         for(var i=0;i<frequencies_all.length;i++){
             const frequency=frequencies_all[i];
             const text=_frequencyHelper.get_frequency_description(frequency)
-            frequencies_model_all.append({title: text, value_frequency_mhz: frequency});
-        }
-        frequencies_model_openhd_channels_only.clear();
-        const frequencies_openhd=_frequencyHelper.get_frequencies(true);
-        for(var i=0;i<frequencies_openhd.length;i++){
-            const frequency=frequencies_openhd[i];
-            const text=_frequencyHelper.get_frequency_description(frequency)
-            frequencies_model_openhd_channels_only.append({title: text, value_frequency_mhz: frequency});
+            frequencies_model.append({title: text, value_frequency_mhz: frequency});
         }
     }
 
-    property bool m_simplify_enable:true
     function update_frequency_combobox(){
-        if(m_simplify_enable){
-            comboBoxFreq.model=frequencies_model_openhd_channels_only;
-        }else{
-            comboBoxFreq.model=frequencies_model_all;
-        }
+        create_list_models_frequency();
+        comboBoxFreq.model=frequencies_model;
         if(_wbLinkSettingsHelper.curr_channel_mhz>0){
             var index=find_index(comboBoxFreq.model,_wbLinkSettingsHelper.curr_channel_mhz);
             if(index>=0){
@@ -148,6 +134,7 @@ Rectangle{
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
         visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible)
+        clip: true
 
         ColumnLayout{
             width: main_scroll_view.width
@@ -167,8 +154,7 @@ Rectangle{
                     Layout.alignment: Qt.AlignCenter
                     Layout.preferredWidth: elementComboBoxWidth
                     id: comboBoxFreq
-                    //model: supported_frequencies_model
-                    //model: frequencies_model_openhd_channels_only
+                    model: frequencies_model
                     textRole: "title"
                     implicitWidth:  elementComboBoxWidth
                     currentIndex: 0
@@ -220,7 +206,7 @@ Rectangle{
                     }
                     enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0;
                 }
-                Switch{
+                /*Switch{
                     Layout.alignment: Qt.AlignCenter
                     text: "SIMPLIFY"
                     checked: true
@@ -229,6 +215,29 @@ Rectangle{
                             m_simplify_enable=checked;
                             function_rebuild_ui();
                         }
+                    }
+                }*/
+                TabBar{
+                    id: filter_tab_bar
+                    Layout.preferredWidth: 200
+                    currentIndex: settings.qopenhd_frequency_filter_selection
+                    onCurrentIndexChanged: {
+                        if(currentIndex!=settings.qopenhd_frequency_filter_selection){
+                            settings.qopenhd_frequency_filter_selection=currentIndex;
+                            function_rebuild_ui();
+                            if(currentIndex==1 || currentIndex==2){
+                                _qopenhd.show_toast("Please watch out for wifi pollution");
+                            }
+                        }
+                    }
+                    TabButton{
+                        text: "1-5"
+                    }
+                    TabButton{
+                        text: "2.4G"
+                    }
+                    TabButton{
+                        text: "5.8G"
                     }
                 }
                 Item{ // FILLER

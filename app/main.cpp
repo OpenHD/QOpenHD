@@ -186,6 +186,15 @@ static void android_check_permissions(){
 #endif
 }
 
+static void write_screen_resolutions(QApplication& app){
+    const auto actual_size=QGuiApplication::primaryScreen()->size();
+    QRenderStats::instance().set_screen_width_height(actual_size.width(),actual_size.height());
+    // This includes dpi adjustment
+    QScreen* screen=app.primaryScreen();
+    if(screen){
+        QRenderStats::instance().set_display_width_height(screen->size().width(),screen->size().height());
+    }
+}
 
 int main(int argc, char *argv[]) {
 
@@ -238,12 +247,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     // Customize cursor if needed
     QOpenHD::instance().customize_cursor_from_settings();
-    {
-        QScreen* screen=app.primaryScreen();
-        if(screen){
-            QRenderStats::instance().set_display_width_height(screen->size().width(),screen->size().height());
-        }
-    }
+    write_screen_resolutions(app);
     QOpenHDVideoHelper::reset_qopenhd_switch_primary_secondary();
 
 #if defined(__ios__)

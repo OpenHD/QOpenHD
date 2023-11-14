@@ -29,6 +29,8 @@ Rectangle{
     property bool m_is_air: false
 
     property int m_user_selected_card_manufacturer: -1;
+    property int left_text_minimum_width: 100
+    property int left_text_preferred_width: 100
 
     function open(){
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
@@ -234,9 +236,6 @@ Rectangle{
         //Layout.preferredWidth: 600
 
         Item{
-            Layout.row: 0
-            Layout.column: 0
-            Layout.columnSpan: 4
             Layout.fillWidth: true
             Layout.preferredHeight: 80
             Text{ // TITLE
@@ -259,8 +258,8 @@ Rectangle{
         RowLayout{
             Layout.fillWidth: true
             Text{
-                Layout.minimumWidth: 100
-                Layout.preferredWidth: 250
+                Layout.minimumWidth: left_text_minimum_width
+                Layout.preferredWidth: left_text_preferred_width
                 text: "RF CHIP:\n" +get_card_chipset_str()
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 14
@@ -279,16 +278,14 @@ Rectangle{
             }
             // FILLER
             Item{
-                Layout.row: 1
-                Layout.column: 3
                 Layout.fillWidth: true
             }
         }
         RowLayout{
             Layout.fillWidth: true
             Text{
-                Layout.minimumWidth: 100
-                Layout.preferredWidth: 250
+                Layout.minimumWidth: left_text_minimum_width
+                Layout.preferredWidth: left_text_preferred_width
                 text: "DISARMED:\n"+get_current_tx_power_int(1)+" "+get_tx_power_unit();
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 14
@@ -329,11 +326,8 @@ Rectangle{
                     _messageBoxInstance.set_text_and_show("TX Power applied when FC is disarmed");
                 }
             }
-
             // FILLER
             Item{
-                Layout.row: 2
-                Layout.column: 4
                 Layout.fillWidth: true
             }
         }
@@ -341,8 +335,8 @@ Rectangle{
         RowLayout{
             Layout.fillWidth: true
             Text{
-                Layout.minimumWidth: 100
-                Layout.preferredWidth: 250
+                Layout.minimumWidth: left_text_minimum_width
+                Layout.preferredWidth: left_text_preferred_width
                 text: {
                     var power_int=get_current_tx_power_int(2);
                     if(power_int==0) return "ARMED:\nDISABLED";
@@ -361,8 +355,6 @@ Rectangle{
                 font.pixelSize: 14
             }
             Button{
-                Layout.row: 3
-                Layout.column: 2
                 text: "SAVE"
                 enabled: m_user_selected_card_manufacturer>=0;
                 onClicked: {
@@ -382,8 +374,6 @@ Rectangle{
                 font.pixelSize: 14
             }
             ButtonIconInfo{
-                Layout.row: 3
-                Layout.column: 3
                 onClicked: {
                     _messageBoxInstance.set_text_and_show("TX Power applied when FC is armed. By default, set to 0 (DISABLE) which means the same tx power (tx power disarmed) is applied regardless"+
                                                           "if armed or not.");

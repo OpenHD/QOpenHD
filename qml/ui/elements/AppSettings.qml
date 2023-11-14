@@ -407,4 +407,6 @@ Settings {
 
     property int qopenhd_mavlink_connection_mode: 0;
     property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.178.36"
+
+    property int qopenhd_frequency_filter_selection: 0;
 }

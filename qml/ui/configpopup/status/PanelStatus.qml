@@ -40,14 +40,6 @@ Rectangle {
     }
 
     ScrollView {
-        /*id:mavlinkExtraWBParamPanel
-        width: parent.width
-        height: parent.height
-        contentHeight: mainItem.height
-        contentWidth: mainItem.width
-        clip: true
-        //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        ScrollBar.vertical.interactive: true*/
         width: parent.width
         anchors.top: selectItemInStackLayoutBar.bottom
         anchors.left: parent.left
@@ -68,21 +60,19 @@ Rectangle {
                 id: statuscardscolumn
                 width: parent.width
                 height: 350
-
                 anchors.leftMargin: 4
                 anchors.topMargin: 4
-
+                anchors.rightMargin: 4
                 anchors.left: parent.left
+                anchors.right: parent.right
                // anchors.top: qopenhdversioncard.bottom
             }
-
 
             PingUtilColumn {
                 id:actionsButtonMenu
                 width: parent.width
                 height: 80
                 anchors.top: statuscardscolumn.bottom
-
             }
         }
     }

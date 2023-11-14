@@ -11,7 +11,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-ColumnLayout {
+Column {
     //Layout.fillWidth: true
     //Layout.fillHeight: true
     // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html

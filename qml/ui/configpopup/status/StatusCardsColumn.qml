@@ -14,12 +14,14 @@ import "../../elements"
 // The 3 status cards (OpenHD AIR & GND, FC)
 // next to each other
 Row{
-    width: parent.width
-    height: parent.height
+    id: status_cards_row
+    property int m_spacing_px: 3
 
-    property int m_card_width: parent.width/3-3;
-    property int m_card_height: 350
-    padding: 3
+    property int m_card_width: (parent.width-4*m_spacing_px)/3;
+    property int m_card_height: status_cards_row.height
+
+    spacing: m_spacing_px
+
     Card {
         width: m_card_width
         height:m_card_height
