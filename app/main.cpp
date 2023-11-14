@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationDomain("openhd");
     QCoreApplication::setApplicationName("QOpenHD");
     {// Original screen resoluton before setting anything
-        QApplication a(argc, argv);
+        //QApplication a(argc, argv);
         const auto screen=QGuiApplication::primaryScreen();
         if(screen){
             const auto actual_size=screen->size();

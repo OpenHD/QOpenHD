@@ -266,5 +266,6 @@
         <file>ui/elements/ButtonIconInfo2.qml</file>
         <file>ui/elements/CardBasic.qml</file>
         <file>ui/elements/ButtonIconConnect.qml</file>
+        <file>ui/elements/SmallHeaderInfoRow.qml</file>
     </qresource>
 </RCC>

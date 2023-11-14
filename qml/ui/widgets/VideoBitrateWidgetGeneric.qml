@@ -196,7 +196,7 @@ BaseWidget {
                 Layout.preferredWidth: 200
                 Layout.minimumWidth: 200
                 height: 50
-                currentIndex: 0
+                currentIndex: -1
                 displayText: {
                     if(!_ohdSystemAir.is_alive)return "Res@fps N/A";
                     return m_curr_video_format;
