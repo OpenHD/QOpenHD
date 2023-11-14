@@ -53,8 +53,8 @@ BaseWidget {
 
     ListModel{
         id: mcs_model
-        ListElement {title: "MCS0 "; value: 0}
-        ListElement {title: "MCS1 "; value: 1}
+        ListElement {title: "MCS0 (LONG RANGE)"; value: 0}
+        ListElement {title: "MCS1 (RANGE)"; value: 1}
         ListElement {title: "MCS2 (DEFAULT)"; value: 2}
         ListElement {title: "MCS3 (EXPERIMENTAL)"; value: 3}
         ListElement {title: "MCS4 (EXPERIMENTAL)"; value: 4}
