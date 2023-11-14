@@ -11,8 +11,8 @@ import OpenHD 1.0
 // See corresponding .cpp for more info
 Card {
     id: restartqopenhdmessagebox
-    width: 360
-    height: 340
+    width: 320
+    height: 240
     z: 6.0
     anchors.centerIn: parent
     cardName: qsTr("QOpenHD")

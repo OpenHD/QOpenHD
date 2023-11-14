@@ -20,8 +20,8 @@ public:
     L_RO_PROP(QString, display_width_height_str, set_display_width_height_str, "NA")
     L_RO_PROP(QString, screen_width_height_str, set_screen_width_height_str, "NA")
     // Resolution qopenhd is rendering at
-    L_RO_PROP(int, window_width, set_window_width, -1)
-    L_RO_PROP(int, window_height, set_window_height, -1)
+    L_RW_PROP(int, window_width, set_window_width, -1)
+    L_RW_PROP(int, window_height, set_window_height, -1)
     // Time QT spent "rendering", probably aka creating the GPU command buffer
     L_RO_PROP(QString, qt_rendering_time, set_qt_rendering_time, "NA")
     // Time QT spent "recording the render pass"

@@ -202,6 +202,7 @@ int main(int argc, char *argv[]) {
     }
     
     QSettings settings;
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
 
     const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
     if (screen_custom_font_dpi) {
@@ -213,22 +214,10 @@ int main(int argc, char *argv[]) {
     }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     //QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-
-    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
-    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
-    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
-    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
-        qDebug()<<"Request swap interval of 0";
-        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
-        format.setSwapInterval(0);
-        QSurfaceFormat::setDefaultFormat(format);
-    }
-
     const double global_scale = settings.value("global_scale", 1.0).toDouble();
     const std::string global_scale_s = std::to_string(global_scale);
     QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
-    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
@@ -242,6 +231,16 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.renderloop=true");
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
+
+    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
+    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
+    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
+    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
+        qDebug()<<"Request swap interval of 0";
+        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
 
     QApplication app(argc, argv);
     // Customize cursor if needed

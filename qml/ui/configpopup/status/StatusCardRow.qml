@@ -69,7 +69,7 @@ Item {
 
         Text{
             id: left_part
-            width: parent.width/3
+            width: parent.width*0.4
             height: parent.height
             anchors.left: parent.left
             anchors.top: parent.top
@@ -77,13 +77,13 @@ Item {
             verticalAlignment: Qt.AlignVCenter
             horizontalAlignment: Qt.AlignRight
             font.bold: true
-            font.pixelSize: 19
+            font.pixelSize: 18
             clip: true
         }
 
         Text{
             id: right_part
-            width: parent.width/3*2;
+            width: parent.width-left_part.width
             height: parent.height
             anchors.left: left_part.right
             anchors.top: left_part.top
@@ -92,7 +92,7 @@ Item {
             horizontalAlignment: Qt.AlignCenter
             color: m_has_error ? m_right_text_color_error : m_right_text_color
             visible: !right_part_button.visible
-            font.pixelSize: 19
+            font.pixelSize: 18
         }
         MouseArea {
             enabled: m_has_error && !m_look_shit_on_error

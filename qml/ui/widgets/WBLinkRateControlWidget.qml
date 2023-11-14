@@ -32,7 +32,7 @@ BaseWidget {
     hasWidgetAction: true
 
     property int m_widget_action_w:  256
-    property int m_widget_action_h: 300+100;
+    property int m_widget_action_h: 300;
     widgetActionWidth: m_widget_action_w
     widgetActionHeight: m_widget_action_h
 
@@ -202,7 +202,7 @@ The lower the MCS (Modulation and coding) index, the less signal (dBm) is requir
     property string m_DESCRIPTION_STABILITY: "
 Make the video more stable (less microfreezes) on the cost of less image quality."+
 "Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability"+
-"and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel."
+"and works in most cases. Use CITY/POLLUTED on polluted channels,but it is always better to find a free channel."
 
     widgetDetailComponent: ScrollView {
 
@@ -303,46 +303,64 @@ Make the video more stable (less microfreezes) on the cost of less image quality
     }
 
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
-    widgetActionComponent: ScrollView {
-
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
-        width: parent.width
-        height: parent.height
-
+    widgetActionComponent:
         Column {
-            width: m_widget_action_w-32
-            //height:  m_widget_action_h
-            //spacing: 20
-
-            SmallHeaderInfoRow{
-                m_text: "Range vs Bitrate"
-                m_info_text: m_DESCRIPTION_CHANNEL_WIDTH
-            }
-            Row{
+        width: m_widget_action_w-32
+        SmallHeaderInfoRow{
+            m_text: "Range vs Bitrate"
+            m_info_text: m_DESCRIPTION_CHANNEL_WIDTH
+        }
+        /*TabBar{
                 width: parent.width
                 height: m_row_height
-                spacing: 20
-                enabled: _ohdSystemAir.is_alive;
-                Button{
+                id: channel_width_tab_bar
+                currentIndex:  m_curr_channel_width==40 ? 1 : 0;
+                onCurrentIndexChanged: {
+                    //const chan_w= currentIndex==0 ? 20 : 40;
+                    //set_channel_width_async(20)
+                }
+                TabButton{
                     text: "20Mhz"
                     onClicked: {
                         set_channel_width_async(20)
                     }
-                    highlighted: m_curr_channel_width==20
                 }
-                Button{
+                TabButton{
                     text: "40Mhz"
                     onClicked: {
-                       set_channel_width_async(40)
+                        set_channel_width_async(40)
                     }
-                    highlighted:  m_curr_channel_width==40
                 }
+            }*/
+        Row{
+            width: parent.width
+            height: m_row_height
+            spacing: 20
+            Button{
+                text: "20Mhz"
+                onClicked: {
+                    set_channel_width_async(20)
+                }
+                highlighted: m_curr_channel_width==20
+                //enabled: _ohdSystemAir.is_alive;
             }
-            SmallHeaderInfoRow{
-                m_text: "Range vs Bitrate"
-                m_info_text: m_DESCRIPTION_MCS
+            Button{
+                text: "40Mhz"
+                onClicked: {
+                    set_channel_width_async(40)
+                }
+                highlighted:  m_curr_channel_width==40
+                //enabled: _ohdSystemAir.is_alive;
             }
+        }
+        SmallHeaderInfoRow{
+            m_text: "Range vs Bitrate"
+            m_info_text: m_DESCRIPTION_MCS
+        }
+        Row{
+            width: parent.width
+            height: m_row_height
+
             ComboBox{
                 width: parent.width
                 height: m_row_height
@@ -363,10 +381,14 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 }
                 enabled: _ohdSystemAir.is_alive;
             }
-            SmallHeaderInfoRow{
-                m_text: "Stability vs Bitrate"
-                m_info_text:m_DESCRIPTION_STABILITY
-            }
+        }
+        SmallHeaderInfoRow{
+            m_text: "Resiliency vs Bitrate"
+            m_info_text:m_DESCRIPTION_STABILITY
+        }
+        Row{
+            width: parent.width
+            height: m_row_height
             ComboBox{
                 width: parent.width
                 height: m_row_height
@@ -390,6 +412,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
             }
         }
     }
+
 
     Item {
         id: widgetInner

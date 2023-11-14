@@ -31,10 +31,10 @@ ApplicationWindow {
     height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_width : m_window_height
 
     onWidthChanged: {
-        //_qrenderstats.set_window_width(width)
+        _qrenderstats.set_window_width(width)
     }
     onHeightChanged: {
-        //_qrenderstats.set_window_height(height)
+        _qrenderstats.set_window_height(height)
     }
 
     contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation

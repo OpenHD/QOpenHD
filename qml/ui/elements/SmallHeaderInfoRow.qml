@@ -2,7 +2,7 @@ import QtQuick 2.12
 
 Item {
     width: parent.width
-    height: 40
+    height: 32
 
     property string m_text: "FILL ME"
     property string m_info_text: "FILL ME"
@@ -12,8 +12,8 @@ Item {
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignLeft
         text: m_text
-        font.pixelSize: 18
-        font.bold: true
+        font.pixelSize: 16
+        //font.bold: true
         color: "white"
     }
     ButtonIconInfo{

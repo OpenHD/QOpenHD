@@ -29,7 +29,7 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
-    widgetActionHeight: 450
+    widgetActionHeight: 420
 
     property var m_camera_stream_model: m_is_for_primary_camera ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
 
