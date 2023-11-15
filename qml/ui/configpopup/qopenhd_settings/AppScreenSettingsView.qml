@@ -51,18 +51,18 @@ ScrollView {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     from : 0.3
-                    to : 2.0
+                    to : 2.5
                     // Important: Looks as without .1 steps, we can get rendering artfacts
                     stepSize: .1
 
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
                     value: settings.global_scale
 
-                    // @disable-check M223
                     onValueChanged: {
-                        // @disable-check M222
+                        if(settings.global_scale != value){
+                            _restartqopenhdmessagebox.show();
+                        }
                         settings.global_scale = value
-                        //_messageBoxInstance.set_text_and_show("Please restart QOpenHD !")
                     }
                 }
             }
@@ -146,7 +146,11 @@ ScrollView {
                         }
                     }
                     onCurrentIndexChanged: {
-                        settings.screen_custom_font_dpi = font_dpi.get(currentIndex).value
+                        const value_fdpi = font_dpi.get(currentIndex).value
+                        if(settings.screen_custom_font_dpi != value_fdpi){
+                            _restartqopenhdmessagebox.show();
+                        }
+                        settings.screen_custom_font_dpi = value_fdpi
                     }
                 }
             }

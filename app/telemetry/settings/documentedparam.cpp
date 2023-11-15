@@ -707,6 +707,16 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret["CONFIG_BOOT_AIR"]=nullptr;
     ret[openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM]=nullptr;
     ret[openhd::WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT]=nullptr;
+    // TX POWER Whitelisted, since they should be changed from the quick wizzard
+    ret[openhd::WB_TX_POWER_MILLI_WATT]=nullptr;
+    ret[openhd::WB_TX_POWER_MILLI_WATT_ARMED]=nullptr;
+    ret[openhd::WB_RTL8812AU_TX_PWR_IDX_OVERRIDE]=nullptr;
+    ret[openhd::WB_RTL8812AU_TX_PWR_IDX_ARMED]=nullptr;
+    // STBC / LDPC - Whitelisted, since they should be changed from the quick wizzard
+    ret[openhd::WB_ENABLE_LDPC]=nullptr;
+    ret[openhd::WB_ENABLE_STBC]=nullptr;
+    // Whitelisted since normally it should not be changed / has no effect anyways
+    ret[openhd::WB_ENABLE_SHORT_GUARD]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }

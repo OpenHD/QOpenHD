@@ -186,14 +186,23 @@ static void android_check_permissions(){
 #endif
 }
 
-
 int main(int argc, char *argv[]) {
 
     QCoreApplication::setOrganizationName("OpenHD");
     QCoreApplication::setOrganizationDomain("openhd");
     QCoreApplication::setApplicationName("QOpenHD");
+    {// Original screen resoluton before setting anything
+        //QApplication a(argc, argv);
+        const auto screen=QGuiApplication::primaryScreen();
+        if(screen){
+            const auto actual_size=screen->size();
+            QRenderStats::instance().set_screen_width_height(actual_size.width(),actual_size.height());
+        }
+        // a is deleted again
+    }
     
     QSettings settings;
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
 
     const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
     if (screen_custom_font_dpi) {
@@ -204,22 +213,11 @@ int main(int argc, char *argv[]) {
         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-
-    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
-    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
-    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
-    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
-        qDebug()<<"Request swap interval of 0";
-        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
-        format.setSwapInterval(0);
-        QSurfaceFormat::setDefaultFormat(format);
-    }
-
+    //QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
     const double global_scale = settings.value("global_scale", 1.0).toDouble();
     const std::string global_scale_s = std::to_string(global_scale);
     QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
-    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
@@ -234,10 +232,20 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
+    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
+    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
+    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
+    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
+        qDebug()<<"Request swap interval of 0";
+        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
+
     QApplication app(argc, argv);
     // Customize cursor if needed
     QOpenHD::instance().customize_cursor_from_settings();
-    {
+    {  // This includes dpi adjustment
         QScreen* screen=app.primaryScreen();
         if(screen){
             QRenderStats::instance().set_display_width_height(screen->size().width(),screen->size().height());

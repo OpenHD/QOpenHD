@@ -33,18 +33,18 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
     connect(window, &QQuickWindow::afterRenderPassRecording, this, &QRenderStats::m_QQuickWindow_afterRenderPassRecording, Qt::DirectConnection);
 }
 
+void QRenderStats::set_screen_width_height(int width, int height)
+{
+    std::stringstream ss;
+    ss<<width<<"x"<<height;
+    set_screen_width_height_str(ss.str().c_str());
+}
+
 void QRenderStats::set_display_width_height(int width, int height)
 {
     std::stringstream ss;
     ss<<width<<"x"<<height;
     set_display_width_height_str(ss.str().c_str());
-}
-
-void QRenderStats::set_window_width_height(int width, int height)
-{
-    std::stringstream ss;
-    ss<<width<<"x"<<height;
-    set_window_width_height_str(ss.str().c_str());
 }
 
 void QRenderStats::m_QQuickWindow_beforeRendering()

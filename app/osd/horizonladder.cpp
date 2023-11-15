@@ -14,7 +14,8 @@ HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     setRenderTarget(RenderTarget::FramebufferObject);
 
     //m_font.setPixelSize(14);
-    m_font.setPointSize(14);
+    m_font.setPointSize(DEFAULT_FONT_PIXEL_SIZE);
+    m_fontAwesome.setPointSize(DEFAULT_FONT_PIXEL_SIZE);
 }
 
 void HorizonLadder::paint(QPainter* painter) {
@@ -500,5 +501,6 @@ void HorizonLadder::set_custom_font_scale(double custom_font_scale)
 {
     m_custom_font_scale=custom_font_scale;
     m_font.setPointSize(DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale);
+    m_fontAwesome.setPointSize(DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale);
     update();
 }

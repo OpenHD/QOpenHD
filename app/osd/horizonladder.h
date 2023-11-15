@@ -108,7 +108,7 @@ private:
 
     QFont m_font;
 
-    QFont m_fontAwesome = QFont("Font Awesome 5 Free", 15, QFont::Bold, false);
+    QFont m_fontAwesome = QFont("Font Awesome 5 Free", 11, QFont::Bold, false);
     double m_custom_font_scale=1.0;
 };
 #endif //QOPENHD_HORIZON_LADDER

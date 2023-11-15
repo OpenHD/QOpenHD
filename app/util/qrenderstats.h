@@ -13,12 +13,15 @@
 class QRenderStats : public QObject
 {
     Q_OBJECT
+public:
     L_RO_PROP(QString, main_render_stats, set_main_render_stats, "NA")
     // It can be quite nice for debugging to see what resolution QOpenHD's main window is rendered at
     // Resolution of the screen / display itself
     L_RO_PROP(QString, display_width_height_str, set_display_width_height_str, "NA")
+    L_RO_PROP(QString, screen_width_height_str, set_screen_width_height_str, "NA")
     // Resolution qopenhd is rendering at
-    L_RO_PROP(QString, window_width_height_str, set_window_width_height_str, "NA")
+    L_RW_PROP(int, window_width, set_window_width, -1)
+    L_RW_PROP(int, window_height, set_window_height, -1)
     // Time QT spent "rendering", probably aka creating the GPU command buffer
     L_RO_PROP(QString, qt_rendering_time, set_qt_rendering_time, "NA")
     // Time QT spent "recording the render pass"
@@ -32,8 +35,8 @@ public:
     void register_to_root_window(QQmlApplicationEngine& engine);
     // Manually regster the QML window
     void registerOnWindow(QQuickWindow* window);
+    void set_screen_width_height(int width,int height);
     void set_display_width_height(int width,int height);
-    void set_window_width_height(int width,int height);
 public slots:
     void m_QQuickWindow_beforeRendering();
     void m_QQuickWindow_afterRendering();

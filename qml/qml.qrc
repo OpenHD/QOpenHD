@@ -261,5 +261,11 @@
         <file>video/SecondaryVideoGstreamerPane.qml</file>
         <file>ui/elements/SettingsHeaderElement.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml</file>
+        <file>ui/configpopup/openhd_settings/OpenHDQuickPanel.qml</file>
+        <file>ui/elements/BaseHeaderItem.qml</file>
+        <file>ui/elements/ButtonIconInfo2.qml</file>
+        <file>ui/elements/CardBasic.qml</file>
+        <file>ui/elements/ButtonIconConnect.qml</file>
+        <file>ui/elements/SmallHeaderInfoRow.qml</file>
     </qresource>
 </RCC>

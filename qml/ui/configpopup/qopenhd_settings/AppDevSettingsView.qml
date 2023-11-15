@@ -136,7 +136,7 @@ ScrollView {
                     onClicked: {
                         simplePopupHack.visible=true;
                     }
-                    enabled: _qopenhd.is_linux()
+                    //enabled: _qopenhd.is_linux()
                 }
             }
             SettingBaseElement{

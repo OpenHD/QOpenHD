@@ -52,7 +52,30 @@ Rectangle {
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.margins: 10
-
+            Text{
+                text: qsTr("QOpenHD version:" + _qopenhd.version_string)
+                Layout.leftMargin: 12
+            }
+            Text {
+                id: test5
+                text: qsTr("FEATURES:  " + get_features_string())
+                Layout.leftMargin: 12
+            }
+            Text {
+                id: test6
+                text: qsTr("Screen resolution: " + _qrenderstats.screen_width_height_str+" ADJ:"+_qrenderstats.display_width_height_str)
+                Layout.leftMargin: 12
+            }
+            Text {
+                id: test7
+                text: qsTr("Window resolution: " + _qrenderstats.window_width+"x"+_qrenderstats.window_height)
+                Layout.leftMargin: 12
+            }
+            Text {
+                id: test8
+                text: qsTr("You're running on: " + Qt.platform.os)
+                Layout.leftMargin: 12
+            }
             Text {
                 id: test1
                 text: qsTr("Art Horizon mavlink update rate:" + _fcMavlinkSystem.curr_update_rate_mavlink_message_attitude + " Hz")
@@ -83,26 +106,6 @@ Rectangle {
             Text {
                 id: test3
                 text: qsTr("video0 FEC decode:  " + _cameraStreamModelPrimary.curr_fec_decode_time_avg_min_max)
-                Layout.leftMargin: 12
-            }
-            Text {
-                id: test5
-                text: qsTr("FEATURES:  " + get_features_string())
-                Layout.leftMargin: 12
-            }
-            Text {
-                id: test6
-                text: qsTr("Screen resolution: " + _qrenderstats.display_width_height_str)
-                Layout.leftMargin: 12
-            }
-            Text {
-                id: test7
-                text: qsTr("Window resolution: " + _qrenderstats.window_width_height_str)
-                Layout.leftMargin: 12
-            }
-            Text {
-                id: test8
-                text: qsTr("You're running on: " + Qt.platform.os)
                 Layout.leftMargin: 12
             }
             Button {

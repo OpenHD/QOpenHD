@@ -372,8 +372,8 @@ BaseWidget {
 
                 // Note: By the width / height we also controll the clipping area (since the horizon is double drawn, into a texture, then onto the screen).
                 // Ideally, we want to reduce the "overdraw" to save GPU resources, e.g. make this area as small as possible / as less pixels as possible.
-                width: 600 * settings.horizon_clip_area_scale
-                height: 600 * settings.horizon_clip_area_scale
+                width: 400 * settings.horizon_clip_area_scale
+                height: 400 * settings.horizon_clip_area_scale
                 //width: applicationWindow.width *0.8 * settings.horizon_clip_area_scale
                 //height: applicationWindow.height *0.8 * settings.horizon_clip_area_scale
                 clip: false

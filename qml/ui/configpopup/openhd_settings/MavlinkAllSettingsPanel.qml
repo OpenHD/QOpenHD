@@ -64,6 +64,7 @@ Rectangle {
         currentIndex: selectItemInStackLayoutBar.currentIndex
 
         MavlinkOpenHDWBParamPanel{
+        //OpenHDQuickPanel{
             id: mavlink_openhd_wb_param_panel
         }
         MavlinkParamPanel{
