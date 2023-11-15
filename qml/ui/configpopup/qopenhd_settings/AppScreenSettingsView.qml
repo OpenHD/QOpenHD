@@ -146,7 +146,11 @@ ScrollView {
                         }
                     }
                     onCurrentIndexChanged: {
-                        settings.screen_custom_font_dpi = font_dpi.get(currentIndex).value
+                        const value_fdpi = font_dpi.get(currentIndex).value
+                        if(settings.screen_custom_font_dpi != value_fdpi){
+                            _restartqopenhdmessagebox.show();
+                        }
+                        settings.screen_custom_font_dpi = value_fdpi
                     }
                 }
             }
