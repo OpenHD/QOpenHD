@@ -202,13 +202,28 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         const double lat=static_cast<double>(global_position_int.lat) / 10000000.0;
         const double lon=static_cast<double>(global_position_int.lon) / 10000000.0;
         // This way we could also calculate the flight distance - but aparently, this results in slightly too small values
-        // (probably could be fixed by using a distance calculation method that is a better fit)
-        /*if(m_lat!=0.0 && m_lon!=0.0 && m_gps_hdop<20){
-            const auto added_distance_m=distance_between(m_lat,m_lon,lat,lon);
-            total_dist = total_dist + added_distance_m;
-            //qDebug() << "total distance" << total_dist;
-            set_flight_distance_m( total_dist);
-        }*/
+        double added_distance_m=0.0;
+        if(m_lat!=0.0 && m_lon!=0.0 && m_gps_hdop<20){
+            // kind of dumb to do this for the first few meters....whatever...
+            if (m_last_lat==0.0 && m_last_lon==0.0){
+            added_distance_m=distance_between(m_lat,m_lon,lat,lon);
+            }
+            else {
+            added_distance_m=distance_between(m_last_lat,m_last_lon,lat,lon);
+            }
+            qDebug() << "added_distance_m" << added_distance_m;
+            if (added_distance_m > 2.0){
+
+                total_dist = total_dist + added_distance_m;
+                //qDebug() << "total distance" << total_dist;
+                //in sitl large distance can still be erroniously generated with hdop<20
+                if (m_armed ){
+                set_flight_distance_m( total_dist);
+                set_last_lat(lat);
+                set_last_lon(lon);
+                }
+            }
+        }
         set_lat(lat);
         set_lon(lon);
         set_boot_time(global_position_int.time_boot_ms);
@@ -280,7 +295,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_throttle(vfr_hud.throttle);
         set_air_speed_meter_per_second(vfr_hud.airspeed);
         set_ground_speed_meter_per_second(vfr_hud.groundspeed);
-        update_flight_distance_using_groundspeed();
         // qDebug() << "Speed- ground " << speed;
         auto vsi = vfr_hud.climb;
         set_vertical_speed_indicator_mps(vsi);
@@ -521,25 +535,6 @@ void FCMavlinkSystem::updateFlightTimer() {
     }
 }
 
-void FCMavlinkSystem::update_flight_distance_using_groundspeed() {
-    if (m_gps_hdop > 20 || m_lat == 0.0){
-        //do not pollute distance if we have bad data
-        return;
-    }
-    if (m_armed==true){
-        const auto elapsed_ms = flightTimeStart.elapsed();
-        const auto time_diff_ms = elapsed_ms - m_flight_distance_last_time_ms;
-        m_flight_distance_last_time_ms = elapsed_ms;
-        const auto time_diff_s =time_diff_ms / 1000.0;
-        const auto added_distance =  m_ground_speed_meter_per_second * time_diff_s;
-        //qDebug() << "added distance" << added_distance;
-        total_dist = total_dist + added_distance;
-        //qDebug() << "total distance" << total_dist;
-        set_flight_distance_m( total_dist);
-    }
-}
-
-
 void FCMavlinkSystem::set_armed(bool armed) {
     if(m_armed==armed)return; //there has been no change so exit
     if (armed && !m_armed) {
@@ -550,6 +545,7 @@ void FCMavlinkSystem::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
+        set_flight_distance_m(0.0); //reset the flight distance
         if (m_home_latitude == 0.0 || m_home_longitude == 0.0) {
             //LocalMessage::instance()->showMessage("No Home Position in FCMavlinkSystem", 4);
             // Not needed anymore after we just set the proper rate(s)
