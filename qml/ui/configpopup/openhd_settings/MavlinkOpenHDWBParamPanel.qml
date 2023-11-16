@@ -225,13 +225,15 @@ Rectangle{
                         if(currentIndex!=settings.qopenhd_frequency_filter_selection){
                             settings.qopenhd_frequency_filter_selection=currentIndex;
                             function_rebuild_ui();
-                            if(currentIndex==1 || currentIndex==2){
-                                _qopenhd.show_toast("Please watch out for wifi pollution");
+                            if(currentIndex==1){
+                                _qopenhd.show_toast("2.4G is almost always polluted by WiFi. Not recommended.")
+                            }else if(currentIndex==2){
+                                _qopenhd.show_toast("Please watch out for wifi pollution. Using DEF is highly recommended !")
                             }
                         }
                     }
                     TabButton{
-                        text: "1-5"
+                        text: "DEF"
                     }
                     TabButton{
                         text: "2.4G"
