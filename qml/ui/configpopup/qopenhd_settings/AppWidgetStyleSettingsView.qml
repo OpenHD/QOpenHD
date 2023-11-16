@@ -39,7 +39,8 @@ ScrollView {
                     anchors.rightMargin: 8
                     Text{
                         Layout.alignment: Qt.AlignLeft
-                        text: "PRESETS\nColor/Font"
+                        //text: "PRESETS\nColor/Font"
+                        text: "Presets Color/Font"
                         font.weight: Font.Bold
                         font.pixelSize: 13
                     }
@@ -48,7 +49,7 @@ ScrollView {
                         Layout.fillHeight: true
                     }
                     Button{
-                        text: "GREEN\n@Norbert"
+                        text: "GREEN-Norbert"
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
