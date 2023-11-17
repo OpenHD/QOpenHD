@@ -63,7 +63,7 @@ Item {
     }*/
     // Actual item,centered
     Item{
-        width: parent.width
+        width: parent.width > 260 ? 260 : parent.width
         height: main_item.height
         anchors.centerIn: parent
 
