@@ -29,7 +29,7 @@ Rectangle{
 
     property bool m_normalize_data: false;
     property int m_chart_view_minimum_width: 1280;
-    property int m_chart_view_minimum_width2: 640;
+    property int m_chart_view_minimum_width2: 1280;
 
     property bool m_chart_enlarged: false;
 

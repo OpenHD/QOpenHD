@@ -202,7 +202,7 @@ bool QOpenHD::overwrite_settings_from_backup_file()
 
 bool QOpenHD::reset_settings()
 {
-#ifdef __linux__
+/*#ifdef __linux__
     QSettings settings;
     std::string file_name = settings.fileName().toStdString();
     int result = remove(file_name.c_str());
@@ -213,7 +213,10 @@ bool QOpenHD::reset_settings()
     qDebug() << "Error: Failed to delete file" << QString::fromStdString(file_name);
     return false;
 #endif
-    return false;
+    return false;*/
+    QSettings settings;
+    settings.clear();
+    return true;
 }
 
 

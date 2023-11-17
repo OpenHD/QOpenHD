@@ -11,7 +11,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-ColumnLayout {
+Column {
     //Layout.fillWidth: true
     //Layout.fillHeight: true
     // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
@@ -95,7 +95,7 @@ ColumnLayout {
         m_right_text_color: m_last_ping === "N/A" ? "#DC143C" : "green"
     }
     StatusCardRow{
-        m_left_text: qsTr(m_is_ground ? "Link HW: " : "Link HW:")
+        m_left_text: qsTr(m_is_ground ? "Link HW:" : "Link HW:")
         m_right_text: {
             if(m_is_ground){
                 if(!_ohdSystemGround.is_alive){

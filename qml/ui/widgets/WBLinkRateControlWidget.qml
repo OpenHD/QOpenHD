@@ -32,7 +32,7 @@ BaseWidget {
     hasWidgetAction: true
 
     property int m_widget_action_w:  256
-    property int m_widget_action_h: 300+100;
+    property int m_widget_action_h: 300;
     widgetActionWidth: m_widget_action_w
     widgetActionHeight: m_widget_action_h
 
@@ -48,6 +48,24 @@ BaseWidget {
     //property bool m_is_armed: true
     property bool m_is_armed: _fcMavlinkSystem.armed
 
+    property int m_row_height: 50
+
+
+    ListModel{
+        id: mcs_model
+        ListElement {title: "MCS0 (LONG RANGE)"; value: 0}
+        ListElement {title: "MCS1 (RANGE)"; value: 1}
+        ListElement {title: "MCS2 (DEFAULT)"; value: 2}
+        ListElement {title: "MCS3 (EXPERIMENTAL)"; value: 3}
+        ListElement {title: "MCS4 (EXPERIMENTAL)"; value: 4}
+    }
+    ListModel{
+        id: stability_model
+        ListElement {title: "30%:2 POLLUTED"; value_fec: 30; value_keyframe: 2}
+        ListElement {title: "30%:3 CITY"; value_fec: 30; value_keyframe: 3}
+        ListElement {title: "20%:5 DEFAULT"; value_fec: 20; value_keyframe: 5}
+        //ListElement {title: "10%:5 DESERT"; value_fec: 10; value_keyframe: 5}
+    }
 
     function get_text_channel(){
         if(!settings.wb_link_rate_control_widget_show_frequency){
@@ -142,6 +160,34 @@ BaseWidget {
         }
         _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
     }
+    function get_rate_for_mcs(mcs,is_40mhz){
+        if(is_40mhz){
+            if(mcs==0) return 7.4;
+            if(mcs==1) return 15.3;
+            if(mcs==2) return 22.6;
+            if(mcs==3) return 25;
+            if(mcs==4) return 30;
+        }
+        if(mcs==0) return 4.7;
+        if(mcs==1) return 9.8;
+        if(mcs==2) return 13;
+        if(mcs==3) return 16.2;
+        if(mcs==4) return 20;
+        return -1;
+    }
+    function get_mcs_combobox_text(mcs){
+        for(var i = 0; i < mcs_model.count; ++i) {
+            if (mcs_model.get(i).value==mcs) return mcs_model.get(i).title
+        }
+        return "MCS "+m_curr_mcs_index;
+    }
+
+    function get_fec_keyframe_combobox_text(fec,keyframe){
+        for(var i = 0; i < stability_model.count; ++i) {
+            if (stability_model.get(i).value_fec==fec && stability_model.get(i).value_keyframe==keyframe) return stability_model.get(i).title
+        }
+        return "FEC:"+fec+"% : KEY:"+keyframe+" ?";
+    }
 
     property string m_DESCRIPTION_CHANNEL_WIDTH: "
 A higher bandwidth / 40Mhz channel width increases the bitrate significantly, but also increases interference and reduces the maximum range."+
@@ -156,7 +202,7 @@ The lower the MCS (Modulation and coding) index, the less signal (dBm) is requir
     property string m_DESCRIPTION_STABILITY: "
 Make the video more stable (less microfreezes) on the cost of less image quality."+
 "Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability"+
-"and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel."
+"and works in most cases. Use CITY/POLLUTED on polluted channels,but it is always better to find a free channel."
 
     widgetDetailComponent: ScrollView {
 
@@ -257,247 +303,116 @@ Make the video more stable (less microfreezes) on the cost of less image quality
     }
 
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
-    widgetActionComponent: ScrollView {
-
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
-        width: parent.width
-        height: parent.height
-
-        ColumnLayout {
-            width: m_widget_action_w -32
-            height:  m_widget_action_h-32
+    widgetActionComponent:
+        Column {
+        width: m_widget_action_w-32
+        SmallHeaderInfoRow{
+            m_text: "Range vs Bitrate"
+            m_info_text: m_DESCRIPTION_CHANNEL_WIDTH
+        }
+        /*TabBar{
+                width: parent.width
+                height: m_row_height
+                id: channel_width_tab_bar
+                currentIndex:  m_curr_channel_width==40 ? 1 : 0;
+                onCurrentIndexChanged: {
+                    //const chan_w= currentIndex==0 ? 20 : 40;
+                    //set_channel_width_async(20)
+                }
+                TabButton{
+                    text: "20Mhz"
+                    onClicked: {
+                        set_channel_width_async(20)
+                    }
+                }
+                TabButton{
+                    text: "40Mhz"
+                    onClicked: {
+                        set_channel_width_async(40)
+                    }
+                }
+            }*/
+        Row{
+            width: parent.width
+            height: m_row_height
             spacing: 20
-
-            Rectangle{
-                width: parent.width
-                height: 50
-                Layout.fillWidth: true
-                //color: "#13142e"
-                //border.width: 5
-                //radius: 10
-                //color: "green"
-                color: "black"
-                ColumnLayout{
-                    width: parent.width
-                    height:  parent.height
-                    spacing: 1
-                    Rectangle {
-                        height: 32
-                        width: parent.width
-                        id: itemDescriptionRangeQuality
-                        //color: "green"
-                        color: "black"
-                        Text {
-                            id: simpleDescriptionRangeQuality
-                            text: "Trade range/image quality"
-                            color: "white"
-                            font.bold: true
-                            font.pixelSize: detailPanelFontPixels
-                            anchors.left: parent.left
-                        }
-                        Button{
-                            height: 32
-                            width: 32
-                            text: "\uf05a"
-                            anchors.left: simpleDescriptionRangeQuality.right
-                            anchors.top: simpleDescriptionRangeQuality.top
-                            Material.background:Material.LightBlue
-                            anchors.leftMargin: 5
-                            onClicked: {
-                                _messageBoxInstance.set_text_and_show(m_DESCRIPTION_CHANNEL_WIDTH)
-                            }
-                        }
-                    }
-                    Item{
-                        width: parent.width
-                        height: 20
-                        GridLayout{
-                            width: parent.width
-                            height: parent.height
-                            rows: 2
-                            columns: 2
-                            Button{
-                                text: "20Mhz"
-                                onClicked: {
-                                    set_channel_width_async(20)
-                                }
-                                highlighted: m_curr_channel_width==20
-                            }
-                            Button{
-                                text: "40Mhz"
-                                onClicked: {
-                                   set_channel_width_async(40)
-                                }
-                                highlighted:  m_curr_channel_width==40
-                            }
-                        }
-                    }
+            Button{
+                text: "20Mhz"
+                onClicked: {
+                    set_channel_width_async(20)
                 }
+                highlighted: m_curr_channel_width==20
+                //enabled: _ohdSystemAir.is_alive;
             }
-
-            Rectangle{
-                id: areaMCS
-                width: parent.width
-                height: parent.height /3;
-                //color: "red"
-                color: "black"
-                ColumnLayout{
-                    width: parent.width
-                    height:  parent.height
-                    spacing: 1
-                    Item {
-                        height: 32
-                        width: parent.width
-                        id: itemDescriptionMCS
-                        Text {
-                            id: simpleDescription
-                            text: "Trade range/image quality"
-                            color: "white"
-                            font.bold: true
-                            font.pixelSize: detailPanelFontPixels
-                            anchors.left: parent.left
-                        }
-                        Button{
-                            height: 32
-                            width: 32
-                            text: "\uf05a"
-                            anchors.left: simpleDescription.right
-                            anchors.top: simpleDescription.top
-                            Material.background:Material.LightBlue
-                            anchors.leftMargin: 5
-                            onClicked: {
-                                _messageBoxInstance.set_text_and_show(m_DESCRIPTION_MCS)
-                            }
-                        }
-                    }
-
-                    Rectangle{
-                        width: parent.width
-                        height: 100;
-                        id: itemMcsChoices
-                        //color: "green"
-                        color: "black"
-                        GridLayout{
-                            width: parent.width
-                            height: parent.height
-                            rows: 3
-                            columns: 2
-                            Button{
-                                text: "MCS0"
-                                onClicked: {
-                                    set_air_only_mcs(0)
-                                }
-                                highlighted: m_curr_mcs_index==0
-                            }
-                            Button{
-                                text: "MCS1"
-                                onClicked: {
-                                    set_air_only_mcs(1)
-                                }
-                                highlighted: m_curr_mcs_index==1
-                            }
-                            Button{
-                                text: "MCS2\n(DEFAULT)"
-                                onClicked: {
-                                    set_air_only_mcs(2)
-                                }
-                                highlighted: m_curr_mcs_index==2
-                            }
-                            Button{
-                                text: "MCS3"
-                                onClicked: {
-                                    set_air_only_mcs(3)
-                                }
-                                highlighted: m_curr_mcs_index==3
-                            }
-                        }
-                    }
+            Button{
+                text: "40Mhz"
+                onClicked: {
+                    set_channel_width_async(40)
                 }
+                highlighted:  m_curr_channel_width==40
+                //enabled: _ohdSystemAir.is_alive;
             }
-            Rectangle{
-                id: areaKeyframe
+        }
+        SmallHeaderInfoRow{
+            m_text: "Range vs Bitrate"
+            m_info_text: m_DESCRIPTION_MCS
+        }
+        Row{
+            width: parent.width
+            height: m_row_height
+
+            ComboBox{
                 width: parent.width
-                height: parent.height /3;
-                //color: "green"
-                color: "black"
-                ColumnLayout{
-                    width: parent.width
-                    height:  parent.height
-                    spacing: 5
-                    Item {
-                        height: 32
-                        width: parent.width
-                        id: itemDescriptionKeyframe
-                        //anchors.top: itemMcsChoices.bottom
-                        Text {
-                            id: simpleDescriptionKeyframe
-                            text: "Trade Quality/Stability"
-                            color: "white"
-                            font.bold: true
-                            font.pixelSize: detailPanelFontPixels
-                            anchors.left: parent.left
-                        }
-                        Button{
-                            height: 32
-                            width: 32
-                            text: "\uf05a"
-                            anchors.left: simpleDescriptionKeyframe.right
-                            anchors.top: simpleDescriptionKeyframe.top
-                            Material.background:Material.LightBlue
-                            anchors.leftMargin: 5
-                            onClicked: {
-                                _messageBoxInstance.set_text_and_show(m_DESCRIPTION_STABILITY)
-                            }
-                        }
-                    }
-                    Item{
-                        width: parent.width
-                        height: parent.height -32;
-                        //color: "green"
-                        GridLayout{
-                            width: parent.width
-                            height: parent.height
-                            rows: 2
-                            columns: 2
-                            Button{
-                                text: "POLLUTED"
-                                onClicked: {
-                                    set_keyframe_interval(2)
-                                    set_fec_percentage(30)
-                                }
-                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==30
-                            }
-                            Button{
-                                text: "CITY"
-                                onClicked: {
-                                    set_keyframe_interval(3)
-                                    set_fec_percentage(20)
-                                }
-                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==20
-                            }
-                            Button{
-                                text: "DEFAULT"
-                                onClicked: {
-                                    set_keyframe_interval(5)
-                                    set_fec_percentage(20)
-                                }
-                                highlighted:  m_curr_keyframe_i == 5 && m_curr_fec_perc==20
-                            }
-                            Button{
-                                text: "DESERT"
-                                onClicked: {
-                                    set_keyframe_interval(5)
-                                    set_fec_percentage(10)
-                                }
-                                highlighted:  m_curr_keyframe_i == 5 && m_curr_fec_perc==10
-                            }
-                        }
-                    }
+                height: m_row_height
+                id: mcs_cb
+                model: mcs_model
+                textRole: "title"
+                currentIndex: -1
+                displayText: {
+                    if(!_ohdSystemAir.is_alive)return "AIR NOT ALIVE";
+                    return get_mcs_combobox_text(m_curr_mcs_index);
+                    //return "MCS "+m_curr_mcs_index+" / "+get_rate_for_mcs(m_curr_mcs_index,m_curr_channel_width==40)+" MBit/s"
                 }
+                onActivated: {
+                    console.log("onActivated:"+currentIndex);
+                    if(currentIndex<0)return;
+                    const mcs=model.get(currentIndex).value
+                    set_air_only_mcs(mcs)
+                }
+                enabled: _ohdSystemAir.is_alive;
+            }
+        }
+        SmallHeaderInfoRow{
+            m_text: "Resiliency vs Bitrate"
+            m_info_text:m_DESCRIPTION_STABILITY
+        }
+        Row{
+            width: parent.width
+            height: m_row_height
+            ComboBox{
+                width: parent.width
+                height: m_row_height
+                id: pollution_cb
+                model: stability_model
+                textRole: "title"
+                currentIndex: -1
+                displayText: {
+                    if(!_ohdSystemAir.is_alive)return "AIR NOT ALIVE";
+                    return get_fec_keyframe_combobox_text(m_curr_fec_perc,m_curr_keyframe_i)
+                }
+                onActivated: {
+                    console.log("onActivated:"+currentIndex);
+                    if(currentIndex<0)return;
+                    const fec=model.get(currentIndex).value_fec
+                    const key=model.get(currentIndex).value_keyframe
+                    set_fec_percentage(fec)
+                    set_keyframe_interval(key)
+                }
+                enabled: _ohdSystemAir.is_alive;
             }
         }
     }
+
 
     Item {
         id: widgetInner

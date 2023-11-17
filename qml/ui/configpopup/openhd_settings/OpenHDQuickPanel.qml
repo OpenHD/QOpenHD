@@ -45,24 +45,38 @@ Rectangle{
     }
 
     ListModel{
-        id: frequencies_model
+        id: frequencies_model_all
+        ListElement {title: "Unknown"; value_frequency_mhz:-1}
+    }
+    ListModel{
+        id: frequencies_model_openhd_channels_only
         ListElement {title: "Unknown"; value_frequency_mhz:-1}
     }
 
     function create_list_models_frequency(){
-        frequencies_model.clear();
-        const filter = filter_tab_bar.currentIndex;
-        const frequencies_all=_frequencyHelper.get_frequencies(filter);
+        frequencies_model_all.clear();
+        const frequencies_all=_frequencyHelper.get_frequencies(false);
         for(var i=0;i<frequencies_all.length;i++){
             const frequency=frequencies_all[i];
             const text=_frequencyHelper.get_frequency_description(frequency)
-            frequencies_model.append({title: text, value_frequency_mhz: frequency});
+            frequencies_model_all.append({title: text, value_frequency_mhz: frequency});
+        }
+        frequencies_model_openhd_channels_only.clear();
+        const frequencies_openhd=_frequencyHelper.get_frequencies(true);
+        for(var i=0;i<frequencies_openhd.length;i++){
+            const frequency=frequencies_openhd[i];
+            const text=_frequencyHelper.get_frequency_description(frequency)
+            frequencies_model_openhd_channels_only.append({title: text, value_frequency_mhz: frequency});
         }
     }
 
+    property bool m_simplify_enable:true
     function update_frequency_combobox(){
-        create_list_models_frequency();
-        comboBoxFreq.model=frequencies_model;
+        if(m_simplify_enable){
+            comboBoxFreq.model=frequencies_model_openhd_channels_only;
+        }else{
+            comboBoxFreq.model=frequencies_model_all;
+        }
         if(_wbLinkSettingsHelper.curr_channel_mhz>0){
             var index=find_index(comboBoxFreq.model,_wbLinkSettingsHelper.curr_channel_mhz);
             if(index>=0){
@@ -134,27 +148,28 @@ Rectangle{
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
         visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible)
-        clip: true
 
-        ColumnLayout{
-            width: main_scroll_view.width
-            id: main_column_layout
-            Layout.margins: 10
 
-            BaseHeaderItem{
-                m_text: "FREQUENCY / TOOLKIT"
+        Column{
+            spacing: 0
+            anchors.left: parent.left
+            anchors.right: parent.right
+            id: main_colum_layout
+            Text{
+                width: parent.width
+                height: rowHeight
+                text: "FREQUENCY / TOOLKIT"
+                font.bold: true
+                horizontalAlignment: Qt.AlignHCenter
+                verticalAlignment: Qt.AlignVCenter
             }
-
-            RowLayout{
-                Layout.fillWidth: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
+            Row{
+                width: parent.width
+                height: rowHeight
                 ComboBox {
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.preferredWidth: elementComboBoxWidth
                     id: comboBoxFreq
-                    model: frequencies_model
+                    //model: supported_frequencies_model
+                    //model: frequencies_model_openhd_channels_only
                     textRole: "title"
                     implicitWidth:  elementComboBoxWidth
                     currentIndex: 0
@@ -170,6 +185,8 @@ Rectangle{
                         }
                         highlighted: comboBoxFreq.highlightedIndex === index
                     }
+                    Layout.row: 1
+                    Layout.column: 0
                     displayText: {
                         if(!_ohdSystemGround.is_alive)return "GND NOT ALIVE";
                         if(_ohdSystemGround.wb_gnd_operating_mode==1){
@@ -206,8 +223,10 @@ Rectangle{
                     }
                     enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0;
                 }
-                /*Switch{
-                    Layout.alignment: Qt.AlignCenter
+                Switch{
+                    Layout.row: 1
+                    Layout.column: 1
+                    Layout.columnSpan: 1
                     text: "SIMPLIFY"
                     checked: true
                     onCheckedChanged: {
@@ -216,53 +235,12 @@ Rectangle{
                             function_rebuild_ui();
                         }
                     }
-                }*/
-                TabBar{
-                    id: filter_tab_bar
-                    Layout.preferredWidth: 200
-                    currentIndex: settings.qopenhd_frequency_filter_selection
-                    onCurrentIndexChanged: {
-                        if(currentIndex!=settings.qopenhd_frequency_filter_selection){
-                            settings.qopenhd_frequency_filter_selection=currentIndex;
-                            function_rebuild_ui();
-                            if(currentIndex==1){
-                                _qopenhd.show_toast("2.4G is almost always polluted by WiFi. Not recommended.")
-                            }else if(currentIndex==2){
-                                _qopenhd.show_toast("Please watch out for wifi pollution. Using DEF is highly recommended !")
-                            }
-                        }
-                    }
-                    TabButton{
-                        text: "DEF"
-                    }
-                    TabButton{
-                        text: "2.4G"
-                    }
-                    TabButton{
-                        text: "5.8G"
-                    }
-                }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                ButtonIconInfo2{
-                    Layout.alignment: Qt.AlignRight
-                    onClicked: {
-                        var text="Please select a channel / frequency free of noise and interference. The current loss / pollution / throttle stats below can help,"+
-                                "as well as the analyze channels feature or a frequency analyzer on your phone. SIMPLIFY: Show OpenHD standard channels [1-5] only - they "+
-                                " often are free of wifi pollution and should be used. Only disable SIMPLIFY if you know exactly why."
-                        _messageBoxInstance.set_text_and_show(text)
-                    }
                 }
             }
-
-            RowLayout{
-                Layout.fillWidth: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
+            Row{
+                width: parent.width
+                height: rowHeight
                 Button{
-                    Layout.alignment: Qt.AlignCenter
                     Layout.preferredWidth: 150
                     id: b_find_air_unit
                     text: "SCAN"
@@ -294,7 +272,6 @@ Rectangle{
                     }
                 }
                 Button{
-                    Layout.alignment: Qt.AlignCenter
                     Layout.preferredWidth: 150
                     text: "ANALYZE"
                     enabled: _ohdSystemGround.is_alive
@@ -303,87 +280,18 @@ Rectangle{
                         popup_analyze_channels.open()
                     }
                 }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                /*ButtonIconInfo{
-                            onClicked: {
-                                var text="SCAN: Similar to analoque channel scan, find a running air unit by checking all possible channels (frequencies).\n\n"+
-                                        "ANALYZE: Analyze channels for WiFi pollution. Read the wiki for more info.";
-                                _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }*/
             }
-            RowLayout{
-                Layout.fillWidth: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 120
-                    text:{
-                        "LOSS:\n"+_ohdSystemGround.curr_rx_packet_loss_perc+"%"
-                    }
-                    color: _ohdSystemGround.curr_rx_packet_loss_perc > 5 ? "red" : "black"
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 120
-                    text: {
-                        return "POLLUTION:\n"+_ohdSystemGround.wb_link_curr_foreign_pps+"pps"
-                    }
-                    color: _ohdSystemGround.wb_link_curr_foreign_pps > 20 ? "red" : "black"
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 120
-                    text: {
-                        return "THROTTLE:\n"+_ohdSystemAir.curr_n_rate_adjustments
-                    }
-                    color: _ohdSystemAir.curr_n_rate_adjustments > 0 ? "red" : "black"
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                /*ButtonIconInfo{
-                            onClicked: {
-                                var text="High Loss / Pollution / active throttle hint at a polluted channel."
-                                _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }
-                        ButtonIconWarning{
-                            visible: (_ohdSystemGround.curr_rx_packet_loss_perc > 5 || _ohdSystemGround.wb_link_curr_foreign_pps > 20 || _ohdSystemAir.curr_n_rate_adjustments > 0)
-                            onClicked: {
-                                var text="On the bench, if you encounter issues like a high loss , high pollution or throttling, make sure:\n"+
-                                        "1) You are using a channel free of noise and interference (OHD channel 1-5 are a good bet)\n"+
-                                        "2) (RARELY,RTL8812AU only): Your TX card(s) aren't overamplifying the signal and have adequate cooling.";
-                                _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }*/
+            Text{
+                width: parent.width
+                height: rowHeight
+                text: "TX POWER"
+                font.bold: true
+                horizontalAlignment: Qt.AlignHCenter
+                verticalAlignment: Qt.AlignVCenter
             }
-
-            BaseHeaderItem{
-                m_text: "TX POWER"
-            }
-
-            RowLayout {
-                id: tx_power_layout
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
+            Row{
+                width: parent.width
+                height: rowHeight
                 Text{
                     Layout.preferredWidth: 120
                     text: "AIR:\n "+get_text_wifi_tx_power(true)
@@ -416,57 +324,8 @@ Rectangle{
                         popup_change_tx_power.open()
                     }
                 }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
             }
 
-            BaseHeaderItem{
-                m_text: "ADVANCED (STBC,LDPC)"
-            }
-
-            RowLayout {
-                id: stbc_ldpc_layout
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                Text{
-                    Layout.preferredWidth: 120
-                    text: "AIR:\n"+get_text_stbc_ldpc(true);
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                }
-                Text{
-                    Layout.preferredWidth: 120
-                    text: "GND:\n"+get_text_stbc_ldpc(false);
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                }
-                Button{
-                    text: "EDIT";
-                    //enabled: true
-                    enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
-                             (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
-                    onClicked: {
-                        close_all_dialoques();
-                        popup_enable_stbc_ldpc.open()
-                    }
-                }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                /*ButtonIconInfo{
-                    onClicked: {
-                        _messageBoxInstance.set_text_and_show("STBC / LDPC : Greatly increases range, but requires 2 RF paths (2 Antennas) on BOTH your air and ground station."+
-                                                              "WARNING: Enabling STBC with the wrong hardware (only 1 antenna / only one rf path) results in no connectivity "+
-                                                              "and you need to re-flash your air / ground unit to recover !");
-                    }
-                }*/
-            }
         }
     }
 
