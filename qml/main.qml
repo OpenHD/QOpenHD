@@ -27,8 +27,15 @@ ApplicationWindow {
 
     //width: 850
     //height: 480
-    width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_height : m_window_width
-    height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_width : m_window_height
+    width: 1920
+    height: 1080
+
+    onWidthChanged: {
+        _qrenderstats.set_window_width(width)
+    }
+    onHeightChanged: {
+        _qrenderstats.set_window_height(height)
+    }
 
     onWidthChanged: {
         _qrenderstats.set_window_width(width)
