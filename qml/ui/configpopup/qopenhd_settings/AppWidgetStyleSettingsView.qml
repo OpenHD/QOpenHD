@@ -59,7 +59,7 @@ ScrollView {
                             settings.color_shape="#ff14ff00"
                             settings.color_text="#ff05ff00"
                             settings.color_warn="red"
-                            //settings.font_text="Quicksand"
+                            settings.font_text="Quicksand"
                         }
                     }
                     Button{

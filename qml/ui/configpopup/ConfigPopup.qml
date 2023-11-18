@@ -54,7 +54,7 @@ Rectangle {
     function user_guidance_open_openhd_settings_find_air_unit_location(){
         openSettings();
         mainStackLayout.currentIndex=1;
-        mavlinkAllSettingsPanel.user_quidance_animate_channel_scan();
+        ohdSettingsPanel.user_quidance_animate_channel_scan();
     }
 
     /*Keys.onPressed: (event)=> {
@@ -170,7 +170,7 @@ Rectangle {
                     m_selection_index: 0
                 }
 
-                // OpenHD Settings - MavlinkAllSettingsPanel
+                // OpenHD OHD Settings
                 ConfigPopupSidebarButton{
                     id:  openhd_button
                     m_icon_text: "\uf085"
@@ -253,8 +253,8 @@ Rectangle {
         }
 
          //this is "openhd" menu
-        MavlinkAllSettingsPanel {
-            id:  mavlinkAllSettingsPanel
+        OHDSettingsPanel {
+            id:  ohdSettingsPanel
         }
 
         AppSettingsPanel {
