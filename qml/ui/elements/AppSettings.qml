@@ -389,6 +389,7 @@ Settings {
 
     property int custom_cursor_type: 0
     property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,
+    property bool enable_cursor_auto_hide: false
 
     // experimental - mavlink via TCP
     property bool dev_mavlink_via_tcp: false

@@ -212,7 +212,7 @@ ScrollView {
                     value: settings.custom_cursor_type
                     onValueChanged: {
                         settings.custom_cursor_type = value
-                        _qopenhd.customize_cursor(settings.custom_cursor_type,settings.custom_cursor_scale)
+                        _mouseHelper.set_active_cursor_type_and_scale(settings.custom_cursor_type,settings.custom_cursor_scale)
                     }
                 }
             }
@@ -234,7 +234,27 @@ ScrollView {
                     value: settings.custom_cursor_scale
                     onValueChanged: {
                         settings.custom_cursor_scale = value
-                        _qopenhd.customize_cursor(settings.custom_cursor_type,settings.custom_cursor_scale)
+                        _mouseHelper.set_active_cursor_type_and_scale(settings.custom_cursor_type,settings.custom_cursor_scale)
+                    }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Cursor AutoHide"
+                m_long_description: "Automatically hide cursor on inactivity"
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.enable_cursor_auto_hide
+                    onCheckedChanged: {
+                        if(settings.enable_cursor_auto_hide!=checked){
+                            settings.enable_cursor_auto_hide=checked;
+                            _mouseHelper.set_hide_cursor_inactive_enable(settings.enable_cursor_auto_hide);
+                        }
                     }
                 }
             }

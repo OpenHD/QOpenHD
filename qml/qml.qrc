@@ -127,7 +127,6 @@
         <file>osdfonts/Visitor.ttf</file>
         <file>osdfonts/ZolanMonoOblique.ttf</file>
         <file>ui/elements/FontSelect.qml</file>
-        <file>ui/elements/FontSelectForm.ui.qml</file>
         <file>ui/elements/OSDCustomizer.qml</file>
         <file>ui/elements/colorwheel/CheckerBoard.qml</file>
         <file>ui/elements/colorwheel/ColorWheel.qml</file>
@@ -208,7 +207,7 @@
         <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
-        <file>ui/configpopup/openhd_settings/MavlinkAllSettingsPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/OHDSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
         <file>ui/configpopup/rc/RcInfoScreen.qml</file>
@@ -248,7 +247,7 @@
         <file>ui/configpopup/status/DialoqueNotAlive.qml</file>
         <file>ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml</file>
         <file>ui/configpopup/log/LogMessagesView.qml</file>
-        <file>ui/configpopup/openhd_settings/MavlinkOpenHDWBParamPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/LinkQuickPanel.qml</file>
         <file>ui/configpopup/openhd_settings/PopupScanChannels.qml</file>
         <file>ui/configpopup/openhd_settings/PopupTxPowerEditor.qml</file>
         <file>ui/elements/TextOrWarningButton.qml</file>
@@ -261,7 +260,6 @@
         <file>video/SecondaryVideoGstreamerPane.qml</file>
         <file>ui/elements/SettingsHeaderElement.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml</file>
-        <file>ui/configpopup/openhd_settings/OpenHDQuickPanel.qml</file>
         <file>ui/elements/BaseHeaderItem.qml</file>
         <file>ui/elements/ButtonIconInfo2.qml</file>
         <file>ui/elements/CardBasic.qml</file>

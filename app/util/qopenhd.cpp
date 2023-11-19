@@ -26,6 +26,7 @@
 #include <QtAndroid>
 #endif
 
+#include "mousehelper.h"
 
 QOpenHD &QOpenHD::instance()
 {
@@ -229,56 +230,6 @@ QString QOpenHD::show_local_ip()
     return QString("Only works on linux");
 #endif
 
-}
-
-void QOpenHD::customize_cursor(const int cursor_type,const int cursor_scale)
-{
-    QApplication::restoreOverrideCursor();
-    // Default 0 - do not change
-    if(cursor_type==0)return;
-    qDebug()<<"Custom cursor type:"<<cursor_type<<" scale:"<<cursor_scale;
-    // QCursor cursor(Qt::PointingHandCursor);
-    // QApplication::setOverrideCursor(cursor);
-    // NOTE: the "OS" cursors cannot be scaled easily
-    QPixmap pixmap;
-    if(cursor_type==1){
-        pixmap=QPixmap("://resources/cursors/arrow_512_transparent.png");
-    }else if(cursor_type==2){
-        pixmap=QPixmap("://resources/cursors/arrow_512_white.png");
-    }else if(cursor_type==3){
-        pixmap=QPixmap("://resources/cursors/arrow_512_green.png");
-    }else{
-        pixmap=QPixmap("://resources/cursors/hand_white.png");
-    }
-    int size_px= 16;
-    if(cursor_scale==0){
-       size_px =16;
-    }else if(cursor_scale==1){
-       size_px = 32;
-    }else if(cursor_scale==2){
-       size_px=64;
-    }else if(cursor_scale==3){
-       size_px= 128;
-    }
-    pixmap = pixmap.scaled(size_px,size_px);
-    // position is a bit of a mess
-    QCursor cursor;
-    // arrow - roughly
-    if(cursor_type==1 || cursor_type==2 || cursor_type==3){
-       cursor=QCursor(pixmap,pixmap.width()/16,pixmap.height()/16);
-    }else{
-       // The hand is a bit different
-       cursor=QCursor(pixmap,pixmap.width()/3,pixmap.height()/4);
-    }
-    QApplication::setOverrideCursor(cursor);
-}
-
-void QOpenHD::customize_cursor_from_settings()
-{
-    QSettings settings;
-    const int custom_cursor_type=settings.value("custom_cursor_type",0).toInt();
-    const int custom_cursor_scale=settings.value("custom_cursor_scale",1).toInt();
-    customize_cursor(custom_cursor_type,custom_cursor_scale);
 }
 
 bool QOpenHD::is_linux()

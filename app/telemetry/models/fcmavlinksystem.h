@@ -99,6 +99,8 @@ public: // Stuff needs to be public for qt
     //
     L_RO_PROP(double,lat,set_lat,0.0)
     L_RO_PROP(double,lon,set_lon,0.0)
+    L_RO_PROP(double,last_lat,set_last_lat,0.0)
+    L_RO_PROP(double,last_lon,set_last_lon,0.0)
     L_RO_PROP(int,satellites_visible,set_satellites_visible,0)
     L_RO_PROP(double,gps_hdop,set_gps_hdop,-1)
     L_RO_PROP(double,gps_vdop,set_gps_vdop,-1)
@@ -164,9 +166,6 @@ public:
     void calculate_home_course();
     // Updates the flight time by increasing the time when armed
     void updateFlightTimer();
-    // Calculates the flght distance (dirty) by taking time delta and current speed into account
-    // replaced by using distance between lat,lon point(s) (this is a bit more accurate)
-    void update_flight_distance_using_groundspeed();
     // Something something luke
     void updateVehicleAngles();
     // Something somethng luke
@@ -202,7 +201,7 @@ private:
     double speed_last_time = 0.0;
 
     qint64 m_flight_distance_last_time_ms= 0;
-    long total_dist= 0;
+    double total_dist= 0.0;
 
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;

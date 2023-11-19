@@ -61,6 +61,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "logging/logmessagesmodel.h"
 #include "logging/hudlogmessagesmodel.h"
 #include "util/qopenhd.h"
+#include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
 
@@ -243,8 +244,6 @@ int main(int argc, char *argv[]) {
     }
 
     QApplication app(argc, argv);
-    // Customize cursor if needed
-    QOpenHD::instance().customize_cursor_from_settings();
     {  // This includes dpi adjustment
         QScreen* screen=app.primaryScreen();
         if(screen){
@@ -280,6 +279,7 @@ int main(int argc, char *argv[]) {
     // Needs to be registered first, otherwise we can have threading issue(s)
     engine.rootContext()->setContextProperty("_messageBoxInstance", &WorkaroundMessageBox::instance());
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
+    engine.rootContext()->setContextProperty("_mouseHelper", &MouseHelper::instance());
 
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
