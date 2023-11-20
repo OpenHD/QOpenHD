@@ -292,9 +292,6 @@ Item {
         LinkUpRSSIWidget {
             id: uplink
         }
-        Sidebar{
-            id: sidebar
-        }
         // ----------------------------------------------------------------------------
         // TODO SORT ME
 
@@ -473,6 +470,10 @@ Item {
 
         UAVTimeWiget{
             id: uavtimewidget
+        }
+
+        Sidebar{
+            id: sidebar
         }
     }
 

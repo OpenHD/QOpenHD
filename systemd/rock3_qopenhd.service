@@ -9,6 +9,7 @@ Environment="QT_LOGGING_RULES=qt.qpa.egl*=true"
 Environment="QT_QPA_EGLFS_KMS_PLANE_INDEX=1"
 Environment="QT_QPA_EGLFS_FORCE888=1"
 Environment="QT_QPA_EGLFS_SWAPINTERVAL=0"
+Environment="QT_QPA_EGLFS_ALWAYS_SET_MODE=true"
 Environment="QT_QPA_EGLFS_KMS_CONFIG=/usr/local/share/qopenhd/rock_qt_eglfs_kms_config.json"
 ExecStart=/usr/local/bin/QOpenHD -platform eglfs
 User=root
