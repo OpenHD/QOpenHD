@@ -1030,7 +1030,7 @@ BaseWidget {
                             }
 
                             Text {
-                                text: "OpenHD 2.5 evo"
+                                text: "Todo"
                                 font.pixelSize: 14
                                 font.family: "AvantGarde-Medium"
                                 color: "#ffffff"
@@ -1086,7 +1086,7 @@ BaseWidget {
                             }
 
                             Text {
-                                text: "Core3566"
+                                text: "Todo"
                                 font.pixelSize: 14
                                 font.family: "AvantGarde-Medium"
                                 color: "#ffffff"
