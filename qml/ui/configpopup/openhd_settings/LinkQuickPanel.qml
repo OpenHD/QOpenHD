@@ -334,7 +334,15 @@ Rectangle{
                     Layout.preferredHeight: 50
                     Layout.preferredWidth: 120
                     text: {
-                        return "THROTTLE:\n"+_ohdSystemAir.curr_n_rate_adjustments
+                        var ret="THROTTLE:\n";
+                        if(_ohdSystemAir.curr_n_rate_adjustments<=-1){
+                            ret+="N/A";
+                        }else if(_ohdSystemAir.curr_n_rate_adjustments==0){
+                            ret+="NONE";
+                        }else{
+                            ret+=("ACTIVE:"+_ohdSystemAir.curr_n_rate_adjustments+"x");
+                        }
+                        return ret;
                     }
                     color: _ohdSystemAir.curr_n_rate_adjustments > 0 ? "red" : "black"
                     verticalAlignment: Qt.AlignVCenter
