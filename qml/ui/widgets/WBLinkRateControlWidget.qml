@@ -379,6 +379,13 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     const mcs=model.get(currentIndex).value
                     set_air_only_mcs(mcs)
                 }
+                onDisplayTextChanged: {
+                    for(var i = 0; i < model.count; ++i) {
+                        if (model.get(i).value==m_curr_mcs_index){
+                            currentIndex=i;
+                        }
+                    }
+                }
                 enabled: _ohdSystemAir.is_alive;
             }
         }
@@ -407,6 +414,13 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     const key=model.get(currentIndex).value_keyframe
                     set_fec_percentage(fec)
                     set_keyframe_interval(key)
+                }
+                onDisplayTextChanged: {
+                    for(var i = 0; i < model.count; ++i) {
+                        if (model.get(i).value_fec==m_curr_fec_perc && model.get(i).value_keyframe==m_curr_keyframe_i){
+                            currentIndex=i;
+                        }
+                    }
                 }
                 enabled: _ohdSystemAir.is_alive;
             }
