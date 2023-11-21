@@ -84,15 +84,20 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
 cp rock_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 fi
 
-VERSION="2.5.3-$(date '+%Y%m%d%H%M')-${VER2}"
+VERSION="2.5.2-beta-$(date '+%Y%m%d%H%M')-${VER2}"
+
+ls -a ${TMPDIR}/usr/local/bin
+echo "going into packaging stage"
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
+    echo "raspberry pi"
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
+    echo "rockchip"
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3566 -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_rk3566_VERSION_ARCH.deb \
     --after-install after-install.sh \
@@ -112,6 +117,8 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 else
+    echo "everything else"
+
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_VERSION_ARCH.deb \
     --after-install after-install.sh \
