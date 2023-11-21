@@ -9,7 +9,7 @@ Settings {
     property double global_scale: 1.0
     // Set a custom font dpi instead of QT high dpi auto scaling.
     // Requires restart to be applied
-    property int screen_custom_font_dpi: 0
+    property int screen_custom_font_dpi: 100
 
     // Dirty, rotate everything even though that can create issues
     property int general_screen_rotation: 0
