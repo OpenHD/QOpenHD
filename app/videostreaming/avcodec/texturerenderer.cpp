@@ -103,7 +103,8 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
     //std::cout<<"DRMPrimeOut::drmprime_out_display "<<src_frame->width<<"x"<<src_frame->height<<"\n";
     if ((src_frame->flags & AV_FRAME_FLAG_CORRUPT) != 0) {
       //fprintf(stderr, "Discard corrupt frame: fmt=%d, ts=%" PRId64 "\n", src_frame->format, src_frame->pts);
-      qDebug()<<"Frame corrupt, but forwarding anyways";
+      // log removed, can also appear on non corrupted frames
+      //qDebug()<<"Frame corrupt, but forwarding anyways";
       //return 0;
     }
     latest_frame_mutex.lock();
