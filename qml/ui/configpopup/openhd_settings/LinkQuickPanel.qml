@@ -230,6 +230,7 @@ Rectangle{
                     TabButton{
                         text: "5.8G"
                     }
+                    enabled: comboBoxFreq.enabled
                 }
                 Item{ // FILLER
                     Layout.fillWidth: true
