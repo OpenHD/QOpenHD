@@ -16,7 +16,7 @@
 #include <qdebug.h>
 
 static int linux_tcp_socket_try_connect(const std::string remote_ip, const int remote_port,const int timeout_seconds){
-    qDebug()<<"linux_tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";
+    //qDebug()<<"linux_tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";
     int sockfd=socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd<0){
         qDebug()<<"Cannot create socket"<<strerror(errno);
@@ -60,7 +60,7 @@ static int linux_tcp_socket_try_connect(const std::string remote_ip, const int r
     socklen_t len = sizeof(so_error);
     getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
     if (so_error != 0) {
-        qDebug()<<"Any socket error";
+        //qDebug()<<"Any socket error";
         close(sockfd);
         return -1;
     }

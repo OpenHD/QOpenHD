@@ -204,7 +204,14 @@ int main(int argc, char *argv[]) {
     
     QSettings settings;
     qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
-
+    // RPI only - set a smaller default screen scale, for whatever reason thats needed
+    if(QOpenHD::instance().is_platform_rpi()){
+        if(!settings.value("qopenhd_custom_default_screen_has_been_set",false).toBool()){
+            qDebug()<<"Setting initial rpi screen scale";
+            settings.setValue("qopenhd_custom_default_screen_has_been_set",true);
+            settings.setValue("global_scale",0.7);
+        }
+    }
     const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
     if (screen_custom_font_dpi) {
         QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);

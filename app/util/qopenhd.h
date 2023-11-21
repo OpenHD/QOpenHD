@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE void sysctl_openhd(int task);
 
     Q_INVOKABLE bool is_valid_ip(QString ip);
+    Q_INVOKABLE bool is_platform_rpi();
     //
     // Tries to mimic android toast as much as possible
     //
