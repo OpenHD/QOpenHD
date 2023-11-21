@@ -76,9 +76,12 @@ Rectangle{
                     ListElement { text: "MANUAL UDP" }
                     ListElement { text: "MANUAL TCP" }
                 }
-                onCurrentIndexChanged: {
+                onActivated: {
                     if(currentIndex==0 || currentIndex==1 || currentIndex==2){
-                        _mavlinkTelemetry.change_telemetry_connection_mode(currentIndex);
+                        if(settings.qopenhd_mavlink_connection_mode!=currentIndex){
+                            _mavlinkTelemetry.change_telemetry_connection_mode(currentIndex);
+                            settings.qopenhd_mavlink_connection_mode=currentIndex;
+                        }
                     }
                 }
                 currentIndex: settings.qopenhd_mavlink_connection_mode
