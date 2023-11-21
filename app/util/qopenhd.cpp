@@ -294,6 +294,15 @@ bool QOpenHD::is_valid_ip(QString ip)
 #endif
 }
 
+bool QOpenHD::is_platform_rpi()
+{
+#ifdef IS_PLATFORM_RPI
+    return true;
+#else
+    return false;
+#endif
+}
+
 
 void QOpenHD::keep_screen_on(bool on)
 {
