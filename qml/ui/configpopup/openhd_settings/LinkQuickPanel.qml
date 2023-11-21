@@ -236,6 +236,7 @@ Rectangle{
                 }
                 ButtonIconInfo2{
                     Layout.alignment: Qt.AlignRight
+                    visible:false
                     onClicked: {
                         var text="Please select a channel / frequency free of noise and interference. The current loss / pollution / throttle stats below can help,"+
                                 "as well as the analyze channels feature or a frequency analyzer on your phone. DEF: Show OpenHD standard channels [1-5] only - they "+
@@ -317,7 +318,7 @@ Rectangle{
                     color: _ohdSystemGround.curr_rx_packet_loss_perc > 5 ? "red" : "black"
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     Layout.preferredHeight: 50
@@ -328,7 +329,7 @@ Rectangle{
                     color: _ohdSystemGround.wb_link_curr_foreign_pps > 20 ? "red" : "black"
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     Layout.preferredHeight: 50
@@ -347,7 +348,7 @@ Rectangle{
                     color: _ohdSystemAir.curr_n_rate_adjustments > 0 ? "red" : "black"
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
+                    font.bold: false
                 }
                 Item{ // FILLER
                     Layout.fillWidth: true
@@ -386,7 +387,7 @@ Rectangle{
                     text: "AIR:\n "+get_text_wifi_tx_power(true)
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
+                    font.bold: false
                 }
                 Button{
                     text: "EDIT"
@@ -402,7 +403,7 @@ Rectangle{
                     text: "GND:\n"+get_text_wifi_tx_power(false)
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
+                    font.bold: false
                 }
                 Button{
                     text: "EDIT"
@@ -434,14 +435,14 @@ Rectangle{
                     text: "AIR:\n"+get_text_stbc_ldpc(true);
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     Layout.preferredWidth: 120
                     text: "GND:\n"+get_text_stbc_ldpc(false);
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
+                    font.bold: false
                 }
                 Button{
                     text: "EDIT";

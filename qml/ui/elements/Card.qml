@@ -93,7 +93,7 @@ Item {
 
     Rectangle{
         anchors.fill: background
-        color: "gray"
+        color: "lightgrey"
         opacity: 0.6
         visible: m_style_error
     }

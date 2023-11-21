@@ -17,12 +17,10 @@ import "../../elements"
 Rectangle{
     //width: parent.width-12
     //height: parent.height*2/3;
-    width: parent.width
-    height: parent.height
+    width: parent.width - 20
+    height: parent.height -20
     anchors.centerIn: parent
-    color: "#ADD8E6"
-    border.color: "black"
-    border.width: 3
+    color: "#333c4c"
 
     function open(){
         visible=true
@@ -42,40 +40,56 @@ Rectangle{
     }
 
     ColumnLayout{
+        id:channelScanLayout
         anchors.fill: parent
         anchors.leftMargin: 10
         anchors.rightMargin: 10
 
-        Item{
-            Layout.fillWidth: true
-            Layout.preferredHeight: 80
-            Text{ // TITLE
-                anchors.fill: parent
-                text: "SCAN (FIND AIR UNIT)";
-                verticalAlignment: Qt.AlignVCenter
-                horizontalAlignment: Qt.AlignHCenter
-                font.bold: true
-            }
-            Button{
-                anchors.right: parent.right
-                anchors.top: parent.top
-                text: "CLOSE"
+        BaseHeaderItem{
+            m_text: "Find Air Unit"
+        }
+
+        Item {
+            id:closeButtonWrapper
+            Layout.alignment: Qt.AlignTop | Qt.AlignRight
+            Layout.rightMargin: closeButton.width-channelScanLayout.anchors.rightMargin
+            Layout.topMargin: (closeButtonWrapper.height-closeButton.height)-1
+
+            Button {
+                id:closeButton
+                text: "X"
+                height:42
+                width:42
+                background: Rectangle {
+                    Layout.fillHeight: parent
+                    Layout.fillWidth: parent
+                    color: closeButton.hovered ? "darkgrey" : "lightgrey"
+                }
                 onClicked: {
-                    if(_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==1){
-                        _qopenhd.show_toast("STILL SCANNING,PLEASE WAIT ...");
+                    if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 1) {
+                        _qopenhd.show_toast("STILL SCANNING, PLEASE WAIT ...");
                         return;
                     }
                     close()
                 }
             }
         }
+
         RowLayout{
-            SimpleProgressBar{
+            id:channelSelectorRow
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            ComboBox {
                 Layout.preferredWidth: 400
                 Layout.minimumWidth: 100
-                Layout.preferredHeight: 40
-                impl_curr_progress_perc: _wbLinkSettingsHelper.scan_progress_perc
-                impl_show_progress_text: true
+                id: comboBoxWhichFrequencyToScan
+                model: model_chann_to_scan
+                textRole: "title"
+                Material.background: {
+                    (comboBoxWhichFrequencyToScan.currentIndex===0) ? "#2b9848" : "#ffae42"
+                }
+                onCurrentIndexChanged: {
+                }
+                enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
             }
             Button{
                 text: "START"
@@ -94,6 +108,7 @@ Rectangle{
                 }
             }
             ButtonIconInfo{
+                visible:false
                 onClicked: {
                     _messageBoxInstance.set_text_and_show("Initiate Channel Scan (Find a running air unit). Similar to analogue TX / RX, this listens on each channel for a short time"+
                                                           " to find a running openhd air unit."+
@@ -102,24 +117,23 @@ Rectangle{
                 }
             }
         }
-        ComboBox {
-            Layout.preferredWidth: 400
-            Layout.minimumWidth: 100
-            id: comboBoxWhichFrequencyToScan
-            model: model_chann_to_scan
-            textRole: "title"
-            Material.background: {
-                (comboBoxWhichFrequencyToScan.currentIndex===0) ? Material.Green : Material.Orange
-            }
-            onCurrentIndexChanged: {
-            }
-            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-        }
+
+        SimpleProgressBar{
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                        Layout.preferredWidth: channelSelectorRow.width
+                        Layout.minimumWidth: 100
+                        Layout.preferredHeight: 40
+                        impl_curr_progress_perc: _wbLinkSettingsHelper.scan_progress_perc
+                        impl_show_progress_text: true
+                    }
         Text{
+            visible: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode!=0
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.row: 3
             Layout.column: 0
             text: _wbLinkSettingsHelper.scanning_text_for_ui
-            font.pixelSize: 25
+            font.pixelSize: 21
+            color: "#fff"
         }
         Item{ // Filler
             Layout.row: 4

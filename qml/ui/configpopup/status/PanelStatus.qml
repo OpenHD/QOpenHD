@@ -15,7 +15,7 @@ Rectangle {
     width: parent.width
     height: parent.height
 
-    color: "#eaeaea"
+    color: "#fff"
 
     function voltage_as_string(voltage_mv){
         if(voltage_mv===0)return "N/A";

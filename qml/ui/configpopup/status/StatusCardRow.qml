@@ -111,6 +111,14 @@ Item {
             anchors.left: left_part.right
             anchors.top: left_part.top
             text: m_right_text
+            background: Rectangle {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 5
+                        anchors.left: parent.left
+                        anchors.leftMargin: 5
+                        opacity: .3
+                        color: right_part_button.hovered ? "lightgrey" : "transparent" // Only look shit when hovered
+                    }
             //Material.accent: Material.Red
             //highlighted: true
             visible: m_has_error && m_look_shit_on_error
