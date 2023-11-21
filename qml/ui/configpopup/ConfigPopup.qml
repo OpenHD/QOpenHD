@@ -207,6 +207,7 @@ Rectangle {
                 // On localhost, QOpenHD "automatically" connects due to udp localhost method
                 ConfigPopupSidebarButton{
                     id:  connect_button
+                    visible: !_ohdSystemAir.is_alive && !_ohdSystemGround.is_alive
                     m_icon_text: "\uf6ff"
                     m_description_text: "Connect"
                     m_selection_index: 5

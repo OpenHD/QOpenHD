@@ -17,11 +17,7 @@ Rectangle {
     color: "#eaeaea"
 
     RowLayout {
-        anchors.topMargin: 24
-        anchors.left: parent.left
-        anchors.leftMargin: 20
-        spacing: 6
-        height: 300
+        anchors.centerIn: parent
 
         ColumnLayout {
             spacing: 6
@@ -53,6 +49,7 @@ Rectangle {
             }
 
             Card {
+                visible: false
                 id: thomas
                 height: 224
                 width: 150
@@ -167,6 +164,7 @@ Rectangle {
 
             Card {
                 id: you
+                visible: false
                 height: 224
                 width: 150
                 cardName: qsTr("")
