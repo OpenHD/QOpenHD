@@ -87,7 +87,7 @@ fi
 VERSION="2.5.3-$(date '+%Y%m%d%H%M')-${VER2}"
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
-if [[ "${PACKAGE_ARCH}" = "armhf" ]] || [[ "${PACKAGE_ARCH}" = "x86_64" ]]; then
+if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_VERSION_ARCH.deb \
     --after-install after-install.sh \
@@ -109,6 +109,11 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
 
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588 -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_rk3588_VERSION_ARCH.deb \
+    --after-install after-install.sh \
+    ${PLATFORM_PACKAGES} || exit 1
+else
+    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
+    -p qopenhd_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 fi
