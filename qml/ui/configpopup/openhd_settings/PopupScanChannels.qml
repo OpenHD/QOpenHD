@@ -43,7 +43,7 @@ Rectangle{
         id:channelScanLayout
         anchors.fill: parent
         anchors.leftMargin: 10
-        anchors.rightMargin: 10
+        anchors.rightMargin: 5
 
         BaseHeaderItem{
             m_text: "Find Air Unit"

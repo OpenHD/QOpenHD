@@ -18,14 +18,11 @@ import QtCharts 2.0
 
 Rectangle{
     id: main_background
-    //width: parent.width-12
-    //height: parent.height*2/3;
-    width: parent.width
-    height: parent.height
+    width: parent.width - 20
+    height: parent.height -20
     anchors.centerIn: parent
-    color: "#ADD8E6"
-    border.color: "black"
-    border.width: 3
+    color: "#333c4c"
+
 
     property bool m_normalize_data: false;
     property int m_chart_view_minimum_width: 1280;
@@ -53,8 +50,8 @@ Rectangle{
     }
 
     property string m_info_string: "Analyze channels for pollution by wifi access points.\n"+
-"NOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended !\n"+
-"In short: Any frequency with red bars (small or big) should not be used, unless there are no options / other reasons to do so."
+                                   "NOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended !\n"+
+                                   "In short: Any frequency with red bars (small or big) should not be used, unless there are no options / other reasons to do so."
 
     ColumnLayout{
         id: main_layout
@@ -62,39 +59,50 @@ Rectangle{
         anchors.leftMargin: 10
         anchors.rightMargin: 10
 
-        Item{
-            Layout.fillWidth: true
-            Layout.preferredHeight: 60
-            Text{ // TITLE
-                anchors.fill: parent
-                text: "ANALYZE (POLLUTION)";
-                verticalAlignment: Qt.AlignVCenter
-                horizontalAlignment: Qt.AlignHCenter
-                font.bold: true
-            }
-            Button{
-                anchors.right: parent.right
-                anchors.top: parent.top
-                text: "CLOSE"
+        BaseHeaderItem{
+            m_text: "Scan for clean Channels"
+        }
+
+        Item {
+            id:closeButtonWrapper
+            Layout.alignment: Qt.AlignTop | Qt.AlignRight
+            Layout.rightMargin: closeButton.width-main_layout.anchors.rightMargin
+            Layout.topMargin: closeButtonWrapper.height-closeButton.height-1
+
+            Button {
+                id:closeButton
+                text: "X"
+                height:42
+                width:42
+                background: Rectangle {
+                    Layout.fillHeight: parent
+                    Layout.fillWidth: parent
+                    color: closeButton.hovered ? "darkgrey" : "lightgrey"
+                }
                 onClicked: {
-                    if(_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==2){
-                        _qopenhd.show_toast("STILL ANALYZING, PLEASE WAIT ...",);
+                    if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 1) {
+                        _qopenhd.show_toast("STILL ANALYZING, PLEASE WAIT ...");
                         return;
                     }
                     close()
                 }
             }
         }
+
         RowLayout{
-            SimpleProgressBar{
-                Layout.preferredWidth: 400
-                Layout.minimumWidth: 100
-                Layout.preferredHeight: 40
-                impl_curr_progress_perc: _wbLinkSettingsHelper.analyze_progress_perc
-                impl_show_progress_text: true
-            }
-            Button{
+            visible:false
+            Layout.alignment: Qt.AlignTop | Qt.AlignRight
+            ButtonIconInfo{
                 Layout.alignment: Qt.AlignLeft
+                onClicked: {
+                    _messageBoxInstance.set_text_and_show(m_info_string)
+                }
+            }
+        }
+        RowLayout{
+            Layout.alignment: Qt.AlignHCenter
+            Button{
+                id:startButton
                 text: "START"
                 onClicked: {
                     var result=_wbLinkSettingsHelper.start_analyze_channels()
@@ -105,27 +113,6 @@ Rectangle{
                     }
                 }
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-            }
-            ButtonIconInfo{
-                Layout.alignment: Qt.AlignLeft
-                onClicked: {
-                    _messageBoxInstance.set_text_and_show(m_info_string)
-                }
-            }
-        }
-        RowLayout{
-            Text{
-                Layout.preferredWidth: 200
-                Layout.minimumWidth: 100
-                Layout.preferredHeight: 40
-                text: {
-                    if(_wbLinkSettingsHelper.current_analyze_frequency<=0){
-                        return "";
-                    }
-                    return "Analyzed "+_wbLinkSettingsHelper.current_analyze_frequency+" Mhz ...";
-                }
-                verticalAlignment: Qt.AlignVCenter
-                horizontalAlignment: Qt.AlignHCenter
             }
             ComboBox {
                 Layout.preferredWidth: 150
@@ -138,12 +125,40 @@ Rectangle{
                 }
             }
             Switch{
-                text: "NORMALIZE"
+                id:normalize
                 checked: m_normalize_data
                 onCheckedChanged: {
                     m_normalize_data=checked
                     pollution_chart.update_pollution_graph();
                 }
+            }
+            Text{
+                text: "Normalize"
+                color: "#fff"
+                font.pixelSize: 18
+                verticalAlignment: Qt.AlignVCenter
+                Layout.leftMargin: -10
+            }
+        }
+        SimpleProgressBar{
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.preferredWidth: 400
+            Layout.minimumWidth: 100
+            Layout.preferredHeight: 40
+            impl_curr_progress_perc: _wbLinkSettingsHelper.analyze_progress_perc
+            impl_show_progress_text: true
+        }
+        Text{
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.preferredWidth: 200
+            Layout.minimumWidth: 100
+            Layout.preferredHeight: 25
+            color: "#fff"
+            text: {
+                if(_wbLinkSettingsHelper.current_analyze_frequency<=0){
+                    return "";
+                }
+                return "Analyzed "+_wbLinkSettingsHelper.current_analyze_frequency+" Mhz ...";
             }
         }
         ScrollView{
@@ -152,13 +167,13 @@ Rectangle{
             Layout.fillHeight: true
             contentWidth: pollution_chart.width
             ScrollBar.horizontal.interactive: true
+            clip: true
 
             ChartView {
                 id: pollution_chart
-                title: "WiFi pollution estimate"
                 //width: main_background.width>m_chart_view_minimum_width ? main_background.width : m_chart_view_minimum_width;
                 width: {
-                    const screen_width = main_layout.width;
+                    const screen_width = main_background.width-10;
                     if(comboBoxFilter.currentIndex==0){
                         return screen_width>m_chart_view_minimum_width ? screen_width : m_chart_view_minimum_width;
                     }
