@@ -80,7 +80,7 @@ Rectangle{
                     color: closeButton.hovered ? "darkgrey" : "lightgrey"
                 }
                 onClicked: {
-                    if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 1) {
+                    if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 2) {
                         _qopenhd.show_toast("STILL ANALYZING, PLEASE WAIT ...");
                         return;
                     }
@@ -90,7 +90,7 @@ Rectangle{
         }
 
         RowLayout{
-            visible:false
+            visible:true
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
             ButtonIconInfo{
                 Layout.alignment: Qt.AlignLeft
