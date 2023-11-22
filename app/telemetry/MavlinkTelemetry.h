@@ -35,6 +35,8 @@ public:
     MavlinkTelemetry(QObject *parent = nullptr);
     ~MavlinkTelemetry();
     static MavlinkTelemetry& instance();
+    // start / terminate needs a bit of care due to singleton usage,
+    // not clean, but works
     void start();
     void terminate();
     /**
