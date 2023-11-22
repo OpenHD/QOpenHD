@@ -35,7 +35,10 @@ public:
     MavlinkTelemetry(QObject *parent = nullptr);
     ~MavlinkTelemetry();
     static MavlinkTelemetry& instance();
+    // start / terminate needs a bit of care due to singleton usage,
+    // not clean, but works
     void start();
+    void terminate();
     /**
      * Send a message to the OHD ground unit. If no connection has been established (yet), this should return immediately.
      * The message can be aimed at either the OHD ground unit, the OHD air unit (forwarded by OpenHD) or the FC connected to the

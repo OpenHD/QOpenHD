@@ -100,6 +100,7 @@ void AVCodecDecoder::terminate()
         // Wait for everything to cleanup and stop
         decode_thread->join();
     }
+    qDebug()<<"Decoding terminated";
 }
 
 void AVCodecDecoder::timer_check_settings_changed_callback()
@@ -158,7 +159,8 @@ void AVCodecDecoder::constant_decode()
             }
         }
         qDebug()<<"Decode stopped,restarting";
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // wait a bit before starting again, to save CPU
+        if(!m_should_terminate)std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 

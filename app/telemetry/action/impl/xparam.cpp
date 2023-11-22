@@ -17,9 +17,16 @@ XParam::XParam()
 
 XParam::~XParam()
 {
-    m_timeout_thread_run=false;
-    m_timeout_thread->join();
-    m_timeout_thread=nullptr;
+    terminate();
+}
+
+void XParam::terminate()
+{
+    if(m_timeout_thread){
+        m_timeout_thread_run=false;
+        m_timeout_thread->join();
+        m_timeout_thread=nullptr;
+    }
 }
 
 XParam &XParam::instance()
@@ -400,7 +407,7 @@ void XParam::update_progress_get_all(const RunningParamCmdGetAll &cmd)
 
 void XParam::loop_timeout()
 {
-    while(true){
+    while(m_timeout_thread_run){
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         check_timeout_param_get_all();
         check_timeout_param_set();

@@ -16,6 +16,7 @@ class XParam
 public:
     explicit XParam();
     ~XParam();
+    void terminate();
     static XParam& instance();
     /**
      * returns true if this message has been consumed, false otherwise.
