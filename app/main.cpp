@@ -395,11 +395,10 @@ int main(int argc, char *argv[]) {
     MavlinkTelemetry::instance().start();
 
     QRenderStats::instance().register_to_root_window(engine);
-
     LogMessagesModel::instanceGround().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
-
+    // Terminating needs a bit of special care due to the singleton usage and threads
+    qDebug()<<"Terminating";
+    MavlinkTelemetry::instance().terminate();
     return retval;
-
-
 }

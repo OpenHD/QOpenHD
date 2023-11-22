@@ -18,6 +18,7 @@ class CmdSender
 public:
     CmdSender();
     ~CmdSender();
+    void terminate();
     static CmdSender& instance();
     /**
      * returns true if this message has been consumed, false otherwise.

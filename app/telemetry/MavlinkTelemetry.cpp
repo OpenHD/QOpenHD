@@ -38,13 +38,27 @@ void MavlinkTelemetry::start()
     m_heartbeat_thread=std::make_unique<std::thread>(&MavlinkTelemetry::send_heartbeat_loop,this);
 }
 
-MavlinkTelemetry::~MavlinkTelemetry()
+void MavlinkTelemetry::terminate()
 {
+    // first stop any incoming telemetry
     if(m_heartbeat_thread){
         m_heartbeat_thread_run=false;
         m_heartbeat_thread->join();
         m_heartbeat_thread=nullptr;
     }
+    m_udp_connection=nullptr;
+    m_tcp_connection=nullptr;
+    // Cleanup those 2 threads
+    CmdSender::instance().terminate();
+    XParam::instance().terminate();
+    qDebug()<<"MavlinkTelemetry::stopped";
+}
+
+MavlinkTelemetry::~MavlinkTelemetry()
+{
+    qDebug()<<"MavlinkTelemetry::~() begin";
+    terminate();
+    qDebug()<<"MavlinkTelemetry::~() end";
 }
 
 MavlinkTelemetry &MavlinkTelemetry::instance()
