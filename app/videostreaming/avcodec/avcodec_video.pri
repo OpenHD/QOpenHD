@@ -32,6 +32,9 @@ CONFIG += link_pkgconfig
 packagesExist(mmal) {
    DEFINES += IS_PLATFORM_RPI
 }
+packagesExist(mali) {
+   DEFINES += IS_PLATFORM_ROCK
+}
 
 # can be used in c++, also set to be exposed in qml
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
