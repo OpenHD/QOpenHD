@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include<iostream>
+#include <sys/stat.h>
 #include<fstream>
 #include<string>
 
@@ -305,11 +306,16 @@ bool QOpenHD::is_platform_rpi()
 
 bool QOpenHD::is_platform_rock()
 {
-#ifdef IS_PLATFORM_Rock
-    return true;
-#else
-    return false;
-#endif
+const char* rockPlatformPath = "/usr/local/share/openhd/platform/rock/";
+    struct stat info;
+    if (stat(rockPlatformPath, &info) != 0) {
+        return false;
+    }
+    if (info.st_mode & S_IFDIR) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void QOpenHD::keep_screen_on(bool on)
