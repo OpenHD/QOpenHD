@@ -17,7 +17,7 @@ function install_x86_packages {
 PLATFORM_PACKAGES="qml-module-qt-labs-platform"
 }
 function install_rock_packages {
-PLATFORM_PACKAGES="qml-module-qt-labs-platform"
+PLATFORM_PACKAGES="gst-latest qml-module-qt-labs-platform"
 }
 
  # Add OpenHD Repository platform-specific packages
