@@ -212,7 +212,16 @@ int main(int argc, char *argv[]) {
             settings.setValue("global_scale",0.7);
         }
     }
-    
+    if(QOpenHD::instance().is_platform_rock()){
+        if(!settings.value("dev_rpi_use_external_omx_decode_service",true).toBool()){
+            qDebug()<<"Disabling RPI decode!";
+            settings.setValue("dev_rpi_use_external_omx_decode_service",false);
+        }
+        if(!settings.value("dev_always_use_generic_external_decode_service",false).toBool()){
+            qDebug()<<"Enable rockchip HW decoding!";
+            settings.setValue("dev_always_use_generic_external_decode_service",true);
+        }
+    }
 
     const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
     if (screen_custom_font_dpi) {
