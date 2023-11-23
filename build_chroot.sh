@@ -5,6 +5,7 @@
 sudo apt install -y python3-pip git
 sudo pip3 install --upgrade cloudsmith-cli
 bash install_build_dep.sh rock5
+mkdir -p /usr/local/share/openhd/platform/rock/
 sudo ./package.sh arm64 debian bullseye-rock5 || exit 1
 mkdir -p /opt/out/
 cp -v *.dep /opt/out/
