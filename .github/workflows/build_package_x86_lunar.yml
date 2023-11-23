@@ -35,7 +35,7 @@ jobs:
 
       - name: clone QOpenHD
         run: |
-          git clone https://github.com/OpenHD/QOpenHD --recursive
+          git clone -b ${{ github.ref_name }} https://github.com/OpenHD/QOpenHD --recursive
 
       - name: Install Dependencies
         run: |
