@@ -32,13 +32,13 @@ CONFIG += link_pkgconfig
 packagesExist(mmal) {
    DEFINES += IS_PLATFORM_RPI
 }
-# Check if mali package exists
-message(Mali package exists: $$packagesExist(mali))
 
-# If the mali package exists, define IS_PLATFORM_ROCK
-packagesExist(mali) {
-   DEFINES += IS_PLATFORM_ROCK
-   message(IS_PLATFORM_ROCK defined because mali package exists)
+exists(/usr/local/share/openhd/platform/rock/) {
+    message(This is a Rock)
+    DEFINES += IS_PLATFORM_ROCK
+} else {
+    message(This is not a Rock)
 }
+
 # can be used in c++, also set to be exposed in qml
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
