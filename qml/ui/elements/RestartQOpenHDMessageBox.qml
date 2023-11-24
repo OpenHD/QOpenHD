@@ -28,6 +28,7 @@ Card {
             height:parent.height
             leftPadding: 12
             rightPadding: 12
+            font.pixelSize: 14
             wrapMode: Text.WordWrap
         }
     }

@@ -390,7 +390,7 @@ int main(int argc, char *argv[]) {
     QtAndroid::hideSplashScreen();
 #endif
 
-    qDebug() << "Running QML";
+    qDebug() << "QML loaded";
     // Now we start mavlink for the first time
     MavlinkTelemetry::instance().start();
 

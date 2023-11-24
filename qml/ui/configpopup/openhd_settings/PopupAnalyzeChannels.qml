@@ -14,7 +14,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-import QtCharts 2.0
+import QtCharts 2.15
 
 Rectangle{
     id: main_background
@@ -216,14 +216,6 @@ Rectangle{
                     }
                 }
             }
-            /*Button{
-                anchors.top: pollution_chart.top
-                anchors.left: pollution_chart.left
-                text: "ENLARGE"
-                onClicked: {
-                    m_chart_enlarged = !m_chart_enlarged;
-                }
-            }*/
         }
         // Filler
         //Item{
