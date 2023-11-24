@@ -165,7 +165,7 @@ Rectangle{
             id: chart_scroll_view
             Layout.fillWidth: true
             Layout.fillHeight: true
-            //contentWidth: pollution_chart.width
+            contentWidth: pollution_chart.width
             ScrollBar.horizontal.interactive: true
             clip: true
 
