@@ -14,7 +14,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-//import QtCharts 2.0
+import QtCharts 2.15
 
 Rectangle{
     id: main_background
@@ -121,7 +121,7 @@ Rectangle{
                 model: model_filter
                 textRole: "title"
                 onCurrentIndexChanged: {
-                    //pollution_chart.update_pollution_graph();
+                    pollution_chart.update_pollution_graph();
                 }
             }
             Switch{
@@ -129,7 +129,7 @@ Rectangle{
                 checked: m_normalize_data
                 onCheckedChanged: {
                     m_normalize_data=checked
-                    //pollution_chart.update_pollution_graph();
+                    pollution_chart.update_pollution_graph();
                 }
             }
             Text{
@@ -169,7 +169,7 @@ Rectangle{
             ScrollBar.horizontal.interactive: true
             clip: true
 
-            /*ChartView {
+            ChartView {
                 id: pollution_chart
                 //width: main_background.width>m_chart_view_minimum_width ? main_background.width : m_chart_view_minimum_width;
                 width: {
@@ -215,7 +215,7 @@ Rectangle{
                         color: "red"
                     }
                 }
-            }*/
+            }
         }
         // Filler
         //Item{
