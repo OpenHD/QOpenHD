@@ -265,7 +265,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                        );
         }
         append_int(ret,"VIDEO_CODEC",
-                   ImprovedIntSetting::createEnum( std::vector<std::string>{"h264","h265","mjpeg"}),
+                   //NOTE: MJPEG has been removed intentionally, since we are going to eventually remove support for it in
+                   //favour of h264
+                   // ,"mjpeg"
+                   ImprovedIntSetting::createEnum( std::vector<std::string>{"h264","h265"}),
                    "Video codec. If your camera/ground station does not support HW accelerated encoding/decoding of the selected codec,it'l default to SW encode/decode. "
                    "A reboot (air&ground) is recommended after changing this parameter."
                    );
