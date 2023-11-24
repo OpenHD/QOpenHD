@@ -14,8 +14,6 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-import QtCharts 2.0
-
 // This is an extra screen for changing the frequency / channel width -
 // They both need to match !
 Rectangle{

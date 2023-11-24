@@ -78,19 +78,6 @@ Rectangle{
         RowLayout{
             id:channelSelectorRow
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            ComboBox {
-                Layout.preferredWidth: 400
-                Layout.minimumWidth: 100
-                id: comboBoxWhichFrequencyToScan
-                model: model_chann_to_scan
-                textRole: "title"
-                Material.background: {
-                    (comboBoxWhichFrequencyToScan.currentIndex===0) ? "#2b9848" : "#ffae42"
-                }
-                onCurrentIndexChanged: {
-                }
-                enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-            }
             Button{
                 text: "START"
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
@@ -106,6 +93,20 @@ Rectangle{
                         _qopenhd.show_toast("Busy,please try again later",true)
                     }
                 }
+            }
+
+            ComboBox {
+                Layout.preferredWidth: 400
+                Layout.minimumWidth: 100
+                id: comboBoxWhichFrequencyToScan
+                model: model_chann_to_scan
+                textRole: "title"
+                Material.background: {
+                    (comboBoxWhichFrequencyToScan.currentIndex===0) ? "#2b9848" : "#ffae42"
+                }
+                onCurrentIndexChanged: {
+                }
+                enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
             }
             ButtonIconInfo{
                 visible:false

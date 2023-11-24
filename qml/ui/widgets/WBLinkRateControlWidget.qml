@@ -276,6 +276,27 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     onCheckedChanged: settings.wb_link_rate_control_widget_show_fec_and_keyframe = checked
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show throttle warning")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wb_link_rate_control_widget_show_throttle_warning
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show_throttle_warning = checked
+                }
+            }
 
 
             Item {
@@ -433,20 +454,17 @@ Make the video more stable (less microfreezes) on the cost of less image quality
         anchors.fill: parent
         scale: bw_current_scale
 
-        Item {
-            anchors.fill: parent
-            anchors.centerIn: parent
+        Column {
+            anchors.top: widgetInner.top
+            width: parent.width
 
             Text {
                 id: channelText
                 y: 0
                 width: parent.width
-                height: parent.height / 3
                 color: settings.color_text
                 text: get_text_channel()
-                anchors.top: parent.top
-                anchors.bottomMargin: 0
-                verticalAlignment: Text.AlignBottom
+                verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 14
                 font.family: settings.font_text
@@ -454,7 +472,6 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 styleColor: settings.color_glow
                 visible: settings.wb_link_rate_control_widget_show_frequency
             }
-
             Text {
                 id: mcsText
                 y: 0
@@ -462,9 +479,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 height: 14
                 color: settings.color_text
                 text: get_text_bitrate()
-                anchors.top: channelText.bottom
-                anchors.bottomMargin: 0
-                verticalAlignment: Text.AlignBottom
+                verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 14
                 font.family: settings.font_text
@@ -473,22 +488,37 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 visible: settings.wb_link_rate_control_widget_show_bitrate
             }
             Text {
+                id: fec_keyfra
                 y: 0
                 width: parent.width
                 height: 14
                 color: settings.color_text
                 text: get_text_fec_keyframe()
-                //anchors.bottom: parent.bottom
-                //anchors.bottomMargin: 0
-                anchors.left: parent.left
-                anchors.top: mcsText.bottom
-                verticalAlignment: Text.AlignBottom
+                verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 14
                 font.family: settings.font_text
                 style: Text.Outline
                 styleColor: settings.color_glow
                 visible: settings.wb_link_rate_control_widget_show_fec_and_keyframe
+            }
+            Text{
+                width: parent.width
+                height: 14
+                color: settings.color_warn
+                font.pixelSize: 14
+                font.family: settings.font_text
+                style: Text.Outline
+                styleColor: settings.color_glow
+                visible: settings.wb_link_rate_control_widget_show_throttle_warning
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                text: {
+                    if(_ohdSystemAir.is_alive && _ohdSystemAir.curr_n_rate_adjustments>0){
+                        return "THROTTLED";
+                    }
+                    return "";
+                }
             }
 
         }

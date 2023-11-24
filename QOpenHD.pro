@@ -71,6 +71,7 @@ LinuxBuild {
 QT +=core quick qml gui \
     widgets
 QT += opengl
+QT += charts
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app

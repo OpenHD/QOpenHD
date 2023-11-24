@@ -390,16 +390,15 @@ int main(int argc, char *argv[]) {
     QtAndroid::hideSplashScreen();
 #endif
 
-    qDebug() << "Running QML";
+    qDebug() << "QML loaded";
     // Now we start mavlink for the first time
     MavlinkTelemetry::instance().start();
 
     QRenderStats::instance().register_to_root_window(engine);
-
     LogMessagesModel::instanceGround().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
-
+    // Terminating needs a bit of special care due to the singleton usage and threads
+    qDebug()<<"Terminating";
+    MavlinkTelemetry::instance().terminate();
     return retval;
-
-
 }
