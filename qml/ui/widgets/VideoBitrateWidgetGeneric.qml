@@ -32,6 +32,7 @@ BaseWidget {
     widgetActionHeight: 420
 
     property var m_camera_stream_model: m_is_for_primary_camera ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
+    property bool m_show_button_quick_switch: false
 
     // param - so therefore might not be always synchronized
     property string m_curr_video_format:  m_is_for_primary_camera ? _cameraStreamModelPrimary.curr_set_video_format : _cameraStreamModelSecondary.curr_set_video_format
@@ -345,7 +346,7 @@ BaseWidget {
             Item {
                 width: parent.width
                 height: 32
-                visible: !m_is_for_primary_camera
+                visible: m_show_button_quick_switch
                 Button{
                     text: "Switch primary & secondary"
                     onClicked: settings.qopenhd_switch_primary_secondary = !settings.qopenhd_switch_primary_secondary
