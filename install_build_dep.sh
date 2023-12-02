@@ -23,6 +23,7 @@ PLATFORM_PACKAGES="qml-module-qt-labs-platform"
  # Add OpenHD Repository platform-specific packages
  apt install -y curl
  curl -1sLf 'https://dl.cloudsmith.io/public/openhd/release/setup.deb.sh'| sudo -E bash
+ curl -1sLf 'https://dl.cloudsmith.io/public/openhd/dev-release/setup.deb.sh'| sudo -E bash
  apt update
 
 # Main function

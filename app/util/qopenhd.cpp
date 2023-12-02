@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include<iostream>
+#include <sys/stat.h>
 #include<fstream>
 #include<string>
 
@@ -303,6 +304,14 @@ bool QOpenHD::is_platform_rpi()
 #endif
 }
 
+bool QOpenHD::is_platform_rock()
+{
+#ifdef IS_PLATFORM_ROCK
+    return true;
+#else
+    return false;
+#endif
+}
 
 void QOpenHD::keep_screen_on(bool on)
 {
