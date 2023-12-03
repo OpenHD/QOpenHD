@@ -128,7 +128,7 @@ ScrollView {
                     anchors.horizontalCenter: parent.horizonatalCenter
                     width: 320
                     model: ListModel {
-                        id: font_dpi
+                        ListElement { text: qsTr("-1 Disable") ; value: -1 }
                         ListElement { text: qsTr("0 Auto (Recommended)") ; value: 0 }
                         ListElement { text: qsTr("50 (ultra small)") ; value: 50 }
                         ListElement { text: qsTr("72 (smaller)") ; value: 72 }
@@ -145,12 +145,14 @@ ScrollView {
                             }
                         }
                     }
-                    onCurrentIndexChanged: {
-                        const value_fdpi = font_dpi.get(currentIndex).value
+                    onActivated:{
+                        const value_fdpi = model.get(currentIndex).value
                         if(settings.screen_custom_font_dpi != value_fdpi){
+                            console.log("font dpi changed from :"+settings.screen_custom_font_dpi+" to:"+value_fdpi);
                             _restartqopenhdmessagebox.show();
+                            settings.screen_custom_font_dpi = value_fdpi
                         }
-                        settings.screen_custom_font_dpi = value_fdpi
+
                     }
                 }
             }
