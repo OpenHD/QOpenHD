@@ -89,6 +89,6 @@ qmake ..
 
 ## Contributing
 
-**Thanks to all the people who have contributed!**
+**Thanks to all the people who have contributed !**
 
 ![Contributors](https://fra1.digitaloceanspaces.com/openhd-images/uploads/QOpenHD.svg)
