@@ -115,6 +115,20 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     -p qopenhd_rk3588_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
+    #Rock5aPackage
+
+    rm /tmp/qopenhd/etc/systemd/system/qopenhd.service
+    rm /tmp/qopenhd/etc/systemd/system/h264_decode.service
+    rm /tmp/qopenhd/etc/systemd/system/h265_decode.service
+
+    cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
+    cp systemd/rock5_h264a_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service
+    cp systemd/rock5_h265a_decode.service /tmp/qopenhd/etc/systemd/system/h265_decode.service
+
+    fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588a -v ${VERSION} -C ${TMPDIR} \
+    -p qopenhd_rk3588_VERSION_ARCH.deb \
+    --after-install after-install.sh \
+    ${PLATFORM_PACKAGES} || exit 1
 else
     echo "everything else"
 
