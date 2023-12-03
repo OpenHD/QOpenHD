@@ -128,7 +128,6 @@ Rectangle{
                         impl_show_progress_text: true
                     }
         Text{
-            visible: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode!=0
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.row: 3
             Layout.column: 0

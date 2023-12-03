@@ -46,7 +46,7 @@ public:
     // Dirty, incremented to signal to the UI that it should rebuild the model(s)
     L_RO_PROP(int,ui_rebuild_models,set_ui_rebuild_models,0)
     // Scanning
-    L_RO_PROP(QString,scanning_text_for_ui,set_scanning_text_for_ui,"NONE");
+    L_RO_PROP(QString,scanning_text_for_ui,set_scanning_text_for_ui,"");
     L_RO_PROP(int,scan_progress_perc,set_scan_progress_perc,0)
     // Analyzing
     L_RO_PROP(int,analyze_progress_perc,set_analyze_progress_perc,0)
