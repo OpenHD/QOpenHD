@@ -62,6 +62,7 @@ Rectangle{
                 color: m_is_air_or_ground_connected ? "red" : "black"
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
+                font.pixelSize: settings.qopenhd_general_font_pixel_size
             }
             ComboBox {
                 Layout.fillWidth: false
@@ -93,6 +94,7 @@ Rectangle{
                 text: _mavlinkTelemetry.telemetry_connection_status
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
+                font.pixelSize: settings.qopenhd_general_font_pixel_size
             }
 
             // Visible when auto mode is enabled ------------------------------------------------------------------------------------------
@@ -218,6 +220,7 @@ Rectangle{
                 Text{
                     Layout.alignment: Qt.AlignCenter
                     text: "Listening on localhost:5600"
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Item{ // filler
                     Layout.fillWidth: true
@@ -253,6 +256,7 @@ Rectangle{
                     Layout.alignment: Qt.AlignCenter
                     Layout.columnSpan: 2
                     text: "TCP PORT: 5760"
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
             }
         }

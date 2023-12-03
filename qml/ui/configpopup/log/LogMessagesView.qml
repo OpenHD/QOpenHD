@@ -62,6 +62,7 @@ Rectangle{
                     verticalAlignment: Text.AlignVCenter
                     height: parent.height
                     opacity: 1.0
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Text {
                     text: model.message
@@ -69,6 +70,7 @@ Rectangle{
                     verticalAlignment: Text.AlignVCenter
                     height: parent.height
                     opacity: 1.0
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
             }
         }
