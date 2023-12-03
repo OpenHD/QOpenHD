@@ -126,7 +126,7 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     cp systemd/rock5_h265a_decode.service /tmp/qopenhd/etc/systemd/system/h265_decode.service
 
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588a -v ${VERSION} -C ${TMPDIR} \
-    -p qopenhd_rk3588_VERSION_ARCH.deb \
+    -p qopenhd_rk3588a_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 else
