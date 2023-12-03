@@ -204,12 +204,15 @@ int main(int argc, char *argv[]) {
     
     QSettings settings;
     qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
-    // RPI only - set a smaller default screen scale, for whatever reason thats needed
-    if(QOpenHD::instance().is_platform_rpi() || QOpenHD::instance().is_platform_rock()){
-        if(!settings.value("qopenhd_custom_default_screen_has_been_set",false).toBool()){
-            qDebug()<<"Setting initial rpi screen scale";
-            settings.setValue("qopenhd_custom_default_screen_has_been_set",true);
-            settings.setValue("global_scale",0.7);
+    // RPI and ROCK - disable font dpi. The user has to scale manually when using displays
+    // (Bigger than) 640x480 according to its preferences. On rpi, auto scale is just bugged,
+    // nothing more to say.
+    if(QOpenHD::instance().is_platform_rpi() || QOpenHD::instance().is_platform_rock() || true){
+        static constexpr auto TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET="qopenhd_initial_font_dpi_has_been_set";
+        if(!settings.value(TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET,false).toBool()){
+            qDebug()<<"RPI/ROCK: Disable font dpi by default";
+            settings.setValue(TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET,true);
+            settings.setValue("screen_custom_font_dpi",-1);
         }
     }
     if(QOpenHD::instance().is_platform_rock()){
@@ -222,21 +225,24 @@ int main(int argc, char *argv[]) {
             settings.setValue("dev_always_use_generic_external_decode_service",true);
         }
     }
-
     const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
-    if (screen_custom_font_dpi) {
+    if(screen_custom_font_dpi<0){
+        // Disabled
+        QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+    }else if(screen_custom_font_dpi==0){
+        // Enabled (whatever qt thinks it wanna do on auto). Works on android, on other devices, meh
+         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    }else{
+        // Custom font dpi set by the user
         QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
         const std::string font_dpi_s = std::to_string(screen_custom_font_dpi);
         qputenv("QT_FONT_DPI", QByteArray(font_dpi_s.c_str(), font_dpi_s.length()));
-    } else {
-        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     //QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
     const double global_scale = settings.value("global_scale", 1.0).toDouble();
     const std::string global_scale_s = std::to_string(global_scale);
-    QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
-    qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
+    qputenv("QT_SCALE_FACTOR", QByteArray(global_scale_s.c_str(), global_scale_s.length()));
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");

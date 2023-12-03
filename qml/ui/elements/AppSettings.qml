@@ -10,6 +10,12 @@ Settings {
     // Set a custom font dpi instead of QT high dpi auto scaling.
     // Requires restart to be applied
     property int screen_custom_font_dpi: 0
+    // Consti10: Since we rely on font.pixel size in the HUD anyways, in general,
+    // small to medium sized text should use this pixel size. Please dont't touch for now,
+    // in general, if you increase this value, text(fields) with hard coded width / height values
+    // will not handle this value properly ! If you increase this one, you (might) have to touch
+    // 100s of code places, too
+    property int qopenhd_general_font_pixel_size: 14
 
     // Dirty, rotate everything even though that can create issues
     property int general_screen_rotation: 0

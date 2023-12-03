@@ -318,6 +318,7 @@ Rectangle{
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: false
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Text{
                     Layout.preferredHeight: 50
@@ -329,6 +330,7 @@ Rectangle{
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: false
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Text{
                     Layout.preferredHeight: 50
@@ -348,6 +350,7 @@ Rectangle{
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: false
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Item{ // FILLER
                     Layout.fillWidth: true
@@ -387,6 +390,7 @@ Rectangle{
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: false
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Button{
                     text: "EDIT"
@@ -403,6 +407,7 @@ Rectangle{
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: false
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Button{
                     text: "EDIT"
@@ -435,6 +440,7 @@ Rectangle{
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: false
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Text{
                     Layout.preferredWidth: 120
@@ -442,6 +448,7 @@ Rectangle{
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: false
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Button{
                     text: "EDIT";
