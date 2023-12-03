@@ -16,8 +16,9 @@ git describe --exact-match HEAD >/dev/null 2>&1
 echo "Pushing the package to OpenHD dev-release repository"
 ls -a
 API_KEY=$(cat cloudsmith_api_key.txt)
-cloudsmith push deb --api-key "$API_KEY" openhd/release/debian/bullseye qopenhd_rk3588*.deb || exit 1
 cloudsmith push deb --api-key "$API_KEY" openhd/release/debian/bullseye qopenhd_rk3566*.deb || exit 1
 cloudsmith push deb --api-key "$API_KEY" openhd/release/debian/bullseye qopenhd_rk3588a*.deb || exit 1
+rm -Rf qopenhd_rk3588a*.deb
+cloudsmith push deb --api-key "$API_KEY" openhd/release/debian/bullseye qopenhd_rk3588*.deb || exit 1
 
 
