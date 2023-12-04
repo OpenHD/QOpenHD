@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
     // RPI and ROCK - disable font dpi. The user has to scale manually when using displays
     // (Bigger than) 640x480 according to its preferences. On rpi, auto scale is just bugged,
     // nothing more to say.
-    if(QOpenHD::instance().is_platform_rpi() || QOpenHD::instance().is_platform_rock() || true){
+    if(QOpenHD::instance().is_platform_rpi() || QOpenHD::instance().is_platform_rock()){
         static constexpr auto TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET="qopenhd_initial_font_dpi_has_been_set";
         if(!settings.value(TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET,false).toBool()){
             qDebug()<<"RPI/ROCK: Disable font dpi by default";
