@@ -125,7 +125,7 @@ Rectangle{
                 }
             }
             Switch{
-                id:normalize
+                id:normalize_sw
                 checked: m_normalize_data
                 onCheckedChanged: {
                     m_normalize_data=checked
@@ -133,7 +133,7 @@ Rectangle{
                 }
             }
             Text{
-                text: "Normalize"
+                text: m_normalize_data ? "Relative" : "Absolute"
                 color: "#fff"
                 font.pixelSize: 18
                 verticalAlignment: Qt.AlignVCenter
@@ -207,9 +207,14 @@ Rectangle{
                         //min: "0"
                         //max: "500"
                     }
+                    axisY: ValueAxis {
+                        labelsVisible: false
+                        gridVisible:false
+                    }
                     BarSet {
                         id: bar_set
-                        label: m_normalize_data ? "Pollution estimate %" : "Pollution estimate (pps)";
+                        //label: m_normalize_data ? "Pollution estimate %" : "WiFiPollution estimate (pps)";
+                        label: "WiFi pollution estimate"
                         values: [5,10,3,100]
                         //values: [0,0,0,0]
                         color: "red"
