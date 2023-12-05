@@ -209,7 +209,7 @@ Rectangle{
                     }
                     BarSet {
                         id: bar_set
-                        label: "Pollution (pps)";
+                        label: m_normalize_data ? "Pollution estimate %" : "Pollution estimate (pps)";
                         values: [5,10,3,100]
                         //values: [0,0,0,0]
                         color: "red"
