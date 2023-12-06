@@ -31,9 +31,9 @@ WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
     return tmp;
 }
 
-bool WBLinkSettingsHelper::start_analyze_channels()
+bool WBLinkSettingsHelper::start_analyze_channels(int freq_bands)
 {
-    if(OHDAction::instance().send_command_analyze_channels_blocking()){
+    if(OHDAction::instance().send_command_analyze_channels_blocking(freq_bands)){
         set_analyze_progress_perc(0);
         return true;
     }

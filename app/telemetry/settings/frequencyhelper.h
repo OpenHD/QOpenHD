@@ -16,6 +16,8 @@ public:
     static FrequencyHelper &instance();
     // Filter: 0 - OpenHD 1-5 only, 1= all 2.4G freq, 2 = all 5.8G freq
     Q_INVOKABLE QList<int> get_frequencies(int filter);
+    Q_INVOKABLE QList<int> filter_frequencies_40mhz_ht40plus_only(QList<int>);
+
     Q_INVOKABLE QList<int> get_frequencies_all_40Mhz();
 
     Q_INVOKABLE bool get_frequency_radar(int frequency_mhz);
