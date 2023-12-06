@@ -24,7 +24,8 @@ Rectangle{
     //property color m_background_color: "#ADD8E6"
     property color m_background_color: "#8cbfd7f3"
 
-    property int m_small_width: 200
+    property int m_small_height: 50
+    property int m_small_width: 120
 
     function user_quidance_animate_channel_scan(){
         console.log("User guidance animate channel scan");
@@ -134,106 +135,103 @@ Rectangle{
         visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible)
         clip: true
 
-        ColumnLayout{
-            width: main_scroll_view.width
-            id: main_column_layout
-            Layout.margins: 10
+        Item {
+            anchors.fill: parent
 
-            BaseHeaderItem{
-                m_text: "FREQUENCY / TOOLKIT"
-            }
+            Column{
+                id: main_column_layout
+                anchors.left: parent.left
+                anchors.right: parent.right
 
-            RowLayout{
-                Layout.fillWidth: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                ComboBox {
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.preferredWidth: elementComboBoxWidth
-                    id: comboBoxFreq
-                    model: frequencies_model
-                    textRole: "title"
-                    implicitWidth:  elementComboBoxWidth
-                    currentIndex: 0
-                    delegate: ItemDelegate {
-                        width: comboBoxFreq.width
-                        contentItem: FreqComboBoxRow{
-                            m_main_text: title
-                            m_selection_tpye: (value_frequency_mhz===_wbLinkSettingsHelper.curr_channel_mhz) ? 1 : 0
-                            m_is_2G: value_frequency_mhz < 3000 && value_frequency_mhz > 100
-                            m_show_radar: _frequencyHelper.get_frequency_radar(value_frequency_mhz)
-                            m_openhd_race_band: _frequencyHelper.get_frequency_openhd_race_band(value_frequency_mhz)
-                            m_pollution_pps: _pollutionHelper.pollution_get_last_scan_pollution_for_frequency(value_frequency_mhz)
-                        }
-                        highlighted: comboBoxFreq.highlightedIndex === index
-                    }
-                    displayText: {
-                        if(!_ohdSystemGround.is_alive)return "GND NOT ALIVE";
-                        if(_ohdSystemGround.wb_gnd_operating_mode==1){
-                            return "SCANNING";
-                        }
-                        if(_ohdSystemGround.wb_gnd_operating_mode==2){
-                            return "ANALYZING";
-                        }
-                        if(!_ohdSystemAir.is_alive){
-                            return _wbLinkSettingsHelper.curr_channel_mhz+"@"+"N/A"+" Mhz (NO AIR)";
-                        }
-                        return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+" Mhz";
-                    }
-                    onActivated: {
-                        console.log("onActivated:"+currentIndex);
-                        if(currentIndex<0)return;
-                        const frequency_mhz=comboBoxFreq.model.get(currentIndex).value_frequency_mhz
-                        console.log("Selected frequency: "+frequency_mhz);
-                        if(!_frequencyHelper.hw_supports_frequency_threadsafe(frequency_mhz)){
-                            _qopenhd.show_toast("your HW does not support "+frequency_mhz+" Mhz");
-                            return;
-                        }
-                        if(_wbLinkSettingsHelper.curr_channel_mhz==frequency_mhz){
-                            console.log("Already at frequency "+frequency_mhz);
-                            return;
-                        }
-                        if(!_ohdSystemAir.is_alive){
-                            var error_message_not_alive="AIR Unit not alive -"
-                            dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
-                            return;
-                        }
-                        // Change the freuquency
-                        dialoqueFreqChangeAirGnd.initialize_and_show_frequency(frequency_mhz);
-                    }
-                    enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0;
-                }
-                TabBar{
-                    id: filter_tab_bar
-                    Layout.preferredWidth: 200
-                    currentIndex: settings.qopenhd_frequency_filter_selection
-                    onCurrentIndexChanged: {
-                        if(currentIndex!=settings.qopenhd_frequency_filter_selection){
-                            settings.qopenhd_frequency_filter_selection=currentIndex;
-                            function_rebuild_ui();
-                            if(currentIndex==1){
-                                _qopenhd.show_toast("2.4G is almost always polluted by WiFi. Not recommended.")
-                            }else if(currentIndex==2){
-                                _qopenhd.show_toast("Please watch out for wifi pollution. Using DEF is highly recommended !")
+                SettingsCategory{
+                    m_description: "FREQUENCY / TOOLKIT"
+                    spacing: 1
+
+                    Row{
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 8
+                        ComboBox {
+                            width: elementComboBoxWidth
+                            id: comboBoxFreq
+                            model: frequencies_model
+                            textRole: "title"
+                            implicitWidth:  elementComboBoxWidth
+                            currentIndex: 0
+                            delegate: ItemDelegate {
+                                width: comboBoxFreq.width
+                                contentItem: FreqComboBoxRow{
+                                    m_main_text: title
+                                    m_selection_tpye: (value_frequency_mhz===_wbLinkSettingsHelper.curr_channel_mhz) ? 1 : 0
+                                    m_is_2G: value_frequency_mhz < 3000 && value_frequency_mhz > 100
+                                    m_show_radar: _frequencyHelper.get_frequency_radar(value_frequency_mhz)
+                                    m_openhd_race_band: _frequencyHelper.get_frequency_openhd_race_band(value_frequency_mhz)
+                                    m_pollution_pps: _pollutionHelper.pollution_get_last_scan_pollution_for_frequency(value_frequency_mhz)
+                                }
+                                highlighted: comboBoxFreq.highlightedIndex === index
                             }
+                            displayText: {
+                                if(!_ohdSystemGround.is_alive)return "GND NOT ALIVE";
+                                if(_ohdSystemGround.wb_gnd_operating_mode==1){
+                                    return "SCANNING";
+                                }
+                                if(_ohdSystemGround.wb_gnd_operating_mode==2){
+                                    return "ANALYZING";
+                                }
+                                if(!_ohdSystemAir.is_alive){
+                                    return _wbLinkSettingsHelper.curr_channel_mhz+"@"+"N/A"+" Mhz (NO AIR)";
+                                }
+                                return _wbLinkSettingsHelper.curr_channel_mhz+"@"+_wbLinkSettingsHelper.curr_channel_width_mhz+" Mhz";
+                            }
+                            onActivated: {
+                                console.log("onActivated:"+currentIndex);
+                                if(currentIndex<0)return;
+                                const frequency_mhz=comboBoxFreq.model.get(currentIndex).value_frequency_mhz
+                                console.log("Selected frequency: "+frequency_mhz);
+                                if(!_frequencyHelper.hw_supports_frequency_threadsafe(frequency_mhz)){
+                                    _qopenhd.show_toast("your HW does not support "+frequency_mhz+" Mhz");
+                                    return;
+                                }
+                                if(_wbLinkSettingsHelper.curr_channel_mhz==frequency_mhz){
+                                    console.log("Already at frequency "+frequency_mhz);
+                                    return;
+                                }
+                                if(!_ohdSystemAir.is_alive){
+                                    var error_message_not_alive="AIR Unit not alive -"
+                                    dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
+                                    return;
+                                }
+                                // Change the freuquency
+                                dialoqueFreqChangeAirGnd.initialize_and_show_frequency(frequency_mhz);
+                            }
+                            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0;
                         }
-                    }
-                    TabButton{
-                        text: "DEF"
-                    }
-                    TabButton{
-                        text: "2.4G"
-                    }
-                    TabButton{
-                        text: "5.8G"
-                    }
-                    enabled: comboBoxFreq.enabled
-                }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                ButtonIconInfo2{
+                        TabBar{
+                            id: filter_tab_bar
+                            width:  200
+                            currentIndex: settings.qopenhd_frequency_filter_selection
+                            onCurrentIndexChanged: {
+                                if(currentIndex!=settings.qopenhd_frequency_filter_selection){
+                                    settings.qopenhd_frequency_filter_selection=currentIndex;
+                                    function_rebuild_ui();
+                                    if(currentIndex==1){
+                                        _qopenhd.show_toast("2.4G is almost always polluted by WiFi. Not recommended.")
+                                    }else if(currentIndex==2){
+                                        _qopenhd.show_toast("Please watch out for wifi pollution. Using DEF is highly recommended !")
+                                    }
+                                }
+                            }
+                            TabButton{
+                                text: "DEF"
+                            }
+                            TabButton{
+                                text: "2.4G"
+                            }
+                            TabButton{
+                                text: "5.8G"
+                            }
+                            enabled: comboBoxFreq.enabled
+                        }
+                        /*ButtonIconInfo2{
                     Layout.alignment: Qt.AlignRight
                     visible:false
                     onClicked: {
@@ -242,120 +240,103 @@ Rectangle{
                                 " often are free of wifi pollution and should be used."
                         _messageBoxInstance.set_text_and_show(text)
                     }
-                }
-            }
+                }*/
+                    }
 
-            RowLayout{
-                Layout.fillWidth: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                Button{
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.preferredWidth: 150
-                    id: b_find_air_unit
-                    text: "SCAN"
-                    enabled: _ohdSystemGround.is_alive
-                    onClicked: {
-                        close_all_dialoques();
-                        popup_scan_channels.open()
-                    }
-                    SequentialAnimation {
-                        running: false
-                        loops: 4
-                        id: anim_find_air_unit
-                        // Expand the button
-                        PropertyAnimation {
-                            target: b_find_air_unit
-                            property: "scale"
-                            to: 1.5
-                            duration: 200
-                            easing.type: Easing.InOutQuad
-                        }
-                        // Shrink back to normal
-                        PropertyAnimation {
-                            target: b_find_air_unit
-                            property: "scale"
-                            to: 1.0
-                            duration: 200
-                            easing.type: Easing.InOutQuad
-                        }
-                    }
-                }
-                Button{
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.preferredWidth: 150
-                    text: "ANALYZE"
-                    enabled: _ohdSystemGround.is_alive
-                    onClicked: {
-                        close_all_dialoques();
-                        popup_analyze_channels.open()
-                    }
-                }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                /*ButtonIconInfo{
+                    Row{
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 8
+                        Button{
+                            width:  150
+                            id: b_find_air_unit
+                            text: "SCAN"
+                            enabled: _ohdSystemGround.is_alive
                             onClicked: {
-                                var text="SCAN: Similar to analoque channel scan, find a running air unit by checking all possible channels (frequencies).\n\n"+
-                                        "ANALYZE: Analyze channels for WiFi pollution. Read the wiki for more info.";
-                                _messageBoxInstance.set_text_and_show(text)
+                                close_all_dialoques();
+                                popup_scan_channels.open()
                             }
-                        }*/
-            }
-            RowLayout{
-                Layout.fillWidth: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 120
-                    text:{
-                        "LOSS:\n"+_ohdSystemGround.curr_rx_packet_loss_perc+"%"
-                    }
-                    color: _ohdSystemGround.curr_rx_packet_loss_perc > 5 ? "red" : "black"
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: false
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 120
-                    text: {
-                        return "POLLUTION:\n"+_ohdSystemGround.wb_link_curr_foreign_pps+"pps"
-                    }
-                    color: _ohdSystemGround.wb_link_curr_foreign_pps > 20 ? "red" : "black"
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: false
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
-                }
-                Text{
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 120
-                    text: {
-                        var ret="THROTTLE:\n";
-                        if(_ohdSystemAir.curr_n_rate_adjustments<=-1){
-                            ret+="N/A";
-                        }else if(_ohdSystemAir.curr_n_rate_adjustments==0){
-                            ret+="NONE";
-                        }else{
-                            ret+=("ACTIVE:"+_ohdSystemAir.curr_n_rate_adjustments+"x");
+                            SequentialAnimation {
+                                running: false
+                                loops: 4
+                                id: anim_find_air_unit
+                                // Expand the button
+                                PropertyAnimation {
+                                    target: b_find_air_unit
+                                    property: "scale"
+                                    to: 1.5
+                                    duration: 200
+                                    easing.type: Easing.InOutQuad
+                                }
+                                // Shrink back to normal
+                                PropertyAnimation {
+                                    target: b_find_air_unit
+                                    property: "scale"
+                                    to: 1.0
+                                    duration: 200
+                                    easing.type: Easing.InOutQuad
+                                }
+                            }
                         }
-                        return ret;
+                        Button{
+                            width:  150
+                            text: "ANALYZE"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                close_all_dialoques();
+                                popup_analyze_channels.open()
+                            }
+                        }
                     }
-                    color: _ohdSystemAir.curr_n_rate_adjustments > 0 ? "red" : "black"
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: false
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
-                }
-                Item{ // FILLER
+                    Row{
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text:{
+                                "LOSS:\n"+_ohdSystemGround.curr_rx_packet_loss_perc+"%"
+                            }
+                            color: _ohdSystemGround.curr_rx_packet_loss_perc > 5 ? "red" : "black"
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text: {
+                                return "POLLUTION:\n"+_ohdSystemGround.wb_link_curr_foreign_pps+"pps"
+                            }
+                            color: _ohdSystemGround.wb_link_curr_foreign_pps > 20 ? "red" : "black"
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text: {
+                                var ret="THROTTLE:\n";
+                                if(_ohdSystemAir.curr_n_rate_adjustments<=-1){
+                                    ret+="N/A";
+                                }else if(_ohdSystemAir.curr_n_rate_adjustments==0){
+                                    ret+="NONE";
+                                }else{
+                                    ret+=("ACTIVE:"+_ohdSystemAir.curr_n_rate_adjustments+"x");
+                                }
+                                return ret;
+                            }
+                            color: _ohdSystemAir.curr_n_rate_adjustments > 0 ? "red" : "black"
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        /*Item{ // FILLER
                     Layout.fillWidth: true
-                }
-                /*ButtonIconInfo{
+                }*/
+                        /*ButtonIconInfo{
                             onClicked: {
                                 var text="High Loss / Pollution / active throttle hint at a polluted channel."
                                 _messageBoxInstance.set_text_and_show(text)
@@ -370,110 +351,91 @@ Rectangle{
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }*/
-            }
-
-            BaseHeaderItem{
-                m_text: "TX POWER"
-            }
-
-            RowLayout {
-                id: tx_power_layout
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                Text{
-                    Layout.preferredWidth: 120
-                    text: "AIR:\n "+get_text_wifi_tx_power(true)
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: false
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
-                }
-                Button{
-                    text: "EDIT"
-                    enabled: _ohdSystemAir.is_alive
-                    onClicked: {
-                        close_all_dialoques();
-                        popup_change_tx_power.m_is_air=true;
-                        popup_change_tx_power.open()
                     }
                 }
-                Text{
-                    Layout.preferredWidth: 120
-                    text: "GND:\n"+get_text_wifi_tx_power(false)
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: false
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
-                }
-                Button{
-                    text: "EDIT"
-                    enabled: _ohdSystemGround.is_alive
-                    onClicked: {
-                        close_all_dialoques();
-                        popup_change_tx_power.m_is_air=false;
-                        popup_change_tx_power.open()
-                    }
-                }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-            }
 
-            BaseHeaderItem{
-                m_text: "ADVANCED (STBC,LDPC)"
-            }
+                SettingsCategory{
+                    m_description: "TX POWER"
+                    Row{
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text: "AIR:\n "+get_text_wifi_tx_power(true)
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Button{
+                            text: "EDIT"
+                            enabled: _ohdSystemAir.is_alive
+                            onClicked: {
+                                close_all_dialoques();
+                                popup_change_tx_power.m_is_air=true;
+                                popup_change_tx_power.open()
+                            }
+                        }
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text: "GND:\n"+get_text_wifi_tx_power(false)
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Button{
+                            text: "EDIT"
+                            enabled: _ohdSystemGround.is_alive
+                            onClicked: {
+                                close_all_dialoques();
+                                popup_change_tx_power.m_is_air=false;
+                                popup_change_tx_power.open()
+                            }
+                        }
 
-            RowLayout {
-                id: stbc_ldpc_layout
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                Text{
-                    Layout.preferredWidth: 120
-                    text: "AIR:\n"+get_text_stbc_ldpc(true);
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: false
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
-                }
-                Text{
-                    Layout.preferredWidth: 120
-                    text: "GND:\n"+get_text_stbc_ldpc(false);
-                    verticalAlignment: Qt.AlignVCenter
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: false
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
-                }
-                Button{
-                    text: "EDIT";
-                    //enabled: true
-                    enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
-                             (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
-                    onClicked: {
-                        close_all_dialoques();
-                        popup_enable_stbc_ldpc.open()
                     }
                 }
-                Item{ // FILLER
-                    Layout.fillWidth: true
-                }
-                /*ButtonIconInfo{
-                    onClicked: {
-                        _messageBoxInstance.set_text_and_show("STBC / LDPC : Greatly increases range, but requires 2 RF paths (2 Antennas) on BOTH your air and ground station."+
-                                                              "WARNING: Enabling STBC with the wrong hardware (only 1 antenna / only one rf path) results in no connectivity "+
-                                                              "and you need to re-flash your air / ground unit to recover !");
+
+                SettingsCategory{
+                    m_description: "ADVANCED (STBC,LDPC)"
+
+                    Row{
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text: "AIR:\n"+get_text_stbc_ldpc(true);
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text: "GND:\n"+get_text_stbc_ldpc(false);
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Button{
+                            text: "EDIT";
+                            //enabled: true
+                            enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
+                                     (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
+                            onClicked: {
+                                close_all_dialoques();
+                                popup_enable_stbc_ldpc.open()
+                            }
+                        }
                     }
-                }*/
+                }
             }
         }
     }
-
     PopupAnalyzeChannels{
         id: popup_analyze_channels
     }
@@ -495,4 +457,6 @@ Rectangle{
     DialoqueFreqChangeAirGnd{
         id: dialoqueFreqChangeAirGnd
     }
+
 }
+
