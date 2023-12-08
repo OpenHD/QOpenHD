@@ -11,8 +11,8 @@ static mavlink_command_long_t create_cmd_reboot(int target_sysid,int target_comp
     cmd.target_system=target_sysid;
     cmd.target_component=target_compid;
     cmd.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
-    cmd.param1=0;
-    cmd.param2=(reboot ? 1 : 2);
+    cmd.param1=(reboot ? 1 : 2);
+    //cmd.param2=(reboot ? 1 : 2);
     return cmd;
 }
 

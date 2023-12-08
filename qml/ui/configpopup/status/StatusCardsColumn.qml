@@ -71,7 +71,7 @@ Row{
 
         hasFooter: true
         cardFooter: FooterRebootShutdownWarning{
-            m_supports_reboot_actions: false
+            m_supports_reboot_actions: true
             m_type: 2
         }
     }
