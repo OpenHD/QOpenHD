@@ -6,13 +6,18 @@
 // Here we have various util methods to create mavlink_command_long_t commands
 namespace cmd::helper{
 
-static mavlink_command_long_t create_cmd_reboot(int target_sysid,int target_compid,bool reboot){
+// @Param: companion_computer: If set to true the message generated is for openhd
+// otherwise,it is for the FC
+static mavlink_command_long_t create_cmd_reboot(int target_sysid,int target_compid,bool reboot,bool companion_computer){
     mavlink_command_long_t cmd{};
     cmd.target_system=target_sysid;
     cmd.target_component=target_compid;
     cmd.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
-    cmd.param1=(reboot ? 1 : 2);
-    //cmd.param2=(reboot ? 1 : 2);
+    if(companion_computer){
+        cmd.param2=(reboot ? 1 : 2);
+    }else{
+        cmd.param1=(reboot ? 1 : 2);
+    }
     return cmd;
 }
 

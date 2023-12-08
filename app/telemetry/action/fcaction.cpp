@@ -177,7 +177,7 @@ void FCAction::request_home_position_from_fc()
 bool FCAction::send_command_reboot(bool reboot)
 {
     const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
-    auto command=cmd::helper::create_cmd_reboot(fc_id.sys_id,fc_id.comp_id,reboot);
+    auto command=cmd::helper::create_cmd_reboot(fc_id.sys_id,fc_id.comp_id,reboot,false);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
 }

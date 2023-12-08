@@ -20,14 +20,14 @@ OHDAction& OHDAction::instance()
 
 bool OHDAction::send_command_reboot_air(bool reboot)
 {
-    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_AIR,MAV_COMP_ID_ONBOARD_COMPUTER,reboot);
+    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_AIR,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
 }
 
 bool OHDAction::send_command_reboot_gnd(bool reboot)
 {
-    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,reboot);
+    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
 }
