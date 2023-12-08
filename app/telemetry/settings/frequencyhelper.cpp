@@ -39,6 +39,22 @@ QList<int> FrequencyHelper::get_frequencies(int filter)
     return ret;
 }
 
+QList<int> FrequencyHelper::filter_frequencies_40mhz_ht40plus_only(QList<int> frequencies)
+{
+    std::vector<uint32_t> frequencies2;
+    for(auto& freq:frequencies){
+        frequencies2.push_back(freq);
+    }
+    QList<int> ret;
+    auto channels=openhd::frequencies_to_channels(frequencies2);
+    for(auto& channel:channels){
+        if(channel.in_40Mhz_ht40_plus){
+            ret.push_back(channel.frequency);
+        }
+    }
+    return ret;
+}
+
 QList<int> FrequencyHelper::get_frequencies_all_40Mhz()
 {
     QList<int> ret;

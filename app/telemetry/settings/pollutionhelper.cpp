@@ -59,7 +59,19 @@ QStringList PollutionHelper::pollution_frequencies_int_to_qstringlist(QList<int>
     for(auto& freq:frequencies){
         std::stringstream ss;
         ss<<freq<<"Mhz";
-        ret.push_back(QString(ss.str().c_str()));
+        auto pollution=threadsafe_get_pollution_for_frequency(freq);
+        if(pollution.has_value()){
+            /*if(pollution.value().n_foreign_packets<1){
+                ss<<"\nFREE";
+            }else{
+                ss<<"\nPOLLUTED";
+            }*/
+            ret.push_back(QString(ss.str().c_str()));
+        }else{
+            //ss<<" N/A";
+            //ret.push_back(QString(ss.str().c_str()));
+            ret.push_back(" ");
+        }
     }
     return ret;
 }
@@ -73,6 +85,11 @@ QVariantList PollutionHelper::pollution_frequencies_int_get_pollution(QList<int>
             if(normalize){
                 ret.push_back(static_cast<int>(pollution.value().n_foreign_packets_normalized));
             }else{
+                /*if(pollution.value().n_foreign_packets<1){
+                    ret.push_back(static_cast<int>(0));
+                }else{
+                    ret.push_back(static_cast<int>(100));
+                }*/
                 ret.push_back(static_cast<int>(pollution.value().n_foreign_packets));
             }
 

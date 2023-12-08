@@ -24,7 +24,7 @@ public:
     Q_INVOKABLE bool send_command_reboot_gnd(bool reboot);
 
     // Sent to the ground unit only
-    bool send_command_analyze_channels_blocking();
+    bool send_command_analyze_channels_blocking(int freq_bands);
     bool send_command_start_scan_channels_blocking(int freq_bands,int channel_widths);
 private:
 };

@@ -26,7 +26,6 @@ Rectangle{
 
     property bool m_normalize_data: false;
     property int m_chart_view_minimum_width: 1280;
-    property int m_chart_view_minimum_width2: 1280;
 
     property bool m_chart_enlarged: false;
 
@@ -44,9 +43,9 @@ Rectangle{
 
     ListModel{
         id: model_filter
-        ListElement {title: "NO FILTER"; value: 0}
-        ListElement {title: "2.4G ONLY"; value: 1}
-        ListElement {title: "5.8G ONLY"; value: 2}
+        ListElement {title: "OHD [1-5]"; value: 0}
+        ListElement {title: "All 2.4G"; value: 1}
+        ListElement {title: "All 5.8G"; value: 2}
     }
 
     property string m_info_string: "Analyze channels for pollution by wifi access points.\n"+
@@ -105,7 +104,8 @@ Rectangle{
                 id:startButton
                 text: "START"
                 onClicked: {
-                    var result=_wbLinkSettingsHelper.start_analyze_channels()
+                    var how_many_freq_bands=comboBoxWhichFrequencyToAnalyze.currentIndex
+                    var result=_wbLinkSettingsHelper.start_analyze_channels(how_many_freq_bands)
                     if(result!==true){
                         _qopenhd.show_toast("Busy,please try again later",true);
                     }else{
@@ -117,7 +117,7 @@ Rectangle{
             ComboBox {
                 Layout.preferredWidth: 150
                 Layout.minimumWidth: 50
-                id: comboBoxFilter
+                id: comboBoxWhichFrequencyToAnalyze
                 model: model_filter
                 textRole: "title"
                 onCurrentIndexChanged: {
@@ -125,15 +125,18 @@ Rectangle{
                 }
             }
             Switch{
-                id:normalize
+                id:normalize_sw
                 checked: m_normalize_data
                 onCheckedChanged: {
                     m_normalize_data=checked
                     pollution_chart.update_pollution_graph();
+                    if(m_normalize_data){
+                        _qopenhd.show_toast("WARNING: THIS VIEW CAN BE DECEIVING !");
+                    }
                 }
             }
             Text{
-                text: "Normalize"
+                text: m_normalize_data ? "Relative" : "Absolute"
                 color: "#fff"
                 font.pixelSize: 18
                 verticalAlignment: Qt.AlignVCenter
@@ -171,16 +174,17 @@ Rectangle{
 
             ChartView {
                 id: pollution_chart
+                clip: true
                 //width: main_background.width>m_chart_view_minimum_width ? main_background.width : m_chart_view_minimum_width;
                 width: {
                     const screen_width = main_background.width-10;
-                    if(comboBoxFilter.currentIndex==0){
-                        return screen_width>m_chart_view_minimum_width ? screen_width : m_chart_view_minimum_width;
+                    // 2.4G and OHD 1-5 should always fit into screen size
+                    const filter=comboBoxWhichFrequencyToAnalyze.currentIndex;
+                    if(filter==0 || filter==1){
+                         return screen_width;
                     }
-                    if(comboBoxFilter.currentIndex==1){
-                        return screen_width
-                    }
-                    return screen_width>m_chart_view_minimum_width2 ? screen_width : m_chart_view_minimum_width2;
+                    // All the 5.8G frequencies together do not!
+                    return screen_width>m_chart_view_minimum_width ? screen_width : m_chart_view_minimum_width;
                 }
                 //width: m_chart_enlarged ? 1280 : main_background.width
                 height: parent.height
@@ -191,14 +195,30 @@ Rectangle{
                     //const frequencies_list = _wbLinkSettingsHelper.get_pollution_qstringlist();
                     //bar_axis_x.categories=frequencies_list;
                     //const supported_frequencies = _wbLinkSettingsHelper.get_supported_frequencies();
-                    const all_40Mhz_frequencies_unfiltered=_frequencyHelper.get_frequencies_all_40Mhz();
-                    const all_40Mhz_frequencies = _frequencyHelper.filter_frequencies(all_40Mhz_frequencies_unfiltered,comboBoxFilter.currentIndex);
-                    var categories = _pollutionHelper.pollution_frequencies_int_to_qstringlist(all_40Mhz_frequencies);
-                    var values = _pollutionHelper.pollution_frequencies_int_get_pollution(all_40Mhz_frequencies,m_normalize_data);
+                    const channels_to_analyze=comboBoxWhichFrequencyToAnalyze.currentIndex;
+                    var frequencies_to_analyze=_frequencyHelper.get_frequencies(0);
+                    if(channels_to_analyze==0){
+                       frequencies_to_analyze=_frequencyHelper.get_frequencies(0);
+                    }else if(channels_to_analyze==1){
+                        frequencies_to_analyze=_frequencyHelper.get_frequencies(1);
+                    }else{
+                        frequencies_to_analyze=_frequencyHelper.get_frequencies(2);
+                        frequencies_to_analyze=_frequencyHelper.filter_frequencies_40mhz_ht40plus_only(frequencies_to_analyze);
+                    }
+                    var categories = _pollutionHelper.pollution_frequencies_int_to_qstringlist(frequencies_to_analyze);
+                    var values = _pollutionHelper.pollution_frequencies_int_get_pollution(frequencies_to_analyze,m_normalize_data);
                     bar_axis_x.categories=categories;
                     bar_set.values=values;
+                    if(m_normalize_data){
+                        element_x_axis.labelsVisible=false;
+                        element_x_axis.min=0;
+                        element_x_axis.max=100;
+                    }else{
+                        element_x_axis.labelsVisible=true;
+                        element_x_axis.min=0;
+                        element_x_axis.max=30;
+                    }
                 }
-
                 BarSeries {
                     id: hm_bar_series
                     axisX: BarCategoryAxis {
@@ -207,13 +227,49 @@ Rectangle{
                         //min: "0"
                         //max: "500"
                     }
+                    /*axisY: ValueAxis {
+                        labelsVisible: false
+                        gridVisible:false
+                    }*/
+                    axisY: CategoryAxis{
+                        id: element_x_axis
+                        min: 0
+                        max: 30
+                        labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
+                        CategoryRange {
+                            label: "perfect"
+                            endValue: 0
+
+                        }
+                        CategoryRange {
+                            label: "good"
+                            endValue: 10
+
+                        }
+                        CategoryRange {
+                            label: "medium"
+                            endValue: 20
+                        }
+                        CategoryRange {
+                            label: "bad"
+                            endValue: 30
+                        }
+                    }
                     BarSet {
                         id: bar_set
-                        label: "Pollution (pps)";
+                        //label: m_normalize_data ? "Pollution estimate %" : "WiFiPollution estimate (pps)";
+                        label: "WiFi pollution estimate"
                         values: [5,10,3,100]
                         //values: [0,0,0,0]
                         color: "red"
                     }
+                    /*BarSet{
+                        id: bar_set2
+                        label: "GOOD"
+                        color: "green"
+                        values: [5,10,3,100]
+                    }*/
+                    labelsPosition: AbstractBarSeries.LabelsInsideEnd
                 }
             }
         }
