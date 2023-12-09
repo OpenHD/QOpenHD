@@ -13,224 +13,220 @@ import "../../elements"
 // This hereby functions as a copyrighted declaration. Any unpermitted alteration, suppression, or eradication of this page is expressly forbidden unless granted explicit authorization by the OpenHD development team.
 
 Rectangle {
+    id: creditsRectangle
     Layout.fillHeight: true
     color: "#eaeaea"
 
-    RowLayout {
-        anchors.centerIn: parent
+    GridLayout {
+        anchors.fill: parent
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
+        anchors.topMargin: 10
+        anchors.bottomMargin: 10
+        columns: 4
+        rows: 2
+        columnSpacing: 10
+        rowSpacing: 10
 
-        ColumnLayout {
-            spacing: 6
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#f6f6f6"
 
-            Card {
-                id: consti
-                height: 224
-                width: 150
-                cardName: qsTr("Constantin")
-                cardBody: ColumnLayout {
-                    RowLayout {
-                        Layout.fillWidth: true
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
 
-                        Item {
-                            width: parent.width
-                            height: parent.height
-
-                            Image {
-                                id: ee1
-                                visible: true
-                                source: "../../../resources/master1.png"
-                                width: max.height * 0.7
-                                height: max.height * 0.7
-                            }
-                        }
-                    }
+                Text {
+                    text: "Consti"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "black"
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
-                hasFooter: false
+
+                Image {
+                    id: ee1
+                    visible: true
+                    source: "../../../resources/master1.png"
+                    width: creditsRectangle.width/5
+                    height: creditsRectangle.width/5
+                }
             }
+        }
 
-            Card {
-                visible: false
-                id: thomas
-                height: 224
-                width: 150
-                cardName: qsTr("Thomas")
-                cardBody: ColumnLayout {
-                    RowLayout {
-                        Layout.fillWidth: true
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#f6f6f6"
 
-                        Item {
-                            width: parent.width
-                            height: parent.height
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
 
-                            Image {
-                                id: ee3
-                                visible: true
-                                source: "../../../resources/master4.png"
-                                width: max.height * 0.7
-                                height: max.height * 0.7
-                            }
-                        }
-                    }
+                Text {
+                    text: "Raphael"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "black"
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
-                hasFooter: false
+
+                Image {
+                    id: ee2
+                    visible: true
+                    source: "../../../resources/master2.png"
+                    width: creditsRectangle.width/5
+                    height: creditsRectangle.width/5
+                }
             }
 
         }
 
-        ColumnLayout {
-            spacing: 6
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#f6f6f6"
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
 
-            Card {
-                id: rapha
-                height: 224
-                width: 150
-                cardName: qsTr("Raphael")
-                cardBody: ColumnLayout {
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        Item {
-                            width: parent.width
-                            height: parent.height
-
-                            Image {
-                                id: ee2
-                                visible: true
-                                source: "../../../resources/master2.png"
-                                width: rapha.height * 0.7
-                                height: rapha.height * 0.7
-                            }
-                        }
-                    }
+                Text {
+                    text: "Max"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "black"
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
-                hasFooter: false
+
+                Image {
+                    id: ee3
+                    visible: true
+                    source: "../../../resources/master3.png"
+                    width: creditsRectangle.width/5
+                    height: creditsRectangle.width/5
+                }
             }
 
-            Card {
-                id: pete
-                height: 224
-                width: 150
-                cardName: qsTr("Pete")
-                cardBody: ColumnLayout {
-                    RowLayout {
-                        Layout.fillWidth: true
+        }
 
-                        Item {
-                            width: parent.width
-                            height: parent.height
+        Rectangle {
+            Layout.rowSpan: 2
+            Layout.row: 0
+            Layout.column: 3
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#333c4c"
 
-                            Image {
-                                id: ee4
-                                visible: true
-                                source: "../../../resources/master5.png"
-                                width: thomas.height * 0.7
-                                height: thomas.height * 0.7
-                            }
-                        }
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
+
+                Text {
+                    text: "Honorable Mentions"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "white"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                Text {
+                    text: "   "
+                    color: "white"
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.2
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                }
+
+                Repeater {
+                    model: ["pilotnbr1", "limitlessgreen", "michell", "roman", "jweijs", "user1321",
+                            "flavio", "hdfpv", "htcohio", "raymond", "yes21", "mjc506", "cq112358",
+                            "steveatinfincia", "norbert", "macdaddyfpv"]
+
+                    Text {
+                        text: modelData
+                        color: "white"
+                        font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        anchors.horizontalCenter: parent.horizontalCenter
+
                     }
                 }
-                hasFooter: false
             }
         }
 
-        ColumnLayout {
-            spacing: 6
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#f6f6f6"
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
 
-            Card {
-                id: max
-                height: 224
-                width: 150
-                cardName: qsTr("Max")
-                cardBody: ColumnLayout {
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        Item {
-                            width: parent.width
-                            height: parent.height
-
-                            Image {
-                                id: ee5
-                                visible: true
-                                source: "../../../resources/master3.png"
-                                width: rapha.height * 0.7
-                                height: rapha.height * 0.7
-                            }
-                        }
-                    }
+                Text {
+                    text: "Thomas"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "black"
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
-                hasFooter: false
+
+                Image {
+                    id: ee4
+                    visible: true
+                    source: "../../../resources/master4.png"
+                    width: creditsRectangle.width/5
+                    height: creditsRectangle.width/5
+                }
             }
 
-            Card {
-                id: you
-                visible: false
-                height: 224
-                width: 150
-                cardName: qsTr("")
-                cardBody: ColumnLayout {
-                    RowLayout {
-                        Layout.fillWidth: true
-
-                        Item {
-                            width: parent.width
-                            height: parent.height
-
-                            Image {
-                                id: ee6
-                                visible: false
-                                source: "../../../resources/master4.png"
-                                width: thomas.height * 0.7
-                                height: thomas.height * 0.7
-                            }
-                        }
-                    }
-                }
-                hasFooter: false
-            }
         }
 
-        ColumnLayout {
-            spacing: 6
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#f6f6f6"
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
 
-            Card {
-                id: honorableMentions
-                height: 448
-                width: 224
-                cardName: qsTr("      Honorable Mentions")
-                cardBody: ColumnLayout {
-                    Repeater {
-                        model: [
-                            "pilotnbr1",
-                            "limitlessgreen",
-                            "michell",
-                            "roman",
-                            "patemil",
-                            "jweijs",
-                            "user1321",
-                            "flavio",
-                            "hdfpv",
-                            "htcohio",
-                            "raymond",
-                            "yes21",
-                            "mjc506",
-                            "cq112358",
-                            "steveatinfincia",
-                            "norbert",
-                            "macdaddyfpv"
-                        ]
-
-                        delegate: Text {
-                            text: modelData
-                            font.pixelSize: 14
-                            color: "#333333"
-                            Layout.leftMargin: 70
-                            Layout.alignment: Qt.AlignHCenter
-                        }
-                    }
+                Text {
+                    text: "Pete"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "black"
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
-                hasFooter: false
+
+                Image {
+                    id: ee5
+                    visible: true
+                    source: "../../../resources/master5.png"
+                    width: creditsRectangle.width/5
+                    height: creditsRectangle.width/5
+                }
             }
+
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#f6f6f6"
+
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
+
+                Text {
+                    text: "You ?"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "black"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+
+            }
+
+
         }
     }
 }
