@@ -56,7 +56,11 @@ Item {
         //visible: get_show_power_actions()
         Button{
             visible: get_show_power_actions() && m_supports_reboot_actions
-            Layout.alignment: Qt.AlignLeft
+            Layout.alignment: {if (m_supports_shutdown_actions == false)
+                    return Qt.AlignCenter
+                else
+                    return Qt.Align.Right
+            }
             Layout.leftMargin: 10
             text: qsTr("REBOOT")
             onPressed: {
