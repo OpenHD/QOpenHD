@@ -60,7 +60,7 @@ Item {
             }
         }
         Button{
-            visible: get_show_power_actions() && m_supports_reboot_actions
+            visible: get_show_power_actions() && m_supports_reboot_actions && !m_supports_reboot_actions==2
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 10
             text: qsTr("SHUTDOWN")
