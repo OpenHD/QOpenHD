@@ -207,7 +207,7 @@ BaseWidget {
             visible: true
             text: {
                 if (settings.ground_battery_show_single_cell) {
-                    return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells / 1000) + "mVpC";
+                    return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells / 1000).toFixed(2) + "mVpC";
                 } else {
                     return (_ohdSystemGround.ina219_voltage_millivolt / 1000).toFixed(2) + "V";
                 }
