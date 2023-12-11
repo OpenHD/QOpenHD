@@ -59,7 +59,7 @@ Item {
             Layout.alignment: {if (m_supports_shutdown_actions == false)
                     return Qt.AlignCenter
                 else
-                    return Qt.Align.Right
+                    return Qt.AlignRight
             }
             Layout.leftMargin: 10
             text: qsTr("REBOOT")
