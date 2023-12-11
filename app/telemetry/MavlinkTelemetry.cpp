@@ -151,6 +151,7 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
                 m_fc_comp_id=source_compid;
                 m_fc_found=true;
             }else if(source_compid==MAV_COMP_ID_SYSTEM_CONTROL && source_sysid==1){
+                // Aparently INAV uses a weird comp id & sys id 1
                 qDebug()<<"Found INAV FC:"<<source_sysid;
                 m_fc_sys_id=source_sysid;
                 m_fc_comp_id=source_compid;
