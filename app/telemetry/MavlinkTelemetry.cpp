@@ -113,6 +113,7 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
         //qDebug()<<"Found OHD Ground station";
         MavlinkSettingsModel::instanceGround().set_ready();
     }else{
+        qDebug()<<"MavlinkTelemetry::XonProcessMavlinkMessage"<<msg.msgid;
         if(!m_fc_found){
             // For the fc we need to wait until we got an heartbeat
             /*if(msg.msgid==MAVLINK_MSG_ID_HEARTBEAT){
