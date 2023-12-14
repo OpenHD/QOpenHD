@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 Item {
-    ComboBox {
+    GgComboBox {
         anchors.fill: parent
 
         model: ListModel {

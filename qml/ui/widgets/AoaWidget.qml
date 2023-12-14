@@ -46,7 +46,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     id: aoa_max_Slider
                     orientation: Qt.Horizontal
                     from: 15

@@ -49,7 +49,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     orientation: Qt.Horizontal
                     from: .3
                     value: settings.horizon_clip_area_scale
@@ -78,7 +78,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     id: horizon_width_Slider
                     orientation: Qt.Horizontal
                     from: 1
@@ -108,7 +108,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     id: horizon_spacing_Slider
                     orientation: Qt.Horizontal
                     from: 10
@@ -137,7 +137,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     id: horizon_range_Slider
                     orientation: Qt.Horizontal
                     from: 1
@@ -166,7 +166,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     id: horizon_step_Slider
                     orientation: Qt.Horizontal
                     from: 5
@@ -195,7 +195,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -217,7 +217,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -238,7 +238,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -259,7 +259,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     x: 190
                     y: 0
                     width: 32
@@ -282,7 +282,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     x: 190
                     y: 0
                     width: 32
@@ -306,7 +306,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     x: 190
                     y: 0
                     width: 32
@@ -329,7 +329,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     x: 190
                     y: 0
                     width: 32

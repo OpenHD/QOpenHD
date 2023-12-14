@@ -90,7 +90,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -111,7 +111,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -139,7 +139,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -170,7 +170,7 @@ BaseWidget {
                     anchors.left: gps_warn_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     id: gps_warn_Slider
                     orientation: Qt.Horizontal
                     from: 3
@@ -210,7 +210,7 @@ BaseWidget {
                     anchors.left: gps_caution_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     id: gps_caution_Slider
                     orientation: Qt.Horizontal
                     from: .5

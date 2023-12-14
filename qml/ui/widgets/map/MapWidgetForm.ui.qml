@@ -98,7 +98,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Slider {
+                GgSlider {
                     id: mini_zoomSlider
                     orientation: Qt.Horizontal
                     from: 1
@@ -127,7 +127,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Slider {
+                GgSlider {
                     id: mini_sizeSlider
                     orientation: Qt.Horizontal
                     from: 0.25
@@ -154,7 +154,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                GgSlider {
                     orientation: Qt.Horizontal
                     from: .1
                     value: settings.map_opacity_minimized
@@ -179,7 +179,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -200,7 +200,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -221,7 +221,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -428,7 +428,7 @@ BaseWidget {
                     spacing: 6
                     width: settingsVisible ? 488 : 0
 
-                    ComboBox {
+                    GgComboBox {
                         id: providerDropdown
                         height: 48
                         width: parent.width
@@ -440,7 +440,7 @@ BaseWidget {
 
                     }
 
-                    ComboBox {
+                    GgComboBox {
                         id: variantDropdown
                         height: 48
                         width: parent.width
@@ -463,7 +463,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Slider {
+                        GgSlider {
                             id: zoomSlider
                             orientation: Qt.Horizontal
                             from: 1
@@ -494,7 +494,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Slider {
+                        GgSlider {
                             orientation: Qt.Horizontal
                             from: .1
                             value: settings.map_opacity_maximized
@@ -523,7 +523,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Switch {
+                        GgSwitch {
                             id: switch1
                             width: 32
                             height: parent.height

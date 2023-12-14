@@ -146,7 +146,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -190,7 +190,7 @@ BaseWidget {
                 }
             }
 
-            ComboBox{
+            GgComboBox{
                 id: resolution_fps_cb
                 model: resolutions_model
                 textRole: "title"
@@ -348,7 +348,7 @@ BaseWidget {
                 height: 32
                 visible: m_show_button_quick_switch
                 Button{
-                    text: "Switch primary & secondary"
+                    text: "GgSwitch primary & secondary"
                     onClicked: settings.qopenhd_switch_primary_secondary = !settings.qopenhd_switch_primary_secondary
                     highlighted: settings.qopenhd_switch_primary_secondary == true
                 }

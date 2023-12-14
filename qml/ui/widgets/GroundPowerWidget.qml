@@ -43,7 +43,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                GgSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -66,7 +66,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                ComboBox {
+                GgComboBox {
                     id: batteryComboBox
                     width: 100
                     height: parent.height

@@ -43,7 +43,7 @@ ScrollView {
 
                 }
 
-                Slider {
+                GgSlider {
                     id: screenScaleSpinBox
                     height: elementHeight
                     width: 210
@@ -70,7 +70,7 @@ ScrollView {
                 m_short_description: "Cursor AutoHide"
                 m_long_description: "Automatically hide cursor on inactivity"
 
-                Switch {
+                GgSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -89,7 +89,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Custom cursor"
                 m_long_description: "Customize cursor for high visibility in the field"
-                SpinBox {
+                GgSpinBox {
                     width: 210
                     font.pixelSize: 14
                     height: elementHeight
@@ -111,7 +111,7 @@ ScrollView {
                 m_short_description: "Custom cursor scale"
                 m_long_description: "Scale of your custom cursor. NOTE: Only works if custom cursor is not 0 !"
 
-                SpinBox {
+                GgSpinBox {
                     width: 210
                     font.pixelSize: 14
                     height: elementHeight
@@ -137,7 +137,7 @@ ScrollView {
                     m_short_description: "Screen rotation"
                     m_long_description: "Rotate QOpenHD, can be usefull if your screen is installed the wrong way around. Might or might not work."
                     // anything other than 0 and 180 can breaks things
-                    ComboBox {
+                    GgComboBox {
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
@@ -169,7 +169,7 @@ ScrollView {
                     m_short_description: "Background transparent"
                     m_long_description: "Use a transparent surface, such that another application can play (hw composer accelerated) video behind the QOpenHD surface."
 
-                    Switch {
+                    GgSwitch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -184,7 +184,7 @@ ScrollView {
                     m_short_description: "Force full screen"
                     m_long_description: "Force Full screen if QOpenHD is not already full screen"
 
-                    Switch {
+                    GgSwitch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -199,7 +199,7 @@ ScrollView {
                     m_short_description: "Swap interval 0"
                     m_long_description: "Can decrease latency on x86 / laptop. Requires restart. Experimental."
 
-                    Switch {
+                    GgSwitch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -215,7 +215,7 @@ ScrollView {
                     m_short_description: "Settings window size"
                     m_long_description: "Change the size of the settings window, such that you can view the live video while changing settings"
 
-                    SpinBox {
+                    GgSpinBox {
                         width: 210
                         font.pixelSize: 14
                         height: elementHeight
@@ -236,7 +236,7 @@ ScrollView {
                     m_short_description: "Settings window transparency"
                     m_long_description: "make the openhd parameters window semi-transparent"
 
-                    Switch {
+                    GgSwitch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -250,7 +250,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Font DPI"
                     m_long_description: "Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD."
-                    ComboBox {
+                    GgComboBox {
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18

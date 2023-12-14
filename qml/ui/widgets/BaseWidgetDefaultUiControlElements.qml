@@ -58,7 +58,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Slider {
+        GgSlider {
             id: transparency_slider
             orientation: Qt.Horizontal
             from: .1
@@ -88,7 +88,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Slider {
+        GgSlider {
             id: item_scale_Slider
             orientation: Qt.Horizontal
             from: .5
@@ -118,7 +118,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Slider {
+        GgSlider {
             orientation: Qt.Horizontal
             from: .5
             value: bw_qquickpainteditem_font_scale
@@ -149,7 +149,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Switch {
+        GgSwitch {
             width: 32
             height: parent.height
             anchors.rightMargin: 6
@@ -185,7 +185,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Switch {
+        GgSwitch {
             width: 32
             height: parent.height
             anchors.rightMargin: 6

@@ -32,7 +32,7 @@ ScrollView {
                 m_short_description: "Enable speech"
                 m_long_description: "Enable text to speech - events like flight mode change are given as audio messages"
 
-                Switch {
+                GgSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -60,7 +60,7 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                Switch {
+                GgSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -101,7 +101,7 @@ ScrollView {
 
                 }
 
-                Slider {
+                GgSlider {
                     id: smoothing_Slider
                     height: elementHeight
                     width: 210
@@ -141,7 +141,7 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                SpinBox {
+                GgSpinBox {
                     id: gndBatteryCellspinBox
                     height: elementHeight
                     width: 210
@@ -204,7 +204,7 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                SpinBox {
+                GgSpinBox {
                     id: dev_qopenhd_n_cameras_spinbox
                     height: elementHeight
                     width: 210
@@ -230,7 +230,7 @@ ScrollView {
                 m_short_description: "Mavlink sys id"
                 m_long_description: "Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart."
 
-                SpinBox {
+                GgSpinBox {
                     id: mavlinkSysIDSpinBox
                     height: elementHeight
                     width: 210
@@ -256,7 +256,7 @@ ScrollView {
                 m_short_description: "Hide identity offset lattitude"
                 m_long_description: "Set this to a random value only you know to hide lat identity"
 
-                /*SpinBox {
+                /*GgSpinBox {
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
