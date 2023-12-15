@@ -6,6 +6,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: groundPowerWidget
     width: 96
@@ -43,7 +45,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -66,7 +68,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                ComboBox {
+                NewComboBox {
                     id: batteryComboBox
                     width: 100
                     height: parent.height

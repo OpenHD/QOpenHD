@@ -7,6 +7,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 Item {
     height: 25
     clip: true

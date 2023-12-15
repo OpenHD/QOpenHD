@@ -13,7 +13,7 @@ import "../elements"
 
 // From https://doc.qt.io/qt-5/qml-qtquick-controls2-spinbox.html
 // Modified a bit for easier use
-SpinBox {
+NewSpinBox {
 
     // Min,max,default in double space
     property double m_default_value: 0.00

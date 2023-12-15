@@ -225,7 +225,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -246,7 +246,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -267,7 +267,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -288,7 +288,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -311,7 +311,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -382,7 +382,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
             width: parent.width
             height: m_row_height
 
-            ComboBox{
+            NewComboBox{
                 width: parent.width
                 height: m_row_height
                 id: mcs_cb
@@ -417,7 +417,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
         Row{
             width: parent.width
             height: m_row_height
-            ComboBox{
+            NewComboBox{
                 width: parent.width
                 height: m_row_height
                 id: pollution_cb

@@ -252,31 +252,6 @@ Rectangle{
                 }
             }
         }
-
-        Rectangle {
-            width: parent.width
-            height: mainColumn.height
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            color: "#333c4c"
-
-            ColumnLayout {
-                id:mainColumn
-                anchors.centerIn: parent
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    ComboBox {
-                        id: comboBoxCardSelectManufacturer
-                        Layout.minimumWidth: 170
-                        Layout.preferredWidth: 480
-                        model: get_model_manufacturer_for_chip_type()
-                        textRole: "title"
-                        onCurrentIndexChanged: {
-                            var manufacturer = comboBoxCardSelectManufacturer.model.get(comboBoxCardSelectManufacturer.currentIndex).value;
-                            m_user_selected_card_manufacturer = manufacturer;
-                        }
-                        font.pixelSize: 14
-                    }
                 }
 
                 RowLayout {
@@ -302,7 +277,7 @@ Rectangle{
                         }
                         font.pixelSize: 14
                     }
-                    ComboBox {
+                    NewComboBox {
                         Layout.minimumWidth: 100
                         Layout.preferredWidth: 350
                         id: combo_box_txpower_disarmed
@@ -315,78 +290,4 @@ Rectangle{
                         }
                     }
                 }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Button {
-                        text: "    SAVE Armed    "
-                        enabled: m_user_selected_card_manufacturer >= 0;
-                        onClicked: {
-                            var tx_power_index_or_mw = combo_box_txpower_armed.model.get(combo_box_txpower_armed.currentIndex).value;
-                            if (tx_power_index_or_mw < 0) {
-                                _qopenhd.show_toast("Please select a valid tx power", false);
-                                return;
-                            }
-                            var is_tx_power_index_unit = get_chipset_type() == 0;
-                            var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air, is_tx_power_index_unit, true, tx_power_index_or_mw)
-                            if (success == true) {
-                                _qopenhd.show_toast("SUCCESS");
-                            } else {
-                                _qopenhd.show_toast("Cannot change TX power, please try again", true);
-                            }
-                        }
-                        font.pixelSize: 14
-                    }
-                    ComboBox {
-                        Layout.minimumWidth: 100
-                        Layout.preferredWidth: 350
-                        id: combo_box_txpower_armed
-                        model: get_model_txpower_for_chip_type_manufacturer(true)
-                        textRole: "title"
-                        enabled: m_user_selected_card_manufacturer >= 0;
-                        font.pixelSize: 14
-                    }
-                }
-            }
-        }
-        Item{ // Filler
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-        }
-        Text{
-            Layout.fillWidth: true
-            Layout.minimumHeight: 50
-            text: "Caution: Not all cards are designed to handle high power levels.\n Excessive power may lead to card damage";
-            color: "white"
-            //style: Text.Outline
-            //styleColor: "black"
-            wrapMode: Text.WordWrap
-            font.pixelSize: 18
-            verticalAlignment: Qt.AlignVCenter
-            horizontalAlignment: Qt.AlignHCenter
-        }
-        Text{
-            Layout.fillWidth: true
-            text: "WARNING: ARMING WILL REDUCE YOUR TX POWER"
-            //visible: true
-            visible: {
-                var txpower_disarmed=get_current_tx_power_int(1);
-                var txpower_armed=get_current_tx_power_int(2);
-                if(txpower_armed==0)return false;
-                return txpower_armed<txpower_disarmed;
-            }
-            color: "white"
-            font.pixelSize: 18
-            verticalAlignment: Qt.AlignVCenter
-            horizontalAlignment: Qt.AlignHCenter
-            style: Text.Outline
-            styleColor: "black"
-        }
-        Item{ // Filler
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-        }
-        // ----------------
-    }
 }
-
