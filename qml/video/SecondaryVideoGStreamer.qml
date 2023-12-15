@@ -194,7 +194,7 @@ Item {
                         width: 100
                         text: "Minimized Width (px)"
                     }
-                    SpinBox {
+                    NewSpinBox {
                         stepSize: 1
                         editable: true
                         from:25
@@ -211,7 +211,7 @@ Item {
                         width: 100
                         text: "Minimized Height (px)"
                     }
-                    SpinBox {
+                    NewSpinBox {
                         stepSize: 1
                         editable: true
                         from:25
