@@ -172,7 +172,7 @@ BaseWidget {
                     anchors.left: gps_warn_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: gps_warn_Slider
                     orientation: Qt.Horizontal
                     from: 3
@@ -212,7 +212,7 @@ BaseWidget {
                     anchors.left: gps_caution_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: gps_caution_Slider
                     orientation: Qt.Horizontal
                     from: .5

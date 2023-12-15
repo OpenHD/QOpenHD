@@ -101,7 +101,7 @@ ScrollView {
 
                 }
 
-                Slider {
+                NewSlider {
                     id: smoothing_Slider
                     height: elementHeight
                     width: 210

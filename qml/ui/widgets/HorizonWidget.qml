@@ -51,7 +51,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     orientation: Qt.Horizontal
                     from: .3
                     value: settings.horizon_clip_area_scale
@@ -80,7 +80,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: horizon_width_Slider
                     orientation: Qt.Horizontal
                     from: 1
@@ -110,7 +110,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: horizon_spacing_Slider
                     orientation: Qt.Horizontal
                     from: 10
@@ -139,7 +139,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: horizon_range_Slider
                     orientation: Qt.Horizontal
                     from: 1
@@ -168,7 +168,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: horizon_step_Slider
                     orientation: Qt.Horizontal
                     from: 5

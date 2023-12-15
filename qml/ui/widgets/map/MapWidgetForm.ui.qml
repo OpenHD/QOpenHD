@@ -100,7 +100,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Slider {
+                NewSlider {
                     id: mini_zoomSlider
                     orientation: Qt.Horizontal
                     from: 1
@@ -129,7 +129,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Slider {
+                NewSlider {
                     id: mini_sizeSlider
                     orientation: Qt.Horizontal
                     from: 0.25
@@ -156,7 +156,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     orientation: Qt.Horizontal
                     from: .1
                     value: settings.map_opacity_minimized
@@ -465,7 +465,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Slider {
+                        NewSlider {
                             id: zoomSlider
                             orientation: Qt.Horizontal
                             from: 1
@@ -496,7 +496,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Slider {
+                        NewSlider {
                             orientation: Qt.Horizontal
                             from: .1
                             value: settings.map_opacity_maximized

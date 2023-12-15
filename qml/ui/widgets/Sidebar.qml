@@ -242,17 +242,17 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: valueSlider
                             from: 0
                             to: 3
                             stepSize: 1
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
                                 // Handle the slider value change here
-                                console.log("MCS Slider:", value)
+                                console.log("MCS NewSlider:", value)
                             }
                         }
                         Text{
@@ -273,17 +273,17 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: txPowerAirSlider
                             from: 22
                             to: 58
                             stepSize: 4
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 22 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
                                 // Handle the slider value change here
-                                console.log("TX Power Air Slider:", value)
+                                console.log("TX Power Air NewSlider:", value)
                             }
                         }
                         Text{
@@ -500,16 +500,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: resolutionSlider3
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution Slider:", value)
+                                console.log("Resolution NewSlider:", value)
                             }
                         }
                         Text{
@@ -596,16 +596,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: isoSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution Slider:", value)
+                                console.log("Resolution NewSlider:", value)
                             }
                         }
                         Text{
@@ -615,16 +615,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: exposureSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Framerate Slider:", value)
+                                console.log("Framerate NewSlider:", value)
                             }
                         }
                         Text{
@@ -634,16 +634,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: modeSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution Slider:", value)
+                                console.log("Resolution NewSlider:", value)
                             }
                         }
                     }
@@ -705,16 +705,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: recResolutionSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution Slider:", value)
+                                console.log("Resolution NewSlider:", value)
                             }
                         }
                         Text{
@@ -724,16 +724,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: recFramerateSlider
                             from: 0
                             to: 3
                             stepSize: 1
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Framerate Slider:", value)
+                                console.log("Framerate NewSlider:", value)
                             }
                         }
                         Text{
@@ -743,16 +743,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
+                        NewSlider {
                             id: recBitrateSlider
                             from: 2
                             to: 18
                             stepSize: 2
-                            //snapMode: Slider.SnapToStep
+                            //snapMode: NewSlider.SnapToStep
                             value: 8 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Birtate Slider:", value)
+                                console.log("Birtate NewSlider:", value)
                             }
                         }
                         Text{

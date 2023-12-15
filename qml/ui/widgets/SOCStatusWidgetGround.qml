@@ -150,7 +150,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_cpu_caution_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_cpu_caution
@@ -189,7 +189,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_cpu_warn_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_cpu_warn
@@ -228,7 +228,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_temp_caution_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_temp_caution
@@ -267,7 +267,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_temp_warn_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_temp_warn

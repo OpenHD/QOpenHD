@@ -59,7 +59,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Slider {
+        NewSlider {
             id: transparency_slider
             orientation: Qt.Horizontal
             from: .1
@@ -89,7 +89,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Slider {
+        NewSlider {
             id: item_scale_Slider
             orientation: Qt.Horizontal
             from: .5
@@ -119,7 +119,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        Slider {
+        NewSlider {
             orientation: Qt.Horizontal
             from: .5
             value: bw_qquickpainteditem_font_scale

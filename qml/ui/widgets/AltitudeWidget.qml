@@ -141,7 +141,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: altitude_range_Slider
                     orientation: Qt.Horizontal
                     from: 40

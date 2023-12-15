@@ -170,7 +170,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: speed_range_Slider
                     orientation: Qt.Horizontal
                     from: 40
@@ -200,7 +200,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: speed_minimum_Slider
                     orientation: Qt.Horizontal
                     from: 0

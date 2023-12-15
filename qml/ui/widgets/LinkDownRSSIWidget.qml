@@ -175,7 +175,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     orientation: Qt.Horizontal
                     from: 0
                     value: settings.downlink_packet_loss_perc_caution
@@ -203,7 +203,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     orientation: Qt.Horizontal
                     from: 0
                     value: settings.downlink_packet_loss_perc_warn

@@ -43,7 +43,7 @@ ScrollView {
 
                 }
 
-                Slider {
+                NewSlider {
                     id: screenScaleSpinBox
                     height: elementHeight
                     width: 210

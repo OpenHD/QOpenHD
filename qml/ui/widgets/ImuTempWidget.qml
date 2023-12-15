@@ -77,7 +77,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: imu_temp_warn_Slider
                     orientation: Qt.Horizontal
                     from: 75
@@ -117,7 +117,7 @@ BaseWidget {
                     anchors.left: imu_temp_caution_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: imu_temp_caution_Slider
                     orientation: Qt.Horizontal
                     from: 30
