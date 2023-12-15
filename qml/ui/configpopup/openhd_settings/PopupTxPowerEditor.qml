@@ -29,6 +29,7 @@ Rectangle{
     property int m_user_selected_card_manufacturer: -1;
     property int left_text_minimum_width: 100
     property int left_text_preferred_width: 100
+    property bool isSynced:false
 
     function open(){
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
@@ -72,7 +73,7 @@ Rectangle{
     // Should never show up !
     ListModel{
         id: model_error
-        ListElement {title: "Select wifi card first"; value: -1}
+        ListElement {title: "Not Enabled"; value: -1}
     }
 
     ListModel{
@@ -199,7 +200,7 @@ Rectangle{
             for(var i = 0; i < ret.count; ++i){
                 model_txpower_for_chip_type_manufacturer_armed.insert(i,ret.get(i));
             }
-            model_txpower_for_chip_type_manufacturer_armed.insert(1,{title: "DISABLE [0]", value: 0});
+            model_txpower_for_chip_type_manufacturer_armed.insert(1,{title: "Snyncronised with Disarmed", value: 0});
             return model_txpower_for_chip_type_manufacturer_armed;
         }
         return ret;
@@ -267,7 +268,7 @@ Rectangle{
                     Layout.fillWidth: true
                     ComboBox {
                         id: comboBoxCardSelectManufacturer
-                        Layout.minimumWidth: 170
+                        Layout.minimumWidth: 180
                         Layout.preferredWidth: 480
                         model: get_model_manufacturer_for_chip_type()
                         textRole: "title"
@@ -322,6 +323,7 @@ Rectangle{
                         text: "    SAVE Armed    "
                         enabled: m_user_selected_card_manufacturer >= 0;
                         onClicked: {
+                            isSynced=true;
                             var tx_power_index_or_mw = combo_box_txpower_armed.model.get(combo_box_txpower_armed.currentIndex).value;
                             if (tx_power_index_or_mw < 0) {
                                 _qopenhd.show_toast("Please select a valid tx power", false);
@@ -345,6 +347,61 @@ Rectangle{
                         textRole: "title"
                         enabled: m_user_selected_card_manufacturer >= 0;
                         font.pixelSize: 14
+                    }
+                }
+                Rectangle {
+                    width: comboBoxCardSelectManufacturer.width + 5
+                    height: comboBoxCardSelectManufacturer.height * 0.8
+                    color: "white"
+                    RowLayout{
+                        anchors.centerIn: parent
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.minimumHeight: 50
+                            text: "Tx-Power Disarmed: ";
+                            color: "black"
+                            wrapMode: Text.WordWrap
+                            verticalAlignment: Qt.AlignVCenter
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.minimumHeight: 50
+                            text: get_current_tx_power_int(1)+" "+get_tx_power_unit();
+                            color: "black"
+                            font.bold: true
+                            wrapMode: Text.WordWrap
+                            verticalAlignment: Qt.AlignVCenter
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.minimumHeight: 50
+                            text: "      ";
+                            color: "black"
+                            wrapMode: Text.WordWrap
+                            verticalAlignment: Qt.AlignVCenter
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.minimumHeight: 50
+                            text: "Tx-Power Armed: ";
+                            color: "black"
+                            wrapMode: Text.WordWrap
+                            verticalAlignment: Qt.AlignVCenter
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.minimumHeight: 50
+                            text: {
+                                                var power_int=get_current_tx_power_int(2);
+                                                if(power_int==0) return get_current_tx_power_int(1) +" "+get_tx_power_unit();
+                                                return get_current_tx_power_int(2)+" "+get_tx_power_unit();
+                                            }
+                            color: "black"
+                            font.bold: true
+                            wrapMode: Text.WordWrap
+                            verticalAlignment: Qt.AlignVCenter
+                        }
+
                     }
                 }
             }
