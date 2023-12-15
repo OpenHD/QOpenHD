@@ -352,7 +352,7 @@ Rectangle{
             id: intEnumDynamicListModel
             ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
         }
-        ComboBox {
+        NewComboBox {
             id: intEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14
@@ -373,7 +373,7 @@ Rectangle{
             ListElement {title: "I SHOULD NEVER APPEAR"; value:"ERROR"}
         }
 
-        ComboBox {
+        NewComboBox {
             id: stringEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14

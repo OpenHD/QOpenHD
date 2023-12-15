@@ -430,7 +430,7 @@ BaseWidget {
                     spacing: 6
                     width: settingsVisible ? 488 : 0
 
-                    ComboBox {
+                    NewComboBox {
                         id: providerDropdown
                         height: 48
                         width: parent.width
@@ -442,7 +442,7 @@ BaseWidget {
 
                     }
 
-                    ComboBox {
+                    NewComboBox {
                         id: variantDropdown
                         height: 48
                         width: parent.width

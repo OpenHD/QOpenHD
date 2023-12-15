@@ -107,7 +107,7 @@ Rectangle {
         Item {
             anchors.fill: parent
 
-            ComboBox {
+            NewComboBox {
                 id: choiceBox
                 model: ["Top Left", "Top Right", "Bottom Right", "Bottom Left"]
             }

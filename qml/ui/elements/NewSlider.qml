@@ -46,6 +46,19 @@ Slider {
         }
     }
 
+    onHoveredChanged: {
+        if (control.hovered == true){
+            handle.color="#33aaff"
+            highlight.color="#33aaff"
+            animateHighlight.start()
+        }
+        else{
+            handle.color="#33aaff"
+            highlight.color="transparent"
+            animateHighlight.stop()
+        }
+    }
+
     Keys.onPressed: {
         if (event.key === Qt.Key_S){
             if (selected == false){

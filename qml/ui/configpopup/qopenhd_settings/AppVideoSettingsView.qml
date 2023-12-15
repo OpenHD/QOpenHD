@@ -59,7 +59,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Video codec primary"
                     m_long_description: "Video codec of primary stream (main video). Automatically fetched from OpenHD."
-                    ComboBox {
+                    NewComboBox {
                         id: selectVideoCodecPrimary
                         width: 320
                         height: elementHeight
@@ -118,7 +118,7 @@ ScrollView {
                     m_long_description: "Video codec of secondary stream (pip video). Automatically fetched from OpenHD."
                     // only show to dualcam users
                     visible: settings.dev_qopenhd_n_cameras==2
-                    ComboBox {
+                    NewComboBox {
                         id: selectVideoCodecSecondary
                         width: 320
                         height: elementHeight
@@ -193,7 +193,7 @@ ScrollView {
                         height: elementHeight
                         anchors.left: parent.left
                     }
-                    ComboBox {
+                    NewComboBox {
                         width: 320
                         height: elementHeight
                         anchors.right: parent.right

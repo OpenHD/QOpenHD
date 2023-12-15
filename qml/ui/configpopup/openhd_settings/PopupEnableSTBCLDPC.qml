@@ -78,7 +78,7 @@ Rectangle{
             }
         }
 
-        ComboBox {
+        NewComboBox {
             id: comboBoxNAntennasAir
             Layout.minimumWidth: 100
             Layout.preferredWidth: 450
@@ -91,7 +91,7 @@ Rectangle{
                 }
             }
         }
-        ComboBox {
+        NewComboBox {
             id: comboBoxNAntennasGnd
             Layout.minimumWidth: 100
             Layout.preferredWidth: 450

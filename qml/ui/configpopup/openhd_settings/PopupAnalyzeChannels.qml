@@ -114,7 +114,7 @@ Rectangle{
                 }
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
             }
-            ComboBox {
+            NewComboBox {
                 Layout.preferredWidth: 150
                 Layout.minimumWidth: 50
                 id: comboBoxWhichFrequencyToAnalyze

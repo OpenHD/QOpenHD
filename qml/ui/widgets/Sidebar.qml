@@ -262,7 +262,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        ComboBox {
+                        NewComboBox {
                             width: 200
                             model: [ "2312", "2332", "2352", "2372", "2392", "2412", "2432", "2452", "2472", "2492", "2512", "2532", "2572", "2592", "2612", "2632", "2652", "2672", "2692", "2712", "5180", "5200", "5220", "5240", "5260", "5280", "5300", "5320", "5500", "5520", "5540", "5560", "5580", "5600", "5620", "5640", "5660", "5680", "5700", "5745", "5765", "5785", "5805", "5825", "5845", "5865", "5885" ]
                         }
@@ -481,13 +481,13 @@ BaseWidget {
                         anchors.centerIn: parent
                         spacing: 5
 
-                        ComboBox {
+                        NewComboBox {
                             id:raspberryCams3
                             visible: true
                             width: 200
                             model: [ "IMX708","IMX462","IMX477" ]
                         }
-                        ComboBox {
+                        NewComboBox {
                             id:rock5Cams3
                             visible: false
                             width: 200
@@ -824,7 +824,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        ComboBox {
+                        NewComboBox {
                             id:displayResolution
                             visible: true
                             width: 200

@@ -137,7 +137,7 @@ ScrollView {
                     m_short_description: "Screen rotation"
                     m_long_description: "Rotate QOpenHD, can be usefull if your screen is installed the wrong way around. Might or might not work."
                     // anything other than 0 and 180 can breaks things
-                    ComboBox {
+                    NewComboBox {
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
@@ -250,7 +250,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Font DPI"
                     m_long_description: "Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD."
-                    ComboBox {
+                    NewComboBox {
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18

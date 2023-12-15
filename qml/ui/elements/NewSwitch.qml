@@ -53,7 +53,7 @@ SwitchDelegate {
     indicator: Rectangle {
         id:pill
         implicitWidth: 48
-        implicitHeight: 18
+        implicitHeight: 13
         x: control.width - width - control.rightPadding
         y: parent.height / 2 - height / 2
         radius: 13
@@ -77,9 +77,9 @@ SwitchDelegate {
             id:knob
             x: control.checked ? parent.width - width : 0
             y: parent.height / 2 - height / 2
-            width: 26
-            height: 26
-            radius: 13
+            width: 22
+            height: 22
+            radius: 12
             color: control.checked ? "#33aaff" : "#A5A1A0"
             border.color: control.checked ? "transparent"  : "grey"
             opacity: 1

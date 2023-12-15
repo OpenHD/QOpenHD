@@ -68,7 +68,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                ComboBox {
+                NewComboBox {
                     id: batteryComboBox
                     width: 100
                     height: parent.height

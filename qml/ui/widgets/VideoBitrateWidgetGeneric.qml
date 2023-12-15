@@ -190,7 +190,7 @@ BaseWidget {
                 }
             }
 
-            ComboBox{
+            NewComboBox{
                 id: resolution_fps_cb
                 model: resolutions_model
                 textRole: "title"
