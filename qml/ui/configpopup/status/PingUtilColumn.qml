@@ -39,7 +39,7 @@ Item {
                 text: "Ping all systems"
                 onClicked: _mavlinkTelemetry.ping_all_systems()
             }
-            GgSwitch {
+            NewSwitch {
                 text: "Auto-ping"
                 onCheckedChanged: {
                     if (checked) {

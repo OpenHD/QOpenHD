@@ -31,7 +31,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Vehicle Battery Cells"
                 m_long_description: "When show voltage per cell is selected (off by dfault) in the HUD, set this to the N of cells your air battery has."
-                GgSpinBox {
+                NewSpinBox {
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
@@ -52,7 +52,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Show FC Messages in HUD"
                 m_long_description: "When enabled, FC log messages are shown in the HUD log messages element,e.g. they might apear before,during and after flight"
-                GgSwitch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -66,7 +66,7 @@ ScrollView {
                 m_short_description: "Set mavlink message rates"
                 m_long_description: "Set mavlink message rate(s) that should work for most users. NOTE: When disabling this feature, you have to manually set the mavlink message rate(s)
  via mission planner for your autpilot running ardupilot/ PX4 ! After disabling, a reboot of the FC is required."
-                GgSwitch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -81,7 +81,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "High mavlink message rates"
                 m_long_description: "Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD."
-                GgSwitch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -99,7 +99,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "High mavlink message rates RC"
                 m_long_description: "Increases the rate for mavlink down rc channel messages (This does not affect your RC over openhd latency !)"
-                GgSwitch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -117,7 +117,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Log quiet FC warning"
                 m_long_description: "Log a warning when we get heartbeats from the FC, but not proper data"
-                GgSwitch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

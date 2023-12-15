@@ -187,6 +187,10 @@
         <file>ui/elements/SettingBaseElement.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
         <file>ui/widgets/BaseWidgetDefaultUiControlElements.qml</file>
+        <file>ui/elements/NewSlider.qml</file>
+        <file>ui/elements/NewComboBox.qml</file>
+        <file>ui/elements/NewSwitch.qml</file>
+        <file>ui/elements/NewSpinBox.qml</file>
         <file>resources/cursors/arrow_512_transparent.png</file>
         <file>resources/cursors/arrow_512_green.png</file>
         <file>resources/cursors/arrow_512_white.png</file>
@@ -266,9 +270,5 @@
         <file>ui/elements/ButtonIconConnect.qml</file>
         <file>ui/elements/SmallHeaderInfoRow.qml</file>
         <file>ui/elements/SettingsCategory.qml</file>
-        <file>ui/elements/GgSlider.qml</file>
-        <file>ui/elements/GgComboBox.qml</file>
-        <file>ui/elements/GgSwitch.qml</file>
-        <file>ui/elements/GgSpinbox.qml</file>
     </qresource>
 </RCC>

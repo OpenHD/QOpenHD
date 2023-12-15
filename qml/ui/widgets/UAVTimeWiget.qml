@@ -8,6 +8,8 @@ import QtQml 2.15
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: uavtmewidget
     width: 100

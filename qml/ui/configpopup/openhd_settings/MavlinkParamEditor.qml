@@ -324,10 +324,10 @@ Rectangle{
         // Value edit part begin
 
         // Type int only begin --------------------------
-        // For int values that do not have an enum mapping, we use a GgSpinBox such that the user can either
+        // For int values that do not have an enum mapping, we use a NewSpinBox such that the user can either
         // use the +/- to edit the value (for touch screen users) but also allows the user to
         // type in an int value directly with the keyboard.
-        GgSpinBox {
+        NewSpinBox {
             id: spinBoxInputParamtypeInt
             height: customHeight
             font.pixelSize: 14
@@ -352,7 +352,7 @@ Rectangle{
             id: intEnumDynamicListModel
             ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
         }
-        GgComboBox {
+        ComboBox {
             id: intEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14
@@ -373,7 +373,7 @@ Rectangle{
             ListElement {title: "I SHOULD NEVER APPEAR"; value:"ERROR"}
         }
 
-        GgComboBox {
+        ComboBox {
             id: stringEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14

@@ -9,14 +9,14 @@ import QtQuick.Controls.Material 2.12
 // NOTE: QOpenHD, not OpenHD/Mavlink settings !
 // It does not define the element that is actually then used to edit the QT setting -
 // See any implementation for an example how to use.
-// This element could be a GgSwitch, a GgSpinBox, ...
+// This element could be a Switch, a NewSpinBox, ...
 // E.g. visualized a single column with this layout:
 // ----------------------------------------------------------------------------------
 // | [Description]    [opional info popup]          [actuall seting element, empty] |
 // ----------------------------------------------------------------------------------
 // Description UI element  -> fetched from @property m_short_description
 // Optional info popup     -> icon visible when @property m_long_description!=="none"
-// actuall seting element  -> fill with e.g. your QT settings element, e.g. a GgSwitch
+// actuall seting element  -> fill with e.g. your QT settings element, e.g. a Switch
 Rectangle {
     width: parent.width
     height: rowHeight*2 / 3;

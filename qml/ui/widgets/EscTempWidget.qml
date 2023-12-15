@@ -6,6 +6,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: escTempWidget
     width: 30
@@ -45,7 +47,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                GgSwitch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -76,7 +78,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                GgSlider {
+                Slider {
                     id: esc_temp_warn_Slider
                     orientation: Qt.Horizontal
                     from: 75
@@ -116,7 +118,7 @@ BaseWidget {
                     anchors.left: esc_temp_caution_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                GgSlider {
+                Slider {
                     id: esc_temp_caution_Slider
                     orientation: Qt.Horizontal
                     from: 30

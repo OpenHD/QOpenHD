@@ -95,7 +95,7 @@ Rectangle{
                 }
             }
 
-            GgComboBox {
+            ComboBox {
                 Layout.preferredWidth: 400
                 Layout.minimumWidth: 100
                 id: comboBoxWhichFrequencyToScan

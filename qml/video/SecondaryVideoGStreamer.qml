@@ -194,7 +194,7 @@ Item {
                         width: 100
                         text: "Minimized Width (px)"
                     }
-                    GgSpinbox {
+                    SpinBox {
                         stepSize: 1
                         editable: true
                         from:25
@@ -211,7 +211,7 @@ Item {
                         width: 100
                         text: "Minimized Height (px)"
                     }
-                    GgSpinbox {
+                    SpinBox {
                         stepSize: 1
                         editable: true
                         from:25
@@ -228,7 +228,7 @@ Item {
                         width: 100
                         text: "Maximize factor %"
                     }
-                    GgSpinbox {
+                    NewSpinBox {
                         stepSize: 1
                         editable: true
                         from:120

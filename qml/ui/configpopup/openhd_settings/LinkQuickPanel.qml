@@ -150,7 +150,7 @@ Rectangle{
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 8
-                        GgComboBox {
+                        ComboBox {
                             width: elementComboBoxWidth
                             id: comboBoxFreq
                             model: frequencies_model

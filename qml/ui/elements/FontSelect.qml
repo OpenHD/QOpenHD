@@ -18,7 +18,7 @@ Item {
         update_selection();
     }
 
-    GgComboBox {
+    ComboBox {
         id: fontDropdown
         anchors.fill: parent
         font.pixelSize: 14

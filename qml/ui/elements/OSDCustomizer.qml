@@ -195,7 +195,7 @@ Rectangle {
             /*Item{
                 height: 60
                 width: parent.width - 24
-                GgSlider{
+                Slider{
                     from: 0.5
                     to: 1.5
                     value: settings.hud_osd_qquickpainteditem_font_scale

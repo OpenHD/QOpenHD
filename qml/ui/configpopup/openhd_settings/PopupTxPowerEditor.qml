@@ -264,7 +264,7 @@ Rectangle{
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 14
             }
-            GgComboBox {
+            ComboBox {
                 id: comboBoxCardSelectManufacturer
                 Layout.minimumWidth: 100
                 Layout.preferredWidth: 350
@@ -290,7 +290,7 @@ Rectangle{
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 14
             }
-            GgComboBox {
+            ComboBox {
                 Layout.minimumWidth: 100
                 Layout.preferredWidth: 350
                 id: combo_box_txpower_disarmed
@@ -345,7 +345,7 @@ Rectangle{
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 14
             }
-            GgComboBox {
+            ComboBox {
                 Layout.minimumWidth: 100
                 Layout.preferredWidth: 350
                 id: combo_box_txpower_armed
