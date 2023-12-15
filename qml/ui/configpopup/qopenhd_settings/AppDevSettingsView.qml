@@ -32,7 +32,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "DEV_SHOW_WHITELISTED_PARAMS"
                 m_long_description: "Enabling this gives you full controll over the mavlink parameters set openhd exposes (both air and ground) BUT BE WARNED yu can easily break things!"
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -46,7 +46,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description:"DEV_SHOW_ADVANCED_BUTTON"
                 m_long_description: "Allows more customization of the mavlink parameters set than what openhd exposes, BE WARNED you can easily break things this way !"
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -60,7 +60,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description:"dev_allow_freq_change_when_armed"
                 m_long_description: "Allows changing the frequency and channel width while armed, THIS CAN BREAK YOUR LINK DURING FLIGHT !"
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -142,7 +142,7 @@ ScrollView {
                 m_short_description: "Enable audio playback"
                 m_long_description: "Enable live audio playback in QOpenHD, NOTE: audio streaming is not supported in OpenHD yet. Requires restart of QOpenHD."
 
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -157,7 +157,7 @@ ScrollView {
                 m_short_description: "dirty_enable_inav_hacks"
                 m_long_description: "NEVER ENABLE UNLESS YOU HAVE TO. INAV mavlink support is quirky in some ways to say the least."
 
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -172,7 +172,7 @@ ScrollView {
                 m_short_description: "dirty_enable_mavlink_fc_sys_id_check"
                  m_long_description: "Only accept FCs that explicitly expose themselves as autopilot - can fix issues with FC discovery in QOpenHD."
 
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -187,7 +187,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "dev_mavlink_via_tcp"
                 m_long_description: "Requires full restart. Connect via TCP instead of UDP. Requires matching server IP."
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -216,7 +216,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "dev_wb_show_no_stbc_enabled_warning"
                 m_long_description: "Do not show the STBC recommended enabled message"
-                Switch {
+                NewSwitch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

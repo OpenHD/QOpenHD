@@ -7,6 +7,8 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: gpsWidget
     width: 96
@@ -90,7 +92,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -111,7 +113,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -139,7 +141,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -170,7 +172,7 @@ BaseWidget {
                     anchors.left: gps_warn_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: gps_warn_Slider
                     orientation: Qt.Horizontal
                     from: 3
@@ -210,7 +212,7 @@ BaseWidget {
                     anchors.left: gps_caution_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: gps_caution_Slider
                     orientation: Qt.Horizontal
                     from: .5

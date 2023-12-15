@@ -6,6 +6,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: groundStatusWidget
     width: 112
@@ -97,7 +99,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -118,7 +120,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -148,7 +150,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_cpu_caution_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_cpu_caution
@@ -187,7 +189,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_cpu_warn_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_cpu_warn
@@ -226,7 +228,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_temp_caution_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_temp_caution
@@ -265,7 +267,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                Slider {
+                NewSlider {
                     id: ground_status_temp_warn_Slider
                     orientation: Qt.Horizontal
                     value: settings.ground_status_temp_warn

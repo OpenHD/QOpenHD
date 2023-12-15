@@ -9,7 +9,7 @@ import QtQuick.Controls.Material 2.12
 // NOTE: QOpenHD, not OpenHD/Mavlink settings !
 // It does not define the element that is actually then used to edit the QT setting -
 // See any implementation for an example how to use.
-// This element could be a Switch, a SpinBox, ...
+// This element could be a Switch, a NewSpinBox, ...
 // E.g. visualized a single column with this layout:
 // ----------------------------------------------------------------------------------
 // | [Description]    [opional info popup]          [actuall seting element, empty] |

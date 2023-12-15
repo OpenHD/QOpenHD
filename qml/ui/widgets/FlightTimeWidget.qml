@@ -6,6 +6,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: flightTimeWidget
     width: 96

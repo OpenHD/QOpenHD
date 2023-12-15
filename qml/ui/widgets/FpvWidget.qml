@@ -7,6 +7,8 @@ import QtQuick.Controls.Material 2.12
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: fpvWidget
     width: 50
@@ -41,7 +43,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -63,7 +65,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -88,7 +90,7 @@ BaseWidget {
                 anchors.left: parent.left
                 verticalAlignment: Text.AlignVCenter
             }
-            Switch {
+            NewSwitch {
                 width: 32
                 height: parent.height
                 anchors.rightMargin: 6

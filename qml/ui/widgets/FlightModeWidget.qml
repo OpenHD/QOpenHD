@@ -56,7 +56,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6

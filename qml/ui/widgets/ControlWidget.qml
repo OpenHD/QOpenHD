@@ -6,6 +6,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: controlWidget
     width: 100
@@ -93,7 +95,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -114,7 +116,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -135,7 +137,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -156,7 +158,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -177,7 +179,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -198,7 +200,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6

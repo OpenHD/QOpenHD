@@ -8,6 +8,7 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
+import "../elements"
 
 /* Plane or Copter decides if the widget will use mavlink wind msg (only available for planes)
   or openhd calculated wind messages which are based on expected tilt vs actual tilt.
@@ -51,7 +52,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -72,7 +73,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6

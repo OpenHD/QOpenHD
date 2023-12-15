@@ -7,6 +7,8 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: headingWidget
     width: 48
@@ -51,7 +53,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
@@ -72,7 +74,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                Switch {
+                NewSwitch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
