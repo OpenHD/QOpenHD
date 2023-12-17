@@ -126,7 +126,7 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
     //no point in continuing because no location. This is somewhat redundant with parser
     //possible situation where we start to not get location.. and gets stale then removed
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-
+qDebug() << "ADD/Update ADSB Vehicle";
         //decide if its new or needs update
         if (_adsbICAOMap.contains(icaoAddress)) {
             _adsbICAOMap[icaoAddress]->update(vehicleInfo);
@@ -209,6 +209,7 @@ void ADSBapi::init(void) {
  * keep in case api changes again
  */
 void ADSBapi::mapBoundsChanged(double map_lat, double map_lon) {
+    qDebug() << "------------------Adsbapi::mapboundschanged()";
     m_api_lat=map_lat;
     m_api_lon=map_lon;
     qreal adsb_distance_limit = _settings.value("adsb_distance_limit").toInt();
@@ -228,17 +229,19 @@ void ADSBapi::mapBoundsChanged(double map_lat, double map_lon) {
 
 
 void ADSBInternet::requestData(void) {
+    qDebug() << "------------------AdsbInternet::requestdata()";
     _adsb_api_openskynetwork = _settings.value("adsb_api_openskynetwork").toBool();
     _show_adsb_internet = _settings.value("show_adsb").toBool();
 
     // If openskynetwork is disabled by settings don't make the request and return
     if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
-        return;
+     //TODO manage settings
+     //   return;
     }
 
     //adsb_url= "https://opensky-network.org/api/states/all?lamin="+lowerr_lat+"&lomin="+upperl_lon+"&lamax="+upperl_lat+"&lomax="+lowerr_lon;
     //TODO REFCTOR URL FOR NEW API
-    adsb_url="<<<<<<<<<<<URL TODO>>>>>>>>>>>>>>>>";
+    adsb_url="https://api.airplanes.live/v2/point/40.48205/-3.35996/100";
     QNetworkRequest request;
     QUrl api_request = adsb_url;
     request.setUrl(api_request);
@@ -251,13 +254,14 @@ void ADSBInternet::requestData(void) {
 void ADSBInternet::processReply(QNetworkReply *reply) {
 
     if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
-        return;
+     //TODO manage user settings
+     //   return;
     }
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
-    //qDebug() << "MAX adsb distance=" << max_distance;
+    qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
         qDebug() << "ADSB OpenSky request error!";
@@ -296,30 +300,41 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         return;
     }
 
-    QJsonValue value = jsonObject.value("states");
-    QJsonArray array = value.toArray();
 
-    foreach (const QJsonValue & v, array){
+
+    QJsonArray acArray = doc.object()["ac"].toArray();
+
+    qDebug()<<"count:" << acArray.count();
+
+    // Iterate through the "ac" array
+    for (const QJsonValue &aircraftValue : acArray) {
+        QJsonObject aircraft = aircraftValue.toObject();
+
+        qDebug() << "Type:" << aircraft["type"].toString();
+        qDebug() << "Flight:" << aircraft["flight"].toString();
+        // Add more fields as needed
+        qDebug() << "";
 
         ADSBVehicle::VehicleInfo_t adsbInfo;
+
+        //Aircraft Hex
         bool icaoOk;
-
-        QJsonArray innerarray = v.toArray();
-        QString icaoAux = innerarray[0].toString();
+        QString icaoAux = aircraft["hex"].toString();
         adsbInfo.icaoAddress = icaoAux.toUInt(&icaoOk, 16);
-
+        qDebug() << "Hex:" << aircraft["hex"].toString();
         // Skip this element if icao number is not ok
         if (!icaoOk) {
+            qDebug()<<"skipping - icao not ok";
             continue;
         }
 
-        // location comes in lat lon format, but we need it as QGeoCoordinate
-        if(innerarray[6].isNull() || innerarray[5].isNull()){ //skip if no lat lon
+        //Aircraft lat/lon
+        if(aircraft["lat"].isNull() || aircraft["lon"].isNull()){ //skip if no lat lon
             continue;
         }
-        double lat = innerarray[6].toDouble();
-        double lon = innerarray[5].toDouble();
-        //QGeoCoordinate location(lat, lon);
+        double lat = aircraft["lat"].toDouble();
+        double lon = aircraft["lon"].toDouble();
+        qDebug()<<"lat/lon" << lat << " / " << lon;
         //adsbInfo.location = location;
         adsbInfo.vehicle_lat = lat;
         adsbInfo.vehicle_lon = lon;
@@ -340,37 +355,37 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         double distance = 6371 * c;
 
         adsbInfo.distance = distance;
-        //qDebug() << "adsb internet distance=" << distance;
+        qDebug() << "adsb internet distance=" << distance;
         adsbInfo.availableFlags |= ADSBVehicle::DistanceAvailable;
 
         // If aircraft beyond max distance than skip this one
         if(distance>max_distance){
-            //qDebug() << "Beyond max SKIPPING";
-            continue;
+            qDebug() << "Beyond max SKIPPING";
+            //TODO commented for testing
+            //continue;
         }
 
-        // rest of fields
-
-        // callsign
-        adsbInfo.callsign = innerarray[1].toString();
+        //Aircraft callsign
+        adsbInfo.callsign = aircraft["flight"].toString();
         if (adsbInfo.callsign.length() == 0) {
             adsbInfo.callsign = "N/A";
         }
         adsbInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
 
-        //altitude
-        if(innerarray[7].isDouble()){
-            adsbInfo.altitude = innerarray[7].toDouble();
+        //Aircraft altitude
+        if(aircraft["alt_baro"].toDouble()){
+            adsbInfo.altitude = aircraft["alt_baro"].toDouble();
+            qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
             //per setting eliminate all unknown alt
             if (adsbInfo.altitude<5 && unknown_zero_alt==false){
-                //skip this traffic
+                qDebug() << "ADSB Skipping aircraft for alt error";
                 continue;
             }
         }
         else {
             //per setting eliminate all unknown alt
             if (unknown_zero_alt==false){
-                //skip this traffic
+                qDebug() << "ADSB Skipping aircraft for alt error";
                 continue;
             }
             else {
@@ -379,18 +394,18 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         }
         adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
 
-        //velocity
-        if(innerarray[9].isDouble()){
-            adsbInfo.velocity = innerarray[9].toDouble() * 3.6; // m/s to km/h
+        //Aircraft velocity
+        if(aircraft["gs"].toDouble()){
+            adsbInfo.velocity = aircraft["gs"].toDouble() * 3.6; // m/s to km/h
         }
         else {
             adsbInfo.velocity=99999.9;
         }
         adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
 
-        //heading
-        if(innerarray[10].isDouble()){
-            adsbInfo.heading = innerarray[10].toDouble();
+        //Aircraft heading
+        if(aircraft["track"].toDouble()){
+            adsbInfo.heading = aircraft["track"].toDouble();
         }
         else {
             adsbInfo.heading=0.0;
@@ -398,17 +413,17 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
 
         //last contact
-        if(innerarray[4].isNull()){
+        if(aircraft["seen"].isNull()){
             adsbInfo.lastContact=0;
         }
         else {
-            adsbInfo.lastContact = innerarray[4].toInt();
+            adsbInfo.lastContact = aircraft["seen"].toInt();
         }
         adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
 
         //vertical velocity
-        if(innerarray[11].isDouble()){
-            adsbInfo.verticalVel = innerarray[11].toDouble();
+        if(aircraft["baro_rate"].isDouble()){
+            adsbInfo.verticalVel = aircraft["baro_rate"].toDouble();
         }
         else {
             adsbInfo.verticalVel=0.0;
