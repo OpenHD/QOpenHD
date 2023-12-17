@@ -24,6 +24,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/models/wificard.h"
 #include "telemetry/MavlinkTelemetry.h"
 #include "telemetry/models/rcchannelsmodel.h"
+#include "telemetry/models/markermodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/wblinksettingshelper.h"
 #include "telemetry/settings/frequencyhelper.h"
@@ -34,6 +35,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/aoagauge.h"
+#include "adsb/adsb.h"
+#include "adsb/adsbvehicle.h"
+#include "adsb/adsbvehiclemanager.h"
+#include "adsb/qmlobjectlistmodel.h"
+
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
 #include "decodingstatistcs.h"
@@ -293,6 +299,10 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
 
+
+    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
+
+
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
@@ -338,6 +348,11 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
     engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
+    //engine.rootContext()->setContextProperty("_markermodel", &MarkerModel::instance());
+    auto adsbVehicleManager = ADSBVehicleManager::instance();
+    engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
+    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
+    adsbVehicleManager->onStarted();
     // And then the main part
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
 
