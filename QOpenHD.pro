@@ -101,6 +101,10 @@ LinuxBuild {
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
+    app/adsb/adsb.cpp \
+    app/adsb/adsbvehicle.cpp \
+    app/adsb/adsbvehiclemanager.cpp \
+    app/adsb/qmlobjectlistmodel.cpp \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
     app/util/mousehelper.cpp \
@@ -111,6 +115,10 @@ SOURCES += \
     app/main.cpp \
 
 HEADERS += \
+    app/adsb/adsb.h \
+    app/adsb/adsbvehicle.h \
+    app/adsb/adsbvehiclemanager.h \
+    app/adsb/qmlobjectlistmodel.h \
     app/common/util_fs.h \
     app/common/StringHelper.hpp \
     app/common/TimeHelper.hpp \
