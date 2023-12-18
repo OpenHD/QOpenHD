@@ -6,8 +6,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 // RSSI reported by the FC, aka the RSSI from the (non-wifibroadcast!) rc controll link
 // (In case rc over wb is used, this widget should be disabled)
 BaseWidget {

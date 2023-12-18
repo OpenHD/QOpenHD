@@ -6,8 +6,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 BaseWidget {
     id: horizonWidget
     width: 250
@@ -51,7 +49,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     orientation: Qt.Horizontal
                     from: .3
                     value: settings.horizon_clip_area_scale
@@ -80,7 +78,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: horizon_width_Slider
                     orientation: Qt.Horizontal
                     from: 1
@@ -110,7 +108,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: horizon_spacing_Slider
                     orientation: Qt.Horizontal
                     from: 10
@@ -139,7 +137,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: horizon_range_Slider
                     orientation: Qt.Horizontal
                     from: 1
@@ -168,7 +166,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: horizon_step_Slider
                     orientation: Qt.Horizontal
                     from: 5
@@ -197,7 +195,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -219,7 +217,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -240,7 +238,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -261,7 +259,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     x: 190
                     y: 0
                     width: 32
@@ -284,7 +282,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     x: 190
                     y: 0
                     width: 32
@@ -308,7 +306,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     x: 190
                     y: 0
                     width: 32
@@ -331,7 +329,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     x: 190
                     y: 0
                     width: 32

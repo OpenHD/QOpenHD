@@ -95,7 +95,7 @@ Rectangle{
                 }
             }
 
-            NewComboBox {
+            ComboBox {
                 Layout.preferredWidth: 400
                 Layout.minimumWidth: 100
                 id: comboBoxWhichFrequencyToScan

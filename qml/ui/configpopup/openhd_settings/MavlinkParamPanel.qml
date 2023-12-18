@@ -73,7 +73,7 @@ Rectangle {
                 _messageBoxInstance.set_text_and_show(text)
             }
         }
-        NewSwitch{
+        Switch{
             checked: settings.screen_settings_openhd_parameters_transparent
             onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
         }

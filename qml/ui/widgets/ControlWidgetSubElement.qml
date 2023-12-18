@@ -1,7 +1,5 @@
 import QtQuick 2.0
 
-import "../elements"
-
 // Simple way to show a "stick" position in qml
 // Draws a big circle to show the full range and
 // a small circle to show the input itself

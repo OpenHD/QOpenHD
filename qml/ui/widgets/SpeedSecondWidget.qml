@@ -6,8 +6,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 BaseWidget {
     id: speedsecondWidget
     width: 80
@@ -77,7 +75,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -98,7 +96,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -119,7 +117,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6

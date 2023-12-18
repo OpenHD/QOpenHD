@@ -13,8 +13,6 @@ import "../";
 
 import OpenHD 1.0
 
-import "../../elements"
-
 BaseWidget {
     id: mapWidget
 
@@ -100,7 +98,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                NewSlider {
+                Slider {
                     id: mini_zoomSlider
                     orientation: Qt.Horizontal
                     from: 1
@@ -129,7 +127,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                NewSlider {
+                Slider {
                     id: mini_sizeSlider
                     orientation: Qt.Horizontal
                     from: 0.25
@@ -156,7 +154,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     orientation: Qt.Horizontal
                     from: .1
                     value: settings.map_opacity_minimized
@@ -181,7 +179,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -202,7 +200,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -223,7 +221,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -430,7 +428,7 @@ BaseWidget {
                     spacing: 6
                     width: settingsVisible ? 488 : 0
 
-                    NewComboBox {
+                    ComboBox {
                         id: providerDropdown
                         height: 48
                         width: parent.width
@@ -442,7 +440,7 @@ BaseWidget {
 
                     }
 
-                    NewComboBox {
+                    ComboBox {
                         id: variantDropdown
                         height: 48
                         width: parent.width
@@ -465,7 +463,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        NewSlider {
+                        Slider {
                             id: zoomSlider
                             orientation: Qt.Horizontal
                             from: 1
@@ -496,7 +494,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        NewSlider {
+                        Slider {
                             orientation: Qt.Horizontal
                             from: .1
                             value: settings.map_opacity_maximized
@@ -525,7 +523,7 @@ BaseWidget {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        NewSwitch {
+                        Switch {
                             id: switch1
                             width: 32
                             height: parent.height

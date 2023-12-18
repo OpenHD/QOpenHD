@@ -242,17 +242,17 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: valueSlider
                             from: 0
                             to: 3
                             stepSize: 1
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
                                 // Handle the slider value change here
-                                console.log("MCS NewSlider:", value)
+                                console.log("MCS Slider:", value)
                             }
                         }
                         Text{
@@ -262,7 +262,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewComboBox {
+                        ComboBox {
                             width: 200
                             model: [ "2312", "2332", "2352", "2372", "2392", "2412", "2432", "2452", "2472", "2492", "2512", "2532", "2572", "2592", "2612", "2632", "2652", "2672", "2692", "2712", "5180", "5200", "5220", "5240", "5260", "5280", "5300", "5320", "5500", "5520", "5540", "5560", "5580", "5600", "5620", "5640", "5660", "5680", "5700", "5745", "5765", "5785", "5805", "5825", "5845", "5865", "5885" ]
                         }
@@ -273,17 +273,17 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: txPowerAirSlider
                             from: 22
                             to: 58
                             stepSize: 4
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 22 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
                                 // Handle the slider value change here
-                                console.log("TX Power Air NewSlider:", value)
+                                console.log("TX Power Air Slider:", value)
                             }
                         }
                         Text{
@@ -369,7 +369,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSwitch {
+                        Switch {
                             text: qsTr("")
                         }
                         Text{
@@ -481,13 +481,13 @@ BaseWidget {
                         anchors.centerIn: parent
                         spacing: 5
 
-                        NewComboBox {
+                        ComboBox {
                             id:raspberryCams3
                             visible: true
                             width: 200
                             model: [ "IMX708","IMX462","IMX477" ]
                         }
-                        NewComboBox {
+                        ComboBox {
                             id:rock5Cams3
                             visible: false
                             width: 200
@@ -500,16 +500,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: resolutionSlider3
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution NewSlider:", value)
+                                console.log("Resolution Slider:", value)
                             }
                         }
                         Text{
@@ -519,7 +519,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSwitch {
+                        Switch {
                         }
                         TabBar {
                             id: cameraSwitch
@@ -596,16 +596,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: isoSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution NewSlider:", value)
+                                console.log("Resolution Slider:", value)
                             }
                         }
                         Text{
@@ -615,16 +615,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: exposureSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Framerate NewSlider:", value)
+                                console.log("Framerate Slider:", value)
                             }
                         }
                         Text{
@@ -634,16 +634,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: modeSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution NewSlider:", value)
+                                console.log("Resolution Slider:", value)
                             }
                         }
                     }
@@ -705,16 +705,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: recResolutionSlider
                             from: 0
                             to: 2
                             stepSize: 1
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Resolution NewSlider:", value)
+                                console.log("Resolution Slider:", value)
                             }
                         }
                         Text{
@@ -724,16 +724,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: recFramerateSlider
                             from: 0
                             to: 3
                             stepSize: 1
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 0 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Framerate NewSlider:", value)
+                                console.log("Framerate Slider:", value)
                             }
                         }
                         Text{
@@ -743,16 +743,16 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSlider {
+                        Slider {
                             id: recBitrateSlider
                             from: 2
                             to: 18
                             stepSize: 2
-                            //snapMode: NewSlider.SnapToStep
+                            //snapMode: Slider.SnapToStep
                             value: 8 // Initial value
                             Material.accent: Material.Grey
                             onValueChanged: {
-                                console.log("Birtate NewSlider:", value)
+                                console.log("Birtate Slider:", value)
                             }
                         }
                         Text{
@@ -762,7 +762,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSwitch {
+                        Switch {
                         }
                     }
                 }
@@ -824,7 +824,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewComboBox {
+                        ComboBox {
                             id:displayResolution
                             visible: true
                             width: 200
@@ -837,7 +837,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSwitch {
+                        Switch {
                             text: qsTr("Wifi Hotspot")
                         }
                         Text{
@@ -847,7 +847,7 @@ BaseWidget {
                             color: "#ffffff"
                             smooth: true
                         }
-                        NewSwitch {
+                        Switch {
                             text: qsTr("Ethernet Hotspot")
                         }
                         Text{

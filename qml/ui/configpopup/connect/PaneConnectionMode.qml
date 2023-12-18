@@ -64,7 +64,7 @@ Rectangle{
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: settings.qopenhd_general_font_pixel_size
             }
-            NewComboBox {
+            ComboBox {
                 Layout.fillWidth: false
                 Layout.fillHeight: true;
                 Layout.preferredWidth: 200

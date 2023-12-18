@@ -7,8 +7,6 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 BaseWidget {
     id: horizonWidget
     width: 250

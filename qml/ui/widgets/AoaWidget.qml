@@ -10,8 +10,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 BaseWidget {
     id: aoaWidget
     width: 50
@@ -48,7 +46,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: aoa_max_Slider
                     orientation: Qt.Horizontal
                     from: 15

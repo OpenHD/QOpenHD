@@ -4,8 +4,6 @@ import QtQuick.Layouts 1.12
 
 import OpenHD 1.0
 
-import "../elements"
-
 BaseWidget {
     width: 256
     height: 48

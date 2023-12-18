@@ -3,7 +3,6 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
-import "../elements"
 
 // Can be used to quickly add the right UI elements for (persistently) setting scale and opacity for a HUD element (e.g. an element extending BaseWidget)
 // By default, placed in one of the popups, and more values can be added manually if needed
@@ -59,7 +58,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        NewSlider {
+        Slider {
             id: transparency_slider
             orientation: Qt.Horizontal
             from: .1
@@ -89,7 +88,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        NewSlider {
+        Slider {
             id: item_scale_Slider
             orientation: Qt.Horizontal
             from: .5
@@ -119,7 +118,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        NewSlider {
+        Slider {
             orientation: Qt.Horizontal
             from: .5
             value: bw_qquickpainteditem_font_scale
@@ -150,7 +149,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        NewSwitch {
+        Switch {
             width: 32
             height: parent.height
             anchors.rightMargin: 6
@@ -186,7 +185,7 @@ ColumnLayout{
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
         }
-        NewSwitch {
+        Switch {
             width: 32
             height: parent.height
             anchors.rightMargin: 6

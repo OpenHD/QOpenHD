@@ -10,8 +10,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 BaseWidget {
     id: vsGaugeWidget
     width: 50
@@ -60,7 +58,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: vsi_max_Slider
                     orientation: Qt.Horizontal
                     from: 5

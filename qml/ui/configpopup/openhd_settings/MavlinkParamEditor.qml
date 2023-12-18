@@ -324,10 +324,10 @@ Rectangle{
         // Value edit part begin
 
         // Type int only begin --------------------------
-        // For int values that do not have an enum mapping, we use a NewSpinBox such that the user can either
+        // For int values that do not have an enum mapping, we use a SpinBox such that the user can either
         // use the +/- to edit the value (for touch screen users) but also allows the user to
         // type in an int value directly with the keyboard.
-        NewSpinBox {
+        SpinBox {
             id: spinBoxInputParamtypeInt
             height: customHeight
             font.pixelSize: 14
@@ -352,7 +352,7 @@ Rectangle{
             id: intEnumDynamicListModel
             ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
         }
-        NewComboBox {
+        ComboBox {
             id: intEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14
@@ -373,7 +373,7 @@ Rectangle{
             ListElement {title: "I SHOULD NEVER APPEAR"; value:"ERROR"}
         }
 
-        NewComboBox {
+        ComboBox {
             id: stringEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14

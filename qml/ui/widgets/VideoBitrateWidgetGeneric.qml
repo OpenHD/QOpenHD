@@ -146,7 +146,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -190,7 +190,7 @@ BaseWidget {
                 }
             }
 
-            NewComboBox{
+            ComboBox{
                 id: resolution_fps_cb
                 model: resolutions_model
                 textRole: "title"

@@ -39,7 +39,7 @@ ScrollView {
                 m_short_description: "Scale primary video to fit"
                 m_long_description: "Fit the primary video to the exact screen size (discards actual video aspect ratio,aka video is a bit distorted). Not supported on all platforms / implementations. Might require a restart."
 
-                NewSwitch {
+                Switch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -59,7 +59,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Video codec primary"
                     m_long_description: "Video codec of primary stream (main video). Automatically fetched from OpenHD."
-                    NewComboBox {
+                    ComboBox {
                         id: selectVideoCodecPrimary
                         width: 320
                         height: elementHeight
@@ -84,7 +84,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Primary video force SW"
                     m_long_description: "Force SW decode for primary video stream (unless it already defaulted to sw decode). Can fix bug(s) in rare hardware incompability cases."
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -98,7 +98,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Primary video udp in port"
                     m_long_description: "UDP port where qopenhd listens for video data for the primary video stream"
-                    NewSpinBox {
+                    SpinBox {
                         height: elementHeight
                         width: 210
                         font.pixelSize: 14
@@ -118,7 +118,7 @@ ScrollView {
                     m_long_description: "Video codec of secondary stream (pip video). Automatically fetched from OpenHD."
                     // only show to dualcam users
                     visible: settings.dev_qopenhd_n_cameras==2
-                    NewComboBox {
+                    ComboBox {
                         id: selectVideoCodecSecondary
                         width: 320
                         height: elementHeight
@@ -146,7 +146,7 @@ ScrollView {
                     m_long_description: "Force SW decode for secondary video stream (unless it already defaulted to sw decode). Can fix bug(s) in rare hardware incompability cases."
                     // only show to dualcam users
                     visible: settings.dev_qopenhd_n_cameras==2
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -161,7 +161,7 @@ ScrollView {
                     m_short_description: "Secondary video udp in port"
                     m_long_description: "UDP port where qopenhd listens for video data for the secondary video stream"
                     visible: settings.dev_qopenhd_n_cameras==2
-                    NewSpinBox {
+                    SpinBox {
                         height: elementHeight
                         width: 210
                         font.pixelSize: 14
@@ -193,7 +193,7 @@ ScrollView {
                         height: elementHeight
                         anchors.left: parent.left
                     }
-                    NewComboBox {
+                    ComboBox {
                         width: 320
                         height: elementHeight
                         anchors.right: parent.right
@@ -236,7 +236,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSpinBox {
+                    SpinBox {
                         id: dev_limit_fps_on_test_fileSpinBox
                         height: elementHeight
                         width: 210
@@ -268,7 +268,7 @@ ScrollView {
                         height: elementHeight
                         anchors.left: parent.left
                     }
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -294,7 +294,7 @@ ScrollView {
                         height: elementHeight
                         anchors.left: parent.left
                     }
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -320,7 +320,7 @@ ScrollView {
                         height: elementHeight
                         anchors.left: parent.left
                     }
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -335,7 +335,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "dev_rpi_use_external_omx_decode_service"
                     //m_long_description: "On by default, RPI specific."
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -348,7 +348,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "dev_always_use_generic_external_decode_service"
                     //m_long_description: "Video decode is not done via QOpenHD, but rather in an extra service (started and stopped by QOpenHD). For platforms other than rpi"
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -362,7 +362,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Switch primary / secondary video"
                     m_long_description: "Show secondary video in main video window & primary video in pip window (if the platform supports pip)"
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

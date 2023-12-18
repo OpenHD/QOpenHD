@@ -8,8 +8,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 VideoBitrateWidgetGeneric{
     m_is_for_primary_camera: false
     // Also show it if air has a seconary cam

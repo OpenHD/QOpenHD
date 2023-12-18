@@ -33,7 +33,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Show Downlink RSSI"
                     m_long_description: "RSSI / Stats about downlink"
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -48,7 +48,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Show Uplink RSSI"
                     m_long_description: "RSSI / Stats about uplink"
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -62,7 +62,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Show live rate control widget"
                     m_long_description: "Trade range / stability for bitrate at run time. Requires hw support."
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -76,7 +76,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Show video widget"
                     m_long_description: "More stats about each camera stream, quick resolution changes and quick air recording."
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -111,7 +111,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -140,7 +140,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -168,7 +168,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -197,7 +197,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -226,7 +226,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -255,7 +255,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -284,7 +284,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -313,7 +313,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -342,7 +342,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -371,7 +371,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -400,7 +400,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -429,7 +429,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -458,7 +458,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -487,7 +487,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -516,7 +516,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -545,7 +545,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -574,7 +574,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -603,7 +603,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -633,7 +633,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -662,7 +662,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -691,7 +691,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -720,7 +720,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -749,7 +749,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -778,7 +778,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -807,7 +807,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -836,7 +836,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -865,7 +865,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -894,7 +894,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -925,7 +925,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -954,7 +954,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -982,7 +982,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1010,7 +1010,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1039,7 +1039,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1070,7 +1070,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1088,7 +1088,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Show distance sensor widget"
                     m_long_description: "For UAVs with a distance sensor"
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1103,7 +1103,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: "Show (GPS) time widget"
                     m_long_description: "For UAVs with GPS, shows the time as reported by the UAV"
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1136,7 +1136,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1171,7 +1171,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1199,7 +1199,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1227,7 +1227,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1258,7 +1258,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

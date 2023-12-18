@@ -6,8 +6,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../elements"
-
 BaseWidget {
     id: airspeedTempWidget
     width: 30
@@ -71,7 +69,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSwitch {
+                Switch {
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 6
@@ -102,7 +100,7 @@ BaseWidget {
                     anchors.left: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: airspeed_temp_warn_Slider
                     orientation: Qt.Horizontal
                     from: 0
@@ -142,7 +140,7 @@ BaseWidget {
                     anchors.left: airspeed_temp_caution_label.right
                     verticalAlignment: Text.AlignVCenter
                 }
-                NewSlider {
+                Slider {
                     id: airspeed_temp_caution_Slider
                     orientation: Qt.Horizontal
                     from: 10

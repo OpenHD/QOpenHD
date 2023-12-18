@@ -114,7 +114,7 @@ Rectangle{
                 }
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
             }
-            NewComboBox {
+            ComboBox {
                 Layout.preferredWidth: 150
                 Layout.minimumWidth: 50
                 id: comboBoxWhichFrequencyToAnalyze
@@ -124,7 +124,7 @@ Rectangle{
                     pollution_chart.update_pollution_graph();
                 }
             }
-            NewSwitch{
+            Switch{
                 id:normalize_sw
                 checked: m_normalize_data
                 onCheckedChanged: {

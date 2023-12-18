@@ -5,8 +5,6 @@ import QtQuick.Controls 2.12
 
 import OpenHD 1.0
 
-import "../elements"
-
 /*
  * This file is WAY longer than I'd like, it's very repetitive and could probably be cleaned
  * up with a common base Component for some of the elements
@@ -107,7 +105,7 @@ Rectangle {
         Item {
             anchors.fill: parent
 
-            NewComboBox {
+            ComboBox {
                 id: choiceBox
                 model: ["Top Left", "Top Right", "Bottom Right", "Bottom Left"]
             }
