@@ -211,7 +211,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             else {
             added_distance_m=distance_between(m_last_lat,m_last_lon,lat,lon);
             }
-            qDebug() << "added_distance_m" << added_distance_m;
+            //qDebug() << "added_distance_m" << added_distance_m;
             if (added_distance_m > 2.0){
 
                 total_dist = total_dist + added_distance_m;

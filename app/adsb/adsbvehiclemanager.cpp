@@ -95,7 +95,7 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
     for (int i=_adsbVehicles.count()-1; i>=0; i--) {
         ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
         if (adsbVehicle->expired()) {
-            // qDebug() << "Expired" << QStringLiteral("%1").arg(adsbVehicle->icaoAddress(), 0, 16);
+             qDebug() << "Expired" << QStringLiteral("%1").arg(adsbVehicle->icaoAddress(), 0, 16);
             _adsbVehicles.removeAt(i);
             _adsbICAOMap.remove(adsbVehicle->icaoAddress());
             adsbVehicle->deleteLater();
@@ -115,7 +115,7 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
 
 //currently not used.. was for testing but could have future purpose to turn off display
 void ADSBVehicleManager::adsbClearModel(){
-    //qDebug() << "_adsbVehicles.clearAndDeleteContents";
+    qDebug() << "_adsbVehicles.clearAndDeleteContents";
     _adsbVehicles.clearAndDeleteContents();
 }
 
@@ -126,7 +126,7 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
     //no point in continuing because no location. This is somewhat redundant with parser
     //possible situation where we start to not get location.. and gets stale then removed
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-qDebug() << "ADD/Update ADSB Vehicle";
+//qDebug() << "ADD/Update ADSB Vehicle";
         //decide if its new or needs update
         if (_adsbICAOMap.contains(icaoAddress)) {
             _adsbICAOMap[icaoAddress]->update(vehicleInfo);
@@ -261,7 +261,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
-    qDebug() << "MAX adsb distance=" << max_distance;
+    //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
         qDebug() << "ADSB OpenSky request error!";
@@ -310,11 +310,6 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     for (const QJsonValue &aircraftValue : acArray) {
         QJsonObject aircraft = aircraftValue.toObject();
 
-        qDebug() << "Type:" << aircraft["type"].toString();
-        qDebug() << "Flight:" << aircraft["flight"].toString();
-        // Add more fields as needed
-        qDebug() << "";
-
         ADSBVehicle::VehicleInfo_t adsbInfo;
 
         //Aircraft Hex
@@ -336,9 +331,10 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         double lon = aircraft["lon"].toDouble();
         qDebug()<<"lat/lon" << lat << " / " << lon;
         //adsbInfo.location = location;
-        adsbInfo.vehicle_lat = lat;
-        adsbInfo.vehicle_lon = lon;
+        adsbInfo.lat = lat;
+        adsbInfo.lon = lon;
         adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
+        qDebug()<<"avail flag:"<< adsbInfo.availableFlags;
 
         //evaluate distance for INTERNET adsb traffic... this is redundant with sdr
         double lat_1 = m_api_lat;
@@ -557,8 +553,8 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
             //QGeoCoordinate location(lat, lon);
             //adsbInfo.location = location;
-            adsbInfo.vehicle_lat = lat;
-            adsbInfo.vehicle_lon = lon;
+            adsbInfo.lat = lat;
+            adsbInfo.lon = lon;
             adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
 
             //evaluate distance for SDR adsb traffic... this is redundant with internet

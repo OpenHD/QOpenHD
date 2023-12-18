@@ -35,11 +35,11 @@ void ADSBVehicle::update(const VehicleInfo_t& vehicleInfo)
         }
     }
     if (vehicleInfo.availableFlags & LocationAvailable) {
-        if (_vehicle_lat != vehicleInfo.vehicle_lat || _vehicle_lon != vehicleInfo.vehicle_lon) {
-            _vehicle_lat = vehicleInfo.vehicle_lat;
-            _vehicle_lon = vehicleInfo.vehicle_lon;
-            emit vehicleLatChanged();
-            emit vehicleLonChanged();
+        if (_lat != vehicleInfo.lat || _lon != vehicleInfo.lon) {
+            _lat = vehicleInfo.lat;
+            _lon = vehicleInfo.lon;
+            emit latChanged();
+            emit lonChanged();
         }
     }
     if (vehicleInfo.availableFlags & AltitudeAvailable) {

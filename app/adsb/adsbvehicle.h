@@ -33,8 +33,8 @@ public:
     typedef struct {
         uint32_t        icaoAddress;    // Required
         QString         callsign;
-        double  vehicle_lat;
-        double  vehicle_lon;
+        double          lat;
+        double          lon;
         double          altitude;
         double          velocity;
         double          heading;
@@ -49,8 +49,8 @@ public:
 
     Q_PROPERTY(int              icaoAddress READ icaoAddress    CONSTANT)
     Q_PROPERTY(QString          callsign    READ callsign       NOTIFY callsignChanged)
-    Q_PROPERTY(double           vehicle_lat         READ vehicle_lat            NOTIFY vehicleLatChanged)
-    Q_PROPERTY(double           vehicle_lon         READ vehicle_lon            NOTIFY vehicleLonChanged)
+    Q_PROPERTY(double           lat         READ lat            NOTIFY latChanged)
+    Q_PROPERTY(double           lon         READ lon            NOTIFY lonChanged)
     Q_PROPERTY(double           altitude    READ altitude       NOTIFY altitudeChanged)     // NaN for not available
     Q_PROPERTY(double           velocity    READ velocity       NOTIFY velocityChanged)     // NaN for not available
     Q_PROPERTY(double           heading     READ heading        NOTIFY headingChanged)      // NaN for not available
@@ -61,8 +61,8 @@ public:
 
     int             icaoAddress (void) const { return static_cast<int>(_icaoAddress); }
     QString         callsign    (void) const { return _callsign; }
-    double  vehicle_lat  (void) const { return _vehicle_lat; }
-    double  vehicle_lon  (void) const { return _vehicle_lon; }
+    double          lat         (void) const { return _lat; }
+    double          lon         (void) const { return _lon; }
     double          altitude    (void) const { return _altitude; }
     double          velocity    (void) const { return _velocity; }
     double          heading     (void) const { return _heading; }
@@ -79,8 +79,8 @@ public:
     bool tooFar();
 
 signals:
-    void vehicleLatChanged  ();
-    void vehicleLonChanged  ();
+    void latChanged  ();
+    void lonChanged  ();
     void callsignChanged    ();
     void altitudeChanged    ();
     void velocityChanged    ();
@@ -96,8 +96,8 @@ private:
 
     uint32_t        _icaoAddress;
     QString         _callsign;
-    double  _vehicle_lat;
-    double  _vehicle_lon;
+    double          _lat;
+    double          _lon;
     double          _altitude;
     double          _velocity;
     double          _heading;
