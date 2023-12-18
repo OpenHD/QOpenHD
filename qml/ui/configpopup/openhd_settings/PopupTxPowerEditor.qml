@@ -266,7 +266,7 @@ Rectangle{
 
                 RowLayout {
                     Layout.fillWidth: true
-                    NewComboBox {
+                    ComboBox {
                         id: comboBoxCardSelectManufacturer
                         Layout.minimumWidth: 180
                         Layout.preferredWidth: 480
@@ -303,7 +303,7 @@ Rectangle{
                         }
                         font.pixelSize: 14
                     }
-                    NewComboBox {
+                    ComboBox {
                         Layout.minimumWidth: 100
                         Layout.preferredWidth: 350
                         id: combo_box_txpower_disarmed
@@ -339,7 +339,7 @@ Rectangle{
                         }
                         font.pixelSize: 14
                     }
-                    NewComboBox {
+                    ComboBox {
                         Layout.minimumWidth: 100
                         Layout.preferredWidth: 350
                         id: combo_box_txpower_armed
