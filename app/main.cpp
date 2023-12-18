@@ -39,6 +39,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "adsb/adsbvehicle.h"
 #include "adsb/adsbvehiclemanager.h"
 #include "adsb/qmlobjectlistmodel.h"
+#include "adsb/drawingcanvas.h"
 
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
@@ -301,6 +302,7 @@ int main(int argc, char *argv[]) {
 
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
+    qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
 
 
     QQmlApplicationEngine engine;
