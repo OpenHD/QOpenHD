@@ -30,6 +30,7 @@ jobs:
           arch: 'win64_msvc2019_64'
           tools: 'tools_ifw tools_qtcreator,qt.tools.qtcreator'
           setup-python: false
+          modules: qtcharts
       
       - name: Download JOM
         uses: suisei-cn/actions-download-file@v1
