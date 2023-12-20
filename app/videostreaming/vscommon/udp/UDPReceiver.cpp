@@ -1,16 +1,23 @@
 
 #include "UDPReceiver.h"
+#ifdef __windows__
+#define _WIN32_WINNT 0x0600 //TODO dirty
+#include <winsock2.h>
+#include <Ws2tcpip.h> // For InetPton
+#else
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
 #include "common/StringHelper.hpp"
 #include "common/SchedulingHelper.hpp"
-#include <arpa/inet.h>
 #include <utility>
 #include <vector>
 #include <sstream>
 #include <array>
 #include <cstring>
 
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <iostream>
 
 #include <qdebug.h>
@@ -45,7 +52,9 @@ void UDPReceiver::startReceiving() {
 void UDPReceiver::stopReceiving() {
     m_receiving=false;
     //this stops the recvfrom even if in blocking mode
+#ifndef __windows__
     shutdown(m_socket,SHUT_RD);
+#endif
     if(m_receive_thread->joinable()){
         m_receive_thread->join();
     }
@@ -56,6 +65,7 @@ void UDPReceiver::stopReceiving() {
 // increase the UDP receive buffer size, needed for high bandwidth (at ~>20MBit/s the "default"
 // udp receive buffer size is often not enough and the OS might (silently) drop packets on localhost)
 static void increase_socket_recv_buff_size(int sockfd, const int wanted_rcvbuff_size_bytes) {
+#ifndef __windows__
   int recvBufferSize=0;
   socklen_t len=sizeof(recvBufferSize);
   getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &recvBufferSize, &len);
@@ -76,9 +86,12 @@ static void increase_socket_recv_buff_size(int sockfd, const int wanted_rcvbuff_
     getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &recvBufferSize, &len);
     std::cerr<<"UDP Wanted "<<StringHelper::memorySizeReadable(wanted_rcvbuff_size_bytes)<<" Set "<<StringHelper::memorySizeReadable(recvBufferSize)<<"\n";
   }
+#else
+#endif
 }
 
 void UDPReceiver::receiveFromUDPLoop() {
+#ifndef __windows__
     m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (m_socket == -1) {
         std::cerr<<"Error creating socket\n";
@@ -149,6 +162,7 @@ void UDPReceiver::receiveFromUDPLoop() {
         }
     }
     close(m_socket);
+#endif
 }
 
 int UDPReceiver::getPort() const {

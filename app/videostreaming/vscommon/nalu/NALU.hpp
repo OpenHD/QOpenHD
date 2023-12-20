@@ -88,7 +88,7 @@ public:
         return &getData()[m_nalu_prefix_size];
     }
     //size of the NALU data without 0001 prefix
-    ssize_t getDataSizeWithoutPrefix()const{
+    int getDataSizeWithoutPrefix()const{
         return getSize()-m_nalu_prefix_size;
     }
     // return the nal unit type (quick)

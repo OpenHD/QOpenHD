@@ -70,7 +70,11 @@ private:
     // do not forget the braces to initialize with 0
     std::chrono::nanoseconds sum{};
     long nSamples=0;
+#ifndef __windows__
     std::chrono::nanoseconds min=std::chrono::nanoseconds::max();
+#else
+    std::chrono::nanoseconds min{10000000000};
+#endif //__windows__
     std::chrono::nanoseconds max{};
     const std::string name;
     std::chrono::steady_clock::time_point last_log{};
@@ -116,7 +120,11 @@ public:
         sum=std::chrono::nanoseconds(0);
         nSamples=0;
         // Workaround for std::numeric_limits returning 0 for std::chrono::nanoseconds
+#ifdef __windows__
+        min=std::chrono::nanoseconds(1000000000000);
+#else
         min=std::chrono::nanoseconds::max();
+#endif
         max={};
     }
     std::string getAvgReadable(const bool averageOnly=false)const{

@@ -2,10 +2,18 @@
 #ifndef FPV_VR_UDPRECEIVER_H
 #define FPV_VR_UDPRECEIVER_H
 
-#include <stdio.h>
-#include <sys/socket.h>
+#ifdef __windows__
+#define _WIN32_WINNT 0x0600 //TODO dirty
+#include <winsock2.h>
+#include <Ws2tcpip.h> // For InetPton
+#else
+#include <arpa/inet.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
+#endif
+
+#include <stdio.h>
 #include <iostream>
 #include <thread>
 #include <atomic>

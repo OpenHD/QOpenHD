@@ -111,6 +111,7 @@ SOURCES += \
     app/main.cpp \
 
 HEADERS += \
+    app/common/packed_struct_compiler.h \
     app/common/util_fs.h \
     app/common/StringHelper.hpp \
     app/common/TimeHelper.hpp \
