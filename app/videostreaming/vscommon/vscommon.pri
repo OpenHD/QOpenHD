@@ -31,5 +31,9 @@ windows {
 }
 
 HEADERS += \
-    $$PWD/ExternalDecodeService.hpp
+    $$PWD/ExternalDecodeService.hpp \
+    $$PWD/custom/rawreceiver.h
+
+SOURCES += \
+    $$PWD/custom/rawreceiver.cpp
 
