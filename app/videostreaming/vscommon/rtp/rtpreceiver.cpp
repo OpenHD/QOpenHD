@@ -38,7 +38,7 @@ RTPReceiver::RTPReceiver(const int port,const std::string ip,bool is_h265,bool f
         }
         m_out_file=std::make_unique<std::ofstream>(ss.str());
     }
-    m_keyframe_finder=std::make_unique<KeyFrameFinder>();
+    m_keyframe_finder=std::make_unique<CodecConfigFinder>();
 #ifdef OPENHD_USE_LIB_UVGRTP
     m_session = m_ctx.create_session(ip.c_str());
     int flags = RCE_RECEIVE_ONLY;

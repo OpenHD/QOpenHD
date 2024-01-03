@@ -97,8 +97,8 @@ private:
 private:
     void fetch_frame_or_feed_input_packet();
 private:
-    //std::unique_ptr<RTPReceiver> m_rtp_receiver=nullptr;
-    std::unique_ptr<RawReceiver> m_rtp_receiver=nullptr;
+    std::unique_ptr<RTPReceiver> m_rtp_receiver=nullptr;
+    //std::unique_ptr<RawReceiver> m_rtp_receiver=nullptr;
 private:
     // Custom rtp parse (and therefore limited to h264 and h265)
     // AND always goes the avcodec decode route (SW decode or avcodec mmal decode).

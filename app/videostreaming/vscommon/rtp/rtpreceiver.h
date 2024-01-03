@@ -11,7 +11,7 @@
 #include <functional>
 
 #include "../nalu/NALU.hpp"
-#include "../nalu/KeyFrameFinder.hpp"
+#include "../nalu/CodecConfigFinder.hpp"
 
 #include "common/TimeHelper.hpp"
 #include "common/moodycamel/readerwriterqueue/readerwritercircularbuffer.h"
@@ -65,7 +65,7 @@ private:
     NEW_NALU_CALLBACK m_new_nalu_cb=nullptr;
     bool forward_via_cb_if_registered();
 private:
-    std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
+    std::unique_ptr<CodecConfigFinder> m_keyframe_finder;
     int n_dropped_frames=0;
     BitrateCalculator m_rtp_bitrate;
 private:

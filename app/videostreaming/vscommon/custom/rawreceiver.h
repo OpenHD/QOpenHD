@@ -4,7 +4,7 @@
 #include <udp/UDPReceiver.h>
 
 #include "../nalu/NALU.hpp"
-#include <nalu/KeyFrameFinder.hpp>
+#include <nalu/CodecConfigFinder.hpp>
 
 #include <mutex>
 
@@ -37,7 +37,7 @@ private:
     const bool is_h265;
     std::mutex m_data_mutex;
     std::unique_ptr<UDPReceiver> m_udp_receiver=nullptr;
-    std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
+    std::unique_ptr<CodecConfigFinder> m_keyframe_finder;
     std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     int m_nalu_data_length=0;
     int nalu_search_state=0;

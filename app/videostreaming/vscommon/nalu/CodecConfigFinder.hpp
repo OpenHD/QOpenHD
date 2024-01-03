@@ -13,7 +13,7 @@
 
 // Takes a continuous stream of NALUs and save SPS / PPS data
 // For later use
-class KeyFrameFinder{
+class CodecConfigFinder{
 private:
     std::unique_ptr<NALUBuffer> SPS=nullptr;
     std::unique_ptr<NALUBuffer> PPS=nullptr;

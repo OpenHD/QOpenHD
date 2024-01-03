@@ -7,7 +7,7 @@
 RawReceiver::RawReceiver(int port,std::string ip,bool is_h265,bool unused):
         is_h265(is_h265)
 {
-    m_keyframe_finder=std::make_unique<KeyFrameFinder>();
+    m_keyframe_finder=std::make_unique<CodecConfigFinder>();
     auto udp_config=UDPReceiver::Configuration{std::nullopt,port};
     udp_config.opt_os_receive_buff_size=UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE;
     udp_config.set_sched_param_max_realtime=true;
@@ -92,6 +92,11 @@ void RawReceiver::udp_raw_data_callback(const uint8_t *data, const std::size_t d
                 case 2:
                 case 3:
                     if (data[i]==0){
+                        if(nalu_search_state==3){
+                            // Ignore this 0
+                            nalu_data_position--;
+                        }
+                        // as long as only zeroes come in, we don't have to do anything - I don't think 0000001 should ever happen, but could be a valid start code
                         nalu_search_state=3;
                     }else if(data[i]==1){
                         parsed_prefix_len = nalu_search_state==3 ? 4 : 3;
@@ -100,6 +105,7 @@ void RawReceiver::udp_raw_data_callback(const uint8_t *data, const std::size_t d
                         }else{
                             //qDebug()<<"Not a valid NALU";
                         }
+                        // move the read prefix to the beginning of the nalu buffer
                         NALU::write_prefix(nalu_data,parsed_prefix_len==4);
                         nalu_data_position = parsed_prefix_len;
                         //nalu_data[0] = 0;
