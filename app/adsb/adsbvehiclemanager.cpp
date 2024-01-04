@@ -54,10 +54,10 @@ ADSBVehicleManager::~ADSBVehicleManager()
 
 void ADSBVehicleManager::onStarted()
 {
-    qDebug() << "<<<<<<<<<<<<<ADSB VEHICLE MANAGER STARTED";
+    qDebug() << "ADSBVehicleManager::onStarted()";
     // this is for adsb recievers on the FC
- //   MavlinkTelemetry* mavlinktelemetry = MavlinkTelemetry::instance();
- //   connect(mavlinktelemetry, &MavlinkTelemetry::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
+    //   MavlinkTelemetry* mavlinktelemetry = MavlinkTelemetry::instance();
+    //   connect(mavlinktelemetry, &MavlinkTelemetry::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
 
     connect(&_adsbVehicleCleanupTimer, &QTimer::timeout, this, &ADSBVehicleManager::_cleanupStaleVehicles);
     _adsbVehicleCleanupTimer.setSingleShot(false);
@@ -65,20 +65,21 @@ void ADSBVehicleManager::onStarted()
 
     _internetLink = new ADSBInternet();
     connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
-  //TODO COMMENTED TO GET WORKING
-    //   connect(this, &ADSBVehicleManager::mapLatChanged, _internetLink, &ADSBInternet::mapBoundsChanged, Qt::QueuedConnection);
- //   connect(this, &ADSBVehicleManager::mapLonChanged, _internetLink, &ADSBInternet::mapBoundsChanged, Qt::QueuedConnection);
+    //there is probably a better way to get map lat,lon from map component
+    //currently map componenet calls adsbvehicle method which then emits signal to slot in adsbapi with lat lon
+    connect(this, &ADSBVehicleManager::mapLatChanged, _internetLink, &ADSBInternet::mapLatChanged, Qt::QueuedConnection);
+    connect(this, &ADSBVehicleManager::mapLonChanged, _internetLink, &ADSBInternet::mapLonChanged, Qt::QueuedConnection);
     connect(_internetLink, &ADSBInternet::adsbClearModelRequest, this, &ADSBVehicleManager::adsbClearModel, Qt::QueuedConnection);
 
     _sdrLink = new ADSBSdr();
     connect(_sdrLink, &ADSBSdr::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
-  //TODO COMMENTED TO GET WORKING
+    //TODO COMMENTED TO GET WORKING
     //   connect(this, &ADSBVehicleManager::mapLatChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
- //   connect(this, &ADSBVehicleManager::mapLonChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
+    //   connect(this, &ADSBVehicleManager::mapLonChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
     connect(_sdrLink, &ADSBSdr::adsbClearModelRequest, this, &ADSBVehicleManager::adsbClearModel, Qt::QueuedConnection);
 }
 
-// called from qml when the map is moved
+// called from qml when the center of map component changes
 void ADSBVehicleManager::newMapLat(double map_lat) {
     _api_lat = map_lat;
     emit mapLatChanged(map_lat);
@@ -95,7 +96,7 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
     for (int i=_adsbVehicles.count()-1; i>=0; i--) {
         ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
         if (adsbVehicle->expired()) {
-             qDebug() << "Expired" << QStringLiteral("%1").arg(adsbVehicle->icaoAddress(), 0, 16);
+            qDebug() << "Expired" << QStringLiteral("%1").arg(adsbVehicle->icaoAddress(), 0, 16);
             _adsbVehicles.removeAt(i);
             _adsbICAOMap.remove(adsbVehicle->icaoAddress());
             adsbVehicle->deleteLater();
@@ -126,7 +127,7 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
     //no point in continuing because no location. This is somewhat redundant with parser
     //possible situation where we start to not get location.. and gets stale then removed
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-//qDebug() << "ADD/Update ADSB Vehicle";
+        //qDebug() << "ADD/Update ADSB Vehicle";
         //decide if its new or needs update
         if (_adsbICAOMap.contains(icaoAddress)) {
             _adsbICAOMap[icaoAddress]->update(vehicleInfo);
@@ -189,8 +190,6 @@ void ADSBapi::run(void)
 }
 
 void ADSBapi::init(void) {
-    qDebug() << "------------------Adsbapi::init()";
-
     QNetworkAccessManager * manager = new QNetworkAccessManager(this);
 
     m_manager = manager;
@@ -202,46 +201,35 @@ void ADSBapi::init(void) {
 
     // How frequently data is requested
     timer->start(timer_interval);
-    mapBoundsChanged(40.48205, -3.35996); // this shouldn't be necesary
+
+    //init a lat lon here jsut in case map doesnt send anything in time
+    mapLatChanged(40.4820);
+    mapLonChanged(-3.3599);
 }
 
-/* this from when the old api needed a bounding rectangle
- * keep in case api changes again
- */
-void ADSBapi::mapBoundsChanged(double map_lat, double map_lon) {
-    qDebug() << "------------------Adsbapi::mapboundschanged()";
+// This is the slot for the singal emitted from adsbvehicle class that map center changed
+void ADSBapi::mapLatChanged(double map_lat) {
     m_api_lat=map_lat;
-    m_api_lon=map_lon;
+    lat_string=QString::number(m_api_lat);
     qreal adsb_distance_limit = _settings.value("adsb_distance_limit").toInt();
-/*
-    QGeoCoordinate qgeo_upper_left;
-    QGeoCoordinate qgeo_lower_right;
-
-    qgeo_upper_left = center_coord.atDistanceAndAzimuth(adsb_distance_limit, 315, 0.0);
-    qgeo_lower_right = center_coord.atDistanceAndAzimuth(adsb_distance_limit, 135, 0.0);
-
-    upperl_lat= QString::number(qgeo_upper_left.latitude());
-    upperl_lon= QString::number(qgeo_upper_left.longitude());
-    lowerr_lat= QString::number(qgeo_lower_right.latitude());
-    lowerr_lon= QString::number(qgeo_lower_right.longitude());
-*/
+}
+void ADSBapi::mapLonChanged(double map_lon) {
+    m_api_lon=map_lon;
+    lon_string=QString::number(m_api_lon);
+    qreal adsb_distance_limit = _settings.value("adsb_distance_limit").toInt();
 }
 
 
 void ADSBInternet::requestData(void) {
-    qDebug() << "------------------AdsbInternet::requestdata()";
     _adsb_api_openskynetwork = _settings.value("adsb_api_openskynetwork").toBool();
     _show_adsb_internet = _settings.value("show_adsb").toBool();
 
     // If openskynetwork is disabled by settings don't make the request and return
     if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
-     //TODO manage settings
-     //   return;
+        //TODO manage settings
+        //   return;
     }
-
-    //adsb_url= "https://opensky-network.org/api/states/all?lamin="+lowerr_lat+"&lomin="+upperl_lon+"&lamax="+upperl_lat+"&lomax="+lowerr_lon;
-    //TODO REFCTOR URL FOR NEW API
-    adsb_url="https://api.airplanes.live/v2/point/40.48205/-3.35996/100";
+    adsb_url="https://api.airplanes.live/v2/point/"+  lat_string +"/"+ lon_string + "/50";
     QNetworkRequest request;
     QUrl api_request = adsb_url;
     request.setUrl(api_request);
@@ -254,8 +242,8 @@ void ADSBInternet::requestData(void) {
 void ADSBInternet::processReply(QNetworkReply *reply) {
 
     if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
-     //TODO manage user settings
-     //   return;
+        //TODO manage user settings
+        //   return;
     }
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
@@ -304,7 +292,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
     QJsonArray acArray = doc.object()["ac"].toArray();
 
-    qDebug()<<"count:" << acArray.count();
+    qDebug()<<"adsb aircraft count:" << acArray.count();
 
     // Iterate through the "ac" array
     for (const QJsonValue &aircraftValue : acArray) {
@@ -316,7 +304,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         bool icaoOk;
         QString icaoAux = aircraft["hex"].toString();
         adsbInfo.icaoAddress = icaoAux.toUInt(&icaoOk, 16);
-        qDebug() << "Hex:" << aircraft["hex"].toString();
+        //qDebug() << "Hex:" << aircraft["hex"].toString();
         // Skip this element if icao number is not ok
         if (!icaoOk) {
             qDebug()<<"skipping - icao not ok";
@@ -329,12 +317,12 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         }
         double lat = aircraft["lat"].toDouble();
         double lon = aircraft["lon"].toDouble();
-        qDebug()<<"lat/lon" << lat << " / " << lon;
+        //qDebug()<<"lat/lon" << lat << " / " << lon;
         //adsbInfo.location = location;
         adsbInfo.lat = lat;
         adsbInfo.lon = lon;
         adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
-        qDebug()<<"avail flag:"<< adsbInfo.availableFlags;
+        //qDebug()<<"avail flag:"<< adsbInfo.availableFlags;
 
         //evaluate distance for INTERNET adsb traffic... this is redundant with sdr
         double lat_1 = m_api_lat;
@@ -356,7 +344,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
         // If aircraft beyond max distance than skip this one
         if(distance>max_distance){
-            qDebug() << "Beyond max SKIPPING";
+            qDebug() << "Aircraft Beyond max distance... SKIPPING aircraft";
             //TODO commented for testing
             //continue;
         }
@@ -371,7 +359,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         //Aircraft altitude
         if(aircraft["alt_baro"].toDouble()){
             adsbInfo.altitude = aircraft["alt_baro"].toDouble();
-            qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
+            //qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
             //per setting eliminate all unknown alt
             if (adsbInfo.altitude<5 && unknown_zero_alt==false){
                 qDebug() << "ADSB Skipping aircraft for alt error";

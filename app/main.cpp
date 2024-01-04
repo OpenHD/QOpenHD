@@ -35,7 +35,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/aoagauge.h"
-#include "adsb/adsb.h"
 #include "adsb/adsbvehicle.h"
 #include "adsb/adsbvehiclemanager.h"
 #include "adsb/qmlobjectlistmodel.h"
@@ -71,6 +70,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+RESOLVEFUNC(SSL_get1_peer_certificate);
+RESOLVEFUNC(EVP_PKEY_get_base_id);
+#endif // OPENSSL_VERSION_MAJOR >= 3
 
 
 // Load all the fonts we use ?!
@@ -350,11 +354,10 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
     engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
-    //engine.rootContext()->setContextProperty("_markermodel", &MarkerModel::instance());
     auto adsbVehicleManager = ADSBVehicleManager::instance();
     engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
-    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
     adsbVehicleManager->onStarted();
+
     // And then the main part
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
 

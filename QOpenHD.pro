@@ -101,7 +101,6 @@ LinuxBuild {
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
-    app/adsb/adsb.cpp \
     app/adsb/adsbvehicle.cpp \
     app/adsb/adsbvehiclemanager.cpp \
     app/adsb/drawingcanvas.cpp \
@@ -116,7 +115,6 @@ SOURCES += \
     app/main.cpp \
 
 HEADERS += \
-    app/adsb/adsb.h \
     app/adsb/adsbvehicle.h \
     app/adsb/adsbvehiclemanager.h \
     app/adsb/drawingcanvas.h \
