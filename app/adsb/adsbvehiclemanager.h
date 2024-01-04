@@ -37,7 +37,8 @@ protected:
     void run(void) final;
 
 public slots:
-    void mapBoundsChanged(double map_lat, double map_lon);
+    void mapLatChanged(double map_lat);
+    void mapLonChanged(double map_lon);
 
 protected slots:
     virtual void processReply(QNetworkReply *reply) = 0;
@@ -50,11 +51,10 @@ protected:
     QNetworkAccessManager * m_manager;
     QString adsb_url;
 
-    // boundingbox parameters
-    //QString upperl_lat;
-    //QString upperl_lon;
-    //QString lowerr_lat;
-    //QString lowerr_lon;
+
+    QString lat_string;
+    QString lon_string;
+
 
     // timer for requests
     int timer_interval;
