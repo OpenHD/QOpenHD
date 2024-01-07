@@ -211,25 +211,25 @@ void ADSBapi::init(void) {
 void ADSBapi::mapLatChanged(double map_lat) {
     m_api_lat=map_lat;
     lat_string=QString::number(m_api_lat);
-    qreal adsb_distance_limit = _settings.value("adsb_distance_limit").toInt();
 }
 void ADSBapi::mapLonChanged(double map_lon) {
     m_api_lon=map_lon;
     lon_string=QString::number(m_api_lon);
-    qreal adsb_distance_limit = _settings.value("adsb_distance_limit").toInt();
 }
 
 
 void ADSBInternet::requestData(void) {
-    _adsb_api_openskynetwork = _settings.value("adsb_api_openskynetwork").toBool();
-    _show_adsb_internet = _settings.value("show_adsb").toBool();
+    _adsb_enable = _settings.value("adsb_enable").toBool();
+    _adsb_show_internet_data = _settings.value("adsb_show_internet_data").toBool();
+    max_distance = _settings.value("adsb_radius").toInt();
 
-    // If openskynetwork is disabled by settings don't make the request and return
-    if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
-        //TODO manage settings
-        //   return;
+    QString distance_string = QString::number(max_distance/1852); // convert meters to NM for api
+
+    // If adsb or adsb_internet is disabled by settings don't make the internet request and return
+    if (!_adsb_enable || !_adsb_show_internet_data) {
+           return;
     }
-    adsb_url="https://api.airplanes.live/v2/point/"+  lat_string +"/"+ lon_string + "/50";
+    adsb_url="https://api.airplanes.live/v2/point/"+  lat_string +"/"+ lon_string + "/" + distance_string;
     QNetworkRequest request;
     QUrl api_request = adsb_url;
     request.setUrl(api_request);
@@ -241,15 +241,10 @@ void ADSBInternet::requestData(void) {
 
 void ADSBInternet::processReply(QNetworkReply *reply) {
 
-    if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
-        //TODO manage user settings
-        //   return;
-    }
-
-    max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
+    max_distance=(_settings.value("adsb_radius").toInt());
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
-    //qDebug() << "MAX adsb distance=" << max_distance;
+    qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
         qDebug() << "ADSB OpenSky request error!";
@@ -265,7 +260,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
 
     if (doc.isNull()) {
-        qDebug() << "ADSB Opensky network response: Parse failed";
+        qDebug() << "ADSB internet network response: Parse failed";
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky Parse Error", 4);
         reply->deleteLater();
@@ -281,7 +276,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     QJsonObject jsonObject = doc.object();
 
     if(jsonObject.isEmpty()){
-        qDebug()<<"ADSB Openskynetwork response: JSON object is empty.";
+        qDebug()<<"ADSB internet json response: JSON object is empty.";
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky empty object", 4);
         reply->deleteLater();
@@ -359,7 +354,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         //Aircraft altitude
         if(aircraft["alt_baro"].toDouble()){
             adsbInfo.altitude = aircraft["alt_baro"].toDouble();
-            //qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
+            qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
             //per setting eliminate all unknown alt
             if (adsbInfo.altitude<5 && unknown_zero_alt==false){
                 qDebug() << "ADSB Skipping aircraft for alt error";
@@ -434,11 +429,10 @@ ADSBSdr::ADSBSdr()
 void ADSBSdr::requestData(void) {
     //TODO REFACTOR MSG
     //Logger::instance()->logData("request data", 1);
-    _adsb_api_sdr = _settings.value("adsb_api_sdr").toBool();
-    _show_adsb_sdr = _settings.value("show_adsb").toBool();
+    _adsb_show_sdr_data = _settings.value("adsb_show_sdr_data").toBool();
 
-    // If sdr is disabled by settings don't make the request and return
-    if (!_adsb_api_sdr || !_show_adsb_sdr) {
+    // If adsb or sdr adsb is disabled by settings don't make the request and return
+    if (!_adsb_enable || !_adsb_show_sdr_data) {
         return;
     }
 
@@ -454,10 +448,8 @@ void ADSBSdr::requestData(void) {
 }
 
 void ADSBSdr::processReply(QNetworkReply *reply) {
+    //TODO
     //Logger::instance()->logData("process reply", 1);
-    if (!_adsb_api_sdr || !_show_adsb_sdr) {
-        return;
-    }
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();

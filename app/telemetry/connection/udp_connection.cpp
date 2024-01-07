@@ -23,6 +23,7 @@
 #ifdef __windows__
 #endif
 
+int _local_port;
 
 UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb)
     :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb)
@@ -38,6 +39,7 @@ UDPConnection::~UDPConnection()
 
 void UDPConnection::start()
 {
+    _local_port=m_local_port;
     m_keep_receiving=true;
     m_receive_thread=std::make_unique<std::thread>(&UDPConnection::loop_receive,this);
 }
@@ -117,8 +119,8 @@ void UDPConnection::process_mavlink_message(mavlink_message_t message)
 
 void UDPConnection::loop_receive()
 {
-    while(m_keep_receiving){
-        qDebug()<<"UDP start receiving on "<<m_local_ip.c_str()<<":"<<m_local_port;
+    while(m_keep_receiving){     
+        qDebug()<<"UDP start receiving on "<<m_local_ip.c_str()<<":"<<_local_port;
         connect_once();
         if(m_keep_receiving)std::this_thread::sleep_for(std::chrono::seconds(2));// try again in X seconds
     }
@@ -143,7 +145,7 @@ bool UDPConnection::setup_socket()
     struct sockaddr_in addr {};
     addr.sin_family = AF_INET;
     inet_pton(AF_INET, m_local_ip.c_str(), &(addr.sin_addr));
-    addr.sin_port = htons(m_local_port);
+    addr.sin_port = htons(_local_port);
 
     // TODO needed ?
     // Without setting reuse, this might block infinite on some platforms
@@ -153,6 +155,15 @@ bool UDPConnection::setup_socket()
     }*/
     if (bind(m_socket_fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
         qDebug()<<"Cannot bind port "<<strerror(errno);
+        if (errno==98){ //port already bound error code
+            if(_local_port==14550){
+                _local_port=14551;
+            } else if (_local_port == 14551){
+                _local_port= 14550;
+            } else {
+                _local_port= m_local_port; //finally back to whatever is set if its not 14550 or 14551.. unlikely
+            }
+        }
         close(m_socket_fd);
         return false;
     }
@@ -220,7 +231,7 @@ void UDPConnection::set_remote(const std::string ip, int port)
         auto& remote=m_curr_remote.value();
         if(remote.ip!=ip || remote.port != port){
             auto new_remote=Remote{ip,port};
-            qDebug()<<"Remote chnged from "<<remote.to_string().c_str()<<" to "<<new_remote.to_string().c_str();
+            qDebug()<<"Remote changed from "<<remote.to_string().c_str()<<" to "<<new_remote.to_string().c_str();
             m_curr_remote=remote;
         }
     }else{

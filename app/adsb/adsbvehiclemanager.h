@@ -47,6 +47,8 @@ protected slots:
 protected:
     void init();
 
+    bool _adsb_enable;
+
     // network
     QNetworkAccessManager * m_manager;
     QString adsb_url;
@@ -82,8 +84,7 @@ private slots:
     void requestData() override;
 
 private:
-    bool _adsb_api_openskynetwork;
-    bool _show_adsb_internet; //wired to show widget setting. somewhat redundant
+    bool _adsb_show_internet_data;
 };
 
 // This class gets the info from SDR
@@ -102,9 +103,7 @@ private slots:
 
 private:
     QString _groundAddress = "";
-    bool _adsb_api_sdr;
-    bool _show_adsb_sdr; //wired to show widget setting. somewhat redundant
-
+    bool _adsb_show_sdr_data;
 };
 
 class ADSBVehicleManager : public QObject {
@@ -157,8 +156,8 @@ private:
     QTimer                          _adsbVehicleCleanupTimer;
     ADSBInternet*                   _internetLink = nullptr;
     ADSBSdr*                        _sdrLink = nullptr;
-    double                  _api_lat;
-    double                  _api_lon;
+    double                          _api_lat;
+    double                          _api_lon;
     QElapsedTimer                   _last_update_timer;
     uint                            _status = 0;
 

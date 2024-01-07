@@ -25,6 +25,7 @@ Map {
     property double userLon: 0.0
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
+    property var center_coord
 
     property int track_limit: 200; //max number of drone track points before it starts averaging
     // We start with a minimum distance of 3m, each time we perform a track reduction, the minimum distance is increased
@@ -62,7 +63,7 @@ Map {
     }
 
     function findMapBounds(){
-        var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
+        center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("Map component: center",center_coord.latitude, center_coord.longitude);
         AdsbVehicleManager.newMapLat(center_coord.latitude);
         AdsbVehicleManager.newMapLon(center_coord.longitude);
@@ -151,23 +152,30 @@ Map {
         }
     }
 
+    // This graphically depicts the area in which adsb traffic is being sourced
 
-    //>>>>>>>>>>>>>>>>>>> ADSB <<<<<<<<<<<<<<<<<<<
-    /* this graphically depicts the area in which adsb traffic is being sourced
-      *TODO fix.... will be a circle per the api
-    MapRectangle {
-        id: adsbSquare
-        topLeft : EnableADSB ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0) : QtPositioning.coordinate(0, 0)
-        bottomRight: EnableADSB ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0) : QtPositioning.coordinate(0, 0)
-        enabled: EnableADSB
-        visible: settings.adsb_api_openskynetwork
+    MapCircle {
+        id: adsbCircle
+        visible: {
+            //TODO add control that also responds to no interent setting
+            if (!settings.adsb_enable){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        center {
+            latitude: center_coord.latitude
+            longitude: center_coord.longitude
+        }
+        radius: settings.adsb_radius //in meters
         color: "white"
         border.color: "red"
         border.width: 5
         smooth: true
         opacity: .3
     }
-    */
 
     MapItemView {
         id: markerMapView
