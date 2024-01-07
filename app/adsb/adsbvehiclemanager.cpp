@@ -354,7 +354,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         //Aircraft altitude
         if(aircraft["alt_baro"].toDouble()){
             adsbInfo.altitude = aircraft["alt_baro"].toDouble();
-            //qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
+            qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
             //per setting eliminate all unknown alt
             if (adsbInfo.altitude<5 && unknown_zero_alt==false){
                 qDebug() << "ADSB Skipping aircraft for alt error";
