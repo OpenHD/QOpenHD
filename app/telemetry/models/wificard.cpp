@@ -27,6 +27,9 @@ static std::string wifi_card_type_to_string(const int card_type) {
     case 8:
         return "BROADCOM";
     case 9:
+        return "8852BU";
+    case 10:
+        return "EMULATED";
     default:
         return "UNKNOWN";
     }

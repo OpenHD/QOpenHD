@@ -13,6 +13,7 @@
 #endif
 
 #include <qdebug.h>
+#include "mavlinkchannel.h"
 
 #ifdef WINDOWS
 #define GET_ERROR(_x) WSAGetLastError()
@@ -25,7 +26,8 @@
 
 
 UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb)
-    :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb)
+    :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb),
+      //m_mav_channel(MavlinkChannel::instance().get_free_channel())
 {
 
 }
@@ -33,6 +35,7 @@ UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV
 UDPConnection::~UDPConnection()
 {
     stop();
+    //MavlinkChannel::instance().give_back_channel(m_mav_channel);
 }
 
 
@@ -103,7 +106,7 @@ void UDPConnection::process_data(const uint8_t *data, int data_len)
 {
     for (int i = 0; i < data_len; i++) {
         mavlink_message_t msg;
-        uint8_t res = mavlink_parse_char(0, (uint8_t)data[i], &msg, &m_recv_status);
+        uint8_t res = mavlink_parse_char(m_mav_channel, (uint8_t)data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);
         }
@@ -165,15 +168,16 @@ void UDPConnection::connect_once()
     const bool success=setup_socket();
     if(success){
         // Enough for MTU 1500 bytes.
-        uint8_t buffer[2048];
+        auto buffer=std::make_unique<std::vector<uint8_t>>();
+        buffer->resize(1500);
 
         while (m_keep_receiving) {
             struct sockaddr_in src_addr = {};
             socklen_t src_addr_len = sizeof(src_addr);
             const auto recv_len = recvfrom(
                 m_socket_fd,
-                (char*)buffer,
-                sizeof(buffer),
+                (char*)buffer->data(),
+                buffer->size(),
                 0,
                 reinterpret_cast<struct sockaddr*>(&src_addr),
                 &src_addr_len);
@@ -195,7 +199,7 @@ void UDPConnection::connect_once()
             const int remote_port=ntohs(src_addr.sin_port);
             set_remote(remote_ip,remote_port);
             m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
-            process_data(buffer,recv_len);
+            process_data(buffer->data(),recv_len);
         }
     }
     // TODO close socket

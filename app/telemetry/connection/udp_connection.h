@@ -61,6 +61,7 @@ private:
     std::mutex m_remote_nutex;
     std::optional<Remote> m_curr_remote;
     std::atomic_int32_t m_last_data_ms=0;
+    const int m_mav_channel=0;
 };
 
 #endif // MUDPLINK_H

@@ -39,6 +39,7 @@ private:
     mavlink_status_t m_recv_status{};
     std::unique_ptr<std::thread> m_receive_thread=nullptr;
     std::atomic_int32_t m_last_data_ms=0;
+    const int m_mav_channel=1;
 public:
     std::string m_remote_ip;
     int m_remote_port;

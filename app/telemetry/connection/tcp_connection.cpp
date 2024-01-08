@@ -15,6 +15,8 @@
 
 #include <qdebug.h>
 
+#include "mavlinkchannel.h"
+
 static int linux_tcp_socket_try_connect(const std::string remote_ip, const int remote_port,const int timeout_seconds){
     //qDebug()<<"linux_tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";
     int sockfd=socket(AF_INET, SOCK_STREAM, 0);
@@ -92,13 +94,14 @@ static bool linux_send_message(int sockfd,const std::string& dest_ip,const int d
     return true;
 }
 
-TCPConnection::TCPConnection(MAV_MSG_CB cb):m_cb(cb)
+TCPConnection::TCPConnection(MAV_MSG_CB cb):m_cb(cb)//,m_mav_channel(MavlinkChannel::instance().get_free_channel())
 {
 }
 
 TCPConnection::~TCPConnection()
 {
     stop_receiving();
+    //MavlinkChannel::instance().give_back_channel(m_mav_channel);
 }
 
 bool TCPConnection::try_connect_and_receive(const std::string remote_ip, const int remote_port)
@@ -162,7 +165,7 @@ void TCPConnection::process_data(const uint8_t *data, int data_len)
     m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
     for (int i = 0; i < data_len; i++) {
         mavlink_message_t msg;
-        uint8_t res = mavlink_parse_char(1,data[i], &msg, &m_recv_status);
+        uint8_t res = mavlink_parse_char(m_mav_channel,data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);
         }
@@ -178,9 +181,10 @@ void TCPConnection::process_mavlink_message(mavlink_message_t message)
 void TCPConnection::receive_until_stopped()
 {
     // Enough for MTU 1500 bytes.
-    uint8_t buffer[2048];
+    auto buffer=std::make_unique<std::vector<uint8_t>>();
+    buffer->resize(1500);
     while (m_keep_receiving) {
-        const auto recv_len = recv(m_socket_fd, reinterpret_cast<char*>(&buffer), sizeof(buffer), 0);
+        const auto recv_len = recv(m_socket_fd, reinterpret_cast<char*>(buffer->data()), buffer->size(), 0);
 
         if (recv_len == 0) {
             // This can happen when shutdown is called on the socket,
@@ -195,7 +199,7 @@ void TCPConnection::receive_until_stopped()
             // Something went wrong, we should try to re-connect in next iteration.
             continue;
         }
-        process_data(buffer,recv_len);
+        process_data(buffer->data(),recv_len);
     }
 }
 

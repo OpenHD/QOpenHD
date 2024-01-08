@@ -8,6 +8,7 @@ SOURCES += \
     $$PWD/action/fcmissionhandler.cpp \
     $$PWD/action/fcmsgintervalhandler.cpp \
     $$PWD/action/ohdaction.cpp \
+    $$PWD/connection/mavlinkchannel.cpp \
     $$PWD/connection/tcp_connection.cpp \
     $$PWD/connection/udp_connection.cpp \
     $$PWD/models/fcmapmodel.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     $$PWD/action/fcmissionhandler.h \
     $$PWD/action/fcmsgintervalhandler.h \
     $$PWD/action/ohdaction.h \
+    $$PWD/connection/mavlinkchannel.h \
     $$PWD/connection/tcp_connection.h \
     $$PWD/settings/documentedparam.h \
     $$PWD/action/impl/xparam.h \
