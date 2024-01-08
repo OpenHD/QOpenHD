@@ -104,8 +104,8 @@ bool UDPConnection::threadsafe_is_alive(){
 
 void UDPConnection::process_data(const uint8_t *data, int data_len)
 {
+    mavlink_message_t msg;
     for (int i = 0; i < data_len; i++) {
-        mavlink_message_t msg;
         uint8_t res = mavlink_parse_char(m_mav_channel, (uint8_t)data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);

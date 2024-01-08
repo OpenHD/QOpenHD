@@ -99,6 +99,8 @@ private:
     std::shared_ptr<std::string> m_connction_manual_tcp_ip;
     void send_heartbeat_loop();
     void perform_connection_management();
+    // Weird
+    std::mutex m_udp_or_tcp_mavlink_message_mutex;
 };
 
 #endif // OHDMAVLINKCONNECTION_H

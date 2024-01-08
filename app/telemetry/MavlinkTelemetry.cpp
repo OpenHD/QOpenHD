@@ -97,6 +97,10 @@ static int get_message_size(const mavlink_message_t& msg){
 
 void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
 {
+    // The message might come from udp or tcp endpoint - make sure there are no weird races
+    // from 2 threads providing telemetry data (which is an edge case, normally, there is only one
+    // connection feeding us data
+    std::lock_guard<std::mutex> lock(m_udp_or_tcp_mavlink_message_mutex);
     m_tele_received_packets++;
     m_tele_received_bytes+=get_message_size(msg);
     set_telemetry_pps_in(m_tele_pps_in.get_last_or_recalculate(m_tele_received_packets));

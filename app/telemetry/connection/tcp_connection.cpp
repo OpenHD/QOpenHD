@@ -94,7 +94,8 @@ static bool linux_send_message(int sockfd,const std::string& dest_ip,const int d
     return true;
 }
 
-TCPConnection::TCPConnection(MAV_MSG_CB cb):m_cb(cb)//,m_mav_channel(MavlinkChannel::instance().get_free_channel())
+TCPConnection::TCPConnection(MAV_MSG_CB cb):m_cb(cb)
+  //,m_mav_channel(MavlinkChannel::instance().get_free_channel())
 {
 }
 
@@ -163,8 +164,8 @@ bool TCPConnection::threadsafe_is_alive()
 void TCPConnection::process_data(const uint8_t *data, int data_len)
 {
     m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    mavlink_message_t msg;
     for (int i = 0; i < data_len; i++) {
-        mavlink_message_t msg;
         uint8_t res = mavlink_parse_char(m_mav_channel,data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);
@@ -184,7 +185,13 @@ void TCPConnection::receive_until_stopped()
     auto buffer=std::make_unique<std::vector<uint8_t>>();
     buffer->resize(1500);
     while (m_keep_receiving) {
-        const auto recv_len = recv(m_socket_fd, reinterpret_cast<char*>(buffer->data()), buffer->size(), 0);
+        const auto recv_len = recvfrom(
+            m_socket_fd,
+            (char*)buffer->data(),
+            buffer->size(),
+            0,
+            nullptr,
+            nullptr);
 
         if (recv_len == 0) {
             // This can happen when shutdown is called on the socket,
