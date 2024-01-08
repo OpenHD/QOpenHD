@@ -26,8 +26,8 @@
 
 
 UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb)
-    :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb),
-      //m_mav_channel(MavlinkChannel::instance().get_free_channel())
+    :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb)
+      //,m_mav_channel(MavlinkChannel::instance().get_free_channel())
 {
 
 }
