@@ -48,7 +48,7 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.primary_video_scale_to_fit
                     onCheckedChanged: settings.primary_video_scale_to_fit = checked
-                    enabled: _qopenhd.is_linux() && (!_qopenhd.is_android() && !_qopenhd.is_platform_rock() && !_qopenhd.is_platform_rpi())
+                    enabled: _qopenhd.is_android() || (_qopenhd.is_linux() && (!_qopenhd.is_platform_rock() && !_qopenhd.is_platform_rpi()))
                 }
             }
 
