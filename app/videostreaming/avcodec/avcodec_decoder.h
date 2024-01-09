@@ -23,7 +23,7 @@
 //#include "drm_kms/drmprime_out.h"
 
 // DIRTY
-#define HACK_RAW
+//#define HACK_RAW
 
 
 /**
