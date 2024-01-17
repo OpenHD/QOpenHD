@@ -8,6 +8,8 @@
 #include <logging/hudlogmessagesmodel.h>
 #include <logging/logmessagesmodel.h>
 
+#include "openhd_core/camera.hpp"
+
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
     if(value==1)return "h265";
@@ -36,20 +38,9 @@ CameraStreamModel &CameraStreamModel::instance(int cam_index)
 
 QString CameraStreamModel::camera_type_to_string(int camera_type)
 {
-    if(camera_type<=0)return "Unknown";
-    if(camera_type==1)return "DUMMY";
-    if(camera_type==2)return "RPI_CSI_MMAL";
-    if(camera_type==3)return "RPI_CSI_VEYE_V4l2";
-    if(camera_type==4)return "RPI_CSI_LIBCAMERA";
-    if(camera_type==5)return "JETSON_CSI";
-    if(camera_type==6)return "ROCKCHIP_CSI";
-    if(camera_type==7)return "ALLWINNER_CSI";
-    if(camera_type==8)return "UVC (USB)";
-    if(camera_type==9)return "UVC_H264";
-    if(camera_type==10)return "IP";
-    if(camera_type==11)return "ROCK_HDMI";
-    if(camera_type==12)return "CUSTOM UNMANAGED";
-    return "ERROR";
+    if(camera_type<0)return "N/A";
+    auto tmp=XCamera{camera_type,0,""};
+    return tmp.cam_type_as_verbose_string().c_str();
 }
 
 QString CameraStreamModel::camera_status_to_string(int camera_status)
@@ -76,6 +67,11 @@ QString CameraStreamModel::camera_recording_mode_to_string(int recording_mode)
     if(recording_mode==0)return "not active";
     if(recording_mode==1)return "active";
     return "error";
+}
+
+bool CameraStreamModel::is_valid_resolution_fps_string(QString input)
+{
+    return true;
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)
@@ -129,6 +125,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
 
 void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_openhd_camera_status_air_t &msg)
 {
+    //qDebug()<<"X:"<<(int)msg.cam_type;
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
     set_camera_type(msg.cam_type);

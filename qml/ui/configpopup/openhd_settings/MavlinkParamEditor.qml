@@ -26,6 +26,7 @@ Rectangle{
     height: parent.height
     anchors.right: parent.right;
     anchors.top: parent.top
+    //anchors.centerIn: parent
     //anchors.topMargin: -15
     color: "#333c4c"
 

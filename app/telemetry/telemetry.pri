@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/action/ohdaction.cpp \
     $$PWD/connection/mavlinkchannel.cpp \
     $$PWD/connection/tcp_connection.cpp \
+    $$PWD/connection/tcp_connection2.cpp \
     $$PWD/connection/udp_connection.cpp \
     $$PWD/models/fcmapmodel.cpp \
     $$PWD/settings/documentedparam.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     $$PWD/action/ohdaction.h \
     $$PWD/connection/mavlinkchannel.h \
     $$PWD/connection/tcp_connection.h \
+    $$PWD/connection/tcp_connection2.h \
     $$PWD/settings/documentedparam.h \
     $$PWD/action/impl/xparam.h \
     $$PWD/settings/frequencyhelper.h \
@@ -60,6 +62,7 @@ HEADERS += \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \
     app/telemetry/models/fcmavlinkmissionitemsmodel.h \
+    app/telemetry/models/openhd_core/camera.hpp \
 
 WindowsBuild{
     LIBS += -lws2_32

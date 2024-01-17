@@ -70,7 +70,9 @@ public:
         ShortDescriptionRole,
         // Weather this parameter is read-only (we repurpose the malink parameter protocoll in this regard here)
         // Default false, only if a parameter is in the read-only whitelist it is marked as read-only
-        ReadOnlyRole
+        ReadOnlyRole,
+        // Weather this parameter is whitelisted
+        WhitelistedRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;

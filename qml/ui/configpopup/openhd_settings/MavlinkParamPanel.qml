@@ -35,14 +35,14 @@ Rectangle {
     SimpleProgressBar{
         id: fetch_all_progress
         width: parent.width
-        height:  15
+        height:  visible ? 15 : 0 // only show when active
         anchors.top: parent.top
-        visible: m_progress_perc>=0 && m_progress_perc<=100
+        visible: m_progress_perc>=0 && m_progress_perc<100
         impl_curr_progress_perc: m_progress_perc
         impl_curr_color: "#333c4c"
     }
 
-    RowLayout{
+    /*Row{
         id: upper_action_row
         width: parent.width
         height: 48
@@ -57,7 +57,9 @@ Rectangle {
             visible: !m_instanceCheckIsAvlie.is_alive
         }
         Button {
-            text:"REFETCH "+m_name
+            //text:"REFETCH "+m_name
+            text: "\uf2f1"
+            font.family: "Font Awesome 5 Free"
             visible: m_instanceCheckIsAvlie.is_alive
             onClicked: {
                 parameterEditor.visible=false
@@ -73,7 +75,7 @@ Rectangle {
                 _messageBoxInstance.set_text_and_show(text)
             }
         }
-        Switch{
+        CheckBox{
             checked: settings.screen_settings_openhd_parameters_transparent
             onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
         }
@@ -84,15 +86,68 @@ Rectangle {
             }
         }
         Button{
+            id: up_button
             text:"UP"
             onClicked: {
                 paramListScrollView.ScrollBar.vertical.position -= 0.1
             }
         }
-        Item{ // Filler
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+    }*/
+    Rectangle{
+        id: upper_action_row
+        width: parent.width
+        height: 48
+        Button {
+            text: "\uf2f1" //"REFETCH "+m_name
+            font.family: "Font Awesome 5 Free"
+            visible: m_instanceCheckIsAvlie.is_alive
+            anchors.left: parent.left
+            anchors.leftMargin: 3
+            onClicked: {
+                parameterEditor.visible=false
+                m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
+            }
         }
+        ButtonIconWarning{
+            anchors.left: parent.left
+            anchors.leftMargin: 3
+            onClicked: {
+                _messageBoxInstance.set_text_and_show(""+m_name+ " not alive, parameters unavailable. Please check status view.");
+            }
+            visible: !m_instanceCheckIsAvlie.is_alive
+        }
+        Text{
+            text: "FULL "+m_name+" PARAM SET"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        CheckBox{
+            anchors.right: down_button.right
+            anchors.rightMargin: 3
+            checked: settings.screen_settings_openhd_parameters_transparent
+            onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
+        }
+        Button{
+            id: down_button
+            anchors.right: up_button.left
+            anchors.leftMargin: 3
+            text:"\uf0d7" //DOWN
+            font.family: "Font Awesome 5 Free";
+            onClicked: {
+                paramListScrollView.ScrollBar.vertical.position += 0.1
+            }
+        }
+        Button{
+            id: up_button
+            font.family: "Font Awesome 5 Free";
+            text: "\uf0d8" //UP
+            anchors.right: parent.right
+            anchors.rightMargin: 3
+            onClicked: {
+                paramListScrollView.ScrollBar.vertical.position -= 0.1
+            }
+        }
+
     }
 
     /*ProgressBar{
@@ -165,7 +220,7 @@ Rectangle {
                 Button {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "INFO"
-                    Material.background:Material.LightBlue
+                    Material.background: Material.LightBlue
                     onClicked: {
                         var text = model.shortDescription
                         if(text==="TODO"){
@@ -176,6 +231,13 @@ Rectangle {
                         }
                         _messageBoxInstance.set_text_and_show(text)
                     }
+                }
+                ButtonIconWarning{
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: {
+                        _messageBoxInstance.set_text_and_show("This param is whitelisted (You should not edit it from here / editing can break things))")
+                    }
+                    visible: model.whitelisted
                 }
             }
         }
@@ -227,5 +289,4 @@ Rectangle {
         running: m_instanceMavlinkSettingsModel.ui_is_busy
         //visible: _xParamUI.is_busy
     }
-
 }

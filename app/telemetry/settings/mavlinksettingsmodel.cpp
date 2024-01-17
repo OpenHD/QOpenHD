@@ -228,6 +228,8 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         return ret;
     } else if(role ==ReadOnlyRole){
         return DocumentedParam::read_only(data.unique_id.toStdString());
+    }else if(role == WhitelistedRole){
+        return DocumentedParam::is_param_whitelisted(data.unique_id.toStdString());
     }
     else
         return QVariant();
@@ -241,7 +243,8 @@ QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
         {ExtraValueRole, "extraValue"},
         {ValueTypeRole,"valueType"},
         {ShortDescriptionRole,"shortDescription"},
-        {ReadOnlyRole,"read_only"}
+        {ReadOnlyRole,"read_only"},
+        {WhitelistedRole,"whitelisted"}
     };
     return mapping;
 }
