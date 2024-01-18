@@ -53,6 +53,13 @@ Card {
         text_input_cameras.text=m_current_resolution_fps;
     }
 
+    function get_user_selected_resolution(){
+        if(advanced_checkbox.checked){
+            return text_input_cameras.displayText;
+        }
+        return combobox_resolutions.model.get(combobox_resolutions.currentIndex).value;
+    }
+
     ListModel{
         id: resolutions_model
         ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
@@ -139,28 +146,23 @@ Card {
                 text: "SAVE"
                 onPressed: {
                     var success=false;
-                    var selected_value = advanced_checkbox.checked ? text_input_cameras.displayText : combobox_resolutions.model.get(combobox_resolutions.currentIndex);
-                    console.log("Setting "+(m_is_for_secondary ? "CAM2" : "CAM1")+" to {"+selected_value+"}");
+                    const selected_res_fps=get_user_selected_resolution();
+                    console.log("Setting "+(m_is_for_secondary ? "CAM2" : "CAM1")+" to {"+selected_res_fps+"}");
                     if(m_is_for_secondary){
-                        success=_airCameraSettingsModel2.try_update_parameter_string("V_FORMAT",selected_value)===""
+                        success=_airCameraSettingsModel2.try_update_parameter_string("V_FORMAT",selected_res_fps)===""
                     }else{
-                        success=_airCameraSettingsModel.try_update_parameter_string("V_FORMAT",selected_value)===""
+                        success=_airCameraSettingsModel.try_update_parameter_string("V_FORMAT",selected_res_fps)===""
                     }
                     if(success){
-                        _messageBoxInstance.set_text_and_show("Saved "+selected_value);
+                        _messageBoxInstance.set_text_and_show("Saved "+selected_res_fps);
                         close();
                     }else{
                         _messageBoxInstance.set_text_and_show("Failed,please try again");
                     }
                 }
                 enabled: {
-                    if(advanced_checkbox.checked){
-                        var selected_res_fps=text_input_cameras.displayText;
-                        return _cameraStreamModelPrimary.is_valid_resolution_fps_string(selected_res_fps) && selected_res_fps!=m_current_resolution_fps;
-                    }else{
-                        var selected_res_fps =  combobox_resolutions.model.get(combobox_resolutions.currentIndex);
-                        return selected_res_fps!=m_current_resolution_fps;
-                    }
+                    const selected_res_fps=get_user_selected_resolution();
+                    return _cameraStreamModelPrimary.is_valid_resolution_fps_string(selected_res_fps) && selected_res_fps!=m_current_resolution_fps;
                 }
             }
         }

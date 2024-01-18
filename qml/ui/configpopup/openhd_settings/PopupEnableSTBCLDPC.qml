@@ -14,16 +14,12 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-Rectangle{
-    id: main_background
-    //width: parent.width-12
-    //height: parent.height*2/3;
-    width: parent.width
-    height: parent.height
-    anchors.centerIn: parent
-    color: "#ADD8E6"
-    border.color: "black"
-    border.width: 3
+PopupBigGeneric{
+
+    m_title: "STBC / LDPC (ADVANCED)"
+    onCloseButtonClicked: {
+        close();
+    }
 
     function open(){
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
@@ -53,30 +49,14 @@ Rectangle{
     }
 
     ColumnLayout{
-        id: main_row_layout
-        anchors.fill: parent
+        id: main_layout
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.leftMargin: 10
         anchors.rightMargin: 10
-
-        Item{
-            Layout.fillWidth: true
-            Layout.preferredHeight: 80
-            Text{ // TITLE
-                anchors.fill: parent
-                text: "ADVANCED - STBC / LDPC"
-                verticalAlignment: Qt.AlignVCenter
-                horizontalAlignment: Qt.AlignHCenter
-                font.bold: true
-            }
-            Button{
-                text: "CLOSE"
-                anchors.top: parent.top
-                anchors.right: parent.right
-                onClicked: {
-                    close()
-                }
-            }
-        }
+        anchors.topMargin: dirty_top_margin_for_implementation
 
         ComboBox {
             id: comboBoxNAntennasAir
@@ -126,6 +106,7 @@ Rectangle{
             font.pixelSize: 14
             verticalAlignment: Qt.AlignVCenter
             horizontalAlignment: Qt.AlignLeft
+            color: "white"
         }
         Text{
             id: stbc_warning_text

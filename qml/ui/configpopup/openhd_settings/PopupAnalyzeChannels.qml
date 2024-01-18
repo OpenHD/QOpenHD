@@ -16,17 +16,19 @@ import "../../elements"
 
 import QtCharts 2.15
 
-Rectangle{
-    id: main_background
-    width: parent.width - 20
-    height: parent.height -20
-    anchors.centerIn: parent
-    color: "#333c4c"
-
-
+PopupBigGeneric{
+    // Overwritten from parent
+    m_title: "Scan for clean Channels"
+    onCloseButtonClicked: {
+        if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 2) {
+            _qopenhd.show_toast("STILL ANALYZING, PLEASE WAIT ...");
+            return;
+        }
+        close()
+    }
+    // Actual implementation
     property bool m_normalize_data: false;
     property int m_chart_view_minimum_width: 1280;
-
     property bool m_chart_enlarged: false;
 
     function open(){
@@ -41,6 +43,7 @@ Rectangle{
         pollution_chart.update_pollution_graph();
     }
 
+
     ListModel{
         id: model_filter
         ListElement {title: "OHD [1-5]"; value: 0}
@@ -54,39 +57,13 @@ Rectangle{
 
     ColumnLayout{
         id: main_layout
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.leftMargin: 10
         anchors.rightMargin: 10
-
-        BaseHeaderItem{
-            m_text: "Scan for clean Channels"
-        }
-
-        Item {
-            id:closeButtonWrapper
-            Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            Layout.rightMargin: closeButton.width-main_layout.anchors.rightMargin
-            Layout.topMargin: closeButtonWrapper.height-closeButton.height-1
-
-            Button {
-                id:closeButton
-                text: "X"
-                height:42
-                width:42
-                background: Rectangle {
-                    Layout.fillHeight: parent
-                    Layout.fillWidth: parent
-                    color: closeButton.hovered ? "darkgrey" : "lightgrey"
-                }
-                onClicked: {
-                    if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 2) {
-                        _qopenhd.show_toast("STILL ANALYZING, PLEASE WAIT ...");
-                        return;
-                    }
-                    close()
-                }
-            }
-        }
+        anchors.topMargin: dirty_top_margin_for_implementation
 
         RowLayout{
             visible:true

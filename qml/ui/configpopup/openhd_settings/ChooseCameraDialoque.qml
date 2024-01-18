@@ -244,6 +244,7 @@ Card {
         combobox_cameras.currentIndex=0;
         var index_manufacturer=comboBoxManufacturers.currentIndex;
         combobox_cameras.model=get_cameras_model(index_manufacturer)
+        m_user_selected_camera_type=combobox_cameras.model.get(combobox_cameras.currentIndex).value;
     }
 
     cardBody: Column{
@@ -262,8 +263,6 @@ Card {
             currentIndex: 0
             onActivated: {
                 populate_main_camera_selector();
-                combobox_cameras.currentIndex=0;
-                combobox_cameras.visible=true;
             }
         }
         ComboBox {

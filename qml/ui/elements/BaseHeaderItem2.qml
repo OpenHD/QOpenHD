@@ -1,19 +1,22 @@
+import QtQuick 2.0
+
 import QtQuick 2.12
-import QtQuick.Controls 2.4
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
 import QtQuick.Controls.Styles 1.4
 
-import Qt.labs.settings 1.0
-
-import OpenHD 1.0
-
+// UI element for a header
+// consisting of a title an a close button
 Item {
-    width: parent.width
-    height: 32
+    Layout.fillWidth: true
+    Layout.preferredHeight: 32
 
     property string m_text: "FILL ME"
+
+    // should be overridden by implementation
+    signal closeButtonClicked();
 
     Rectangle{
         anchors.fill: parent
@@ -37,21 +40,21 @@ Item {
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
     }
-
     Button {
+        anchors.top: parent.top
+        anchors.right: parent.right
         id:closeButton
         text: "X"
         height:42
         width:42
-        anchors.right: parent.right
-        anchors.rightMargin: 2
         background: Rectangle {
             Layout.fillHeight: parent
             Layout.fillWidth: parent
             color: closeButton.hovered ? "darkgrey" : "lightgrey"
         }
         onClicked: {
-            close()
+            closeButtonClicked();
         }
     }
+
 }

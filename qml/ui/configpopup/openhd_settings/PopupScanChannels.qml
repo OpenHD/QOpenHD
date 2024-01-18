@@ -14,14 +14,18 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-Rectangle{
-    //width: parent.width-12
-    //height: parent.height*2/3;
-    width: parent.width - 20
-    height: parent.height -20
-    anchors.centerIn: parent
-    color: "#333c4c"
+PopupBigGeneric{
+    // Overwritten from parent
+    m_title:  "Find Air Unit"
+    onCloseButtonClicked: {
+        if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 1) {
+            _qopenhd.show_toast("STILL SCANNING, PLEASE WAIT ...");
+            return;
+        }
+        close()
+    }
 
+    // Impl.
     function open(){
         visible=true
         enabled=true
@@ -40,40 +44,14 @@ Rectangle{
     }
 
     ColumnLayout{
-        id:channelScanLayout
-        anchors.fill: parent
+        id: main_layout
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.leftMargin: 10
-        anchors.rightMargin: 5
-
-        BaseHeaderItem{
-            m_text: "Find Air Unit"
-        }
-
-        Item {
-            id:closeButtonWrapper
-            Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            Layout.rightMargin: closeButton.width-channelScanLayout.anchors.rightMargin
-            Layout.topMargin: (closeButtonWrapper.height-closeButton.height)-1
-
-            Button {
-                id:closeButton
-                text: "X"
-                height:42
-                width:42
-                background: Rectangle {
-                    Layout.fillHeight: parent
-                    Layout.fillWidth: parent
-                    color: closeButton.hovered ? "darkgrey" : "lightgrey"
-                }
-                onClicked: {
-                    if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 1) {
-                        _qopenhd.show_toast("STILL SCANNING, PLEASE WAIT ...");
-                        return;
-                    }
-                    close()
-                }
-            }
-        }
+        anchors.rightMargin: 10
+        anchors.topMargin: dirty_top_margin_for_implementation
 
         RowLayout{
             id:channelSelectorRow

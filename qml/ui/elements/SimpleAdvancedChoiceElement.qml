@@ -19,9 +19,9 @@ Rectangle {
     Switch{
         text: m_is_advanced_selected ? "ADVANCED" : "SIMPLE"
         anchors.verticalCenter: parent.verticalCenter
-        //anchors.horizontalCenter: parent.horizontalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+        //anchors.left: parent.left
+        //anchors.leftMargin: 10
         //font.pixelSize: 20
         checked: m_is_advanced_selected
         onCheckedChanged: {

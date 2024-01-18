@@ -32,100 +32,36 @@ Rectangle {
 
     property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
 
-    SimpleProgressBar{
-        id: fetch_all_progress
-        width: parent.width
-        height:  visible ? 15 : 0 // only show when active
-        anchors.top: parent.top
-        visible: m_progress_perc>=0 && m_progress_perc<100
-        impl_curr_progress_perc: m_progress_perc
-        impl_curr_color: "#333c4c"
-    }
-
-    /*Row{
-        id: upper_action_row
-        width: parent.width
-        height: 48
-        anchors.top: fetch_all_progress.bottom
-        anchors.topMargin: 1
-        anchors.left: parent.left
-        anchors.leftMargin: 12
-        ButtonIconWarning{
-            onClicked: {
-                _messageBoxInstance.set_text_and_show(""+m_name+ " not alive, parameters unavailable. Please check status view.");
-            }
-            visible: !m_instanceCheckIsAvlie.is_alive
-        }
-        Button {
-            //text:"REFETCH "+m_name
-            text: "\uf2f1"
-            font.family: "Font Awesome 5 Free"
-            visible: m_instanceCheckIsAvlie.is_alive
-            onClicked: {
-                parameterEditor.visible=false
-                m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
-            }
-        }
-        Button {
-            text:"INFO"
-            Material.background:Material.LightBlue
-            visible: m_instanceCheckIsAvlie.is_alive
-            onClicked: {
-                var text="Refresh your complete parameter set by fetching it from the openhd air/ground unit."
-                _messageBoxInstance.set_text_and_show(text)
-            }
-        }
-        CheckBox{
-            checked: settings.screen_settings_openhd_parameters_transparent
-            onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
-        }
-        Button{
-            text:"DOWN"
-            onClicked: {
-                paramListScrollView.ScrollBar.vertical.position += 0.1
-            }
-        }
-        Button{
-            id: up_button
-            text:"UP"
-            onClicked: {
-                paramListScrollView.ScrollBar.vertical.position -= 0.1
-            }
-        }
-    }*/
     Rectangle{
         id: upper_action_row
         width: parent.width
-        height: 48
+        height: rowHeight*2 / 3;
+        color: "#8cbfd7f3"
         Button {
-            text: "\uf2f1" //"REFETCH "+m_name
+            text: m_instanceCheckIsAvlie.is_alive ?  qsTr("\uf2f1") : qsTr("\uf127");
             font.family: "Font Awesome 5 Free"
-            visible: m_instanceCheckIsAvlie.is_alive
             anchors.left: parent.left
             anchors.leftMargin: 3
             onClicked: {
                 parameterEditor.visible=false
                 m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
             }
-        }
-        ButtonIconWarning{
-            anchors.left: parent.left
-            anchors.leftMargin: 3
-            onClicked: {
-                _messageBoxInstance.set_text_and_show(""+m_name+ " not alive, parameters unavailable. Please check status view.");
-            }
-            visible: !m_instanceCheckIsAvlie.is_alive
+            anchors.verticalCenter: parent.verticalCenter
+            enabled: m_instanceCheckIsAvlie.is_alive
         }
         Text{
             text: "FULL "+m_name+" PARAM SET"
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
+            font.bold: true
+            font.pixelSize: 13
         }
         CheckBox{
-            anchors.right: down_button.right
+            anchors.right: down_button.left
             anchors.rightMargin: 3
             checked: settings.screen_settings_openhd_parameters_transparent
             onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
+            anchors.verticalCenter: parent.verticalCenter
         }
         Button{
             id: down_button
@@ -133,6 +69,7 @@ Rectangle {
             anchors.leftMargin: 3
             text:"\uf0d7" //DOWN
             font.family: "Font Awesome 5 Free";
+            anchors.verticalCenter: parent.verticalCenter
             onClicked: {
                 paramListScrollView.ScrollBar.vertical.position += 0.1
             }
@@ -143,22 +80,27 @@ Rectangle {
             text: "\uf0d8" //UP
             anchors.right: parent.right
             anchors.rightMargin: 3
+            anchors.verticalCenter: parent.verticalCenter
             onClicked: {
                 paramListScrollView.ScrollBar.vertical.position -= 0.1
             }
         }
-
+        Rectangle{
+            width: parent.width
+            height: 2
+            color: "black"
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+        }
+        SimpleProgressBar{
+            width: parent.width
+            height: 15
+            anchors.top: parent.top
+            visible: m_progress_perc>=0 && m_progress_perc<100
+            impl_curr_progress_perc: m_progress_perc
+            impl_curr_color: "#333c4c"
+        }
     }
-
-    /*ProgressBar{
-        width: parent.width
-        height: 50
-        from: 0
-        to: 100
-        value: m_progress_perc
-        //visible: m_progress_perc>=0
-        anchors.top: fetchAllButtonId.top
-    }*/
 
     Component {
         id: delegateMavlinkSettingsValue
@@ -210,7 +152,7 @@ Rectangle {
                         parameterEditor.setup_for_parameter(model.unique_id,model)
                     }
                     // gray out the button for read-only params
-                    enabled: !model.read_only
+                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive
                 }
                 // Empty item for padding
                 Item{
@@ -270,6 +212,41 @@ Rectangle {
                 width: parent.width
                 model: m_instanceMavlinkSettingsModel
                 delegate: delegateMavlinkSettingsValue
+                visible: !please_fetch_item.visible && m_instanceCheckIsAvlie.is_alive
+            }
+        }
+        Item{
+            id: please_fetch_item
+            width: scrollViewRectangle.width
+            height: scrollViewRectangle.height
+            visible: !m_instanceMavlinkSettingsModel.has_params_fetched && m_instanceCheckIsAvlie.is_alive
+            Text{
+                anchors.centerIn: parent
+                text: "Please fetch";
+                font.bold: true
+            }
+        }
+        Item{
+            id: not_connected_overlay
+            width: scrollViewRectangle.width
+            height: scrollViewRectangle.height
+            visible: !m_instanceCheckIsAvlie.is_alive
+            /*Rectangle{
+                anchors.fill: parent
+                color: "gray"
+                opacity: 0.5
+            }*/
+            Text {
+                anchors.fill: parent
+                text: qsTr("\uf127");
+                font.family: "Font Awesome 5 Free";
+                color: "black"
+                //fontSizeMode: Text.Fit
+                //font.pointSize: 100000
+                font.pixelSize: 100
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                opacity: 0.5
             }
         }
     }

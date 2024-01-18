@@ -14,13 +14,12 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-Rectangle {
-    width: parent.width
-    height: parent.height
-    anchors.centerIn: parent
-    color: "#ADD8E6"
-    border.color: "black"
-    border.width: 3
+PopupBigGeneric{
+
+    m_title: "Bitrate Selector"
+    onCloseButtonClicked: {
+        close();
+    }
 
 
     function open(){
@@ -32,28 +31,5 @@ Rectangle {
         enabled=false;
     }
 
-    Column{
-        anchors.fill: parent
-
-        BaseHeaderItem2{
-            m_text: "Bitrate Selector"
-        }
-        // 3 Rates can be selected
-
-
-        Text{
-            text: "Primary Camera: XXX"
-        }
-        Text{
-            text: "Secondary Camera: XXX"
-        }
-        Text{
-            text: "Switch primary & Secondary: XX"
-        }
-        Text{
-            text: "Secondary cam bandwidth: XX";
-        }
-
-    }
 
 }

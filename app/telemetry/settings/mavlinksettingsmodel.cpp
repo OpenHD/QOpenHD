@@ -100,6 +100,7 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
             if(log_result){
                 QOpenHD::instance().show_toast("Fetch all success",false);
             }
+            set_has_params_fetched(true);
         }else{
             if(log_result){
                 QOpenHD::instance().show_toast("Fetch all failed, is your uplink working ? Use the status view for more info..",true);
