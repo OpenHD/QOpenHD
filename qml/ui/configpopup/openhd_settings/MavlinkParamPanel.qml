@@ -23,6 +23,8 @@ Rectangle {
     property var m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
     // figure out if the system is alive
     property var m_instanceCheckIsAvlie: _ohdSystemGround
+    // unly used for camera 1 / camera2
+    property bool m_is_secondary_cam: false
 
     property string m_name: "undefined"
 
@@ -148,8 +150,23 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "EDIT"
                     onClicked: {
-                        // this initializes and opens up the param editor
-                        parameterEditor.setup_for_parameter(model.unique_id,model)
+                        // For a few params we have extra ui elements, otherwise, use the generic param editor
+                        if(model.unique_id==="CAMERA_TYPE"){
+                            dialoque_choose_camera.m_is_for_secondary_camera=m_is_secondary_cam;
+                            dialoque_choose_camera.m_platform_type=dialoque_choose_camera.mPLATFORM_TYPE_RPI
+                            dialoque_choose_camera.initialize_and_show()
+                        }else if(model.unique_id==="CAMERA_TYPE"){
+                            dialoque_choose_camera.m_is_for_secondary_camera=m_is_secondary_cam;
+                            dialoque_choose_camera.m_platform_type=dialoque_choose_camera.mPLATFORM_TYPE_RPI
+                            dialoque_choose_camera.initialize_and_show()
+                        }else if(model.unique_id==="V_FORMAT"){
+                            dialoque_choose_resolution.m_current_resolution_fps=model.value;
+                            dialoque_choose_resolution.m_is_for_secondary=m_is_secondary_cam;
+                            dialoque_choose_resolution.initialize_and_show();
+                        }else{
+                            // this initializes and opens up the (generic) param editor
+                            parameterEditor.setup_for_parameter(model.unique_id,model)
+                        }
                     }
                     // gray out the button for read-only params
                     enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive
@@ -257,6 +274,15 @@ Rectangle {
         id: parameterEditor
         total_width: paramEditorWidth
         instanceMavlinkSettingsModel: m_instanceMavlinkSettingsModel
+    }
+
+    // For (as of now, 2) Settings we have their own custom UI elements to change them
+    // (Since they do not really fit into a 'generic fits all' type
+    ChooseCameraDialoque{
+        id: dialoque_choose_camera
+    }
+    ChooseResolutionDialoque{
+        id: dialoque_choose_resolution
     }
 
     BusyIndicator{

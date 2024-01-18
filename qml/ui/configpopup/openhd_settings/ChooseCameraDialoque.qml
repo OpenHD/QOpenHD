@@ -27,6 +27,7 @@ Card {
     // Secondary camera only supports a few options - we can omit
     // the vendor selection
     property bool m_is_for_secondary_camera: false
+    property var m_cam_model : m_is_for_secondary_camera ? _cameraStreamModelSecondary : _cameraStreamModelPrimary;
 
     property int m_user_selected_camera_type: -100;
 
@@ -55,9 +56,9 @@ Card {
 
         var success= false;
         if(m_is_for_secondary_camera){
-             success=_ohdSystemAirSettingsModel.try_update_parameter_int("TYPE_CAM1",openhd_core_cam_type)=="";
+             success=_airCameraSettingsModel2.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
         }else{
-             success=_ohdSystemAirSettingsModel.try_update_parameter_int("TYPE_CAM0",openhd_core_cam_type)=="";
+             success=_airCameraSettingsModel.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
         }
         if(!success){
             _qopenhd.show_toast("Cannot save, please try again");
@@ -156,6 +157,7 @@ Card {
 
 
     function initialize_and_show(){
+        console.log("Choose camera dialoque opened with ");
         comboBoxManufacturers.model=get_manufacturers_model();
         var current_openhd_core_cam_type=m_cam_model.camera_type;
         // Try and find the index (2D) of the currently active camera

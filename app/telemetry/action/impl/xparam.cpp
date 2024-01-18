@@ -281,6 +281,14 @@ std::optional<XParam::RunningParamCmdGetAll> XParam::find_remove_running_command
                 running.server_param_set.resize(response.param_count);
                 running.server_param_set[response.param_index]=response;
                 update_progress_get_all(running);
+                const int missing=get_missing_count(running.server_param_set);
+                if(missing==0){
+                    qDebug()<<"No params missing, total:"<<running.server_param_set.size();
+                    // We have all the params from this server
+                    RunningParamCmdGetAll tmp_copy=running;
+                    it=m_running_get_all.erase(it);
+                    return tmp_copy;
+                }
             }else{
                 // Size is known, check if we already have this param
                 if(running.server_param_set[response.param_index]!=std::nullopt){
@@ -322,7 +330,7 @@ void XParam::send_next_message_running_get_all(RunningParamCmdGetAll& running_cm
         assert(running_cmd.server_param_set.size()>0);
         const int n_missing=get_missing_count(running_cmd.server_param_set);
         qDebug()<<"Still missing:"<<n_missing<<" total:"<<running_cmd.server_param_set.size();
-        if(n_missing >= running_cmd.server_param_set.size()/2){
+        if(n_missing>2 && n_missing >= running_cmd.server_param_set.size()/2){
             // A lot are stil missing, request them all again
             send_param_ext_request_list(running_cmd.base_cmd);
         }else{

@@ -18,21 +18,17 @@ import "../../elements"
 // which is much more verbose to the user.
 //
 // Aligned to the right, and width can be set by total_width property manually
-Rectangle{
+Card{
+    width: 360
+    height: 340
+    z: 5.0
+    anchors.centerIn: parent
+    cardName: "Parameter Editor"
+    cardNameColor: "black"
+    visible: false
 
     property int total_width: 400
 
-    width: total_width
-    height: parent.height
-    anchors.right: parent.right;
-    anchors.top: parent.top
-    //anchors.centerIn: parent
-    //anchors.topMargin: -15
-    color: "#333c4c"
-
-    //Layout.alignment: Qt.AlignRight || Qt.AlignTop
-    // by default, invisble. Element becomes visible when user clicks on edit for a specific param
-    visible: false
     // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
     // but this can be replaced by the proper instance for air or camera
     property var instanceMavlinkSettingsModel: _ohdSystemGroundSettings
@@ -59,6 +55,11 @@ Rectangle{
     // disable some checking we do for the user, should be used only in really rare cases
     property bool enableAdvanced: false
 
+
+    function close_param_editior(){
+        console.log("Closing param editor")
+        parameterEditor.visible=false
+    }
 
     function holds_int_value(){
         return paramValueType==0;
@@ -225,75 +226,22 @@ Rectangle{
         }
     }
 
-    // This button closes the param editor
-    Button{
-        id:exit_button
-        text: "x"
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.topMargin: 5
-        anchors.rightMargin: 25
-        width: 30
-        height: 30
-        contentItem: Text {
-            text: exit_button.text
-            font: exit_button.font
-            opacity: enabled ? 1.0 : 0.3
-            color: exit_button.down ? "#222425" : "#fff"
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-        }
-        background: Rectangle {
-            implicitWidth: 100
-            implicitHeight: 100
-            opacity: enabled ? 0.1 : 1
-            color: exit_button.down ? "#14181f" : "#333c4c"
-        }
-        onClicked: {
-            console.log("Closing param editor")
-            parameterEditor.visible=false
-        }
-    }
 
-
-    ColumnLayout{
-        width: parent.width
-        height:parent.height
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.topMargin: 15
+    cardBody: Column{
+        padding: 10
         spacing: 10
-
-        Label{
-            height: customHeight
-            text: "Parameter editor"
-            color: "white"
-            font.bold: true
-            font.pixelSize: 18
-            horizontalAlignment: Qt.AlignHCenter
-            Layout.alignment: Qt.AlignCenter
-        }
-
+        width: 300
         Label{
             height:customHeight
             anchors.topMargin: 30
             font.pixelSize: 12
             text: qsTr(parameterId+" "+get_param_type_readable())
-            color: "white"
             // dafuq https://stackoverflow.com/questions/35799944/text-type-alignment
-            horizontalAlignment: Qt.AlignHCenter
-            Layout.alignment: Qt.AlignCenter
-        }
-        Text{
-            width: 300
-            height:customHeight
-            Layout.alignment: Qt.AlignCenter
-            color: "white"
-            text: "Description not availble"
-            visible: !m_has_param_description
-        }
+            width: parent.width
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
 
+        }
         // Value edit part begin
 
         // Type int only begin --------------------------
@@ -303,8 +251,8 @@ Rectangle{
         SpinBox {
             id: spinBoxInputParamtypeInt
             height: customHeight
+            width: parent.width
             font.pixelSize: 14
-            Layout.alignment: Qt.AlignCenter
             from: param_int_min_value()
             to: param_int_max_value()
             stepSize: 1
@@ -329,13 +277,12 @@ Rectangle{
             id: intEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14
-            Layout.alignment: Qt.AlignCenter
             model: intEnumDynamicListModel
             textRole: "title"
-            Layout.minimumWidth : total_width*0.8
             onCurrentIndexChanged: {
             }
             visible:false
+            width: parent.width
         }
         // Type int only end --------------------------
 
@@ -350,10 +297,8 @@ Rectangle{
             id: stringEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14
-            Layout.alignment: Qt.AlignCenter
             model: stringEnumDynamicListModel
             textRole: "title"
-            Layout.minimumWidth : total_width*0.8
             onCurrentIndexChanged: {
                 console.debug("currentIndex:"+currentIndex)
                 if(currentIndex>=0){
@@ -364,6 +309,7 @@ Rectangle{
                 }
             }
             visible:false
+            width: parent.width
         }
 
         // for strings, we always show the text input
@@ -374,44 +320,37 @@ Rectangle{
             text: paramValueString
             cursorVisible: false
             visible: false
-            Layout.alignment: Qt.AlignCenter
-            // Not the best design style wise, but since the param editor is dark blue, otherwise the spin
             color: "white"
+            maximumLength: 30;
         }
-        // Type string only end --------------------------
-        /*CheckBox{
+        // Toggles between text and drop down input
+        CheckBox{
             id: advanced_checkbox
             text: "experiment"
-            Layout.alignment: Qt.AlignHCenter
             onClicked: {
                 enableAdvanced= !enableAdvanced
                 // Completely re-fresh the UI - the user has now more direct access to the parameter(s)
                 setup_spin_box_int_param()
                 setup_text_input_string_param()
             }
-        }*/
-        //Value edit part end
+        }
+    }
 
+    hasFooter: true
+    cardFooter: Item {
+        anchors.fill: parent
         RowLayout{
-            width:parent.width
-            height: 50
-            spacing: 10
-            Layout.alignment: Qt.AlignHCenter
-
-            /*Button{
-                text: "Advanced"
-                visible: settings.dev_show_advanced_button
-                Layout.alignment: Qt.AlignLeft
-                onClicked: {
-                    enableAdvanced= !enableAdvanced
-                    // Completely re-fresh the UI - the user has now more direct access to the parameter(s)
-                    setup_spin_box_int_param()
-                    setup_text_input_string_param()
+            anchors.fill: parent
+            Button{
+                Layout.preferredWidth: 150
+                text: "CANCEL"
+                onPressed: {
+                    close_param_editior();
                 }
-            }*/
+            }
             Button{
                 text: "Save"
-                Layout.alignment: Qt.AlignRight
+                Layout.preferredWidth: 150
                 onClicked: {
                     var res="";
                     if(paramValueType==0){

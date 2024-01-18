@@ -66,24 +66,20 @@ Rectangle {
         LinkQuickPanel{
             id: mavlink_openhd_wb_param_panel
         }
-        /*MavlinkParamPanel{
+        MavlinkParamPanel{
             id: x1_AirCameraSettingsPanel
             m_name: "CAMERA1"
             m_instanceMavlinkSettingsModel: _airCameraSettingsModel
             m_instanceCheckIsAvlie: _ohdSystemAir
-        }*/
-        CamSettingsPanel{
+            m_is_secondary_cam: false
         }
-        /*MavlinkParamPanel{
+        MavlinkParamPanel{
             id: x1_AirCameraSettingsPanel2
             m_name: "CAMERA2"
             m_instanceMavlinkSettingsModel: _airCameraSettingsModel2
             m_instanceCheckIsAvlie: _ohdSystemAir
-        }*/
-        CamSettingsPanel{
             m_is_secondary_cam: true
         }
-
         MavlinkParamPanel{
             id: x2_AirSettingsPanel
             m_name: "AIR"

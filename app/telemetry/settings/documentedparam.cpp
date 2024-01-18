@@ -720,6 +720,19 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret[openhd::WB_ENABLE_STBC]=nullptr;
     // Whitelisted since normally it should not be changed / has no effect anyways
     ret[openhd::WB_ENABLE_SHORT_GUARD]=nullptr;
+    //
+    ret["WB_V_FEC_PERC"]=nullptr;
+    ret["WB_V_RATE_PERC"]=nullptr;
+    ret["VARIABLE_BITRATE"]=nullptr;
+    ret["V_PRIMARY_PERC"]=nullptr;
+    ret["V_SWITCH_CAM"]=nullptr;
+    //
+    ret["TYPE_CAM0"]=nullptr;
+    ret["TYPE_CAM1"]=nullptr;
+    ret[""]=nullptr;
+    ret[""]=nullptr;
+    ret[""]=nullptr;
+    ret[""]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
