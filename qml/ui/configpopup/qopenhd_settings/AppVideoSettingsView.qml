@@ -32,7 +32,6 @@ ScrollView {
                 id: itemsVideoCodec
                 ListElement { text: "H264"; }
                 ListElement { text: "H265";  }
-                ListElement { text: "MJPEG"; }
             }
 
             SettingBaseElement{

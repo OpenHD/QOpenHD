@@ -724,11 +724,24 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret["WB_V_FEC_PERC"]=nullptr;
     ret["WB_V_RATE_PERC"]=nullptr;
     ret["VARIABLE_BITRATE"]=nullptr;
-    ret["V_PRIMARY_PERC"]=nullptr;
-    ret["V_SWITCH_CAM"]=nullptr;
     //
     ret["TYPE_CAM0"]=nullptr;
     ret["TYPE_CAM1"]=nullptr;
+    // The actual 'camera' parameters
+    // Whitelisted since r.n we don't really know
+    // what happens on a platform if h265 is selected
+    ret["VIDEO_CODEC"]=nullptr;
+    ret["V_AIR_RECORDING"]=nullptr;
+    ret["V_FORCE_SW_ENCODE"]=nullptr;
+    ret["V_BITRATE_MBITS"]=nullptr;
+    ret["V_KEYFRAME_I"]=nullptr;
+    ret["V_INTRA_REFRESH"]=nullptr;
+    //
+
+    ret["V_E_STREAMING"]=nullptr;
+    ret["TYPE_CAM1"]=nullptr;
+
+
     ret[""]=nullptr;
     ret[""]=nullptr;
     ret[""]=nullptr;

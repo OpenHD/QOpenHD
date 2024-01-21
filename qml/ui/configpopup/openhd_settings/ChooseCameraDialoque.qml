@@ -180,15 +180,15 @@ Card {
             combobox_cameras.model=get_cameras_model(0);
             combobox_cameras.currentIndex=0;
         }
-        // If there is only one manufacturer choice, disable the combobox.
-        /*if(comboBoxManufacturers.model.length<=1){
-            comboBoxManufacturers.enabled=false;
-        }else{
-            comboBoxManufacturers.enabled=true;
-        }*/
         if(m_is_for_secondary_camera){
             comboBoxManufacturers.model=model_manufacturers_secondary_cam;
             combobox_cameras.model=generic_secondary_camera_options;
+        }else{
+            comboBoxManufacturers.enabled=true;
+        }
+        // If there is only one manufacturer choice, disable the combobox.
+        if(comboBoxManufacturers.model.length<=1){
+            comboBoxManufacturers.enabled=false;
         }else{
             comboBoxManufacturers.enabled=true;
         }

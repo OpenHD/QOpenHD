@@ -11,6 +11,8 @@
 #include <QVariant>
 
 #include "../action/impl/xparam.h"
+// Dirty
+#include "../models/openhd_core/camera.hpp"
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {
@@ -212,6 +214,11 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         return QString(std::get<std::string>(data.value).c_str());
    } else if (role==ExtraValueRole){
         if(std::holds_alternative<int>(data.value)){
+            if(data.unique_id=="CAMERA_TYPE"){
+                auto value=std::get<int>(data.value);
+                XCamera tmp{value,0,""};
+                return tmp.cam_type_as_verbose_string().c_str();
+            }
             auto value=std::get<int>(data.value);
             return int_enum_get_readable(data.unique_id,value);
         }

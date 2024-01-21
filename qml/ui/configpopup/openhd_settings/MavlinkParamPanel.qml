@@ -111,19 +111,12 @@ Rectangle {
             //color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
             //color: "transparent"
             color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : ((index % 2 == 0) ? "#8cbfd7f3" : "#00000000")
-            //color: "green"
-            //implicitHeight: elementsRow.implicitHeight
-            //implicitWidth: elementsRow.implicitWidth
-            //height: 64
-            //width: 200
             height: 64
             width: listView.width-12
             Row {
-                id: elementsRow
-                //anchors.fill: parent
-                spacing: 5
-                //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                height: 64
+                spacing: 10
+                height: parent.height
+                width: parent.width
                 anchors.left: parent.left
                 anchors.leftMargin: 12
                 Text {
@@ -145,6 +138,29 @@ Rectangle {
                     color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
                     style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
                     styleColor: settings.color_glow
+                }
+                //Button {
+                ButtonIconInfo{
+                    anchors.verticalCenter: parent.verticalCenter
+                    //text: "INFO"
+                    //Material.background: Material.LightBlue
+                    onClicked: {
+                        var text = model.shortDescription
+                        if(text==="TODO"){
+                            text = "This parameter is not documented yet";
+                         }
+                        if(model.read_only){
+                            text ="This parameter is read-only (cannot be edited)\n"+text;
+                        }
+                        _messageBoxInstance.set_text_and_show(text)
+                    }
+                }
+                ButtonIconWarning{
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: {
+                        _messageBoxInstance.set_text_and_show("This param is whitelisted (You should not edit it from here / editing can break things))")
+                    }
+                    visible: model.whitelisted
                 }
                 Button {
                     anchors.verticalCenter: parent.verticalCenter
@@ -170,33 +186,6 @@ Rectangle {
                     }
                     // gray out the button for read-only params
                     enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive
-                }
-                // Empty item for padding
-                Item{
-                    width: 16
-                    height: parent.height
-                }
-                Button {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "INFO"
-                    Material.background: Material.LightBlue
-                    onClicked: {
-                        var text = model.shortDescription
-                        if(text==="TODO"){
-                            text = "This parameter is not documented yet";
-                         }
-                        if(model.read_only){
-                            text ="This parameter is read-only (cannot be edited)\n"+text;
-                        }
-                        _messageBoxInstance.set_text_and_show(text)
-                    }
-                }
-                ButtonIconWarning{
-                    anchors.verticalCenter: parent.verticalCenter
-                    onClicked: {
-                        _messageBoxInstance.set_text_and_show("This param is whitelisted (You should not edit it from here / editing can break things))")
-                    }
-                    visible: model.whitelisted
                 }
             }
         }
