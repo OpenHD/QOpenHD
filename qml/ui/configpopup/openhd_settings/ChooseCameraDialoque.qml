@@ -187,7 +187,7 @@ Card {
             comboBoxManufacturers.enabled=true;
         }
         // If there is only one manufacturer choice, disable the combobox.
-        if(comboBoxManufacturers.model.length<=1){
+        if(comboBoxManufacturers.model.count<=1){
             comboBoxManufacturers.enabled=false;
         }else{
             comboBoxManufacturers.enabled=true;

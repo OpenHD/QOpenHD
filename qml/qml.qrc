@@ -269,7 +269,6 @@
         <file>ui/elements/BaseHeaderItem2.qml</file>
         <file>ui/configpopup/openhd_settings/PopupSelectBitrate.qml</file>
         <file>ui/configpopup/openhd_settings/ChooseCameraDialoque.qml</file>
-        <file>ui/configpopup/openhd_settings/CamSettingsPanel.qml</file>
         <file>ui/elements/SettingBaseElement2.qml</file>
         <file>ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml</file>
         <file>ui/elements/SimpleAdvancedChoiceElement.qml</file>

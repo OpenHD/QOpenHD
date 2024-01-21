@@ -149,9 +149,9 @@ Card {
                     const selected_res_fps=get_user_selected_resolution();
                     console.log("Setting "+(m_is_for_secondary ? "CAM2" : "CAM1")+" to {"+selected_res_fps+"}");
                     if(m_is_for_secondary){
-                        success=_airCameraSettingsModel2.try_update_parameter_string("V_FORMAT",selected_res_fps)===""
+                        success=_airCameraSettingsModel2.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
                     }else{
-                        success=_airCameraSettingsModel.try_update_parameter_string("V_FORMAT",selected_res_fps)===""
+                        success=_airCameraSettingsModel.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
                     }
                     if(success){
                         _messageBoxInstance.set_text_and_show("Saved "+selected_res_fps);

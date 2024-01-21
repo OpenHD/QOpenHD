@@ -175,7 +175,7 @@ Rectangle {
                             dialoque_choose_camera.m_is_for_secondary_camera=m_is_secondary_cam;
                             dialoque_choose_camera.m_platform_type=dialoque_choose_camera.mPLATFORM_TYPE_RPI
                             dialoque_choose_camera.initialize_and_show()
-                        }else if(model.unique_id==="V_FORMAT"){
+                        }else if(model.unique_id==="RESOLUTION_FPS"){
                             dialoque_choose_resolution.m_current_resolution_fps=model.value;
                             dialoque_choose_resolution.m_is_for_secondary=m_is_secondary_cam;
                             dialoque_choose_resolution.initialize_and_show();

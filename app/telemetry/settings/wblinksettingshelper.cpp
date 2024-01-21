@@ -224,13 +224,13 @@ bool WBLinkSettingsHelper::change_param_ground_only_blocking(QString param_id, i
 
 void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
 {
-    change_param_air_async(OHD_COMP_ID_AIR_CAMERA_PRIMARY,"V_KEYFRAME_I",static_cast<int32_t>(keyframe_interval),"KEYFRAME");
+    change_param_air_async(OHD_COMP_ID_AIR_CAMERA_PRIMARY,"KEYFRAME_I",static_cast<int32_t>(keyframe_interval),"KEYFRAME");
 }
 void WBLinkSettingsHelper::set_param_video_resolution_framerate_async(bool primary,QString res_str)
 {
     const std::string value=res_str.toStdString();
     const auto comp_id = primary ? OHD_COMP_ID_AIR_CAMERA_PRIMARY : OHD_COMP_ID_AIR_CAMERA_SECONDARY;
-    change_param_air_async(comp_id,"V_FORMAT",value,"VIDEO FORMAT");
+    change_param_air_async(comp_id,"RESOLUTION_FPS",value,"VIDEO FORMAT");
 }
 void WBLinkSettingsHelper::set_param_fec_percentage_async(int percent)
 {
