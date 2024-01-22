@@ -20,6 +20,7 @@ public:
     TCPConnection(MAV_MSG_CB cb,std::string remote_ip,int remote_port,int mavlink_channel);
     ~TCPConnection();
 
+    // Update the remote. Must not be in looping state when called.
     void set_remote(std::string remote_ip,int remote_port);
 
     bool is_looping();
