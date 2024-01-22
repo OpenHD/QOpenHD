@@ -19,6 +19,7 @@ Card {
 
     property string m_current_resolution_fps: "1920x1080@30"
     property bool m_is_for_secondary: false
+    property bool m_textinput_display_text_valid: false;
 
 
     function close(){
@@ -62,6 +63,7 @@ Card {
 
     ListModel{
         id: resolutions_model
+        //ListElement {title: "0x0@0   (AUTO)"; value: "0x0@0"}
         ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
         ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
         ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
@@ -114,6 +116,18 @@ Card {
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
                 }
+                color: m_textinput_display_text_valid ? "black" : "red";
+                onDisplayTextChanged: {
+                    if(_cameraStreamModelPrimary.is_valid_resolution_fps_string(displayText)){
+                        m_textinput_display_text_valid=true;
+                    }else{
+                        m_textinput_display_text_valid=false;
+                    }
+                }
+            }
+            // padding
+            Item {
+                width: 10
             }
             ButtonIconInfo{
                 visible: text_input_cameras.visible

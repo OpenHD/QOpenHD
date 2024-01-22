@@ -81,25 +81,25 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
         }
         Button{
-            id: down_button
-            anchors.right: up_button.left
+            id: up_button
+            anchors.right: down_button.left
             anchors.leftMargin: 3
-            text:"\uf0d7" //DOWN
+            text: "\uf0d8" //UP
             font.family: "Font Awesome 5 Free";
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
-                paramListScrollView.ScrollBar.vertical.position += 0.1
+                paramListScrollView.ScrollBar.vertical.position -= 0.1
             }
         }
         Button{
-            id: up_button
+            id: down_button
             font.family: "Font Awesome 5 Free";
-            text: "\uf0d8" //UP
+            text: "\uf0d7" //DOWN
             anchors.right: parent.right
             anchors.rightMargin: 3
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
-                paramListScrollView.ScrollBar.vertical.position -= 0.1
+                paramListScrollView.ScrollBar.vertical.position += 0.1
             }
         }
         Rectangle{
@@ -136,7 +136,7 @@ Rectangle {
                 anchors.leftMargin: 12
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    width:160
+                    width:180
                     text: model.unique_id
                     font.bold: true
                     font.pixelSize: 14
@@ -145,7 +145,7 @@ Rectangle {
                     styleColor: settings.color_glow
                 }
                 Text {
-                    width:160
+                    width:180
                     text: model.extraValue
                     font.bold: true
                     font.pixelSize: 14
