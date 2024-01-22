@@ -83,7 +83,10 @@ private:
     void process_message_timesync(const mavlink_message_t &msg);
 private:
     std::unique_ptr<UDPConnection> m_udp_connection=nullptr;
-    std::unique_ptr<TCPConnection> m_tcp_connection=nullptr;
+    std::unique_ptr<TCPConnection> m_tcp_connection_wifi_hs=nullptr;
+    std::unique_ptr<TCPConnection> m_tcp_connection_eth_hs=nullptr;
+    std::unique_ptr<TCPConnection> m_tcp_connection_custom=nullptr;
+
     int64_t m_last_timesync_out_us=0;
     bool m_fc_found=false;
     int m_fc_sys_id=-1;

@@ -27,26 +27,26 @@
 
 UDPConnection::UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb)
     :m_local_ip(local_ip),m_local_port(local_port),m_cb(cb)
-      //,m_mav_channel(MavlinkChannel::instance().get_free_channel())
 {
 
 }
 
 UDPConnection::~UDPConnection()
 {
-    stop();
-    //MavlinkChannel::instance().give_back_channel(m_mav_channel);
+    stop_looping_if();
 }
 
 
-void UDPConnection::start()
+void UDPConnection::start_looping()
 {
+    assert(m_receive_thread==nullptr);
     m_keep_receiving=true;
     m_receive_thread=std::make_unique<std::thread>(&UDPConnection::loop_receive,this);
 }
 
-void UDPConnection::stop()
+void UDPConnection::stop_looping()
 {
+    assert(m_receive_thread!=nullptr);
     qDebug()<<"UDP stop - begin";
     m_keep_receiving=false;
 #ifdef __windows__
@@ -100,6 +100,16 @@ bool UDPConnection::threadsafe_is_alive(){
     const int32_t now_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();;
     const auto elapsed=now_ms-m_last_data_ms;
     return elapsed <= 3*1000;
+}
+
+bool UDPConnection::is_looping()
+{
+    return m_receive_thread!=nullptr;
+}
+
+void UDPConnection::stop_looping_if()
+{
+    if(is_looping())stop_looping();
 }
 
 void UDPConnection::process_data(const uint8_t *data, int data_len)

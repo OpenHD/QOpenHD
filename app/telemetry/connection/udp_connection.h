@@ -23,14 +23,17 @@ public:
     UDPConnection(const std::string local_ip,const int local_port,MAV_MSG_CB cb);
     ~UDPConnection();
 
-    void start();
+    void start_looping();
 
-    void stop();
+    void stop_looping();
 
     void send_message(const mavlink_message_t& msg);
 
     // Returns true if the last received message is not older than X seconds
     bool threadsafe_is_alive();
+
+    bool is_looping();
+    void stop_looping_if();
 
 private:
     void process_data(const uint8_t* data,int data_len);
