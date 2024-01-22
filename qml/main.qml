@@ -152,6 +152,24 @@ ApplicationWindow {
                 _qopenhd.disable_service_and_quit()
             }
         }
+        BusyIndicator{
+            id: any_param_busy_indiscator
+            width: 96
+            height: 96
+            anchors.centerIn: parent
+            running: _airCameraSettingsModel.ui_is_busy || _airCameraSettingsModel2.ui_is_busy || _ohdSystemAirSettingsModel.ui_is_busy || _ohdSystemGroundSettings.ui_is_busy
+            //visible: _xParamUI.is_busy
+        }
+        Text{
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: any_param_busy_indiscator.bottom
+            text: "FETCHING PARAMETERS.."
+            visible: any_param_busy_indiscator.running
+            font.pixelSize: 15
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
 
         /*Rectangle {
             width: 800

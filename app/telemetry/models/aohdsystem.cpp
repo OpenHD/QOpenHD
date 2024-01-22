@@ -20,6 +20,7 @@
 
 #include <../util/WorkaroundMessageBox.h>
 #include "../settings/wblinksettingshelper.h"
+#include "../settings/mavlinksettingsmodel.h"
 
 // From https://netbeez.net/blog/what-is-mcs-index/
 static std::vector<int> get_dbm_20mhz(){
@@ -491,7 +492,20 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
         }else{
             LogMessagesModel::instanceOHDAir().add_message_debug("QOpenHD",message.str().c_str());
         }
-
+        if(alive){
+            if(m_is_air && !MavlinkSettingsModel::instanceAir().has_params_fetched()){
+                MavlinkSettingsModel::instanceAir().try_refetch_all_parameters_async();
+            }
+            if(m_is_air && !MavlinkSettingsModel::instanceAirCamera().has_params_fetched()){
+                MavlinkSettingsModel::instanceAirCamera().try_refetch_all_parameters_async();
+            }
+            if(m_is_air && !MavlinkSettingsModel::instanceAirCamera2().has_params_fetched()){
+                MavlinkSettingsModel::instanceAirCamera2().try_refetch_all_parameters_async();
+            }
+            if(!m_is_air && !MavlinkSettingsModel::instanceGround().has_params_fetched()){
+                MavlinkSettingsModel::instanceGround().try_refetch_all_parameters_async();
+            }
+        }
         set_is_alive(alive);
     }
 }

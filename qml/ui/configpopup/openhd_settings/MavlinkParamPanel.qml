@@ -27,12 +27,27 @@ Rectangle {
     property bool m_is_secondary_cam: false
 
     property string m_name: "undefined"
+    property bool m_requires_alive_air: false
 
     //color: "red"
     //color: "transparent"
     color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
 
     property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
+
+    onVisibleChanged: {
+        if(visible){
+            if(!m_instanceCheckIsAvlie.is_alive){
+                var message= m_requires_alive_air ? "AIR not alive" : "GND not alive";
+                message+=", parameters unavailable";
+                _qopenhd.show_toast(message);
+            }else{
+                if(! m_instanceMavlinkSettingsModel.has_params_fetched){
+                   m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
+                }
+            }
+        }
+    }
 
     Rectangle{
         id: upper_action_row

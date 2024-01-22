@@ -100,12 +100,12 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
             const auto param_set=result.param_set;
             remove_and_replace_param_set(param_set);
             if(log_result){
-                QOpenHD::instance().show_toast("Fetch all success",false);
+                QOpenHD::instance().show_toast("Fetch all parameters success",false);
             }
             set_has_params_fetched(true);
         }else{
             if(log_result){
-                QOpenHD::instance().show_toast("Fetch all failed, is your uplink working ? Use the status view for more info..",true);
+                QOpenHD::instance().show_toast("Fetch all parameters failed, is your uplink working ? Use the status view for more info..",true);
             }
         }
         m_is_currently_busy=false;
