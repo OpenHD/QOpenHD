@@ -177,132 +177,263 @@ Map {
         opacity: .3
     }
 
+    //>>>>>>>>>>>>>>>>> Begin ADSB <<<<<<<<<<<<<<<<<
     MapItemView {
-        id: markerMapView
-        model: AdsbVehicleManager.adsbVehicles
-        delegate: markerComponentDelegate
-        //TODO refactor setting
-        //visible: EnableADSB
-        visible: true
+            id: markerMapView
+            model: AdsbVehicleManager.adsbVehicles
+            delegate: markerComponentDelegate
+            visible: settings.adsb_enable
 
-        Component {
-            id: markerComponentDelegate
+            Component {
+                id: markerComponentDelegate
 
-            MapItemGroup {
-                id: delegateGroup
+                MapItemGroup {
+                    id: delegateGroup
 
-                MapQuickItem {
-                    id: marker
+                    MapQuickItem {
+                        id: marker
+                        property alias lastMouseX: markerMouseArea.lastX
+                        property alias lastMouseY: markerMouseArea.lastY
 
-                    anchorPoint.x: 0
-                    anchorPoint.y: 0
-                    width: 260
-                    height: 260
+                        anchorPoint.x: image.width/2
+                        anchorPoint.y: image.height/2
+                        width: image.width
+                        height: image.height
 
 
-                    sourceItem:
+                        sourceItem:
 
-                        DrawingCanvas {
-                        id: icon
-                        anchors.centerIn: parent
+                            Image {
 
-                        width: 260
-                        height: 260
+                            id: image
+                            source: "ADSBmarker.png"
 
-                        color: settings.color_shape
-                        glow: settings.color_glow
+                            Rectangle{// has to be here prior to rotation call
+                                id: speedtail
 
-                        name: object.callsign
+                                x: image.width*.4
+                                y: image.height*.8
 
-                        drone_heading: _fcMavlinkSystem.hdg; //need this to adjust orientation
-
-                        drone_alt: _fcMavlinkSystem.altitude_msl_m;
-
-                        heading: object.heading;
-
-                        speed: object.velocity
-
-                        alt: {
-                            console.log("map lat / lon:" + object.vehicle_lat + " " + object.vehicle_lon);
-
-                   return         object.altitude;
-
-}
-
-//                          {
-/*                          check if traffic is a threat.. this should not be done here. Left as REF
-                                if (object.altitude - OpenHD.alt_msl < 300 && model.distance < 2){
-                                    //console.log("TRAFFIC WARNING");
-
-                                    //image.source="/airplanemarkerwarn.png";
-                                    background.border.color = "red";
-                                    background.border.width = 5;
-                                    background.opacity = 0.5;
-                                } else if (object.altitude - OpenHD.alt_msl < 500 && model.distance < 5){
-                                    //console.log("TRAFFIC ALERT");
-
-                                    //image.source="/airplanemarkeralert.png";
-                                    background.border.color = "yellow";
-                                    background.border.width = 5;
-                                    background.opacity = 0.5;
-                                }
-*/
-
-/*                          *discovered issues when the object is referenced multiple times
-                            *last attempt at putting altitude into a var still resulted in "nulls"
-
-                            var _adsb_alt;
-
-                            _adsb_alt=object.altitude;
-
-                            if ( _adsb_alt> 9999) {
-                                //console.log("qml: model alt or vertical undefined")
-                               return "---";
-                            } else {
-                                if(object.verticalVel > .2){ //climbing
-                                    if (settings.enable_imperial === false){
-                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\ue696"
+                                width: image.width*.2
+                                height: {
+                                    if (object.velocity === undefined) {
+                                        console.log("qml: object velocity undefined")
+                                        return 0;
                                     }
-                                    else{
-                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue696"
+                                    else {
+                                        return object.velocity / 10;
                                     }
                                 }
-                                else if (object.verticalVel < -.2){//descending
-                                    if (settings.enable_imperial === false){
-                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\ue697"
-                                    }
-                                    else{
-                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue697"
-                                    }
+                                opacity: .5
+                                color: "white"
+                                border.color: "grey"
+                                border.width: 1
+                            }
+
+                            rotation: {
+                                if (object.heading === undefined) {
+                                    console.log("qml: model heading undefined")
+                                    return 0;
+                                }
+
+
+
+                                if (settings.map_orientation === true){
+                                    var orientation = object.heading-_fcMavlinkSystem.hdg;
+                                    if (orientation < 0) orientation += 360;
+                                    if (orientation >= 360) orientation -=360;
+                                    return orientation;
                                 }
                                 else {
-                                    if (settings.enable_imperial === false){//level
-                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\u2501"
+                                    //console.log("TRACK=", object.heading);
+                                    return object.heading;
+                                }
+                            }
+
+                            //UNUSED MOUSE AREA.. for future functionality
+                            opacity: markerMouseArea.pressed ? 0.6 : 1.0
+                            MouseArea  {
+                                id: markerMouseArea
+                                property int pressX : -1
+                                property int pressY : -1
+                                property int jitterThreshold : 10
+                                property int lastX: -1
+                                property int lastY: -1
+                                anchors.fill: parent
+                                hoverEnabled : false
+                                drag.target: marker
+                                preventStealing: true
+
+                                onPressed : {
+                                    map.pressX = mouse.x
+                                    map.pressY = mouse.y
+                                    map.currentMarker = -1
+                                    for (var i = 0; i< map.markers.length; i++){
+                                        if (marker == map.markers[i]){
+                                            map.currentMarker = i
+                                            break
+                                        }
                                     }
-                                    else{
-                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\u2501"
+                                }
+
+                                onPressAndHold:{
+                                    if (Math.abs(map.pressX - mouse.x ) < map.jitterThreshold
+                                            && Math.abs(map.pressY - mouse.y ) < map.jitterThreshold) {
+                                        var p = map.fromCoordinate(marker.coordinate)
+                                        lastX = p.x
+                                        lastY = p.y
+                                        map.showMarkerMenu(marker.coordinate)
+                                    }
+                                }
+                            }
+
+                            Rectangle{ //holder to "derotate" info block
+                                id: holder
+
+                                x: image.width+5
+                                y: image.height/2
+                                rotation: {
+                                    if (object.heading === undefined) {
+                                        console.log("qml: model velocity undefined")
+                                        return 0;
+                                    }
+
+                                    if (settings.map_orientation === true){
+                                        var orientation = object.heading - _fcMavlinkSystem.hdg;
+
+                                        if (orientation < 0) orientation += 360;
+                                        if (orientation >= 360) orientation -=360;
+                                        return -orientation;
+                                    }
+                                    else {
+                                        return -object.heading;
+                                    }
+                                }
+                                width: image.width
+                                height: image.height
+                                color: "transparent"
+
+                                Rectangle{
+                                    id: background
+
+                                    width: image.width*1.25
+                                    height: image.height
+                                    color: "black"
+                                    opacity: .2
+                                    border.width: 2
+                                    border.color: "white"
+                                    radius: 8
+                                }
+
+                                Text{
+                                    id: callsign
+                                    anchors.top: holder.top
+                                    topPadding: 2
+                                    leftPadding: 10
+                                    width: image.width
+                                    color: "white"
+                                    //font.bold: true
+                                    font.pixelSize: 11
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: {
+                                        if (object.callsign === undefined) {
+                                            console.log("qml: model callsign undefined")
+                                            return "---"
+                                        }
+                                        else {
+                                            return object.callsign
+                                            //console.log("Map Callsign=",object.callsign);
+                                        }
+                                    }
+                                }
+
+                                Text{
+                                    id: alt
+                                    anchors.top: callsign.bottom
+                                    topPadding: 2
+                                    leftPadding: 10
+                                    width: image.width
+                                    color: "white"
+                                    font.bold: true
+                                    font.pixelSize: 11
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text:  {
+                                        // check if traffic is a threat and change marker image if needed
+                                        if (object.altitude - _fcMavlinkSystem.altitude_msl_m < 300 && object.distance < 2){
+                                            //console.log("TRAFFIC WARNING");
+                                            image.source="ADSBwarnMarker.png";
+                                            background.border.color = "red";
+                                            background.border.width = 5;
+                                            background.opacity = 0.5;
+                                        } else if (object.altitude - _fcMavlinkSystem.altitude_msl_m < 500 && object.distance < 5){
+                                            //console.log("TRAFFIC ALERT");
+                                            image.source="ADSBcautionMarker.png";
+                                            background.border.color = "yellow";
+                                            background.border.width = 5;
+                                            background.opacity = 0.5;
+                                        }
+
+                                        //NOW do altitude Text block
+                                        if (object.altitude === undefined || object.verticalVel === undefined) {
+                                            //console.log("qml: model alt or vertical undefined")
+                                            return "---";
+                                        } else {
+                                            if(object.verticalVel > .2){ //climbing
+                                                if (settings.enable_imperial === false){
+                                                    return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\ue696"
+                                                }
+                                                else{
+                                                    return Math.floor((object.altitude - _fcMavlinkSystem.altitude_msl_m) * 3.28084) + "Ft " + "\ue696"
+                                                }
+                                            }
+                                            else if (object.verticalVel < -.2){//descending
+                                                if (settings.enable_imperial === false){
+                                                    return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\ue697"
+                                                }
+                                                else{
+                                                    return Math.floor((object.altitude - _fcMavlinkSystem.altitude_msl_m) * 3.28084) + "Ft " + "\ue697"
+                                                }
+                                            }
+                                            else {
+                                                if (settings.enable_imperial === false){//level
+                                                    return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\u2501"
+                                                }
+                                                else{
+                                                    return Math.floor((object.altitude - _fcMavlinkSystem.altitude_msl_m) * 3.28084) + "Ft " + "\u2501"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                Text{
+                                    id: velocity
+                                    anchors.top: alt.bottom
+                                    topPadding: 2
+                                    leftPadding: 10
+                                    width: image.width
+                                    color: "white"
+                                    //font.bold: true
+                                    font.pixelSize: 11
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: {
+                                        if (object.velocity === undefined) {
+                                            return "---";
+                                        }
+                                        else {
+                                            return settings.enable_imperial ? Math.floor(object.velocity * 2.23694) + " mph"
+                                                                            : Math.floor(object.velocity * 3.6) + " kph";
+                                        }
                                     }
                                 }
                             }
                         }
-  */
+                        //position everything
+                        coordinate: QtPositioning.coordinate( object.lat , object.lon );
                     }
-                    //position everything
-
-                    coordinate : QtPositioning.coordinate( object.lat , object.lon );
-                   // coordinate: marker.coordinate;
-
-                   // coordinate {
-                    //    latitude: object.lat
-                    //    longitude: object.lon
-                    // console.log("object lat/lon:"+object.lat+ " "+object.lon);
-                  //  }
-
+                    //Component.onCompleted: map.addMapItemGroup(this);
                 }
-                Component.onCompleted: map.addMapItemGroup(this);
             }
         }
-    }
     //>>>>>>>>>>>>>>>>>>> end ADSB <<<<<<<<<<<<<<<
 
 
