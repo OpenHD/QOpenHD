@@ -103,7 +103,6 @@ LinuxBuild {
 SOURCES += \
     app/adsb/adsbvehicle.cpp \
     app/adsb/adsbvehiclemanager.cpp \
-    app/adsb/drawingcanvas.cpp \
     app/adsb/qmlobjectlistmodel.cpp \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
@@ -117,7 +116,6 @@ SOURCES += \
 HEADERS += \
     app/adsb/adsbvehicle.h \
     app/adsb/adsbvehiclemanager.h \
-    app/adsb/drawingcanvas.h \
     app/adsb/qmlobjectlistmodel.h \
     app/common/util_fs.h \
     app/common/StringHelper.hpp \
