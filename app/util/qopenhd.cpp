@@ -228,7 +228,7 @@ QString QOpenHD::show_local_ip()
     auto res=OHDUtil::run_command_out("hostname -I");
     return QString(res->c_str());
 #elif defined(__macos__)
-    auto res=OHDUtil::run_command_out("ipconfig getifaddr en0");
+    auto res=OHDUtil::run_command_out("ifconfig -l | xargs -n1 ipconfig getifaddr");
     return QString(res->c_str());
 #else
     return QString("Only works on linux");
