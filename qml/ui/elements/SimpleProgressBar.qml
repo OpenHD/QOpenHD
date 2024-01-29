@@ -6,7 +6,7 @@ Item {
     // Progress in [0..100]
     property double impl_curr_progress_perc: 0
     // Color of the bar
-    property color impl_curr_color: "blue"
+    property color impl_curr_color: "#39a2f7"
 
     property bool impl_show_progress_text: false
 

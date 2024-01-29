@@ -48,8 +48,7 @@ Rectangle{
                 //color: "#FF0000"
                 //color: "#D0A197"
                 //color: "#808080"
-                color: "white"
-                radius: 10
+                color: "#333c4c"
 
                 height: 28
                 width: baseLogMessagesView.width //parent.width for some reason we cannot just use parent.width here
@@ -62,6 +61,7 @@ Rectangle{
                     verticalAlignment: Text.AlignVCenter
                     height: parent.height
                     opacity: 1.0
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
                 Text {
                     text: model.message
@@ -69,6 +69,8 @@ Rectangle{
                     verticalAlignment: Text.AlignVCenter
                     height: parent.height
                     opacity: 1.0
+                    color:"white"
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
             }
         }

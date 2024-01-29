@@ -38,6 +38,7 @@ Rectangle {
         return m_long_description !== "none"
     }
 
+
     Text {
         id: description
         text: qsTr(m_short_description)

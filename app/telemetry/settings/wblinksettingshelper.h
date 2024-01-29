@@ -46,7 +46,7 @@ public:
     // Dirty, incremented to signal to the UI that it should rebuild the model(s)
     L_RO_PROP(int,ui_rebuild_models,set_ui_rebuild_models,0)
     // Scanning
-    L_RO_PROP(QString,scanning_text_for_ui,set_scanning_text_for_ui,"NONE");
+    L_RO_PROP(QString,scanning_text_for_ui,set_scanning_text_for_ui,"");
     L_RO_PROP(int,scan_progress_perc,set_scan_progress_perc,0)
     // Analyzing
     L_RO_PROP(int,analyze_progress_perc,set_analyze_progress_perc,0)
@@ -59,7 +59,7 @@ public:
     void validate_and_set_gnd_channel_width_mhz(int channel_width_mhz);
     void validate_and_set_air_channel_width_mhz(int channel_width_mhz);
 public:
-    Q_INVOKABLE bool start_analyze_channels();
+    Q_INVOKABLE bool start_analyze_channels(int freq_bands);
     // freq_bands:
     // 0: 2.4G and 5.8G
     // 1: 2.4G only

@@ -16,9 +16,16 @@ CmdSender::CmdSender()
 
 CmdSender::~CmdSender()
 {
-    m_timeout_thread_run=false;
-    m_timeout_thread->join();
-    m_timeout_thread=nullptr;
+    terminate();
+}
+
+void CmdSender::terminate()
+{
+    if(m_timeout_thread){
+        m_timeout_thread_run=false;
+        m_timeout_thread->join();
+        m_timeout_thread=nullptr;
+    }
 }
 
 CmdSender &CmdSender::instance()
@@ -178,7 +185,7 @@ void CmdSender::send_mavlink_command_long(const mavlink_command_long_t &cmd)
 
 void CmdSender::loop_timeout()
 {
-    while(true){
+    while(m_timeout_thread_run){
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         handle_timeout();
     }

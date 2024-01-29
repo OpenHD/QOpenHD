@@ -28,6 +28,57 @@ ScrollView {
             anchors.left: parent.left
             anchors.right: parent.right
 
+            //SettingBaseElement
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                RowLayout{
+                    anchors.fill: parent
+                    anchors.leftMargin: 8
+                    anchors.rightMargin: 8
+                    Text{
+                        Layout.alignment: Qt.AlignLeft
+                        //text: "PRESETS\nColor/Font"
+                        text: "Presets Color/Font"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                    }
+                    Item{ // filler
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
+                    Button{
+                        text: "GREEN-Norbert"
+                        Layout.alignment: Qt.AlignRight
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        onClicked: {
+                            settings.color_caution="yellow"
+                            settings.color_glow="black"
+                            settings.color_shape="#ff14ff00"
+                            settings.color_text="#ff05ff00"
+                            settings.color_warn="red"
+                            settings.font_text="Quicksand"
+                        }
+                    }
+                    Button{
+                        text: "RESET"
+                        Layout.alignment: Qt.AlignRight
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        onClicked: {
+                            settings.color_shape="white"
+                            settings.color_text= "white"
+                            settings.color_glow= "black"
+                            settings.color_warn= "red"
+                            settings.color_caution= "yellow"
+                            settings.font_text= "Sans Serif"
+                        }
+                    }
+                }
+            }
+
             Rectangle {
                 width: parent.width
                 height: rowHeight
@@ -181,7 +232,7 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizonatalCenter
                 }
-            } 
+            }
         }
     }
 }

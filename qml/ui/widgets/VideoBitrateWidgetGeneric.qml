@@ -29,9 +29,10 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
-    widgetActionHeight: 450
+    widgetActionHeight: 420
 
     property var m_camera_stream_model: m_is_for_primary_camera ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
+    property bool m_show_button_quick_switch: false
 
     // param - so therefore might not be always synchronized
     property string m_curr_video_format:  m_is_for_primary_camera ? _cameraStreamModelPrimary.curr_set_video_format : _cameraStreamModelSecondary.curr_set_video_format
@@ -71,7 +72,7 @@ BaseWidget {
         console.log("try_set_recording_mode "+camera_idx+" "+mode)
         var camModel=_airCameraSettingsModel;
         var camString="CAM1"
-        if(camera_idx===2){
+        if(camera_idx===1){
             camModel=_airCameraSettingsModel2;
             camString="CAM2"
         }
@@ -110,13 +111,15 @@ BaseWidget {
 
     ListModel{
         id: resolutions_model
-        ListElement {title: "480p60(16:9)"; value: "848x480@60"}
-        ListElement {title: "480p60(4:3)"; value: "640x480@60"}
-        ListElement {title: "720p49(16:9)"; value: "1280x720@49"}
-        ListElement {title: "720p60(4:3)"; value: "960x720@60"}
-        ListElement {title: "1080p30(16:9)"; value: "1920x1080@30"}
-        ListElement {title: "1080p30(4:3)"; value: "1440x1080@30"}
-        ListElement {title: "1080p49(4:3)"; value: "1440x1080@49"}
+        ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
+        ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
+        ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
+        ListElement {title: "720p@49fps  (16:9)"; value: "1280x720@49"}
+        ListElement {title: "720p@60fps  (4:3)"; value: "960x720@60"}
+        ListElement {title: "720p@60fps  (16:9)"; value: "1280x720@60"}
+        ListElement {title: "1080p@30fps (16:9)"; value: "1920x1080@30"}
+        ListElement {title: "1080p@30fps (4:3)"; value: "1440x1080@30"}
+        ListElement {title: "1080p@49fps (4:3)"; value: "1440x1080@49"}
     }
 
 
@@ -195,7 +198,7 @@ BaseWidget {
                 Layout.preferredWidth: 200
                 Layout.minimumWidth: 200
                 height: 50
-                currentIndex: 0
+                currentIndex: -1
                 displayText: {
                     if(!_ohdSystemAir.is_alive)return "Res@fps N/A";
                     return m_curr_video_format;
@@ -206,6 +209,7 @@ BaseWidget {
                     const resolution=model.get(currentIndex).value
                     console.log("Selected resolution: "+resolution);
                     set_camera_resolution(resolution);
+                    _qopenhd.show_toast("NOTE: OpenHD cannot check if your HW actually supports a given resolution / framerate");
                 }
                 enabled: _ohdSystemAir.is_alive;
             }
@@ -342,7 +346,7 @@ BaseWidget {
             Item {
                 width: parent.width
                 height: 32
-                visible: !m_is_for_primary_camera
+                visible: m_show_button_quick_switch
                 Button{
                     text: "Switch primary & secondary"
                     onClicked: settings.qopenhd_switch_primary_secondary = !settings.qopenhd_switch_primary_secondary

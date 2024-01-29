@@ -19,9 +19,13 @@ import "status"
 // Contains the selector on the left and a stack view for the panels on the right
 Rectangle {
     id: settings_form
-
-    // The connect is only needed when qopenhd is not running on the ground system itself (e.g. android)
-    property bool m_show_connect_option: true // _qopenhd.is_android()
+    //width: 1280
+    //height: 720
+    anchors.fill: parent
+    //width: parent.width * settings.screen_settings_overlay_size_percent / 100;
+    //height: parent.height * settings.screen_settings_overlay_size_percent / 100;
+    z: 4.0
+    color: "transparent"
 
     // size of the elements in the left bar - e.g. what allows switching between all the tabs
     property int left_sidebar_elements_height: 46
@@ -50,7 +54,7 @@ Rectangle {
     function user_guidance_open_openhd_settings_find_air_unit_location(){
         openSettings();
         mainStackLayout.currentIndex=1;
-        mavlinkAllSettingsPanel.user_quidance_animate_channel_scan();
+        ohdSettingsPanel.user_quidance_animate_channel_scan();
     }
 
     /*Keys.onPressed: (event)=> {
@@ -63,14 +67,6 @@ Rectangle {
             //settingsButton.focus=false;
         }
     }*/
-
-    //anchors.fill: parent
-    width: parent.width * settings.screen_settings_overlay_size_percent / 100;
-    height: parent.height * settings.screen_settings_overlay_size_percent / 100;
-
-    z: 4.0
-
-    color: "transparent"
 
     Rectangle {
         id: spacerTopSpacer
@@ -174,7 +170,7 @@ Rectangle {
                     m_selection_index: 0
                 }
 
-                // OpenHD Settings - MavlinkAllSettingsPanel
+                // OpenHD OHD Settings
                 ConfigPopupSidebarButton{
                     id:  openhd_button
                     m_icon_text: "\uf085"
@@ -210,7 +206,6 @@ Rectangle {
                 // We only need the connect panel on android (external device)
                 // On localhost, QOpenHD "automatically" connects due to udp localhost method
                 ConfigPopupSidebarButton{
-                    visible: m_show_connect_option
                     id:  connect_button
                     m_icon_text: "\uf6ff"
                     m_description_text: "Connect"
@@ -258,8 +253,8 @@ Rectangle {
         }
 
          //this is "openhd" menu
-        MavlinkAllSettingsPanel {
-            id:  mavlinkAllSettingsPanel
+        OHDSettingsPanel {
+            id:  ohdSettingsPanel
         }
 
         AppSettingsPanel {

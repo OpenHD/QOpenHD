@@ -58,7 +58,7 @@ We have a CI setup that checks compilation on Ubuntu. You can review the steps i
 
 1. Install Qt using the [Qt online installer](https://www.qt.io/download-qt-installer).
 2. Have it download Qt 5.15.0+ for Linux.
-3. Install GStreamer development packages from the package manager (e.g., on Ubuntu, run `apt install gstreamer1.0-gl libgstreamer1.0-dev libgstreamer-plugins-good1.0-dev gstreamer1.0-plugins-good libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-base libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-qt`).
+3. Install GStreamer development packages from the package manager (e.g., on Ubuntu, run `apt install gstreamer1.0-gl libgstreamer1.0-dev libgstreamer-plugins-good1.0-dev gstreamer1.0-plugins-good libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-base libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-qt libxcb-cursor0`).
 4. Clone the source code as mentioned earlier.
 
 ### Manual via qmake
@@ -89,6 +89,6 @@ qmake ..
 
 ## Contributing
 
-**Thanks to all the people who have contributed!**
+**Thanks to all the people who have contributed !**
 
 ![Contributors](https://fra1.digitaloceanspaces.com/openhd-images/uploads/QOpenHD.svg)

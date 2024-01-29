@@ -50,13 +50,10 @@ Item {
         Text{
             text: m_text
             wrapMode: Text.WordWrap
-            width: parent.width-24
-            height: parent.height-24
-            anchors.centerIn: parent
+            anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "white"
-            //
             font.pointSize: 17
             minimumPointSize: 10
             fontSizeMode: Text.Fit

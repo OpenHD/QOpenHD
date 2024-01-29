@@ -10,6 +10,12 @@ Settings {
     // Set a custom font dpi instead of QT high dpi auto scaling.
     // Requires restart to be applied
     property int screen_custom_font_dpi: 0
+    // Consti10: Since we rely on font.pixel size in the HUD anyways, in general,
+    // small to medium sized text should use this pixel size. Please dont't touch for now,
+    // in general, if you increase this value, text(fields) with hard coded width / height values
+    // will not handle this value properly ! If you increase this one, you (might) have to touch
+    // 100s of code places, too
+    property int qopenhd_general_font_pixel_size: 14
 
     // Dirty, rotate everything even though that can create issues
     property int general_screen_rotation: 0
@@ -379,6 +385,7 @@ Settings {
     property bool wb_link_rate_control_widget_show_frequency: true
     property bool wb_link_rate_control_widget_show_bitrate: true
     property bool wb_link_rate_control_widget_show_fec_and_keyframe: true
+     property bool wb_link_rate_control_widget_show_throttle_warning: true
 
     property bool wb_link_rate_control_widget_show_bitrate_detailed: true
 
@@ -389,6 +396,7 @@ Settings {
 
     property int custom_cursor_type: 0
     property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,
+    property bool enable_cursor_auto_hide: false
 
     // experimental - mavlink via TCP
     property bool dev_mavlink_via_tcp: false
@@ -407,4 +415,6 @@ Settings {
 
     property int qopenhd_mavlink_connection_mode: 0;
     property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.178.36"
+
+    property int qopenhd_frequency_filter_selection: 0;
 }

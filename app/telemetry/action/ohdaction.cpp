@@ -20,24 +20,25 @@ OHDAction& OHDAction::instance()
 
 bool OHDAction::send_command_reboot_air(bool reboot)
 {
-    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_AIR,MAV_COMP_ID_ONBOARD_COMPUTER,reboot);
+    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_AIR,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
 }
 
 bool OHDAction::send_command_reboot_gnd(bool reboot)
 {
-    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,reboot);
+    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
 }
 
-bool OHDAction::send_command_analyze_channels_blocking()
+bool OHDAction::send_command_analyze_channels_blocking(int freq_bands)
 {
     mavlink_command_long_t cmd{};
     cmd.target_system=OHD_SYS_ID_GROUND;
     cmd.target_component=MAV_COMP_ID_ONBOARD_COMPUTER;
     cmd.command=OPENHD_CMD_INITIATE_CHANNEL_ANALYZE;
+    cmd.param1=static_cast<float>(freq_bands);
     const auto res=CmdSender::instance().send_command_long_blocking(cmd);
     return res==CmdSender::Result::CMD_SUCCESS;
 }

@@ -77,21 +77,21 @@ BaseWidget {
                         switch (batteryComboBox.currentIndex) {
                             case 0:
                                 settings.ground_battery_type = 0;
-                                settings.ground_battery_low = 35;
-                                settings.ground_battery_mid = 39;
+                                settings.ground_battery_low = 33;
+                                settings.ground_battery_mid = 37;
                                 settings.ground_battery_full = 42;
                                 break;
                             case 1:
                                 settings.ground_battery_type = 1;
-                                settings.ground_battery_low = 31;
-                                settings.ground_battery_mid = 36;
+                                settings.ground_battery_low = 27;
+                                settings.ground_battery_mid = 34;
                                 settings.ground_battery_full = 42;
                                 break;
                             case 2:
                                 settings.ground_battery_type = 2;
-                                settings.ground_battery_low = 30;
+                                settings.ground_battery_low = 31;
                                 settings.ground_battery_mid = 35;
-                                settings.ground_battery_full = 40;
+                                settings.ground_battery_full = 37;
                                 break;
                         }
                     }
@@ -207,7 +207,7 @@ BaseWidget {
             visible: true
             text: {
                 if (settings.ground_battery_show_single_cell) {
-                    return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells / 1000) + "mVpC";
+                    return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells / 1000).toFixed(2) + "mVpC";
                 } else {
                     return (_ohdSystemGround.ina219_voltage_millivolt / 1000).toFixed(2) + "V";
                 }

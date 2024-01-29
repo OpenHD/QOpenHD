@@ -265,7 +265,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                        );
         }
         append_int(ret,"VIDEO_CODEC",
-                   ImprovedIntSetting::createEnum( std::vector<std::string>{"h264","h265","mjpeg"}),
+                   //NOTE: MJPEG has been removed intentionally, since we are going to eventually remove support for it in
+                   //favour of h264
+                   // ,"mjpeg"
+                   ImprovedIntSetting::createEnum( std::vector<std::string>{"h264","h265"}),
                    "Video codec. If your camera/ground station does not support HW accelerated encoding/decoding of the selected codec,it'l default to SW encode/decode. "
                    "A reboot (air&ground) is recommended after changing this parameter."
                    );
@@ -707,6 +710,16 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret["CONFIG_BOOT_AIR"]=nullptr;
     ret[openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM]=nullptr;
     ret[openhd::WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT]=nullptr;
+    // TX POWER Whitelisted, since they should be changed from the quick wizzard
+    ret[openhd::WB_TX_POWER_MILLI_WATT]=nullptr;
+    ret[openhd::WB_TX_POWER_MILLI_WATT_ARMED]=nullptr;
+    ret[openhd::WB_RTL8812AU_TX_PWR_IDX_OVERRIDE]=nullptr;
+    ret[openhd::WB_RTL8812AU_TX_PWR_IDX_ARMED]=nullptr;
+    // STBC / LDPC - Whitelisted, since they should be changed from the quick wizzard
+    ret[openhd::WB_ENABLE_LDPC]=nullptr;
+    ret[openhd::WB_ENABLE_STBC]=nullptr;
+    // Whitelisted since normally it should not be changed / has no effect anyways
+    ret[openhd::WB_ENABLE_SHORT_GUARD]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }

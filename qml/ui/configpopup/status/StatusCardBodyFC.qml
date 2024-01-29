@@ -11,7 +11,7 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-ColumnLayout {
+Column {
     width: parent.width
     height: parent.height
     spacing: 1
@@ -26,7 +26,7 @@ ColumnLayout {
     }
 
     StatusCardRow{
-        m_left_text: qsTr("FW:") //Autopilot
+        m_left_text: qsTr("Firmware:") //Autopilot
         m_right_text:  _fcMavlinkSystem.autopilot_type_str
     }
 
@@ -49,5 +49,10 @@ ColumnLayout {
     StatusCardRow{
         m_left_text: qsTr("SysID:")
         m_right_text: _fcMavlinkSystem.for_osd_sys_id == -1 ? "na" : qsTr(""+_fcMavlinkSystem.for_osd_sys_id)
+    }
+    // Padding
+    Item{
+        Layout.fillWidth: true
+        Layout.fillHeight: true
     }
 }

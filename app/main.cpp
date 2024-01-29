@@ -61,6 +61,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "logging/logmessagesmodel.h"
 #include "logging/hudlogmessagesmodel.h"
 #include "util/qopenhd.h"
+#include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
 
@@ -186,40 +187,62 @@ static void android_check_permissions(){
 #endif
 }
 
-
 int main(int argc, char *argv[]) {
 
     QCoreApplication::setOrganizationName("OpenHD");
     QCoreApplication::setOrganizationDomain("openhd");
     QCoreApplication::setApplicationName("QOpenHD");
+    {// Original screen resoluton before setting anything
+        //QApplication a(argc, argv);
+        const auto screen=QGuiApplication::primaryScreen();
+        if(screen){
+            const auto actual_size=screen->size();
+            QRenderStats::instance().set_screen_width_height(actual_size.width(),actual_size.height());
+        }
+        // a is deleted again
+    }
     
     QSettings settings;
-
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
+    // RPI and ROCK - disable font dpi. The user has to scale manually when using displays
+    // (Big screens) according to its preferences. Auto scale is just bugged,
+    // nothing more to say.
+    if(QOpenHD::instance().is_platform_rpi() || QOpenHD::instance().is_platform_rock()){
+        static constexpr auto TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET="qopenhd_initial_font_dpi_has_been_set";
+        if(!settings.value(TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET,false).toBool()){
+            qDebug()<<"RPI/ROCK: Disable font dpi by default with setting it to 100%";
+            settings.setValue(TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET,true);
+            settings.setValue("screen_custom_font_dpi",100);
+        }
+    }
+    if(QOpenHD::instance().is_platform_rock()){
+        if(!settings.value("dev_rpi_use_external_omx_decode_service",true).toBool()){
+            qDebug()<<"Disabling RPI decode!";
+            settings.setValue("dev_rpi_use_external_omx_decode_service",false);
+        }
+        if(!settings.value("dev_always_use_generic_external_decode_service",false).toBool()){
+            qDebug()<<"Enable rockchip HW decoding!";
+            settings.setValue("dev_always_use_generic_external_decode_service",true);
+        }
+    }
     const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
-    if (screen_custom_font_dpi) {
+    if(screen_custom_font_dpi<0){
+        // Disabled
+        QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+    }else if(screen_custom_font_dpi==0){
+        // Enabled (whatever qt thinks it wanna do on auto). Works on android, on other devices, meh
+         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    }else{
+        // Custom font dpi set by the user
         QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
         const std::string font_dpi_s = std::to_string(screen_custom_font_dpi);
         qputenv("QT_FONT_DPI", QByteArray(font_dpi_s.c_str(), font_dpi_s.length()));
-    } else {
-        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-
-    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
-    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
-    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
-    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
-        qDebug()<<"Request swap interval of 0";
-        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
-        format.setSwapInterval(0);
-        QSurfaceFormat::setDefaultFormat(format);
-    }
-
+    //QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
     const double global_scale = settings.value("global_scale", 1.0).toDouble();
     const std::string global_scale_s = std::to_string(global_scale);
-    QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
-    qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
-    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
+    qputenv("QT_SCALE_FACTOR", QByteArray(global_scale_s.c_str(), global_scale_s.length()));
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
@@ -234,10 +257,18 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
+    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
+    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
+    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
+    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
+        qDebug()<<"Request swap interval of 0";
+        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
+
     QApplication app(argc, argv);
-    // Customize cursor if needed
-    QOpenHD::instance().customize_cursor_from_settings();
-    {
+    {  // This includes dpi adjustment
         QScreen* screen=app.primaryScreen();
         if(screen){
             QRenderStats::instance().set_display_width_height(screen->size().width(),screen->size().height());
@@ -272,6 +303,7 @@ int main(int argc, char *argv[]) {
     // Needs to be registered first, otherwise we can have threading issue(s)
     engine.rootContext()->setContextProperty("_messageBoxInstance", &WorkaroundMessageBox::instance());
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
+    engine.rootContext()->setContextProperty("_mouseHelper", &MouseHelper::instance());
 
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
@@ -375,16 +407,15 @@ int main(int argc, char *argv[]) {
     QtAndroid::hideSplashScreen();
 #endif
 
-    qDebug() << "Running QML";
+    qDebug() << "QML loaded";
     // Now we start mavlink for the first time
     MavlinkTelemetry::instance().start();
 
     QRenderStats::instance().register_to_root_window(engine);
-
     LogMessagesModel::instanceGround().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
-
+    // Terminating needs a bit of special care due to the singleton usage and threads
+    qDebug()<<"Terminating";
+    MavlinkTelemetry::instance().terminate();
     return retval;
-
-
 }

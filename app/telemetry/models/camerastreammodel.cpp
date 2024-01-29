@@ -55,7 +55,7 @@ QString CameraStreamModel::camera_type_to_string(int camera_type)
 QString CameraStreamModel::camera_status_to_string(int camera_status)
 {
     if(camera_status<0)return "N/A";
-    if(camera_status==0)return "X";
+    if(camera_status==0)return "unknown";
     if(camera_status==1)return "streaming";
     if(camera_status==2)return "restarting";
     return "ERROR";

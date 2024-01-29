@@ -50,9 +50,6 @@ public:
     Q_INVOKABLE bool reset_settings();
     // only works on linux, dirty helper to get local IP address
     Q_INVOKABLE QString show_local_ip();
-    // high visibility cursor for people in the field
-    Q_INVOKABLE void customize_cursor(const int cursor_type,const int cursor_scale);
-    Q_INVOKABLE void customize_cursor_from_settings();
     // returns true if the platform qopenhd is running on is linux (embedded or x86)
     // some settings an stuff depend on that, called from .qml
     // NOTE: android is not linux in this definition !
@@ -65,11 +62,13 @@ public:
     Q_INVOKABLE void sysctl_openhd(int task);
 
     Q_INVOKABLE bool is_valid_ip(QString ip);
+    Q_INVOKABLE bool is_platform_rpi();
+    Q_INVOKABLE bool is_platform_rock();
     //
     // Tries to mimic android toast as much as possible
     //
     Q_INVOKABLE void show_toast(QString message,bool long_toast=false);
-    L_RO_PROP(QString,version_string,set_version_string,"2.5.2-evo-alpha");
+    L_RO_PROP(QString,version_string,set_version_string,"2.5.3-evo-release");
 public:
     L_RO_PROP(QString,toast_text,set_toast_text,"NONE");
     L_RO_PROP(bool,toast_visible,set_toast_visible,false);

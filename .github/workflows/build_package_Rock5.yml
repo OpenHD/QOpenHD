@@ -6,12 +6,8 @@ on:
       - "2.5-evo"
       - "dev-release"
       - "release"
-   paths-ignore:
-      - '**.md'
-      - '**.asciidoc'
-      - '**.adoc'
-      - '.gitignore'
-      - 'LICENSE'
+      - "experiments"
+
 jobs:
   build:
     #runs-on: ubuntu-18.04

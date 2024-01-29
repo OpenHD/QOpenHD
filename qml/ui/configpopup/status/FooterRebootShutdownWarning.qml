@@ -16,6 +16,8 @@ Item {
 
 
     property bool m_supports_reboot_actions: true
+ //m_supports_shutdown_actions added due to testers reporting FC does not shutdown
+    property bool m_supports_shutdown_actions: true
 
     function get_show_power_actions(){
         if(m_type==0){
@@ -23,6 +25,8 @@ Item {
         }else if(m_type==1){
             return _ohdSystemAir.is_alive
         }
+        //hide FC shutdown button
+        m_supports_shutdown_actions=false
         return _fcMavlinkSystem.is_alive
     }
 
@@ -52,7 +56,11 @@ Item {
         //visible: get_show_power_actions()
         Button{
             visible: get_show_power_actions() && m_supports_reboot_actions
-            Layout.alignment: Qt.AlignLeft
+            Layout.alignment: {if (m_supports_shutdown_actions == false)
+                    return Qt.AlignCenter
+                else
+                    return Qt.AlignLeft
+            }
             Layout.leftMargin: 10
             text: qsTr("REBOOT")
             onPressed: {
@@ -60,7 +68,7 @@ Item {
             }
         }
         Button{
-            visible: get_show_power_actions() && m_supports_reboot_actions
+            visible: get_show_power_actions() && m_supports_shutdown_actions
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 10
             text: qsTr("SHUTDOWN")
@@ -68,7 +76,8 @@ Item {
                 open_power_action_dialoque(m_type,false)
             }
         }
-        ButtonIconWarning{
+        ButtonIconConnect{
+            m_type_wired: m_type==0 ? true : false;
             visible: !get_show_power_actions()
             Layout.alignment: Qt.AlignCenter
             height:12
@@ -76,5 +85,13 @@ Item {
                 open_warning();
             }
         }
+        /*ButtonIconWarning{
+            visible: !get_show_power_actions()
+            Layout.alignment: Qt.AlignCenter
+            height:12
+            onPressed: {
+                open_warning();
+            }
+        }*/
     }
 }

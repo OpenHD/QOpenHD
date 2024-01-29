@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest package="com.openhd.openhd" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="v13" android:versionCode="13" android:installLocation="auto">
+<manifest package="com.openhd.openhd" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="v15" android:versionCode="15" android:installLocation="auto">
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33"/>
 
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.

@@ -6,12 +6,6 @@ on:
       - "2.5-evo"
       - "dev-release"
       - "release"
-   paths-ignore:
-      - '**.md'
-      - '**.asciidoc'
-      - '**.adoc'
-      - '.gitignore'
-      - 'LICENSE'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -35,7 +29,7 @@ jobs:
 
       - name: clone QOpenHD
         run: |
-          git clone https://github.com/OpenHD/QOpenHD --recursive
+          git clone -b ${{ github.ref_name }} https://github.com/OpenHD/QOpenHD --recursive
 
       - name: Install Dependencies
         run: |

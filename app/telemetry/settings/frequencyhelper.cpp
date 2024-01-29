@@ -12,10 +12,10 @@ FrequencyHelper &FrequencyHelper::instance()
     return instance;
 }
 
-QList<int> FrequencyHelper::get_frequencies(bool openhd_bands_only)
+QList<int> FrequencyHelper::get_frequencies(int filter)
 {
     QList<int> ret;
-    if(openhd_bands_only){
+    if(filter==0){
         auto tmp=openhd::get_openhd_channels_1_to_5();
         for(auto& channel:tmp){
             ret.push_back(channel.frequency);
@@ -24,8 +24,32 @@ QList<int> FrequencyHelper::get_frequencies(bool openhd_bands_only)
         const auto frequency_items=openhd::get_all_channels_2G_5G();
         for(auto& item:frequency_items){
             if(item.is_legal_at_least_one_country){
-                ret.push_back(item.frequency);
+                if(filter==1){
+                    if(item.frequency<3000){
+                        ret.push_back(item.frequency);
+                    }
+                }else{
+                    if(item.frequency>3000){
+                        ret.push_back(item.frequency);
+                    }
+                }
             }
+        }
+    }
+    return ret;
+}
+
+QList<int> FrequencyHelper::filter_frequencies_40mhz_ht40plus_only(QList<int> frequencies)
+{
+    std::vector<uint32_t> frequencies2;
+    for(auto& freq:frequencies){
+        frequencies2.push_back(freq);
+    }
+    QList<int> ret;
+    auto channels=openhd::frequencies_to_channels(frequencies2);
+    for(auto& channel:channels){
+        if(channel.in_40Mhz_ht40_plus){
+            ret.push_back(channel.frequency);
         }
     }
     return ret;

@@ -1,0 +1,14 @@
+[Unit]
+Description=rock_h264_decode
+
+[Service]
+User=root
+
+# Video decode via mpp, started by QOpenHD if needed (and stopped if needed)
+ExecStart=/bin/sh -c "gst-launch-1.0 udpsrc port=5600 caps='application/x-rtp, payload=(int)96, clock-rate=(int)90000, media=(string)video, encoding-name=(string)H264' ! rtph264depay ! h264parse ! mppvideodec format=23 fast-mode=true width=1920 height=1080 ! queue ! kmssink plane-id=68"
+
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

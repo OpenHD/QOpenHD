@@ -35,6 +35,7 @@ Card {
             text: _messageBoxInstance.text
             leftPadding: 12
             rightPadding: 12
+            font.pixelSize: 14
             wrapMode: Text.WordWrap
         }
     }

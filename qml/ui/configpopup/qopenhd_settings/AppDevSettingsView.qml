@@ -5,7 +5,6 @@ import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
 import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.0
-import Qt.labs.platform 1.0
 
 import OpenHD 1.0
 
@@ -136,7 +135,7 @@ ScrollView {
                     onClicked: {
                         simplePopupHack.visible=true;
                     }
-                    enabled: _qopenhd.is_linux()
+                    //enabled: _qopenhd.is_linux()
                 }
             }
             SettingBaseElement{
