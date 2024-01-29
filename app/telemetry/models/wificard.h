@@ -54,7 +54,7 @@ private:
     int64_t m_last_packets_in_X_second_value=-1;
     // Card alive - ONLY USED FOR GROUND CARD(s)
     std::unique_ptr<QTimer> m_alive_timer = nullptr;
-    std::atomic<int> m_last_mavlink_message=0;
+    std::atomic<int64_t> m_last_mavlink_message=0;
     void update_alive();
 };
 

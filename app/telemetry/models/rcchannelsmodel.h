@@ -50,7 +50,7 @@ public slots:
    QList<int> m_data{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 private:
    // We need thread saftey on the alive
-   std::atomic<int32_t> m_last_update_ms = -1;
+   std::atomic<int64_t> m_last_update_ms = -1;
    std::unique_ptr<QTimer> m_alive_timer;
    void update_alive();
 };
