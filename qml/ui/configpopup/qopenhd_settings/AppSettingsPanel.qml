@@ -49,6 +49,20 @@ Rectangle {
         }
 
         TabButton {
+            text: qsTr("Widgets")
+            width: implicitWidth
+            height: 48
+            font.pixelSize: 13
+        }
+
+        TabButton {
+            text: qsTr("Style")
+            width: implicitWidth
+            height: 48
+            font.pixelSize: 13
+        }
+
+        TabButton {
             y: 0
             text: qsTr("General")
             width: implicitWidth
@@ -59,13 +73,6 @@ Rectangle {
         TabButton {
             y: 0
             text: qsTr("Vehicle")
-            width: implicitWidth
-            height: 48
-            font.pixelSize: 13
-        }
-
-        TabButton {
-            text: qsTr("Widgets")
             width: implicitWidth
             height: 48
             font.pixelSize: 13
@@ -104,22 +111,19 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
 
-        currentIndex:     {
-           // console.log("index:"+appSettingsBar.currentIndex);
-            // for future use to set focus for goggle support
-            showAppSettings(appSettingsBar.currentIndex);
+        currentIndex: appSettingsBar.currentIndex
 
-            return appSettingsBar.currentIndex;
+        AppWidgetSettingsView{
+            id: appWidgetSettingsView
         }
-
+        AppWidgetStyleSettingsView{
+            id: appWidgetStyleSettingsView
+        }
         AppGeneralSettingsView{
             id: appGeneralSettingsView
         }
         AppVehicleSettingsView{
             id: appVehicleSettingsView
-        }
-        AppWidgetSettingsView{
-            id: appWidgetSettingsView
         }
         AppScreenSettingsView{
             id: appScreenSettingsView

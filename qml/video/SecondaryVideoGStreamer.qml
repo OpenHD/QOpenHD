@@ -3,9 +3,6 @@ import QtGraphicalEffects 1.12
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-// QT creator might show "not found" on this import, this is okay, annoying qt specifics
-import org.freedesktop.gstreamer.GLVideoItem 1.0;
-
 import OpenHD 1.0
 
 import "../ui/elements"
@@ -16,6 +13,8 @@ import "../ui/elements"
 // Also, it is nice to automatically have all features needed for the secondary video like scaling, resizing ...
 
 Item {
+    id: secondary_video_item
+    visible: settings.dev_qopenhd_n_cameras>1
     // We use the full screen since while usually small in the lower left corner, the secondary video can be resized
     anchors.fill: parent
     anchors.left: parent.left
@@ -25,51 +24,46 @@ Item {
     property bool has_been_maximized: false
 
     function get_video_width(){
+        var video_width = settings.secondary_video_minimized_width;
         if(has_been_maximized){
-            var maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
-            return settings.secondary_video_minimized_width * maximize_factor;
+            const maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
+            video_width = video_width * maximize_factor;
         }
-        return settings.secondary_video_minimized_width;
+        const screen_width = secondary_video_item.width;
+        return video_width < screen_width ? video_width : screen_width;
+        //return video_width;
     }
     function get_video_height(){
+        var video_height = settings.secondary_video_minimized_height;
         if(has_been_maximized){
-            var maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
-            return settings.secondary_video_minimized_height * maximize_factor;
+            const maximize_factor = settings.secondary_video_maximize_factor_perc / 100;
+            video_height = video_height * maximize_factor;
         }
-        return settings.secondary_video_minimized_height;
+        const screen_height = secondary_video_item.height;
+        return video_height < screen_height ? video_height : screen_height;
+        //return video_height;
     }
 
     // This is for debugging / showing the video widget area at run time
     Rectangle{
+        z: 1.0
         id: video_holder
         width: get_video_width()
         height: get_video_height()
         anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        color: "red"
-        visible: popup.visible
-    }
-
-    GstGLVideoItem {
-        id: secondaryVideoGStreamer
-        objectName: "secondaryVideoGStreamer"
-
-        width: get_video_width()
-        height: get_video_height()
-        // We are always anchored to the lower left corner
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-
-        Component.onCompleted: {
-            console.log("secondaryVideoGStreamer (Qmlglsink) created")
-            _secondary_video_gstreamer_qml.check_common_mistakes_then_init(secondaryVideoGStreamer)
-        }
-
+        //width: get_video_width()
+        //height: get_video_height()
+        //anchors.bottom: parent.bottom
+        //anchors.left: parent.left
+        //color: "red"
+        //color: popup.opened ? "red" : "transparent"
+        color: "gray"
+        opacity: 0.1
+        //visible: popup.visible
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                //console.log("Clicked")
-                // Toggle between maximized and minimized
+                console.log("onClicked");
                 has_been_maximized = !has_been_maximized;
             }
             onPressAndHold: {
@@ -78,7 +72,103 @@ Item {
                 popup.open()
             }
         }
+
     }
+
+    Text{
+        anchors.fill: video_holder
+        text: {
+            if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
+                return "WAITING FOR\nSECONDARY VIDEO";
+            }
+            return "SECONDARY VIEO\nNOT AVAILABLE\nON THIS PLATFORM";
+        }
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Qt.AlignHCenter
+        font.pixelSize: 14
+        color: "white"
+    }
+
+    Loader {
+        z: 0.0
+        anchors.fill: video_holder
+        source: {
+            if(settings.dev_qopenhd_n_cameras>1){
+                // R.N the only implementation for secondary video
+                if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
+                    return "SecondaryVideoGstreamerPane.qml";
+                }else{
+                    console.warn("No secondary video implementation")
+                }
+            }else{
+                console.debug("Scondary video disabled");
+            }
+            return "";
+        }
+    }
+
+    /*Button{
+        id: button_maximize
+        text: "\uf31e";
+        width: 24
+        height: 24
+        anchors.right: video_holder.right
+        anchors.top: video_holder.top
+        onClicked: {
+            console.log("Button clicked");
+            has_been_maximized = !has_been_maximized;
+        }
+    }*/
+    /*Button{
+        text:"S"
+        anchors.right: button_maximize.left
+        anchors.rightMargin: 2
+        anchors.top: button_maximize.top
+        onClicked: {
+            popup.open()
+        }
+        visible: has_been_maximized
+    }*/
+    /*Text{
+        id: button_maximize
+        color: "white"
+        text: "\uf31e"
+        font.family: "Font Awesome 5 Free"
+        width: 40
+        height: 40
+        anchors.right: video_holder.right
+        anchors.top: video_holder.top
+        font.pixelSize: 19
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Qt.AlignHCenter
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                has_been_maximized = !has_been_maximized;
+            }
+        }
+    }
+    Text{
+        id: button_settings
+        color: "white"
+        text: "\uf013"
+        font.family: "Font Awesome 5 Free"
+        width: 40
+        height: 40
+        anchors.right: button_maximize.left
+        anchors.rightMargin: 2
+        anchors.top: button_maximize.top
+        font.pixelSize: 19
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Qt.AlignHCenter
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                popup.open()
+            }
+        }
+    }*/
+
     property int rowHeight: 64
     // This popup allows changing the settings for this element
     Popup {
@@ -88,12 +178,7 @@ Item {
         width: 500
         height: 300
         modal: true
-        //focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        /*background: Rectangle {
-            color: "gray"
-            border.color: "black"
-        }*/
         Pane{
             ColumnLayout {
                 anchors.fill: parent

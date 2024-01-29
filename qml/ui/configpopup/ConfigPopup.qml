@@ -38,10 +38,6 @@ Rectangle {
         hudOverlayGrid.regain_focus();
     }
 
-    function showAppSettings(i) {
-        console.log("TEST show app settings:"+i);
-    }
-
     function side_bar_regain_focus(){
         sidebar.focus = true;
     }
@@ -162,80 +158,85 @@ Rectangle {
                     _qopenhd.show_toast("No joystick navigation for this panel");
                 }
             }
-
-        Column {
+        ScrollView{
             width: parent.width
+            height: parent.height
+            contentHeight: navigation_buttons_column.height
+            Column {
+                id: navigation_buttons_column
+                width: parent.width
+                anchors.top: parent.top
+                // Status
+                ConfigPopupSidebarButton{
+                    id:  power
+                    m_icon_text: "\uf21e" //"\uf011"
+                    m_description_text: "Status"
+                    m_selection_index: 0
+                }
 
-            anchors.top: parent.top
+                // OpenHD Settings - MavlinkAllSettingsPanel
+                ConfigPopupSidebarButton{
+                    id:  openhd_button
+                    m_icon_text: "\uf085"
+                    m_description_text: "OpenHD"
+                    m_selection_index: 1
+                }
 
-            // Status
-            ConfigPopupSidebarButton{
-                id:  power
-                m_icon_text: "\uf21e" //"\uf011"
-                m_description_text: "Status"
-                m_selection_index: 0
-            }
+                // (QOpenHD Settings - AppSettingsPanel)
+                // OSD
+                ConfigPopupSidebarButton{
+                    id:  qopenhd_button
+                    m_icon_text: "\uf013"
+                    m_description_text: "OSD"
+                    m_selection_index: 2
+                }
 
-            // OpenHD Settings - MavlinkAllSettingsPanel
-            ConfigPopupSidebarButton{
-                id:  openhd_button
-                m_icon_text: "\uf085"
-                m_description_text: "OpenHD"
-                m_selection_index: 1
-            }
+                // Log
+                ConfigPopupSidebarButton{
+                    id:  log_button
+                    m_icon_text: "\uf0c9"
+                    m_description_text: "Log"
+                    m_selection_index: 3
+                }
 
-            // (QOpenHD Settings - AppSettingsPanel)
-            // OSD
-            ConfigPopupSidebarButton{
-                id:  qopenhd_button
-                m_icon_text: "\uf013"
-                m_description_text: "OSD"
-                m_selection_index: 2
-            }
+                // RC
+                ConfigPopupSidebarButton{
+                    id:  rc
+                    m_icon_text: "\uf11b"
+                    m_description_text: "RC"
+                    m_selection_index: 4
+                }
 
-            // Log
-            ConfigPopupSidebarButton{
-                id:  log_button
-                m_icon_text: "\uf0c9"
-                m_description_text: "Log"
-                m_selection_index: 3
-            }
+                // We only need the connect panel on android (external device)
+                // On localhost, QOpenHD "automatically" connects due to udp localhost method
+                ConfigPopupSidebarButton{
+                    visible: m_show_connect_option
+                    id:  connect_button
+                    m_icon_text: "\uf6ff"
+                    m_description_text: "Connect"
+                    m_selection_index: 5
+                }
 
-            // RC
-            ConfigPopupSidebarButton{
-                id:  rc
-                m_icon_text: "\uf11b"
-                m_description_text: "RC"
-                m_selection_index: 4
-            }
+                // Credits and copyright
+                ConfigPopupSidebarButton{
+                    id:  credits
+                    m_icon_text: "\uf005"
+                    m_description_text: "Credits"
+                    m_selection_index: 6
+                }
 
-            // We only need the connect panel on android (external device)
-            // On localhost, QOpenHD "automatically" connects due to udp localhost method
-            ConfigPopupSidebarButton{
-                visible: m_show_connect_option
-                id:  connect_button
-                m_icon_text: "\uf6ff"
-                m_description_text: "Connect"
-                m_selection_index: 5
-            }
-
-            // Credits and copyright
-            ConfigPopupSidebarButton{
-                id:  credits
-                m_icon_text: "\uf005"
-                m_description_text: "Credits"
-                m_selection_index: 6
-            }
-
-            // Developer stats
-            ConfigPopupSidebarButton{
-                id:  developerstats
-                m_icon_text: "\uf0ad"
-                m_description_text: "DEV"
-                m_selection_index: 7
+                // Developer stats
+                ConfigPopupSidebarButton{
+                    id:  developerstats
+                    m_icon_text: "\uf0ad"
+                    m_description_text: "DEV"
+                    m_selection_index: 7
+                }
             }
         }
     }
+
+
 
 
     StackLayout {

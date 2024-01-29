@@ -16,7 +16,6 @@ ScrollView {
     width: parent.width
     height: parent.height
     contentHeight: generalColumn.height
-    visible: appSettingsBar.currentIndex == 0
 
     clip: true
 
@@ -70,6 +69,56 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.enable_imperial
                     onCheckedChanged: settings.enable_imperial = checked
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Animation Smoothing,0 to disable")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Text {
+                    text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "ms";
+                    font.pixelSize: 16
+                    anchors.right: smoothing_Slider.left
+                    anchors.rightMargin: 12
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 32
+                    height: elementHeight
+
+                }
+
+                Slider {
+                    id: smoothing_Slider
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    to : 1000
+                    from : 0
+                    stepSize: 25
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    value: settings.smoothing
+
+                    // @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M222
+                        settings.smoothing = smoothing_Slider.value
+                    }
                 }
             }
 

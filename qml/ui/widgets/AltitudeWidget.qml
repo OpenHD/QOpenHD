@@ -61,7 +61,8 @@ BaseWidget {
             id: idBaseWidgetDefaultUiControlElements
 
             show_vertical_lock: true
-            show_horizontal_lock: true
+            //show_horizontal_lock: true
+            show_quickpainteditem_font_scale: true
 
             Item {
                 width: parent.width
@@ -192,6 +193,7 @@ BaseWidget {
                 altitudeRange: settings.altitude_ladder_range
                 Behavior on altitude {NumberAnimation { duration: settings.smoothing }}
                 fontFamily: settings.font_text
+                custom_font_scale: bw_qquickpainteditem_font_scale
             }
         }
         //-----------------------ladder end---------------

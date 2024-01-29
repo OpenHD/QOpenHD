@@ -40,7 +40,7 @@ Card {
 
     property string m_info_string_frequency: "Please use the channel scan to find your air unit, then change frequency."+
 "Otherwise, you can manually change your ground station frequency,"+
-"leaving your air unit untouched - thiis can be quicker than a channel scan if you know your air unit frequency."
+"leaving your air unit untouched - this can be quicker than a channel scan if you know your air unit frequency."
 
     property string m_info_ground_only: "WARNING: This changes your ground unit frequency without changing your air unit frequency !"
 

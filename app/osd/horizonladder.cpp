@@ -5,8 +5,9 @@
 #include <QPainter>
 #include <math.h>
 
-#include "common/TimeHelper.hpp"
 #include "debug_overdraw.hpp"
+
+static constexpr int DEFAULT_FONT_PIXEL_SIZE=11;
 
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HorizonLadder::HorizonLadder()";
@@ -491,6 +492,13 @@ void HorizonLadder::setShowHorizonHome(bool showHorizonHome) {
 void HorizonLadder::setFontFamily(QString fontFamily) {
     m_fontFamily = fontFamily;
     emit fontFamilyChanged(m_fontFamily);
-    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
+    m_font = QFont(m_fontFamily, DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale, QFont::Bold, false);
+    update();
+}
+
+void HorizonLadder::set_custom_font_scale(double custom_font_scale)
+{
+    m_custom_font_scale=custom_font_scale;
+    m_font.setPointSize(DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale);
     update();
 }

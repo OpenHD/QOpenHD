@@ -16,7 +16,6 @@ ScrollView {
     width: parent.width
     height: parent.height
     contentHeight: widgetColumn.height
-    visible: appSettingsBar.currentIndex == 2
 
     clip: true
 
@@ -29,231 +28,13 @@ ScrollView {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Shape Color")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                RoundButton {
-                    //text: "Open"
-
-                    height: elementHeight
-                    anchors.right: parent.right
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizonatalCenter
-                    onClicked: {
-                        colorPicker.previousColor = settings.color_shape
-                        colorPicker.currentColorType = ColorPicker.ColorType.ShapeColor
-                        colorPicker.visible = true
-                    }
-
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: ((parent.width<parent.height?parent.width:parent.height))-20
-                        height: width
-                        radius: width*0.5
-                        color: settings.color_shape
-                    }
-
-                }
+            SettingsHeaderElement{
+                m_description: "OHD LINK / STREAMING WIDGETS"
             }
 
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Glow Color")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                RoundButton {
-                    //text: "Open"
-
-                    height: elementHeight
-                    anchors.right: parent.right
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizonatalCenter
-                    onClicked: {
-                        colorPicker.previousColor = settings.color_glow
-                        colorPicker.currentColorType = ColorPicker.ColorType.GlowColor
-                        colorPicker.visible = true
-                    }
-
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: ((parent.width<parent.height?parent.width:parent.height))-20
-                        height: width
-                        radius: width*0.5
-                        color: settings.color_glow
-                    }
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Text Color")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                RoundButton {
-                    //text: "Open"
-
-                    height: elementHeight
-                    anchors.right: parent.right
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizonatalCenter
-                    onClicked: {
-                        colorPicker.previousColor = settings.color_text
-                        colorPicker.currentColorType = ColorPicker.ColorType.TextColor
-                        colorPicker.visible = true
-                    }
-
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: ((parent.width<parent.height?parent.width:parent.height))-20
-                        height: width
-                        radius: width*0.5
-                        color: settings.color_text
-                    }
-                }
-            }
-
-
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Text font")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                FontSelect {
-                    id: fontSelectBox
-                    height: elementHeight
-                    width: 320
-                    anchors.right: parent.right
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizonatalCenter
-                }
-            }
-
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Animation Smoothing,0 to disable")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Text {
-                    text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "ms";
-                    font.pixelSize: 16
-                    anchors.right: smoothing_Slider.left
-                    anchors.rightMargin: 12
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 32
-                    height: elementHeight
-
-                }
-
-                Slider {
-                    id: smoothing_Slider
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    to : 1000
-                    from : 0
-                    stepSize: 25
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.smoothing
-
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.smoothing = smoothing_Slider.value
-                    }
-                }
-
-
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Show Downlink RSSI")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
+            SettingBaseElement{
+                m_short_description: "Show Downlink RSSI"
+                m_long_description: "RSSI / Stats about downlink"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -266,23 +47,9 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Show Uplink RSSI")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
+            SettingBaseElement{
+                m_short_description: "Show Uplink RSSI"
+                m_long_description: "RSSI / Stats about uplink"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -294,24 +61,9 @@ ScrollView {
                     onCheckedChanged: settings.show_uplink_rssi = checked
                 }
             }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Show RC RSSI (not OpenHD RC)")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
+            SettingBaseElement{
+                m_short_description: "Show live rate control widget"
+                m_long_description: "Trade range / stability for bitrate at run time. Requires hw support."
                 Switch {
                     width: 32
                     height: elementHeight
@@ -319,28 +71,13 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_rc_rssi
-                    onCheckedChanged: settings.show_rc_rssi = checked
+                    checked: settings.wb_link_rate_control_widget_show
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show = checked
                 }
             }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Show Bitrate")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
+            SettingBaseElement{
+                m_short_description: "Show video widget"
+                m_long_description: "More stats about each camera stream, quick resolution changes and quick air recording."
                 Switch {
                     width: 32
                     height: elementHeight
@@ -352,6 +89,14 @@ ScrollView {
                     onCheckedChanged: settings.show_bitrate = checked
                 }
             }
+
+            // Dummy for positioner index
+            //Item{
+            //}
+            SettingsHeaderElement{
+                m_description: "UAV (FC) WIDGETS"
+            }
+
 
             Rectangle {
                 width: parent.width
@@ -408,6 +153,34 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_home_distance
                     onCheckedChanged: settings.show_home_distance = checked
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Show RC RSSI (not OpenHD RC)")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_rc_rssi
+                    onCheckedChanged: settings.show_rc_rssi = checked
                 }
             }
 
@@ -794,35 +567,6 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Show log messages on-screen")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_message_hud
-                    onCheckedChanged: settings.show_message_hud = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
                     text: qsTr("Show Horizon")
                     font.weight: Font.Bold
                     font.pixelSize: 13
@@ -1114,42 +858,6 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Show Map")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_map
-                    onCheckedChanged: {
-                        // Weird qt specifcs, see https://stackoverflow.com/questions/56817460/qml-appswitch-sending-oncheckedchanged-signal-each-time-page-is-opened
-                        if(settings.show_map != checked){
-                            settings.show_map = checked;
-                            _restartqopenhdmessagebox.show();
-                        }
-                        //settings.show_map = checked
-                    }
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
                     text: qsTr("Show Throttle")
                     font.weight: Font.Bold
                     font.pixelSize: 13
@@ -1202,34 +910,7 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                Text {
-                    text: qsTr("Show GPIO")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_gpio
-                    onCheckedChanged: settings.show_gpio = checked
-                }
-            }
 
             Rectangle {
                 width: parent.width
@@ -1407,6 +1088,131 @@ ScrollView {
                 }
             }
 
+
+            SettingBaseElement{
+                m_short_description: "Show distance sensor widget"
+                m_long_description: "For UAVs with a distance sensor"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_distance_sensor_widget
+                    onCheckedChanged: settings.show_distance_sensor_widget = checked
+                }
+            }
+
+            SettingBaseElement{
+                m_short_description: "Show (GPS) time widget"
+                m_long_description: "For UAVs with GPS, shows the time as reported by the UAV"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_time_widget
+                    onCheckedChanged: settings.show_time_widget = checked
+                }
+            }
+
+            SettingsHeaderElement{
+                m_description: "OTHER"
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Show Map")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_map
+                    onCheckedChanged: {
+                        // Weird qt specifcs, see https://stackoverflow.com/questions/56817460/qml-appswitch-sending-oncheckedchanged-signal-each-time-page-is-opened
+                        if(settings.show_map != checked){
+                            settings.show_map = checked;
+                            _restartqopenhdmessagebox.show();
+                        }
+                        //settings.show_map = checked
+                    }
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Show log messages on-screen")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_message_hud
+                    onCheckedChanged: settings.show_message_hud = checked
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Show Sidebar ProofOfConcept")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_sidebar
+                    onCheckedChanged: settings.show_sidebar = checked
+                }
+            }
             Rectangle {
                 width: parent.width
                 height: rowHeight
@@ -1437,28 +1243,13 @@ ScrollView {
                     }
                 }
             }
-            SettingBaseElement{
-                m_short_description: "Show live rate control widget"
-                m_long_description: "Trade range / stability for bitrate at run time. Requires hw support (rtl8812au)"
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.wb_link_rate_control_widget_show
-                    onCheckedChanged: settings.wb_link_rate_control_widget_show = checked
-                }
-            }
-
             Rectangle {
                 width: parent.width
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Show Record Widget")
+                    text: qsTr("Show GPIO")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -1476,67 +1267,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_record_widget
-                    onCheckedChanged: settings.show_record_widget = checked
-                }
-            }
-            
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Show Sidebar ProofOfConcept")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_sidebar
-                    onCheckedChanged: settings.show_sidebar = checked
-                }
-            }
-
-            SettingBaseElement{
-                m_short_description: "Show distance sensor widget"
-                m_long_description: "For UAVs with a distance sensor"
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_distance_sensor_widget
-                    onCheckedChanged: settings.show_distance_sensor_widget = checked
-                }
-            }
-
-            SettingBaseElement{
-                m_short_description: "Show (GPS) time widget"
-                m_long_description: "For UAVs with GPS, shows the time as reported by the UAV"
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_time_widget
-                    onCheckedChanged: settings.show_time_widget = checked
+                    checked: settings.show_gpio
+                    onCheckedChanged: settings.show_gpio = checked
                 }
             }
         }

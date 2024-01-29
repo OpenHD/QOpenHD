@@ -16,8 +16,10 @@ import "../../elements"
 
 Rectangle{
     id: main_background
-    width: parent.width-12
-    height: parent.height*2/3;
+    //width: parent.width-12
+    //height: parent.height*2/3;
+    width: parent.width
+    height: parent.height
     anchors.centerIn: parent
     color: "#ADD8E6"
     border.color: "black"
@@ -50,23 +52,89 @@ Rectangle{
         ListElement {title: "GND: 2 RF PATHS / ANTENNAS"; value: 2}
     }
 
-    GridLayout{
+    ColumnLayout{
         id: main_row_layout
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.leftMargin: 5
-        Layout.rightMargin: 5
+        anchors.fill: parent
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
 
+        Item{
+            Layout.fillWidth: true
+            Layout.preferredHeight: 80
+            Text{ // TITLE
+                anchors.fill: parent
+                text: "ADVANCED - STBC / LDPC"
+                verticalAlignment: Qt.AlignVCenter
+                horizontalAlignment: Qt.AlignHCenter
+                font.bold: true
+            }
+            Button{
+                text: "CLOSE"
+                anchors.top: parent.top
+                anchors.right: parent.right
+                onClicked: {
+                    close()
+                }
+            }
+        }
+
+        ComboBox {
+            id: comboBoxNAntennasAir
+            Layout.minimumWidth: 100
+            Layout.preferredWidth: 450
+            model: model_n_antennas_air
+            textRole: "title"
+            font.pixelSize: 14
+            onCurrentIndexChanged: {
+                if(currentIndex==2){
+                    anim_warn_user_stbc.start();
+                }
+            }
+        }
+        ComboBox {
+            id: comboBoxNAntennasGnd
+            Layout.minimumWidth: 100
+            Layout.preferredWidth: 450
+            model: model_n_antennas_gnd
+            textRole: "title"
+            font.pixelSize: 14
+            onCurrentIndexChanged: {
+                if(currentIndex==2){
+                    anim_warn_user_stbc.start();
+                }
+            }
+        }
+        Button{
+            id: button_enable
+            text: "ENABLE"
+            enabled: comboBoxNAntennasAir.currentIndex==2 && comboBoxNAntennasGnd.currentIndex==2;
+            font.pixelSize: 14
+            onClicked: {
+                if(_wbLinkSettingsHelper.set_param_stbc_ldpc_enable_air_ground()){
+                    _qopenhd.show_toast("Success (STBC & LDPC set to ON on both AIR and GND)");
+                    close();
+                }else{
+                    _qopenhd.show_toast("Something went wrong, please try again");
+                }
+            }
+        }
+        Text{
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+            visible: !button_enable.enabled
+            text: "CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS";
+            font.pixelSize: 14
+            verticalAlignment: Qt.AlignVCenter
+            horizontalAlignment: Qt.AlignLeft
+        }
         Text{
             id: stbc_warning_text
-            Layout.row: 0
-            Layout.column: 0
             text: "WARNING:\n YOU NEED TO REFLASH YOUR AIR / GROUND UNIT\nIF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW";
             color: "red"
-            width: main_background.width
+            Layout.fillWidth: true
             height: 200
-            horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
+            horizontalAlignment: Qt.AlignHCenter
             font.pixelSize: 15
             wrapMode: Text.WordWrap
             SequentialAnimation {
@@ -91,71 +159,14 @@ Rectangle{
                 }
             }
         }
-        ComboBox {
-            Layout.row: 1
+        Item{ // Filler
+            Layout.row: 5
             Layout.column: 0
-            id: comboBoxNAntennasAir
-            Layout.minimumWidth: 100
-            Layout.preferredWidth: 350
-            model: model_n_antennas_air
-            textRole: "title"
-            font.pixelSize: 14
-            onCurrentIndexChanged: {
-                if(currentIndex==2){
-                    anim_warn_user_stbc.start();
-                }
-            }
-        }
-        ComboBox {
-            Layout.row: 2
-            Layout.column: 0
-            id: comboBoxNAntennasGnd
-            Layout.minimumWidth: 100
-            Layout.preferredWidth: 350
-            model: model_n_antennas_gnd
-            textRole: "title"
-            font.pixelSize: 14
-            onCurrentIndexChanged: {
-                if(currentIndex==2){
-                    anim_warn_user_stbc.start();
-                }
-            }
-        }
-        Button{
-            id: button_enable
-            Layout.row: 3
-            Layout.column: 0
-            text: "ENABLE"
-            enabled: comboBoxNAntennasAir.currentIndex==2 && comboBoxNAntennasGnd.currentIndex==2;
-            font.pixelSize: 14
-            onClicked: {
-                if(_wbLinkSettingsHelper.set_param_stbc_ldpc_enable_air_ground()){
-                    _qopenhd.show_toast("Success (STBC & LDPC set to ON on both AIR and GND)");
-                    close();
-                }else{
-                    _qopenhd.show_toast("Something went wrong, please try again");
-                }
-            }
-        }
-        Text{
-            Layout.row: 4
-            Layout.column: 0
-            visible: !button_enable.enabled
-            text: "CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS";
-            font.pixelSize: 14
+            Layout.columnSpan: 3
+            Layout.fillWidth: true
+            Layout.fillHeight: true
         }
         // ----------------
     }
-
-    Button{
-        text: "CLOSE"
-        anchors.top: parent.top
-        anchors.right: parent.right
-        onClicked: {
-            close()
-        }
-    }
-
-
 }
 

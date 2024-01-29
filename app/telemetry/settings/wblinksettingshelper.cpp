@@ -10,6 +10,7 @@
 #include "../../util/qopenhd.h"
 
 #include "pollutionhelper.h"
+#include "frequencyhelper.h"
 
 static void tmp_log_result(bool enable,const std::string message){
     if(enable){
@@ -85,11 +86,6 @@ void WBLinkSettingsHelper::validate_and_set_air_channel_width_mhz(int channel_wi
     set_curr_air_channel_width_mhz(channel_width_mhz);
 }
 
-void WBLinkSettingsHelper::set_simplify_channels(bool enable)
-{
-    m_simplify_channels=enable;
-}
-
 void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channels(const mavlink_openhd_wifbroadcast_supported_channels_t &msg)
 {
     std::vector<uint16_t> channels;
@@ -101,7 +97,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_supported_channe
         qDebug()<<"No valid channels from ground station - should never happen";
         return;
     }
-    if(update_supported_channels(channels)){
+    if(FrequencyHelper::instance().set_hw_supported_frequencies_threadsafe(channels)){
         qDebug()<<"Supported channels changed";
         signal_ui_rebuild_model_when_possible();
     }
@@ -139,11 +135,15 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
     ss<<" Foreign packets:"<<curr_foreign_packets<<" ";
     if(msg.progress_perc>=100){
         ss<<"100%, Done";
+        // DONE
+        set_current_analyze_frequency(-1);
     }else{
         ss<<(int)msg.progress_perc<<"%";
+        set_current_analyze_frequency(curr_channel_mhz);
     }
     qDebug()<<ss.str().c_str();
     PollutionHelper::instance().threadsafe_update(analyzed_channels);
+    set_analyze_progress_perc(msg.progress_perc);
     // signal to the UI to rebuild model
     signal_ui_rebuild_model_when_possible();
 }
@@ -168,7 +168,7 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
                 set_scanning_text_for_ui(ss2.str().c_str());
             }else{
                 std::stringstream ss2;
-                ss2<<"Couldn't find air unit";
+                ss2<<"No air unit found";
                 set_scanning_text_for_ui(ss2.str().c_str());
             }
         }else{
@@ -220,139 +220,6 @@ bool WBLinkSettingsHelper::change_param_ground_only_blocking(QString param_id, i
     }
     qDebug()<<"change_param_ground_only failure "<<param_id<<":"<<value;
     return false;
-}
-
-
-struct FrequencyItem{
-    int channel_nr;
-    int frequency;
-    bool radar;
-    bool simple;
-    bool recommended;
-    int openhd_raceband;
-};
-static std::vector<FrequencyItem> get_freq_descr(){
-    std::vector<FrequencyItem> ret{
-        FrequencyItem{-1,2312,false,false,false,-1},
-        FrequencyItem{-1,2332,false,false,false,-1},
-        FrequencyItem{-1,2352,false,false,false,-1},
-        FrequencyItem{-1,2372,false,false,false,-1},
-        FrequencyItem{-1,2392,false,false,false,-1},
-        // ACTUAL 2G
-        FrequencyItem{1 ,2412,false,true,false,-1},
-        FrequencyItem{5 ,2432,false,true,false,-1},
-        FrequencyItem{9 ,2452,false,true,false,-1},
-        FrequencyItem{13,2472,false,true,false,-1},
-        FrequencyItem{14,2484,false,false,false,-1},
-        // ACTUAL 2G end
-        FrequencyItem{-1,2492,false,false,false,-1},
-        FrequencyItem{-1,2512,false,false,false,-1},
-        FrequencyItem{-1,2532,false,false,false,-1},
-        FrequencyItem{-1,2572,false,false,false,-1},
-        FrequencyItem{-1,2592,false,false,false,-1},
-        FrequencyItem{-1,2612,false,false,false,-1},
-        FrequencyItem{-1,2632,false,false,false,-1},
-        FrequencyItem{-1,2652,false,false,false,-1},
-        FrequencyItem{-1,2672,false,false,false,-1},
-        FrequencyItem{-1,2692,false,false,false,-1},
-        FrequencyItem{-1, 2712,false,false,false,-1},
-        // 5G begin
-        FrequencyItem{ 32,5160,false,false,false,-1},
-        FrequencyItem{ 36,5180,false,true ,false,-1},
-        FrequencyItem{ 40,5200,false,false,false,-1},
-        FrequencyItem{ 44,5220,false,true,false,-1},
-        FrequencyItem{ 48,5240,false,false,false,-1},
-        FrequencyItem{ 52,5260,true,true ,false,-1},
-        FrequencyItem{ 56,5280,true,false,false,-1},
-        FrequencyItem{ 60,5300,true,true,false,-1},
-        FrequencyItem{ 64,5320,true,false,false,-1},
-        // big break / part that is not allowed
-        FrequencyItem{100,5500,true,true,false,-1},
-        FrequencyItem{104,5520,true,false,false,-1},
-        FrequencyItem{108,5540,true,true,false,-1},
-        FrequencyItem{112,5560,true,false,false,-1},
-        FrequencyItem{116,5580,true,true,false,-1},
-        FrequencyItem{120,5600,true,false,false,-1},
-        FrequencyItem{124,5620,true,true,false,-1},
-        FrequencyItem{128,5640,true,false,false,-1},
-        FrequencyItem{132,5660,true,true,false,-1},
-        FrequencyItem{136,5680,true,false,false,-1},
-        FrequencyItem{140,5700,false,true,false,1},
-        FrequencyItem{144,5720,false,false,false,-1},
-        // Here is the weird break
-        FrequencyItem{149,5745,false,true,true,2},
-        FrequencyItem{153,5765,false,false,false,-1},
-        FrequencyItem{157,5785,false,true,true,3},
-        FrequencyItem{161,5805,false,false,false,-1},
-        FrequencyItem{165,5825,false,true,true,4},
-        // Depends
-        FrequencyItem{169,5845,false,false,false,-1},
-        FrequencyItem{173,5865,false,true,true,5},
-        FrequencyItem{177,5885,false,false,false,-1},
-        FrequencyItem{181,5905,false,false,true,-1}
-    };
-    return ret;
-}
-
-static FrequencyItem find_frequency_item(const int frequency){
-    const auto frequency_items=get_freq_descr();
-    for(const auto& item:frequency_items){
-        if(item.frequency==frequency)return item;
-    }
-    return FrequencyItem{-1,-1,false,false,false};
-}
-
-static std::string spaced_string(int number){
-    std::stringstream ss;
-    if(number<100)ss<<" ";
-    if(number<10)ss<<" ";
-    ss<<number;
-    return ss.str();
-}
-
-QString WBLinkSettingsHelper::get_frequency_description(int frequency_mhz)
-{
-    const auto frequency_item=find_frequency_item(frequency_mhz);
-    std::stringstream ss;
-    const bool is_2g=frequency_mhz<3000;
-    if(is_2g){
-        //ss<<"2.4G ";
-    }else{
-        //ss<<"5.8G ";
-    }
-    ss<<"["<<spaced_string(frequency_item.channel_nr)<<"] ";
-    ss<<frequency_mhz<<"Mhz ";
-    //if(frequency_item.channel_nr==-1){
-    //    ss<<"(ATH) ";
-    //}
-    //if(frequency_item.radar){
-    //    ss<<"(DFS RADAR)";
-    //}
-    return ss.str().c_str();
-}
-
-bool WBLinkSettingsHelper::get_frequency_radar(int frequency_mhz)
-{
-    const auto frequency_item=find_frequency_item(frequency_mhz);
-    return frequency_item.radar;
-}
-
-bool WBLinkSettingsHelper::get_frequency_simplify(int frequency_mhz)
-{
-    const auto frequency_item=find_frequency_item(frequency_mhz);
-    return frequency_item.simple;
-}
-
-bool WBLinkSettingsHelper::get_frequency_reccommended(int frequency_mhz)
-{
-    const auto frequency_item=find_frequency_item(frequency_mhz);
-    return frequency_item.recommended;
-}
-
-int WBLinkSettingsHelper::get_frequency_openhd_race_band(int frequency_mhz)
-{
-    const auto frequency_item=find_frequency_item(frequency_mhz);
-    return frequency_item.openhd_raceband;
 }
 
 void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
@@ -422,22 +289,6 @@ bool WBLinkSettingsHelper::set_param_stbc_ldpc_enable_air_ground()
     return true;
 }
 
-bool WBLinkSettingsHelper::update_supported_channels(const std::vector<uint16_t> supported_channels)
-{
-    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
-    if(m_supported_channels!=supported_channels){
-        m_supported_channels=supported_channels;
-        return true;
-    }
-    return false;
-}
-
-bool WBLinkSettingsHelper::has_valid_reported_channel_data()
-{
-    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
-    return !m_supported_channels.empty();
-}
-
 void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag)
 {
     mavlink_param_ext_set_t command;
@@ -468,7 +319,7 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
             if(std::holds_alternative<int32_t>(param_value)){
                 ss<<std::get<int32_t>(param_value);
             }else{
-                ss<<std::get<int32_t>(param_value);
+                ss<<std::get<std::string>(param_value);
             }
             ss<<",please check uplink";
             HUDLogMessagesModel::instance().add_message_warning(ss.str().c_str());
@@ -490,67 +341,10 @@ void WBLinkSettingsHelper::change_param_air_channel_width_async(int value, bool 
     change_param_air_async(OHD_COMP_ID_LINK_PARAM,PARAM_ID_WB_CHANNEL_WIDTH,static_cast<int32_t>(value),"BWIDTH");
 }
 
-QList<int> WBLinkSettingsHelper::get_supported_frequencies()
-{
-    std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
-    QList<int> ret;
-    for(auto& channel:m_supported_channels){
-        ret.push_back(channel);
-    }
-    return ret;
-}
-
-QList<int> WBLinkSettingsHelper::get_supported_frequencies_filtered(int filter_level)
-{
-    auto supported_frequencies=get_supported_frequencies();
-    if(filter_level<=0)return supported_frequencies;
-    QList<int> ret;
-    for(auto& frequency: supported_frequencies){
-        if(filter_level==1){
-            // 40Mhz spacing
-            auto info=find_frequency_item(frequency);
-            if(info.simple){
-                ret.push_back(frequency);
-            }
-        }
-    }
-    return ret;
-}
-
-QStringList WBLinkSettingsHelper::pollution_frequencies_int_to_qstringlist(QList<int> frequencies)
-{
-    QStringList ret;
-    for(auto& freq:frequencies){
-        std::stringstream ss;
-        ss<<freq<<"Mhz";
-        ret.push_back(QString(ss.str().c_str()));
-    }
-    return ret;
-}
-
-QVariantList WBLinkSettingsHelper::pollution_frequencies_int_get_pollution(QList<int> frequencies,bool normalize)
-{
-    QVariantList ret;
-    for(auto& freq: frequencies){
-        auto pollution=PollutionHelper::instance().threadsafe_get_pollution_for_frequency(freq);
-        if(pollution.has_value()){
-            if(normalize){
-                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets_normalized));
-            }else{
-                ret.push_back(static_cast<int>(pollution.value().n_foreign_packets));
-            }
-
-        }else{
-            ret.push_back(static_cast<int>(0));
-        }
-    }
-    return ret;
-}
-
 
 void WBLinkSettingsHelper::signal_ui_rebuild_model_when_possible()
 {
-    const bool valid_ground_channel_data=has_valid_reported_channel_data();
+    const bool valid_ground_channel_data=FrequencyHelper::instance().has_valid_supported_frequencies_data();
     if(m_curr_channel_mhz>0 && m_curr_channel_width_mhz>0 && valid_ground_channel_data){
        qDebug()<<"Signal UI Ready & should rebuild "<<m_curr_channel_mhz<<":"<<m_curr_channel_width_mhz<<"Mhz valid channels:"<<valid_ground_channel_data;
        set_ui_rebuild_models(m_ui_rebuild_models+1);

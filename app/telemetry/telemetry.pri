@@ -12,6 +12,7 @@ SOURCES += \
     $$PWD/connection/udp_connection.cpp \
     $$PWD/models/fcmapmodel.cpp \
     $$PWD/settings/documentedparam.cpp \
+    $$PWD/settings/frequencyhelper.cpp \
     $$PWD/settings/pollutionhelper.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
     $$PWD/action/impl/xparam.cpp \
@@ -36,7 +37,9 @@ HEADERS += \
     $$PWD/connection/tcp_connection.h \
     $$PWD/settings/documentedparam.h \
     $$PWD/action/impl/xparam.h \
+    $$PWD/settings/frequencyhelper.h \
     $$PWD/settings/pollutionhelper.h \
+    $$PWD/settings/wifi_channel.h \
     $$PWD/util/geodesi_helper.h \
     $$PWD/util/mavlink_enum_to_string.h \
     $$PWD//util/openhd_defines.hpp \

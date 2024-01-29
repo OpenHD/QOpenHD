@@ -1,56 +1,37 @@
-
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
 
-import "colorwheel"
+import Qt.labs.settings 1.0
 
-Rectangle {
-    id: osdCustomizer
+import OpenHD 1.0
 
-    //width: 196
-    //height: 312
-    width: 250
-    height: 350
+import "../../../ui" as Ui
+import "../../elements"
 
-    color: "#ffeaeaea"
+ScrollView {
+    id: appWidgetSettingsView
+    width: parent.width
+    height: parent.height
+    contentHeight: widgetColumn.height
 
-    property bool stateVisible: visible
-
-    states: [
-        State {
-            when: colorPicker.stateVisible;
-            PropertyChanges {
-                target: colorPicker
-                opacity: 1.0
-            }
-        },
-        State {
-            when: !colorPicker.stateVisible;
-            PropertyChanges {
-                target: colorPicker
-                opacity: 0.0
-            }
-        }
-    ]
-
-    transitions: [ Transition { NumberAnimation { property: "opacity"; duration: 250}} ]
+    clip: true
 
     Item {
         anchors.fill: parent
 
         Column {
-            id: col
-            anchors.fill: parent
-            spacing: 6
-            rightPadding: 12
-            leftPadding: 12
-            topPadding: 12
+            id: widgetColumn
+            spacing: 0
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-            Item {
-                width: parent.width - 24
-                height: 48
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
                     text: qsTr("Shape Color")
@@ -60,17 +41,18 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 RoundButton {
                     //text: "Open"
 
-                    height: 48
+                    height: elementHeight
                     anchors.right: parent.right
-                    anchors.rightMargin: 8
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
                     onClicked: {
                         colorPicker.previousColor = settings.color_shape
                         colorPicker.currentColorType = ColorPicker.ColorType.ShapeColor
@@ -84,13 +66,15 @@ Rectangle {
                         radius: width*0.5
                         color: settings.color_shape
                     }
+
                 }
             }
 
 
-            Item {
-                width: parent.width - 24
-                height: 48
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
                     text: qsTr("Glow Color")
@@ -100,17 +84,18 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 RoundButton {
                     //text: "Open"
 
-                    height: 48
+                    height: elementHeight
                     anchors.right: parent.right
-                    anchors.rightMargin: 8
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
                     onClicked: {
                         colorPicker.previousColor = settings.color_glow
                         colorPicker.currentColorType = ColorPicker.ColorType.GlowColor
@@ -127,9 +112,10 @@ Rectangle {
                 }
             }
 
-            Item {
-                width: parent.width - 24
-                height: 48
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
                     text: qsTr("Text Color")
@@ -139,17 +125,18 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 RoundButton {
                     //text: "Open"
 
-                    height: 48
+                    height: elementHeight
                     anchors.right: parent.right
-                    anchors.rightMargin: 8
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
                     onClicked: {
                         colorPicker.previousColor = settings.color_text
                         colorPicker.currentColorType = ColorPicker.ColorType.TextColor
@@ -166,57 +153,35 @@ Rectangle {
                 }
             }
 
-            Item {
-                height: 60
-                width: parent.width - 24
 
+
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    id: fontBoxDescription
-                    text: "Font"
-                    height: 20
-                    color: "black"
-                    font.bold: true
-                    font.pixelSize: 14
+                    text: qsTr("Text font")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
                 }
 
                 FontSelect {
-                    id: fontBox
-                    width: parent.width
-                    height: 40
-                    anchors.top: fontBoxDescription.bottom
-                    anchors.topMargin: 6
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
+                    id: fontSelectBox
+                    height: elementHeight
+                    width: 320
                     anchors.right: parent.right
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
                 }
-            }
-
-            /*Item{
-                height: 60
-                width: parent.width - 24
-                Slider{
-                    from: 0.5
-                    to: 1.5
-                    value: settings.hud_osd_qquickpainteditem_font_scale
-                    onValueChanged: settings.hud_osd_qquickpainteditem_font_scale=value
-                }
-            }*/
-
-            Button {
-                height: 60
-                width: parent.width - 24
-                text: qsTr("Done")
-                Material.accent: Material.Red
-                highlighted: true
-
-                onClicked: {
-                    osdCustomizer.visible = false
-                    if (IsRaspPi) {
-                        piSettingsTimer.start();
-                    }
-                }
-            }
+            } 
         }
     }
 }

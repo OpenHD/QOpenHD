@@ -32,7 +32,8 @@ class HorizonLadder : public QQuickPaintedItem {
     L_RW_PROP(bool,show_center_indicator, set_show_center_indicator, true)
     // Adjust the stroke strength of the lines, in percent
     //L_RW_PROP(double,line_stroke_strength_perc, set_line_stroke_strength_perc, 100)
-
+public:
+    Q_PROPERTY(double custom_font_scale WRITE set_custom_font_scale)
 public:
     explicit HorizonLadder(QQuickItem* parent = nullptr);
 
@@ -61,7 +62,7 @@ public slots:
     void setShowHorizonHome(bool showHorizonHome);
 
     void setFontFamily(QString fontFamily);
-
+    void set_custom_font_scale(double custom_font_scale);
 signals:
     void colorChanged(QColor color);
     void glowChanged(QColor glow);
@@ -108,5 +109,6 @@ private:
     QFont m_font;
 
     QFont m_fontAwesome = QFont("Font Awesome 5 Free", 15, QFont::Bold, false);
+    double m_custom_font_scale=1.0;
 };
 #endif //QOPENHD_HORIZON_LADDER

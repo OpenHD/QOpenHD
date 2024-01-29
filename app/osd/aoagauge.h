@@ -2,7 +2,6 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
-
 class AoaGauge : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)

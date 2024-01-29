@@ -19,6 +19,8 @@ ColumnLayout{
     property bool show_horizontal_lock: false
     property bool show_transparency: true
 
+    property bool show_quickpainteditem_font_scale: false
+
     Item {
         width: parent.width
         height: 42
@@ -103,6 +105,36 @@ ColumnLayout{
             }
         }
     }
+    Item {
+        width: parent.width
+        height: 32
+        visible: show_quickpainteditem_font_scale
+        Text {
+            text: qsTr("Font Sale: x"+bw_qquickpainteditem_font_scale.toFixed(1))
+            color: "white"
+            height: parent.height
+            font.bold: true
+            font.pixelSize: detailPanelFontPixels
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+        }
+        Slider {
+            orientation: Qt.Horizontal
+            from: .5
+            value: bw_qquickpainteditem_font_scale
+            to: 2
+            stepSize: .1
+            height: parent.height
+            anchors.rightMargin: 0
+            anchors.right: parent.right
+            width: parent.width - 96
+
+            onValueChanged: {
+                bw_set_qquickpainteditem_font_scale(value);
+            }
+        }
+    }
+
 
     Item {
         width: 230

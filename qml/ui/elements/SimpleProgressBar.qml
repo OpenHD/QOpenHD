@@ -8,6 +8,8 @@ Item {
     // Color of the bar
     property color impl_curr_color: "blue"
 
+    property bool impl_show_progress_text: false
+
     Rectangle{
         id: progress_background
         color: impl_curr_color
@@ -20,14 +22,33 @@ Item {
 
     }
 
+    Text{
+        width: parent.width
+        height: parent.height
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Qt.AlignHCenter
+        text: {
+            var ret="PROGRESS";
+            if(impl_curr_progress_perc>=0 && impl_curr_progress_perc<=100){
+                ret += ": "+impl_curr_progress_perc+"%";
+            }else{
+                ret += "   ";
+            }
+            return ret;
+        }
+        color: "white"
+        visible: impl_show_progress_text
+    }
+
     Rectangle{
         id: progress_bar
-        opacity: 1.0
+        opacity: impl_show_progress_text ? 0.5 : 1.0
         width: progress_background.width * (impl_curr_progress_perc / 100.0)
         height: parent.height
         anchors.left: parent.left
 
         color: impl_curr_color
-
     }
+
+
 }

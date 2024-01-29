@@ -34,6 +34,50 @@ CameraStreamModel &CameraStreamModel::instance(int cam_index)
     assert(false);
 }
 
+QString CameraStreamModel::camera_type_to_string(int camera_type)
+{
+    if(camera_type<=0)return "Unknown";
+    if(camera_type==1)return "DUMMY";
+    if(camera_type==2)return "RPI_CSI_MMAL";
+    if(camera_type==3)return "RPI_CSI_VEYE_V4l2";
+    if(camera_type==4)return "RPI_CSI_LIBCAMERA";
+    if(camera_type==5)return "JETSON_CSI";
+    if(camera_type==6)return "ROCKCHIP_CSI";
+    if(camera_type==7)return "ALLWINNER_CSI";
+    if(camera_type==8)return "UVC (USB)";
+    if(camera_type==9)return "UVC_H264";
+    if(camera_type==10)return "IP";
+    if(camera_type==11)return "ROCK_HDMI";
+    if(camera_type==12)return "CUSTOM UNMANAGED";
+    return "ERROR";
+}
+
+QString CameraStreamModel::camera_status_to_string(int camera_status)
+{
+    if(camera_status<0)return "N/A";
+    if(camera_status==0)return "X";
+    if(camera_status==1)return "streaming";
+    if(camera_status==2)return "restarting";
+    return "ERROR";
+}
+
+QString CameraStreamModel::camera_codec_to_string(int camera_codec)
+{
+    if(camera_codec<0)return "ERROR";
+    if(camera_codec==0)return "h264";
+    if(camera_codec==1)return "h265";
+    if(camera_codec==2)return "mjpeg";
+    return "ERROR";
+}
+
+QString CameraStreamModel::camera_recording_mode_to_string(int recording_mode)
+{
+    if(recording_mode<0)return "n/a";
+    if(recording_mode==0)return "not active";
+    if(recording_mode==1)return "active";
+    return "error";
+}
+
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)
 {
     const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
@@ -88,6 +132,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
     set_camera_type(msg.cam_type);
+    set_encoding_codec(msg.encoding_format);
     {
         std::stringstream ss;
         ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
@@ -124,18 +169,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     }else{
         qDebug()<<"Invalid video codec: "<<codec_in_openhd;
     }
-    // Feature - log in the HUD if the camera is restarting
     set_camera_status(msg.cam_status);
-    if(msg.cam_status==2){
-        const auto elapsed=std::chrono::steady_clock::now()-m_last_hud_message_camera_status;
-        if(elapsed>=std::chrono::seconds(3)){
-           m_last_hud_message_camera_status=std::chrono::steady_clock::now();
-           std::stringstream log;
-           log<<(secondary ? "CAM2" : "CAM1");
-           log<<" is restarting, please wait";
-           HUDLogMessagesModel::instance().add_message_info(log.str().c_str());
-        }
-    }
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)

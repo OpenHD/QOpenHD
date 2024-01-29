@@ -6,6 +6,8 @@
 
 #include "debug_overdraw.hpp"
 
+static constexpr int DEFAULT_FONT_PIXEL_SIZE=11;
+
 HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HeadingLadder::HeadingLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
@@ -235,6 +237,13 @@ void HeadingLadder::setHomeHeading(int homeHeading) {
 void HeadingLadder::setFontFamily(QString fontFamily) {
     m_fontFamily = fontFamily;
     emit fontFamilyChanged(m_fontFamily);
-    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
+     m_font = QFont(m_fontFamily, DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale, QFont::Bold, false);
+    update();
+}
+
+void HeadingLadder::set_custom_font_scale(double custom_font_scale)
+{
+    m_custom_font_scale=custom_font_scale;
+    m_font.setPointSize(DEFAULT_FONT_PIXEL_SIZE*m_custom_font_scale);
     update();
 }
