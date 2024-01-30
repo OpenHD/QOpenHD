@@ -132,6 +132,7 @@ Card {
         ListElement {title: "Dummy (debug)"; value: 0}
         ListElement {title: "External (DEV)"; value: 2}
         ListElement {title: "External IP (DEV)"; value: 3}
+        ListElement {title: "DEV Filecamera"; value: 4}
     }
     ListModel{
         id: x20_runcam_cameras

@@ -7,6 +7,7 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
 
 // For development, always 'works' since fully emulated in SW.
 static constexpr int X_CAM_TYPE_DUMMY_SW=0; // Dummy sw picture
@@ -19,6 +20,8 @@ static constexpr int X_CAM_TYPE_EXTERNAL=2;
 // For openhd, this is exactly the same as X_CAM_TYPE_EXTERNAL - only file start_ip_cam.txt is created
 // Such that the ip cam service can start forwarding data to openhd core.
 static constexpr int X_CAM_TYPE_EXTERNAL_IP=3;
+// For development, camera that reads input from a file, and then re-encodes it using the platform encoder
+static constexpr int X_CAM_TYPE_DEVELOPMENT_FILESRC=4;
 //
 // RPI Specific starts here
 //
@@ -90,6 +93,7 @@ struct XCamera {
             case X_CAM_TYPE_USB: return "USB";
             case X_CAM_TYPE_EXTERNAL: return "EXTERNAL";
             case X_CAM_TYPE_EXTERNAL_IP: return "EXTERNAL_IP";
+            case X_CAM_TYPE_DEVELOPMENT_FILESRC: return "DEV_FILESRC";
             // All the rpi stuff begin
             case X_CAM_TYPE_RPI_MMAL_HDMI_TO_CSI: return "MMAL_HDMI";
             case X_CAM_TYPE_RPI_LIBCAMERA_RPIF_V1_OV5647: return "RPIF_V1_OV5647";
@@ -134,12 +138,56 @@ struct XCamera {
             return {1920,1080,30};
         }else if(camera_type==X_CAM_TYPE_USB){
             // TODO properly
-            return {640,490,30};
+            return {640,480,30};
         }else if(camera_type==X_CAM_TYPE_DUMMY_SW){
             return {640,480,30};
         }
         return {1920,1080,30};
     }
+    // Returns a list of known supported resolution(s).
+    // The first element is what openhd uses as default.
+    // Must always return at least one resolution
+    // Might not return all resolutions a camera supports per HW
+    // (In qopenhd, we have the experiment checkbox, where the user can enter anything he likes)
+    std::vector<ResolutionFramerate> get_supported_resolutions()const{
+        if(requires_rpi_veye_pipeline()){
+            // Veye camera(s) only do 1080p30
+            return {ResolutionFramerate{1920,1080,30}};
+        }else if(requires_x20_cedar_pipeline()){
+            // also easy, 720p60 only (for now)
+            return {ResolutionFramerate{1280,720,60}};
+        } else if(camera_type==X_CAM_TYPE_USB){ // TODO properly
+            return {ResolutionFramerate{640,480,30}};
+        }else if(requires_rpi_libcamera_pipeline()){// TODO properly
+            std::vector<ResolutionFramerate> ret;
+            ret.push_back(ResolutionFramerate{1920,1080,30});
+            ret.push_back(ResolutionFramerate{1280,720,60});
+            ret.push_back(ResolutionFramerate{640,480,60});
+            return ret;
+        }else if(camera_type==X_CAM_TYPE_RPI_MMAL_HDMI_TO_CSI){
+            std::vector<ResolutionFramerate> ret;
+            ret.push_back(ResolutionFramerate{1920,1080,30});
+            ret.push_back(ResolutionFramerate{1280,720,30});
+            ret.push_back(ResolutionFramerate{1280,720,60});
+            return ret;
+        }
+        // Not mapped yet
+        return {ResolutionFramerate{1920,1080,30}};
+    }
 };
+
+
+
+static bool is_valid_primary_cam_type(int cam_type){
+    if(cam_type>=0 && cam_type<X_CAM_TYPE_DISABLED)return true;
+    return false;
+}
+static bool is_valid_secondary_cam_type(int cam_type){
+    if(cam_type==X_CAM_TYPE_DUMMY_SW || cam_type==X_CAM_TYPE_USB || cam_type==X_CAM_TYPE_EXTERNAL ||
+        cam_type==X_CAM_TYPE_EXTERNAL_IP || cam_type==X_CAM_TYPE_DISABLED){
+        return true;
+    }
+    return false;
+}
 
 #endif //OPENHD_CAMERA_HPP

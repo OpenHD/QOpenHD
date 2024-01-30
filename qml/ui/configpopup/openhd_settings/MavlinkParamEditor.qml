@@ -398,7 +398,7 @@ Rectangle{
             spacing: 10
             Layout.alignment: Qt.AlignHCenter
 
-            /*Button{
+            Button{
                 text: "Advanced"
                 visible: settings.dev_show_advanced_button
                 Layout.alignment: Qt.AlignLeft
@@ -408,7 +408,7 @@ Rectangle{
                     setup_spin_box_int_param()
                     setup_text_input_string_param()
                 }
-            }*/
+            }
             Button{
                 text: "Save"
                 Layout.alignment: Qt.AlignRight

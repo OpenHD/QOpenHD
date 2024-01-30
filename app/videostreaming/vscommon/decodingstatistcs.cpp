@@ -25,7 +25,7 @@ void DecodingStatistcs::reset_all_to_default()
     set_n_missing_rtp_video_packets(-1);
     set_rtp_measured_bitrate("-1");
     set_estimate_rtp_fps("-1");
-    set_estimate_keyframe_interval(-1);
+    set_estimate_keyframe_interval("N/A");
     set_n_decoder_dropped_frames(-1);
 }
 
@@ -34,5 +34,12 @@ void DecodingStatistcs::util_set_primary_stream_frame_format(std::string format,
     std::stringstream ss;
     ss<<format<<" "<<width_px<<"x"<<height_px;
     set_primary_stream_frame_format(ss.str().c_str());
+}
+
+void DecodingStatistcs::util_set_estimate_keyframe_interval_int(int value)
+{
+    std::stringstream ss;
+    ss<<value;
+    set_estimate_keyframe_interval(ss.str().c_str());
 }
 

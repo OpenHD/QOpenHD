@@ -40,8 +40,8 @@ std::shared_ptr<NALUBuffer> RawReceiver::get_next_frame(std::optional<std::chron
 std::shared_ptr<std::vector<uint8_t> > RawReceiver::get_config_data()
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
-    if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
-        return m_keyframe_finder->get_keyframe_data(is_h265);
+    if(m_keyframe_finder->all_config_available(is_h265)){
+        return m_keyframe_finder->get_config_data(is_h265);
     }
     return nullptr;
 }
@@ -144,7 +144,7 @@ void RawReceiver::queue_data(const uint8_t *nalu_data, const std::size_t nalu_da
     //if(config_has_changed_during_decode)return;
     //qDebug()<<"Got frame2";
     NALU nalu(nalu_data,nalu_data_len,is_h265);
-    //qDebug()<<"Got NAL:"<<nalu_data_len<<" :"<<nalu.get_nal_unit_type_as_string().c_str();
+    qDebug()<<"Got NAL:"<<nalu_data_len<<" :"<<nalu.get_nal_unit_type_as_string().c_str();
     if(nalu.is_aud()){
         return;
     }
@@ -159,11 +159,11 @@ void RawReceiver::queue_data(const uint8_t *nalu_data, const std::size_t nalu_da
         n_frames_idr++;
     }
     if(n_frames_idr>=3){
-        DecodingStatistcs::instance().set_estimate_keyframe_interval((n_frames_non_idr+n_frames_idr)/n_frames_idr);
+        DecodingStatistcs::instance().util_set_estimate_keyframe_interval_int((n_frames_non_idr+n_frames_idr)/n_frames_idr);
         n_frames_idr=0;
         n_frames_non_idr=0;
     }
-    if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
+    if(m_keyframe_finder->all_config_available(is_h265)){
         if(!m_keyframe_finder->check_is_still_same_config_data(nalu)){
             // We neither queue on new data nor call the callback - upper level needs to reconfigure the decoder
             qDebug()<<"config_has_changed_during_decode";
@@ -195,6 +195,6 @@ void RawReceiver::queue_data(const uint8_t *nalu_data, const std::size_t nalu_da
         }
     }else{
         // We don't have all config data yet, drop anything that is not config data.
-        m_keyframe_finder->saveIfKeyFrame(nalu);
+        m_keyframe_finder->save_if_config(nalu);
     }
 }

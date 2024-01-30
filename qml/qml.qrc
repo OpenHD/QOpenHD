@@ -274,5 +274,7 @@
         <file>ui/elements/SimpleAdvancedChoiceElement.qml</file>
         <file>ui/configpopup/openhd_settings/PopupBigGeneric.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor2.qml</file>
+        <file>ui/configpopup/quick/PanelQuick.qml</file>
+        <file>ui/configpopup/quick/BaseJoyEditElement.qml</file>
     </qresource>
 </RCC>

@@ -15,6 +15,7 @@ import "qopenhd_settings"
 import "openhd_settings"
 import "rc"
 import "status"
+import "quick"
 
 // Contains the selector on the left and a stack view for the panels on the right
 Rectangle {
@@ -162,6 +163,15 @@ Rectangle {
                 id: navigation_buttons_column
                 width: parent.width
                 anchors.top: parent.top
+
+                //
+                /*ConfigPopupSidebarButton{
+                    id:  quick
+                    m_icon_text: "\uf0fb"
+                    m_description_text: "Quick"
+                    m_selection_index: 0
+                }*/
+
                 // Status
                 ConfigPopupSidebarButton{
                     id:  power
@@ -247,6 +257,10 @@ Rectangle {
 
         // default index
         currentIndex: 0
+
+        /*PanelQuick{
+            id: quickPanel
+        }*/
 
         PanelStatus {
             id: statusPanel

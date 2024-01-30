@@ -685,6 +685,7 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret["BITRATE_MBITS"]=nullptr;
     ret["KEYFRAME_I"]=nullptr;
     ret["INTRA_REFRESH"]=nullptr;
+    ret["N_SLICES"]=nullptr;
     //
 
     ret["STREAMING_E"]=nullptr;

@@ -84,6 +84,7 @@ private:
     int n_frames_idr=0;
 private:
     std::chrono::steady_clock::time_point m_last_log_hud_dropped_frame=std::chrono::steady_clock::now();
+    int dev_count=0;
 };
 
 #endif // RTPRECEIVER_H

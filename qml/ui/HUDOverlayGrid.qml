@@ -15,6 +15,8 @@ import "./elements"
 
 import "../video"
 
+import "configpopup/quick"
+
 Item {
     id: hudOverlayGrid
     focus: true
@@ -524,6 +526,9 @@ Item {
         anchors.left: parent.left
         visible: m_show_vertical_center_indicator
     }
+
+    //PanelQuick{
+    //}
 }
 
 
