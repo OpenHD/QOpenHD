@@ -303,6 +303,7 @@ bool MavlinkTelemetry::change_manual_tcp_ip(QString ip)
         return false;
     }
     m_connction_manual_tcp_ip=std::make_shared<std::string>(ip.toStdString());
+    return true;
 }
 
 void MavlinkTelemetry::send_heartbeat_loop()
@@ -373,8 +374,8 @@ void MavlinkTelemetry::perform_connection_management()
             }
         }
         std::stringstream ss;
-        ss<<"MANUAL TCP -";
-        if(m_udp_connection->threadsafe_is_alive()){
+        ss<<"MANUAL TCP - ";
+        if(m_tcp_connection->threadsafe_is_alive()){
             ss<<"CONNECTED";
         }else{
             ss<<"WRONG IP ? ["<<user_ip<<"]";

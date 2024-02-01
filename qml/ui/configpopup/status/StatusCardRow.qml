@@ -63,7 +63,7 @@ Item {
     }*/
     // Actual item,centered
     Item{
-        width: parent.width > 260 ? 260 : parent.width
+        width: parent.width > 400 ? 400 : parent.width
         height: main_item.height
         anchors.centerIn: parent
 
@@ -80,6 +80,7 @@ Item {
             font.pixelSize: 18
             clip: true
             elide: Text.ElideRight
+            padding: 4
         }
 
         Text{
@@ -90,12 +91,13 @@ Item {
             anchors.top: left_part.top
             text: m_right_text
             verticalAlignment: Qt.AlignVCenter
-            horizontalAlignment: Qt.AlignHCenter
+            horizontalAlignment: Qt.AlignLeft
             color: m_has_error ? m_right_text_color_error : m_right_text_color
             visible: !right_part_button.visible
             font.pixelSize: 18
             clip: true
             elide: Text.ElideRight
+            padding: 4
         }
         MouseArea {
             enabled: m_has_error && !m_look_shit_on_error
