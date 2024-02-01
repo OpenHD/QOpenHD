@@ -117,7 +117,7 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
     if(inputPipeClosed){
         //A feedD thread (e.g. file or udp) thread might be running even tough no output surface was set
         //But at least we can buffer the sps/pps data
-        mKeyFrameFinder.saveIfKeyFrame(nalu);
+        mKeyFrameFinder.save_if_config(nalu);
         return;
     }
     if(decoder.configured){
@@ -132,8 +132,8 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
     }else{
         //Store sps,pps, vps(H265 only)
         // As soon as enough data has been buffered to initialize the decoder,do so.
-        mKeyFrameFinder.saveIfKeyFrame(nalu);
-        if(mKeyFrameFinder.allKeyFramesAvailable(IS_H265)){
+        mKeyFrameFinder.save_if_config(nalu);
+        if(mKeyFrameFinder.all_config_available(IS_H265)){
             configureStartDecoder();
         }
     }
