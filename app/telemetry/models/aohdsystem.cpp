@@ -458,8 +458,8 @@ void AOHDSystem::update_alive()
     // come through, not only a heartbeat
     // AIR: Quite lossy, and r.n we send about 2 to 3 telemetry packets per second
     // GROUND: OpenHD (can) send a lot of data to QOpenHD, since there are no bw constraints
-    const int tmp=m_last_message_ms;
-    if(tmp<=-1){
+    const int64_t tmp=m_last_message_ms;
+    if(tmp<=-1) {
         update_alive_status_with_hud_message(false);
         return;
     }

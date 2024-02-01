@@ -9,10 +9,10 @@
 #include <sstream>
 #include <memory>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__macos__)
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#endif // __linux__
+#endif // __linux__ || __macos__
 
 
 namespace OHDUtil {
@@ -27,7 +27,7 @@ namespace OHDUtil {
  * NOTE: Used to use boost, there were issues with that, I changed it to use c standard library.
  */
 static bool run_command(const std::string &command, const std::vector<std::string> &args,bool print_debug=true) {
-#ifdef __linux__
+#if defined(__linux__) || defined(__macos__)
   std::stringstream ss;
   ss << command;
   for (const auto &arg: args) {
@@ -51,7 +51,7 @@ static bool run_command(const std::string &command, const std::vector<std::strin
   }
   return ret;
 #else
-    std::cerr<<"run_command only supported on linux\n";
+    std::cerr<<"run_command only supported on linux and macos\n";
     return false;
 #endif
 }
@@ -67,7 +67,7 @@ static bool run_command(const std::string &command, const std::vector<std::strin
  */
 
 static std::optional<std::string> run_command_out(const char* command){
-#ifdef __linux__
+#if defined(__linux__) || defined(__macos__)
   std::string raw_value;
   std::array<char, 512> buffer{};
   std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
@@ -83,7 +83,7 @@ static std::optional<std::string> run_command_out(const char* command){
   }
   return raw_value;
 #else
-    std::cerr<<"run_command only supported on linux\n";
+    std::cerr<<"run_command only supported on linux and macos\n";
     return std::nullopt;
 #endif
 }
@@ -93,7 +93,7 @@ static std::string yes_or_no(bool yes){
 }
 
 static bool is_valid_ip(const std::string& ip) {
-#ifdef __linux__
+#if defined(__linux__) || defined(__macos__)
   unsigned char buf[sizeof(struct in6_addr)];
   auto result = inet_pton(AF_INET, ip.c_str(), buf);
   return result == 1;

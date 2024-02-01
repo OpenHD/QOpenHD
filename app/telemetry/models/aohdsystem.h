@@ -143,8 +143,8 @@ private:
      void process_sys_status1(const mavlink_openhd_sys_status1_t& msg);
      void process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t& msg);
 private:
-     std::atomic<int32_t> m_last_heartbeat_ms = -1;
-     std::atomic<int32_t> m_last_message_ms= -1;
+     std::atomic<int64_t> m_last_heartbeat_ms = -1;
+     std::atomic<int64_t> m_last_message_ms= -1;
      //
      QString m_curr_incoming_bitrate="Bitrate NA";
      QString m_curr_incoming_tele_bitrate="Bitrate NA";
