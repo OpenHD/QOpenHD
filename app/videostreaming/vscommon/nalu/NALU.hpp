@@ -195,15 +195,15 @@ public:
        return ss.str();
    }
    static bool has_valid_prefix(const uint8_t* p){
-       return p[0]==0 && p[1]==0 && p[2]==0 && p[3]==1 ||
-               p[0]==0 && p[1]==0 && p[2]==1;
+       return (p[0]==0 && p[1]==0 && p[2]==0 && p[3]==1) ||
+               (p[0]==0 && p[1]==0 && p[2]==1);
    }
    static void write_prefix(uint8_t* p,bool long_prefix){
        if(long_prefix){
            p[0]=0;
            p[1]=0;
            p[2]=0;
-           p[3]==1;
+           p[3]=1;
        }else{
            p[0]=0;
            p[1]=0;
