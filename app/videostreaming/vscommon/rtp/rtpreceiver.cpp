@@ -131,7 +131,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         n_frames_non_idr++;
     }
     if(nalu.is_keyframe()){
-        qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+        //qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();
         n_frames_idr++;
     }
     if(n_frames_idr>=3){

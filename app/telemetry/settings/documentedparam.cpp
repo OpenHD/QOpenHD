@@ -532,6 +532,27 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                           "Change which joystick 'channel' is taken for each RC channel. This is a list of numbers, where each number X at position N means take joystick input nr X for channel N."
                           " For example, 1,4,... means take channel number 1 for the first channel, and channel number 4 for the second channel. Needs to have ! all! 18 channel elements seperated by a ','");
         }
+        {
+            auto infiray_colorpalete_items=std::vector<ImprovedIntSetting::Item>{
+                    {"CMD Shutter calibration",32768},
+                    {"CMD YUYV output",32773},
+                    {"CMD save configurations",33022},
+                    // Color palete
+                    {"White Hot",34816},
+                    {"Black Hot",34817},
+                    {"Iron Rainbow",34818},
+                    {"Lava",34819},
+                    {"Rainbow2",34820},
+                    {"Rainbow3",34821},
+                    {"Red Hot",34822},
+                    {"Iron gray",34823},
+                    {"HCR1",34824},
+                    {"HCR2",34825},
+                    {"Black hot 2",34826},
+                                                                         };
+            append_int(ret,"COLOR_PALETE",ImprovedIntSetting(34816,34826,infiray_colorpalete_items),
+                       "Infiray thermal colors");
+        }
         append_only_documented(ret,"RC_UPDATE_HZ",
                                "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink."
                                "No effect if joy rc is disabled.");
