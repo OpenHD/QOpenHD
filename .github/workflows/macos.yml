@@ -33,6 +33,7 @@ jobs:
       # Build your program with the given configuration
       run: |
         qmake CONFIG+=release QOpenHD.pro
+        make -j2
 
 
     - name: Upload to Github  
