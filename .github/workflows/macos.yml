@@ -22,6 +22,8 @@ jobs:
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
+      with:
+        modules: 'qtcharts'
 
     # - name: Install create-dmg
     #   run: brew install create-dmg
