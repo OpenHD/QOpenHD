@@ -276,5 +276,6 @@
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor2.qml</file>
         <file>ui/configpopup/quick/PanelQuick.qml</file>
         <file>ui/configpopup/quick/BaseJoyEditElement.qml</file>
+        <file>ui/widgets/SOCStatusWidgetGeneric.qml</file>
     </qresource>
 </RCC>
