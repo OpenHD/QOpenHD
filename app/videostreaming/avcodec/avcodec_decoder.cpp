@@ -816,6 +816,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                  // No buff after X seconds
                  continue;
              }
+             //qDebug()<<"Got frame";
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->get_nal().getData();
              pkt->size=buf->get_nal().getSize();

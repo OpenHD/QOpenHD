@@ -277,5 +277,8 @@
         <file>ui/configpopup/quick/PanelQuick.qml</file>
         <file>ui/configpopup/quick/BaseJoyEditElement.qml</file>
         <file>ui/widgets/SOCStatusWidgetGeneric.qml</file>
+        <file>ui/elements/BigClickableText.qml</file>
+        <file>ui/configpopup/openhd_settings/MavlinkParamValueEditElement.qml</file>
+        <file>ui/elements/ButtonIconGear.qml</file>
     </qresource>
 </RCC>

@@ -36,6 +36,26 @@ Card {
         enabled=false;
     }
 
+    // Returns true if we have a 'NICE UI' for this platform type
+    function set_ohd_platform_type(ohd_platform_type){
+        if(ohd_platform_type>=10 && ohd_platform_type<20){
+            m_platform_type=mPLATFORM_TYPE_RPI;
+            return true;
+        }
+        if(ohd_platform_type>=20 && ohd_platform_type<30){
+            m_platform_type=mPLATFORM_TYPE_ROCK;
+            return true;
+        }
+        if(ohd_platform_type==1){
+            m_platform_type=mPLATFORM_TYPE_X86;
+            return true;
+        }
+        if(ohd_platform_type==30){
+            m_platform_type=mPLATFORM_TYPE_X20;
+            return true;
+        }
+        return false;
+    }
 
     function get_platform_name(){
         if(m_platform_type==mPLATFORM_TYPE_RPI){

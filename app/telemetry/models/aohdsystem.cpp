@@ -22,6 +22,8 @@
 #include "../settings/wblinksettingshelper.h"
 #include "../settings/mavlinksettingsmodel.h"
 
+#include "openhd_core/platform.hpp"
+
 // From https://netbeez.net/blog/what-is-mcs-index/
 static std::vector<int> get_dbm_20mhz(){
     return {-82,-79,-77,-74,-70,-66,-65,-64,-59,-57};
@@ -274,6 +276,10 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_ram_total(msg.ram_total);
     int16_t air_reported_sys_id=msg.fan_speed[0];
     set_air_reported_fc_sys_id(air_reported_sys_id);
+    const uint8_t ohd_platform=msg.link_type[0];
+    set_ohd_platform(ohd_platform);
+    const auto platform_as_str=openhd::x_platform_type_to_string(ohd_platform);
+    set_ohd_platform_type_as_string(platform_as_str.c_str());
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){

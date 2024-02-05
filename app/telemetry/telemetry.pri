@@ -37,6 +37,7 @@ HEADERS += \
     $$PWD/action/ohdaction.h \
     $$PWD/connection/mavlinkchannel.h \
     $$PWD/connection/tcp_connection.h \
+    $$PWD/models/openhd_core/platform.hpp \
     $$PWD/settings/documentedparam.h \
     $$PWD/action/impl/xparam.h \
     $$PWD/settings/frequencyhelper.h \

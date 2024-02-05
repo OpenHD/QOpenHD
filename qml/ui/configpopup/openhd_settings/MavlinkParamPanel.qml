@@ -35,6 +35,8 @@ Rectangle {
 
     property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
 
+    property bool m_any_param_eitor_opened: parameterEditor.visible || dialoque_choose_camera.visible || dialoque_choose_resolution.visible;
+
     onVisibleChanged: {
         if(visible){
             if(!m_instanceCheckIsAvlie.is_alive){
@@ -52,13 +54,13 @@ Rectangle {
     Rectangle{
         id: upper_action_row
         width: parent.width
-        height: rowHeight*2 / 3;
+        height: rowHeight;//*2 / 3;
         color: "#8cbfd7f3"
         Button {
             text: m_instanceCheckIsAvlie.is_alive ?  qsTr("\uf2f1") : qsTr("\uf127");
             font.family: "Font Awesome 5 Free"
             anchors.left: parent.left
-            anchors.leftMargin: 3
+            anchors.leftMargin: 10
             onClicked: {
                 parameterEditor.visible=false
                 m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
@@ -96,7 +98,7 @@ Rectangle {
             font.family: "Font Awesome 5 Free";
             text: "\uf0d7" //DOWN
             anchors.right: parent.right
-            anchors.rightMargin: 3
+            anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
                 paramListScrollView.ScrollBar.vertical.position += 0.1
@@ -129,7 +131,7 @@ Rectangle {
             height: 64
             width: listView.width-12
             Row {
-                spacing: 10
+                spacing: 30
                 height: parent.height
                 width: parent.width
                 anchors.left: parent.left
@@ -144,7 +146,7 @@ Rectangle {
                     style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
                     styleColor: settings.color_glow
                 }
-                Text {
+                /*Text {
                     width:180
                     text: model.extraValue
                     font.bold: true
@@ -153,7 +155,7 @@ Rectangle {
                     color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
                     style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
                     styleColor: settings.color_glow
-                }
+                }*/
                 //Button {
                 ButtonIconInfo{
                     anchors.verticalCenter: parent.verticalCenter
@@ -170,16 +172,9 @@ Rectangle {
                         _messageBoxInstance.set_text_and_show(text)
                     }
                 }
-                ButtonIconWarning{
+                BigClickableText{
+                    text: model.extraValue
                     anchors.verticalCenter: parent.verticalCenter
-                    onClicked: {
-                        _messageBoxInstance.set_text_and_show("This param is whitelisted (You should not edit it from here / editing can break things))")
-                    }
-                    visible: model.whitelisted
-                }
-                Button {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: "EDIT"
                     onClicked: {
                         // For a few params we have extra ui elements, otherwise, use the generic param editor
                         if(model.unique_id==="CAMERA_TYPE"){
@@ -200,7 +195,46 @@ Rectangle {
                         }
                     }
                     // gray out the button for read-only params
-                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive
+                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened)
+                }
+                /*MavlinkParamValueEditElement{
+                    m_display_text: model.extraValue
+                    m_is_int: model.valueType===0
+                    anchors.verticalCenter: parent.verticalCenter
+                }*/
+                ButtonIconGear {
+                    anchors.verticalCenter: parent.verticalCenter
+                    //text: "EDIT"
+                    onClicked: {
+                        // For a few params we have extra ui elements, otherwise, use the generic param editor
+                        var init_special_ui_element_success=false;
+                        if(model.unique_id==="CAMERA_TYPE"){
+                            dialoque_choose_camera.m_is_for_secondary_camera=m_is_secondary_cam;
+                            if(dialoque_choose_camera.set_ohd_platform_type(_ohdSystemAir.ohd_platform_type)){
+                                dialoque_choose_camera.initialize_and_show()
+                                init_special_ui_element_success=true;
+                            }
+                        }else if(model.unique_id==="RESOLUTION_FPS"){
+                            dialoque_choose_resolution.m_current_resolution_fps=model.value;
+                            dialoque_choose_resolution.m_is_for_secondary=m_is_secondary_cam;
+                            dialoque_choose_resolution.initialize_and_show();
+                            init_special_ui_element_success=true;
+                        }
+                        if(!init_special_ui_element_success){
+                            // generic editor
+                            parameterEditor.setup_for_parameter(model.unique_id,model)
+                        }
+                    }
+                    // gray out the button for read-only params
+                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened)
+                }
+                ButtonIconWarning{
+                    id: warning_whitelisted
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: {
+                        _messageBoxInstance.set_text_and_show("This param is whitelisted (You should not edit it from here / editing can break things))")
+                    }
+                    visible: model.whitelisted
                 }
             }
         }
@@ -228,6 +262,7 @@ Rectangle {
             // Always show the scroll bar (sometimes the interactive might not work) but allow interactive also
             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
             ScrollBar.vertical.interactive: true
+
             ListView {
                 id: listView
                 width: parent.width

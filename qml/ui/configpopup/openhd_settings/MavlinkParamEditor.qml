@@ -25,6 +25,7 @@ Rectangle{
     width: total_width
     height: parent.height
     anchors.right: parent.right;
+    //anchors.horizontalCenter: parent.horizontalCenter
     anchors.top: parent.top
     //anchors.centerIn: parent
     //anchors.topMargin: -15
