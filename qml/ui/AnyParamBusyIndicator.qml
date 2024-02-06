@@ -13,6 +13,7 @@ Item{
     width: parent.width
     height: parent.height
 
+
     BusyIndicator{
         id: any_param_busy_indiscator
         width: 96

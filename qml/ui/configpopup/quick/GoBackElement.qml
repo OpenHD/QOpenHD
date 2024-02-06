@@ -5,8 +5,11 @@ Rectangle{
     id: go_back_element
     width: parent.width
     height: 50
-    color: "blue"
-    opacity:go_back_element.focus ? 1.0 : 0.4;
+
+    color: {
+        return "#333c4c"
+    }
+    opacity: go_back_element.focus ? 1.0 : 0.3;
 
     function close_and_go_back(){
         // Go back to the

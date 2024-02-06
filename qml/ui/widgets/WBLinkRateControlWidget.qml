@@ -331,28 +331,6 @@ Make the video more stable (less microfreezes) on the cost of less image quality
             m_text: "Range vs Bitrate"
             m_info_text: m_DESCRIPTION_CHANNEL_WIDTH
         }
-        /*TabBar{
-                width: parent.width
-                height: m_row_height
-                id: channel_width_tab_bar
-                currentIndex:  m_curr_channel_width==40 ? 1 : 0;
-                onCurrentIndexChanged: {
-                    //const chan_w= currentIndex==0 ? 20 : 40;
-                    //set_channel_width_async(20)
-                }
-                TabButton{
-                    text: "20Mhz"
-                    onClicked: {
-                        set_channel_width_async(20)
-                    }
-                }
-                TabButton{
-                    text: "40Mhz"
-                    onClicked: {
-                        set_channel_width_async(40)
-                    }
-                }
-            }*/
         Row{
             width: parent.width
             height: m_row_height

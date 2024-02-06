@@ -67,9 +67,9 @@ Item{
         border.color: "black"
         border.width: 3
         color: {
-            return "blue"
+            return "#333c4c"
         }
-        opacity: base_joy_edit_element.focus ? 1.0 : 0.4;
+        opacity: base_joy_edit_element.focus ? 1.0 : 0.3;
         //opacity: focus ? 1.0 : 0.4;
         //color: "green"
         //  "#8cbfd7f3" : "#00000000"

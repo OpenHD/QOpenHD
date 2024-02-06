@@ -120,15 +120,6 @@ Item {
     }
 
 
-    Rectangle{
-        implicitWidth: middle_element.width
-        implicitHeight: middle_element.height
-        color: "blue"
-        opacity: 0.2;
-        anchors.top: middle_element.top
-        anchors.left: middle_element.left
-    }
-
     Column{
         anchors.centerIn: parent
         id: middle_element
