@@ -323,12 +323,4 @@ Rectangle {
     ChooseResolutionDialoque{
         id: dialoque_choose_resolution
     }
-
-    BusyIndicator{
-        width: 96
-        height: 96
-        anchors.centerIn: parent
-        running: m_instanceMavlinkSettingsModel.ui_is_busy
-        //visible: _xParamUI.is_busy
-    }
 }

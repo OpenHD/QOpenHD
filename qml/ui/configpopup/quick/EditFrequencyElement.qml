@@ -71,6 +71,7 @@ BaseJoyEditElement{
             new_model_index-=1;
         }
         const new_frequency=frequencies_model.get(new_model_index).frequency
+        _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQUENCY");
         _wbLinkSettingsHelper.change_param_air_and_ground_frequency(new_frequency)
     }
 

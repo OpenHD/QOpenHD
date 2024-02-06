@@ -35,6 +35,7 @@ BaseJoyEditElement{
     }
 
     function set_air_only_mcs(mcs_index){
+         _qopenhd.set_busy_for_milliseconds(2000,"CHANGING RATE");
         _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
     }
 

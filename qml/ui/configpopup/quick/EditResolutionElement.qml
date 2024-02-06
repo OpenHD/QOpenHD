@@ -59,6 +59,7 @@ BaseJoyEditElement{
             new_model_index-=1;
         }
         var new_resolution_string=resolutions_model.get(new_model_index).title;
+         _qopenhd.set_busy_for_milliseconds(1000,"CHANGING RESOLUTION");
         _wbLinkSettingsHelper.set_param_video_resolution_framerate_async(true,new_resolution_string)
     }
 

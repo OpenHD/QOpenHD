@@ -288,5 +288,6 @@
         <file>ui/configpopup/quick/InfoElement.qml</file>
         <file>ui/configpopup/quick/EditFrequencyElement.qml</file>
         <file>ui/configpopup/quick/TriangleButton.qml</file>
+        <file>ui/AnyParamBusyIndicator.qml</file>
     </qresource>
 </RCC>

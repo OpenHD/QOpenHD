@@ -31,6 +31,7 @@ BaseJoyEditElement{
             _hudLogMessagesModel.add_message_warning("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive");
             return;
         }
+         _qopenhd.set_busy_for_milliseconds(2000,"CHANGING BW");
         _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
     }
 
