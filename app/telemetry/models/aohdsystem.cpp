@@ -258,6 +258,11 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
     return consumed;
 }
 
+QString AOHDSystem::get_rate_for_mcs_bw(int mcs, int bw)
+{
+    return "TODO";
+}
+
 void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_status_t &msg)
 {
     set_curr_cpuload_perc(msg.cpu_cores[0]);

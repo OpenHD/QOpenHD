@@ -266,6 +266,7 @@ Item {
         id: actual_hud_elements
         width: parent.width
         height: parent.height
+        visible: !quickPanel.visible
 
         // By default on top row
         // --------------------------------------------------------------------------
@@ -498,7 +499,9 @@ Item {
 
     Label{
         text: "JOSTICK NAVIGATION ENABLED"
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 30
         visible: m_keyboard_navigation_active
         // style
         color: settings.color_text
@@ -508,6 +511,7 @@ Item {
         wrapMode: Text.NoWrap
         style: Text.Outline
         styleColor: settings.color_glow
+        height: 50
     }
     // Shows center while dragging widgets
     Rectangle{
@@ -527,8 +531,9 @@ Item {
         visible: m_show_vertical_center_indicator
     }
 
-    //PanelQuick{
-    //}
+    DevStreamingInfo{
+
+    }
 }
 
 

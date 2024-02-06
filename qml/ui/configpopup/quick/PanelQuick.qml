@@ -15,6 +15,104 @@ Item {
     width: parent.width
     height: parent.height
 
+    property int m_n_elements: 5;
+
+    property int m_currently_selected_item:0;
+
+
+    function gain_focus(){
+       set_focus_to_selected_item();
+    }
+
+    function set_focus_to_selected_item(){
+        if(m_currently_selected_item==0){
+            edit_frequency_element.focus=true;
+        }else if(m_currently_selected_item==1){
+            edit_channel_width_element.focus=true;
+        }else if(m_currently_selected_item==2){
+            edit_rate_element.focus=true;
+        }else if(m_currently_selected_item==3){
+            edit_resolution_element.focus=true;
+        }else{
+            go_back_element.focus=true;
+        }
+    }
+
+    function set_focus_next_element(up){
+        if(up){
+            m_currently_selected_item--;
+        }else{
+            m_currently_selected_item++;
+        }
+        // loop around
+        if(m_currently_selected_item>=m_n_elements)m_currently_selected_item=0;
+        if(m_currently_selected_item<0)m_currently_selected_item=m_n_elements-1;
+        set_focus_to_selected_item();
+    }
+
+    Keys.onPressed: (event)=> {
+                        console.log("Panel Quick key was pressed:"+event);
+                        if(event.key==Qt.Key_Up){
+                            set_focus_next_element(true);
+                        }else if (event.key == Qt.Key_Down) {
+                            set_focus_next_element(false);
+                        }else if(event.key == Qt.Key_Left){
+                            // X
+                            if(m_currently_selected_item==4){
+                                // Go back
+
+                            }
+                        }else if(event.key == Qt.Key_Right){
+                            //
+                        }
+                    }
+
+    Column{
+        width: parent.width
+        //anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.leftMargin: 50
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 50
+
+        InfoElement{
+            m_left_text: "DOWNLINK:"
+            m_right_text: {
+                if(!_ohdSystemAir.is_alive){
+                    m_use_red=true;
+                    return "AIR NOT ALIVE";
+                }
+                if(!_ohdSystemGround.is_alive){
+                    m_use_red=true;
+                    return "N/A (NO GND)"
+                }
+                const loss_down = _ohdSystemGround.curr_rx_packet_loss_perc;
+                if(loss_down>=8){
+                    m_use_red=true;
+                    return "BAD - LOSS: "+loss_down+"%"
+                }
+                m_use_red=false;
+                return "GOOD, LOSS: "+loss_down+"%";
+            }
+        }
+        InfoElement{
+            m_left_text: "UPLINK:"
+            m_right_text: {
+                if(!_ohdSystemAir.is_alive){
+                    m_use_red=true;
+                    return "N/A (NO AIR)"
+                }
+                const loss_up=_ohdSystemAir.curr_rx_packet_loss_perc
+                if(loss_up>50){
+                    m_use_red=true;
+                    return "BAD - LOSS: "+loss_up+"%";
+                }
+                m_use_red=false;
+                return "GOOD - LOSS: "+loss_up+"%";
+            }
+        }
+    }
+
 
     Rectangle{
         implicitWidth: middle_element.width
@@ -28,61 +126,25 @@ Item {
     Column{
         anchors.centerIn: parent
         id: middle_element
-        BaseJoyEditElement{
-            m_title: "Channel"
+        width: 200
 
-            m_displayed_value:{
-                if(!_ohdSystemGround.is_alive)return "NO GND";
-                if(_ohdSystemGround.wb_gnd_operating_mode==1){
-                    return "SCANNING";
-                }
-                if(_ohdSystemGround.wb_gnd_operating_mode==2){
-                    return "ANALYZING";
-                }
-                if(!_ohdSystemAir.is_alive){
-                    return _wbLinkSettingsHelper.curr_channel_mhz+"@\n"+"N/A"+" Mhz";
-                }
-                return _wbLinkSettingsHelper.curr_channel_mhz+"\n@"+_wbLinkSettingsHelper.curr_channel_width_mhz+" Mhz";
-            }
-            m_is_enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-
-            m_displayed_extra_value: {
-                var loss=_ohdSystemGround.curr_rx_packet_loss_perc
-                var pollution=_ohdSystemGround.wb_link_curr_foreign_pps
-                if(pollution>10 || (loss > 3 && ! _fcMavlinkSystem.armed)){
-                    return "! POLLUTED CHANNEL !";
-                }
-                return "";
-            }
+        EditFrequencyElement{
+            id: edit_frequency_element
         }
-        BaseJoyEditElement{
-            m_title: "Rate"
 
-            m_displayed_value: {
-                if(!_ohdSystemAir.is_alive)return "N/A";
-                const mcs_index=_ohdSystemAir.curr_mcs_index
-                const channel_width=_ohdSystemAir.curr_channel_width_mhz
-                if(mcs_index==2 && channel_width==40){
-                    return "RACE\n40Mhz";
-                }else if(mcs_index==2 && channel_width==20){
-                    return "RACE\n20Mhz";
-                }else if(mcs_index==1 && channel_width==20){
-                    return "LONG RANGE";
-                }else if(mcs_index==0 && channel_width==20){
-                    return "ULTRA LONG RANGE";
-                }
-                return "ERROR";
-            }
-            m_displayed_extra_value: "";
+        EditChannelWidthElement{
+            id: edit_channel_width_element
         }
-        BaseJoyEditElement{
-            m_title: "Resolution"
 
-            m_displayed_value: {
-                return "FHD";
-            }
+        EditRateElement{
+            id: edit_rate_element
+        }
 
-            m_displayed_extra_value: "";
+        EditResolutionElement{
+            id: edit_resolution_element
+        }
+        GoBackElement{
+            id: go_back_element
         }
     }
 

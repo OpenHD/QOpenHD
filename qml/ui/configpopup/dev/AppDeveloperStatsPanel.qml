@@ -85,27 +85,14 @@ Rectangle {
                     Layout.leftMargin: 12
                 }
                 // air
-                Text {
-                    id: test2
-                    text: qsTr("video0 FEC encode:  " + _cameraStreamModelPrimary.curr_fec_encode_time_avg_min_max)
-                    Layout.leftMargin: 12
+                Button{
+                    height: 23
+                    text: "SHOW DEV OVERLAY"
+                    onClicked: {
+                        settings.show_dev_stats_overlay=!settings.show_dev_stats_overlay
+                    }
                 }
-                Text {
-                    id: testX
-                    text: qsTr("video0 TX delay:  " + _cameraStreamModelPrimary.curr_time_until_tx_min_max_avg)
-                    Layout.leftMargin: 12
-                }
-                Text {
-                    id: test4
-                    text: qsTr("video0 FEC block length:  " + _cameraStreamModelPrimary.curr_fec_block_length_min_max_avg)
-                    Layout.leftMargin: 12
-                }
-                // ground
-                Text {
-                    id: test3
-                    text: qsTr("video0 FEC decode:  " + _cameraStreamModelPrimary.curr_fec_decode_time_avg_min_max)
-                    Layout.leftMargin: 12
-                }
+
                 Button {
                     height: 24
                     text: "Restart local OHD service"

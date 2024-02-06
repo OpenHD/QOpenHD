@@ -10,9 +10,21 @@ import OpenHD 1.0
 import "../../../ui" as Ui
 import "../../elements"
 
-Item {
-    width: 300
-    height: 170
+//
+// Base for an UI element that has the following properties:
+// left / right: Increment / Decrement (model) value (If increment / decrement is available)
+// top / bottom : Go to next / previous element
+// MIDDLE: Show the current value
+//
+// It looks like this:
+// |-------------------------------|
+// |             TITLE             |
+// | {ARROW L} {CONTENT} {ARROW R} |
+// |------------------------------ |
+Item{
+    id: base_joy_edit_element
+    width: 200
+    height: 60+30
 
     property string m_title: "FILL ME"
 
@@ -20,23 +32,46 @@ Item {
 
     property string m_displayed_value: "VALUE T"
 
-    property string m_displayed_extra_value: "EXTRA VALUE"
-
     property bool m_is_enabled: true
 
-    function on_choice_left(){
+    // Set to true if the "select element left" button should be activated
+    property bool m_button_left_activated: false
+     // Set to true if the "select element right" button should be activated
+    property bool  m_button_right_activated: false
 
-    }
-    function on_choice_right(){
+    // Emitted if the button left is clicked
+    signal choice_left();
+    // Emitted if the button right is clicked
+    signal choice_right();
 
-    }
+    Keys.onPressed: (event)=> {
+                        console.log("BaseJoyElement"+m_title+" key was pressed:"+event);
+                        if(event.key == Qt.Key_Left){
+                           if(m_button_left_activated){
+                                choice_left()
+                            }else{
+                                _qopenhd.show_toast("NOT AVAILABLE");
+                            }
+                        }else if(event.key == Qt.Key_Right){
+                            if(m_button_right_activated){
+                                 choice_right()
+                             }else{
+                                 _qopenhd.show_toast("NOT AVAILABLE");
+                             }
+                        }
+                    }
 
     Rectangle{
         width: parent.width
-        height: parent.height
+        height:parent.height
         border.color: "black"
         border.width: 3
-        color: "green"
+        color: {
+            return "blue"
+        }
+        opacity: base_joy_edit_element.focus ? 1.0 : 0.4;
+        //opacity: focus ? 1.0 : 0.4;
+        //color: "green"
         //  "#8cbfd7f3" : "#00000000"
         //color: m_is_selected ? "green" : "black"
         //opacity: m_is_selected ? 1.0 : 0.5;
@@ -46,17 +81,18 @@ Item {
         id: title_str
         text: qsTr(m_title)
         width: parent.width
-        height: parent.height * 1/3;
-        anchors.top: parent.top
+        height: 30
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
-        font.pixelSize: 13
+        font.pixelSize: 18
+        anchors.top: parent.top
+        color: "white"
     }
 
     Item{
         id: middle_element_holder
         width: parent.width
-        height: 80
+        height: 50
         anchors.top: title_str.bottom
         Rectangle{
             color: "white"
@@ -72,42 +108,44 @@ Item {
                 text: m_displayed_value
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
-                font.pixelSize: 13
+                font.pixelSize: 14
             }
         }
-        Button{
+        TriangleButton{
+            m_point_right: false
             id: button_left
             text: "L"
             anchors.left: parent.left
             height: parent.height
             width: height
-            background: Item {
-                // no background
+            onClicked: choice_left()
+            enabled: m_button_left_activated
+            m_fill_color: {
+                if(enabled){
+                    return "green"
+                }
+                return "black"
             }
-            onClicked: on_choice_left()
         }
-        Button{
+
+        TriangleButton{
+            m_point_right: true
             id: button_right
             text: "R"
             anchors.right: parent.right
             height: parent.height
             width: height
-            background: Item {
-
-                // no background
+            onClicked: choice_right()
+            enabled: m_button_right_activated
+            m_fill_color: {
+                if(enabled){
+                    return "green"
+                }
+                return "black"
             }
-            onClicked: on_choice_right()
         }
     }
 
-    Text{
-        width: parent.width
-        height: 40
-        anchors.top: middle_element_holder.bottom
-        text: m_displayed_extra_value
-        verticalAlignment: Qt.AlignVCenter
-        horizontalAlignment: Qt.AlignHCenter
-    }
     Rectangle{
         width: parent.width
         height: parent.height

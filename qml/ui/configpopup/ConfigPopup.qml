@@ -58,6 +58,10 @@ Rectangle {
         ohdSettingsPanel.user_quidance_animate_channel_scan();
     }
 
+    function gain_focus(){
+        sidebar.focus=true;
+    }
+
     /*Keys.onPressed: (event)=> {
         console.log("ConfigPopup Key was pressed:"+event);
         if (event.key == Qt.Key_Return) {
@@ -151,6 +155,12 @@ Rectangle {
                 }else if(event.key == Qt.Key_Left){
                     close_all()
                 }else if(event.key == Qt.Key_Right){
+                    // Right now we only have joystick navigation for the QUICK panel
+                    if(mainStackLayout.currentIndex==0){
+                         // hand over navigation to the panel
+                         quickPanel.gain_focus();
+                         return;
+                     }
                     //mainStackLayout.childAt(mainStackLayout.currentIndex).focus=true
                     _qopenhd.show_toast("No joystick navigation for this panel");
                 }
@@ -165,19 +175,19 @@ Rectangle {
                 anchors.top: parent.top
 
                 //
-                /*ConfigPopupSidebarButton{
+                ConfigPopupSidebarButton{
                     id:  quick
                     m_icon_text: "\uf0fb"
                     m_description_text: "Quick"
                     m_selection_index: 0
-                }*/
+                }
 
                 // Status
                 ConfigPopupSidebarButton{
                     id:  power
                     m_icon_text: "\uf21e" //"\uf011"
                     m_description_text: "Status"
-                    m_selection_index: 0
+                    m_selection_index: 1
                 }
 
                 // OpenHD OHD Settings
@@ -185,7 +195,7 @@ Rectangle {
                     id:  openhd_button
                     m_icon_text: "\uf085"
                     m_description_text: "OpenHD"
-                    m_selection_index: 1
+                    m_selection_index: 2
                 }
 
                 // (QOpenHD Settings - AppSettingsPanel)
@@ -194,7 +204,7 @@ Rectangle {
                     id:  qopenhd_button
                     m_icon_text: "\uf013"
                     m_description_text: "OSD"
-                    m_selection_index: 2
+                    m_selection_index: 3
                 }
 
                 // Log
@@ -202,7 +212,7 @@ Rectangle {
                     id:  log_button
                     m_icon_text: "\uf0c9"
                     m_description_text: "Log"
-                    m_selection_index: 3
+                    m_selection_index: 4
                 }
 
                 // RC
@@ -210,7 +220,7 @@ Rectangle {
                     id:  rc
                     m_icon_text: "\uf11b"
                     m_description_text: "RC"
-                    m_selection_index: 4
+                    m_selection_index: 5
                 }
 
                 // We only need the connect panel on android (external device)
@@ -219,7 +229,7 @@ Rectangle {
                     id:  connect_button
                     m_icon_text: "\uf6ff"
                     m_description_text: "Connect"
-                    m_selection_index: 5
+                    m_selection_index: 6
                 }
 
                 // Credits and copyright
@@ -227,7 +237,7 @@ Rectangle {
                     id:  credits
                     m_icon_text: "\uf005"
                     m_description_text: "Credits"
-                    m_selection_index: 6
+                    m_selection_index: 7
                 }
 
                 // Developer stats
@@ -235,7 +245,7 @@ Rectangle {
                     id:  developerstats
                     m_icon_text: "\uf0ad"
                     m_description_text: "DEV"
-                    m_selection_index: 7
+                    m_selection_index: 8
                 }
             }
         }
@@ -258,9 +268,9 @@ Rectangle {
         // default index
         currentIndex: 0
 
-        /*PanelQuick{
+        PanelQuick{
             id: quickPanel
-        }*/
+        }
 
         PanelStatus {
             id: statusPanel

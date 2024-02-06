@@ -280,5 +280,14 @@
         <file>ui/elements/BigClickableText.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamValueEditElement.qml</file>
         <file>ui/elements/ButtonIconGear.qml</file>
+        <file>ui/widgets/DevStreamingInfo.qml</file>
+        <file>ui/widgets/DevStreamingInfoText.qml</file>
+        <file>ui/configpopup/quick/EditChannelWidthElement.qml</file>
+        <file>ui/configpopup/quick/EditRateElement.qml</file>
+        <file>ui/configpopup/quick/EditResolutionElement.qml</file>
+        <file>ui/configpopup/quick/GoBackElement.qml</file>
+        <file>ui/configpopup/quick/InfoElement.qml</file>
+        <file>ui/configpopup/quick/EditFrequencyElement.qml</file>
+        <file>ui/configpopup/quick/TriangleButton.qml</file>
     </qresource>
 </RCC>

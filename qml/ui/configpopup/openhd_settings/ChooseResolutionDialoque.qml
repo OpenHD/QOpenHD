@@ -63,7 +63,7 @@ Card {
 
     ListModel{
         id: resolutions_model
-        //ListElement {title: "0x0@0   (AUTO)"; value: "0x0@0"}
+        ListElement {title: "0x0@0   (AUTO)"; value: "0x0@0"}
         ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
         ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
         ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
