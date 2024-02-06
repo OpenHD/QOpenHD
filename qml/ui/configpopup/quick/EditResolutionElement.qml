@@ -5,9 +5,10 @@ BaseJoyEditElement{
 
     ListModel{
         id: resolutions_model
-        ListElement {title: "640x480@60"; info:"640x480@60\nVGA 4:3"}
-        ListElement {title: "1280x720@60"; info:"1280x720@60\nHD 16:9"}
-        ListElement {title: "1920x1080@30"; info:"1920x1080@30\nFHD 16:9"}
+        ListElement {title: "0x0@0"; info:"AUTO\n"}
+        ListElement {title: "640x480@60"; info:"VGA 4:3\n60fps"}
+        ListElement {title: "1280x720@60"; info:"HD 16:9\n60fps"}
+        ListElement {title: "1920x1080@30"; info:"FHD 16:9\n30fps"}
     }
 
     property int m_model_index: -1;
@@ -43,7 +44,7 @@ BaseJoyEditElement{
     m_displayed_value: {
         if(!_ohdSystemAir.is_alive)return "N/A";
         if(m_model_index==-1){
-            return "CUSTOM";
+            return "CUSTOM\n"+_cameraStreamModelPrimary.curr_set_video_format;
         }
         return resolutions_model.get(m_model_index).info;
     }

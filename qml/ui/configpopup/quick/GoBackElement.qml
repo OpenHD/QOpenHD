@@ -12,6 +12,7 @@ Rectangle{
          color: "white"
          verticalAlignment: Qt.AlignVCenter
          horizontalAlignment: Qt.AlignHCenter
+         anchors.fill: parent
     }
 
     Keys.onPressed: (event)=> {

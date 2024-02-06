@@ -95,6 +95,7 @@ Item{
         height: 50
         anchors.top: title_str.bottom
         Rectangle{
+            id: main_selector
             color: "white"
             width: parent.width /2;
             height: parent.height
@@ -114,35 +115,23 @@ Item{
         TriangleButton{
             m_point_right: false
             id: button_left
-            text: "L"
-            anchors.left: parent.left
+            anchors.right:  main_selector.left
             height: parent.height
             width: height
             onClicked: choice_left()
             enabled: m_button_left_activated
-            m_fill_color: {
-                if(enabled){
-                    return "green"
-                }
-                return "black"
-            }
+            m_is_enabled: enabled
         }
 
         TriangleButton{
             m_point_right: true
             id: button_right
-            text: "R"
-            anchors.right: parent.right
+            anchors.left:  main_selector.right
             height: parent.height
             width: height
             onClicked: choice_right()
             enabled: m_button_right_activated
-            m_fill_color: {
-                if(enabled){
-                    return "green"
-                }
-                return "black"
-            }
+            m_is_enabled: enabled
         }
     }
 

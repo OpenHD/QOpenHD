@@ -97,7 +97,6 @@ Rectangle{
         dialoqueFreqChangeGndOnly.close();
         dialoqueFreqChangeAirGnd.close();
         popup_enable_stbc_ldpc.close();
-        popup_select_bitrate.close();
     }
 
     function get_text_stbc_ldpc(air){
@@ -133,7 +132,7 @@ Rectangle{
         //contentWidth: main_column_layout.width
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
-        visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible && !popup_select_bitrate.visible)
+        visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible)
         clip: true
 
         Item {
@@ -147,7 +146,7 @@ Rectangle{
                 SettingsCategory{
                     m_description: "FREQUENCY / TOOLKIT"
                     spacing: 1
-                    m_hide_elements: true;
+                    m_hide_elements: false;
 
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -358,7 +357,7 @@ Rectangle{
 
                 SettingsCategory{
                     m_description: "TX POWER";
-                    m_hide_elements: true;
+                    m_hide_elements: false;
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
                         Text{
@@ -405,7 +404,7 @@ Rectangle{
 
                 SettingsCategory{
                     m_description: "ADVANCED (STBC,LDPC)"
-                    m_hide_elements: true;
+                    m_hide_elements: false;
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
                         Text{
@@ -438,31 +437,6 @@ Rectangle{
                         }
                     }
                 }
-
-                SettingsCategory{
-                    m_description: "BITRATE SELECTOR";
-                    m_hide_elements: true;
-                    Row{
-                        Text{
-                            width:  m_small_width*2
-                            height: m_small_height
-                            text: "Current Bitrate:\n"+"20Mhz, 14MBit/s";
-                            verticalAlignment: Qt.AlignVCenter
-                            horizontalAlignment: Qt.AlignHCenter
-                            font.bold: false
-                            font.pixelSize: settings.qopenhd_general_font_pixel_size
-                        }
-                        Button{
-                            text: "EDIT";
-                            //enabled: true
-                            enabled: true// _ohdSystemAir.is_alive
-                            onClicked: {
-                                close_all_dialoques();
-                                popup_select_bitrate.open();
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -479,9 +453,6 @@ Rectangle{
     }
     PopupEnableSTBCLDPC{
         id: popup_enable_stbc_ldpc
-    }
-    PopupSelectBitrate{
-        id: popup_select_bitrate
     }
 
     DialoqueFreqChangeGndOnly{

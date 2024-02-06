@@ -21,20 +21,21 @@ Item {
 
 
     function gain_focus(){
+        m_currently_selected_item=0;
        set_focus_to_selected_item();
     }
 
     function set_focus_to_selected_item(){
         if(m_currently_selected_item==0){
-            edit_frequency_element.focus=true;
+             go_back_element.focus=true;
         }else if(m_currently_selected_item==1){
-            edit_channel_width_element.focus=true;
+            edit_frequency_element.focus=true;
         }else if(m_currently_selected_item==2){
-            edit_rate_element.focus=true;
+            edit_channel_width_element.focus=true;
         }else if(m_currently_selected_item==3){
+            edit_rate_element.focus=true;
+        }else if(m_currently_selected_item==4){
             edit_resolution_element.focus=true;
-        }else{
-            go_back_element.focus=true;
         }
     }
 
@@ -128,6 +129,10 @@ Item {
         id: middle_element
         width: 200
 
+        GoBackElement{
+            id: go_back_element
+        }
+
         EditFrequencyElement{
             id: edit_frequency_element
         }
@@ -143,9 +148,7 @@ Item {
         EditResolutionElement{
             id: edit_resolution_element
         }
-        GoBackElement{
-            id: go_back_element
-        }
+
     }
 
 }

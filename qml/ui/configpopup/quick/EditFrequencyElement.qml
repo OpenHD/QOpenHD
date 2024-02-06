@@ -26,11 +26,7 @@ BaseJoyEditElement{
     property int m_model_index: -1;
 
     function update_model_index(){
-        if(!_ohdSystemAir.is_alive){
-            m_model_index=-1;
-            return;
-        }
-        const curr_frequency=5700;
+        const curr_frequency=curr_air_frequency;
         for(var i=0;i<frequencies_model.count;i++){
             const tmp=frequencies_model.get(i).frequency;
             if(curr_frequency==tmp){
@@ -41,7 +37,7 @@ BaseJoyEditElement{
         m_model_index=-1;
     }
 
-    property int curr_air_frequency: 5700
+    property int curr_air_frequency: _ohdSystemAir.curr_channel_mhz
 
     onCurr_air_frequencyChanged: {
         update_model_index()
@@ -60,7 +56,7 @@ BaseJoyEditElement{
     m_displayed_value: {
         if(!_ohdSystemAir.is_alive)return "N/A";
         if(m_model_index==-1){
-            return "CUSTOM";
+            return "CUSTOM\n"+curr_air_frequency+"Mhz";
         }
         return frequencies_model.get(m_model_index).verbose;
     }
@@ -74,12 +70,12 @@ BaseJoyEditElement{
         }else{
             new_model_index-=1;
         }
-        // TODO
+        const new_frequency=frequencies_model.get(new_model_index).frequency
+        _wbLinkSettingsHelper.change_param_air_and_ground_frequency(new_frequency)
     }
 
     onChoice_left: {
         set_air_frequency(false);
-        set_air_primary_camera_resolution(false);
     }
 
     onChoice_right: {
