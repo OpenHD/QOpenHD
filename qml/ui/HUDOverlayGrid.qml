@@ -46,6 +46,7 @@ Item {
         hudOverlayGrid.focus = true;
         // Receive key events
         hudOverlayGrid.enabled =true;
+        hudOverlayGrid.visible =true;
         // argh
         actual_hud_elements.visible=true;
     }
@@ -203,7 +204,12 @@ Item {
 
     Keys.onPressed: (event)=> {
                         console.log("HUDOverlayGrid::Key was pressed:"+event);
-                        if (event.key == Qt.Key_Return) {
+                        if(event.key==Qt.Key_Left || event.key == Qt.Key_Right || event.key == Qt.Key_Up || event.key == Qt.Key_Down){
+                            event.accepted=true;
+                            visible=false;
+                            quickPanelX.takeover_visible_and_focus()
+                        }
+                        /*if (event.key == Qt.Key_Return) {
                             //console.log("enter was pressed");
                             event.accepted = true;
                             dummy_joystick_enter()
@@ -223,7 +229,7 @@ Item {
                             //console.log("down was pressed")
                             event.accepted=true;
                             dummy_joystick_down()
-                        }
+                        }*/
                     }
 
     Image {
@@ -299,10 +305,6 @@ Item {
         // TODO SORT ME
 
         // + 0% cpu
-        MessageHUD {
-            id: messageHUD
-        }
-
         GroundPowerWidget {
             id: groundPowerWidget
         }

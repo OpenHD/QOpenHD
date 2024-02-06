@@ -19,6 +19,11 @@ Item {
 
     property int m_currently_selected_item:0;
 
+    function takeover_visible_and_focus(){
+        visible=true;
+        m_currently_selected_item=0;
+        set_focus_to_selected_item();
+    }
 
     function gain_focus(){
         m_currently_selected_item=0;

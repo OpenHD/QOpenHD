@@ -14,6 +14,7 @@ import "./ui/widgets"
 import "./ui/elements"
 import "./ui/configpopup"
 import "./video"
+import "./ui/configpopup/quick"
 
 ApplicationWindow {
     id: applicationWindow
@@ -155,28 +156,17 @@ ApplicationWindow {
         AnyParamBusyIndicator{
              z: 10
         }
-        /*Rectangle {
-            width: 800
-            height: 600
-            color: "red"
-            z: 1
+        MessageHUD {
+            id: messageHUD
+        }
 
-            MediaPlayer {
-                id: player
-                source: "gst-pipeline: videotestsrc ! videoconvert ! qtvideosink"
-                //source: "gst-pipeline: udpsrc port=5600 caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! decodebin ! qtvideosink"
-                autoPlay: true
-            }
-
-            VideoOutput {
-                id: videoOutput
-                source: player
-                anchors.fill: parent
-            }
-        }*/
         Component.onCompleted: {
             console.log("Completed");
             hudOverlayGrid.regain_focus()
+        }
+        PanelQuick{
+            id: quickPanelX
+            visible: false
         }
     }
 }
