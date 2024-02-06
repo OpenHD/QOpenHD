@@ -213,6 +213,7 @@ iOSBuild {
 }
 
 MacBuild {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
     QMAKE_INFO_PLIST = mac/Info.plist
     ICON = $${BASEDIR}/icons/macos.icns
     DISTFILES += mac/Info.plist

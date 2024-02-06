@@ -246,7 +246,7 @@ Rectangle{
                     text: "SAVE"
                     onClicked: {
                         if(!_mavlinkTelemetry.change_manual_tcp_ip(textFieldip.text)){
-                            _qopenhd.toast_text("Please enter a valid ip");
+                            _qopenhd.show_toast("Please enter a valid ip");
                         }else{
                             settings.qopenhd_mavlink_connection_manual_tcp_ip=textFieldip.text
                         }

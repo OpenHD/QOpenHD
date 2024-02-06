@@ -72,7 +72,7 @@ BaseWidget {
         console.log("try_set_recording_mode "+camera_idx+" "+mode)
         var camModel=_airCameraSettingsModel;
         var camString="CAM1"
-        if(camera_idx===2){
+        if(camera_idx===1){
             camModel=_airCameraSettingsModel2;
             camString="CAM2"
         }

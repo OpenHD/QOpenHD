@@ -10,7 +10,12 @@
 #include <sstream>
 
 // This code is written for little endian (aka ARM,x86) byte order
+#if defined(__macos__)
+static_assert(__BYTE_ORDER__==LITTLE_ENDIAN);
+#else
 static_assert(__BYTE_ORDER__==__LITTLE_ENDIAN);
+#endif
+
 // RTP uses big endian (network) byte order. Therefore, most of the structs here
 // are actually declared in 'reverse order' such that the compiler can do the work
 // of 'interpreting bits the right way' for us

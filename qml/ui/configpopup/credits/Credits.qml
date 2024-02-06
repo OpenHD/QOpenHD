@@ -140,7 +140,7 @@ Rectangle {
                 Repeater {
                     model: ["pilotnbr1", "limitlessgreen", "michell", "roman", "jweijs", "user1321",
                             "flavio", "hdfpv", "htcohio", "raymond", "yes21", "mjc506", "cq112358",
-                            "steveatinfincia", "norbert", "macdaddyfpv"]
+                            "steveatinfincia", "norbert", "macdaddyfpv", "ivan"]
 
                     Text {
                         text: modelData

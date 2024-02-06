@@ -209,8 +209,8 @@ private:
     std::unique_ptr<QTimer> m_flight_time_timer = nullptr;
     //
     std::unique_ptr<QTimer> m_alive_timer = nullptr;
-    std::atomic<int32_t> m_last_heartbeat_ms = -1;
-    std::atomic<int32_t> m_last_message_ms= -1;
+    std::atomic<int64_t> m_last_heartbeat_ms = -1;
+    std::atomic<int64_t> m_last_message_ms= -1;
     void update_alive();
     std::chrono::steady_clock::time_point m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     int m_n_messages_update_rate_mavlink_message_attitude=0;
