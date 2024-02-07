@@ -404,8 +404,7 @@ BaseWidget {
                 return warning_level_to_color(level)
             }
             opacity: bw_current_opacity
-            //text: "\uF2DA"
-            text: "\uf2db"
+            text: m_is_air ? "\uf2db" : "\uF2DA"
             anchors.right: cpuload_air.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
