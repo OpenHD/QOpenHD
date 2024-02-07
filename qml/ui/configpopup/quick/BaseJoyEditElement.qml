@@ -65,16 +65,9 @@ Item{
         width: parent.width
         height:parent.height
         border.color: "black"
-        border.width: 3
-        color: {
-            return "#333c4c"
-        }
+        border.width: base_joy_edit_element.focus ? 3 : 0;
+        color: "#333c4c"
         opacity: base_joy_edit_element.focus ? 1.0 : 0.3;
-        //opacity: focus ? 1.0 : 0.4;
-        //color: "green"
-        //  "#8cbfd7f3" : "#00000000"
-        //color: m_is_selected ? "green" : "black"
-        //opacity: m_is_selected ? 1.0 : 0.5;
     }
 
     Text {
@@ -96,12 +89,17 @@ Item{
         anchors.top: title_str.bottom
         Rectangle{
             id: main_selector
-            color: "white"
+            color: "transparent"
             width: parent.width /2;
             height: parent.height
-            border.color: "black"
-            border.width: 1
+            border.color: "white"
+            border.width: 2
             anchors.centerIn: parent
+        //Item{
+            //id: main_selector
+            //width: parent.width /2;
+            //height: parent.height
+            //anchors.centerIn: parent
             Text{
                 id: middle_element
                 width: parent.width
@@ -110,6 +108,7 @@ Item{
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 14
+                color: "white"
             }
         }
         TriangleButton{

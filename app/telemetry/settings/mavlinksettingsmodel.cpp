@@ -71,9 +71,28 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     connect(this, &MavlinkSettingsModel::signal_ui_thread_replace_param_set, this, &MavlinkSettingsModel::ui_thread_replace_param_set);
 }
 
+bool MavlinkSettingsModel::is_air_or_cam_param_busy()
+{
+    if(MavlinkSettingsModel::instanceAir().is_x_busy()){
+        return true;
+    }
+    if(MavlinkSettingsModel::instanceAirCamera().is_x_busy()){
+        return true;
+    }
+    if(MavlinkSettingsModel::instanceAirCamera2().is_x_busy()){
+        return true;
+    }
+    return false;
+}
+
 void MavlinkSettingsModel::set_ready()
 {
     m_is_ready=true;
+}
+
+bool MavlinkSettingsModel::is_x_busy()
+{
+    return m_is_currently_busy;
 }
 
 void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)

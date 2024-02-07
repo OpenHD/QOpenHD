@@ -74,10 +74,10 @@ Item {
                     }
 
     Column{
-        width: parent.width
+        width: 200
         //anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.leftMargin: 50
+        anchors.right: parent.right
+        anchors.rightMargin: 50
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 50
 
@@ -121,8 +121,9 @@ Item {
 
 
     Column{
-        anchors.centerIn: parent
-        id: middle_element
+        anchors.left: parent.left
+        anchors.leftMargin: 40
+        anchors.verticalCenter: parent.verticalCenter
         width: 200
 
         GoBackElement{

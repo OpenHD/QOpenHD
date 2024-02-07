@@ -88,6 +88,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"AOHDSystem::process_message: wron sys id";
         return false;
     }
+    autofech_params_if_apropriate();
     m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
     bool consumed=false;
     switch(msg.msgid){
@@ -464,6 +465,46 @@ void AOHDSystem::process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating
     set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
 }
 
+void AOHDSystem::autofech_params_if_apropriate()
+{
+    if(!m_is_air){
+        // Ground - auto-fetch IF ;)
+        if(m_wb_gnd_operating_mode==0){
+            // Link is active
+            if(!MavlinkSettingsModel::is_air_or_cam_param_busy()){
+                // None of the air param set(s) are currently busy
+                if(!MavlinkSettingsModel::instanceGround().has_params_fetched() && !MavlinkSettingsModel::instanceGround().is_x_busy()){
+                    qDebug()<<"Init autofetch of groun param set";
+                    // Ground has neither already fetched all params or is busy fetching already
+                    MavlinkSettingsModel::instanceGround().try_refetch_all_parameters_async(true);
+                }
+            }
+        }
+    }else{
+        // AIR - auto fetch IF ;)
+        if(!MavlinkSettingsModel::instanceGround().is_x_busy()){
+            // Ground is currently not fetching params
+            if(m_curr_rx_last_packet_status_good){
+                // air reports a working uplink
+                if(!MavlinkSettingsModel::is_air_or_cam_param_busy()){
+                    // None of the (up to 3) air param set(s) are currently fetching params
+                    if(!MavlinkSettingsModel::instanceAir().has_params_fetched()){
+                        qDebug()<<"Init autofetch of air param set";
+                        MavlinkSettingsModel::instanceAir().try_refetch_all_parameters_async();
+                    }else if(!MavlinkSettingsModel::instanceAirCamera().has_params_fetched()){
+                        qDebug()<<"Init autofetch of air camera1 param set";
+                        MavlinkSettingsModel::instanceAirCamera().try_refetch_all_parameters_async();
+                    }else if(!MavlinkSettingsModel::instanceAirCamera2().has_params_fetched()){
+                        qDebug()<<"Init autofetch of air camera2 param set";
+                        MavlinkSettingsModel::instanceAirCamera2().try_refetch_all_parameters_async();
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 void AOHDSystem::update_alive()
 {
     // NOTE: Since we are really resourcefully with the link, we consider the system alive if any message coming from it has
@@ -504,7 +545,7 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
             LogMessagesModel::instanceOHDAir().add_message_debug("QOpenHD",message.str().c_str());
         }
         if(alive){
-            if(m_is_air && !MavlinkSettingsModel::instanceAir().has_params_fetched()){
+            /*if(m_is_air && !MavlinkSettingsModel::instanceAir().has_params_fetched()){
                 MavlinkSettingsModel::instanceAir().try_refetch_all_parameters_async();
             }
             if(m_is_air && !MavlinkSettingsModel::instanceAirCamera().has_params_fetched()){
@@ -515,7 +556,7 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
             }
             if(!m_is_air && !MavlinkSettingsModel::instanceGround().has_params_fetched()){
                 MavlinkSettingsModel::instanceGround().try_refetch_all_parameters_async();
-            }
+            }*/
         }
         set_is_alive(alive);
     }

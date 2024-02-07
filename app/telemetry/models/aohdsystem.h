@@ -145,6 +145,8 @@ private:
      void process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t& msg);
      void process_sys_status1(const mavlink_openhd_sys_status1_t& msg);
      void process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t& msg);
+     // When apropriate, auto-fecth params until success
+     void autofech_params_if_apropriate();
 private:
      std::atomic<int64_t> m_last_heartbeat_ms = -1;
      std::atomic<int64_t> m_last_message_ms= -1;

@@ -35,6 +35,8 @@ public:
     // (aka what for example mission planner would show)
     //static MavlinkSettingsModel& instanceFC();
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
+    //
+    static bool is_air_or_cam_param_busy();
 public:
     L_RO_PROP(int, curr_get_all_progress_perc,set_curr_get_all_progress_perc,-1);
     // NOTE: This is only for the UI, not for c++ usage (non-atomic)
@@ -42,6 +44,7 @@ public:
     L_RO_PROP(bool,has_params_fetched,set_has_params_fetched,false);
 public:
     void set_ready();
+    bool is_x_busy();
 public:
     // callable from QT.
     // async with progress bar and result being prompted to the user
