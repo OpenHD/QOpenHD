@@ -164,10 +164,10 @@ ApplicationWindow {
             console.log("Completed");
             hudOverlayGrid.regain_focus()
         }
-        PanelQuick{
+        /*PanelQuick{
             id: quickPanelX
             visible: false
-        }
+        }*/
     }
 }
 
