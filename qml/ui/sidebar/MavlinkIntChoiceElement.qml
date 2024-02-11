@@ -48,13 +48,13 @@ BaseJoyEditElement{
         id: elements_model_air_recording
         ListElement {value: 0; verbose:"ALWAYS\nOFF"}
         ListElement {value: 1; verbose:"ALWAYS\nON"}
-         ListElement {value: 2; verbose:"AUTO\nARMED"}
+         ListElement {value: 2; verbose:"AUTO\n(IF ARMED)"}
     }
     ListModel{
         id: elements_model_hotspot
         ListElement {value: 0; verbose:"ALWAYS\nOFF"}
         ListElement {value: 1; verbose:"ALWAYS\nON"}
-        ListElement {value: 2; verbose:"AUTO\nDISARMED"}
+        ListElement {value: 2; verbose:"AUTO\n(IF DISARMED)"}
     }
     ListModel{
         id: elements_model_contrast
