@@ -651,73 +651,19 @@ Item {
                             m_param_id: "AIR_RECORDING_E"
                             m_settings_model: _airCameraSettingsModel
                         }
-
-                        /*Text{
-                            text: "Resolution 480p -> 1080p"
-                            font.pixelSize: 14
-                            font.family: "AvantGarde-Medium"
-                            color: "#ffffff"
-                            smooth: true
-                        }
-                        Slider {
-                            id: recResolutionSlider
-                            from: 0
-                            to: 2
-                            stepSize: 1
-                            //snapMode: Slider.SnapToStep
-                            value: 0 // Initial value
-                            Material.accent: Material.Grey
-                            onValueChanged: {
-                                console.log("Resolution Slider:", value)
-                            }
-                        }
                         Text{
-                            text: "Framerate 30 -> 60"
-                            font.pixelSize: 14
-                            font.family: "AvantGarde-Medium"
-                            color: "#ffffff"
-                            smooth: true
-                        }
-                        Slider {
-                            id: recFramerateSlider
-                            from: 0
-                            to: 3
-                            stepSize: 1
-                            //snapMode: Slider.SnapToStep
-                            value: 0 // Initial value
-                            Material.accent: Material.Grey
-                            onValueChanged: {
-                                console.log("Framerate Slider:", value)
+                            text: {
+                                var tmp="CAM1 AIR RECORDING:";
+                                if(!_ohdSystemAir.is_alive){
+                                    return tmp+" N/A";
+                                }
+                                return tmp+_cameraStreamModelPrimary.camera_recording_mode_to_string(_cameraStreamModelPrimary.air_recording_active)
                             }
-                        }
-                        Text{
-                            text: "Bitrate"
                             font.pixelSize: 14
                             font.family: "AvantGarde-Medium"
                             color: "#ffffff"
                             smooth: true
                         }
-                        Slider {
-                            id: recBitrateSlider
-                            from: 2
-                            to: 18
-                            stepSize: 2
-                            //snapMode: Slider.SnapToStep
-                            value: 8 // Initial value
-                            Material.accent: Material.Grey
-                            onValueChanged: {
-                                console.log("Birtate Slider:", value)
-                            }
-                        }
-                        Text{
-                            text: "Enable Recording"
-                            font.pixelSize: 14
-                            font.family: "AvantGarde-Medium"
-                            color: "#ffffff"
-                            smooth: true
-                        }
-                        Switch {
-                        }*/
                     }
                 }
 

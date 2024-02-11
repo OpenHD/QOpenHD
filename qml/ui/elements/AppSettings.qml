@@ -86,6 +86,7 @@ Settings {
     property bool dev_show_whitelisted_params: false
     property bool dev_show_advanced_button: false
     property bool dev_allow_freq_change_when_armed: false
+    property bool dev_show_5180mhz_lowband: false
     // WARNING END
     //WARNING: THIS makes the RC panel visible
     property bool app_show_RC: false
