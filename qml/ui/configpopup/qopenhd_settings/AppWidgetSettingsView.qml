@@ -1186,7 +1186,7 @@ ScrollView {
                     width: parent.width
                     height: rowHeight
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                    enabled: false // Not yet functional
+                    enabled: true//false // Not yet functional
                     Text {
                         text: qsTr("Show Sidebar ProofOfConcept")
                         font.weight: Font.Bold

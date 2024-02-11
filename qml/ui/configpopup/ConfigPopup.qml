@@ -15,7 +15,7 @@ import "qopenhd_settings"
 import "openhd_settings"
 import "rc"
 import "status"
-import "quick"
+
 
 // Contains the selector on the left and a stack view for the panels on the right
 Rectangle {

@@ -11,17 +11,17 @@ import OpenHD 1.0
 
 import "../elements"
 
-BaseWidget {
+
+Item {
     id: sidebar
     width: 64
     height: 24
-    visible: settings.show_sidebar
-    defaultVCenter: true
-    widgetIdentifier: "sidebar_widget"
-    bw_verbose_name: "Menu"
-    defaultHCenter: false
-    hasWidgetDetail: false
-    
+    visible: settings.show_sidebar || m_extra_is_visible
+
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+
+
     property int secondaryUiWidth: 335
     property int secondaryUiHeight: 375
     property string secondaryUiColor: "#000"
@@ -33,6 +33,33 @@ BaseWidget {
     property int m_control_pitch: settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_pitch : _rcchannelsmodelground.control_pitch
     property int m_control_throttle: settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_throttle : _rcchannelsmodelground.control_throttle
     property int selectedItemIndex: -1
+
+    // Set to true if the sidebar is active (and some HUD elements shall be disabled)
+    property bool m_is_active : false
+
+
+    property bool m_extra_is_visible: false
+
+
+    // Gives (keyboard / joystick) control to this element
+    function open_and_take_control(){
+        googleUI.visible = true
+        linkUI.visible = true
+        uiButton.visible = false
+        m_is_active = true
+        focus=true;
+    }
+
+
+    // This is called whenever the user clicks on the 'WBLIink' widget
+    function open_link_category(){
+        m_extra_is_visible=true;
+        googleUI.visible = true
+        linkUI.visible = true
+        uiButton.visible = false
+        m_is_active = true
+    }
+
 
     ColumnLayout {
         id: uiButton
@@ -46,9 +73,7 @@ BaseWidget {
             Layout.fillHeight: true
 
             onClicked: {
-                googleUI.visible = true
-                linkUI.visible = true
-                uiButton.visible = false
+                open_and_take_control()
             }
 
             Rectangle {
@@ -141,6 +166,7 @@ BaseWidget {
                                     googleUI.visible = false;
                                     uiButton.visible = true;
                                     hideElements();
+                                    m_is_active=false;
                                 } else if (model.subText === "link") {
                                     hideElements();
                                     linkUI.visible = true;
@@ -235,7 +261,19 @@ BaseWidget {
                         anchors.centerIn: parent
                         spacing: 5
 
-                        Text{
+                        EditFrequencyElement{
+                            id: edit_frequency_element
+                        }
+
+                        EditChannelWidthElement{
+                            id: edit_channel_width_element
+                        }
+
+                        EditRateElement{
+                            id: edit_rate_element
+                        }
+
+                        /*Text{
                             text: "Range -> Quality" + "  (MCS" + _ohdSystemAir.curr_mcs_index + ")"
                             font.pixelSize: 14
                             font.family: "AvantGarde-Medium"
@@ -308,26 +346,10 @@ BaseWidget {
                             TabButton {
                                 text: qsTr("40MHZ")
                             }
-                        }
+                        }*/
                     }
                 }
-                Rectangle {
-                    id: linkUiFooter
-                    anchors.top: parent.top
-                    anchors.topMargin: secondaryUiHeight-saveText.height-10
-                    anchors.left: parent.left
-                    anchors.leftMargin: secondaryUiWidth-saveText.width-10
 
-
-                    Text {
-                        id: saveText
-                        text: "\uf019"
-                        font.pixelSize: 21
-                        font.family: "AvantGarde-Medium"
-                        color: "#ffffff"
-                        smooth: true
-                    }
-                }
             }
             Rectangle {
                 id: rcUI
@@ -362,16 +384,22 @@ BaseWidget {
                         anchors.centerIn: parent
                         spacing: 5
 
-                        Text{
+                        /*Text{
                             text: "Enable RC"
                             font.pixelSize: 14
                             font.family: "AvantGarde-Medium"
                             color: "#ffffff"
                             smooth: true
                         }
-                        Switch {
-                            text: qsTr("")
+                        MavlinkSwitch{
+                            m_param_name: "ENABLE_JOY_RC"
+                        }*/
+                        MavlinkIntChoiceElement{
+                            m_title: "JOY RC"
+                            m_param_id: "ENABLE_JOY_RC";
+                            m_settings_model: _ohdSystemGroundSettings
                         }
+
                         Text{
                             text: "Channel 1"
                             font.pixelSize: 14
@@ -430,23 +458,7 @@ BaseWidget {
                         }
                     }
                 }
-                Rectangle {
-                    id: rcUiFooter
-                    anchors.top: parent.top
-                    anchors.topMargin: secondaryUiHeight-saveTextRC.height-10
-                    anchors.left: parent.left
-                    anchors.leftMargin: secondaryUiWidth-saveTextRC.width-10
 
-
-                    Text {
-                        id: saveTextRC
-                        text: "\uf019"
-                        font.pixelSize: 21
-                        font.family: "AvantGarde-Medium"
-                        color: "#ffffff"
-                        smooth: true
-                    }
-                }
             }
             Rectangle {
                 id: videoUI
@@ -481,7 +493,11 @@ BaseWidget {
                         anchors.centerIn: parent
                         spacing: 5
 
-                        ComboBox {
+                        EditResolutionElement{
+                            id: edit_resolution_element
+                        }
+
+                        /*ComboBox {
                             id:raspberryCams3
                             visible: true
                             width: 200
@@ -536,26 +552,10 @@ BaseWidget {
                             TabButton {
                                 text: qsTr("Cam2")
                             }
-                        }
+                        }*/
                     }
                 }
-                Rectangle {
-                    id: videoUiFooter
-                    anchors.top: parent.top
-                    anchors.topMargin: secondaryUiHeight-saveTextVid.height-10
-                    anchors.left: parent.left
-                    anchors.leftMargin: secondaryUiWidth-saveTextVid.width-10
 
-
-                    Text {
-                        id: saveTextVid
-                        text: "\uf019"
-                        font.pixelSize: 21
-                        font.family: "AvantGarde-Medium"
-                        color: "#ffffff"
-                        smooth: true
-                    }
-                }
             }
             Rectangle {
                 id: cameraUI
@@ -589,82 +589,19 @@ BaseWidget {
                     Column {
                         anchors.centerIn: parent
                         spacing: 5
-                        Text{
-                            text: "ISO"
-                            font.pixelSize: 14
-                            font.family: "AvantGarde-Medium"
-                            color: "#ffffff"
-                            smooth: true
+                        MavlinkIntChoiceElement{
+                            m_title: "BRIGHTNESS"
+                            m_param_id: "BRIGHTNESS"
+                            m_settings_model: _airCameraSettingsModel
                         }
-                        Slider {
-                            id: isoSlider
-                            from: 0
-                            to: 2
-                            stepSize: 1
-                            //snapMode: Slider.SnapToStep
-                            value: 0 // Initial value
-                            Material.accent: Material.Grey
-                            onValueChanged: {
-                                console.log("Resolution Slider:", value)
-                            }
-                        }
-                        Text{
-                            text: "Exposure"
-                            font.pixelSize: 14
-                            font.family: "AvantGarde-Medium"
-                            color: "#ffffff"
-                            smooth: true
-                        }
-                        Slider {
-                            id: exposureSlider
-                            from: 0
-                            to: 2
-                            stepSize: 1
-                            //snapMode: Slider.SnapToStep
-                            value: 0 // Initial value
-                            Material.accent: Material.Grey
-                            onValueChanged: {
-                                console.log("Framerate Slider:", value)
-                            }
-                        }
-                        Text{
-                            text: "Camera Mode"
-                            font.pixelSize: 14
-                            font.family: "AvantGarde-Medium"
-                            color: "#ffffff"
-                            smooth: true
-                        }
-                        Slider {
-                            id: modeSlider
-                            from: 0
-                            to: 2
-                            stepSize: 1
-                            //snapMode: Slider.SnapToStep
-                            value: 0 // Initial value
-                            Material.accent: Material.Grey
-                            onValueChanged: {
-                                console.log("Resolution Slider:", value)
-                            }
+                        MavlinkIntChoiceElement{
+                            m_title: "SATURATION"
+                            m_param_id: "SATURATION_LC"
+                            m_settings_model: _airCameraSettingsModel
                         }
                     }
                 }
-                Rectangle {
-                    id: camUiFooter
-                    anchors.top: parent.top
-                    anchors.topMargin: secondaryUiHeight-saveTextCam.height-10
-                    anchors.left: parent.left
-                    anchors.leftMargin: secondaryUiWidth-saveTextCam.width-10
 
-
-                    Text {
-                        id: saveTextCam
-                        text: "\uf019"
-                        font.pixelSize: 21
-                        font.family: "AvantGarde-Medium"
-                        color: "#ffffff"
-                        smooth: true
-                    }
-                }
             }
             Rectangle {
                 id: recordingUI
@@ -698,7 +635,14 @@ BaseWidget {
                     Column {
                         anchors.centerIn: parent
                         spacing: 5
-                        Text{
+
+                        MavlinkIntChoiceElement{
+                            m_title: "RECORDING MODE"
+                            m_param_id: "AIR_RECORDING_E"
+                            m_settings_model: _airCameraSettingsModel
+                        }
+
+                        /*Text{
                             text: "Resolution 480p -> 1080p"
                             font.pixelSize: 14
                             font.family: "AvantGarde-Medium"
@@ -763,26 +707,10 @@ BaseWidget {
                             smooth: true
                         }
                         Switch {
-                        }
+                        }*/
                     }
                 }
-                Rectangle {
-                    id: recUiFooter
-                    anchors.top: parent.top
-                    anchors.topMargin: secondaryUiHeight-saveTextRec.height-10
-                    anchors.left: parent.left
-                    anchors.leftMargin: secondaryUiWidth-saveTextRec.width-10
 
-
-                    Text {
-                        id: saveTextRec
-                        text: "\uf019"
-                        font.pixelSize: 21
-                        font.family: "AvantGarde-Medium"
-                        color: "#ffffff"
-                        smooth: true
-                    }
-                }
             }
             Rectangle {
                 id: displayUI
@@ -817,7 +745,7 @@ BaseWidget {
                         anchors.centerIn: parent
                         spacing: 5
 
-                        Text{
+                        /*Text{
                             text: "Display Resolution"
                             font.pixelSize: 14
                             font.family: "AvantGarde-Medium"
@@ -861,26 +789,20 @@ BaseWidget {
                             Material.accent: Material.Grey
                             Material.theme: Material.Dark
                             placeholderText: qsTr("192.168.3.1")
+                        }*/
+                        MavlinkIntChoiceElement{
+                            m_title: "AIR WIFI HS"
+                            m_param_id: "WIFI_HOTSPOT_E"
+                            m_settings_model: _ohdSystemAirSettingsModel
+                        }
+                        MavlinkIntChoiceElement{
+                            m_title: "GND WIFI HS"
+                            m_param_id: "WIFI_HOTSPOT_E"
+                            m_settings_model: _ohdSystemGroundSettings
                         }
                     }
                 }
-                Rectangle {
-                    id: miscUiFooter
-                    anchors.top: parent.top
-                    anchors.topMargin: secondaryUiHeight-saveTextMisc.height-10
-                    anchors.left: parent.left
-                    anchors.leftMargin: secondaryUiWidth-saveTextMisc.width-10
 
-
-                    Text {
-                        id: saveTextMisc
-                        text: "\uf019"
-                        font.pixelSize: 21
-                        font.family: "AvantGarde-Medium"
-                        color: "#ffffff"
-                        smooth: true
-                    }
-                }
             }
             Rectangle {
                 id: miscUI

@@ -143,7 +143,6 @@
         <file>ui/widgets/ImuTempWidget.qml</file>
         <file>ui/widgets/FlightMahKmWidget.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
-        <file>ui/widgets/Sidebar.qml</file>
         <file>resources/osdicons.ttf</file>
         <file>resources/materialdesignicons-webfont.ttf</file>
         <file>resources/ic128.png</file>
@@ -272,22 +271,24 @@
         <file>ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml</file>
         <file>ui/elements/SimpleAdvancedChoiceElement.qml</file>
         <file>ui/configpopup/openhd_settings/PopupBigGeneric.qml</file>
-        <file>ui/configpopup/openhd_settings/MavlinkParamEditor2.qml</file>
-        <file>ui/configpopup/quick/PanelQuick.qml</file>
-        <file>ui/configpopup/quick/BaseJoyEditElement.qml</file>
         <file>ui/widgets/SOCStatusWidgetGeneric.qml</file>
         <file>ui/elements/BigClickableText.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamValueEditElement.qml</file>
         <file>ui/elements/ButtonIconGear.qml</file>
         <file>ui/widgets/DevStreamingInfo.qml</file>
         <file>ui/widgets/DevStreamingInfoText.qml</file>
-        <file>ui/configpopup/quick/EditChannelWidthElement.qml</file>
-        <file>ui/configpopup/quick/EditRateElement.qml</file>
-        <file>ui/configpopup/quick/EditResolutionElement.qml</file>
-        <file>ui/configpopup/quick/GoBackElement.qml</file>
-        <file>ui/configpopup/quick/InfoElement.qml</file>
-        <file>ui/configpopup/quick/EditFrequencyElement.qml</file>
-        <file>ui/configpopup/quick/TriangleButton.qml</file>
         <file>ui/AnyParamBusyIndicator.qml</file>
+        <file>ui/sidebar/SideBarMain.qml</file>
+        <file>ui/sidebar/TriangleButton.qml</file>
+        <file>ui/sidebar/PanelQuick.qml</file>
+        <file>ui/sidebar/MavlinkSwitch.qml</file>
+        <file>ui/sidebar/InfoElement.qml</file>
+        <file>ui/sidebar/GoBackElement.qml</file>
+        <file>ui/sidebar/EditResolutionElement.qml</file>
+        <file>ui/sidebar/EditRateElement.qml</file>
+        <file>ui/sidebar/EditFrequencyElement.qml</file>
+        <file>ui/sidebar/EditChannelWidthElement.qml</file>
+        <file>ui/sidebar/BaseJoyEditElement.qml</file>
+        <file>ui/sidebar/MavlinkIntChoiceElement.qml</file>
     </qresource>
 </RCC>

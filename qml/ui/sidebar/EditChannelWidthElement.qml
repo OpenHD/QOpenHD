@@ -5,6 +5,17 @@ BaseJoyEditElement{
     m_title: "Channel Width"
 
 
+    ListModel{
+        id: elements_model
+        ListElement {value: 5700; verbose:"5700Mhz\nOHD 1"}
+        ListElement {value: 5745; verbose:"5745Mhz\nOHD 2"}
+        ListElement {value: 5785; verbose:"5785Mhz\nOHD 3"}
+        ListElement {value: 5825; verbose:"5825Mhz\nOHD 4"}
+        ListElement {value: 5865; verbose:"5865Mhz\nOHD 5"}
+    }
+
+    property int m_model_index: -1;
+
     m_button_left_activated: {
         if(!_ohdSystemAir.is_alive)return false;
         return _ohdSystemAir.curr_channel_width_mhz==40;

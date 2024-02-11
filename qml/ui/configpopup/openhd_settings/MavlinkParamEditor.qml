@@ -60,6 +60,18 @@ Rectangle{
     // disable some checking we do for the user, should be used only in really rare cases
     property bool enableAdvanced: false
 
+    // For getting the result of a update operation
+    property int m_update_count: instanceMavlinkSettingsModel.update_count
+
+    onM_update_countChanged: {
+        console.log("Update count changed, "+instanceMavlinkSettingsModel.last_updated_param_id+" "+instanceMavlinkSettingsModel.last_updated_param_success);
+        if(instanceMavlinkSettingsModel.last_updated_param_id==parameterId && instanceMavlinkSettingsModel.last_updated_param_success && parameterEditor.visible){
+            // Success updating, close the editor
+            parameterEditor.visible=false
+            _qopenhd.show_toast("Set "+parameterId+" success");
+        }
+    }
+
 
     function holds_int_value(){
         return paramValueType==0;
@@ -409,6 +421,7 @@ Rectangle{
                     setup_spin_box_int_param()
                     setup_text_input_string_param()
                 }
+                enabled: !instanceMavlinkSettingsModel.ui_is_busy
             }
             Button{
                 text: "Save"
@@ -426,13 +439,14 @@ Rectangle{
                         //var value_int = parseInt(value_int_as_string)
                         //console.log("UI set int:{"+value_int_as_string+"}={"+value_int+"}")
                         console.log("UI set int:{"+value_int+"}")
-                        res=instanceMavlinkSettingsModel.try_update_parameter_int(parameterId,value_int)
+                        //res=instanceMavlinkSettingsModel.try_update_parameter_int(parameterId,value_int)
+                        instanceMavlinkSettingsModel.try_set_param_int_async(parameterId,value_int);
                     }else{
                         var value_string=textInputParamtypeString.text
                         console.log("UI set string:{"+value_string+"}")
-                        res=instanceMavlinkSettingsModel.try_update_parameter_string(parameterId,value_string);
+                        instanceMavlinkSettingsModel.try_set_param_string_async(parameterId,value_string);
                     }
-                    if(res===""){
+                    /*if(res===""){
                         // Update success (no error code)
                         if(instanceMavlinkSettingsModel.get_param_requires_manual_reboot(parameterId)){
                             _messageBoxInstance.set_text_and_show("Please reboot to apply")
@@ -443,8 +457,9 @@ Rectangle{
                     }else{
                         console.log("Update failed")
                         _qopenhd.show_toast(res,true);
-                    }
+                    }*/
                 }
+                enabled: !instanceMavlinkSettingsModel.ui_is_busy
             }
         }
     }

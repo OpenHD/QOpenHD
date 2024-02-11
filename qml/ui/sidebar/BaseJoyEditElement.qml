@@ -7,8 +7,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../../../ui" as Ui
-import "../../elements"
+import "../../ui" as Ui
+import "../elements"
 
 //
 // Base for an UI element that has the following properties:
@@ -23,7 +23,7 @@ import "../../elements"
 // |------------------------------ |
 Item{
     id: base_joy_edit_element
-    width: 200
+    width: 320
     height: 60+30
 
     property string m_title: "FILL ME"
@@ -92,8 +92,8 @@ Item{
             color: "transparent"
             width: parent.width /2;
             height: parent.height
-            border.color: "white"
-            border.width: 2
+            //border.color: "white"
+            //border.width: 2
             anchors.centerIn: parent
         //Item{
             //id: main_selector

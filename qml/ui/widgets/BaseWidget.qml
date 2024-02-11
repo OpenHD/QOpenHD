@@ -236,7 +236,12 @@ BaseWidgetForm {
                 if (globalDragLock) {
                     return;
                 }
-                widgetAction.open()
+                // A bit dirty - different action
+                if(widgetIdentifier=="wb_link_rate_control_widget"){
+                    sidebar.open_link_category();
+                }else{
+                    widgetAction.open()
+                }
             }
         }
     }

@@ -95,13 +95,15 @@ Card {
         ListElement {title: "VEYE"}
         ListElement {title: "RPI FOUNDATION"}
         ListElement {title: "GEEKWORM"}
-        ListElement {title: "OTHER"}
+        ListElement {title: "USB"}
+        ListElement {title: "DEV/DEBUG"}
     }
     ListModel{
         id: model_manufacturers_rock
         ListElement {title: "ARDUCAM"}
         ListElement {title: "RADXA"}
-        ListElement {title: "OTHER"}
+        ListElement {title: "USB"}
+        ListElement {title: "DEV/DEBUG"}
     }
     ListModel{
         id: model_manufacturers_x20
@@ -109,7 +111,8 @@ Card {
     }
     ListModel{ // X86 doesn't reall have manufacturers
         id: model_manufacturers_x86
-        ListElement {title: "OTHER"}
+        ListElement {title: "USB"}
+        ListElement {title: "DEV/DEBUG"}
     }
     ListModel{ // Secondary camera doesn't reall have manufacturers
         id: model_manufacturers_secondary_cam
@@ -120,35 +123,39 @@ Card {
     // Value needs to map to the corrseponding openhd camera type !
     ListModel{
         id: rpi_arducam_cameras
-        ListElement {title: "SKYMASTERHDR"; value: 30}
-        ListElement {title: "SKYVISIONPRO"; value: 31}
-        ListElement {title: "IMX477"; value: 32}
-        ListElement {title: "IMX462"; value: 33}
-        ListElement {title: "IMX327"; value: 34}
-        ListElement {title: "IMX290"; value: 35}
-        ListElement {title: "IMX462_LOWLIGHT_MINI"; value: 36}
+        ListElement {title: "SKYMASTERHDR"; value: 40}
+        ListElement {title: "SKYVISIONPRO"; value: 41}
+        ListElement {title: "IMX477"; value: 42}
+        ListElement {title: "IMX462"; value: 43}
+        ListElement {title: "IMX327"; value: 44}
+        ListElement {title: "IMX290"; value: 45}
+        ListElement {title: "IMX462_LOWLIGHT_MINI"; value: 46}
     }
     ListModel{
         id: rpi_veye_cameras
-        ListElement {title: "2MP"; value: 50}
-        ListElement {title: "CSIMX307"; value: 51}
-        ListElement {title: "CSSC132"; value: 52}
-        ListElement {title: "MVCAM"; value: 53}
+        ListElement {title: "2MP"; value: 60}
+        ListElement {title: "CSIMX307"; value: 61}
+        ListElement {title: "CSSC132"; value: 62}
+        ListElement {title: "MVCAM"; value: 63}
     }
     ListModel{
         id: rpi_rpif_cameras
-        ListElement {title: "V1 OV5647"; value: 20}
-        ListElement {title: "V2 IMX219"; value: 21}
-        ListElement {title: "V3 IMX708"; value: 22}
-        ListElement {title: "HQ IMX477"; value: 23}
+        ListElement {title: "V1 OV5647"; value: 30}
+        ListElement {title: "V2 IMX219"; value: 31}
+        ListElement {title: "V3 IMX708"; value: 32}
+        ListElement {title: "HQ IMX477"; value: 33}
     }
     ListModel{
         id: rpi_geekworm_cameras
-        ListElement {title: "HDMI to CSI"; value: 10}
+        ListElement {title: "HDMI to CSI"; value: 20}
     }
     ListModel{
-        id: cameras_generic
-        ListElement {title: "USB (Thermal)"; value: 1}
+        id: cameras_usb
+        ListElement {title: "EXP USB GENERIC"; value: 10}
+        ListElement {title: "INFIRAY USB"; value: 11}
+    }
+    ListModel{
+        id: cameras_debug
         ListElement {title: "Dummy (debug)"; value: 0}
         ListElement {title: "External (DEV)"; value: 2}
         ListElement {title: "External IP (DEV)"; value: 3}
@@ -156,7 +163,7 @@ Card {
     }
     ListModel{
         id: x20_runcam_cameras
-        ListElement {title: "RUNCAM NANO"; value: 60}
+        ListElement {title: "RUNCAM NANO"; value: 70}
     }
     ListModel{
         id: rock_arducam_cameras
@@ -170,7 +177,7 @@ Card {
     ListModel{
         id: generic_secondary_camera_options
         ListElement {title: "DISABLED (Default)"; value: 255}
-        ListElement {title: "USB (Thermal)"; value: 1}
+        ListElement {title: "USB (Thermal)"; value: 10}
         ListElement {title: "Dummy (debug)"; value: 0}
         ListElement {title: "External (DEV)"; value: 2}
         ListElement {title: "External IP (DEV)"; value: 3}
@@ -246,20 +253,28 @@ Card {
             }else if(index_manufacturer==3){
                 return rpi_geekworm_cameras;
             }else if(index_manufacturer==4){
-                return cameras_generic;
+                return cameras_usb;
+            }else{
+                return cameras_debug
             }
         }else if(m_platform_type==mPLATFORM_TYPE_ROCK){
             if(index_manufacturer==0){
                 return rock_arducam_cameras;
             }else if(index_manufacturer==1){
                 return rock_raxca_cameras;
+            }else if(index_manufacturer==2){
+                return cameras_usb;
             }else{
-                return cameras_generic;
+                return cameras_debug;
             }
         }else if(m_platform_type==mPLATFORM_TYPE_X20){
             return x20_runcam_cameras;
         }else if(m_platform_type==mPLATFORM_TYPE_X86){
-            return cameras_generic;
+            if(index_manufacturer==0){
+                return cameras_usb;
+            }else{
+                return cameras_debug;
+            }
         }
     }
 

@@ -7,9 +7,11 @@
 #include <optional>
 #include <thread>
 #include <mutex>
+#include <QJSValue>
 
 #include "../util/mavlink_include.h"
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "../action/impl/xparam.h"
 
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
 // (the side that changes parameter(s) provided by a specific system & component).
@@ -42,6 +44,9 @@ public:
     // NOTE: This is only for the UI, not for c++ usage (non-atomic)
     L_RO_PROP(bool,ui_is_busy,set_ui_is_busy,false);
     L_RO_PROP(bool,has_params_fetched,set_has_params_fetched,false);
+    L_RO_PROP(int,update_count,set_update_count,0);
+    L_RO_PROP(QString,last_updated_param_id,set_last_updated_param_id,"");
+    L_RO_PROP(bool,last_updated_param_success,set_last_updated_param_success,false);
 public:
     void set_ready();
     bool is_x_busy();
@@ -107,6 +112,10 @@ private:
     SetParamResult try_set_param_int_impl(const QString param_id,int value);
     SetParamResult try_set_param_string_impl(const QString param_id,QString value);
 public:
+    Q_INVOKABLE void try_set_param_int_async(const QString param_id,int value);
+    Q_INVOKABLE void try_set_param_string_async(const QString param_id,QString value);
+    Q_INVOKABLE bool system_is_alive();
+public:
     struct ParamIntEnum{
         bool valid;
         QStringList keys;
@@ -148,7 +157,12 @@ public:
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
-private:
+public:
+    // Returns true if the given (int,string) param exists
+    Q_INVOKABLE bool param_int_exists(QString param_id);
+    Q_INVOKABLE bool param_string_exists(QString param_id);
+    Q_INVOKABLE int get_cached_int(QString param_id);
+private:;
     void remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t>& param_set);
 public:
     struct QtParamValue{
@@ -166,6 +180,8 @@ signals:
 private:
     std::atomic<bool> m_is_ready=false;
     std::atomic_bool m_is_currently_busy=false;
+private:
+    void finalize_update_param(QString param_id,bool success);
 };
 
 Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamIntEnum);

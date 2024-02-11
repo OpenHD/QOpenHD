@@ -14,7 +14,6 @@ import "./ui/widgets"
 import "./ui/elements"
 import "./ui/configpopup"
 import "./video"
-import "./ui/configpopup/quick"
 
 ApplicationWindow {
     id: applicationWindow
@@ -164,10 +163,6 @@ ApplicationWindow {
             console.log("Completed");
             hudOverlayGrid.regain_focus()
         }
-        /*PanelQuick{
-            id: quickPanelX
-            visible: false
-        }*/
     }
 }
 

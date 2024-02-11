@@ -12,10 +12,11 @@ import "./widgets"
 import "./widgets/map"
 import "../resources" as Resources
 import "./elements"
+import "./sidebar"
 
 import "../video"
 
-import "configpopup/quick"
+import "sidebar"
 
 Item {
     id: hudOverlayGrid
@@ -205,9 +206,9 @@ Item {
     Keys.onPressed: (event)=> {
                         console.log("HUDOverlayGrid::Key was pressed:"+event);
                         if(event.key==Qt.Key_Left || event.key == Qt.Key_Right || event.key == Qt.Key_Up || event.key == Qt.Key_Down){
+                            // If the user presses any navigation key, we open up the sidebar and hand over the inputs to it
+                            sidebar.open_and_take_control();
                             event.accepted=true;
-                            visible=false;
-                            quickPanelX.takeover_visible_and_focus()
                         }
                         /*if (event.key == Qt.Key_Return) {
                             //console.log("enter was pressed");
@@ -477,7 +478,7 @@ Item {
             id: uavtimewidget
         }
 
-        Sidebar{
+        SideBarMain{
             id: sidebar
         }
     }
