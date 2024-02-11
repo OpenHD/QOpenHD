@@ -24,19 +24,32 @@ Item{
         //visible: _xParamUI.is_busy
     }
     Text{
+        id: busy_description
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: any_param_busy_indiscator.bottom
         text: {
             if(_qopenhd.is_busy){
                 return _qopenhd.busy_reason;
             }
-            return "FETCHING PARAMETERS.."
+            var busy_param="ERROR"
+            if(_airCameraSettingsModel.ui_is_busy){
+                busy_param="CAM1";
+            }else if(_airCameraSettingsModel2.ui_is_busy){
+                busy_param="CAM2";
+            }else if(_ohdSystemAirSettingsModel.ui_is_busy){
+               busy_param="AIR";
+            }else if(_ohdSystemGroundSettings.ui_is_busy){
+                busy_param="GND";
+            }
+            return busy_param+" PARAM BUSY ...";
         }
         visible: any_param_busy_indiscator.running
         font.pixelSize: 15
-        font.family: settings.font_text
-        style: Text.Outline
-        styleColor: settings.color_glow
+        //font.family: settings.font_text
+        //style: Text.Outline
+        //styleColor: "green"//settings.color_glow
+        color: "green"
+        smooth: true
     }
 }
 

@@ -36,6 +36,8 @@ Rectangle {
     property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
 
     property bool m_any_param_eitor_opened: parameterEditor.visible || dialoque_choose_camera.visible || dialoque_choose_resolution.visible;
+    property bool m_any_param_busy: _ohdSystemGroundSettings.ui_is_busy || _ohdSystemAirSettingsModel.ui_is_busy || _airCameraSettingsModel.ui_is_busy ||
+                                    _airCameraSettingsModel2.ui_is_busy;
 
     onVisibleChanged: {
         if(visible){
@@ -66,7 +68,7 @@ Rectangle {
                 m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
             }
             anchors.verticalCenter: parent.verticalCenter
-            enabled: m_instanceCheckIsAvlie.is_alive
+            enabled: m_instanceCheckIsAvlie.is_alive && (!m_any_param_busy)
         }
         Text{
             text: "FULL "+m_name+" PARAM SET"
@@ -195,7 +197,7 @@ Rectangle {
                         }
                     }
                     // gray out the button for read-only params
-                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened)
+                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened) && (!m_any_param_busy)
                 }
                 /*MavlinkParamValueEditElement{
                     m_display_text: model.extraValue
@@ -226,7 +228,7 @@ Rectangle {
                         }
                     }
                     // gray out the button for read-only params
-                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened)
+                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened) && (!m_any_param_busy)
                 }
                 ButtonIconWarning{
                     id: warning_whitelisted
