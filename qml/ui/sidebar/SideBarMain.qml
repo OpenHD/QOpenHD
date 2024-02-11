@@ -23,7 +23,7 @@ Item {
 
 
     property int secondaryUiWidth: 335
-    property int secondaryUiHeight: 375
+    property int secondaryUiHeight: 420
     property string secondaryUiColor: "#000"
     property real secondaryUiOpacity: 0.75
     property string mainDarkColor: "#302f30"
@@ -596,12 +596,17 @@ Item {
                         }
                         MavlinkIntChoiceElement{
                             m_title: "SATURATION"
-                            m_param_id: "SATURATION_LC"
+                            m_param_id: "SATURATION"
                             m_settings_model: _airCameraSettingsModel
                         }
                         MavlinkIntChoiceElement{
                             m_title: "CONTRAST"
-                            m_param_id: "CONTRAST_LC"
+                            m_param_id: "CONTRAST"
+                            m_settings_model: _airCameraSettingsModel
+                        }
+                        MavlinkIntChoiceElement{
+                            m_title: "SHARPNESS"
+                            m_param_id: "SHARPNESS"
                             m_settings_model: _airCameraSettingsModel
                         }
                     }

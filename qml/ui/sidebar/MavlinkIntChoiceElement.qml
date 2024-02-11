@@ -18,31 +18,47 @@ BaseJoyEditElement{
 
     ListModel{
         id: elements_model_brightness
-        ListElement {value: 0; verbose:"0"}
-        ListElement {value: 25; verbose:"25"}
-        ListElement {value: 50; verbose:"50"}
-        ListElement {value: 75; verbose:"75"}
-        ListElement {value: 100; verbose:"100\n(Default)"}
-        ListElement {value: 125; verbose:"125"}
-        ListElement {value: 150; verbose:"150"}
-        ListElement {value: 175; verbose:"175"}
-        ListElement {value: 200; verbose:"200"}
+        ListElement {value: 0; verbose:"0%"}
+        ListElement {value: 25; verbose:"25%"}
+        ListElement {value: 50; verbose:"50%"}
+        ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 125; verbose:"125%"}
+        ListElement {value: 150; verbose:"150%"}
+        ListElement {value: 175; verbose:"175%"}
+        ListElement {value: 200; verbose:"200%"}
     }
     ListModel{
         id: elements_model_saturation
-        ListElement {value: 50; verbose:"50"}
-        ListElement {value: 75; verbose:"75"}
-        ListElement {value: 100; verbose:"100\n(Default)"}
-        ListElement {value: 125; verbose:"125"}
-        ListElement {value: 150; verbose:"150"}
+        ListElement {value: 50; verbose:"50%"}
+        ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 125; verbose:"125%"}
+        ListElement {value: 150; verbose:"150%"}
+    }
+    ListModel{
+        id: elements_model_contrast
+        ListElement {value: 50; verbose:"50%"}
+        ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 125; verbose:"125%"}
+        ListElement {value: 150; verbose:"150%"}
+    }
+    ListModel{
+        id: elements_model_sharpness
+        ListElement {value: 50; verbose:"50%"}
+        ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 125; verbose:"125%"}
+        ListElement {value: 150; verbose:"150%"}
     }
     ListModel{
         id: elements_model_rotation
-        ListElement {value: 50; verbose:"50"}
-        ListElement {value: 75; verbose:"75"}
-        ListElement {value: 100; verbose:"100\n(Default)"}
-        ListElement {value: 125; verbose:"125"}
-        ListElement {value: 150; verbose:"150"}
+        ListElement {value: 50; verbose:"50%"}
+        ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 125; verbose:"125%"}
+        ListElement {value: 150; verbose:"150%"}
     }
     ListModel{
         id: elements_model_on_off
@@ -53,22 +69,15 @@ BaseJoyEditElement{
         id: elements_model_air_recording
         ListElement {value: 0; verbose:"ALWAYS\nOFF"}
         ListElement {value: 1; verbose:"ALWAYS\nON"}
-         ListElement {value: 2; verbose:"AUTO\n(IF ARMED)"}
+         ListElement {value: 2; verbose:"AUTO\n(WHEN ARMED)"}
     }
     ListModel{
         id: elements_model_hotspot
         ListElement {value: 0; verbose:"ALWAYS\nOFF"}
         ListElement {value: 1; verbose:"ALWAYS\nON"}
-        ListElement {value: 2; verbose:"AUTO\n(IF DISARMED)"}
+        ListElement {value: 2; verbose:"AUTO\n(WHEN DISARMED)"}
     }
-    ListModel{
-        id: elements_model_contrast
-        ListElement {value: 50; verbose:"50"}
-        ListElement {value: 75; verbose:"75"}
-        ListElement {value: 100; verbose:"100\n(Default)"}
-        ListElement {value: 125; verbose:"125"}
-        ListElement {value: 150; verbose:"150"}
-    }
+
 
     ListModel{
         id: elements_model_undefined
@@ -84,8 +93,12 @@ BaseJoyEditElement{
     function get_model(){
         if(m_param_id=="BRIGHTNESS"){
             return elements_model_brightness;
-        }else if(m_param_id=="SATURATION_LC"){
+        }else if(m_param_id=="SATURATION"){
             return elements_model_saturation;
+        }else if(m_param_id=="CONTRAST"){
+            return elements_model_contrast;
+        }else if(m_param_id=="SHARPNESS"){
+            return elements_model_sharpness;
         }else if(m_param_id=="ROTATION"){
             return elements_model_rotation;
         }else if(m_param_id=="ENABLE_JOY_RC"){
@@ -94,8 +107,6 @@ BaseJoyEditElement{
             return elements_model_air_recording;
         }else if(m_param_id=="WIFI_HOTSPOT_E"){
             return elements_model_hotspot
-        }else if(m_param_id=="CONTRAST_LC"){
-            return elements_model_contrast;
         }
         return elements_model_undefined;
     }
@@ -108,6 +119,12 @@ BaseJoyEditElement{
 
     property int m_update_count: m_settings_model.update_count
     onM_update_countChanged: {
+        if(visible){
+            populate();
+        }
+    }
+    property bool m_has_params_fetched: m_settings_model.has_params_fetched
+    onM_has_params_fetchedChanged: {
         if(visible){
             populate();
         }
