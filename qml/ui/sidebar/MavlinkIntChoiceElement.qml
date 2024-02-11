@@ -18,10 +18,15 @@ BaseJoyEditElement{
 
     ListModel{
         id: elements_model_brightness
+        ListElement {value: 0; verbose:"0"}
         ListElement {value: 25; verbose:"25"}
-        ListElement {value: 50; verbose:"50\n(Default)"}
+        ListElement {value: 50; verbose:"50"}
         ListElement {value: 75; verbose:"75"}
-        ListElement {value: 100; verbose:"100"}
+        ListElement {value: 100; verbose:"100\n(Default)"}
+        ListElement {value: 125; verbose:"125"}
+        ListElement {value: 150; verbose:"150"}
+        ListElement {value: 175; verbose:"175"}
+        ListElement {value: 200; verbose:"200"}
     }
     ListModel{
         id: elements_model_saturation

@@ -311,7 +311,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                                       }),
                    "Experimental,Default NONE, Type of Intra Refresh to use"
                    );
-        append_only_documented(ret,"BRIGHTNESS","Image capture brightness, [0..100], default 50. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.");
+        append_only_documented(ret,"BRIGHTNESS","Image capture brightness, [0..200], default 100. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.");
         append_only_documented(ret,"ISO","ISO value to use (0 = Auto)");
 
         {
