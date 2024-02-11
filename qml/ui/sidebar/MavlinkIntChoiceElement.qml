@@ -1,5 +1,13 @@
 import QtQuick 2.0
 
+
+//
+// Complex ;)
+// Way more javascript code than i'd like, but as long as you:
+// 1) Specify the right param_id
+// 2) Specify the right settings model instance
+// 3) Declare a matching choices-model here
+// This handles all the edge cases that might arise ;)
 BaseJoyEditElement{
 
 
@@ -49,6 +57,15 @@ BaseJoyEditElement{
         ListElement {value: 2; verbose:"AUTO\nDISARMED"}
     }
     ListModel{
+        id: elements_model_contrast
+        ListElement {value: 50; verbose:"50"}
+        ListElement {value: 75; verbose:"75"}
+        ListElement {value: 100; verbose:"100\n(Default)"}
+        ListElement {value: 125; verbose:"125"}
+        ListElement {value: 150; verbose:"150"}
+    }
+
+    ListModel{
         id: elements_model_undefined
         ListElement {value: 0; verbose:"0\nUNDEFINED"}
         ListElement {value: 1; verbose:"1\nUNDEFINED"}
@@ -72,8 +89,9 @@ BaseJoyEditElement{
             return elements_model_air_recording;
         }else if(m_param_id=="WIFI_HOTSPOT_E"){
             return elements_model_hotspot
+        }else if(m_param_id=="CONTRAST_LC"){
+            return elements_model_contrast;
         }
-
         return elements_model_undefined;
     }
 

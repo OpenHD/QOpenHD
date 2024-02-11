@@ -599,6 +599,11 @@ Item {
                             m_param_id: "SATURATION_LC"
                             m_settings_model: _airCameraSettingsModel
                         }
+                        MavlinkIntChoiceElement{
+                            m_title: "CONTRAST"
+                            m_param_id: "CONTRAST_LC"
+                            m_settings_model: _airCameraSettingsModel
+                        }
                     }
                 }
 
