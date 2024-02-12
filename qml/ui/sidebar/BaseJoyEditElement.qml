@@ -107,7 +107,7 @@ Item{
                 text: m_displayed_value
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
-                font.pixelSize: 14
+                font.pixelSize: 15
                 color: "white"
             }
         }

@@ -33,7 +33,7 @@ Button{
         }
         Shape {
             anchors.fill: parent
-            anchors.margins: 10
+            anchors.margins: 12
             id: shape
             antialiasing: true
             opacity: m_is_enabled ? 1.0 : 0.3;

@@ -290,5 +290,13 @@
         <file>ui/sidebar/EditChannelWidthElement.qml</file>
         <file>ui/sidebar/BaseJoyEditElement.qml</file>
         <file>ui/sidebar/MavlinkIntChoiceElement.qml</file>
+        <file>ui/sidebar/SideBarBasePanel.qml</file>
+        <file>ui/sidebar/Panel1Link.qml</file>
+        <file>ui/sidebar/Panel2RC.qml</file>
+        <file>ui/sidebar/Panel3Video.qml</file>
+        <file>ui/sidebar/Panel4Camera.qml</file>
+        <file>ui/sidebar/Panel5Recording.qml</file>
+        <file>ui/sidebar/Panel6Display.qml</file>
+        <file>ui/sidebar/Panel7Misc.qml</file>
     </qresource>
 </RCC>

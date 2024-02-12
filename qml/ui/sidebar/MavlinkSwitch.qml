@@ -12,9 +12,8 @@ import "../elements"
 
 
 
-// NOTE: Does not support joystick yet !
 //
-// Relies on the (cached) param set
+// OBSOLETE
 //
 Switch{
     id: mavlink_switch

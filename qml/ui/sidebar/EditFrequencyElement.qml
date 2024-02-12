@@ -21,9 +21,9 @@ BaseJoyEditElement{
     }
     ListModel{
         id: frequencies_model_with_5180mhz_lowband
-        ListElement {frequency: 5700; verbose:"5180Mhz\n{CUSTOM}"}
-        ListElement {frequency: 5700; verbose:"5200Mhz\n{CUSTOM}"}
-        ListElement {frequency: 5700; verbose:"5220Mhz\n{CUSTOM}"}
+        ListElement {frequency: 5180; verbose:"5180Mhz\n{CUSTOM LB}"}
+        ListElement {frequency: 5200; verbose:"5200Mhz\n{CUSTOM LB}"}
+        ListElement {frequency: 5220; verbose:"5220Mhz\n{CUSTOM LB}"}
         //
         ListElement {frequency: 5700; verbose:"5700Mhz\nOHD 1"}
         ListElement {frequency: 5745; verbose:"5745Mhz\nOHD 2"}

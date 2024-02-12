@@ -1,4 +1,14 @@
-import QtQuick 2.0
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
+import QtQuick.Controls.Material 2.12
+
+import Qt.labs.settings 1.0
+
+import OpenHD 1.0
+
+import "../../ui" as Ui
+import "../elements"
 
 
 //
@@ -10,9 +20,7 @@ import QtQuick 2.0
 // This handles all the edge cases that might arise ;)
 BaseJoyEditElement{
 
-
     // Needs to contain the unique ID of the param inside the param set
-
     property string m_param_id: "FILL ME"
     property var m_settings_model: _ohdSystemGroundSettings
 
