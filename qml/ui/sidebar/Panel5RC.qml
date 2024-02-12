@@ -55,6 +55,7 @@ SideBarBasePanel{
             to: 2000
             value: m_control_yaw
             Material.accent: Material.Grey
+            width: secondaryUiWidth
         }
         Text{
             text: "Channel 2"
@@ -69,6 +70,7 @@ SideBarBasePanel{
             to: 2000
             value: m_control_yaw
             Material.accent: Material.Grey
+            width: secondaryUiWidth
         }
         Text{
             text: "Channel 3"
@@ -83,6 +85,7 @@ SideBarBasePanel{
             to: 2000
             value: m_control_yaw
             Material.accent: Material.Grey
+            width: secondaryUiWidth
         }
         Text{
             text: "Channel 4"
@@ -97,6 +100,7 @@ SideBarBasePanel{
             to: 2000
             value: m_control_yaw
             Material.accent: Material.Grey
+            width: secondaryUiWidth
         }
     }
 

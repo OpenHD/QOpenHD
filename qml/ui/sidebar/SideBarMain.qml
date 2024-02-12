@@ -23,7 +23,7 @@ Item {
 
 
     property int secondaryUiWidth: 320
-    property int secondaryUiHeight: 400
+    property int secondaryUiHeight: 390
     property string secondaryUiColor: "#000"
     property real secondaryUiOpacity: 0.75
     property string mainDarkColor: "#302f30"
@@ -58,7 +58,7 @@ Item {
     function open_video_stream_category(is_primary){
         if(is_primary){
             open_and_take_control(false);
-            m_stack_index=3;
+            m_stack_index=2;
         }
     }
 
