@@ -12,7 +12,6 @@ import OpenHD 1.0
 import "../elements"
 
 SideBarBasePanel{
-    id: miscUI
     override_title: "Status / Advanced"
 
     Column {

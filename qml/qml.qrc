@@ -298,5 +298,6 @@
         <file>ui/sidebar/Panel4Recording.qml</file>
         <file>ui/sidebar/Panel6Misc.qml</file>
         <file>ui/sidebar/Panel7Status.qml</file>
+        <file>ui/sidebar/SidebarStackButton.qml</file>
     </qresource>
 </RCC>

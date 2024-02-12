@@ -12,31 +12,63 @@ import OpenHD 1.0
 import "../elements"
 
 SideBarBasePanel{
-    id: cameraUI
     override_title: "Camera"
+
+    function takeover_control(){
+        brightness.takeover_control();
+    }
+
     Column {
         anchors.top: parent.top
         anchors.topMargin: secondaryUiHeight/8
         spacing: 5
         MavlinkIntChoiceElement{
+            id: brightness
             m_title: "BRIGHTNESS"
             m_param_id: "BRIGHTNESS"
             m_settings_model: _airCameraSettingsModel
+            onGoto_previous: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+            onGoto_next: {
+                saturation.takeover_control();
+            }
         }
         MavlinkIntChoiceElement{
+            id: saturation
             m_title: "SATURATION"
             m_param_id: "SATURATION"
             m_settings_model: _airCameraSettingsModel
+            onGoto_previous: {
+               brightness.takeover_control();
+            }
+            onGoto_next: {
+                contrast.takeover_control();
+            }
         }
         MavlinkIntChoiceElement{
+            id: contrast
             m_title: "CONTRAST"
             m_param_id: "CONTRAST"
             m_settings_model: _airCameraSettingsModel
+            onGoto_previous: {
+               saturation.takeover_control();
+            }
+            onGoto_next: {
+                sharpness.takeover_control();
+            }
         }
         MavlinkIntChoiceElement{
+            id: sharpness
             m_title: "SHARPNESS"
             m_param_id: "SHARPNESS"
             m_settings_model: _airCameraSettingsModel
+            onGoto_previous: {
+               contrast.takeover_control();
+            }
+            onGoto_next: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
         }
     }
 }

@@ -12,22 +12,39 @@ import OpenHD 1.0
 import "../elements"
 
 SideBarBasePanel{
-    id: displayUI
     override_title: "Misc"
+
+    function takeover_control(){
+        air_wifi_hs.takeover_control();
+    }
 
     Column {
         anchors.top: parent.top
         anchors.topMargin: secondaryUiHeight/8
         spacing: 5
         MavlinkIntChoiceElement{
+            id: air_wifi_hs
             m_title: "AIR WIFI HS"
             m_param_id: "WIFI_HOTSPOT_E"
             m_settings_model: _ohdSystemAirSettingsModel
+            onGoto_previous: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+            onGoto_next: {
+                gnd_wifi_hs.takeover_control();
+            }
         }
         MavlinkIntChoiceElement{
+            id: gnd_wifi_hs
             m_title: "GND WIFI HS"
             m_param_id: "WIFI_HOTSPOT_E"
             m_settings_model: _ohdSystemGroundSettings
+            onGoto_previous: {
+                air_wifi_hs.takeover_control();
+            }
+            onGoto_next: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
         }
     }
 }

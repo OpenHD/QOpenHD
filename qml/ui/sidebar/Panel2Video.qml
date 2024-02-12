@@ -14,6 +14,10 @@ import "../elements"
 SideBarBasePanel{
     override_title: "Video"
 
+    function takeover_control(){
+        edit_resolution_element.takeover_control();
+    }
+
     Column {
         anchors.top: parent.top
         anchors.topMargin: secondaryUiHeight/8
@@ -21,6 +25,12 @@ SideBarBasePanel{
 
         EditResolutionElement{
             id: edit_resolution_element
+            onGoto_previous: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+            onGoto_next: {
+               sidebar.regain_control_on_sidebar_stack()
+            }
         }
 
         /*ComboBox {

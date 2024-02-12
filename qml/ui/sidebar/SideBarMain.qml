@@ -37,25 +37,27 @@ Item {
 
 
     // Gives (keyboard / joystick) control to this element
-    function open_and_take_control(){
+    function open_and_take_control(enable_joy){
         m_extra_is_visible=true;
         m_stack_index=0;
         m_is_active = true
-        hudOverlayGrid.focus=false;
-        focus=true;
-        stack_manager.focus=true;
+        stack_manager.visible=true;
+        if(enable_joy){
+            hudOverlayGrid.focus=false;
+            handover_joystick_control_to_button(m_stack_index);
+        }
     }
 
     // This is called whenever the user clicks on the 'WBLIink' widget
     function open_link_category(){
-        open_and_take_control();
+        open_and_take_control(false);
         m_stack_index=0;
     }
 
     // This is called when the user clicks on the configure button of the CAM1 / CAM2 widget
     function open_video_stream_category(is_primary){
         if(is_primary){
-            open_and_take_control();
+            open_and_take_control(false);
             m_stack_index=3;
         }
     }
@@ -65,7 +67,46 @@ Item {
         m_stack_index=-1;
         m_is_active=false;
         m_extra_is_visible=false;
+        stack_manager.visible=false;
         hudOverlayGrid.focus=true;
+    }
+
+    function regain_control_on_sidebar_stack(){
+        handover_joystick_control_to_button(m_stack_index);
+    }
+
+    function handover_joystick_control_to_button(stack_index){
+        if(stack_index==0){
+            b1.takeover_control();
+        }else if(stack_index==1){
+            b2.takeover_control();
+        }else if(stack_index==2){
+            b3.takeover_control();
+        }else if(stack_index==3){
+            b4.takeover_control();
+        }else if(stack_index==4){
+            b5.takeover_control();
+        }else if(stack_index==5){
+            b6.takeover_control();
+        }else if(stack_index==6){
+            b7.takeover_control();
+        }
+    }
+
+    function handover_joystick_control_to_panel(stack_index){
+        if(stack_index==0){
+            panel1.takeover_control();
+        }else if(stack_index==1){
+            panel2.takeover_control();
+        }else if(stack_index==2){
+            panel3.takeover_control();
+        }else if(stack_index==3){
+            panel4.takeover_control();
+        }else if(stack_index==4){
+            panel5.takeover_control();
+        }else if(stack_index==5){
+            panel6.takeover_control();
+        }
     }
 
 
@@ -102,119 +143,61 @@ Item {
         }
     }
 
-
-    // Item that manages the stack on the right
-    Rectangle{
-        id: stack_manager
+    Column{
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        width: secondaryUiHeight / 8 //number of items
-        height: secondaryUiHeight
-        color: highlightColor
-        opacity: 0.7
-        visible: m_stack_index!=-1;
-
-        Keys.onPressed: (event)=> {
-                            console.log("stack_manager"+" key was pressed:"+event);
-                            if(event.key === Qt.Key_Up){
-                                m_stack_index--;
-                                if(m_stack_index<-1){
-                                    m_stack_index=-1;
-                                }
-                                return true;
-                            }else if(event.key === Qt.Key_Down){
-                                m_stack_index++;
-                                if(m_stack_index>6){
-                                    m_stack_index=6;
-                                }
-                                return true;
-                            }
-                            return false;
-                        }
-
-        ListView {
-            width: parent.width
-            height: parent.height
-            focus: true
-            keyNavigationEnabled: true
-            interactive: false
-
-            model: ListModel {
-                ListElement { text: " \uf053"; subText: "back" }
-                ListElement { text: " \uf1eb"; subText: "link" }
-                ListElement { text: " \uf03d"; subText: "video" }
-                ListElement { text: " \uf030"; subText: "camera" }
-                ListElement { text: " \uf0c7"; subText: "recording" }
-                ListElement { text: " \uf11b"; subText: "rc" }
-                ListElement { text: " \uf26c"; subText: "misc" }
-                ListElement { text: " \uf55b"; subText: "status" }
-            }
-
-            delegate: Item {
-                width: parent.width
-                height: secondaryUiHeight / 8 //number of items
-
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-
-                    onClicked: {
-                        // Update the selected item index
-                        console.log("Item clicked: " + model.subText)
-                        var uiElementName = model.subText + "UI";
-                        if (model.subText === "back") {
-                            close();
-                        } else if (model.subText === "link") {
-                            m_stack_index=0;
-                        } else if (model.subText === "video") {
-                            m_stack_index=1;
-                        } else if (model.subText === "camera") {
-                            m_stack_index=2;
-                        } else if (model.subText === "recording") {
-                            m_stack_index=3;
-                        } else if (model.subText === "rc") {
-                            m_stack_index=4;
-                        } else if (model.subText === "misc") {
-                            m_stack_index=5;
-                        } else if (model.subText === "status") {
-                            m_stack_index=6;
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        color: index-1 === m_stack_index ? highlightColor : mainDarkColor
-                    }
-
-                    RowLayout {
-                        width: parent.width
-                        height: parent.height
-
-                        Text {
-                            text: model.text
-                            font.pixelSize: secondaryUiHeight / 16
-                            opacity: 1.0
-                            font.family: "Font Awesome 5 Free"
-                            color: "white"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        Text {
-                            text: model.subText
-                            visible: false
-                            font.pixelSize: secondaryUiHeight / 16
-                            opacity: 1.0
-                            color: "white"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            elide: Text.ElideRight
-                        }
-                    }
-                }
-            }
+        id: stack_manager
+        visible: false
+        SidebarStackButton{
+            id: b0
+            override_text: "\uf053"
+            override_tag: "back"
+            override_index: -1
+        }
+        SidebarStackButton{
+            id: b1
+            override_text: "\uf1eb"
+            override_tag: "link"
+            override_index: 0
+        }
+        SidebarStackButton{
+            id: b2
+            override_text: "\uf03d"
+            override_tag: "video"
+            override_index: 1
+        }
+        SidebarStackButton{
+            id: b3
+            override_text:  "\uf030"
+            override_tag: "camera"
+            override_index: 2
+        }
+        SidebarStackButton{
+            id: b4
+            override_text: "\uf0c7"
+            override_tag: "recording"
+            override_index: 3
+        }
+        SidebarStackButton{
+            id: b5
+            override_text: "\uf11b"
+            override_tag: "rc"
+            override_index: 4
+        }
+        SidebarStackButton{
+            id: b6
+            override_text: "\uf26c"
+            override_tag: "misc"
+            override_index: 5
+        }
+        SidebarStackButton{
+            id: b7
+            override_text: "\uf55b"
+            override_tag: "status"
+            override_index: 6
         }
     }
+
 
     Item{
         width: secondaryUiWidth
@@ -223,27 +206,34 @@ Item {
         anchors.top: stack_manager.top
 
         Panel1Link{
+            id: panel1
             visible: m_stack_index==0;
         }
         Panel2Video{
+            id: panel2
             visible: m_stack_index==1;
         }
 
         Panel3Camera{
+            id: panel3
             visible: m_stack_index==2;
         }
 
         Panel4Recording{
+            id: panel4
             visible: m_stack_index==3;
         }
 
         Panel5RC{
+            id: panel5
             visible: m_stack_index==4;
         }
         Panel6Misc{
+            id: panel6
             visible: m_stack_index==5;
         }
         Panel7Status{
+            id: panel7
             visible: m_stack_index==6;
         }
     }

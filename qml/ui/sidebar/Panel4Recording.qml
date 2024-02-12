@@ -12,8 +12,11 @@ import OpenHD 1.0
 import "../elements"
 
 SideBarBasePanel{
-    id: recordingUI
     override_title: "Air recording"
+
+    function takeover_control(){
+        recording_mode.takeover_control();
+    }
 
     Column {
         anchors.top: parent.top
@@ -21,9 +24,16 @@ SideBarBasePanel{
         spacing: 5
 
         MavlinkIntChoiceElement{
+            id: recording_mode
             m_title: "RECORDING MODE"
             m_param_id: "AIR_RECORDING_E"
             m_settings_model: _airCameraSettingsModel
+            onGoto_previous: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+            onGoto_next: {
+                // Do nothing
+            }
         }
         Text{
             text: {

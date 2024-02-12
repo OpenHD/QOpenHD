@@ -12,8 +12,11 @@ import OpenHD 1.0
 import "../elements"
 
 SideBarBasePanel{
-    id: displayUI
     override_title: "OpenHD RC"
+
+    function takeover_control(){
+        joy_rc_enable.takeover_control();
+    }
 
     property int m_control_yaw : settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_yaw : _rcchannelsmodelground.control_yaw
     property int m_control_roll: settings.control_widget_use_fc_channels ? _rcchannelsmodelfc.control_roll : _rcchannelsmodelground.control_roll
@@ -27,9 +30,16 @@ SideBarBasePanel{
 
 
         MavlinkIntChoiceElement{
+            id: joy_rc_enable
             m_title: "JOY RC"
             m_param_id: "ENABLE_JOY_RC";
             m_settings_model: _ohdSystemGroundSettings
+            onGoto_previous: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+            onGoto_next: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
         }
 
         Text{

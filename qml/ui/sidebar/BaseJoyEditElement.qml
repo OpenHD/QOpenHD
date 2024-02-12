@@ -44,6 +44,10 @@ Item{
     // Emitted if the button right is clicked
     signal choice_right();
 
+    // Emitted if the button up is clicked (navigate to previous eelement)
+    signal goto_previous();
+    signal goto_next();
+
     Keys.onPressed: (event)=> {
                         console.log("BaseJoyElement"+m_title+" key was pressed:"+event);
                         if(event.key == Qt.Key_Left){
@@ -58,13 +62,21 @@ Item{
                              }else{
                                  _qopenhd.show_toast("NOT AVAILABLE");
                              }
+                        }else if(event.key==Qt.Key_Up){
+                            goto_previous()
+                        }else if(event.key==Qt.Key_Down){
+                            goto_next();
                         }
                     }
+
+    function takeover_control(){
+        focus=true;
+    }
 
     Rectangle{
         width: parent.width
         height:parent.height
-        border.color: "black"
+        border.color: "white"
         border.width: base_joy_edit_element.focus ? 3 : 0;
         color: "#333c4c"
         opacity: base_joy_edit_element.focus ? 1.0 : 0.3;
