@@ -81,9 +81,9 @@ BaseJoyEditElement{
     }
     ListModel{
         id: elements_model_hotspot
-        ListElement {value: 0; verbose:"ALWAYS\nOFF"}
-        ListElement {value: 1; verbose:"ALWAYS\nON"}
-        ListElement {value: 2; verbose:"AUTO\n(WHEN DISARMED)"}
+        ListElement {value: 0; verbose:"AUTO\n(WHEN DISARMED)"}
+        ListElement {value: 1; verbose:"ALWAYS\nOFF"}
+        ListElement {value: 2; verbose:"ALWAYS\nON"}
     }
 
 

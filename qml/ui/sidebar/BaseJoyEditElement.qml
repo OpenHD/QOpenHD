@@ -21,6 +21,8 @@ import "../elements"
 // |             TITLE             |
 // | {ARROW L} {CONTENT} {ARROW R} |
 // |------------------------------ |
+//
+// Joystick navigatable (focus) but also supports touch.
 Item{
     id: base_joy_edit_element
     width: 320
@@ -56,16 +58,20 @@ Item{
                             }else{
                                 _qopenhd.show_toast("NOT AVAILABLE");
                             }
+                            event.accepted=true;
                         }else if(event.key == Qt.Key_Right){
                             if(m_button_right_activated){
                                  choice_right()
                              }else{
                                  _qopenhd.show_toast("NOT AVAILABLE");
                              }
+                            event.accepted=true;
                         }else if(event.key==Qt.Key_Up){
                             goto_previous()
+                            event.accepted=true;
                         }else if(event.key==Qt.Key_Down){
                             goto_next();
+                            event.accepted=true;
                         }
                     }
 

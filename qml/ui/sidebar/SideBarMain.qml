@@ -22,7 +22,7 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
 
 
-    property int secondaryUiWidth: 335
+    property int secondaryUiWidth: 320
     property int secondaryUiHeight: 400
     property string secondaryUiColor: "#000"
     property real secondaryUiOpacity: 0.75

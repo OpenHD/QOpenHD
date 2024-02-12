@@ -13,6 +13,7 @@ import "../elements"
 
 //
 // Joystick controllable (override the events)
+// (But also clickable)
 //
 Item {
     id: sidebar_stack_button

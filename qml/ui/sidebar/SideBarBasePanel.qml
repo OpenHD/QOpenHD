@@ -12,14 +12,20 @@ import OpenHD 1.0
 import "../elements"
 
 
-Rectangle {
+Item {
     width: secondaryUiWidth
     height: secondaryUiHeight
-    color: secondaryUiColor
-    opacity: secondaryUiOpacity
 
     property string override_title: "OVERRIDE ME"
 
+    // The main background
+    Rectangle{
+        anchors.fill: parent
+        color: secondaryUiColor
+        opacity: secondaryUiOpacity
+    }
+
+    // The header / title
     Rectangle {
         id: header
         width: secondaryUiWidth
@@ -35,4 +41,6 @@ Rectangle {
             smooth: true
         }
     }
+
+    // Actual UI elements are added here by implementation
 }
