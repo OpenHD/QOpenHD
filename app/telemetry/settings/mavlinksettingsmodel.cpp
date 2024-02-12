@@ -14,6 +14,7 @@
 // Dirty
 #include "../models/openhd_core/camera.hpp"
 #include "../models/aohdsystem.h"
+#include "../util/WorkaroundMessageBox.h"
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {
@@ -622,6 +623,16 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
         if(param.type==0){
             int32_t value=param.param_value.value<int>();
             param_value=value;
+            // Extra hack
+            if(param.param_id=="FC_BATT_N_CELLS" && value>0){
+                QSettings settings;
+                const auto settings_key="vehicle_battery_n_cells"
+                const int vehicle_battery_n_cells=settings.value(settings_key,3).toInt();
+                if(vehicle_battery_n_cells!=value){
+                    settings.setValue(settings_key,value);
+                    QOpenHD::instance().show_toast("Updated N Cells from air unit");
+                }
+            }
         }else{
             QString value=param.param_value.value<QString>();
             param_value=value.toStdString();
