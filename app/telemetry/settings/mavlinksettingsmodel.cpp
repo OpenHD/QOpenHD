@@ -171,17 +171,17 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
     return result ? SetParamResult::SUCCESS : SetParamResult::NO_CONNECTION;
 }
 
-void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int value)
+void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int value,bool log_result)
 {
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
-        finalize_update_param(param_id,false);
+        finalize_update_param(param_id,static_cast<int32_t>(value),false,log_result);
         return;
     }
     auto command=XParam::create_cmd_set_int(m_sys_id,m_comp_id,param_id.toStdString(),value);
     m_is_currently_busy=true;
     set_ui_is_busy(true);
-    XParam::SET_PARAM_RESULT_CB imp_cb=[this,value,param_id](XParam::SetParamResult result){
+    XParam::SET_PARAM_RESULT_CB imp_cb=[this,value,param_id,log_result](XParam::SetParamResult result){
        if(result.is_accepted()){
            // success, update the cached param
            MavlinkSettingsModel::SettingData tmp{param_id,value};
@@ -192,22 +192,22 @@ void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int v
        qDebug()<<"Result:"<<m_comp_id<<":"<<result.is_accepted();
        m_is_currently_busy=false;
        set_ui_is_busy(false);
-       finalize_update_param(param_id,result.is_accepted());
+       finalize_update_param(param_id,static_cast<int32_t>(value),result.is_accepted(),log_result);
     };
     XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
 }
 
-void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QString value)
+void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QString value,bool log_result)
 {
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
-        finalize_update_param(param_id,false);
+        finalize_update_param(param_id,value.toStdString(),false,log_result);
         return;
     }
      auto command=XParam::create_cmd_set_string(m_sys_id,m_comp_id,param_id.toStdString(),value.toStdString());
      m_is_currently_busy=true;
      set_ui_is_busy(true);
-     XParam::SET_PARAM_RESULT_CB imp_cb=[this,value,param_id](XParam::SetParamResult result){
+     XParam::SET_PARAM_RESULT_CB imp_cb=[this,value,param_id,log_result](XParam::SetParamResult result){
         if(result.is_accepted()){
             // success, update the cached param
             MavlinkSettingsModel::SettingData tmp{param_id,value.toStdString()};
@@ -218,7 +218,7 @@ void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QSt
         qDebug()<<"Result:"<<m_comp_id<<":"<<result.is_accepted();
         m_is_currently_busy=false;
         set_ui_is_busy(false);
-        finalize_update_param(param_id,result.is_accepted());
+        finalize_update_param(param_id,value.toStdString(),result.is_accepted(),log_result);
      };
      XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
 }
@@ -631,19 +631,25 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
     }
 }
 
-void MavlinkSettingsModel::finalize_update_param(QString param_id, bool success)
+void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result)
 {
     set_last_updated_param_id(param_id);
     set_last_updated_param_success(success);
-    /*if(success){
-        std::stringstream ss;
-        ss<<"Update "<<param_id.toStdString()<<" success";
-        QOpenHD::instance().show_toast(ss.str().c_str());
-    }else{
-        std::stringstream ss;
-        ss<<"Update "<<param_id.toStdString()<<" failure";
-        QOpenHD::instance().show_toast(ss.str().c_str());
-    }*/
+    if(log_result){
+         std::stringstream ss;
+         ss<<"Update "<<param_id.toStdString()<<" to ";
+         if(std::holds_alternative<int32_t>(value)){
+             ss<<std::get<int32_t>(value);
+         }else{
+             ss<<std::get<std::string>(value);
+         }
+         if(success){
+             ss<<" success";
+         }else{
+             ss<<" failure";
+         }
+         QOpenHD::instance().show_toast(ss.str().c_str());
+    }
     set_update_count(m_update_count+1);
     qDebug()<<"Update count:"<<m_update_count;
 }

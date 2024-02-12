@@ -112,8 +112,8 @@ private:
     SetParamResult try_set_param_int_impl(const QString param_id,int value);
     SetParamResult try_set_param_string_impl(const QString param_id,QString value);
 public:
-    Q_INVOKABLE void try_set_param_int_async(const QString param_id,int value);
-    Q_INVOKABLE void try_set_param_string_async(const QString param_id,QString value);
+    Q_INVOKABLE void try_set_param_int_async(const QString param_id,int value,bool log_result=false);
+    Q_INVOKABLE void try_set_param_string_async(const QString param_id,QString value,bool log_result=false);
     Q_INVOKABLE bool system_is_alive();
 public:
     struct ParamIntEnum{
@@ -181,7 +181,7 @@ private:
     std::atomic<bool> m_is_ready=false;
     std::atomic_bool m_is_currently_busy=false;
 private:
-    void finalize_update_param(QString param_id,bool success);
+    void finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result);
 };
 
 Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamIntEnum);
