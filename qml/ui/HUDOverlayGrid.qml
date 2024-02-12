@@ -207,8 +207,10 @@ Item {
                         console.log("HUDOverlayGrid::Key was pressed:"+event);
                         if(event.key==Qt.Key_Left || event.key == Qt.Key_Right || event.key == Qt.Key_Up || event.key == Qt.Key_Down){
                             // If the user presses any navigation key, we open up the sidebar and hand over the inputs to it
-                            sidebar.open_and_take_control();
-                            event.accepted=true;
+                            if(!sidebar.m_extra_is_visible){
+                                sidebar.open_and_take_control();
+                                event.accepted=true;
+                            }
                         }
                         /*if (event.key == Qt.Key_Return) {
                             //console.log("enter was pressed");

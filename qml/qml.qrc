@@ -292,11 +292,11 @@
         <file>ui/sidebar/MavlinkIntChoiceElement.qml</file>
         <file>ui/sidebar/SideBarBasePanel.qml</file>
         <file>ui/sidebar/Panel1Link.qml</file>
-        <file>ui/sidebar/Panel2RC.qml</file>
-        <file>ui/sidebar/Panel3Video.qml</file>
-        <file>ui/sidebar/Panel4Camera.qml</file>
-        <file>ui/sidebar/Panel5Recording.qml</file>
-        <file>ui/sidebar/Panel6Display.qml</file>
-        <file>ui/sidebar/Panel7Misc.qml</file>
+        <file>ui/sidebar/Panel5RC.qml</file>
+        <file>ui/sidebar/Panel2Video.qml</file>
+        <file>ui/sidebar/Panel3Camera.qml</file>
+        <file>ui/sidebar/Panel4Recording.qml</file>
+        <file>ui/sidebar/Panel6Misc.qml</file>
+        <file>ui/sidebar/Panel7Status.qml</file>
     </qresource>
 </RCC>

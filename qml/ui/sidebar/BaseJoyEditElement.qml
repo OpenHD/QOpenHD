@@ -24,7 +24,7 @@ import "../elements"
 Item{
     id: base_joy_edit_element
     width: 320
-    height: 60+30
+    height: 50+30
 
     property string m_title: "FILL ME"
 

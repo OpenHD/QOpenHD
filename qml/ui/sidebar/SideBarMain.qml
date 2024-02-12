@@ -23,17 +23,14 @@ Item {
 
 
     property int secondaryUiWidth: 335
-    property int secondaryUiHeight: 420
+    property int secondaryUiHeight: 400
     property string secondaryUiColor: "#000"
     property real secondaryUiOpacity: 0.75
     property string mainDarkColor: "#302f30"
     property string highlightColor: "#555"
 
-    property int selectedItemIndex: -1
-
     // Set to true if the sidebar is active (and some HUD elements shall be disabled)
     property bool m_is_active : false
-
 
     property bool m_extra_is_visible: false
     property int m_stack_index: -1;
@@ -44,22 +41,22 @@ Item {
         m_extra_is_visible=true;
         m_stack_index=0;
         m_is_active = true
+        hudOverlayGrid.focus=false;
         focus=true;
+        stack_manager.focus=true;
     }
 
     // This is called whenever the user clicks on the 'WBLIink' widget
     function open_link_category(){
-        m_extra_is_visible=true;
+        open_and_take_control();
         m_stack_index=0;
-        m_is_active = true
     }
 
     // This is called when the user clicks on the configure button of the CAM1 / CAM2 widget
     function open_video_stream_category(is_primary){
         if(is_primary){
-            m_extra_is_visible=true;
+            open_and_take_control();
             m_stack_index=3;
-            m_is_active = true
         }
     }
 
@@ -67,9 +64,9 @@ Item {
     function close(){
         m_stack_index=-1;
         m_is_active=false;
+        m_extra_is_visible=false;
         hudOverlayGrid.focus=true;
     }
-
 
 
     // Item that opens up the sidebar
@@ -78,6 +75,7 @@ Item {
         width: 32
         height: 32
         anchors.verticalCenter: parent.verticalCenter
+        visible: m_stack_index<0;
         MouseArea {
             id: mouseArea1
             anchors.fill: parent
@@ -116,6 +114,24 @@ Item {
         opacity: 0.7
         visible: m_stack_index!=-1;
 
+        Keys.onPressed: (event)=> {
+                            console.log("stack_manager"+" key was pressed:"+event);
+                            if(event.key === Qt.Key_Up){
+                                m_stack_index--;
+                                if(m_stack_index<-1){
+                                    m_stack_index=-1;
+                                }
+                                return true;
+                            }else if(event.key === Qt.Key_Down){
+                                m_stack_index++;
+                                if(m_stack_index>6){
+                                    m_stack_index=6;
+                                }
+                                return true;
+                            }
+                            return false;
+                        }
+
         ListView {
             width: parent.width
             height: parent.height
@@ -126,12 +142,12 @@ Item {
             model: ListModel {
                 ListElement { text: " \uf053"; subText: "back" }
                 ListElement { text: " \uf1eb"; subText: "link" }
-                ListElement { text: " \uf11b"; subText: "rc" }
                 ListElement { text: " \uf03d"; subText: "video" }
                 ListElement { text: " \uf030"; subText: "camera" }
                 ListElement { text: " \uf0c7"; subText: "recording" }
-                ListElement { text: " \uf26c"; subText: "display" }
-                ListElement { text: " \uf55b"; subText: "drone" }
+                ListElement { text: " \uf11b"; subText: "rc" }
+                ListElement { text: " \uf26c"; subText: "misc" }
+                ListElement { text: " \uf55b"; subText: "status" }
             }
 
             delegate: Item {
@@ -149,26 +165,26 @@ Item {
                         if (model.subText === "back") {
                             close();
                         } else if (model.subText === "link") {
-                             m_stack_index=0;
-                        } else if (model.subText === "rc") {
-                            m_stack_index=1;
+                            m_stack_index=0;
                         } else if (model.subText === "video") {
-                           m_stack_index=2;
+                            m_stack_index=1;
                         } else if (model.subText === "camera") {
-                            m_stack_index=3;
+                            m_stack_index=2;
                         } else if (model.subText === "recording") {
-                           m_stack_index=4;
-                        } else if (model.subText === "display") {
-                           m_stack_index=5;
-                        } else if (model.subText === "drone") {
-                           m_stack_index=6;
+                            m_stack_index=3;
+                        } else if (model.subText === "rc") {
+                            m_stack_index=4;
+                        } else if (model.subText === "misc") {
+                            m_stack_index=5;
+                        } else if (model.subText === "status") {
+                            m_stack_index=6;
                         }
                     }
 
                     Rectangle {
                         width: parent.width
                         height: parent.height
-                        color: index === m_stack_index ? highlightColor : mainDarkColor
+                        color: index-1 === m_stack_index ? highlightColor : mainDarkColor
                     }
 
                     RowLayout {
@@ -207,36 +223,27 @@ Item {
         anchors.top: stack_manager.top
 
         Panel1Link{
-            id: linkUI
             visible: m_stack_index==0;
         }
-        Panel2RC{
-            id: rcUI
+        Panel2Video{
             visible: m_stack_index==1;
         }
 
-        Panel3Video{
-            id: videoUI
+        Panel3Camera{
             visible: m_stack_index==2;
         }
 
-        Panel4Camera{
-            id: cameraUI
+        Panel4Recording{
             visible: m_stack_index==3;
         }
 
-        Panel5Recording{
-            id: recordingUI
+        Panel5RC{
             visible: m_stack_index==4;
         }
-
-        Panel6Display{
-            id: displayUI
+        Panel6Misc{
             visible: m_stack_index==5;
         }
-
-        Panel7Misc{
-            id: miscUI
+        Panel7Status{
             visible: m_stack_index==6;
         }
     }
