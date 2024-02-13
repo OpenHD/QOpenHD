@@ -62,6 +62,21 @@ static MonitorModeLinkBitfield parse_monitor_link_bitfield(uint8_t bitfield){
     return ret;
 }
 
+static std::string ohd_version_as_string(uint8_t major,uint8_t minor,uint8_t patch,uint8_t release_type){
+  std::stringstream ss;
+  ss<<(int)major<<"."<<(int)minor<<"."<<(int)patch<<"-evo";
+  if(release_type==0){
+    ss<<"-release";
+  }else if(release_type==1){
+    ss<<"-beta";
+  }else if(release_type==2){
+    ss<<"-alpha";
+  }else{
+    ss<<"unknwon";
+  }
+  return ss.str();
+}
+
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},m_is_air(is_air)
 {
@@ -95,8 +110,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
             mavlink_openhd_version_message_t parsedMsg;
             mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
-            QString version(parsedMsg.version);
-            set_openhd_version(version);
+            set_openhd_version(ohd_version_as_string(parsedMsg.major,parsedMsg.minor,parsedMsg.patch,parsedMsg.release_type).c_str());
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
