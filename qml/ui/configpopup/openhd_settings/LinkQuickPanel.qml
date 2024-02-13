@@ -371,8 +371,8 @@ Rectangle{
                         }
                         Button{
                             text: "EDIT"
-                            //enabled: _ohdSystemAir.is_alive
-                            enabled: true
+                            enabled: _ohdSystemAir.is_alive
+                            //enabled: true
                             onClicked: {
                                 close_all_dialoques();
                                 popup_change_tx_power.m_is_air=true;
@@ -390,8 +390,8 @@ Rectangle{
                         }
                         Button{
                             text: "EDIT"
-                            //enabled: _ohdSystemGround.is_alive
-                            enabled: true
+                            enabled: _ohdSystemGround.is_alive
+                            //enabled: true
                             onClicked: {
                                 close_all_dialoques();
                                 popup_change_tx_power.m_is_air=false;
@@ -427,9 +427,9 @@ Rectangle{
                         }
                         Button{
                             text: "EDIT";
-                            enabled: true
-                            //enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
-                            //         (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
+                            //enabled: true
+                            enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
+                                     (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);
                             onClicked: {
                                 close_all_dialoques();
                                 popup_enable_stbc_ldpc.open()
