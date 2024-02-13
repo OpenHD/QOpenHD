@@ -298,10 +298,11 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_int(ret,"ROTATION_DEG",
                    ImprovedIntSetting(0,270,{
                                                ImprovedIntSetting::Item{"0°(disable)",0},
-                                               ImprovedIntSetting::Item{"90 (mmal only)°",90},
+                                               //ImprovedIntSetting::Item{"90 (mmal only)°",90},
                                                ImprovedIntSetting::Item{"180°",180},
-                                               ImprovedIntSetting::Item{"270°(mmal only)",270}}),
-                   "Rotate video by 90 degree increments"
+                                               //ImprovedIntSetting::Item{"270°(mmal only)",270}
+                                      }),
+                   "Rotate video"
                    );
         append_int(ret,"INTRA_REFRESH",
                    ImprovedIntSetting(-1,2130706433,{

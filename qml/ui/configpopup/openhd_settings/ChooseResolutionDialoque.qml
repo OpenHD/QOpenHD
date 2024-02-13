@@ -63,16 +63,16 @@ Card {
 
     ListModel{
         id: resolutions_model
-        ListElement {title: "0x0@0   (AUTO)"; value: "0x0@0"}
-        ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
+        //ListElement {title: "0x0@0   (AUTO)"; value: "0x0@0"}
+        //ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
         ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
-        ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
-        ListElement {title: "720p@49fps  (16:9)"; value: "1280x720@49"}
-        ListElement {title: "720p@60fps  (4:3)"; value: "960x720@60"}
+        //ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
+        //ListElement {title: "720p@49fps  (16:9)"; value: "1280x720@49"}
+        //ListElement {title: "720p@60fps  (4:3)"; value: "960x720@60"}
         ListElement {title: "720p@60fps  (16:9)"; value: "1280x720@60"}
         ListElement {title: "1080p@30fps (16:9)"; value: "1920x1080@30"}
-        ListElement {title: "1080p@30fps (4:3)"; value: "1440x1080@30"}
-        ListElement {title: "1080p@49fps (4:3)"; value: "1440x1080@49"}
+        //ListElement {title: "1080p@30fps (4:3)"; value: "1440x1080@30"}
+        //ListElement {title: "1080p@49fps (4:3)"; value: "1440x1080@49"}
     }
 
 

@@ -5,7 +5,7 @@ BaseJoyEditElement{
 
     ListModel{
         id: resolutions_model
-        ListElement {title: "0x0@0"; info:"AUTO\n"}
+        //ListElement {title: "0x0@0"; info:"AUTO\n"}
         ListElement {title: "640x480@60"; info:"VGA 4:3\n60fps"}
         ListElement {title: "1280x720@60"; info:"HD 16:9\n60fps"}
         ListElement {title: "1920x1080@30"; info:"FHD 16:9\n30fps"}

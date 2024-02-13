@@ -89,7 +89,11 @@ BaseJoyEditElement{
         ListElement {value: 1; verbose:"ALWAYS\nOFF"}
         ListElement {value: 2; verbose:"ALWAYS\nON"}
     }
-
+    ListModel{
+        id: elements_model_camera_rotation_degree
+        ListElement {value: 0; verbose:"0°\n(Default)"}
+        ListElement {value: 1; verbose:"180°\n"}
+    }
 
     ListModel{
         id: elements_model_undefined
