@@ -592,6 +592,17 @@ int MavlinkSettingsModel::get_cached_int(QString param_id)
     return -1;
 }
 
+QString MavlinkSettingsModel::get_cached_string(QString param_id)
+{
+    for(const auto& tmp:m_data){
+        if(tmp.unique_id.compare(param_id)==0 && std::holds_alternative<std::string>(tmp.value)){
+            return std::get<std::string>(tmp.value).c_str();
+        }
+    }
+    qDebug()<<param_id<<" NOT FOUND";
+    return "";
+}
+
 void MavlinkSettingsModel::remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t> &param_set)
 {
     // We might not be called from the UI thread, which is why we do the signal hoop to schedule something on

@@ -268,10 +268,6 @@ Rectangle {
         // default index
         currentIndex: 0
 
-        //PanelQuick{
-        //    id: quickPanel
-        //}
-
         PanelStatus {
             id: statusPanel
         }

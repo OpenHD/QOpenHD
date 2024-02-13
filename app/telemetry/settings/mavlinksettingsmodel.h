@@ -162,6 +162,7 @@ public:
     Q_INVOKABLE bool param_int_exists(QString param_id);
     Q_INVOKABLE bool param_string_exists(QString param_id);
     Q_INVOKABLE int get_cached_int(QString param_id);
+    Q_INVOKABLE QString get_cached_string(QString param_id);
 private:;
     void remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t>& param_set);
 public:

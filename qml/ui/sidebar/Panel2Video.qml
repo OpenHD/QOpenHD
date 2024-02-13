@@ -23,8 +23,12 @@ SideBarBasePanel{
         anchors.topMargin: secondaryUiHeight/8
         spacing: 5
 
-        EditResolutionElement{
+        MavlinkChoiceElement{
             id: edit_resolution_element
+            m_title: "Resolution"
+            m_param_id: "RESOLUTION_FPS"
+            m_settings_model: _airCameraSettingsModel
+            override_takes_string_param: true;
             onGoto_previous: {
                 sidebar.regain_control_on_sidebar_stack()
             }

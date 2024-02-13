@@ -23,6 +23,8 @@ BaseJoyEditElement{
     // Needs to contain the unique ID of the param inside the param set
     property string m_param_id: "FILL ME"
     property var m_settings_model: _ohdSystemGroundSettings
+    // Int param is much more common, but string param is also possible
+    property bool override_takes_string_param: false
 
     ListModel{
         id: elements_model_brightness
@@ -44,7 +46,9 @@ BaseJoyEditElement{
         id: elements_model_saturation
         ListElement {value: 50; verbose:"50%"}
         ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 90; verbose:"90%"}
         ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 110; verbose:"110%"}
         ListElement {value: 125; verbose:"125%"}
         ListElement {value: 150; verbose:"150%"}
     }
@@ -52,6 +56,7 @@ BaseJoyEditElement{
         id: elements_model_contrast
         ListElement {value: 50; verbose:"50%"}
         ListElement {value: 75; verbose:"75%"}
+         ListElement {value: 90; verbose:"90%"}
         ListElement {value: 100; verbose:"100%\n(Default)"}
         ListElement {value: 125; verbose:"125%"}
         ListElement {value: 150; verbose:"150%"}
@@ -60,7 +65,9 @@ BaseJoyEditElement{
         id: elements_model_sharpness
         ListElement {value: 50; verbose:"50%"}
         ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 90; verbose:"90%"}
         ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 110; verbose:"110%"}
         ListElement {value: 125; verbose:"125%"}
         ListElement {value: 150; verbose:"150%"}
     }
@@ -68,7 +75,9 @@ BaseJoyEditElement{
         id: elements_model_rotation
         ListElement {value: 50; verbose:"50%"}
         ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 90; verbose:"90%"}
         ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 110; verbose:"110%"}
         ListElement {value: 125; verbose:"125%"}
         ListElement {value: 150; verbose:"150%"}
     }
@@ -102,8 +111,17 @@ BaseJoyEditElement{
         ListElement {value: 2; verbose:"2\nUNDEFINED"}
     }
 
+    // NOTE: This is for a string param !
+    ListModel{
+        id: elements_model_camera_resolution
+        ListElement {value: "640x480@60"; verbose:"VGA 4:3\n60fps"}
+        ListElement {value: "1280x720@60"; verbose:"HD 16:9\n60fps"}
+        ListElement {value: "1920x1080@30"; verbose:"FHD 16:9\n30fps"}
+    }
+
     property int m_model_index: -1;
-    property int m_actual_value: -1;
+    property int m_actual_value_int: -1;
+    property string m_actual_value_string: ""
     property bool m_param_exists: false;
 
     function get_model(){
@@ -123,6 +141,8 @@ BaseJoyEditElement{
             return elements_model_air_recording;
         }else if(m_param_id=="WIFI_HOTSPOT_E"){
             return elements_model_hotspot
+        }else if(m_param_id=="RESOLUTION_FPS"){
+            return elements_model_camera_resolution;
         }
         return elements_model_undefined;
     }
@@ -157,23 +177,33 @@ BaseJoyEditElement{
             m_model_index=-1;
             return;
         }
-        if(!m_settings_model.param_int_exists(m_param_id)){
+        var param_exists;
+        if(override_takes_string_param){
+            param_exists=m_settings_model.param_string_exists(m_param_id)
+        }else{
+            param_exists=m_settings_model.param_int_exists(m_param_id)
+        }
+        if(!param_exists){
             console.log("Param "+m_param_id+" does not exist");
             m_param_exists=false;
             m_model_index=-1;
             return;
         }
         m_param_exists=true;
-        var value = m_settings_model.get_cached_int(m_param_id);
-        m_actual_value=value;
-        update_model_index(value);
+        if(override_takes_string_param){
+            m_actual_value_string=m_settings_model.get_cached_string(m_param_id);
+            update_model_index(m_actual_value_string);
+        }else{
+            m_actual_value_int=m_settings_model.get_cached_int(m_param_id);
+            update_model_index(m_actual_value_int);
+        }
     }
 
 
     function update_model_index(value){
         for(var i=0;i<get_model().count;i++){
             const tmp=get_model().get(i).value;
-            if(value==tmp){
+            if(value===tmp){
                 m_model_index=i;
                 return;
             }
@@ -193,7 +223,14 @@ BaseJoyEditElement{
     m_displayed_value: {
         if(m_model_index==-1){
             if(m_param_exists){
-                return "{"+m_actual_value+"}\nCUSTOM";
+                var ret="{";
+                if(override_takes_string_param){
+                    ret+=m_actual_value_string;
+                }else{
+                    ret+=m_actual_value_int;
+                }
+                ret+="}\nCUSTOM";
+                return ret;
             }else{
                 return "NOT\nAVAILABLE"
             }
@@ -210,7 +247,11 @@ BaseJoyEditElement{
             new_model_index-=1;
         }
         const value_new=get_model().get(new_model_index).value;
-        m_settings_model.try_set_param_int_async(m_param_id,value_new);
+        if(override_takes_string_param){
+             m_settings_model.try_set_param_string_async(m_param_id,value_new);
+        }else{
+             m_settings_model.try_set_param_int_async(m_param_id,value_new);
+        }
     }
 
     onChoice_left: {

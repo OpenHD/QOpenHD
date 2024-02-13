@@ -59,6 +59,11 @@ BaseJoyEditElement{
     onCurr_air_frequencyChanged: {
         update_model_index()
     }
+    onVisibleChanged: {
+        if(visible){
+            update_model_index();
+        }
+    }
 
 
     function is_armed(){
