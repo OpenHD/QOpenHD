@@ -22,6 +22,7 @@ BaseJoyEditElement{
 
     // Needs to contain the unique ID of the param inside the param set
     property string m_param_id: "FILL ME"
+    // Set to air / ground /air cam 1 / air cam 2 depending on where the param is stored
     property var m_settings_model: _ohdSystemGroundSettings
     // Int param is much more common, but string param is also possible
     property bool override_takes_string_param: false

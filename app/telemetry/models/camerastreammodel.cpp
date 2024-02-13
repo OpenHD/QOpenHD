@@ -14,7 +14,6 @@
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
     if(value==1)return "h265";
-    if(value==2)return "mjpeg";
     return "Unknown";
 }
 
@@ -92,6 +91,24 @@ bool CameraStreamModel::is_valid_resolution_fps_string(QString input)
         }
       }
       return false;
+}
+
+QString CameraStreamModel::get_default_resolution()
+{
+    auto tmp=XCamera{m_camera_type,0,""};
+    auto default_res_fps=tmp.get_default_resolution_fps();
+    return default_res_fps.as_string().c_str();
+}
+
+QStringList CameraStreamModel::get_supported_resolutions()
+{
+    QStringList ret;
+    auto tmp_cam=XCamera{m_camera_type,0,""};
+    auto tmp=tmp_cam.get_supported_resolutions();
+    for(auto& element:tmp){
+        ret.push_back(element.as_string().c_str());
+    }
+    return ret;
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)

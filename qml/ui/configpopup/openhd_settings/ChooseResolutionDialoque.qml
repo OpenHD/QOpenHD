@@ -20,6 +20,7 @@ Card {
     property string m_current_resolution_fps: "1920x1080@30"
     property bool m_is_for_secondary: false
     property bool m_textinput_display_text_valid: false;
+    property string m_default_resolution_fps: "N/A";
 
 
     function close(){
@@ -52,6 +53,7 @@ Card {
             combobox_resolutions.currentIndex=0;
         }
         text_input_cameras.text=m_current_resolution_fps;
+        m_default_resolution_fps=m_is_for_secondary ? _cameraStreamModelSecondary.get_default_resolution() : _cameraStreamModelPrimary.get_default_resolution();
     }
 
     function get_user_selected_resolution(){
@@ -86,7 +88,7 @@ Card {
         }
         Text{
             width: 200
-            text: "Default Resolution: "+"1920x1080@30";
+            text: "Default Resolution: "+m_default_resolution_fps
         }
         ComboBox {
             width: 300
