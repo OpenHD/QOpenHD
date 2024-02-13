@@ -60,14 +60,28 @@ BaseJoyEditElement{
         update_model_index()
     }
 
+
+    function is_armed(){
+        if(settings.dev_allow_freq_change_when_armed){
+            // Never report as armed
+            return false;
+        }
+        if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
+            return true;
+        }
+        return false;
+    }
+    override_show_red_text: is_armed();
+
+
     m_button_left_activated: {
         if(!_ohdSystemAir.is_alive)return false;
-        return m_model_index!=-1 && m_model_index>0;
+        return m_model_index!=-1 && m_model_index>0 && (!is_armed());
     }
 
     m_button_right_activated: {
         if(!_ohdSystemAir.is_alive)return false;
-        return m_model_index!=-1 && m_model_index<get_model().count-1;
+        return m_model_index!=-1 && m_model_index<get_model().count-1 && (!is_armed());
     }
 
     m_displayed_value: {

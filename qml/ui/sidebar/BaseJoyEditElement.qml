@@ -41,6 +41,10 @@ Item{
      // Set to true if the "select element right" button should be activated
     property bool  m_button_right_activated: false
 
+    // Allows the parent to override the text color
+    // Right now only used by the change frequency element
+    property bool override_show_red_text: false
+
     // Emitted if the button left is clicked
     signal choice_left();
     // Emitted if the button right is clicked
@@ -126,7 +130,7 @@ Item{
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 15
-                color: "white"
+                color: override_show_red_text? "red" :  "white"
             }
         }
         TriangleButton{
