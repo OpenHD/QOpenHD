@@ -21,16 +21,49 @@ Card {
     property bool m_is_for_secondary: false
     property bool m_textinput_display_text_valid: false;
     property string m_default_resolution_fps: "N/A";
+    property string m_cam_type_as_string: "N/A";
 
+
+    property bool argh_is_changing_model:false;
+    ListModel{
+        id: resolutions_model
+        //ListElement {title: "0x0@0   (AUTO)"; value: "0x0@0"}
+        //ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
+        ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
+        //ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
+        //ListElement {title: "720p@49fps  (16:9)"; value: "1280x720@49"}
+        //ListElement {title: "720p@60fps  (4:3)"; value: "960x720@60"}
+        ListElement {title: "720p@60fps  (16:9)"; value: "1280x720@60"}
+        ListElement {title: "1080p@30fps (16:9)"; value: "1920x1080@30"}
+        //ListElement {title: "1080p@30fps (4:3)"; value: "1440x1080@30"}
+        //ListElement {title: "1080p@49fps (4:3)"; value: "1440x1080@49"}
+    }
 
     function close(){
         visible=false;
         enabled=false;
     }
 
+    property var m_stream_model :  m_is_for_secondary ? _cameraStreamModelSecondary : _cameraStreamModelPrimary;
+
+
+    function update_resolutions_model(){
+        var supported_resolutions=m_stream_model.get_supported_resolutions();
+        resolutions_model.clear()
+        for(var i=0; i<supported_resolutions.length; i++){
+            var tmp=supported_resolutions[i];
+            console.log("Supported:["+tmp+"]");
+            resolutions_model.append({title: tmp, value: tmp});
+        }
+        //combobox_resolutions.model=resolutions_model;
+    }
 
     function initialize_and_show(){
-        m_current_resolution_fps=m_is_for_secondary ? _cameraStreamModelSecondary.curr_set_video_format : _cameraStreamModelPrimary.curr_set_video_format;
+        argh_is_changing_model=true;
+        update_resolutions_model();
+        m_cam_type_as_string=m_stream_model.camera_type_to_string(m_stream_model.camera_type);
+        m_current_resolution_fps=m_stream_model.curr_set_video_format;
+        m_default_resolution_fps=m_stream_model.get_default_resolution();
         visible=true;
         enabled=true;
         // Check if the current cam resolution is inside the list
@@ -53,7 +86,8 @@ Card {
             combobox_resolutions.currentIndex=0;
         }
         text_input_cameras.text=m_current_resolution_fps;
-        m_default_resolution_fps=m_is_for_secondary ? _cameraStreamModelSecondary.get_default_resolution() : _cameraStreamModelPrimary.get_default_resolution();
+        argh_is_changing_model=false;
+
     }
 
     function get_user_selected_resolution(){
@@ -63,28 +97,13 @@ Card {
         return combobox_resolutions.model.get(combobox_resolutions.currentIndex).value;
     }
 
-    ListModel{
-        id: resolutions_model
-        //ListElement {title: "0x0@0   (AUTO)"; value: "0x0@0"}
-        //ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
-        ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
-        //ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
-        //ListElement {title: "720p@49fps  (16:9)"; value: "1280x720@49"}
-        //ListElement {title: "720p@60fps  (4:3)"; value: "960x720@60"}
-        ListElement {title: "720p@60fps  (16:9)"; value: "1280x720@60"}
-        ListElement {title: "1080p@30fps (16:9)"; value: "1920x1080@30"}
-        //ListElement {title: "1080p@30fps (4:3)"; value: "1440x1080@30"}
-        //ListElement {title: "1080p@49fps (4:3)"; value: "1440x1080@49"}
-    }
-
 
     cardBody: Column{
         spacing: 10
         padding: 10
         Text{
             width: 200
-            text: "Your Camera: "+(m_is_for_secondary ? _cameraStreamModelSecondary.camera_type_to_string(_cameraStreamModelSecondary.camera_type) :
-                                                        _cameraStreamModelPrimary.camera_type_to_string(_cameraStreamModelPrimary.camera_type) )
+            text: "Your Camera: "+m_cam_type_as_string;
         }
         Text{
             width: 200
@@ -177,6 +196,9 @@ Card {
                     }
                 }
                 enabled: {
+                    if(argh_is_changing_model){
+                        return false;
+                    }
                     const selected_res_fps=get_user_selected_resolution();
                     return _cameraStreamModelPrimary.is_valid_resolution_fps_string(selected_res_fps) && selected_res_fps!=m_current_resolution_fps;
                 }
