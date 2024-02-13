@@ -56,6 +56,7 @@ public:
     Q_INVOKABLE bool is_linux();
     Q_INVOKABLE bool is_mac();
     Q_INVOKABLE bool is_android();
+    Q_INVOKABLE bool is_windows();
     Q_INVOKABLE void android_open_tethering_settings();
     // runs systemctl start/stop/enable/disable openhd
     // opens error message if the openhd service file does not exist (e.g. false on all non linux platforms)

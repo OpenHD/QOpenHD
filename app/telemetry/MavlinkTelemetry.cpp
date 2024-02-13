@@ -11,6 +11,7 @@
 #include "action/impl/cmdsender.h"
 #include "action/fcmsgintervalhandler.h"
 #include "action/impl/xparam.h"
+#include "util/qopenhd.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
@@ -23,7 +24,7 @@ void MavlinkTelemetry::start()
     if(mavlink_connection_mode<0 || mavlink_connection_mode>2)mavlink_connection_mode=0;
     m_connection_mode=mavlink_connection_mode;
     QString tcp_manual_ip=settings.value("qopenhd_mavlink_connection_manual_tcp_ip","192.168.178.36").toString();
-    m_connction_manual_tcp_ip=std::make_shared<std::string>(tcp_manual_ip.toStdString());
+    threadsafe_set_manual_tcp_ip(tcp_manual_ip.toStdString());
     auto cb_udp=[this](mavlink_message_t msg){
         process_mavlink_message(msg);
     };
@@ -319,7 +320,7 @@ bool MavlinkTelemetry::change_manual_tcp_ip(QString ip)
     if(!OHDUtil::is_valid_ip(ip.toStdString())){
         return false;
     }
-    m_connction_manual_tcp_ip=std::make_shared<std::string>(ip.toStdString());
+    threadsafe_set_manual_tcp_ip(ip.toStdString());
 }
 
 void MavlinkTelemetry::send_heartbeat_loop()
@@ -344,29 +345,48 @@ void MavlinkTelemetry::perform_connection_management()
 {
     const int mavlink_connection_mode=m_connection_mode;
     if(mavlink_connection_mode==0){
-        // AUTO
-        m_tcp_connection_custom->stop_looping_if();
-        if(!m_udp_connection->is_looping()){
-            m_udp_connection->start_looping();
-        }
-        // Prefer UDP if possible
-        if(m_udp_connection->threadsafe_is_alive()){
-            set_telemetry_connection_status("AUTO-CONNECTED(UDP,LOCALHOST)");
-            m_tcp_connection_wifi_hs->stop_looping_if();
+         // AUTO
+        if(is_localhost_only_usage()){
+            // If we are running on the same system openhd core (ground) is running on we don't need any tcp
+            m_tcp_connection_custom->stop_looping_if();
             m_tcp_connection_eth_hs->stop_looping_if();
-        }else{
-            if(!m_tcp_connection_wifi_hs->is_looping()){
-                m_tcp_connection_wifi_hs->start_looping();
+            m_tcp_connection_wifi_hs->stop_looping_if();
+            if(!m_udp_connection->is_looping()){
+                m_udp_connection->start_looping();
             }
-            if(!m_tcp_connection_eth_hs->is_looping()){
-                m_tcp_connection_eth_hs->start_looping();
-            }
-            if(m_tcp_connection_wifi_hs->threadsafe_is_alive()){
-                set_telemetry_connection_status("AUTO-CONNECTED(TCP,WIFI HS)");
-            }else if(m_tcp_connection_eth_hs->threadsafe_is_alive()){
-                set_telemetry_connection_status("AUTO-CONNECTED(TCP,ETHERNET HS)");
+            const bool connected=m_udp_connection->threadsafe_is_alive();
+            std::string status_text;
+            if(connected){
+                status_text="AUTO-CONNECTED(UDP,LOCALHOST,LOCAL ONLY)";
             }else{
-                set_telemetry_connection_status("AUTO-NOT CONNECTED");
+                status_text="AUTO-DISCONNECTED(LOCAL ONLY) OPENHD CORE RUNNING ?";
+            }
+             set_telemetry_connection_status(status_text.c_str());
+        }else{
+            // We have to account for all the cases the user might connect this device to his ground station
+            m_tcp_connection_custom->stop_looping_if();
+            if(!m_udp_connection->is_looping()){
+                m_udp_connection->start_looping();
+            }
+            // Prefer UDP if possible
+            if(m_udp_connection->threadsafe_is_alive()){
+                set_telemetry_connection_status("AUTO-CONNECTED(UDP,LOCALHOST)");
+                m_tcp_connection_wifi_hs->stop_looping_if();
+                m_tcp_connection_eth_hs->stop_looping_if();
+            }else{
+                if(!m_tcp_connection_wifi_hs->is_looping()){
+                    m_tcp_connection_wifi_hs->start_looping();
+                }
+                if(!m_tcp_connection_eth_hs->is_looping()){
+                    m_tcp_connection_eth_hs->start_looping();
+                }
+                if(m_tcp_connection_wifi_hs->threadsafe_is_alive()){
+                    set_telemetry_connection_status("AUTO-CONNECTED(TCP,WIFI HS)");
+                }else if(m_tcp_connection_eth_hs->threadsafe_is_alive()){
+                    set_telemetry_connection_status("AUTO-CONNECTED(TCP,ETHERNET HS)");
+                }else{
+                    set_telemetry_connection_status("AUTO-NOT CONNECTED");
+                }
             }
         }
     }else if(mavlink_connection_mode==1){
@@ -386,9 +406,7 @@ void MavlinkTelemetry::perform_connection_management()
         m_tcp_connection_wifi_hs->stop_looping_if();
         m_tcp_connection_eth_hs->stop_looping_if();
         m_udp_connection->stop_looping_if();
-
-        auto tmp=m_connction_manual_tcp_ip;
-        const std::string user_ip=*tmp;
+        const std::string user_ip=threadsafe_get_manual_tcp_ip();
         const int user_port=5760;
         if(m_tcp_connection_custom->m_remote_ip!=user_ip || m_tcp_connection_custom->m_remote_port!=user_port){
             m_tcp_connection_custom->stop_looping_if();
@@ -408,4 +426,26 @@ void MavlinkTelemetry::perform_connection_management()
     }else{
         set_telemetry_connection_status("UNKNOWN CONNECTION MODE");
     }
+}
+
+void MavlinkTelemetry::threadsafe_set_manual_tcp_ip(std::string ip)
+{
+    std::lock_guard<std::mutex> lock(m_connection_manual_tcp_ip_mutex);
+    m_connction_manual_tcp_ip=ip;
+}
+
+std::string MavlinkTelemetry::threadsafe_get_manual_tcp_ip()
+{
+    std::lock_guard<std::mutex> lock(m_connection_manual_tcp_ip_mutex);
+    return m_connction_manual_tcp_ip;
+}
+
+bool MavlinkTelemetry::is_localhost_only_usage()
+{
+    if(QOpenHD::instance().is_android() || QOpenHD::instance().is_mac() || QOpenHD::instance().is_windows()){
+        // OpenHD core not running on the same device
+        return false;
+    }
+    // OpenHD core running on the same device
+    return true;
 }

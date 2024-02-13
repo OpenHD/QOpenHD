@@ -99,11 +99,19 @@ private:
     std::unique_ptr<std::thread> m_heartbeat_thread;
     std::atomic_bool m_heartbeat_thread_run;
     std::atomic<int> m_connection_mode;
-    std::shared_ptr<std::string> m_connction_manual_tcp_ip;
     void send_heartbeat_loop();
     void perform_connection_management();
     // Weird
     std::mutex m_udp_or_tcp_mavlink_message_mutex;
+private:
+    // Set and read from 2 different threads. Why is there no std::atomic<std::string>> :/
+    std::mutex m_connection_manual_tcp_ip_mutex;
+    std::string m_connction_manual_tcp_ip;
+    void threadsafe_set_manual_tcp_ip(std::string ip);
+    std::string threadsafe_get_manual_tcp_ip();
+    // Returns true if QOpenHD is running on the ground station itself (e.g. on a rpi, rock)
+    // and always expects data via localhost::udp only.
+    bool is_localhost_only_usage();
 };
 
 #endif // OHDMAVLINKCONNECTION_H
