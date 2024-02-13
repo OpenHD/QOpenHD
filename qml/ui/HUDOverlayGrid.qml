@@ -483,6 +483,10 @@ Item {
         SideBarMain{
             id: sidebar
         }
+
+        MessageHUD {
+            id: messageHUD
+        }
     }
 
     // Extra element - allows customizing the OSD color(s) and more

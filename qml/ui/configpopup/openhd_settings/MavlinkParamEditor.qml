@@ -68,7 +68,7 @@ Rectangle{
         if(instanceMavlinkSettingsModel.last_updated_param_id==parameterId && instanceMavlinkSettingsModel.last_updated_param_success && parameterEditor.visible){
             // Success updating, close the editor
             parameterEditor.visible=false
-            _qopenhd.show_toast("Set "+parameterId+" success");
+            //_qopenhd.show_toast("Set "+parameterId+" success");
         }
     }
 
@@ -440,11 +440,11 @@ Rectangle{
                         //console.log("UI set int:{"+value_int_as_string+"}={"+value_int+"}")
                         console.log("UI set int:{"+value_int+"}")
                         //res=instanceMavlinkSettingsModel.try_update_parameter_int(parameterId,value_int)
-                        instanceMavlinkSettingsModel.try_set_param_int_async(parameterId,value_int);
+                        instanceMavlinkSettingsModel.try_set_param_int_async(parameterId,value_int,true);
                     }else{
                         var value_string=textInputParamtypeString.text
                         console.log("UI set string:{"+value_string+"}")
-                        instanceMavlinkSettingsModel.try_set_param_string_async(parameterId,value_string);
+                        instanceMavlinkSettingsModel.try_set_param_string_async(parameterId,value_string,true);
                     }
                     /*if(res===""){
                         // Update success (no error code)

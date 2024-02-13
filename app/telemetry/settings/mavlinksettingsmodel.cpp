@@ -349,6 +349,7 @@ void MavlinkSettingsModel::removeData(int row)
 
 void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData new_data)
 {
+    perform_dirty_actions(new_data);
     int row=-1;
     if(row_opt.has_value()){
         row=row_opt.value();
@@ -376,6 +377,7 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
+    perform_dirty_actions(data);
     if(is_param_whitelisted(data.unique_id.toStdString())){
         // never add whitelisted params to the simple model, they need synchronization
         return;
@@ -623,16 +625,6 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
         if(param.type==0){
             int32_t value=param.param_value.value<int>();
             param_value=value;
-            // Extra hack
-            if(param.param_id=="FC_BATT_N_CELLS" && value>0){
-                QSettings settings;
-                const auto settings_key="vehicle_battery_n_cells"
-                const int vehicle_battery_n_cells=settings.value(settings_key,3).toInt();
-                if(vehicle_battery_n_cells!=value){
-                    settings.setValue(settings_key,value);
-                    QOpenHD::instance().show_toast("Updated N Cells from air unit");
-                }
-            }
         }else{
             QString value=param.param_value.value<QString>();
             param_value=value.toStdString();
@@ -663,4 +655,21 @@ void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<i
     }
     set_update_count(m_update_count+1);
     qDebug()<<"Update count:"<<m_update_count;
+}
+
+void MavlinkSettingsModel::perform_dirty_actions(const SettingData &data)
+{
+    // Extra hack
+    if(data.unique_id=="FC_BATT_N_CELLS" && std::holds_alternative<int32_t>(data.value)){
+        const auto int_value=std::get<int32_t>(data.value);
+        if(int_value>0){
+            QSettings settings;
+            const auto settings_key="vehicle_battery_n_cells";
+            const int vehicle_battery_n_cells=settings.value(settings_key,3).toInt();
+            if(vehicle_battery_n_cells!=int_value){
+                settings.setValue(settings_key,int_value);
+                QOpenHD::instance().show_toast("Updated N Cells from air unit");
+            }
+        }
+    }
 }

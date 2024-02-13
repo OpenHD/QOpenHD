@@ -182,6 +182,7 @@ private:
     std::atomic_bool m_is_currently_busy=false;
 private:
     void finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result);
+    void perform_dirty_actions(const MavlinkSettingsModel::SettingData& data);
 };
 
 Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamIntEnum);

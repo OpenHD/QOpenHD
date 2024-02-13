@@ -407,7 +407,7 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
         if(delta>0){
             const auto elapsed_since_last=std::chrono::steady_clock::now()-m_last_tx_error_hud_message;
             if(elapsed_since_last>std::chrono::seconds(3)){
-                HUDLogMessagesModel::instance().add_message_warning("TX error (dropped packets)");
+                //HUDLogMessagesModel::instance().add_message_warning("TX error (dropped packets)");
                 m_last_tx_error_hud_message=std::chrono::steady_clock::now();
             }
             set_tx_is_currently_dropping_packets(true);

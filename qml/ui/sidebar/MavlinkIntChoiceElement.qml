@@ -30,7 +30,11 @@ BaseJoyEditElement{
         ListElement {value: 25; verbose:"25%"}
         ListElement {value: 50; verbose:"50%"}
         ListElement {value: 75; verbose:"75%"}
+        ListElement {value: 95; verbose:"95%"}
+        ListElement {value: 98; verbose:"98%"}
         ListElement {value: 100; verbose:"100%\n(Default)"}
+        ListElement {value: 102; verbose:"102%"}
+        ListElement {value: 105; verbose:"105%"}
         ListElement {value: 125; verbose:"125%"}
         ListElement {value: 150; verbose:"150%"}
         ListElement {value: 175; verbose:"175%"}

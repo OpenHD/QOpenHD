@@ -155,9 +155,6 @@ ApplicationWindow {
         AnyParamBusyIndicator{
              z: 10
         }
-        MessageHUD {
-            id: messageHUD
-        }
 
         Component.onCompleted: {
             console.log("Completed");

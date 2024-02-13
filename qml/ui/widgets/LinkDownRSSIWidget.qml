@@ -441,6 +441,29 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
+        // TX errors
+        Text{
+            id: txerrors_icon
+            visible: _ohdSystemAir.is_alive && _ohdSystemAir.tx_is_currently_dropping_packets
+            width: 32
+            height: 32
+            color: "yellow"
+            text: qsTr("\uf7ba")
+            anchors.left: downlink_dbm.right
+            anchors.leftMargin: 2
+            anchors.top: parent.top
+            anchors.topMargin: 2
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 30
+            font.family: settings.font_text
+            wrapMode: Text.NoWrap
+            elide: Text.ElideNone
+            clip: false
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
 // Consti10 temporary begin - r.n we only have the n of injected and received packets per card, no FEC statistics (and the fec statistics also have changed such
 // that what was displayed previosly doesn't make sense anymore
         ColumnLayout{
