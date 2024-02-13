@@ -204,6 +204,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     append_documented_read_only(ret,"WIFI_CARD3",descr_wifi_card);
     append_documented_read_only(ret,"HOTSPOT_CARD","Detected card for wifi hotspot");
     append_documented_read_only(ret,"WB_N_RX_CARDS","TODO");
+    append_only_documented(ret,"FC_BATT_N_CELLS","Stored locally on your air unit. If set to a nonzero value, overwrites the batt n cells of any connected GS (QOpenHD)"
+                                                 "such that you don't have to change the value when swapping around planes.");
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
     // video / camera parameters
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
