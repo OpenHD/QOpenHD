@@ -148,7 +148,6 @@ BaseJoyEditElement{
     property int m_model_index: -1;
     property int m_actual_value_int: -1;
     property string m_actual_value_string: ""
-    property bool m_param_exists: false;
 
     function get_model(){
         if(m_param_id=="BRIGHTNESS"){
@@ -175,13 +174,6 @@ BaseJoyEditElement{
         return elements_model_undefined;
     }
 
-    ListModel{
-        id: m_elements_model
-    }
-    function update_model(){
-        m_elements_model=get_model();
-    }
-
     onVisibleChanged: {
         if(visible){
             populate();
@@ -201,21 +193,26 @@ BaseJoyEditElement{
         }
     }
 
-    property bool is_populating:false
+    // Avoid binding loop
+    property bool populate_enable_left:false
+    property bool populate_enable_right:false
+    property string populate_display_text:"I SHOULD NEVER APPEAR"
 
     function populate(){
-        // Avoids qml binding loops
-        is_populating=true;
         // First, check if the system is alive
         if(!m_settings_model.system_is_alive()){
             // Do not enable the elements, system is not alive
             m_model_index=-1;
-            is_populating=false;
+            populate_enable_left=false;
+            populate_enable_right=false;
+            populate_display_text="N/A";
             return;
         }
         if(!m_settings_model.has_params_fetched){
             m_model_index=-1;
-            is_populating=false;
+            populate_enable_left=false;
+            populate_enable_right=false;
+            populate_display_text="N/A";
             return;
         }
         var param_exists;
@@ -226,13 +223,12 @@ BaseJoyEditElement{
         }
         if(!param_exists){
             console.log("Param "+m_param_id+" does not exist");
-            m_param_exists=false;
             m_model_index=-1;
-            is_populating=false;
+            populate_enable_left=false;
+            populate_enable_right=false;
+            populate_display_text="N/A";
             return;
         }
-        m_param_exists=true;
-        update_model();
         if(override_takes_string_param){
             m_actual_value_string=m_settings_model.get_cached_string(m_param_id);
             update_model_index(m_actual_value_string);
@@ -240,48 +236,49 @@ BaseJoyEditElement{
             m_actual_value_int=m_settings_model.get_cached_int(m_param_id);
             update_model_index(m_actual_value_int);
         }
-        is_populating=false;
     }
 
 
     function update_model_index(value){
+        const m_elements_model=get_model();
+        m_model_index=-1;
         for(var i=0;i<m_elements_model.count;i++){
             const tmp=m_elements_model.get(i).value;
             if(value===tmp){
                 m_model_index=i;
-                return;
+                break;
             }
         }
-        m_model_index=-1;
+        if(m_model_index!=-1 && m_model_index>0){
+            populate_enable_left=true;
+        }else{
+            populate_enable_left=false;
+        }
+        if(m_model_index!=-1 && m_model_index<m_elements_model.count-1){
+            populate_enable_right=true;
+        }else{
+            populate_enable_right=false;
+        }
+        if(m_model_index==-1){
+            var tmp="{";
+            tmp+=value;
+            tmp+="}\nCUSTOM";
+            populate_display_text=tmp
+        }else{
+            populate_display_text=m_elements_model.get(m_model_index).verbose;
+        }
     }
 
-
     m_button_left_activated: {
-        return m_model_index!=-1 && m_model_index>0 && !m_settings_model.ui_is_busy;
+        return populate_enable_left && !m_settings_model.ui_is_busy;
     }
 
     m_button_right_activated: {
-        if(is_populating)return false;
-        return m_model_index!=-1 && m_model_index<m_elements_model.count-1 && !m_settings_model.ui_is_busy;
+        return populate_enable_right && !m_settings_model.ui_is_busy;
     }
 
     m_displayed_value: {
-        if(is_populating)return "";
-        if(m_model_index==-1){
-            if(m_param_exists){
-                var ret="{";
-                if(override_takes_string_param){
-                    ret+=m_actual_value_string;
-                }else{
-                    ret+=m_actual_value_int;
-                }
-                ret+="}\nCUSTOM";
-                return ret;
-            }else{
-                return "NOT\nAVAILABLE"
-            }
-        }
-        return m_elements_model.get(m_model_index).verbose;
+        return populate_display_text;
     }
 
     function try_update_value_async(increment){
@@ -292,7 +289,7 @@ BaseJoyEditElement{
         }else{
             new_model_index-=1;
         }
-        const value_new=m_elements_model.get(new_model_index).value;
+        const value_new=get_model().get(new_model_index).value;
         if(override_takes_string_param){
              m_settings_model.try_set_param_string_async(m_param_id,value_new);
         }else{
