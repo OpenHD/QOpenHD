@@ -69,7 +69,7 @@ Column{
         to: 2000
         Material.accent: Material.Grey
         width: secondaryUiWidth
-        value: get_channel_value_joy()
+        value: get_channel_value_fc()
     }
 }
 
