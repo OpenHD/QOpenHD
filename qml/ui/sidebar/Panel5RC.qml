@@ -41,67 +41,17 @@ SideBarBasePanel{
                 sidebar.regain_control_on_sidebar_stack()
             }
         }
-
-        Text{
-            text: "Channel 1"
-            font.pixelSize: 14
-            font.family: "AvantGarde-Medium"
-            color: "#ffffff"
-            smooth: true
+        RCChannelView{
+            override_channel_index: 0
         }
-        ProgressBar {
-            id: progressBar1
-            from: 1000
-            to: 2000
-            value: m_control_yaw
-            Material.accent: Material.Grey
-            width: secondaryUiWidth
+        RCChannelView{
+            override_channel_index: 1
         }
-        Text{
-            text: "Channel 2"
-            font.pixelSize: 14
-            font.family: "AvantGarde-Medium"
-            color: "#ffffff"
-            smooth: true
+        RCChannelView{
+            override_channel_index: 2
         }
-        ProgressBar {
-            id: progressBar2
-            from: 1000
-            to: 2000
-            value: m_control_yaw
-            Material.accent: Material.Grey
-            width: secondaryUiWidth
-        }
-        Text{
-            text: "Channel 3"
-            font.pixelSize: 14
-            font.family: "AvantGarde-Medium"
-            color: "#ffffff"
-            smooth: true
-        }
-        ProgressBar {
-            id: progressBar3
-            from: 1000
-            to: 2000
-            value: m_control_yaw
-            Material.accent: Material.Grey
-            width: secondaryUiWidth
-        }
-        Text{
-            text: "Channel 4"
-            font.pixelSize: 14
-            font.family: "AvantGarde-Medium"
-            color: "#ffffff"
-            smooth: true
-        }
-        ProgressBar {
-            id: progressBar4
-            from: 1000
-            to: 2000
-            value: m_control_yaw
-            Material.accent: Material.Grey
-            width: secondaryUiWidth
+        RCChannelView{
+            override_channel_index: 3
         }
     }
-
 }
