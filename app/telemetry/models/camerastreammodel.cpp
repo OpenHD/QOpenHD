@@ -71,26 +71,9 @@ QString CameraStreamModel::camera_recording_mode_to_string(int recording_mode)
 
 bool CameraStreamModel::is_valid_resolution_fps_string(QString input)
 {
-    // Takes a string in the from {width}x{height}@{framerate}
-    // e.g. 1280x720@30
-    const std::string videoFormat=input.toStdString();
-      if(videoFormat.size()<=5){
-        return false;
-      }
-      const std::regex reg{R"((\d*)x(\d*)\@(\d*))"};
-      std::smatch result;
-      if (std::regex_search(videoFormat, result, reg)) {
-        if (result.size() == 4) {
-          //openhd::log::get_default()->debug("result[0]=["+result[0].str()+"]");
-          const int width_px=atoi(result[1].str().c_str());
-          const int height_px=atoi(result[2].str().c_str());
-          const int framerate=atoi(result[3].str().c_str());
-          if(width_px>=0 && height_px>=0 && framerate>=0){
-              return true;
-          }
-        }
-      }
-      return false;
+    auto parsed=parse_video_format(input.toStdString());
+    if(parsed.has_value())return true;
+    return false;
 }
 
 QString CameraStreamModel::get_default_resolution()
@@ -109,6 +92,16 @@ QStringList CameraStreamModel::get_supported_resolutions()
         ret.push_back(element.as_string().c_str());
     }
     return ret;
+}
+
+QString CameraStreamModel::make_resolution_fps_verbose(QString input)
+{
+    auto parsed=parse_video_format(input.toStdString());
+    if(parsed.has_value()){
+        return get_verbose_string_of_resolution(parsed.value()).c_str();
+    }
+    qDebug()<<"WEIRD RESOLUTION"<<input;
+    return input;
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)

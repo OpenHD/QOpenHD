@@ -121,10 +121,28 @@ BaseJoyEditElement{
 
     // NOTE: This is for a string param !
     ListModel{
-        id: elements_model_camera_resolution
+        id: elements_model_camera_resolution_bup
         ListElement {value: "640x480@60"; verbose:"VGA 4:3\n60fps"}
         ListElement {value: "1280x720@60"; verbose:"HD 16:9\n60fps"}
         ListElement {value: "1920x1080@30"; verbose:"FHD 16:9\n30fps"}
+    }
+    ListModel{
+        id: elements_model_camera_resolution_dynamic
+    }
+    // Built dynamically depending on the used camera
+    function get_camera_resolution_model(){
+        if(_cameraStreamModelPrimary.camera_type<0){
+            return elements_model_camera_resolution_bup;
+        }
+        var supported_resolutions=_cameraStreamModelPrimary.get_supported_resolutions();
+        elements_model_camera_resolution_dynamic.clear()
+        for(var i=0; i<supported_resolutions.length; i++){
+            var tmp=supported_resolutions[i];
+            var verbose_str=_cameraStreamModelPrimary.make_resolution_fps_verbose(tmp);
+            //console.log("Supported:["+tmp+"]");
+            elements_model_camera_resolution_dynamic.append({value: tmp, verbose: verbose_str});
+        }
+        return elements_model_camera_resolution_dynamic;
     }
 
     property int m_model_index: -1;
@@ -152,7 +170,7 @@ BaseJoyEditElement{
         }else if(m_param_id=="ROTATION_FLIP"){
             return elements_model_camera_rotation_flip
         }else if(m_param_id=="RESOLUTION_FPS"){
-            return elements_model_camera_resolution;
+            return get_camera_resolution_model();
         }
         return elements_model_undefined;
     }
@@ -176,15 +194,21 @@ BaseJoyEditElement{
         }
     }
 
+    property bool is_populating:false
+
     function populate(){
+        // Avoids qml binding loops
+        is_populating=true;
         // First, check if the system is alive
         if(!m_settings_model.system_is_alive()){
             // Do not enable the elements, system is not alive
             m_model_index=-1;
+            is_populating=false;
             return;
         }
         if(!m_settings_model.has_params_fetched){
             m_model_index=-1;
+            is_populating=false;
             return;
         }
         var param_exists;
@@ -197,6 +221,7 @@ BaseJoyEditElement{
             console.log("Param "+m_param_id+" does not exist");
             m_param_exists=false;
             m_model_index=-1;
+            is_populating=false;
             return;
         }
         m_param_exists=true;
@@ -207,6 +232,7 @@ BaseJoyEditElement{
             m_actual_value_int=m_settings_model.get_cached_int(m_param_id);
             update_model_index(m_actual_value_int);
         }
+        is_populating=false;
     }
 
 
@@ -227,6 +253,7 @@ BaseJoyEditElement{
     }
 
     m_button_right_activated: {
+        if(is_populating)return false;
         return m_model_index!=-1 && m_model_index<get_model().count-1 && !m_settings_model.ui_is_busy;
     }
 
