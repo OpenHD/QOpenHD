@@ -14,7 +14,7 @@
 #include "../nalu/CodecConfigFinder.hpp"
 
 #include "common/TimeHelper.hpp"
-#include "common/moodycamel/readerwriterqueue/readerwritercircularbuffer.h"
+#include "common/ThreadsafeQueue.hpp"
 
 //#define OPENHD_USE_LIB_UVGRTP
 
@@ -59,7 +59,7 @@ private:
     std::mutex m_data_mutex;
     // space for up to X NALUs to account for "weird" cases, fifo anyways
     // In case the decoder cannot keep up with the data we provide to it, the only fix would be to reduce the fps/resolution anyways.
-    moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<NALUBuffer>> m_data_queue{20};
+    qopenhd::ThreadsafeQueue<std::shared_ptr<NALUBuffer>> m_data_queue{20};
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
     std::mutex m_new_nalu_data_cb_mutex;
     NEW_NALU_CALLBACK m_new_nalu_cb=nullptr;

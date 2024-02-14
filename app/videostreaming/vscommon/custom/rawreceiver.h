@@ -9,8 +9,7 @@
 #include <mutex>
 
 #include "common/TimeHelper.hpp"
-#include <common/moodycamel/readerwriterqueue/readerwritercircularbuffer.h>
-
+#include "common/ThreadsafeQueue.hpp"
 
 
 class RawReceiver
@@ -45,7 +44,7 @@ private:
     FPSCalculator m_estimate_fps_calculator{};
     // space for up to X NALUs to account for "weird" cases, fifo anyways
     // In case the decoder cannot keep up with the data we provide to it, the only fix would be to reduce the fps/resolution anyways.
-    moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<NALUBuffer>> m_data_queue{20};
+    qopenhd::ThreadsafeQueue<std::shared_ptr<NALUBuffer>> m_data_queue{20};
 private:
     int n_frames_non_idr=0;
     int n_frames_idr=0;

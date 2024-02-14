@@ -84,15 +84,13 @@ RTPReceiver::~RTPReceiver()
 
 std::shared_ptr<NALUBuffer> RTPReceiver::get_next_frame(std::optional<std::chrono::microseconds> timeout)
 {
-    std::shared_ptr<NALUBuffer> ret=nullptr;
-    //qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
     if(timeout!=std::nullopt){
-        m_data_queue.wait_dequeue_timed(ret,timeout.value());
-    }else{
-        m_data_queue.try_dequeue(ret);
+        auto ret=m_data_queue.wait_dequeue_timed(timeout.value());
+        return ret.value_or(nullptr);
     }
-    return ret;
- }
+    auto ret=m_data_queue.wait_dequeue_timed(std::chrono::microseconds(100));
+    return ret.value_or(nullptr);
+}
 
 void RTPReceiver::register_new_nalu_callback(NEW_NALU_CALLBACK cb){
     std::lock_guard<std::mutex> lock(m_new_nalu_data_cb_mutex);

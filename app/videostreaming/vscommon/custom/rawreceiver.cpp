@@ -27,14 +27,13 @@ RawReceiver::~RawReceiver()
 
 std::shared_ptr<NALUBuffer> RawReceiver::get_next_frame(std::optional<std::chrono::microseconds> timeout)
 {
-    std::shared_ptr<NALUBuffer> ret=nullptr;
     //qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
     if(timeout!=std::nullopt){
-        m_data_queue.wait_dequeue_timed(ret,timeout.value());
-    }else{
-        m_data_queue.try_dequeue(ret);
+        auto ret=m_data_queue.wait_dequeue_timed(timeout.value());
+        return ret.value_or(nullptr);
     }
-    return ret;
+    auto ret=m_data_queue.wait_dequeue_timed(std::chrono::microseconds(100));
+    return ret.value_or(nullptr);
 }
 
 std::shared_ptr<std::vector<uint8_t> > RawReceiver::get_config_data()
