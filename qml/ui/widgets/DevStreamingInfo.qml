@@ -6,7 +6,7 @@ Item {
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.topMargin: 100
-    visible: settings.show_dev_stats_overlay
+    visible: settings.show_dev_stats_overlay && !sidebar.m_extra_is_visible
 
     Column{
         width: parent.width
