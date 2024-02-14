@@ -53,14 +53,13 @@ Item{
         color: "green"
         smooth: true
     }
-
     // This indicates a busy camera
     BusyIndicator{
         id: cam_busy_indicator
         width: busy_indicator_size
         height: busy_indicator_size
         anchors.centerIn: parent
-        running: !any_param_busy_indiscator.running && (_cameraStreamModelPrimary.camera_status>0 && _cameraStreamModelPrimary.camera_status==2 && _ohdSystemAir.is_alive)
+        running: !any_param_busy_indiscator.running && (_cameraStreamModelPrimary.camera_status>0 && _cameraStreamModelPrimary.camera_status==2 && _ohdSystemAir.is_alive) && !settings_panel.visible
     }
     Text{
         id: cam_busy_description

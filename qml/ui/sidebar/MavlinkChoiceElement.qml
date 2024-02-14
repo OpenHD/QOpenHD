@@ -236,7 +236,7 @@ BaseJoyEditElement{
             update_model_index(actual_value_string);
         }else{
             var actual_value_int=m_settings_model.get_cached_int(m_param_id);
-            update_model_index(m_actual_value_int);
+            update_model_index(actual_value_int);
         }
     }
 
