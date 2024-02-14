@@ -108,8 +108,8 @@ BaseJoyEditElement{
         id: elements_model_camera_rotation_flip
         ListElement {value: 0; verbose:"0°\n(Default)"}
         ListElement {value: 1; verbose:"VFLIP\n(mirror)\n"}
-        ListElement {value: 2; verbose:"HFLIP°\n(180°)"}
-        ListElement {value: 3; verbose:"BOTH°\n"}
+        ListElement {value: 2; verbose:"HFLIP\n(180°)"}
+        ListElement {value: 3; verbose:"BOTH\n"}
     }
 
     ListModel{
