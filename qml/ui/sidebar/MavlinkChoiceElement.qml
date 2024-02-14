@@ -104,6 +104,13 @@ BaseJoyEditElement{
         ListElement {value: 0; verbose:"0°\n(Default)"}
         ListElement {value: 1; verbose:"180°\n"}
     }
+    ListModel{
+        id: elements_model_camera_rotation_flip
+        ListElement {value: 0; verbose:"0°\n(Default)"}
+        ListElement {value: 1; verbose:"VFLIP\n(mirror)\n"}
+        ListElement {value: 2; verbose:"HFLIP°\n(180°)"}
+        ListElement {value: 3; verbose:"BOTH°\n"}
+    }
 
     ListModel{
         id: elements_model_undefined
@@ -142,6 +149,8 @@ BaseJoyEditElement{
             return elements_model_air_recording;
         }else if(m_param_id=="WIFI_HOTSPOT_E"){
             return elements_model_hotspot
+        }else if(m_param_id=="ROTATION_FLIP"){
+            return elements_model_camera_rotation_flip
         }else if(m_param_id=="RESOLUTION_FPS"){
             return elements_model_camera_resolution;
         }

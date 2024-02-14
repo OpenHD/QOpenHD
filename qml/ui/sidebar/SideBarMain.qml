@@ -49,16 +49,19 @@ Item {
     }
 
     // This is called whenever the user clicks on the 'WBLIink' widget
-    function open_link_category(){
+    function open_category(category_index){
         open_and_take_control(false);
-        m_stack_index=0;
+        m_stack_index=category_index;
+    }
+
+    function open_link_category(){
+        open_category(0)
     }
 
     // This is called when the user clicks on the configure button of the CAM1 / CAM2 widget
     function open_video_stream_category(is_primary){
         if(is_primary){
-            open_and_take_control(false);
-            m_stack_index=2;
+            open_category(1)
         }
     }
 

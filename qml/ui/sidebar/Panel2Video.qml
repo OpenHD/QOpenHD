@@ -33,10 +33,22 @@ SideBarBasePanel{
                 sidebar.regain_control_on_sidebar_stack()
             }
             onGoto_next: {
-               sidebar.regain_control_on_sidebar_stack()
+               //sidebar.regain_control_on_sidebar_stack()
+                rotation_flip.takeover_control();
             }
         }
-
+        MavlinkChoiceElement{
+            id: rotation_flip
+            m_title: "ROTATION/FLIP"
+            m_param_id: "ROTATION_FLIP"
+            m_settings_model: _airCameraSettingsModel
+            onGoto_previous: {
+               edit_resolution_element.takeover_control();
+            }
+            onGoto_next: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+        }
         /*ComboBox {
                 id:raspberryCams3
                 visible: true

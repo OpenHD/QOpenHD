@@ -200,9 +200,21 @@ BaseWidget {
                 width: parent.width
                 height: 50
                 ButtonIconGear{
+                    id: button_change_resolution
                     anchors.left: parent.left
                     onClicked: {
                         sidebar.open_video_stream_category(m_is_for_primary_camera)
+                        widgetAction.close()
+
+                    }
+                }
+                ButtonIconGear{
+                    id: button_change_iq
+                    anchors.left: button_change_resolution.right
+                    anchors.leftMargin: 5
+                    onClicked: {
+                        sidebar.open_category(2)
+                        widgetAction.close()
                     }
                 }
                 visible: m_is_for_primary_camera

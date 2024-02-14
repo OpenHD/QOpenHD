@@ -70,5 +70,6 @@ SideBarBasePanel{
                 sidebar.regain_control_on_sidebar_stack()
             }
         }
+
     }
 }

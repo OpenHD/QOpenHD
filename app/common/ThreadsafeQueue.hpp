@@ -23,6 +23,7 @@ class ThreadsafeQueue {
       return false;
     }
     queue.push(element);
+    lk.unlock();// minimize lock contention
     cv.notify_one();
     return true;
   }

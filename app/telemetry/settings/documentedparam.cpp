@@ -286,13 +286,15 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_only_documented(ret,"V_PRIMARY_PERC",
                                "If Variable bitrate is enabled,your primary camera is given that much percentage of the total available link bandwidth. "
                                "The rest is given to the secondary camera. Default to 60% (60:40 split).");
-        append_int(ret,"HORIZ_FLIP",
-                   ImprovedIntSetting::createEnumEnableDisable(),
-                   "Flip video horizontally"
-                   );
-        append_int(ret,"VERT_FLIP",
-                   ImprovedIntSetting::createEnumEnableDisable(),
-                   "Flip video vertically"
+
+        append_int(ret,"ROTATION_FLIP",
+                    ImprovedIntSetting(-1,2130706433,{
+                       ImprovedIntSetting::Item{"NONE",0},
+                       ImprovedIntSetting::Item{"VFLIP°",1},
+                       ImprovedIntSetting::Item{"HFLIP",2},
+                       ImprovedIntSetting::Item{"BOTH",3}
+                   }),
+                   "Flip video vertically / horizontally (ROTATE)"
                    );
 
         append_int(ret,"ROTATION_DEG",
