@@ -23,7 +23,7 @@ BaseWidget {
     bw_verbose_name: "WB LIVE RATE CONTROL"
 
     defaultAlignment: 0
-    defaultXOffset: 320
+    defaultXOffset: 250
     defaultYOffset: 2
     defaultHCenter: false
     defaultVCenter: false
