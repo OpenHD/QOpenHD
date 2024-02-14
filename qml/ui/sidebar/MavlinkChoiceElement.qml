@@ -183,7 +183,9 @@ BaseJoyEditElement{
     property int m_update_count: m_settings_model.update_count
     onM_update_countChanged: {
         if(visible){
-            populate();
+            if(m_settings_model.last_updated_param_id===m_param_id){
+                populate();
+            }
         }
     }
     property bool m_has_params_fetched: m_settings_model.has_params_fetched
@@ -230,10 +232,10 @@ BaseJoyEditElement{
             return;
         }
         if(override_takes_string_param){
-            m_actual_value_string=m_settings_model.get_cached_string(m_param_id);
-            update_model_index(m_actual_value_string);
+            var actual_value_string=m_settings_model.get_cached_string(m_param_id);
+            update_model_index(actual_value_string);
         }else{
-            m_actual_value_int=m_settings_model.get_cached_int(m_param_id);
+            var actual_value_int=m_settings_model.get_cached_int(m_param_id);
             update_model_index(m_actual_value_int);
         }
     }
