@@ -175,6 +175,13 @@ BaseJoyEditElement{
         return elements_model_undefined;
     }
 
+    ListModel{
+        id: m_elements_model
+    }
+    function update_model(){
+        m_elements_model=get_model();
+    }
+
     onVisibleChanged: {
         if(visible){
             populate();
@@ -225,6 +232,7 @@ BaseJoyEditElement{
             return;
         }
         m_param_exists=true;
+        update_model();
         if(override_takes_string_param){
             m_actual_value_string=m_settings_model.get_cached_string(m_param_id);
             update_model_index(m_actual_value_string);
@@ -237,8 +245,8 @@ BaseJoyEditElement{
 
 
     function update_model_index(value){
-        for(var i=0;i<get_model().count;i++){
-            const tmp=get_model().get(i).value;
+        for(var i=0;i<m_elements_model.count;i++){
+            const tmp=m_elements_model.get(i).value;
             if(value===tmp){
                 m_model_index=i;
                 return;
@@ -254,10 +262,11 @@ BaseJoyEditElement{
 
     m_button_right_activated: {
         if(is_populating)return false;
-        return m_model_index!=-1 && m_model_index<get_model().count-1 && !m_settings_model.ui_is_busy;
+        return m_model_index!=-1 && m_model_index<m_elements_model.count-1 && !m_settings_model.ui_is_busy;
     }
 
     m_displayed_value: {
+        if(is_populating)return "";
         if(m_model_index==-1){
             if(m_param_exists){
                 var ret="{";
@@ -272,7 +281,7 @@ BaseJoyEditElement{
                 return "NOT\nAVAILABLE"
             }
         }
-        return get_model().get(m_model_index).verbose;
+        return m_elements_model.get(m_model_index).verbose;
     }
 
     function try_update_value_async(increment){
@@ -283,7 +292,7 @@ BaseJoyEditElement{
         }else{
             new_model_index-=1;
         }
-        const value_new=get_model().get(new_model_index).value;
+        const value_new=m_elements_model.get(new_model_index).value;
         if(override_takes_string_param){
              m_settings_model.try_set_param_string_async(m_param_id,value_new);
         }else{
