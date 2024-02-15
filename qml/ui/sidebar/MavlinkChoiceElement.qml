@@ -251,22 +251,27 @@ BaseJoyEditElement{
                 break;
             }
         }
-        if(m_model_index!=-1 && m_model_index>0){
-            populate_enable_left=true;
-        }else{
-            populate_enable_left=false;
-        }
-        if(m_model_index!=-1 && m_model_index<m_elements_model.count-1){
-            populate_enable_right=true;
-        }else{
-            populate_enable_right=false;
-        }
         if(m_model_index==-1){
+            // The current value does not exist inside the model
             var tmp="{";
             tmp+=value;
             tmp+="}\nCUSTOM";
             populate_display_text=tmp
+            populate_enable_left=false;
+            populate_enable_right=false;
         }else{
+            // The current value exists inside the mdel, activate the up/down as long as
+            // that does not go out of the bounds of the model
+            if(m_model_index>0){
+                populate_enable_left=true;
+            }else{
+                populate_enable_left=false;
+            }
+            if(m_model_index<m_elements_model.count-1){
+                populate_enable_right=true;
+            }else{
+                populate_enable_right=false;
+            }
             populate_display_text=m_elements_model.get(m_model_index).verbose;
         }
     }
