@@ -37,7 +37,9 @@ Card {
     }
 
     // Returns true if we have a 'NICE UI' for this platform type
-    function set_ohd_platform_type(ohd_platform_type){
+    function set_ohd_platform_type(){
+        const ohd_platform_type=_ohdSystemAir.ohd_platform_type;
+        console.log("Platform:"+ohd_platform_type)
         if(ohd_platform_type>=10 && ohd_platform_type<20){
             m_platform_type=mPLATFORM_TYPE_RPI;
             return true;
@@ -64,9 +66,8 @@ Card {
             return "ROCK";
         }else if(m_platform_type==mPLATFORM_TYPE_X20){
             return "X20";
-        }else{
-            return "X86";
         }
+        return "X86";
     }
 
     // For debugging
@@ -125,7 +126,7 @@ Card {
         id: rpi_arducam_cameras
         ListElement {title: "SKYMASTERHDR"; value: 40}
         ListElement {title: "SKYVISIONPRO"; value: 41}
-        ListElement {title: "IMX477"; value: 42}
+        ListElement {title: "IMX477m"; value: 42}
         ListElement {title: "IMX462"; value: 43}
         ListElement {title: "IMX327"; value: 44}
         ListElement {title: "IMX290"; value: 45}
@@ -186,7 +187,7 @@ Card {
 
 
     function initialize_and_show(){
-        console.log("Choose camera dialoque opened with ");
+        console.log("Choose camera dialoque opened with "+get_platform_name());
         comboBoxManufacturers.model=get_manufacturers_model();
         var current_openhd_core_cam_type=m_cam_model.camera_type;
         // Try and find the index (2D) of the currently active camera
