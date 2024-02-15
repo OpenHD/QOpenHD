@@ -196,7 +196,20 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                "(similar to how flight modes work)."
                );
     append_only_documented(ret,openhd::WB_FREQUENCY,"!!!Editing this param manually without care will result in a broken link!!!");
-    append_only_documented(ret,openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM,"Developer only, FEC auto internal.");
+    {
+        auto default_values=std::vector<ImprovedIntSetting::Item>{
+                                                                    {"AUTO -1",-1},
+                                                                    {"LOW 20",20},
+                                                                    {"30",30},
+                                                                    {"40",40},
+                                                                    {"50",50},
+                                                                    {"100",100},
+                                                                    {"128",128},
+                                                                    };
+        append_int(ret,openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM,
+                   ImprovedIntSetting(-1,128,default_values),
+                   "Developer only, max FEC block size.");
+    }
     const auto descr_wifi_card="Detected wifi card type used for wifibroadcast.";
     append_documented_read_only(ret,"WIFI_CARD0",descr_wifi_card);
     append_documented_read_only(ret,"WIFI_CARD1",descr_wifi_card);
