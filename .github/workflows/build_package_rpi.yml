@@ -74,6 +74,7 @@ jobs:
         release: "bullseye"
         republish: "true" # needed ONLY if version is not changing
         file: "QOpenHD/*.deb"
+      if: ${{ github.ref != 'refs/heads/2.5-evo' }}
           
       #- name: Install
       #  run: |
