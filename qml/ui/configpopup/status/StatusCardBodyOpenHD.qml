@@ -66,7 +66,13 @@ Column {
     }
 
     StatusCardRow{
-        m_left_text: qsTr("Version:")
+        m_left_text: qsTr("Platform:")
+        m_right_text: m_is_ground ? _ohdSystemGround.ohd_platform_type_as_string : _ohdSystemAir.ohd_platform_type_as_string
+        m_has_error: false
+    }
+
+    StatusCardRow{
+        m_left_text: qsTr("OHD Version:")
         m_right_text: m_version
         m_has_error: {
             if(m_is_ground){

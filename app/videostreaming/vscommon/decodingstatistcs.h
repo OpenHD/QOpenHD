@@ -32,7 +32,7 @@ class DecodingStatistcs : public QObject
     // In QOpenHD (rtp udp receiver) measured bitrate
     L_RO_PROP(QString, rtp_measured_bitrate, set_rtp_measured_bitrate, "-1")
     L_RO_PROP(QString, estimate_rtp_fps, set_estimate_rtp_fps, "-1")
-    L_RO_PROP(int, estimate_keyframe_interval, set_estimate_keyframe_interval, -1)
+    L_RO_PROP(QString, estimate_keyframe_interval, set_estimate_keyframe_interval, "N/A")
     // Not link related - n frame(s) we had to drop since the decoder cannot keep up with
     // the data stream that is provided to it
     L_RO_PROP(int,n_decoder_dropped_frames,set_n_decoder_dropped_frames,-1)
@@ -42,6 +42,7 @@ public:
     void reset_all_to_default();
 
     void util_set_primary_stream_frame_format(std::string format,int width_px,int height_px);
+    void util_set_estimate_keyframe_interval_int(int value);
 };
 
 #endif // DECODINGSTATISTCS_H

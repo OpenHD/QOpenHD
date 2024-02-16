@@ -38,7 +38,7 @@ RTPReceiver::RTPReceiver(const int port,const std::string ip,bool is_h265,bool f
         }
         m_out_file=std::make_unique<std::ofstream>(ss.str());
     }
-    m_keyframe_finder=std::make_unique<KeyFrameFinder>();
+    m_keyframe_finder=std::make_unique<CodecConfigFinder>();
 #ifdef OPENHD_USE_LIB_UVGRTP
     m_session = m_ctx.create_session(ip.c_str());
     int flags = RCE_RECEIVE_ONLY;
@@ -84,15 +84,13 @@ RTPReceiver::~RTPReceiver()
 
 std::shared_ptr<NALUBuffer> RTPReceiver::get_next_frame(std::optional<std::chrono::microseconds> timeout)
 {
-    std::shared_ptr<NALUBuffer> ret=nullptr;
-    //qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
     if(timeout!=std::nullopt){
-        m_data_queue.wait_dequeue_timed(ret,timeout.value());
-    }else{
-        m_data_queue.try_dequeue(ret);
+        auto ret=m_data_queue.wait_dequeue_timed(timeout.value());
+        return ret.value_or(nullptr);
     }
-    return ret;
- }
+    auto ret=m_data_queue.wait_dequeue_timed(std::chrono::microseconds(100));
+    return ret.value_or(nullptr);
+}
 
 void RTPReceiver::register_new_nalu_callback(NEW_NALU_CALLBACK cb){
     std::lock_guard<std::mutex> lock(m_new_nalu_data_cb_mutex);
@@ -102,8 +100,8 @@ void RTPReceiver::register_new_nalu_callback(NEW_NALU_CALLBACK cb){
 std::shared_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
 {
      std::lock_guard<std::mutex> lock(m_data_mutex);
-     if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
-         return m_keyframe_finder->get_keyframe_data(is_h265);
+     if(m_keyframe_finder->all_config_available(is_h265)){
+         return m_keyframe_finder->get_config_data(is_h265);
      }
      return nullptr;
 }
@@ -123,18 +121,29 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
     NALU nalu(nalu_data,nalu_data_len,is_h265);
     //qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();
     // hacky way to estimate keyframe interval
+    /*if(nalu.is_keyframe()){
+        if(dev_count>2)return;
+        dev_count++;
+    }*/
     if(nalu.is_frame_but_not_keyframe()){
         n_frames_non_idr++;
     }
     if(nalu.is_keyframe()){
+        //qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();
         n_frames_idr++;
     }
     if(n_frames_idr>=3){
-        DecodingStatistcs::instance().set_estimate_keyframe_interval((n_frames_non_idr+n_frames_idr)/n_frames_idr);
+        int keyframe_interval=(n_frames_non_idr+n_frames_idr)/n_frames_idr;
+        DecodingStatistcs::instance().util_set_estimate_keyframe_interval_int(keyframe_interval);
         n_frames_idr=0;
         n_frames_non_idr=0;
     }
-    if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
+    if(n_frames_non_idr>60*3 && n_frames_idr==0){
+        std::stringstream ss;
+        ss<<">"<<n_frames_non_idr;
+        DecodingStatistcs::instance().set_estimate_keyframe_interval(ss.str().c_str());
+    }
+    if(m_keyframe_finder->all_config_available(is_h265)){
         if(!m_keyframe_finder->check_is_still_same_config_data(nalu)){
             // We neither queue on new data nor call the callback - upper level needs to reconfigure the decoder
             qDebug()<<"config_has_changed_during_decode";
@@ -174,7 +183,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         }
     }else{
         // We don't have all config data yet, drop anything that is not config data.
-        m_keyframe_finder->saveIfKeyFrame(nalu);
+        m_keyframe_finder->save_if_config(nalu);
     }
 }
 

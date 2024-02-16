@@ -20,6 +20,9 @@
 
 #include <../util/WorkaroundMessageBox.h>
 #include "../settings/wblinksettingshelper.h"
+#include "../settings/mavlinksettingsmodel.h"
+
+#include "openhd_core/platform.hpp"
 
 // From https://netbeez.net/blog/what-is-mcs-index/
 static std::vector<int> get_dbm_20mhz(){
@@ -59,6 +62,21 @@ static MonitorModeLinkBitfield parse_monitor_link_bitfield(uint8_t bitfield){
     return ret;
 }
 
+static std::string ohd_version_as_string(uint8_t major,uint8_t minor,uint8_t patch,uint8_t release_type){
+  std::stringstream ss;
+  ss<<(int)major<<"."<<(int)minor<<"."<<(int)patch<<"-evo";
+  if(release_type==0){
+    ss<<"-release";
+  }else if(release_type==1){
+    ss<<"-beta";
+  }else if(release_type==2){
+    ss<<"-alpha";
+  }else{
+    ss<<"-unknown";
+  }
+  return ss.str();
+}
+
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},m_is_air(is_air)
 {
@@ -85,14 +103,14 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"AOHDSystem::process_message: wron sys id";
         return false;
     }
+    autofech_params_if_apropriate();
     m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
     bool consumed=false;
     switch(msg.msgid){
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
             mavlink_openhd_version_message_t parsedMsg;
             mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
-            QString version(parsedMsg.version);
-            set_openhd_version(version);
+            set_openhd_version(ohd_version_as_string(parsedMsg.major,parsedMsg.minor,parsedMsg.patch,parsedMsg.release_type).c_str());
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
@@ -255,6 +273,11 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
     return consumed;
 }
 
+QString AOHDSystem::get_rate_for_mcs_bw(int mcs, int bw)
+{
+    return "TODO";
+}
+
 void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_status_t &msg)
 {
     set_curr_cpuload_perc(msg.cpu_cores[0]);
@@ -273,6 +296,10 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_ram_total(msg.ram_total);
     int16_t air_reported_sys_id=msg.fan_speed[0];
     set_air_reported_fc_sys_id(air_reported_sys_id);
+    const uint8_t ohd_platform=msg.link_type[0];
+    set_ohd_platform(ohd_platform);
+    const auto platform_as_str=openhd::x_platform_type_to_string(ohd_platform);
+    set_ohd_platform_type_as_string(platform_as_str.c_str());
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
@@ -394,7 +421,7 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
         if(delta>0){
             const auto elapsed_since_last=std::chrono::steady_clock::now()-m_last_tx_error_hud_message;
             if(elapsed_since_last>std::chrono::seconds(3)){
-                HUDLogMessagesModel::instance().add_message_warning("TX error (dropped packets)");
+                //HUDLogMessagesModel::instance().add_message_warning("TX error (dropped packets)");
                 m_last_tx_error_hud_message=std::chrono::steady_clock::now();
             }
             set_tx_is_currently_dropping_packets(true);
@@ -452,6 +479,46 @@ void AOHDSystem::process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating
     set_tx_operating_mode(msg.tx_passive_mode_is_enabled);
 }
 
+void AOHDSystem::autofech_params_if_apropriate()
+{
+    if(!m_is_air){
+        // Ground - auto-fetch IF ;)
+        if(m_wb_gnd_operating_mode==0){
+            // Link is active
+            if(!MavlinkSettingsModel::is_air_or_cam_param_busy()){
+                // None of the air param set(s) are currently busy
+                if(!MavlinkSettingsModel::instanceGround().has_params_fetched() && !MavlinkSettingsModel::instanceGround().is_x_busy()){
+                    qDebug()<<"Init autofetch of groun param set";
+                    // Ground has neither already fetched all params or is busy fetching already
+                    MavlinkSettingsModel::instanceGround().try_refetch_all_parameters_async(true);
+                }
+            }
+        }
+    }else{
+        // AIR - auto fetch IF ;)
+        if(!MavlinkSettingsModel::instanceGround().is_x_busy()){
+            // Ground is currently not fetching params
+            if(m_curr_rx_last_packet_status_good){
+                // air reports a working uplink
+                if(!MavlinkSettingsModel::is_air_or_cam_param_busy()){
+                    // None of the (up to 3) air param set(s) are currently fetching params
+                    if(!MavlinkSettingsModel::instanceAir().has_params_fetched()){
+                        qDebug()<<"Init autofetch of air param set";
+                        MavlinkSettingsModel::instanceAir().try_refetch_all_parameters_async();
+                    }else if(!MavlinkSettingsModel::instanceAirCamera().has_params_fetched()){
+                        qDebug()<<"Init autofetch of air camera1 param set";
+                        MavlinkSettingsModel::instanceAirCamera().try_refetch_all_parameters_async();
+                    }else if(!MavlinkSettingsModel::instanceAirCamera2().has_params_fetched()){
+                        qDebug()<<"Init autofetch of air camera2 param set";
+                        MavlinkSettingsModel::instanceAirCamera2().try_refetch_all_parameters_async();
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 void AOHDSystem::update_alive()
 {
     // NOTE: Since we are really resourcefully with the link, we consider the system alive if any message coming from it has
@@ -491,7 +558,20 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
         }else{
             LogMessagesModel::instanceOHDAir().add_message_debug("QOpenHD",message.str().c_str());
         }
-
+        if(alive){
+            /*if(m_is_air && !MavlinkSettingsModel::instanceAir().has_params_fetched()){
+                MavlinkSettingsModel::instanceAir().try_refetch_all_parameters_async();
+            }
+            if(m_is_air && !MavlinkSettingsModel::instanceAirCamera().has_params_fetched()){
+                MavlinkSettingsModel::instanceAirCamera().try_refetch_all_parameters_async();
+            }
+            if(m_is_air && !MavlinkSettingsModel::instanceAirCamera2().has_params_fetched()){
+                MavlinkSettingsModel::instanceAirCamera2().try_refetch_all_parameters_async();
+            }
+            if(!m_is_air && !MavlinkSettingsModel::instanceGround().has_params_fetched()){
+                MavlinkSettingsModel::instanceGround().try_refetch_all_parameters_async();
+            }*/
+        }
         set_is_alive(alive);
     }
 }

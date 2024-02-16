@@ -11,6 +11,10 @@
 #include <QVariant>
 
 #include "../action/impl/xparam.h"
+// Dirty
+#include "../models/openhd_core/camera.hpp"
+#include "../models/aohdsystem.h"
+#include "../util/WorkaroundMessageBox.h"
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {
@@ -35,11 +39,14 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
     return *instanceGround;
 }
 
-/*MavlinkSettingsModel &MavlinkSettingsModel::instanceFC()
+bool MavlinkSettingsModel::system_is_alive()
 {
-    static MavlinkSettingsModel* instanceFc=new MavlinkSettingsModel(1,1);
-    return *instanceFc;
-}*/
+    if(m_sys_id==OHD_SYS_ID_AIR){
+        return AOHDSystem::instanceAir().is_alive();
+    }
+    return AOHDSystem::instanceGround().is_alive();
+}
+
 
 bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
 {
@@ -67,11 +74,32 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     //m_data.push_back({"VIDEO_HEIGHT",1});
     //m_data.push_back({"VIDEO_FPS",1});
     connect(this, &MavlinkSettingsModel::signal_ui_thread_replace_param_set, this, &MavlinkSettingsModel::ui_thread_replace_param_set);
+    //
+    //connect(this, &MavlinkSettingsModel::signalCallResultCb, this, &MavlinkSettingsModel::do_not_call_me_signalCallResultCb);
+}
+
+bool MavlinkSettingsModel::is_air_or_cam_param_busy()
+{
+    if(MavlinkSettingsModel::instanceAir().is_x_busy()){
+        return true;
+    }
+    if(MavlinkSettingsModel::instanceAirCamera().is_x_busy()){
+        return true;
+    }
+    if(MavlinkSettingsModel::instanceAirCamera2().is_x_busy()){
+        return true;
+    }
+    return false;
 }
 
 void MavlinkSettingsModel::set_ready()
 {
     m_is_ready=true;
+}
+
+bool MavlinkSettingsModel::is_x_busy()
+{
+    return m_is_currently_busy;
 }
 
 void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
@@ -98,11 +126,12 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
             const auto param_set=result.param_set;
             remove_and_replace_param_set(param_set);
             if(log_result){
-                QOpenHD::instance().show_toast("Fetch all success",false);
+                QOpenHD::instance().show_toast("Fetch all parameters success",false);
             }
+            set_has_params_fetched(true);
         }else{
             if(log_result){
-                QOpenHD::instance().show_toast("Fetch all failed, is your uplink working ? Use the status view for more info..",true);
+                QOpenHD::instance().show_toast("Fetch all parameters failed, is your uplink working ? Use the status view for more info..",true);
             }
         }
         m_is_currently_busy=false;
@@ -141,6 +170,58 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
     const auto result=XParam::instance().try_set_param_blocking(command);
     m_is_currently_busy=false;
     return result ? SetParamResult::SUCCESS : SetParamResult::NO_CONNECTION;
+}
+
+void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int value,bool log_result)
+{
+    if(m_is_currently_busy){
+        qDebug()<<"BUSY";
+        finalize_update_param(param_id,static_cast<int32_t>(value),false,log_result);
+        return;
+    }
+    auto command=XParam::create_cmd_set_int(m_sys_id,m_comp_id,param_id.toStdString(),value);
+    m_is_currently_busy=true;
+    set_ui_is_busy(true);
+    XParam::SET_PARAM_RESULT_CB imp_cb=[this,value,param_id,log_result](XParam::SetParamResult result){
+       if(result.is_accepted()){
+           // success, update the cached param
+           MavlinkSettingsModel::SettingData tmp{param_id,value};
+           updateData(std::nullopt,tmp);
+       }else{
+           // FAILURE
+       }
+       qDebug()<<"Result:"<<m_comp_id<<":"<<result.is_accepted();
+       m_is_currently_busy=false;
+       set_ui_is_busy(false);
+       finalize_update_param(param_id,static_cast<int32_t>(value),result.is_accepted(),log_result);
+    };
+    XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
+}
+
+void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QString value,bool log_result)
+{
+    if(m_is_currently_busy){
+        qDebug()<<"BUSY";
+        finalize_update_param(param_id,value.toStdString(),false,log_result);
+        return;
+    }
+     auto command=XParam::create_cmd_set_string(m_sys_id,m_comp_id,param_id.toStdString(),value.toStdString());
+     m_is_currently_busy=true;
+     set_ui_is_busy(true);
+     XParam::SET_PARAM_RESULT_CB imp_cb=[this,value,param_id,log_result](XParam::SetParamResult result){
+        if(result.is_accepted()){
+            // success, update the cached param
+            MavlinkSettingsModel::SettingData tmp{param_id,value.toStdString()};
+            updateData(std::nullopt,tmp);
+        }else{
+            // FAILURE
+        }
+        qDebug()<<"Result:"<<m_comp_id<<":"<<result.is_accepted();
+        m_is_currently_busy=false;
+        set_ui_is_busy(false);
+        finalize_update_param(param_id,value.toStdString(),result.is_accepted(),log_result);
+     };
+     XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
 }
 
 QString MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
@@ -211,6 +292,11 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         return QString(std::get<std::string>(data.value).c_str());
    } else if (role==ExtraValueRole){
         if(std::holds_alternative<int>(data.value)){
+            if(data.unique_id=="CAMERA_TYPE"){
+                auto value=std::get<int>(data.value);
+                XCamera tmp{value,0,""};
+                return tmp.cam_type_as_verbose_string().c_str();
+            }
             auto value=std::get<int>(data.value);
             return int_enum_get_readable(data.unique_id,value);
         }
@@ -228,6 +314,8 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         return ret;
     } else if(role ==ReadOnlyRole){
         return DocumentedParam::read_only(data.unique_id.toStdString());
+    }else if(role == WhitelistedRole){
+        return DocumentedParam::is_param_whitelisted(data.unique_id.toStdString());
     }
     else
         return QVariant();
@@ -241,7 +329,8 @@ QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
         {ExtraValueRole, "extraValue"},
         {ValueTypeRole,"valueType"},
         {ShortDescriptionRole,"shortDescription"},
-        {ReadOnlyRole,"read_only"}
+        {ReadOnlyRole,"read_only"},
+        {WhitelistedRole,"whitelisted"}
     };
     return mapping;
 }
@@ -260,6 +349,7 @@ void MavlinkSettingsModel::removeData(int row)
 
 void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData new_data)
 {
+    perform_dirty_actions(new_data);
     int row=-1;
     if(row_opt.has_value()){
         row=row_opt.value();
@@ -287,6 +377,7 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
+    perform_dirty_actions(data);
     if(is_param_whitelisted(data.unique_id.toStdString())){
         // never add whitelisted params to the simple model, they need synchronization
         return;
@@ -466,6 +557,52 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     return DocumentedParam::requires_reboot(param_id.toStdString());
 }
 
+bool MavlinkSettingsModel::param_int_exists(QString param_id)
+{
+    //qDebug()<<"Size:"<<m_data.size();
+    for(const auto& tmp:m_data){
+        //qDebug()<<tmp.unique_id;
+        if(tmp.unique_id==param_id && std::holds_alternative<int>(tmp.value)){
+            return true;
+        }
+    }
+    qDebug()<<"int Param:"+param_id<<" does not exist";
+    return false;
+}
+
+bool MavlinkSettingsModel::param_string_exists(QString param_id)
+{
+    for(const auto& tmp:m_data){
+        if(tmp.unique_id==param_id && std::holds_alternative<std::string>(tmp.value)){
+            return true;
+        }
+    }
+    qDebug()<<"string Param:"+param_id<<" does not exist";
+    return false;
+}
+
+int MavlinkSettingsModel::get_cached_int(QString param_id)
+{
+    for(const auto& tmp:m_data){
+        if(tmp.unique_id.compare(param_id)==0 && std::holds_alternative<int>(tmp.value)){
+            return std::get<int>(tmp.value);
+        }
+    }
+    qDebug()<<param_id<<" NOT FOUND";
+    return -1;
+}
+
+QString MavlinkSettingsModel::get_cached_string(QString param_id)
+{
+    for(const auto& tmp:m_data){
+        if(tmp.unique_id.compare(param_id)==0 && std::holds_alternative<std::string>(tmp.value)){
+            return std::get<std::string>(tmp.value).c_str();
+        }
+    }
+    qDebug()<<param_id<<" NOT FOUND";
+    return "";
+}
+
 void MavlinkSettingsModel::remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t> &param_set)
 {
     // We might not be called from the UI thread, which is why we do the signal hoop to schedule something on
@@ -505,5 +642,45 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
         }
         MavlinkSettingsModel::SettingData data{param_id,param_value};
         addData(data);
+    }
+}
+
+void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result)
+{
+    set_last_updated_param_id(param_id);
+    set_last_updated_param_success(success);
+    if(log_result){
+         std::stringstream ss;
+         ss<<"Update "<<param_id.toStdString()<<" to ";
+         if(std::holds_alternative<int32_t>(value)){
+             ss<<std::get<int32_t>(value);
+         }else{
+             ss<<std::get<std::string>(value);
+         }
+         if(success){
+             ss<<" success";
+         }else{
+             ss<<" failure";
+         }
+         QOpenHD::instance().show_toast(ss.str().c_str());
+    }
+    set_update_count(m_update_count+1);
+    qDebug()<<"Update count:"<<m_update_count;
+}
+
+void MavlinkSettingsModel::perform_dirty_actions(const SettingData &data)
+{
+    // Extra hack
+    if(data.unique_id=="FC_BATT_N_CELLS" && std::holds_alternative<int32_t>(data.value)){
+        const auto int_value=std::get<int32_t>(data.value);
+        if(int_value>0){
+            QSettings settings;
+            const auto settings_key="vehicle_battery_n_cells";
+            const int vehicle_battery_n_cells=settings.value(settings_key,3).toInt();
+            if(vehicle_battery_n_cells!=int_value){
+                settings.setValue(settings_key,int_value);
+                QOpenHD::instance().show_toast("Updated N Cells from air unit");
+            }
+        }
     }
 }

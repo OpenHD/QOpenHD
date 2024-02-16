@@ -19,6 +19,98 @@ ScrollView {
 
     clip: true
 
+    function close_after_preset(){
+        settings_form.close_all();
+    }
+
+    function disable_or_enable_all(enable_elements){
+        settings.show_downlink_rssi= enable_elements;
+        settings.downlink_show_dbm_and_packets_per_card= enable_elements;
+        settings.downlink_dbm_per_card_show_multiple_antennas=enable_elements;
+        settings.downlink_show_current_bitrate= enable_elements;
+        settings.downlink_cards_right= enable_elements;
+        settings.downlink_signal_quality_show= enable_elements;
+        settings.downlink_pollution_show=enable_elements;
+        settings.show_uplink_rssi=enable_elements;
+        settings.show_rc_rssi= enable_elements;
+        settings.show_bitrate=enable_elements;
+        settings.camera_bitrate_widget_show_recording= enable_elements;
+        settings.show_air_battery= enable_elements;
+        settings.show_ground_battery=enable_elements;
+        settings.show_gps=enable_elements;
+        settings.show_home_distance=enable_elements;
+        settings.show_flight_time= enable_elements;
+        settings.show_flight_mode= enable_elements;
+        settings.show_flight_distance=enable_elements;
+        settings.show_flight_mah= enable_elements;
+        settings.show_flight_mah_km=enable_elements;
+        settings.show_press_temp=enable_elements;
+        settings.show_airspeed_temp=enable_elements;
+        settings.show_esc_temp=enable_elements;
+        settings.show_ground_status= enable_elements;
+        settings.show_air_status=enable_elements;
+        settings.show_message_hud= enable_elements;
+        settings.show_horizon=enable_elements;
+        settings.show_performance_horizon=enable_elements;
+        settings.show_heading_ladder=enable_elements;
+        settings.show_flight_path_vector=enable_elements;
+        settings.speed_ladder_show=enable_elements;
+        settings.speed_ladder_show_ladder=enable_elements;
+        settings.show_speed_second=enable_elements;
+        settings.altitude_ladder_show=enable_elements;
+        settings.altitude_ladder_show_ladder=enable_elements;
+        settings.show_altitude_second=enable_elements;
+        settings.show_control=enable_elements;
+        settings.show_vertical_speed_simple_widget=enable_elements;
+        settings.show_vertical_speed_gauge_widget=enable_elements;
+        settings.show_wind=enable_elements;
+        settings.show_mission=enable_elements;
+        settings.show_aoa=enable_elements;
+        settings.wb_link_rate_control_widget_show=enable_elements;
+        settings.show_arrow=enable_elements;
+        settings.show_throttle=enable_elements;
+        // dev only element and therefore always off
+        settings.qrenderstats_show=false;
+    }
+
+    function enable_basic_elements(){
+        settings.show_downlink_rssi= true;
+        settings.show_uplink_rssi= true;
+        settings.show_bitrate=true;
+        settings.show_performance_horizon=true;
+        settings.wb_link_rate_control_widget_show=true;
+        settings.show_air_battery=true;
+        settings.show_home_distance=true;
+        settings.show_arrow=true;
+    }
+
+    function enable_medium_elements(){
+        settings.show_vertical_speed_simple_widget=true;
+        settings.altitude_ladder_show=true;
+        settings.altitude_ladder_show_ladder=false;
+    }
+
+    function configure_preset1(){
+        disable_or_enable_all(true);
+        // Show the advanced horizon (but not 2 at the same time)
+        settings.show_performance_horizon=false;
+        settings.show_horizon=true;
+        close_after_preset();
+    }
+
+    function configure_preset2(){
+        disable_or_enable_all(false);
+        enable_basic_elements();
+        enable_medium_elements();
+        close_after_preset();
+    }
+
+    function configure_preset3(){
+        disable_or_enable_all(false);
+        enable_basic_elements();
+        close_after_preset();
+    }
+
     Item {
         anchors.fill: parent
         Column {
@@ -26,6 +118,41 @@ ScrollView {
             spacing: 0
             anchors.left: parent.left
             anchors.right: parent.right
+
+
+            // TODO finalize
+            /*SettingBaseElement{
+                m_short_description: "Presets"
+                m_long_description: "You can use these presets to quickly enable / disable a lot of elements before refining things further.\n"+
+                                    "P1 (Preset 1): Enable all elements (completely overloaded)\n"+
+                                    "P2 (Preset 2): Example for fixed wing usage, a lot less elements.\n"+
+                                    "P3 (Preset 3): Example for small quad (inav/betaflight) usage, minimal\n";
+                Row{
+                    anchors.right: parent.right
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 5
+                    Button{
+                        text:"P1"
+                        onClicked: {
+                            configure_preset1()
+                        }
+                    }
+                    Button{
+                        text: "P2"
+                        onClicked: {
+                            configure_preset2()
+                        }
+                    }
+                    Button{
+                        text: "P3";
+                        onClicked: {
+                            configure_preset3()
+                        }
+                    }
+                }
+            }*/
+
 
             SettingsCategory{
                 m_description: "OHD LINK / STREAMING WIDGETS"
@@ -1186,7 +1313,7 @@ ScrollView {
                     width: parent.width
                     height: rowHeight
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                    enabled: false // Not yet functional
+                    enabled: true//false // Not yet functional
                     Text {
                         text: qsTr("Show Sidebar ProofOfConcept")
                         font.weight: Font.Bold

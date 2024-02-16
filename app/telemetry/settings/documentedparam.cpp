@@ -196,7 +196,20 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                "(similar to how flight modes work)."
                );
     append_only_documented(ret,openhd::WB_FREQUENCY,"!!!Editing this param manually without care will result in a broken link!!!");
-    append_only_documented(ret,openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM,"Developer only, FEC auto internal.");
+    {
+        auto default_values=std::vector<ImprovedIntSetting::Item>{
+                                                                    {"AUTO -1",-1},
+                                                                    {"LOW 20",20},
+                                                                    {"30",30},
+                                                                    {"40",40},
+                                                                    {"50",50},
+                                                                    {"100",100},
+                                                                    {"128",128},
+                                                                    };
+        append_int(ret,openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM,
+                   ImprovedIntSetting(-1,128,default_values),
+                   "Developer only, max FEC block size.");
+    }
     const auto descr_wifi_card="Detected wifi card type used for wifibroadcast.";
     append_documented_read_only(ret,"WIFI_CARD0",descr_wifi_card);
     append_documented_read_only(ret,"WIFI_CARD1",descr_wifi_card);
@@ -204,6 +217,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     append_documented_read_only(ret,"WIFI_CARD3",descr_wifi_card);
     append_documented_read_only(ret,"HOTSPOT_CARD","Detected card for wifi hotspot");
     append_documented_read_only(ret,"WB_N_RX_CARDS","TODO");
+    append_only_documented(ret,"FC_BATT_N_CELLS","Stored locally on your air unit. If set to a nonzero value, overwrites the batt n cells of any connected GS (QOpenHD)"
+                                                 "such that you don't have to change the value when swapping around planes.");
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
     // video / camera parameters
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -221,48 +236,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                 //"1440x1080@30",
                 "1920x1080@30",
             };
-            append_string(ret,"V_FORMAT",ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate),
+            append_string(ret,"RESOLUTION_FPS",ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate),
                           "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop");
-        }
-        {
-            // Needs to match OpenHD
-            //   MMAL = 0, // raspivid / gst-rpicamsrc
-            //   IMX462 Low Light Mini, // "normal" libcamera, explicitly set to Arducam_piviarity detection only NEEDS CUSTOM LIBCAMERA
-            //   SkyMaster HDR, // "normal" libcamera, explicitly set to imx708 detection only
-            //   SkyVision Pro, // "normal" libcamera, explicitly set to imx519 detection only NEEDS CUSTOM LIBCAMERA
-            //   LIBCAMERA_IMX477M, // "normal" libcamera, explicitly set to imx477 detection only NEEDS CUSTOM TUNING FILE
-            //   LIBCAMERA_IMX477, // "normal" libcamera, explicitly set to imx477 detection only
-            //   LIBCAMERA_IMX462, // "normal" libcamera, explicitly set to imx462 detection only
-            //   LIBCAMERA_IMX327, // "normal" libcamera, explicitly set to imx327 detection only
-            //   LIBCAMERA_IMX290, // "normal" libcamera, explicitly set to imx290 detection only
-            //   LIBCAMERA_AUTO, // standart libcamera with autodetect
-            //   LIBCAMERA_ARDUCAM_AUTO, // pivariety libcamera (arducam special)NEEDS CUSTOM LIBCAMERA
-            //   VEYE_2MP_CAMERAS // Veye IMX327 (never versions), VEYE series with 200W resolution
-            //   VEYE_CSIMX307, // Veye IMX307
-            //   VEYE_CSSC132, //Veye SC132
-            //   VEYE_MVCAM, // Veye MV Cameras
-            auto cam_config_items=std::vector<std::string>{
-                "Legacy(MMAL)",
-                "IMX462 Low Light Mini",
-                "SkyMaster HDR (708)",
-                "SkyVision Pro (519)",
-                "LIBCAMERA_IMX477M",
-                "LIBCAMERA_IMX477",
-                "LIBCAMERA_IMX462",
-                "LIBCAMERA_IMX327",
-                "LIBCAMERA_IMX290",
-                "LIBCAMERA_AUTO",
-                "LIBCAMERA_ARDUCAM_AUTO",
-                "VEYE_2MP_CAMERAS",
-                "VEYE_CSIMX307",
-                "VEYE_CSSC132",
-                "VEYE_MVCAM"
-            };
-            append_int(ret,"V_OS_CAM_CONFIG",
-                       ImprovedIntSetting::createEnum(cam_config_items),
-                       "If your connected CSI camera is not detected (e.g. you see a dummy camera stream) you need to select the apropriate config here. "
-                       "Air will automatically reboot when you change this parameter"
-                       );
         }
         append_int(ret,"VIDEO_CODEC",
                    //NOTE: MJPEG has been removed intentionally, since we are going to eventually remove support for it in
@@ -272,12 +247,12 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "Video codec. If your camera/ground station does not support HW accelerated encoding/decoding of the selected codec,it'l default to SW encode/decode. "
                    "A reboot (air&ground) is recommended after changing this parameter."
                    );
-        append_int(ret,"V_AIR_RECORDING",
+        append_int(ret,"AIR_RECORDING_E",
                    ImprovedIntSetting::createEnum( std::vector<std::string>{"DISABLE","ENABLE","AUTO(armed)"}),
                    "Record video data locally on your air unit. You can find the files under /home/openhd/Videos on the SD card and/or download them via the web ui."
                    "When AUTO is set, air recording automatically starts (and stops) when you arm/disarm your drone (requires inav / ardupilot FC)."
                    );
-        append_int(ret,"V_E_STREAMING",
+        append_int(ret,"STREAMING_E",
                    ImprovedIntSetting::createEnumEnableDisable(),
                    "Enable / disable streaming for this camera. Note that this setting is persistent at run time - once you disable streaming for a camera, you won't have video"
                    " until you re-enable streaming or reboot your air unit. On by default"
@@ -292,14 +267,12 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                                                         {"14MBit/s (high)",14},
                                                                         {"18MBit/s (high)",18},
                                                                         };
-            append_int(ret,"V_BITRATE_MBITS",
+            append_int(ret,"BITRATE_MBITS",
                        ImprovedIntSetting(1,100,default_values),
                        "Camera encoder bitrate, does not include FEC overhead. "
                        "!! If variable bitrate is enabled (recommended), this value is ignored.!! Otherwise, you can manually set a fixed camera/encoder bitrate here. "
                        "NOTE: If you are using a camera not listed on the OpenHD recommended cameras list, the bitrate might be fixed by the vendor and not changeable."
                        );
-            append_only_documented(ret,"V_MJPEG_QUALITY",
-                                   "Active if video codec== mjpeg. MJPEG has no encoder bitrate, only an arbitratry quality parameter (0..100)");
         }
         {
             auto default_values=std::vector<ImprovedIntSetting::Item>{
@@ -311,12 +284,12 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                                                         {"15 (medium recovery)",15},
                                                                         {"20 (bad recovery)",20},
                                                                         };
-            append_int(ret,"V_KEYFRAME_I",
+            append_int(ret,"KEYFRAME_I",
                        ImprovedIntSetting(0,100,default_values),
                        "Keyframe / instantaneous decode refresh interval, in frames. E.g. if set to 15, every 15th frame will be a key frame. Higher values result in better image compression, but increase the likeliness of microfreezes."
                        );
         }
-        append_int(ret,"V_FORCE_SW_ENC",
+        append_int(ret,"FORCE_SW_ENC",
                    ImprovedIntSetting::createEnumEnableDisable(),
                    "Force SW encode for the given camera, only enable if your camera supports outputting an appropriate raw format."
                    );
@@ -326,24 +299,27 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_only_documented(ret,"V_PRIMARY_PERC",
                                "If Variable bitrate is enabled,your primary camera is given that much percentage of the total available link bandwidth. "
                                "The rest is given to the secondary camera. Default to 60% (60:40 split).");
-        append_int(ret,"V_HORIZ_FLIP",
-                   ImprovedIntSetting::createEnumEnableDisable(),
-                   "Flip video horizontally"
-                   );
-        append_int(ret,"V_VERT_FLIP",
-                   ImprovedIntSetting::createEnumEnableDisable(),
-                   "Flip video vertically"
+
+        append_int(ret,"ROTATION_FLIP",
+                    ImprovedIntSetting(-1,2130706433,{
+                       ImprovedIntSetting::Item{"NONE",0},
+                       ImprovedIntSetting::Item{"VFLIP°",1},
+                       ImprovedIntSetting::Item{"HFLIP",2},
+                       ImprovedIntSetting::Item{"BOTH",3}
+                   }),
+                   "Flip video vertically / horizontally (ROTATE)"
                    );
 
-        append_int(ret,"V_CAM_ROT_DEG",
+        append_int(ret,"ROTATION_DEG",
                    ImprovedIntSetting(0,270,{
                                                ImprovedIntSetting::Item{"0°(disable)",0},
-                                               ImprovedIntSetting::Item{"90 (mmal only)°",90},
+                                               //ImprovedIntSetting::Item{"90 (mmal only)°",90},
                                                ImprovedIntSetting::Item{"180°",180},
-                                               ImprovedIntSetting::Item{"270°(mmal only)",270}}),
-                   "Rotate video by 90 degree increments"
+                                               //ImprovedIntSetting::Item{"270°(mmal only)",270}
+                                      }),
+                   "Rotate video"
                    );
-        append_int(ret,"V_INTRA_REFRESH",
+        append_int(ret,"INTRA_REFRESH",
                    ImprovedIntSetting(-1,2130706433,{
                                                           ImprovedIntSetting::Item{"NONE",-1},
                                                           ImprovedIntSetting::Item{"CYCLIC",0},
@@ -353,14 +329,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                                       }),
                    "Experimental,Default NONE, Type of Intra Refresh to use"
                    );
-        append_int(ret,"V_N_CAMERAS",
-                   ImprovedIntSetting(1,2,{ImprovedIntSetting::Item{"SINGLE (default)",1},ImprovedIntSetting::Item{"DUALCAM",2}}),
-                   "Configure openhd for single / dualcam usage. The air unit will wait for a specific amount of time until it has found that many camera(s),"
-                   " if it cannot find enough camera(s) it creates as many dummy camera(s) as needec instead.",
-                   true
-                   );
-        append_only_documented(ret,"V_BRIGHTNESS","Image capture brightness, [0..100], default 50. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.");
-        append_only_documented(ret,"V_ISO","ISO value to use (0 = Auto)");
+        append_only_documented(ret,"BRIGHTNESS","Image capture brightness, [0..200], default 100. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.");
+        append_only_documented(ret,"ISO","ISO value to use (0 = Auto)");
 
         {
             // rpicamsrc only for now
@@ -394,15 +364,15 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
             auto values_metering_mode=std::vector<std::string>{
                 "AVERAGE","SPOT","BACKLIST","MATRIX"
             };
-            append_int(ret,"V_AWB_MODE",
+            append_int(ret,"AWB_MODE",
                        ImprovedIntSetting::createEnum(gst_awb_modes),
                        "AWB Automatic white balance mode"
                        );
-            append_int(ret,"V_EXP_MODE",
+            append_int(ret,"EXP_MODE",
                        ImprovedIntSetting::createEnum(gst_exposure_modes),
                        "EXP Exposure mode"
                        );
-            append_int(ret,"V_METERING_MODE",
+            append_int(ret,"METERING_MODE",
                        ImprovedIntSetting::createEnum(values_metering_mode),
                        "Camera exposure metering mode to use. Default average."
                        );
@@ -494,9 +464,6 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    " - even with encryption disabled, it is not easy for an attacker to listen in on your openhd video "
                    "(and impossible to attack your video due to always on secure packet validation)."
                    );
-        append_documented_read_only(ret,"V_CAM_TYPE","Detected camera type");
-        append_documented_read_only(ret,"V_CAM_SENSOR","Detected camera sensor (might not work)");
-        append_documented_read_only(ret,"V_CAM_NAME","Detected camera name (might not work)");
     }
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
     // Other stuff
@@ -582,6 +549,27 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
             append_string(ret,"RC_CHAN_MAP",ImprovedStringSetting{values},
                           "Change which joystick 'channel' is taken for each RC channel. This is a list of numbers, where each number X at position N means take joystick input nr X for channel N."
                           " For example, 1,4,... means take channel number 1 for the first channel, and channel number 4 for the second channel. Needs to have ! all! 18 channel elements seperated by a ','");
+        }
+        {
+            auto infiray_colorpalete_items=std::vector<ImprovedIntSetting::Item>{
+                    {"CMD Shutter calibration",32768},
+                    {"CMD YUYV output",32773},
+                    {"CMD save configurations",33022},
+                    // Color palete
+                    {"White Hot",34816},
+                    {"Black Hot",34817},
+                    {"Iron Rainbow",34818},
+                    {"Lava",34819},
+                    {"Rainbow2",34820},
+                    {"Rainbow3",34821},
+                    {"Red Hot",34822},
+                    {"Iron gray",34823},
+                    {"HCR1",34824},
+                    {"HCR2",34825},
+                    {"Black hot 2",34826},
+                                                                         };
+            append_int(ret,"COLOR_PALETE",ImprovedIntSetting(34816,34826,infiray_colorpalete_items),
+                       "Infiray thermal colors");
         }
         append_only_documented(ret,"RC_UPDATE_HZ",
                                "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink."
@@ -720,6 +708,32 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret[openhd::WB_ENABLE_STBC]=nullptr;
     // Whitelisted since normally it should not be changed / has no effect anyways
     ret[openhd::WB_ENABLE_SHORT_GUARD]=nullptr;
+    //
+    ret["WB_V_FEC_PERC"]=nullptr;
+    ret["WB_V_RATE_PERC"]=nullptr;
+    ret["VARIABLE_BITRATE"]=nullptr;
+    //
+    ret["TYPE_CAM0"]=nullptr;
+    ret["TYPE_CAM1"]=nullptr;
+    // The actual 'camera' parameters
+    // Whitelisted since r.n we don't really know
+    // what happens on a platform if h265 is selected
+    ret["VIDEO_CODEC"]=nullptr;
+    ret["AIR_RECORDING"]=nullptr;
+    ret["FORCE_SW_ENC"]=nullptr;
+    ret["BITRATE_MBITS"]=nullptr;
+    ret["KEYFRAME_I"]=nullptr;
+    ret["INTRA_REFRESH"]=nullptr;
+    ret["N_SLICES"]=nullptr;
+    //
+
+    ret["STREAMING_E"]=nullptr;
+
+
+    ret[""]=nullptr;
+    ret[""]=nullptr;
+    ret[""]=nullptr;
+    ret[""]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }

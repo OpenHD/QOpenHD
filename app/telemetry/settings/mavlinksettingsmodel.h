@@ -7,9 +7,11 @@
 #include <optional>
 #include <thread>
 #include <mutex>
+#include <QJSValue>
 
 #include "../util/mavlink_include.h"
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "../action/impl/xparam.h"
 
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
 // (the side that changes parameter(s) provided by a specific system & component).
@@ -35,12 +37,19 @@ public:
     // (aka what for example mission planner would show)
     //static MavlinkSettingsModel& instanceFC();
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
+    //
+    static bool is_air_or_cam_param_busy();
 public:
     L_RO_PROP(int, curr_get_all_progress_perc,set_curr_get_all_progress_perc,-1);
     // NOTE: This is only for the UI, not for c++ usage (non-atomic)
-    L_RO_PROP(bool,ui_is_busy,set_ui_is_busy,false)
+    L_RO_PROP(bool,ui_is_busy,set_ui_is_busy,false);
+    L_RO_PROP(bool,has_params_fetched,set_has_params_fetched,false);
+    L_RO_PROP(int,update_count,set_update_count,0);
+    L_RO_PROP(QString,last_updated_param_id,set_last_updated_param_id,"");
+    L_RO_PROP(bool,last_updated_param_success,set_last_updated_param_success,false);
 public:
     void set_ready();
+    bool is_x_busy();
 public:
     // callable from QT.
     // async with progress bar and result being prompted to the user
@@ -70,7 +79,9 @@ public:
         ShortDescriptionRole,
         // Weather this parameter is read-only (we repurpose the malink parameter protocoll in this regard here)
         // Default false, only if a parameter is in the read-only whitelist it is marked as read-only
-        ReadOnlyRole
+        ReadOnlyRole,
+        // Weather this parameter is whitelisted
+        WhitelistedRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
@@ -100,6 +111,10 @@ private:
     static std::string set_param_result_as_string(const SetParamResult& res);
     SetParamResult try_set_param_int_impl(const QString param_id,int value);
     SetParamResult try_set_param_string_impl(const QString param_id,QString value);
+public:
+    Q_INVOKABLE void try_set_param_int_async(const QString param_id,int value,bool log_result=false);
+    Q_INVOKABLE void try_set_param_string_async(const QString param_id,QString value,bool log_result=false);
+    Q_INVOKABLE bool system_is_alive();
 public:
     struct ParamIntEnum{
         bool valid;
@@ -142,7 +157,13 @@ public:
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
-private:
+public:
+    // Returns true if the given (int,string) param exists
+    Q_INVOKABLE bool param_int_exists(QString param_id);
+    Q_INVOKABLE bool param_string_exists(QString param_id);
+    Q_INVOKABLE int get_cached_int(QString param_id);
+    Q_INVOKABLE QString get_cached_string(QString param_id);
+private:;
     void remove_and_replace_param_set(const std::vector<mavlink_param_ext_value_t>& param_set);
 public:
     struct QtParamValue{
@@ -160,6 +181,9 @@ signals:
 private:
     std::atomic<bool> m_is_ready=false;
     std::atomic_bool m_is_currently_busy=false;
+private:
+    void finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result);
+    void perform_dirty_actions(const MavlinkSettingsModel::SettingData& data);
 };
 
 Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamIntEnum);

@@ -20,7 +20,7 @@ windows {
         $$PWD/decodingstatistcs.cpp \
 
     HEADERS += \
-        $$PWD/nalu/KeyFrameFinder.hpp \
+    $$PWD/nalu/CodecConfigFinder.hpp \
         $$PWD/nalu/NALUnitType.hpp \
         $$PWD/rtp/ParseRTP.h \
         $$PWD/rtp/RTP.hpp \
@@ -31,5 +31,9 @@ windows {
 }
 
 HEADERS += \
-    $$PWD/ExternalDecodeService.hpp
+    $$PWD/ExternalDecodeService.hpp \
+    $$PWD/custom/rawreceiver.h
+
+SOURCES += \
+    $$PWD/custom/rawreceiver.cpp
 

@@ -56,6 +56,7 @@ public:
     Q_INVOKABLE bool is_linux();
     Q_INVOKABLE bool is_mac();
     Q_INVOKABLE bool is_android();
+    Q_INVOKABLE bool is_windows();
     Q_INVOKABLE void android_open_tethering_settings();
     // runs systemctl start/stop/enable/disable openhd
     // opens error message if the openhd service file does not exist (e.g. false on all non linux platforms)
@@ -68,7 +69,12 @@ public:
     // Tries to mimic android toast as much as possible
     //
     Q_INVOKABLE void show_toast(QString message,bool long_toast=false);
-    L_RO_PROP(QString,version_string,set_version_string,"2.5.3-evo-release");
+    L_RO_PROP(QString,version_string,set_version_string,"2.5.4-evo-alpha");
+    // Notify that something is going on for a specified amount of time
+public:
+    Q_INVOKABLE void set_busy_for_milliseconds(int milliseconds,QString reason);
+    L_RO_PROP(bool,is_busy,set_is_busy,false);
+    L_RO_PROP(QString,busy_reason,set_busy_reason,"");
 public:
     L_RO_PROP(QString,toast_text,set_toast_text,"NONE");
     L_RO_PROP(bool,toast_visible,set_toast_visible,false);
@@ -94,6 +100,7 @@ private:
     };
     std::list<ToastMessage> m_toast_message_queue;
     void handle_toast_timeout();
+    void handle_busy_timeout();
 public:
 signals:
     void signal_toast_add(QString text,bool long_toast);

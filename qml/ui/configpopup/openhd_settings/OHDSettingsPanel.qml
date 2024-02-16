@@ -71,24 +71,30 @@ Rectangle {
             m_name: "CAMERA1"
             m_instanceMavlinkSettingsModel: _airCameraSettingsModel
             m_instanceCheckIsAvlie: _ohdSystemAir
+            m_is_secondary_cam: false
+            m_requires_alive_air: true
         }
         MavlinkParamPanel{
             id: x1_AirCameraSettingsPanel2
             m_name: "CAMERA2"
             m_instanceMavlinkSettingsModel: _airCameraSettingsModel2
             m_instanceCheckIsAvlie: _ohdSystemAir
+            m_is_secondary_cam: true
+            m_requires_alive_air: true
         }
         MavlinkParamPanel{
             id: x2_AirSettingsPanel
             m_name: "AIR"
             m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
             m_instanceCheckIsAvlie: _ohdSystemAir
+            m_requires_alive_air: true
         }
         MavlinkParamPanel{
             id: x3_GroundSettingsPanel
             m_name: "GROUND"
             m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
             m_instanceCheckIsAvlie: _ohdSystemGround
+            m_requires_alive_air: false
         }
     }
 

@@ -16,6 +16,7 @@ import "openhd_settings"
 import "rc"
 import "status"
 
+
 // Contains the selector on the left and a stack view for the panels on the right
 Rectangle {
     id: settings_form
@@ -55,6 +56,10 @@ Rectangle {
         openSettings();
         mainStackLayout.currentIndex=1;
         ohdSettingsPanel.user_quidance_animate_channel_scan();
+    }
+
+    function gain_focus(){
+        sidebar.focus=true;
     }
 
     /*Keys.onPressed: (event)=> {
@@ -150,6 +155,12 @@ Rectangle {
                 }else if(event.key == Qt.Key_Left){
                     close_all()
                 }else if(event.key == Qt.Key_Right){
+                    // Right now we only have joystick navigation for the QUICK panel
+                    /*if(mainStackLayout.currentIndex==0){
+                         // hand over navigation to the panel
+                         quickPanel.gain_focus();
+                         return;
+                     }*/
                     //mainStackLayout.childAt(mainStackLayout.currentIndex).focus=true
                     _qopenhd.show_toast("No joystick navigation for this panel");
                 }
@@ -162,6 +173,15 @@ Rectangle {
                 id: navigation_buttons_column
                 width: parent.width
                 anchors.top: parent.top
+
+                //
+                /*ConfigPopupSidebarButton{
+                    id:  quick
+                    m_icon_text: "\uf0fb"
+                    m_description_text: "Quick"
+                    m_selection_index: 0
+                }*/
+
                 // Status
                 ConfigPopupSidebarButton{
                     id:  power

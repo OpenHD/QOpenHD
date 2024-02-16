@@ -63,7 +63,8 @@ public: // public for QT
     L_RO_PROP(int,curr_space_left_mb,set_curr_space_left_mb,0)
     L_RO_PROP(int,ram_usage_perc,set_ram_usage_perc,0)
     L_RO_PROP(int,ram_total,set_ram_total,0)
-    L_RO_PROP(int,ohd_platform_type,set_ohd_platform,0)
+    L_RO_PROP(int,ohd_platform_type,set_ohd_platform,-1)
+    L_RO_PROP(QString,ohd_platform_type_as_string,set_ohd_platform_type_as_string,"N/A");
     L_RO_PROP(int,ohd_wifi_type,set_ohd_wifi,0)
     L_RO_PROP(int,ohd_cam_type,set_ohd_cam,0)
     L_RO_PROP(int,ohd_sys_type,set_ohd_sys_ident,0)
@@ -123,7 +124,9 @@ public: // public for QT
     //
     L_RO_PROP(int,air_reported_fc_sys_id,set_air_reported_fc_sys_id,-1)
     //
-     L_RO_PROP(bool,dirty_air_has_secondary_cam,set_dirty_air_has_secondary_cam,false)
+    L_RO_PROP(bool,dirty_air_has_secondary_cam,set_dirty_air_has_secondary_cam,false)
+public:
+    Q_INVOKABLE QString get_rate_for_mcs_bw(int mcs,int bw);
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
@@ -142,6 +145,8 @@ private:
      void process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t& msg);
      void process_sys_status1(const mavlink_openhd_sys_status1_t& msg);
      void process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t& msg);
+     // When apropriate, auto-fecth params until success
+     void autofech_params_if_apropriate();
 private:
      std::atomic<int64_t> m_last_heartbeat_ms = -1;
      std::atomic<int64_t> m_last_message_ms= -1;

@@ -81,7 +81,7 @@ BaseWidget {
             return;
         }
         if(mode===0){ //mode off
-            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
+            var result=camModel.try_update_parameter_int("AIR_RECORDING_E",0)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" disabled")
                 m_camera_recording_mode=0;
@@ -90,7 +90,7 @@ BaseWidget {
             }
         }
         if(mode===1){ //mode on
-            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",1)===""
+            var result=camModel.try_update_parameter_int("AIR_RECORDING_E",1)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" enabled")
                 m_camera_recording_mode=1;
@@ -99,7 +99,7 @@ BaseWidget {
             }
         }
         if(mode==2){ //mode auto
-            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",2)===""
+            var result=camModel.try_update_parameter_int("AIR_RECORDING_E",2)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" auto enabled")
                 m_camera_recording_mode=2;
@@ -189,76 +189,36 @@ BaseWidget {
                     return _cameraStreamModelPrimary.camera_codec_to_string(m_camera_stream_model.encoding_codec);
                 }
             }
-
-            ComboBox{
-                id: resolution_fps_cb
-                model: resolutions_model
-                textRole: "title"
-                width: 200
-                Layout.preferredWidth: 200
-                Layout.minimumWidth: 200
-                height: 50
-                currentIndex: -1
-                displayText: {
-                    if(!_ohdSystemAir.is_alive)return "Res@fps N/A";
+            SimpleLeftRightText{
+                m_left_text: qsTr("Resolution:")
+                m_right_text: {
+                    if(!_ohdSystemAir.is_alive)return "RES@FPS N/A";
                     return m_curr_video_format;
                 }
-                onActivated: {
-                    console.log("onActivated:"+currentIndex);
-                    if(currentIndex<0)return;
-                    const resolution=model.get(currentIndex).value
-                    console.log("Selected resolution: "+resolution);
-                    set_camera_resolution(resolution);
-                    _qopenhd.show_toast("NOTE: OpenHD cannot check if your HW actually supports a given resolution / framerate");
-                }
-                enabled: _ohdSystemAir.is_alive;
             }
-            /*Item{
+            Item{
                 width: parent.width
-                height: 150
-                //color: "green"
-                GridLayout{
-                    width: parent.width
-                    height: parent.height
-                    rows: 3
-                    columns: 2 //
-                    // 1 dummy sw
-                    // 2 mmal
-                    // 3 veye
-                    // 4 libcamera
-                    //enabled: (m_camera_stream_model.camera_type==1 || m_camera_stream_model.camera_type==2 || m_camera_stream_model.camera_type==4)
-                    Button{
-                        text: "480p60(16:9)"
-                        onClicked: set_camera_resolution("848x480@60")
-                        highlighted: m_curr_video_format=="848x480@60"
-                    }
-                    Button{
-                        text: "480p60(4:3)"
-                        onClicked: set_camera_resolution("640x480@60")
-                        highlighted: m_curr_video_format=="640x480@60"
-                    }
-                    Button{
-                        text: "720p49(16:9)"
-                        onClicked: set_camera_resolution("1280x720@49")
-                        highlighted: m_curr_video_format=="1280x720@49"
-                    }
-                    Button{
-                        text: "720p60(4:3)"
-                        onClicked: set_camera_resolution("960x720@60")
-                        highlighted: m_curr_video_format=="960x720@60"
-                    }
-                    Button{
-                        text: "1080p30(16:9)"
-                        onClicked: set_camera_resolution("1920x1080@30")
-                        highlighted: m_curr_video_format=="1920x1080@30"
-                    }
-                    Button{
-                        text: "1080p30(4:3)"
-                        onClicked: set_camera_resolution("1440x1080@30")
-                        highlighted: m_curr_video_format=="1440x1080@30"
+                height: 50
+                ButtonIconGear{
+                    id: button_change_resolution
+                    anchors.left: parent.left
+                    onClicked: {
+                        sidebar.open_video_stream_category(m_is_for_primary_camera)
+                        widgetAction.close()
+
                     }
                 }
-            }*/
+                ButtonIconGear{
+                    id: button_change_iq
+                    anchors.left: button_change_resolution.right
+                    anchors.leftMargin: 5
+                    onClicked: {
+                        sidebar.open_category(2)
+                        widgetAction.close()
+                    }
+                }
+                visible: m_is_for_primary_camera
+            }
             SimpleLeftRightText{
                 m_left_text: qsTr("Bitrate SET:")
                 m_right_text: m_camera_stream_model.curr_recomended_video_bitrate_string

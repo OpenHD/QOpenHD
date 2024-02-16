@@ -86,6 +86,7 @@ Settings {
     property bool dev_show_whitelisted_params: false
     property bool dev_show_advanced_button: false
     property bool dev_allow_freq_change_when_armed: false
+    property bool dev_show_5180mhz_lowband: false
     // WARNING END
     //WARNING: THIS makes the RC panel visible
     property bool app_show_RC: false
@@ -417,4 +418,6 @@ Settings {
     property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.178.36"
 
     property int qopenhd_frequency_filter_selection: 0;
+
+    property bool show_dev_stats_overlay: false
 }

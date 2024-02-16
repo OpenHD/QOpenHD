@@ -52,14 +52,14 @@ Rectangle {
         Item{
             id: mainItem
             width: mainRect.width
-            height: 350+80
+            height: 400+80
 
             // The 3 status cards (OpenHD AIR & GND, FC)
             // next to each other
             StatusCardsColumn{
                 id: statuscardscolumn
                 width: parent.width
-                height: 350
+                height: 400
                 anchors.leftMargin: 4
                 anchors.topMargin: 4
                 anchors.rightMargin: 4

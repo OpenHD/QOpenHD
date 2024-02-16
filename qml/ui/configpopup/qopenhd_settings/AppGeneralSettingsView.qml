@@ -43,22 +43,8 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Imperial units")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Imperial units"
 
                 Switch {
                     width: 32
@@ -122,24 +108,8 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-
-                Text {
-                    text: qsTr("Ground Battery Cells")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Ground Battery Cells"
 
                 SpinBox {
                     id: gndBatteryCellspinBox
@@ -158,22 +128,8 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Language / Locale")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Language / Locale"
 
                 LanguageSelect {
                     id: languageSelectBox
@@ -187,22 +143,8 @@ ScrollView {
             }
 
             // exp
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-                Text {
-                    text: qsTr("N Cameras to controll")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "N Cameras to controll"
 
                 SpinBox {
                     id: dev_qopenhd_n_cameras_spinbox

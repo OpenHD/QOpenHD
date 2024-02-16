@@ -72,6 +72,20 @@ ScrollView {
                 }
             }
             SettingBaseElement{
+                m_short_description:"dev_show_5180mhz_lowband"
+                m_long_description: "Shows the 5180Mhz, 5200Mhz and 5220Mhz channels by default (NOTE: These channels are rarely free)"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_show_5180mhz_lowband
+                    onCheckedChanged: settings.dev_show_5180mhz_lowband = checked
+                }
+            }
+            SettingBaseElement{
                 m_short_description: "Save Settings to file"
                 m_long_description: "Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux."
 

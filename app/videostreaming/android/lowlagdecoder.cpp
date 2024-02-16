@@ -11,7 +11,7 @@
 
 using namespace std::chrono;
 
-static void h264_configureAMediaFormat(KeyFrameFinder& kff,AMediaFormat* format){
+static void h264_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* format){
     const auto sps=kff.getCSD0();
     const auto pps=kff.getCSD1();
     const auto videoWH= sps.sps_get_width_height();
@@ -27,15 +27,15 @@ static void h264_configureAMediaFormat(KeyFrameFinder& kff,AMediaFormat* format)
     //AMediaFormat_setInt32(decoder.format,AMEDIAFORMAT_KEY_PRIORITY,0);
     //writeAndroidPerformanceParams(format);
 }
-static void h265_configureAMediaFormat(KeyFrameFinder& kff,AMediaFormat* format){
+static void h265_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* format){
     std::vector<uint8_t> buff={};
     const auto SPS=kff.getCSD0();
     const auto PPS=kff.getCSD1();
     const auto VPS=kff.getVPS();
     buff.reserve(SPS.getSize()+PPS.getSize()+VPS.getSize());
-    KeyFrameFinder::appendNaluData(buff,VPS);
-    KeyFrameFinder::appendNaluData(buff,SPS);
-    KeyFrameFinder::appendNaluData(buff,PPS);
+    CodecConfigFinder::appendNaluData(buff,VPS);
+    CodecConfigFinder::appendNaluData(buff,SPS);
+    CodecConfigFinder::appendNaluData(buff,PPS);
     const auto videoWH= std::array<int,2>{1280,720};
     AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_WIDTH,videoWH[0]);
     AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_HEIGHT,videoWH[1]);
@@ -117,7 +117,7 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
     if(inputPipeClosed){
         //A feedD thread (e.g. file or udp) thread might be running even tough no output surface was set
         //But at least we can buffer the sps/pps data
-        mKeyFrameFinder.saveIfKeyFrame(nalu);
+        mKeyFrameFinder.save_if_config(nalu);
         return;
     }
     if(decoder.configured){
@@ -132,8 +132,8 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
     }else{
         //Store sps,pps, vps(H265 only)
         // As soon as enough data has been buffered to initialize the decoder,do so.
-        mKeyFrameFinder.saveIfKeyFrame(nalu);
-        if(mKeyFrameFinder.allKeyFramesAvailable(IS_H265)){
+        mKeyFrameFinder.save_if_config(nalu);
+        if(mKeyFrameFinder.all_config_available(IS_H265)){
             configureStartDecoder();
         }
     }

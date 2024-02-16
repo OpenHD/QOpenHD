@@ -196,14 +196,14 @@ int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,
     // we have changed the value on air, now change the ground
     // It is highly unlikely that fauls - if it does, we have an issue !
     // But since qopenhd <-> openhd ground is either localhost or tcp, that should never be an issue
-    const auto command_gnd=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
+    /*const auto command_gnd=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
     const bool ground_success=XParam::instance().try_set_param_blocking(command_gnd,std::chrono::milliseconds(200),5);
     if(!ground_success){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" (gnd failed)";
         qWarning("%s", ss.str().c_str());
         return -3;
-    }
+    }*/
     std::stringstream ss;
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
     qDebug()<<ss.str().c_str();
@@ -224,13 +224,13 @@ bool WBLinkSettingsHelper::change_param_ground_only_blocking(QString param_id, i
 
 void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
 {
-    change_param_air_async(OHD_COMP_ID_AIR_CAMERA_PRIMARY,"V_KEYFRAME_I",static_cast<int32_t>(keyframe_interval),"KEYFRAME");
+    change_param_air_async(OHD_COMP_ID_AIR_CAMERA_PRIMARY,"KEYFRAME_I",static_cast<int32_t>(keyframe_interval),"KEYFRAME");
 }
 void WBLinkSettingsHelper::set_param_video_resolution_framerate_async(bool primary,QString res_str)
 {
     const std::string value=res_str.toStdString();
     const auto comp_id = primary ? OHD_COMP_ID_AIR_CAMERA_PRIMARY : OHD_COMP_ID_AIR_CAMERA_SECONDARY;
-    change_param_air_async(comp_id,"V_FORMAT",value,"VIDEO FORMAT");
+    change_param_air_async(comp_id,"RESOLUTION_FPS",value,"VIDEO FORMAT");
 }
 void WBLinkSettingsHelper::set_param_fec_percentage_async(int percent)
 {

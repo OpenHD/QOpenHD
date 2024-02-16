@@ -25,7 +25,9 @@ Rectangle{
     width: total_width
     height: parent.height
     anchors.right: parent.right;
+    //anchors.horizontalCenter: parent.horizontalCenter
     anchors.top: parent.top
+    //anchors.centerIn: parent
     //anchors.topMargin: -15
     color: "#333c4c"
 
@@ -57,6 +59,18 @@ Rectangle{
 
     // disable some checking we do for the user, should be used only in really rare cases
     property bool enableAdvanced: false
+
+    // For getting the result of a update operation
+    property int m_update_count: instanceMavlinkSettingsModel.update_count
+
+    onM_update_countChanged: {
+        console.log("Update count changed, "+instanceMavlinkSettingsModel.last_updated_param_id+" "+instanceMavlinkSettingsModel.last_updated_param_success);
+        if(instanceMavlinkSettingsModel.last_updated_param_id==parameterId && instanceMavlinkSettingsModel.last_updated_param_success && parameterEditor.visible){
+            // Success updating, close the editor
+            parameterEditor.visible=false
+            //_qopenhd.show_toast("Set "+parameterId+" success");
+        }
+    }
 
 
     function holds_int_value(){
@@ -132,20 +146,9 @@ Rectangle{
         }
         setup_spin_box_int_param()
         setup_text_input_string_param()
-        set_description_enabled(false)
         parameterEditor.visible=true
     }
 
-    function show_description(show_description){
-        set_description_enabled(true)
-    }
-    function set_description_enabled(enabled){
-        if(enabled){
-            descriptionMessageBox.visible=true
-        }else{
-            descriptionMessageBox.visible=false;
-        }
-    }
 
     // For int params we use the spin box
     function setup_spin_box_int_param(){
@@ -295,23 +298,6 @@ Rectangle{
             horizontalAlignment: Qt.AlignHCenter
             Layout.alignment: Qt.AlignCenter
         }
-        Button {
-            width: 300
-            height:customHeight
-            id: buttonOpenDescription
-            flat: true
-            //text: qsTr("Description: "+shortParamDescription)
-            text: qsTr("Description")
-            //horizontalAlignment: Qt.AlignCenter
-            //horizontalAlignment: Text.AlignHCenter
-            Layout.alignment: Qt.AlignCenter
-            onClicked: show_description()
-            //palette {
-            //    button: "green"
-            //}
-            Material.background:Material.LightBlue
-            visible: m_has_param_description
-        }
         Text{
             width: 300
             height:customHeight
@@ -406,6 +392,17 @@ Rectangle{
             color: "white"
         }
         // Type string only end --------------------------
+        /*CheckBox{
+            id: advanced_checkbox
+            text: "experiment"
+            Layout.alignment: Qt.AlignHCenter
+            onClicked: {
+                enableAdvanced= !enableAdvanced
+                // Completely re-fresh the UI - the user has now more direct access to the parameter(s)
+                setup_spin_box_int_param()
+                setup_text_input_string_param()
+            }
+        }*/
         //Value edit part end
 
         RowLayout{
@@ -424,6 +421,7 @@ Rectangle{
                     setup_spin_box_int_param()
                     setup_text_input_string_param()
                 }
+                enabled: !instanceMavlinkSettingsModel.ui_is_busy
             }
             Button{
                 text: "Save"
@@ -441,13 +439,14 @@ Rectangle{
                         //var value_int = parseInt(value_int_as_string)
                         //console.log("UI set int:{"+value_int_as_string+"}={"+value_int+"}")
                         console.log("UI set int:{"+value_int+"}")
-                        res=instanceMavlinkSettingsModel.try_update_parameter_int(parameterId,value_int)
+                        //res=instanceMavlinkSettingsModel.try_update_parameter_int(parameterId,value_int)
+                        instanceMavlinkSettingsModel.try_set_param_int_async(parameterId,value_int,true);
                     }else{
                         var value_string=textInputParamtypeString.text
                         console.log("UI set string:{"+value_string+"}")
-                        res=instanceMavlinkSettingsModel.try_update_parameter_string(parameterId,value_string);
+                        instanceMavlinkSettingsModel.try_set_param_string_async(parameterId,value_string,true);
                     }
-                    if(res===""){
+                    /*if(res===""){
                         // Update success (no error code)
                         if(instanceMavlinkSettingsModel.get_param_requires_manual_reboot(parameterId)){
                             _messageBoxInstance.set_text_and_show("Please reboot to apply")
@@ -458,71 +457,9 @@ Rectangle{
                     }else{
                         console.log("Update failed")
                         _qopenhd.show_toast(res,true);
-                    }
-                    set_description_enabled(false)
+                    }*/
                 }
-            }
-        }
-    }
-
-    // Dirty, popup card that contains the param description
-    // TODO: FUCKING ANNOYING QT UI FIXME
-    property int m_description_message_box_width:320
-    property int m_description_message_box_height:320
-    property int m_description_message_box_footer_width:140
-    property int m_description_message_box_footer_height:48
-    Card {
-        id: descriptionMessageBox
-        width: m_description_message_box_width
-        height: m_description_message_box_height
-        z: 5.0
-        anchors.centerIn: parent
-        cardName: qsTr("Param description")
-        cardNameColor: "black"
-        visible: false
-        cardBody: Column {
-            width: m_description_message_box_width
-            height: m_description_message_box_height-m_description_message_box_footer_height
-            ScrollView{
-                //anchors.fill: parent
-                width: m_description_message_box_width-20
-                height: m_description_message_box_height-48-48
-                contentWidth: availableWidth
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                // allow dragging without using the vertical scroll bar
-                ScrollBar.vertical.interactive: true
-                Text {
-                    id: descriptionMessageBox_text
-                    text: shortParamDescription
-                    width: parent.width
-                    height:parent.height
-                    leftPadding: 12
-                    rightPadding: 12
-                    wrapMode: Text.WordWrap
-                    font.pixelSize: 15
-                }
-            }
-        }
-        hasFooter: true
-        cardFooter: Item {
-            anchors.fill: parent
-            Button {
-                id: descriptionMessageBox_button
-                height: 48
-                width: 140
-                anchors.right: parent.right
-                anchors.rightMargin: 12
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 6
-                font.pixelSize: 14
-                font.capitalization: Font.MixedCase
-                Material.accent: Material.Green
-                highlighted: true
-                text:  qsTr("Okay")
-                onPressed: {
-                    descriptionMessageBox.visible=false
-                }
+                enabled: !instanceMavlinkSettingsModel.ui_is_busy
             }
         }
     }

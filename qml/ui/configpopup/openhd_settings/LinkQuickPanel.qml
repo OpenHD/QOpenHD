@@ -146,6 +146,7 @@ Rectangle{
                 SettingsCategory{
                     m_description: "FREQUENCY / TOOLKIT"
                     spacing: 1
+                    m_hide_elements: false;
 
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -355,7 +356,8 @@ Rectangle{
                 }
 
                 SettingsCategory{
-                    m_description: "TX POWER"
+                    m_description: "TX POWER";
+                    m_hide_elements: false;
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
                         Text{
@@ -370,6 +372,7 @@ Rectangle{
                         Button{
                             text: "EDIT"
                             enabled: _ohdSystemAir.is_alive
+                            //enabled: true
                             onClicked: {
                                 close_all_dialoques();
                                 popup_change_tx_power.m_is_air=true;
@@ -388,6 +391,7 @@ Rectangle{
                         Button{
                             text: "EDIT"
                             enabled: _ohdSystemGround.is_alive
+                            //enabled: true
                             onClicked: {
                                 close_all_dialoques();
                                 popup_change_tx_power.m_is_air=false;
@@ -400,7 +404,7 @@ Rectangle{
 
                 SettingsCategory{
                     m_description: "ADVANCED (STBC,LDPC)"
-
+                    m_hide_elements: false;
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
                         Text{
@@ -457,6 +461,5 @@ Rectangle{
     DialoqueFreqChangeAirGnd{
         id: dialoqueFreqChangeAirGnd
     }
-
 }
 

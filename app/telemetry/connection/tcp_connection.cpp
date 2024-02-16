@@ -15,6 +15,8 @@
 
 #include <qdebug.h>
 
+#include "mavlinkchannel.h"
+
 static int linux_tcp_socket_try_connect(const std::string remote_ip, const int remote_port,const int timeout_seconds){
     //qDebug()<<"linux_tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";
     int sockfd=socket(AF_INET, SOCK_STREAM, 0);
@@ -60,7 +62,7 @@ static int linux_tcp_socket_try_connect(const std::string remote_ip, const int r
     socklen_t len = sizeof(so_error);
     getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
     if (so_error != 0) {
-        //qDebug()<<"Any socket error";
+        qDebug()<<"Any socket error:"<<strerror(errno);
         close(sockfd);
         return -1;
     }
@@ -92,34 +94,51 @@ static bool linux_send_message(int sockfd,const std::string& dest_ip,const int d
     return true;
 }
 
-TCPConnection::TCPConnection(MAV_MSG_CB cb):m_cb(cb)
+TCPConnection::TCPConnection(MAV_MSG_CB cb, std::string remote_ip, int remote_port, int mavlink_channel):
+    m_cb(cb),
+    m_remote_ip(remote_ip),
+    m_remote_port(remote_port),
+    m_mav_channel(mavlink_channel)
 {
 }
 
 TCPConnection::~TCPConnection()
 {
-    stop_receiving();
+    if(is_looping()){
+        stop_looping();
+    }
 }
 
-bool TCPConnection::try_connect_and_receive(const std::string remote_ip, const int remote_port)
+void TCPConnection::set_remote(std::string remote_ip, int remote_port)
 {
     assert(m_receive_thread==nullptr);
     m_remote_ip=remote_ip;
     m_remote_port=remote_port;
-    m_socket_fd=linux_tcp_socket_try_connect(remote_ip,remote_port,2);
-    if(m_socket_fd!=-1){
-        qDebug()<<"TCP connect success";
-        m_keep_receiving=true;
-        m_receive_thread=std::make_unique<std::thread>(&TCPConnection::receive_until_stopped,this);
-        return true;
-    }
-    return false;
 }
 
-void TCPConnection::stop_receiving()
+bool TCPConnection::is_looping()
 {
-    if(m_receive_thread!=nullptr){
-        m_keep_receiving=false;
+    return m_receive_thread!=nullptr;
+}
+
+
+void TCPConnection::start_looping()
+{
+    assert(m_receive_thread==nullptr);
+    m_keep_receiving=true;
+    m_receive_thread=std::make_unique<std::thread>(&TCPConnection::loop_connect_receive,this);
+}
+
+void TCPConnection::stop_looping_if()
+{
+    if(is_looping())stop_looping();
+}
+
+void TCPConnection::stop_looping()
+{
+    assert(m_receive_thread!=nullptr);
+    qDebug()<<"TCPConnection2::stop_receiving begin";
+    m_keep_receiving=false;
 #ifdef __windows__
         shutdown(m_socket_fd, SD_BOTH);
 
@@ -134,8 +153,11 @@ void TCPConnection::stop_receiving()
 #endif
         m_receive_thread->join();
         m_receive_thread=nullptr;
-    }
+    qDebug()<<"TCPConnection2::stop_receiving end";
 }
+
+
+
 
 
 void TCPConnection::send_message(const mavlink_message_t &msg)
@@ -145,8 +167,12 @@ void TCPConnection::send_message(const mavlink_message_t &msg)
     if(!m_keep_receiving){
         return; // Otherwise sendto blocks
     }
+    if(m_socket_fd<0){
+        //qDebug()<<"Cannot send message";
+        return;
+    }
     if(!linux_send_message(m_socket_fd,m_remote_ip,m_remote_port,buffer,buffer_len)){
-        qDebug()<<"Cannot send message";
+        //qDebug()<<"Cannot send message";
     }
 }
 
@@ -160,9 +186,9 @@ bool TCPConnection::threadsafe_is_alive()
 void TCPConnection::process_data(const uint8_t *data, int data_len)
 {
     m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    mavlink_message_t msg;
     for (int i = 0; i < data_len; i++) {
-        mavlink_message_t msg;
-        uint8_t res = mavlink_parse_char(1,data[i], &msg, &m_recv_status);
+        uint8_t res = mavlink_parse_char(m_mav_channel,data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);
         }
@@ -178,13 +204,31 @@ void TCPConnection::process_mavlink_message(mavlink_message_t message)
 void TCPConnection::receive_until_stopped()
 {
     // Enough for MTU 1500 bytes.
-    uint8_t buffer[2048];
+    auto buffer=std::make_unique<std::vector<uint8_t>>();
+    buffer->resize(1500);
+    struct timeval tv;
+    tv.tv_sec = 3;
+    tv.tv_usec = 0;
+    //setsockopt(m_socket_fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
     while (m_keep_receiving) {
-        const auto recv_len = recv(m_socket_fd, reinterpret_cast<char*>(&buffer), sizeof(buffer), 0);
+        const auto elapsed_last_message=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_data_ms;
+        if(elapsed_last_message>3*1000){
+            qDebug()<<"No message for more than 3 seconds, disconnecting";
+            return;
+        }
+        const auto recv_len = recvfrom(
+            m_socket_fd,
+            (char*)buffer->data(),
+            buffer->size(),
+            0,
+            nullptr,
+            nullptr);
 
         if (recv_len == 0) {
             // This can happen when shutdown is called on the socket,
             // therefore we check _should_exit again.
+            //qDebug()<<"Got recv_len==0";
+            //return;
             continue;
         }
 
@@ -193,9 +237,32 @@ void TCPConnection::receive_until_stopped()
             // therefore be quiet.
             // LogErr() << "recvfrom error: " << GET_ERROR(errno);
             // Something went wrong, we should try to re-connect in next iteration.
+            //qDebug()<<"Got recv_len<0 :"<<recv_len<<" : "<< strerror(errno);
+            //return;
             continue;
         }
-        process_data(buffer,recv_len);
+        process_data(buffer->data(),recv_len);
     }
 }
 
+void TCPConnection::loop_connect_receive()
+{
+    qDebug()<<"TCPConnection2::loop_connect_receive begin";
+    while(m_keep_receiving){
+         m_socket_fd=linux_tcp_socket_try_connect(m_remote_ip,m_remote_port,3);
+         if(m_socket_fd>0){
+             m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+             receive_until_stopped();
+             qDebug()<<"Broke out of receive loop";
+             close(m_socket_fd);
+             m_socket_fd=-1;
+         }else{
+             int count=0;
+             while(m_keep_receiving && count<3){
+                 std::this_thread::sleep_for(std::chrono::seconds(1));
+                 count++;
+             }
+         }
+    }
+    qDebug()<<"TCPConnection2::loop_connect_receive end";
+}

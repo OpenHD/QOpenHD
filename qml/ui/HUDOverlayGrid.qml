@@ -12,8 +12,11 @@ import "./widgets"
 import "./widgets/map"
 import "../resources" as Resources
 import "./elements"
+import "./sidebar"
 
 import "../video"
+
+import "sidebar"
 
 Item {
     id: hudOverlayGrid
@@ -44,6 +47,7 @@ Item {
         hudOverlayGrid.focus = true;
         // Receive key events
         hudOverlayGrid.enabled =true;
+        hudOverlayGrid.visible =true;
         // argh
         actual_hud_elements.visible=true;
     }
@@ -201,7 +205,14 @@ Item {
 
     Keys.onPressed: (event)=> {
                         console.log("HUDOverlayGrid::Key was pressed:"+event);
-                        if (event.key == Qt.Key_Return) {
+                        if(event.key==Qt.Key_Left || event.key == Qt.Key_Right || event.key == Qt.Key_Up || event.key == Qt.Key_Down){
+                            // If the user presses any navigation key, we open up the sidebar and hand over the inputs to it
+                            if(!sidebar.m_extra_is_visible){
+                                sidebar.open_and_take_control(true);
+                                event.accepted=true;
+                            }
+                        }
+                        /*if (event.key == Qt.Key_Return) {
                             //console.log("enter was pressed");
                             event.accepted = true;
                             dummy_joystick_enter()
@@ -221,7 +232,7 @@ Item {
                             //console.log("down was pressed")
                             event.accepted=true;
                             dummy_joystick_down()
-                        }
+                        }*/
                     }
 
     Image {
@@ -264,6 +275,7 @@ Item {
         id: actual_hud_elements
         width: parent.width
         height: parent.height
+        visible: !quickPanel.visible
 
         // By default on top row
         // --------------------------------------------------------------------------
@@ -296,10 +308,6 @@ Item {
         // TODO SORT ME
 
         // + 0% cpu
-        MessageHUD {
-            id: messageHUD
-        }
-
         GroundPowerWidget {
             id: groundPowerWidget
         }
@@ -472,8 +480,12 @@ Item {
             id: uavtimewidget
         }
 
-        Sidebar{
+        SideBarMain{
             id: sidebar
+        }
+
+        MessageHUD {
+            id: messageHUD
         }
     }
 
@@ -496,7 +508,9 @@ Item {
 
     Label{
         text: "JOSTICK NAVIGATION ENABLED"
-        anchors.centerIn: parent
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 30
         visible: m_keyboard_navigation_active
         // style
         color: settings.color_text
@@ -506,6 +520,7 @@ Item {
         wrapMode: Text.NoWrap
         style: Text.Outline
         styleColor: settings.color_glow
+        height: 50
     }
     // Shows center while dragging widgets
     Rectangle{
@@ -523,6 +538,10 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         visible: m_show_vertical_center_indicator
+    }
+
+    DevStreamingInfo{
+
     }
 }
 

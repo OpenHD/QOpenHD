@@ -268,6 +268,15 @@ bool QOpenHD::is_android()
 #endif
 }
 
+bool QOpenHD::is_windows()
+{
+#ifdef __windows__
+    return true;
+#else
+    return false;
+#endif
+}
+
 void QOpenHD::android_open_tethering_settings()
 {
 #ifdef __android__
@@ -356,6 +365,14 @@ void QOpenHD::show_toast(QString message,bool long_toast)
     emit signal_toast_add(message,long_toast);
 }
 
+void QOpenHD::set_busy_for_milliseconds(int milliseconds,QString reason)
+{
+    set_is_busy(true);
+    set_busy_reason(reason);
+    const int timeout_ms = milliseconds;
+    QTimer::singleShot(timeout_ms, this, &QOpenHD::handle_busy_timeout);
+}
+
 
 void QOpenHD::handle_toast_timeout()
 {
@@ -367,6 +384,12 @@ void QOpenHD::handle_toast_timeout()
        m_toast_message_queue.pop_front();
        show_toast_and_add_remove_timer(front.text,front.long_toast);
     }
+}
+
+void QOpenHD::handle_busy_timeout()
+{
+    set_is_busy(false);
+    set_busy_reason("");
 }
 
 void QOpenHD::do_not_call_toast_add(QString text,bool long_toast)

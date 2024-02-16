@@ -39,7 +39,7 @@ Column {
         //color: "green"
         //color: "#8cbfd7f3"
         color: "#8cbfd7f3"
-
+        //color: "#333c4c"
 
         Text {
             id: description
@@ -48,19 +48,15 @@ Column {
             font.pixelSize: 13
             anchors.leftMargin: 8
             anchors.rightMargin: 8
-            anchors.fill: parent
+            anchors.centerIn: parent
+            width: m_description.length> 20 ?  250 : 150
 
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
+            //color: "white"
 
         }
-        MouseArea{
-            anchors.fill: description
-            onClicked: {
-                m_hide_elements=!m_hide_elements
-                change_children_visibility()
-            }
-        }
+
         Rectangle{
             width: parent.width
             height: 2
@@ -68,6 +64,37 @@ Column {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
         }
+        Text{
+            text: m_hide_elements ?  qsTr("\uf0d7") : qsTr("\uf0d8");
+            font.family: "Font Awesome 5 Free";
+            anchors.right: description.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 10
+            font.pixelSize: 20
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    m_hide_elements=!m_hide_elements
+                    change_children_visibility()
+                }
+            }
+            //color: "white"
+        }
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                m_hide_elements=!m_hide_elements
+                change_children_visibility()
+            }
+        }
+
+        /*Rectangle{
+            implicitWidth: parent.width
+            implicitHeight: parent.height
+            color: "transparent"
+            border.color: "black"
+            border.width: 2
+        }*/
     }
 
 
