@@ -24,6 +24,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/models/wificard.h"
 #include "telemetry/MavlinkTelemetry.h"
 #include "telemetry/models/rcchannelsmodel.h"
+#include "telemetry/models/markermodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/wblinksettingshelper.h"
 #include "telemetry/settings/frequencyhelper.h"
@@ -34,6 +35,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/aoagauge.h"
+#include "adsb/adsbvehicle.h"
+#include "adsb/adsbvehiclemanager.h"
+#include "adsb/qmlobjectlistmodel.h"
+#include "adsb/drawingcanvas.h"
+
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
 #include "decodingstatistcs.h"
@@ -64,6 +70,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+RESOLVEFUNC(SSL_get1_peer_certificate);
+RESOLVEFUNC(EVP_PKEY_get_base_id);
+#endif // OPENSSL_VERSION_MAJOR >= 3
 
 
 // Load all the fonts we use ?!
@@ -293,6 +304,11 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
 
+
+    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
+    qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
+
+
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
@@ -338,6 +354,10 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
     engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
+    auto adsbVehicleManager = ADSBVehicleManager::instance();
+    engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
+    adsbVehicleManager->onStarted();
+
     // And then the main part
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
 

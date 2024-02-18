@@ -294,6 +294,12 @@ Settings {
     property bool map_drone_track: true
     property bool map_show_mission_waypoints: true
 
+    property bool adsb_enable: true
+    property double adsb_radius: 50000 //using meters for now- api is in NM
+    property bool adsb_show_internet_data: true
+    property bool adsb_show_sdr_data: true
+    property bool adsb_show_unknown_or_zero_alt: false //alot of traffic has no alt and is not useful
+
     property int map_zoom: 18
     property double map_size: 1
     property bool show_throttle: true

@@ -166,6 +166,16 @@ bool UDPConnection::setup_socket()
     }*/
     if (bind(m_socket_fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
         qDebug()<<"Cannot bind port "<<strerror(errno);
+        // TODO finalize merge
+/*if (errno==98){ //port already bound error code
+if(_local_port==14550){
+    _local_port=14551;
+} else if (_local_port == 14551){
+    _local_port= 14550;
+} else {
+    _local_port= m_local_port; //finally back to whatever is set if its not 14550 or 14551.. unlikely
+}
+}*/
         close(m_socket_fd);
         return false;
     }
@@ -234,7 +244,7 @@ void UDPConnection::set_remote(const std::string ip, int port)
         auto& remote=m_curr_remote.value();
         if(remote.ip!=ip || remote.port != port){
             auto new_remote=Remote{ip,port};
-            qDebug()<<"Remote chnged from "<<remote.to_string().c_str()<<" to "<<new_remote.to_string().c_str();
+            qDebug()<<"Remote changed from "<<remote.to_string().c_str()<<" to "<<new_remote.to_string().c_str();
             m_curr_remote=remote;
         }
     }else{

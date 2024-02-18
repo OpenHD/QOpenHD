@@ -12,6 +12,7 @@ SOURCES += \
     $$PWD/connection/tcp_connection.cpp \
     $$PWD/connection/udp_connection.cpp \
     $$PWD/models/fcmapmodel.cpp \
+    $$PWD/models/markermodel.cpp \
     $$PWD/settings/documentedparam.cpp \
     $$PWD/settings/frequencyhelper.cpp \
     $$PWD/settings/pollutionhelper.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     $$PWD/action/ohdaction.h \
     $$PWD/connection/mavlinkchannel.h \
     $$PWD/connection/tcp_connection.h \
+    $$PWD/models/markermodel.h \
     $$PWD/models/openhd_core/platform.hpp \
     $$PWD/settings/documentedparam.h \
     $$PWD/action/impl/xparam.h \
