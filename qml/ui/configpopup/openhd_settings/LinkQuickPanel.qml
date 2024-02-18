@@ -314,6 +314,18 @@ Rectangle{
                             font.bold: false
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }
+                        Text{
+                            width:  m_small_width
+                            height: m_small_height
+                            text: {
+                                return "TX ERRORS:\n"+_cameraStreamModelPrimary.total_n_tx_dropped_frames
+                            }
+                            color: _ohdSystemGround.wb_link_curr_foreign_pps > 20 ? "red" : "black"
+                            verticalAlignment: Qt.AlignVCenter
+                            horizontalAlignment: Qt.AlignHCenter
+                            font.bold: false
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
                         /*Text{
                             width:  m_small_width
                             height: m_small_height
