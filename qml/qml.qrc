@@ -301,5 +301,8 @@
         <file>ui/widgets/map/ADSBcautionMarker.png</file>
         <file>ui/widgets/map/ADSBmarker.png</file>
         <file>ui/widgets/map/ADSBwarnMarker.png</file>
+        <file>ui/elements/NewSwitch.qml</file>
+        <file>ui/elements/NewSpinBox.qml</file>
+        <file>ui/elements/NewSlider.qml</file>
     </qresource>
 </RCC>
