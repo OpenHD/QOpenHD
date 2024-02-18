@@ -189,12 +189,21 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                                }),
                "!!!Editing this param manually without care will result in a broken link!!!"
                );
-    append_int(ret,openhd::WB_MCS_INDEX_VIA_RC_CHANNEL,
-               ImprovedIntSetting::createEnum({"Disable","Channel 1","CHannel 2","Channel 3","Channel 4","Channel 5",
-                                               "Channel 6","Channel 7","Channel 8","Channel 9","Channel 10"}),
-               "Dynamically change the MCS Index (Trade range <-> image quality (bitrate)) during flight using your RC and a specific channel "
-               "(similar to how flight modes work)."
-               );
+    {
+        std::vector<std::string> disable_or_channels{"Disable","Channel 1","CHannel 2","Channel 3","Channel 4","Channel 5",
+                                                          "Channel 6","Channel 7","Channel 8","Channel 9","Channel 10"};
+        append_int(ret,openhd::WB_MCS_INDEX_VIA_RC_CHANNEL,
+                   ImprovedIntSetting::createEnum(disable_or_channels),
+                   "Dynamically change the MCS Index (Trade range <-> image quality (bitrate)) during flight using your RC and a specific channel "
+                   "(similar to how flight modes work)."
+                   );
+        append_int(ret,openhd::WB_BW_VIA_RC_CHANNEL,
+                   ImprovedIntSetting::createEnum(disable_or_channels),
+                   "Dynamically change the BW via RC. NOT ALWAYS SAFE TO USE !"
+                   );
+
+    }
+
     append_only_documented(ret,openhd::WB_FREQUENCY,"!!!Editing this param manually without care will result in a broken link!!!");
     {
         auto default_values=std::vector<ImprovedIntSetting::Item>{
