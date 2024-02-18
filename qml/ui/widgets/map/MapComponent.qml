@@ -25,6 +25,7 @@ Map {
     property double userLon: 0.0
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
+    property var center_coord
 
     property int track_limit: 200; //max number of drone track points before it starts averaging
     // We start with a minimum distance of 3m, each time we perform a track reduction, the minimum distance is increased
@@ -62,8 +63,10 @@ Map {
     }
 
     function findMapBounds(){
-        var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
+        center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("Map component: center",center_coord.latitude, center_coord.longitude);
+        AdsbVehicleManager.newMapLat(center_coord.latitude);
+        AdsbVehicleManager.newMapLon(center_coord.longitude);
     }
 
     PositionSource {
@@ -148,6 +151,290 @@ Map {
             source: "qrc:/resources/homemarker.png"
         }
     }
+
+    // This graphically depicts the area in which adsb traffic is being sourced
+
+    MapCircle {
+        id: adsbCircle
+        visible: {
+            //TODO add control that also responds to no interent setting
+            if (!settings.adsb_enable){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        center {
+            latitude: center_coord.latitude
+            longitude: center_coord.longitude
+        }
+        radius: settings.adsb_radius //in meters
+        color: "white"
+        border.color: "red"
+        border.width: 5
+        smooth: true
+        opacity: .3
+    }
+
+    //>>>>>>>>>>>>>>>>> Begin ADSB <<<<<<<<<<<<<<<<<
+    MapItemView {
+            id: markerMapView
+            model: AdsbVehicleManager.adsbVehicles
+            delegate: markerComponentDelegate
+            visible: settings.adsb_enable
+
+            Component {
+                id: markerComponentDelegate
+
+                MapItemGroup {
+                    id: delegateGroup
+
+                    MapQuickItem {
+                        id: marker
+                        property alias lastMouseX: markerMouseArea.lastX
+                        property alias lastMouseY: markerMouseArea.lastY
+
+                        anchorPoint.x: image.width/2
+                        anchorPoint.y: image.height/2
+                        width: image.width
+                        height: image.height
+
+
+                        sourceItem:
+
+                            Image {
+
+                            id: image
+                            source: "ADSBmarker.png"
+
+                            Rectangle{// has to be here prior to rotation call
+                                id: speedtail
+
+                                x: image.width*.4
+                                y: image.height*.8
+
+                                width: image.width*.2
+                                height: {
+                                    if (object.velocity === undefined) {
+                                        console.log("qml: object velocity undefined")
+                                        return 0;
+                                    }
+                                    else {
+                                        return object.velocity / 10;
+                                    }
+                                }
+                                opacity: .5
+                                color: "white"
+                                border.color: "grey"
+                                border.width: 1
+                            }
+
+                            rotation: {
+                                if (object.heading === undefined) {
+                                    console.log("qml: model heading undefined")
+                                    return 0;
+                                }
+
+
+
+                                if (settings.map_orientation === true){
+                                    var orientation = object.heading-_fcMavlinkSystem.hdg;
+                                    if (orientation < 0) orientation += 360;
+                                    if (orientation >= 360) orientation -=360;
+                                    return orientation;
+                                }
+                                else {
+                                    //console.log("TRACK=", object.heading);
+                                    return object.heading;
+                                }
+                            }
+
+                            //UNUSED MOUSE AREA.. for future functionality
+                            opacity: markerMouseArea.pressed ? 0.6 : 1.0
+                            MouseArea  {
+                                id: markerMouseArea
+                                property int pressX : -1
+                                property int pressY : -1
+                                property int jitterThreshold : 10
+                                property int lastX: -1
+                                property int lastY: -1
+                                anchors.fill: parent
+                                hoverEnabled : false
+                                drag.target: marker
+                                preventStealing: true
+
+                                onPressed : {
+                                    map.pressX = mouse.x
+                                    map.pressY = mouse.y
+                                    map.currentMarker = -1
+                                    for (var i = 0; i< map.markers.length; i++){
+                                        if (marker == map.markers[i]){
+                                            map.currentMarker = i
+                                            break
+                                        }
+                                    }
+                                }
+
+                                onPressAndHold:{
+                                    if (Math.abs(map.pressX - mouse.x ) < map.jitterThreshold
+                                            && Math.abs(map.pressY - mouse.y ) < map.jitterThreshold) {
+                                        var p = map.fromCoordinate(marker.coordinate)
+                                        lastX = p.x
+                                        lastY = p.y
+                                        map.showMarkerMenu(marker.coordinate)
+                                    }
+                                }
+                            }
+
+                            Rectangle{ //holder to "derotate" info block
+                                id: holder
+
+                                x: image.width+5
+                                y: image.height/2
+                                rotation: {
+                                    if (object.heading === undefined) {
+                                        console.log("qml: model velocity undefined")
+                                        return 0;
+                                    }
+
+                                    if (settings.map_orientation === true){
+                                        var orientation = object.heading - _fcMavlinkSystem.hdg;
+
+                                        if (orientation < 0) orientation += 360;
+                                        if (orientation >= 360) orientation -=360;
+                                        return -orientation;
+                                    }
+                                    else {
+                                        return -object.heading;
+                                    }
+                                }
+                                width: image.width
+                                height: image.height
+                                color: "transparent"
+
+                                Rectangle{
+                                    id: background
+
+                                    width: image.width*1.25
+                                    height: image.height
+                                    color: "black"
+                                    opacity: .2
+                                    border.width: 2
+                                    border.color: "white"
+                                    radius: 8
+                                }
+
+                                Text{
+                                    id: callsign
+                                    anchors.top: holder.top
+                                    topPadding: 2
+                                    leftPadding: 10
+                                    width: image.width
+                                    color: "white"
+                                    //font.bold: true
+                                    font.pixelSize: 11
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: {
+                                        if (object.callsign === undefined) {
+                                            console.log("qml: model callsign undefined")
+                                            return "---"
+                                        }
+                                        else {
+                                            return object.callsign
+                                            //console.log("Map Callsign=",object.callsign);
+                                        }
+                                    }
+                                }
+
+                                Text{
+                                    id: alt
+                                    anchors.top: callsign.bottom
+                                    topPadding: 2
+                                    leftPadding: 10
+                                    width: image.width
+                                    color: "white"
+                                    font.bold: true
+                                    font.pixelSize: 11
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text:  {
+                                        // check if traffic is a threat and change marker image if needed
+                                        if (object.altitude - _fcMavlinkSystem.altitude_msl_m < 300 && object.distance < 2){
+                                            //console.log("TRAFFIC WARNING");
+                                            image.source="ADSBwarnMarker.png";
+                                            background.border.color = "red";
+                                            background.border.width = 5;
+                                            background.opacity = 0.5;
+                                        } else if (object.altitude - _fcMavlinkSystem.altitude_msl_m < 500 && object.distance < 5){
+                                            //console.log("TRAFFIC ALERT");
+                                            image.source="ADSBcautionMarker.png";
+                                            background.border.color = "yellow";
+                                            background.border.width = 5;
+                                            background.opacity = 0.5;
+                                        }
+
+                                        //NOW do altitude Text block
+                                        if (object.altitude === undefined || object.verticalVel === undefined) {
+                                            //console.log("qml: model alt or vertical undefined")
+                                            return "---";
+                                        } else {
+                                            if(object.verticalVel > .2){ //climbing
+                                                if (settings.enable_imperial === false){
+                                                    return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\ue696"
+                                                }
+                                                else{
+                                                    return Math.floor((object.altitude - _fcMavlinkSystem.altitude_msl_m) * 3.28084) + "Ft " + "\ue696"
+                                                }
+                                            }
+                                            else if (object.verticalVel < -.2){//descending
+                                                if (settings.enable_imperial === false){
+                                                    return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\ue697"
+                                                }
+                                                else{
+                                                    return Math.floor((object.altitude - _fcMavlinkSystem.altitude_msl_m) * 3.28084) + "Ft " + "\ue697"
+                                                }
+                                            }
+                                            else {
+                                                if (settings.enable_imperial === false){//level
+                                                    return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\u2501"
+                                                }
+                                                else{
+                                                    return Math.floor((object.altitude - _fcMavlinkSystem.altitude_msl_m) * 3.28084) + "Ft " + "\u2501"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                Text{
+                                    id: velocity
+                                    anchors.top: alt.bottom
+                                    topPadding: 2
+                                    leftPadding: 10
+                                    width: image.width
+                                    color: "white"
+                                    //font.bold: true
+                                    font.pixelSize: 11
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: {
+                                        if (object.velocity === undefined) {
+                                            return "---";
+                                        }
+                                        else {
+                                            return settings.enable_imperial ? Math.floor(object.velocity * 2.23694) + " mph"
+                                                                            : Math.floor(object.velocity * 3.6) + " kph";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        //position everything
+                        coordinate: QtPositioning.coordinate( object.lat , object.lon );
+                    }
+                    //Component.onCompleted: map.addMapItemGroup(this);
+                }
+            }
+        }
+    //>>>>>>>>>>>>>>>>>>> end ADSB <<<<<<<<<<<<<<<
 
 
     //get coordinates on click... for future use
