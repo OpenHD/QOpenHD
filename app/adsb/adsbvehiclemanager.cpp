@@ -221,6 +221,7 @@ void ADSBInternet::requestData(void) {
     _adsb_enable = _settings.value("adsb_enable").toBool();
     _adsb_show_internet_data = _settings.value("adsb_show_internet_data").toBool();
     max_distance = _settings.value("adsb_radius").toInt();
+    QObject::connect(m_manager, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(dirty_onSslError(QNetworkReply*, QList<QSslError>)));
 
     QString distance_string = QString::number(max_distance/1852); // convert meters to NM for api
 
@@ -419,6 +420,13 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         emit adsbVehicleUpdate(adsbInfo);
     }
     reply->deleteLater();
+}
+
+void ADSBInternet::dirty_onSslError(QNetworkReply *reply, QList<QSslError> errors)
+{
+    // Consti10: Dang openssl - just ignore all SSL errors !
+    //qDebug()<<"got some ssl errors";
+    reply->ignoreSslErrors();
 }
 
 ADSBSdr::ADSBSdr()
