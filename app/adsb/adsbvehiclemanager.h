@@ -81,8 +81,8 @@ public:
 
 private slots:
     void processReply(QNetworkReply *reply) override;
+    void dirty_onSslError(QNetworkReply* reply, QList<QSslError> errors);
     void requestData() override;
-
 private:
     bool _adsb_show_internet_data;
 };

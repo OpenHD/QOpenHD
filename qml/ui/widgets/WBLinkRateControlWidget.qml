@@ -40,7 +40,7 @@ BaseWidget {
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
     property int m_curr_bitrate_kbits: _ohdSystemAir.curr_bitrate_kbits
 
-    property int m_curr_fine_adjustments: _ohdSystemAir.curr_n_rate_adjustments
+    //property int m_curr_fine_adjustments: _ohdSystemAir.curr_n_rate_adjustments
 
     property int m_curr_fec_perc: _cameraStreamModelPrimary.curr_fec_percentage
     property int m_curr_keyframe_i: _cameraStreamModelPrimary.curr_keyframe_interval
@@ -111,8 +111,8 @@ BaseWidget {
         }
         var ret=bitrate_kbits_readable(m_curr_bitrate_kbits);
         //if(m_curr_fine_adjustments>0){
-            var fine_readable="-"+m_curr_fine_adjustments;
-            ret+=fine_readable;
+        //    var fine_readable="-"+m_curr_fine_adjustments;
+        //    ret+=fine_readable;
         //}
         ret += (" ["+m_curr_mcs_index+"]");
         return ret;
@@ -276,7 +276,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     onCheckedChanged: settings.wb_link_rate_control_widget_show_fec_and_keyframe = checked
                 }
             }
-            Item {
+            /*Item {
                 width: parent.width
                 height: 32
                 Text {
@@ -296,7 +296,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     checked: settings.wb_link_rate_control_widget_show_throttle_warning
                     onCheckedChanged: settings.wb_link_rate_control_widget_show_throttle_warning = checked
                 }
-            }
+            }*/
 
 
             Item {
@@ -480,7 +480,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 styleColor: settings.color_glow
                 visible: settings.wb_link_rate_control_widget_show_fec_and_keyframe
             }
-            Text{
+            /*Text{
                 width: parent.width
                 height: 14
                 color: settings.color_warn
@@ -497,7 +497,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                     }
                     return "";
                 }
-            }
+            }*/
 
         }
     }

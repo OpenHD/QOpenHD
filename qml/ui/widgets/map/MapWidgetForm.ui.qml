@@ -311,11 +311,12 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
+                // Consti10: I think this is in metres
                 NewSlider {
                     orientation: Qt.Horizontal
-                    from: 5000
+                    from: (5*1000)
                     value: settings.adsb_radius
-                    to: 50000
+                    to: (100*1000)
                     stepSize: 1000
                     height: parent.height
                     anchors.rightMargin: 0
