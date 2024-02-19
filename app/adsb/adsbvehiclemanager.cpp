@@ -28,14 +28,12 @@
 
 #include <QDebug>
 
-static ADSBVehicleManager* _instance = nullptr;
 
 ADSBVehicleManager* ADSBVehicleManager::instance()
 {
-    if ( _instance == nullptr ) {
-        _instance = new ADSBVehicleManager();
-    }
-    return _instance;
+    // This is the only required c++ code for a thread safe singleton
+    static ADSBVehicleManager instance{};
+    return &instance;
 }
 
 ADSBVehicleManager::ADSBVehicleManager(QObject *parent) : QObject(parent)
@@ -191,6 +189,7 @@ void ADSBapi::run(void)
 
 void ADSBapi::init(void) {
     QNetworkAccessManager * manager = new QNetworkAccessManager(this);
+    //qDebug()<<"isStrictTransportSecurityEnabled:"<<(manager->isStrictTransportSecurityEnabled() ? "Y" : "N");
 
     m_manager = manager;
 
@@ -229,6 +228,7 @@ void ADSBInternet::requestData(void) {
     if (!_adsb_enable || !_adsb_show_internet_data) {
            return;
     }
+    // TODO - http instead of https ?
     adsb_url="https://api.airplanes.live/v2/point/"+  lat_string +"/"+ lon_string + "/" + distance_string;
     QNetworkRequest request;
     QUrl api_request = adsb_url;
@@ -254,9 +254,15 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         reply->deleteLater();
         return;
     }
+    if(!reply->isFinished()){
+        qDebug()<<"We should only get finished replies";
+    }
+
 
     QJsonParseError errorPtr;
     QByteArray data = reply->readAll();
+    //qDebug()<<"Len:"<<data.length()<<" available in reply:"<<reply->bytesAvailable();
+    //qDebug()<<"URL was:"<<reply->request().url();
     QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
 
     if (doc.isNull()) {
