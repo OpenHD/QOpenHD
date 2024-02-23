@@ -79,8 +79,7 @@ void QOpenHD::switchToLanguage(const QString &language) {
         qDebug()<<"Error switch language- engine not set";
         return;
     }
-    // TODO QT 6 doesn't have it
-    QLocale::setDefault(language);
+    QLocale::setDefault(QLocale(language));
 
     if (!m_translator.isEmpty()) {
         QCoreApplication::removeTranslator(&m_translator);
