@@ -3,7 +3,7 @@
 #include "../../common/StringHelper.hpp"
 #include "../../common/TimeHelper.hpp"
 #include "QOpenHDVideoHelper.hpp"
-#include "util/telemetryutil.hpp"
+#include "tutil/telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
 #include "camerastreammodel.h"
@@ -16,7 +16,7 @@
 #include <logging/hudlogmessagesmodel.h>
 
 #include "util/qopenhd.h"
-#include "../util/qopenhdmavlinkhelper.hpp"
+#include "../tutil/qopenhdmavlinkhelper.hpp"
 
 #include <../util/WorkaroundMessageBox.h>
 #include "../settings/wblinksettingshelper.h"

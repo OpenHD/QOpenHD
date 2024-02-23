@@ -1,7 +1,7 @@
 #ifndef MUDPLINK_H
 #define MUDPLINK_H
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 
 #include <thread>
 #include <memory.h>

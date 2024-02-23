@@ -2,9 +2,9 @@
 
 #include <qdebug.h>
 
-#include "../../util/qopenhdmavlinkhelper.hpp"
+#include "../../tutil/qopenhdmavlinkhelper.hpp"
 #include "../../MavlinkTelemetry.h"
-#include "util/mavlink_enum_to_string.h"
+#include "tutil/mavlink_enum_to_string.h"
 #include <future>
 
 CmdSender::CmdSender()

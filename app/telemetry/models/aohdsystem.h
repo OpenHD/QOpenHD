@@ -8,10 +8,10 @@
 #include <QQmlContext>
 #include <atomic>
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
-#include "util/openhd_defines.hpp"
+#include "util/lqutils_include.h"
+#include "tutil/openhd_defines.hpp"
 
 /**
  * Abstract OHD (Mavlink) system.

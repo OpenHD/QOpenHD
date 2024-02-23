@@ -4,7 +4,7 @@
 #include <QObject>
 #include <mutex>
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 /**

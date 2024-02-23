@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include "../../logging/hudlogmessagesmodel.h"
-#include "util/qopenhdmavlinkhelper.hpp"
+#include "tutil/qopenhdmavlinkhelper.hpp"
 
 
 static std::string wifi_card_type_to_string(const int card_type) {

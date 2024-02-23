@@ -1,5 +1,5 @@
 #include "udp_connection.h"
-#include "util/qopenhdmavlinkhelper.hpp"
+#include "tutil/qopenhdmavlinkhelper.hpp"
 
 #ifdef __windows__
 #define _WIN32_WINNT 0x0600 //TODO dirty

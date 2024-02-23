@@ -92,18 +92,6 @@ static std::string yes_or_no(bool yes){
   return (yes ? "Y" : "N");
 }
 
-static bool is_valid_ip(const std::string& ip) {
-#if defined(__linux__) || defined(__macos__)
-  unsigned char buf[sizeof(struct in6_addr)];
-  auto result = inet_pton(AF_INET, ip.c_str(), buf);
-  return result == 1;
-#else
-  // TODO find method
-  return true;
-#endif //#ifdef __linux__
-
-}
-
 }
 
 #endif

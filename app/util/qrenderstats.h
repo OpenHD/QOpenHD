@@ -6,7 +6,7 @@
 #include <qquickwindow.h>
 
 #include "../common/TimeHelper.hpp"
-#include "../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/lqutils_include.h"
 
 // Stats about the QT (QOpenHD) OpenGL rendering.
 // E.g frame time of the QT OpenGL rendering thread.

@@ -5,7 +5,7 @@
 #include "../../util/qopenhd.h"
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
-#include "util/openhd_defines.hpp"
+#include "tutil/openhd_defines.hpp"
 
 #include <QSettings>
 #include <QVariant>

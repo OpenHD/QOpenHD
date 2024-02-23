@@ -1,6 +1,6 @@
 #include "fcmissionhandler.h"
-#include "../util/qopenhdmavlinkhelper.hpp"
-#include "../util/telemetryutil.hpp"
+#include "../tutil/qopenhdmavlinkhelper.hpp"
+#include "../tutil/telemetryutil.hpp"
 #include "../MavlinkTelemetry.h"
 
 #include "../models/fcmavlinkmissionitemsmodel.h"

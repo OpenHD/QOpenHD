@@ -1,7 +1,7 @@
 #ifndef TCPCONNECTION2_H
 #define TCPCONNECTION2_H
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 
 #include <thread>
 #include <memory.h>

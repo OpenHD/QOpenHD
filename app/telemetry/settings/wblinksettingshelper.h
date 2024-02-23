@@ -9,8 +9,8 @@
 #include <mutex>
 #include <optional>
 
-#include "../util/mavlink_include.h"
-#include "util/openhd_defines.hpp"
+#include "../tutil/mavlink_include.h"
+#include "tutil/openhd_defines.hpp"
 
 
 // DON'T ASK, THIS CLASS IS HUGE AND REALLY HARD TO DESCRIBE
