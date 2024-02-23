@@ -73,6 +73,10 @@ qt_add_executable(QOpenHDApp
     app/videostreaming/vscommon/decodingstatistcs.h
     ##
     lib/geographiclib-c-2.0/src/geodesic.c
+    ##
+    ##
+    ##
+    qml/qml.qrc
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
@@ -88,9 +92,10 @@ target_include_directories(QOpenHDApp PUBLIC app/videostreaming/vscommon)
 target_include_directories(QOpenHDApp PUBLIC lib)
 
 qt_add_qml_module(QOpenHDApp
-    URI QOpenHDUI
+    URI QOpenHD
     VERSION 1.0
-    QML_FILES qml/main.qml
+    QML_FILES
+        qml/MainX.qml
 )
 
 
