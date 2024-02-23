@@ -304,5 +304,6 @@
         <file>ui/elements/NewSwitch.qml</file>
         <file>ui/elements/NewSpinBox.qml</file>
         <file>ui/elements/NewSlider.qml</file>
+        <file>ui/sidebar/InfoElement2.qml</file>
     </qresource>
 </RCC>
