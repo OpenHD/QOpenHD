@@ -80,7 +80,7 @@ void QOpenHD::switchToLanguage(const QString &language) {
         return;
     }
     // TODO QT 6 doesn't have it
-    //QLocale::setDefault(language);
+    QLocale::setDefault(language);
 
     if (!m_translator.isEmpty()) {
         QCoreApplication::removeTranslator(&m_translator);
