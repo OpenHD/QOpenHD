@@ -1,6 +1,6 @@
 #include "rcchannelsmodel.h"
 #include "qdebug.h"
-#include "../util/qopenhdmavlinkhelper.hpp"
+#include "../tutil/qopenhdmavlinkhelper.hpp"
 
 
 

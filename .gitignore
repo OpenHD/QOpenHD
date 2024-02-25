@@ -84,3 +84,5 @@ build
 qopenhd.qmltypes
 qopenhd_metatypes.json
 qopenhd_qmltyperegistrations.cpp
+
+CMakeLists.txt.user

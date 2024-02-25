@@ -9,7 +9,7 @@
 #include <mutex>
 #include <QJSValue>
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 #include "../action/impl/xparam.h"
 

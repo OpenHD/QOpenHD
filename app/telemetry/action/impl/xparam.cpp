@@ -1,5 +1,5 @@
 #include "xparam.h"
-#include "util/qopenhdmavlinkhelper.hpp"
+#include "tutil/qopenhdmavlinkhelper.hpp"
 
 #include <cstring>
 #include <sstream>

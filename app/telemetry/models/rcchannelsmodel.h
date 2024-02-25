@@ -9,7 +9,7 @@
 #include <memory>
 #include <mutex>
 
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/lqutils_include.h"
 
 // Don't get confused - we have 2 instances of this model:
 // instanceGround()-> The OpenHD ground instance for now broadcasts the rc channel value(s) to QOpenHD for display / debugging.

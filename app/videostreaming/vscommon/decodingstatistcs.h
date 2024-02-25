@@ -4,7 +4,7 @@
 #include <QObject>
 
 // Really nice, this way we don't have to write all the setters / getters / signals ourselves !
-#include "../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/lqutils_include.h"
 
 /**
  * @brief Simple QT model to expose QOpenHD decoding statistics to the UI.

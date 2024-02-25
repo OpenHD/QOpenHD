@@ -36,7 +36,7 @@ ApplicationWindow {
     }
 
     contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
-    contentItem.rotation: settings.general_screen_rotation 
+    contentItem.rotation: settings.general_screen_rotation
 
     //minimumWidth: 850
     //minimumHeight: 480

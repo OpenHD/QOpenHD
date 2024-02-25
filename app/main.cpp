@@ -418,7 +418,12 @@ int main(int argc, char *argv[]) {
 #endif
      );
 
+    // TODO QT 6
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+    //engine.loadFromModule("QOpenHD", "qrc:/main.qml");
+    //engine.loadFromModule("QOpenHDApp","qrc:/main.qml");
+    //engine.load("qml/main.qml");
+    //engine.loadFromModule("QOpenHD", "MainX");
 
 #if defined(__android__)
     QtAndroid::hideSplashScreen();

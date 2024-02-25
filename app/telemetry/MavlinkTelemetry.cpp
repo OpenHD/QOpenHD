@@ -1,11 +1,10 @@
 #include "MavlinkTelemetry.h"
 
-#include "common/openhd-util.hpp"
 #include "models/aohdsystem.h"
 #include "models/fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
-#include "util/qopenhdmavlinkhelper.hpp"
+#include "tutil/qopenhdmavlinkhelper.hpp"
 
 #include "action/fcmissionhandler.h"
 #include "action/impl/cmdsender.h"
@@ -317,7 +316,7 @@ void MavlinkTelemetry::change_telemetry_connection_mode(int mavlink_connection_m
 
 bool MavlinkTelemetry::change_manual_tcp_ip(QString ip)
 {
-    if(!OHDUtil::is_valid_ip(ip.toStdString())){
+    if(!QOpenHD::instance().is_valid_ip(ip)){
         return false;
     }
     threadsafe_set_manual_tcp_ip(ip.toStdString());

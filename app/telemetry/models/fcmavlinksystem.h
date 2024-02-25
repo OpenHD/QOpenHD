@@ -6,14 +6,13 @@
 #include <QTimer>
 #include <QQmlContext>
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 
 #include <atomic>
 #include <optional>
 #include <memory>
 
-// Really nice, this way we don't have to write all the setters / getters / signals ourselves !
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/lqutils_include.h"
 
 /**
  * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -

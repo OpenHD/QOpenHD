@@ -45,12 +45,12 @@ HEADERS += \
     $$PWD/settings/frequencyhelper.h \
     $$PWD/settings/pollutionhelper.h \
     $$PWD/settings/wifi_channel.h \
-    $$PWD/util/geodesi_helper.h \
-    $$PWD/util/mavlink_enum_to_string.h \
-    $$PWD//util/openhd_defines.hpp \
-    $$PWD//util/qopenhdmavlinkhelper.hpp \
-    $$PWD//util/telemetryutil.hpp \
-    $$PWD/util/mavlink_include.h \
+    $$PWD/tutil/geodesi_helper.h \
+    $$PWD/tutil/mavlink_enum_to_string.h \
+    $$PWD//tutil/openhd_defines.hpp \
+    $$PWD//tutil/qopenhdmavlinkhelper.hpp \
+    $$PWD//tutil/telemetryutil.hpp \
+    $$PWD/tutil/mavlink_include.h \
     $$PWD/models/fcmapmodel.h \
     $$PWD/settings/wblinksettingshelper.h \
     app/telemetry/models/aohdsystem.h \

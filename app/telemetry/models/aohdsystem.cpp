@@ -3,7 +3,7 @@
 #include "../../common/StringHelper.hpp"
 #include "../../common/TimeHelper.hpp"
 #include "QOpenHDVideoHelper.hpp"
-#include "util/telemetryutil.hpp"
+#include "tutil/telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
 #include "camerastreammodel.h"
@@ -16,7 +16,7 @@
 #include <logging/hudlogmessagesmodel.h>
 
 #include "util/qopenhd.h"
-#include "../util/qopenhdmavlinkhelper.hpp"
+#include "../tutil/qopenhdmavlinkhelper.hpp"
 
 #include <../util/WorkaroundMessageBox.h>
 #include "../settings/wblinksettingshelper.h"
@@ -481,6 +481,9 @@ void AOHDSystem::process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating
 
 void AOHDSystem::autofech_params_if_apropriate()
 {
+    QSettings settings;
+    const bool dev_disable_autofetch=settings.value("dev_disable_autofetch",false).toBool();
+    if(dev_disable_autofetch)return;
     if(!m_is_air){
         // Ground - auto-fetch IF ;)
         if(m_wb_gnd_operating_mode==0){

@@ -2,7 +2,7 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/lqutils_include.h"
 
 class HeadingLadder : public QQuickPaintedItem {
     Q_OBJECT

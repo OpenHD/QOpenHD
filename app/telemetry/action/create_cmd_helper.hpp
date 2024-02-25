@@ -1,7 +1,7 @@
 #ifndef CMD_HELPER_H
 #define CMD_HELPER_H
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 
 // Here we have various util methods to create mavlink_command_long_t commands
 namespace cmd::helper{

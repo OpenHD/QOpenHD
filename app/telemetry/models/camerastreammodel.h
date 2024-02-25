@@ -3,9 +3,9 @@
 
 #include <QObject>
 
-#include "../util/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "util/lqutils_include.h"
 
 // NOTE1: This class exists to avoid duplicated code for primary and secondary camera(stream)-stats displayed in the HUD
 // NOTE2: Here we have only stats for one camera / camera stream that are transmitted via lossy

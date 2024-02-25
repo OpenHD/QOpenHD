@@ -79,7 +79,7 @@ void QOpenHD::switchToLanguage(const QString &language) {
         qDebug()<<"Error switch language- engine not set";
         return;
     }
-    QLocale::setDefault(language);
+    QLocale::setDefault(QLocale(language));
 
     if (!m_translator.isEmpty()) {
         QCoreApplication::removeTranslator(&m_translator);
@@ -312,7 +312,9 @@ bool QOpenHD::is_valid_ip(QString ip)
     //TODO fix windows
     return true;
 #else
-    return OHDUtil::is_valid_ip(ip.toStdString());
+    // TODO
+    return true;
+
 #endif
 }
 
