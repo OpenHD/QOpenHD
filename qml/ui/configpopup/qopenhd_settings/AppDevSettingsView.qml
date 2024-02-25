@@ -86,6 +86,20 @@ ScrollView {
                 }
             }
             SettingBaseElement{
+                m_short_description:"dev_disable_autofetch_params"
+                m_long_description: "Disables automatic fetching of the air / ground openhd param set(s)"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_disable_autofetch
+                    onCheckedChanged: settings.dev_disable_autofetch = checked
+                }
+            }
+            SettingBaseElement{
                 m_short_description: "Save Settings to file"
                 m_long_description: "Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux."
 
