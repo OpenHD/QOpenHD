@@ -66,6 +66,8 @@ qt_add_executable(QOpenHDApp
     app/telemetry/settings/mavlinksettingsmodel.cpp
     app/telemetry/settings/pollutionhelper.cpp
     app/telemetry/settings/wblinksettingshelper.cpp
+    #
+    app/telemetry/tutil/geodesi_helper.cpp
 
     ###
     #app/videostreaming/vscommon/custom/rawreceiver.cpp
@@ -75,7 +77,6 @@ qt_add_executable(QOpenHDApp
     app/videostreaming/vscommon/decodingstatistcs.h
     ##
     lib/geographiclib-c-2.0/src/geodesic.c
-    lib/geographiclib-c-2.0/src/geodesic.h
     ##
     ##
     ##
