@@ -25,8 +25,8 @@ ApplicationWindow {
 
     //width: 850
     //height: 480
-    width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_height : m_window_width
-    height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_width : m_window_height
+    //width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_height : m_window_width
+    //height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_width : m_window_height
 
     onWidthChanged: {
         _qrenderstats.set_window_width(width)
@@ -35,8 +35,8 @@ ApplicationWindow {
         _qrenderstats.set_window_height(height)
     }
 
-    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
-    contentItem.rotation: settings.general_screen_rotation 
+    //contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
+    //contentItem.rotation: settings.general_screen_rotation
 
     //minimumWidth: 850
     //minimumHeight: 480
@@ -57,11 +57,11 @@ ApplicationWindow {
     // TODO: the better fix really would be to somehow the the RPI HDMI config to rotate the screen in HW - but r.n there seems to be
     // no way, at least on MMAL
     // NOTE: If this creates issues, just comment it out - I'd love to get rid of it as soon as we can.
-    Item{
+    /*Item{
         // rotation: settings.general_screen_rotation
         anchors.centerIn: parent
         width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.height : parent.width
-        height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.width : parent.height
+        height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.width : parent.height*/
 
         // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
         // and equivalent settings systems on Linux and Android
@@ -158,7 +158,7 @@ ApplicationWindow {
             console.log("Completed");
             hudOverlayGrid.regain_focus()
         }
-    }
+    //}
 }
 
 /*##^##
