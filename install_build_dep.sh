@@ -30,8 +30,6 @@ PLATFORM_PACKAGES="qml-module-qt-labs-platform"
  
  if [[ "${PLATFORM}" == "rpi" ]]; then
     install_pi_packages
-    # Repairing MMAL-Graph-Lib
-    sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
  elif [[ "${PLATFORM}" == "ubuntu-x86" ]] ; then
     install_x86_packages
  elif [[ "${PLATFORM}" == "rock5" ]] ; then

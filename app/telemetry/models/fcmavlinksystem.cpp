@@ -123,7 +123,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_system_time_t sys_time;
         mavlink_msg_system_time_decode(&msg, &sys_time);
         set_sys_time_unix_usec(sys_time.time_unix_usec);
-        // TODO QT 6 doesn't have it
         QDateTime time;
         time.setMSecsSinceEpoch(sys_time.time_unix_usec/1000);
         set_sys_time_unix_as_str(time.toString());

@@ -1,7 +1,8 @@
-import QtQuick 2.12
+//import QtQuick 2.12
+import QtQuick 2.15
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtQuick.Dialogs 1.0
+
 import QtQuick.Controls.Material 2.12
 
 import Qt.labs.settings 1.0
@@ -235,8 +236,12 @@ Rectangle{
                 TextField {
                     Layout.alignment: Qt.AlignCenter
                     id: textFieldip
-                    validator: RegExpValidator {
-                        regExp:  /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
+                    // TODO QT 6
+                    //validator: RegExpValidator {
+                    //    regExp:  /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
+                    //}
+                    validator: RegularExpressionValidator{
+                        regularExpression: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
                     }
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     text: settings.qopenhd_mavlink_connection_manual_tcp_ip

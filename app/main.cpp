@@ -418,8 +418,12 @@ int main(int argc, char *argv[]) {
 #endif
      );
 
-    // TODO QT 6
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+    //engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+    //const QUrl url("qrc:/qt/qml/hello/qml/main.qml");
+    //const QUrl url(QStringLiteral("qrc:/qt/qml/main.qml"));
+    //const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    engine.load(url);
     //engine.loadFromModule("QOpenHD", "qrc:/main.qml");
     //engine.loadFromModule("QOpenHDApp","qrc:/main.qml");
     //engine.load("qml/main.qml");

@@ -98,7 +98,7 @@ ApplicationWindow {
             }
         }
 
-
+        // TODO QT 6
         ColorPicker {
             id: colorPicker
             height: 264

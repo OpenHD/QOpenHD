@@ -295,7 +295,7 @@ Settings {
     property bool map_drone_track: true
     property bool map_show_mission_waypoints: true
 
-    property bool adsb_enable: true
+    property bool adsb_enable: false
     property double adsb_radius: 50000 //using meters for now- api is in NM
     property bool adsb_show_internet_data: true
     property bool adsb_show_sdr_data: true

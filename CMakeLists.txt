@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(QOpenHDProject VERSION 0.1 LANGUAGES CXX)
+project(QOpenHDProject VERSION 0.1 LANGUAGES C CXX)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -64,6 +66,8 @@ qt_add_executable(QOpenHDApp
     app/telemetry/settings/mavlinksettingsmodel.cpp
     app/telemetry/settings/pollutionhelper.cpp
     app/telemetry/settings/wblinksettingshelper.cpp
+    #
+    app/telemetry/tutil/geodesi_helper.cpp
 
     ###
     #app/videostreaming/vscommon/custom/rawreceiver.cpp
@@ -90,13 +94,22 @@ target_include_directories(QOpenHDApp PUBLIC app/telemetry/util)
 
 target_include_directories(QOpenHDApp PUBLIC app/videostreaming/vscommon)
 target_include_directories(QOpenHDApp PUBLIC lib)
+target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 
-qt_add_qml_module(QOpenHDApp
-    URI QOpenHD
-    VERSION 1.0
-    QML_FILES
-        qml/MainX.qml
-)
+#qt_add_qml_module(QOpenHDApp
+#    URI hello
+#    VERSION 1.0
+#    QML_FILES
+#        qml/main.qml
+#        qml/ui/AnyParamBusyIndicator.qml
+#        qml/ui/HUDOverlayGrid.qml
+#        qml/ui/elements/
+#        qml/ui/sidebar/
+#        qml/ui/widgets/
+#)
+#qt6_add_resources(qml_QRC
+#    PREFIX "/"
+#    qml/qml.qrc)
 
 
 target_link_libraries(QOpenHDApp
