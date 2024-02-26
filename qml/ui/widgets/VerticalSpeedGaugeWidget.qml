@@ -131,7 +131,7 @@ BaseWidget {
             }
 
             // TODO QT6
-            /*CircularGauge {
+            CircularGauge {
                 id: gauge
                 anchors.fill: parent
                 antialiasing: true
@@ -191,7 +191,7 @@ BaseWidget {
                         width: 3
                     }
                 }
-            }*/
+            }
         }
     }
 }

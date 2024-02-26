@@ -493,12 +493,12 @@ Item {
 
     // Extra element - allows customizing the OSD color(s) and more
     // TODO QT 6
-    /*OSDCustomizer {
+    OSDCustomizer {
         id: osdCustomizer
         anchors.centerIn: parent
         visible: false
         z: 5.0
-    }*/
+    }
     TapHandler {
         acceptedButtons: Qt.AllButtons
         onTapped: {

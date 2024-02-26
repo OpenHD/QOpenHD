@@ -99,13 +99,13 @@ ApplicationWindow {
         }
 
         // TODO QT 6
-        /*ColorPicker {
+        ColorPicker {
             id: colorPicker
             height: 264
             width: 380
             z: 15.0
             anchors.centerIn: parent
-        }*/
+        }
 
         // UI areas
 

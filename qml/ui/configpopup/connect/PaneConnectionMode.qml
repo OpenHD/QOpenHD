@@ -236,9 +236,9 @@ Rectangle{
                     Layout.alignment: Qt.AlignCenter
                     id: textFieldip
                     // TODO QT 6
-                    //validator: RegExpValidator {
-                    //    regExp:  /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
-                    //}
+                    validator: RegExpValidator {
+                        regExp:  /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
+                    }
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     text: settings.qopenhd_mavlink_connection_manual_tcp_ip
                 }

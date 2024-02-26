@@ -18,6 +18,7 @@ SOURCES += \
     $$PWD/settings/pollutionhelper.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
     $$PWD/action/impl/xparam.cpp \
+    $$PWD/tutil/geodesi_helper.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/telemetry/models/camerastreammodel.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
