@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtQuick.Dialogs 1.1
+
 import QtQuick.Controls.Material 2.12
 
 import OpenHD 1.0

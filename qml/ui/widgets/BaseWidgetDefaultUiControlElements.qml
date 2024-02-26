@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtGraphicalEffects 1.12
+
 import Qt.labs.settings 1.0
 
 // Can be used to quickly add the right UI elements for (persistently) setting scale and opacity for a HUD element (e.g. an element extending BaseWidget)

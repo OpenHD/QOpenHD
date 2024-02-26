@@ -1,8 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.12
-import QtGraphicalEffects 1.12
 
 import OpenHD 1.0
 
@@ -494,12 +492,13 @@ Item {
     }
 
     // Extra element - allows customizing the OSD color(s) and more
-    OSDCustomizer {
+    // TODO QT 6
+    /*OSDCustomizer {
         id: osdCustomizer
         anchors.centerIn: parent
         visible: false
         z: 5.0
-    }
+    }*/
     TapHandler {
         acceptedButtons: Qt.AllButtons
         onTapped: {
