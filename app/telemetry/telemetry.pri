@@ -30,6 +30,7 @@ SOURCES += \
     app/telemetry/models/fcmavlinksystem.cpp \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
+
 HEADERS += \
     $$PWD/action/impl/cmdsender.h \
     $$PWD/action/create_cmd_helper.hpp \
