@@ -1298,7 +1298,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    NewSwitch {
+                    Switch {
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
