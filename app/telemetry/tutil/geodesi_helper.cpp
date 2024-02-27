@@ -1,8 +1,8 @@
 #include "geodesi_helper.h"
 
 extern "C" {
-#include "lib/geographiclib-c-2.0/src/geodesic.h"
-//#include "geodesic.h"
+//#include "lib/geographiclib-c-2.0/src/geodesic.h"
+#include "geodesic.h"
 }
 
 double distance_between(double lat1, double lon1, double lat2, double lon2){
