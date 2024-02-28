@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <qapplication.h>
 #include <QTimer>
+#include <QHostAddress>
 
 #include<iostream>
 #include <sys/stat.h>
@@ -16,7 +17,6 @@
 #endif
 
 #if defined(ENABLE_SPEECH)
-#include <QHostAddress>
 #include <QTextToSpeech>
 #include <QVoice>
 #include <qsettings.h>
