@@ -79,8 +79,8 @@ static std::string construct_gstreamer_pipeline(){
     //ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)L16, encoding-params=(string)1, channels=(int)1, payload=(int)96\" ! rtpL16depay ! queue ! autoaudiosink sync=false";
     ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)PCMA\"";
     ss<<" ! rtppcmadepay ! audio/x-alaw, rate=8000, channels=1 ! alawdec ! ";
-    //ss<<"autoaudiosink sync=false";
-    ss<<"openslessink";
+    ss<<"autoaudiosink sync=false";
+    //ss<<"openslessink";
     return ss.str();
 }
 
