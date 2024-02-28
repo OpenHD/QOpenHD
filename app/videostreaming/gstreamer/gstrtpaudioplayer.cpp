@@ -27,7 +27,7 @@ GstRtpAudioPlayer::GstRtpAudioPlayer()
     GST_PLUGIN_STATIC_REGISTER(tcp);
     GST_PLUGIN_STATIC_REGISTER(app);//XX
     GST_PLUGIN_STATIC_REGISTER(alaw);
-    GST_PLUGIN_STATIC_REGISTER(autodetect);
+    //GST_PLUGIN_STATIC_REGISTER(autodetect);
 #if defined(__android__)
     GST_PLUGIN_STATIC_REGISTER(androidmedia);
 #elif defined(__ios__)
@@ -48,7 +48,9 @@ static std::string construct_gstreamer_pipeline(){
     //ss<<"audiotestsrc ! autoaudiosink";
     //ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)L16, encoding-params=(string)1, channels=(int)1, payload=(int)96\" ! rtpL16depay ! queue ! autoaudiosink sync=false";
     ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)PCMA\"";
-    ss<<" ! rtppcmadepay ! audio/x-alaw, rate=8000, channels=1 ! alawdec ! autoaudiosink sync=false";
+    ss<<" ! rtppcmadepay ! audio/x-alaw, rate=8000, channels=1 ! alawdec ! ";
+    //ss<<"autoaudiosink sync=false";
+    ss<<"openslessink";
     return ss.str();
 }
 
