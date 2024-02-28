@@ -26,7 +26,7 @@ G_BEGIN_DECLS
     GST_PLUGIN_STATIC_DECLARE(opengl);
     GST_PLUGIN_STATIC_DECLARE(tcp);
     GST_PLUGIN_STATIC_DECLARE(app);//XX
-    GST_PLUGIN_STATIC_DECLARE(alaw);
+    //GST_PLUGIN_STATIC_DECLARE(alaw);
     //GST_PLUGIN_STATIC_DECLARE(autodetect);
 #if defined(__android__)
     GST_PLUGIN_STATIC_DECLARE(androidmedia);
@@ -56,7 +56,7 @@ GstRtpAudioPlayer::GstRtpAudioPlayer()
     GST_PLUGIN_STATIC_REGISTER(opengl);
     GST_PLUGIN_STATIC_REGISTER(tcp);
     GST_PLUGIN_STATIC_REGISTER(app);//XX
-    GST_PLUGIN_STATIC_REGISTER(alaw);
+    //GST_PLUGIN_STATIC_REGISTER(alaw);
     //GST_PLUGIN_STATIC_REGISTER(autodetect);
 #if defined(__android__)
     GST_PLUGIN_STATIC_REGISTER(androidmedia);
