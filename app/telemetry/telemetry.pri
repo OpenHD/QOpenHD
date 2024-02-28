@@ -1,7 +1,5 @@
 INCLUDEPATH += $$PWD
 
-#INCLUDEPATH += $$PWD/../../lib/mavlink-headers
-
 SOURCES += \
     $$PWD/action/impl/cmdsender.cpp \
     $$PWD/action/fcaction.cpp \

@@ -583,7 +583,12 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_only_documented(ret,"RC_UPDATE_HZ",
                                "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink."
                                "No effect if joy rc is disabled.");
-
+    }
+    {
+        append_int(ret,"AUDIO_ENABLE",
+                   ImprovedIntSetting::createEnumEnableDisable(),
+                   "enables / disables audio streaming from air to ground. In development. Enabling automatically restarts the air unit !"
+                   );
     }
     return ret;
 }

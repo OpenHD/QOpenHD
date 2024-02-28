@@ -7,7 +7,6 @@
 
 QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     : QObject(parent)
-    //,m_mediaPlayer("org/openhd/LiveVideoPlayerWrapper")
 {
     setup_start_video_decoder_display();
 }

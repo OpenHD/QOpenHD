@@ -236,10 +236,6 @@ Rectangle{
                 TextField {
                     Layout.alignment: Qt.AlignCenter
                     id: textFieldip
-                    // TODO QT 6
-                    //validator: RegExpValidator {
-                    //    regExp:  /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
-                    //}
                     validator: RegularExpressionValidator{
                         regularExpression: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
                     }
@@ -250,11 +246,13 @@ Rectangle{
                     Layout.alignment: Qt.AlignCenter
                     text: "SAVE"
                     onClicked: {
-                        if(!_mavlinkTelemetry.change_manual_tcp_ip(textFieldip.text)){
+                        const m_text=textFieldip.text;
+                        if(!_qopenhd.is_valid_ip(m_text)){
                             _qopenhd.show_toast("Please enter a valid ip");
-                        }else{
-                            settings.qopenhd_mavlink_connection_manual_tcp_ip=textFieldip.text
+                            return;
                         }
+                        settings.qopenhd_mavlink_connection_manual_tcp_ip=m_text;
+                        _mavlinkTelemetry.change_manual_tcp_ip(m_text);
                     }
                 }
                 Text{
