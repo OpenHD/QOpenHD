@@ -10,7 +10,30 @@
 
 GstRtpAudioPlayer::GstRtpAudioPlayer()
 {
-
+#if defined(__android__) || defined(__ios__)
+    GST_PLUGIN_STATIC_REGISTER(coreelements);
+    GST_PLUGIN_STATIC_REGISTER(playback);
+    GST_PLUGIN_STATIC_REGISTER(libav);
+    GST_PLUGIN_STATIC_REGISTER(rtp);
+    GST_PLUGIN_STATIC_REGISTER(rtsp);
+    GST_PLUGIN_STATIC_REGISTER(udp);
+    GST_PLUGIN_STATIC_REGISTER(videoparsersbad);
+    GST_PLUGIN_STATIC_REGISTER(x264);
+    GST_PLUGIN_STATIC_REGISTER(rtpmanager);
+    GST_PLUGIN_STATIC_REGISTER(isomp4);
+    GST_PLUGIN_STATIC_REGISTER(matroska);
+    GST_PLUGIN_STATIC_REGISTER(mpegtsdemux);
+    GST_PLUGIN_STATIC_REGISTER(opengl);
+    GST_PLUGIN_STATIC_REGISTER(tcp);
+    GST_PLUGIN_STATIC_REGISTER(app);//XX
+    GST_PLUGIN_STATIC_REGISTER(alaw);
+    GST_PLUGIN_STATIC_REGISTER(autodetect);
+#if defined(__android__)
+    GST_PLUGIN_STATIC_REGISTER(androidmedia);
+#elif defined(__ios__)
+    GST_PLUGIN_STATIC_REGISTER(applemedia);
+#endif
+#endif
 }
 
 GstRtpAudioPlayer &GstRtpAudioPlayer::instance()
@@ -39,7 +62,8 @@ void GstRtpAudioPlayer::start_playing()
     qDebug() << "GSTREAMER PIPE=[" << pipeline.c_str()<<"]";
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
-        on_error("audio parse launch error");
+        //on_error("audio parse launch error");
+        on_error(error->message);
         return;
     }
     if(!m_gst_pipeline || !(GST_IS_PIPELINE(m_gst_pipeline))){
