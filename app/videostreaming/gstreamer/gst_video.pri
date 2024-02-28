@@ -67,7 +67,8 @@ android{
             -lgstandroidmedia \
             -lgstopengl \
             -lgsttcp \
-            -lgstapp
+            -lgstapp \
+            -lalaw
 
 
         # Rest of GStreamer dependencies
