@@ -60,7 +60,7 @@ public:
     Q_INVOKABLE void re_apply_rates();
     // Change the conenction mode
     Q_INVOKABLE void change_telemetry_connection_mode(int mode);
-    Q_INVOKABLE bool change_manual_tcp_ip(QString ip);
+    Q_INVOKABLE void change_manual_tcp_ip(QString ip);
 public:
     // A couple of stats exposed as QT properties
     L_RO_PROP(int,telemetry_pps_in,set_telemetry_pps_in,-1)

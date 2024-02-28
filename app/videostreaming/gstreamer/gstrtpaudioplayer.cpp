@@ -4,8 +4,6 @@
 
 #include <assert.h>
 #include <qdebug.h>
-
-#include <qsettings.h>
 #include <sstream>
 
 GstRtpAudioPlayer::GstRtpAudioPlayer()
@@ -32,12 +30,6 @@ static std::string construct_gstreamer_pipeline(){
 void GstRtpAudioPlayer::start_playing()
 {
     qDebug()<<"GstRtpAudioPlayer::start_playing() begin";
-    QSettings settings;
-    const bool dev_enable_live_audio_playback=settings.value("dev_enable_live_audio_playback", false).toBool();
-    if(!dev_enable_live_audio_playback){
-        qDebug()<<"Live audio playback is disabled";
-        return;
-    }
     assert(m_gst_pipeline==nullptr);
     const auto pipeline=construct_gstreamer_pipeline();
     GError *error = nullptr;

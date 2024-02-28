@@ -314,11 +314,8 @@ void MavlinkTelemetry::change_telemetry_connection_mode(int mavlink_connection_m
     m_connection_mode=mavlink_connection_mode;
 }
 
-bool MavlinkTelemetry::change_manual_tcp_ip(QString ip)
+void MavlinkTelemetry::change_manual_tcp_ip(QString ip)
 {
-    if(!QOpenHD::instance().is_valid_ip(ip)){
-        return false;
-    }
     threadsafe_set_manual_tcp_ip(ip.toStdString());
 }
 

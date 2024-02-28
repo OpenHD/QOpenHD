@@ -246,12 +246,13 @@ Rectangle{
                     Layout.alignment: Qt.AlignCenter
                     text: "SAVE"
                     onClicked: {
-                        const text=textFieldip.text;
-                        if(!_mavlinkTelemetry.change_manual_tcp_ip(text)){
+                        const m_text=textFieldip.text;
+                        if(!_qopenhd.is_valid_ip(m_text)){
                             _qopenhd.show_toast("Please enter a valid ip");
-                        }else{
-                            settings.qopenhd_mavlink_connection_manual_tcp_ip=text;
+                            return;
                         }
+                        settings.qopenhd_mavlink_connection_manual_tcp_ip=m_text;
+                        _mavlinkTelemetry.change_manual_tcp_ip(m_text);
                     }
                 }
                 Text{

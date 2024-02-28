@@ -32,8 +32,10 @@ windows {
 
 HEADERS += \
     $$PWD/ExternalDecodeService.hpp \
+    $$PWD/audio_playback.h \
     $$PWD/custom/rawreceiver.h
 
 SOURCES += \
+    $$PWD/audio_playback.cpp \
     $$PWD/custom/rawreceiver.cpp
 
