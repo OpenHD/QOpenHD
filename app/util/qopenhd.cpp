@@ -16,6 +16,7 @@
 #endif
 
 #if defined(ENABLE_SPEECH)
+#include <QHostAddress>
 #include <QTextToSpeech>
 #include <QVoice>
 #include <qsettings.h>
@@ -308,14 +309,9 @@ void QOpenHD::sysctl_openhd(int task)
 
 bool QOpenHD::is_valid_ip(QString ip)
 {
-#ifdef __windows__
-    //TODO fix windows
-    return true;
-#else
-    // TODO
-    return true;
-
-#endif
+    QHostAddress addr;
+    bool valid=addr.setAddress(ip);
+    return valid;
 }
 
 bool QOpenHD::is_platform_rpi()
