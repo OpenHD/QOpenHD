@@ -7,11 +7,6 @@
 #include <QFontDatabase>
 #if defined(__android__)
 #include <QtAndroid>
-const QVector<QString> permissions({"android.permission.INTERNET",
-                                    "android.permission.WRITE_EXTERNAL_STORAGE",
-                                    "android.permission.READ_EXTERNAL_STORAGE",
-                                    "android.permission.ACCESS_NETWORK_STATE",
-                                    "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
 #include "telemetry/models/fcmavlinksystem.h"
@@ -183,6 +178,11 @@ static void write_platform_context_properties(QQmlApplicationEngine& engine){
 
 static void android_check_permissions(){
 #if defined(__android__)
+    const QVector<QString> permissions({"android.permission.INTERNET",
+                                        "android.permission.WRITE_EXTERNAL_STORAGE",
+                                        "android.permission.READ_EXTERNAL_STORAGE",
+                                        "android.permission.ACCESS_NETWORK_STATE",
+                                        "android.permission.ACCESS_FINE_LOCATION"});
     qDebug()<<"Android request permissions";
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
