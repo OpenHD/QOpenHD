@@ -86,8 +86,6 @@ qt_add_executable(QOpenHDApp
     ##
     ##
     qml/qml.qrc
-    app/videostreaming/avcodec/avcodec_video.cmake
-    lib/h264/h264.cmake
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
@@ -125,6 +123,7 @@ target_link_libraries(QOpenHDApp
 
 include(lib/h264/h264.cmake)
 include(app/videostreaming/avcodec/avcodec_video.cmake)
+include(app/videostreaming/android/videostreamingandroid.cmake)
 
 #include(GNUInstallDirs)
 #install(TARGETS QOpenHD
