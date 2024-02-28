@@ -74,13 +74,20 @@ qt_add_executable(QOpenHDApp
     #app/videostreaming/vscommon/rtp/rtpreceiver.cpp
     #app/videostreaming/vscommon/rtp/ParseRTP.cpp
     app/videostreaming/vscommon/decodingstatistcs.cpp
-    app/videostreaming/vscommon/decodingstatistcs.h
+    app/videostreaming/vscommon/audio_playback.cpp
+    app/videostreaming/vscommon/rtp/ParseRTP.cpp
+    app/videostreaming/vscommon/rtp/rtpreceiver.cpp
+    app/videostreaming/vscommon/udp/UDPReceiver.cpp
+    app/videostreaming/vscommon/decodingstatistcs.cpp
+
     ##
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
     ##
     ##
     qml/qml.qrc
+    app/videostreaming/avcodec/avcodec_video.cmake
+    lib/h264/h264.cmake
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
@@ -115,6 +122,9 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 target_link_libraries(QOpenHDApp
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets
 )
+
+include(lib/h264/h264.cmake)
+include(app/videostreaming/avcodec/avcodec_video.cmake)
 
 #include(GNUInstallDirs)
 #install(TARGETS QOpenHD
