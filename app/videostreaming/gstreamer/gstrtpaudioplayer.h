@@ -3,6 +3,8 @@
 
 #include "gst/gstelement.h"
 
+#include <string>
+
 /**
  * @brief Input: "RTP audio"
  *        Output: Hopefully the system speaker ;)
@@ -18,6 +20,7 @@ public:
 private:
     // The gstreamer pipeline
     GstElement * m_gst_pipeline=nullptr;
+    void on_error(std::string tag);
 };
 
 #endif // GSTRTPAUDIOPLAYER_H

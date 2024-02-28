@@ -6,6 +6,8 @@
 #include <qdebug.h>
 #include <sstream>
 
+#include <logging/logmessagesmodel.h>
+
 GstRtpAudioPlayer::GstRtpAudioPlayer()
 {
 
@@ -37,10 +39,12 @@ void GstRtpAudioPlayer::start_playing()
     qDebug() << "GSTREAMER PIPE=[" << pipeline.c_str()<<"]";
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
+        on_error("audio parse launch error");
         return;
     }
     if(!m_gst_pipeline || !(GST_IS_PIPELINE(m_gst_pipeline))){
         qDebug()<<"Cannot construct pipeline";
+        on_error("audio pipeline error");
         m_gst_pipeline = nullptr;
         return;
     }
@@ -57,4 +61,9 @@ void GstRtpAudioPlayer::stop_playing()
         gst_object_unref (m_gst_pipeline);
         m_gst_pipeline=nullptr;
     }
+}
+
+void GstRtpAudioPlayer::on_error(std::string tag)
+{
+    LogMessagesModel::instanceGround().add_message_debug("QOpenHD",tag.c_str());
 }
