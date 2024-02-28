@@ -397,7 +397,7 @@ int main(int argc, char *argv[]) {
 #else
      engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(false));
 #endif
-    //GstRtpAudioPlayer::instance().start_playing();
+    GstRtpAudioPlayer::instance().start_playing();
 // Platform - dependend video end  -----------------------------------------------------------------
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
