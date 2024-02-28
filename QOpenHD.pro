@@ -175,12 +175,6 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
     android/src/QOpenHDActivity.java \
-    android/src/SurfaceTextureListener.java \
-    android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
-    android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
-    android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
-    android/src/org/openhd/IsConnected.java \
-    android/src/org/openhd/LiveVideoPlayerWrapper.java \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir \
 

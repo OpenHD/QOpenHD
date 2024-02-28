@@ -31,10 +31,6 @@ signals:
 
 private:
     QPointer<QSurfaceTexture> m_videoOut;
-    // Links to LiveVideoPlayerWrapper - it is honestly easier to write java code and then copy it over into QOpenHD
-    // qt android (video) sucks
-    // replaced by our own custom logic
-    //QAndroidJniObject m_mediaPlayer;
 private:
     std::unique_ptr<LowLagDecoder> m_low_lag_decoder=nullptr;
     std::unique_ptr<GstRtpReceiver> m_receiver=nullptr;
