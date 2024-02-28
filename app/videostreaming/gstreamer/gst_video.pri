@@ -68,7 +68,8 @@ android{
             -lgstopengl \
             -lgsttcp \
             -lgstapp \
-            #-lgstalaw
+            -lgstalaw \
+            -lgstautodetect
 
 
         # Rest of GStreamer dependencies
