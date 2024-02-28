@@ -354,6 +354,8 @@ int main(int argc, char *argv[]) {
     auto adsbVehicleManager = ADSBVehicleManager::instance();
     engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
     adsbVehicleManager->onStarted();
+    // video - a bit special
+    engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
 
     // And then the main part
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
@@ -400,8 +402,6 @@ int main(int argc, char *argv[]) {
     platform_start_audio_streaming_if_enabled();
 // Platform - dependend video end  -----------------------------------------------------------------
 
-    engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
-
     // This allows to use the defines as strings in qml
     engine.rootContext()->setContextProperty("QOPENHD_GIT_VERSION",
 #ifdef QOPENHD_GIT_VERSION
@@ -443,5 +443,6 @@ int main(int argc, char *argv[]) {
     // Terminating needs a bit of special care due to the singleton usage and threads
     qDebug()<<"Terminating";
     MavlinkTelemetry::instance().terminate();
+    platform_audio_terminate();
     return retval;
 }

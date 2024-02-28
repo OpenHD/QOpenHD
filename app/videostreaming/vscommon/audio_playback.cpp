@@ -8,6 +8,8 @@
 #include "../gstreamer/gstrtpaudioplayer.h"
 #endif
 
+#include <util/qopenhd.h>
+#include <logging/logmessagesmodel.h>
 
 void platform_start_audio_streaming_if_enabled()
 {
@@ -19,5 +21,14 @@ void platform_start_audio_streaming_if_enabled()
     }
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     GstRtpAudioPlayer::instance().start_playing();
+    return;
+#endif
+    LogMessagesModel::instanceGround().add_message_debug("QOpenHD","No audio playback");
+}
+
+void platform_audio_terminate()
+{
+#ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+    GstRtpAudioPlayer::instance().stop_playing();
 #endif
 }
