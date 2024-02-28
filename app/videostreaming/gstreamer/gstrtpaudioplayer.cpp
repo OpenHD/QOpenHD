@@ -8,6 +8,36 @@
 
 #include <logging/logmessagesmodel.h>
 
+G_BEGIN_DECLS
+// The static plugins we use
+#if defined(__android__) || defined(__ios__)
+    GST_PLUGIN_STATIC_DECLARE(coreelements);
+    GST_PLUGIN_STATIC_DECLARE(playback);
+    GST_PLUGIN_STATIC_DECLARE(libav);
+    GST_PLUGIN_STATIC_DECLARE(rtp);
+    GST_PLUGIN_STATIC_DECLARE(rtsp);
+    GST_PLUGIN_STATIC_DECLARE(udp);
+    GST_PLUGIN_STATIC_DECLARE(videoparsersbad);
+    GST_PLUGIN_STATIC_DECLARE(x264);
+    GST_PLUGIN_STATIC_DECLARE(rtpmanager);
+    GST_PLUGIN_STATIC_DECLARE(isomp4);
+    GST_PLUGIN_STATIC_DECLARE(matroska);
+    GST_PLUGIN_STATIC_DECLARE(mpegtsdemux);
+    GST_PLUGIN_STATIC_DECLARE(opengl);
+    GST_PLUGIN_STATIC_DECLARE(tcp);
+    GST_PLUGIN_STATIC_DECLARE(app);//XX
+    GST_PLUGIN_STATIC_DECLARE(alaw);
+    //GST_PLUGIN_STATIC_DECLARE(autodetect);
+#if defined(__android__)
+    GST_PLUGIN_STATIC_DECLARE(androidmedia);
+#elif defined(__ios__)
+    GST_PLUGIN_STATIC_DECLARE(applemedia);
+#endif
+#endif
+    GST_PLUGIN_STATIC_DECLARE(qmlgl);
+    GST_PLUGIN_STATIC_DECLARE(qgc);
+G_END_DECLS
+
 GstRtpAudioPlayer::GstRtpAudioPlayer()
 {
 #if defined(__android__) || defined(__ios__)
