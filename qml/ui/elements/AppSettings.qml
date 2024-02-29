@@ -399,16 +399,10 @@ Settings {
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
-    // FC discovery - can be annoying / tricky
-    property bool dirty_enable_mavlink_fc_sys_id_check: false
 
     property int custom_cursor_type: 0
     property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,
     property bool enable_cursor_auto_hide: false
-
-    // experimental - mavlink via TCP
-    property bool dev_mavlink_via_tcp: false
-    property string dev_mavlink_tcp_ip: "0.0.0.0"
 
     // message can be removed if needed.
     property bool dev_wb_show_no_stbc_enabled_warning: false

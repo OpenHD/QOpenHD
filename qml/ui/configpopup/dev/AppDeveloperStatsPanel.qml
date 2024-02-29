@@ -85,11 +85,12 @@ Rectangle {
                     Layout.leftMargin: 12
                 }
                 // air
-                Button{
+                Switch{
                     height: 23
                     text: "SHOW DEV OVERLAY"
-                    onClicked: {
-                        settings.show_dev_stats_overlay=!settings.show_dev_stats_overlay
+                    checked: settings.show_dev_stats_overlay
+                    onCheckedChanged: {
+                        settings.show_dev_stats_overlay=checked
                     }
                 }
 
