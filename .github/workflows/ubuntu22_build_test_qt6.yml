@@ -34,7 +34,4 @@ jobs:
 
       - name: Build with CMake
         run: |
-          mkdir build
-          cd build
-          cmake ..
-          make -j4
+          ./build_cmake.sh
