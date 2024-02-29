@@ -206,9 +206,9 @@ void TCPConnection::receive_until_stopped()
     // Enough for MTU 1500 bytes.
     auto buffer=std::make_unique<std::vector<uint8_t>>();
     buffer->resize(1500);
-    struct timeval tv;
-    tv.tv_sec = 3;
-    tv.tv_usec = 0;
+    //struct timeval tv;
+    //tv.tv_sec = 3;
+    //tv.tv_usec = 0;
     //setsockopt(m_socket_fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
     while (m_keep_receiving) {
         const auto elapsed_last_message=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_data_ms;

@@ -1,7 +1,5 @@
 #include <QThread>
 // #include <QtConcurrent>
-#include <QFutureWatcher>
-#include <QFuture>
 
 #include "markermodel.h"
 
@@ -43,13 +41,9 @@ int Traffic::distance() const{
 }
 
 
-static MarkerModel* _instance = nullptr;
-
 MarkerModel* MarkerModel::instance() {
-    if (_instance == nullptr) {
-        _instance = new MarkerModel();
-    }
-    return _instance;
+    static MarkerModel m_instance{};
+    return &m_instance;
 }
 
 MarkerModel::MarkerModel(QObject *parent): QAbstractListModel(parent){
