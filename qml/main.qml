@@ -126,7 +126,9 @@ ApplicationWindow {
         WorkaroundMessageBox{
             id: workaroundmessagebox
         }
-
+        ErrorMessageBox{
+            id: errorMessageBox
+        }
         CardToast{
             id: card_toast
             m_text: _qopenhd.toast_text

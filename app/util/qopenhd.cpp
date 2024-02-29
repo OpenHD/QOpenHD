@@ -363,6 +363,11 @@ void QOpenHD::show_toast(QString message,bool long_toast)
     emit signal_toast_add(message,long_toast);
 }
 
+void QOpenHD::show_error_message(QString message)
+{
+
+}
+
 void QOpenHD::set_busy_for_milliseconds(int milliseconds,QString reason)
 {
     set_is_busy(true);

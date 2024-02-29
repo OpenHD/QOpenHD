@@ -305,5 +305,6 @@
         <file>ui/elements/NewSpinBox.qml</file>
         <file>ui/elements/NewSlider.qml</file>
         <file>ui/sidebar/InfoElement2.qml</file>
+        <file>ui/elements/ErrorMessageBox.qml</file>
     </qresource>
 </RCC>
