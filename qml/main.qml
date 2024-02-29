@@ -94,17 +94,6 @@ ApplicationWindow {
             }
         }
 
-        // TODO QT 6
-        ColorPicker {
-            id: colorPicker
-            height: 264
-            width: 380
-            z: 15.0
-            anchors.centerIn: parent
-        }
-
-        // UI areas
-
         HUDOverlayGrid {
             id: hudOverlayGrid
             anchors.fill: parent
@@ -117,11 +106,21 @@ ApplicationWindow {
             layer.enabled: false
         }
 
-
         ConfigPopup {
             id: settings_panel
             visible: false
         }
+
+        // TODO QT 6
+        ColorPicker {
+            id: colorPicker
+            height: 264
+            width: 380
+            z: 15.0
+            anchors.centerIn: parent
+        }
+        //ColorDialoque{
+        //}
 
         WorkaroundMessageBox{
             id: workaroundmessagebox
@@ -149,7 +148,7 @@ ApplicationWindow {
             }
         }
         AnyParamBusyIndicator{
-             z: 10
+            z: 10
         }
 
         Component.onCompleted: {

@@ -19,7 +19,7 @@ Rectangle {
     property int rowHeight: 64
     property int text_minHeight: 20
 
-    color: "green"//"#eaeaea"
+    color: "#eaeaea"
 
     function yes_or_no_as_string(yes){
         if(yes) return "Y"
@@ -104,7 +104,7 @@ Rectangle {
                 }
             }
             Row {
-                //width: parent.width
+                spacing: 5
                 visible: _qopenhd.is_linux()
                 Button {
                     text: "Start openhd"
@@ -132,7 +132,7 @@ Rectangle {
                 }
             }
             Row {
-                //width: parent.width
+                spacing: 5
                 Button {
                     font.capitalization: Font.MixedCase
                     text: qsTr("Restart QOpenHD")
