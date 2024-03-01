@@ -35,8 +35,8 @@ ApplicationWindow {
         _qrenderstats.set_window_height(height)
     }
 
-    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
-    contentItem.rotation: settings.general_screen_rotation 
+    //contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
+    //contentItem.rotation: settings.general_screen_rotation
 
     //minimumWidth: 850
     //minimumHeight: 480
@@ -52,6 +52,13 @@ ApplicationWindow {
     // android / ios - specifc: We need to explicitly say full screen, otherwise things might be "cut off"
     visibility: (settings.dev_force_show_full_screen || QOPENHD_IS_MOBILE) ? "FullScreen" : "AutomaticVisibility"
 
+    // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
+    // and equivalent settings systems on Linux and Android
+    // On linux, they generally are stored under /home/username/.config/Open.HD
+    // See https://doc.qt.io/qt-5/qsettings.html#platform-specific-notes for more info
+    AppSettings {
+        id: settings
+    }
     // This only exists to be able to fully rotate "everything" for users that have their screen upside down for some reason.
     // Won't affect the video, but heck, then just mount your camera upside down.
     // TODO: the better fix really would be to somehow the the RPI HDMI config to rotate the screen in HW - but r.n there seems to be
@@ -62,17 +69,6 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.height : parent.width
         height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.width : parent.height
-
-        // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
-        // and equivalent settings systems on Linux and Android
-        // On linux, they generally are stored under /home/username/.config/Open.HD
-        // See https://doc.qt.io/qt-5/qsettings.html#platform-specific-notes for more info
-        AppSettings {
-            id: settings
-            Component.onCompleted: {
-                //
-            }
-        }
 
         // Loads the proper (platform-dependent) video widget for the main (primary) video
         // primary video is always full-screen and behind the HUD OSD Elements
@@ -98,17 +94,6 @@ ApplicationWindow {
             }
         }
 
-        // TODO QT 6
-        ColorPicker {
-            id: colorPicker
-            height: 264
-            width: 380
-            z: 15.0
-            anchors.centerIn: parent
-        }
-
-        // UI areas
-
         HUDOverlayGrid {
             id: hudOverlayGrid
             anchors.fill: parent
@@ -121,16 +106,28 @@ ApplicationWindow {
             layer.enabled: false
         }
 
-
         ConfigPopup {
             id: settings_panel
             visible: false
         }
 
+        // TODO QT 6
+        ColorPicker {
+            id: colorPicker
+            height: 264
+            width: 380
+            z: 15.0
+            anchors.centerIn: parent
+        }
+        //ColorDialoque{
+        //}
+
         WorkaroundMessageBox{
             id: workaroundmessagebox
         }
-
+        ErrorMessageBox{
+            id: errorMessageBox
+        }
         CardToast{
             id: card_toast
             m_text: _qopenhd.toast_text
@@ -151,7 +148,7 @@ ApplicationWindow {
             }
         }
         AnyParamBusyIndicator{
-             z: 10
+            z: 10
         }
 
         Component.onCompleted: {

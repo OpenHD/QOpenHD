@@ -7,12 +7,15 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Gui)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets)
+set(X_QT_VERSION 6.4)
 
-qt_standard_project_setup(REQUIRES 6.5)
+
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
+
+qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
 qt_add_executable(QOpenHDApp
     app/main.cpp
@@ -74,7 +77,12 @@ qt_add_executable(QOpenHDApp
     #app/videostreaming/vscommon/rtp/rtpreceiver.cpp
     #app/videostreaming/vscommon/rtp/ParseRTP.cpp
     app/videostreaming/vscommon/decodingstatistcs.cpp
-    app/videostreaming/vscommon/decodingstatistcs.h
+    app/videostreaming/vscommon/audio_playback.cpp
+    app/videostreaming/vscommon/rtp/ParseRTP.cpp
+    app/videostreaming/vscommon/rtp/rtpreceiver.cpp
+    app/videostreaming/vscommon/udp/UDPReceiver.cpp
+    app/videostreaming/vscommon/decodingstatistcs.cpp
+
     ##
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
@@ -115,6 +123,10 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 target_link_libraries(QOpenHDApp
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets
 )
+
+include(lib/h264/h264.cmake)
+include(app/videostreaming/avcodec/avcodec_video.cmake)
+include(app/videostreaming/android/videostreamingandroid.cmake)
 
 #include(GNUInstallDirs)
 #install(TARGETS QOpenHD

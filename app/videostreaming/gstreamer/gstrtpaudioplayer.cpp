@@ -96,6 +96,7 @@ void GstRtpAudioPlayer::start_playing()
         qDebug() << "gst_parse_launch error: " << error->message;
         //on_error("audio parse launch error");
         on_error(error->message);
+        m_gst_pipeline = nullptr;
         return;
     }
     if(!m_gst_pipeline || !(GST_IS_PIPELINE(m_gst_pipeline))){

@@ -1,8 +1,13 @@
 #include "geodesi_helper.h"
 
+#include <QtGlobal>
+
 extern "C" {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "lib/geographiclib-c-2.0/src/geodesic.h"
-//#include "geodesic.h"
+#else
+#include "geodesic.h"
+#endif
 }
 
 double distance_between(double lat1, double lon1, double lat2, double lon2){

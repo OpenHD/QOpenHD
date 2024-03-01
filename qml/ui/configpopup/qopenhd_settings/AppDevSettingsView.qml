@@ -196,51 +196,6 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "dirty_enable_mavlink_fc_sys_id_check"
-                 m_long_description: "Only accept FCs that explicitly expose themselves as autopilot - can fix issues with FC discovery in QOpenHD."
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dirty_enable_mavlink_fc_sys_id_check
-                    onCheckedChanged: settings.dirty_enable_mavlink_fc_sys_id_check = checked
-                }
-            }
-
-            SettingBaseElement{
-                m_short_description: "dev_mavlink_via_tcp"
-                m_long_description: "Requires full restart. Connect via TCP instead of UDP. Requires matching server IP."
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_mavlink_via_tcp
-                    onCheckedChanged: settings.dev_mavlink_via_tcp = checked
-                }
-            }
-            SettingBaseElement{
-                m_short_description: "dev_mavlink_tcp_ip"
-                m_long_description: "Requires full restart. IP of mavlink tcp server"
-                TextInput{
-                    id: ti_ip
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    text: settings.dev_mavlink_tcp_ip
-                    cursorVisible: true
-                    inputMask: "999.999.999.999"
-                    onTextEdited: settings.dev_mavlink_tcp_ip = ti_ip.text
-                }
-            }
-            SettingBaseElement{
                 m_short_description: "dev_wb_show_no_stbc_enabled_warning"
                 m_long_description: "Do not show the STBC recommended enabled message"
                 Switch {

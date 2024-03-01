@@ -133,28 +133,6 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
         //qDebug()<<"MavlinkTelemetry::XonProcessMavlinkMessage"<<msg.msgid<<"compid:"<<source_compid<<" source_sysid:"<<source_sysid;
         if(!m_fc_found){
             // For the fc we need to wait until we got an heartbeat
-            /*if(msg.msgid==MAVLINK_MSG_ID_HEARTBEAT){
-                qDebug()<<"Got non-openhd heartbeat";
-                // By default, we assume there is one additional non-openhd system - the FC
-                bool is_fc=true;
-                QSettings settings;
-                const bool dirty_enable_mavlink_fc_sys_id_check=settings.value("dirty_enable_mavlink_fc_sys_id_check",false).toBool();
-                if(dirty_enable_mavlink_fc_sys_id_check){
-                    // filtering, default off
-                    //const auto comp_ids=system->component_ids();
-                    //is_fc=mavsdk::helper::any_comp_id_autopilot(comp_ids);
-                }
-                if(is_fc){
-                    qDebug()<<"Found FC";
-                    // we got the flight controller
-                    FCMavlinkSystem::instance().set_system_id(source_sysid);
-                    m_fc_sys_id=source_sysid;
-                    m_fc_comp_id=source_compid;
-                    m_fc_found=true;
-                }else{
-                    qDebug()<<"Got weird system:"<<source_sysid;
-                }
-            }*/
             if(source_compid==MAV_COMP_ID_AUTOPILOT1){
                 FCMavlinkSystem::instance().set_system_id(source_sysid);
                 m_fc_sys_id=source_sysid;
