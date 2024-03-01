@@ -7,12 +7,15 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Gui)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets)
+set(X_QT_VERSION 6.4)
 
-qt_standard_project_setup(REQUIRES 6.5)
+
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
+
+qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
 qt_add_executable(QOpenHDApp
     app/main.cpp
