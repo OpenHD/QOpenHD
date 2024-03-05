@@ -45,14 +45,11 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/telemetry/action/fcmissionhandler.cpp
     app/telemetry/action/fcmsgintervalhandler.cpp
     app/telemetry/action/ohdaction.cpp
-    #
     app/telemetry/action/impl/cmdsender.cpp
     app/telemetry/action/impl/xparam.cpp
-    ##
     app/telemetry/connection/mavlinkchannel.cpp
     app/telemetry/connection/tcp_connection.cpp
     app/telemetry/connection/udp_connection.cpp
-    #
     app/telemetry/models/aohdsystem.cpp
     app/telemetry/models/camerastreammodel.cpp
     app/telemetry/models/fcmapmodel.cpp
@@ -61,7 +58,6 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/telemetry/models/markermodel.cpp
     app/telemetry/models/rcchannelsmodel.cpp
     app/telemetry/models/wificard.cpp
-    #
     app/telemetry/settings/documentedparam.cpp
     app/telemetry/settings/frequencyhelper.cpp
     app/telemetry/settings/improvedintsetting.cpp
@@ -69,10 +65,8 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/telemetry/settings/mavlinksettingsmodel.cpp
     app/telemetry/settings/pollutionhelper.cpp
     app/telemetry/settings/wblinksettingshelper.cpp
-    #
     app/telemetry/tutil/geodesi_helper.cpp
-
-    ###
+    #
     #app/videostreaming/vscommon/custom/rawreceiver.cpp
     #app/videostreaming/vscommon/rtp/rtpreceiver.cpp
     #app/videostreaming/vscommon/rtp/ParseRTP.cpp
