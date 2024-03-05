@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" android:versionName="v16" android:versionCode="16" package="com.openhd.openhd">
+
+    <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
+         Remove the comment if you do not require these default permissions. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
+         Remove the comment if you do not require these default features. -->
+    <!-- %%INSERT_FEATURES -->
+
+    <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
+
+    <application android:name="org.qtproject.qt.android.bindings.QtApplication" android:extractNativeLibs="true" android:hardwareAccelerated="true" android:label="QOpenHD" android:requestLegacyExternalStorage="true" android:icon="@drawable/icon" android:allowBackup="true" android:fullBackupOnly="false">
+
+    <activity android:name="org.qtproject.qt.android.bindings.QtActivity" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:label="QOpenHDActivity" android:launchMode="singleTop" android:screenOrientation="userLandscape" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
+            <meta-data android:name="android.app.background_running" android:value="false"/>
+            <meta-data android:name="android.app.extract_android_style" android:value="none"/>
+        </activity>
+        <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
+    </application>
+</manifest>

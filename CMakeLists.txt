@@ -92,8 +92,8 @@ qt_add_executable(QOpenHDApp
     ##
     qml/qml.qrc
     ##
-    android/src/org/openhd/QOpenHDActivity.java
-    android/AndroidManifest.xml
+    androidqt6/src/org/openhd/QOpenHDActivity.java
+    androidqt6/AndroidManifest.xml
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
@@ -130,7 +130,7 @@ target_link_libraries(QOpenHDApp
 )
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-             ${CMAKE_CURRENT_SOURCE_DIR}/android)
+             ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
 
 include(lib/h264/h264.cmake)
 #include(app/videostreaming/avcodec/avcodec_video.cmake)
