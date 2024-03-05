@@ -294,7 +294,7 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         if(std::holds_alternative<int>(data.value)){
             if(data.unique_id=="CAMERA_TYPE"){
                 auto value=std::get<int>(data.value);
-                XCamera tmp{value,0,""};
+                XCamera tmp{value,0,0};
                 return tmp.cam_type_as_verbose_string().c_str();
             }
             auto value=std::get<int>(data.value);
