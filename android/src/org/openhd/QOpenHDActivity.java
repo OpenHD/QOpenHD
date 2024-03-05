@@ -4,8 +4,7 @@ import android.app.Activity;
 
 import android.content.Context;
 
-import org.qtproject.qt5.android.bindings.QtActivity;
-import org.qtproject.qt5.android.bindings.QtApplication;
+import org.qtproject.qt.android.bindings.QtActivity;
 
 // Custom video surface begin
 import android.os.Bundle;
