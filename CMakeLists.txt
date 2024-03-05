@@ -92,7 +92,6 @@ qt_add_executable(QOpenHDApp
     ##
     qml/qml.qrc
     ##
-    androidqt6/src/org/openhd/QOpenHDActivity.java
     androidqt6/AndroidManifest.xml
 )
 
