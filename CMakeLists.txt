@@ -17,7 +17,7 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
-qt_add_executable(QOpenHDApp
+set(QOPENHD_SOURCE_FILES_LIST
     app/main.cpp
     #
     app/adsb/adsbvehicle.cpp
@@ -45,14 +45,11 @@ qt_add_executable(QOpenHDApp
     app/telemetry/action/fcmissionhandler.cpp
     app/telemetry/action/fcmsgintervalhandler.cpp
     app/telemetry/action/ohdaction.cpp
-    #
     app/telemetry/action/impl/cmdsender.cpp
     app/telemetry/action/impl/xparam.cpp
-    ##
     app/telemetry/connection/mavlinkchannel.cpp
     app/telemetry/connection/tcp_connection.cpp
     app/telemetry/connection/udp_connection.cpp
-    #
     app/telemetry/models/aohdsystem.cpp
     app/telemetry/models/camerastreammodel.cpp
     app/telemetry/models/fcmapmodel.cpp
@@ -61,7 +58,6 @@ qt_add_executable(QOpenHDApp
     app/telemetry/models/markermodel.cpp
     app/telemetry/models/rcchannelsmodel.cpp
     app/telemetry/models/wificard.cpp
-    #
     app/telemetry/settings/documentedparam.cpp
     app/telemetry/settings/frequencyhelper.cpp
     app/telemetry/settings/improvedintsetting.cpp
@@ -69,10 +65,8 @@ qt_add_executable(QOpenHDApp
     app/telemetry/settings/mavlinksettingsmodel.cpp
     app/telemetry/settings/pollutionhelper.cpp
     app/telemetry/settings/wblinksettingshelper.cpp
-    #
     app/telemetry/tutil/geodesi_helper.cpp
-
-    ###
+    #
     #app/videostreaming/vscommon/custom/rawreceiver.cpp
     #app/videostreaming/vscommon/rtp/rtpreceiver.cpp
     #app/videostreaming/vscommon/rtp/ParseRTP.cpp
@@ -82,13 +76,17 @@ qt_add_executable(QOpenHDApp
     app/videostreaming/vscommon/rtp/rtpreceiver.cpp
     app/videostreaming/vscommon/udp/UDPReceiver.cpp
     app/videostreaming/vscommon/decodingstatistcs.cpp
+)
 
+qt_add_executable(QOpenHDApp
+    MANUAL_FINALIZATION
+    ${QOPENHD_SOURCE_FILES_LIST}
     ##
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
-    ##
-    ##
     qml/qml.qrc
+    ##
+    androidqt6/AndroidManifest.xml
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
@@ -124,10 +122,15 @@ target_link_libraries(QOpenHDApp
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets
 )
 
-include(lib/h264/h264.cmake)
-include(app/videostreaming/avcodec/avcodec_video.cmake)
-include(app/videostreaming/android/videostreamingandroid.cmake)
+set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+             ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
 
+include(lib/h264/h264.cmake)
+#include(app/videostreaming/avcodec/avcodec_video.cmake)
+#include(app/videostreaming/android/videostreamingandroid.cmake)
+#include(app/videostreaming/gstreamer/gst_video.cmake)
+
+qt_finalize_executable(QOpenHDApp)
 #include(GNUInstallDirs)
 #install(TARGETS QOpenHD
 #    BUNDLE DESTINATION .

@@ -35,8 +35,8 @@ ApplicationWindow {
         _qrenderstats.set_window_height(height)
     }
 
-    //contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
-    //contentItem.rotation: settings.general_screen_rotation
+    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
+    contentItem.rotation: settings.general_screen_rotation
 
     //minimumWidth: 850
     //minimumHeight: 480

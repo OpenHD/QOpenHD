@@ -39,7 +39,7 @@ CameraStreamModel &CameraStreamModel::instance(int cam_index)
 QString CameraStreamModel::camera_type_to_string(int camera_type)
 {
     if(camera_type<0)return "N/A";
-    auto tmp=XCamera{camera_type,0,""};
+    auto tmp=XCamera{camera_type,0,0};
     return tmp.cam_type_as_verbose_string().c_str();
 }
 
@@ -78,7 +78,7 @@ bool CameraStreamModel::is_valid_resolution_fps_string(QString input)
 
 QString CameraStreamModel::get_default_resolution()
 {
-    auto tmp=XCamera{m_camera_type,0,""};
+    auto tmp=XCamera{m_camera_type,0,0};
     auto default_res_fps=tmp.get_default_resolution_fps();
     return default_res_fps.as_string().c_str();
 }
@@ -86,7 +86,7 @@ QString CameraStreamModel::get_default_resolution()
 QStringList CameraStreamModel::get_supported_resolutions()
 {
     QStringList ret;
-    auto tmp_cam=XCamera{m_camera_type,0,""};
+    auto tmp_cam=XCamera{m_camera_type,0,0};
     auto tmp=tmp_cam.get_supported_resolutions();
     for(auto& element:tmp){
         ret.push_back(element.as_string().c_str());
