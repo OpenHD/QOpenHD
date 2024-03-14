@@ -307,5 +307,7 @@
         <file>ui/sidebar/InfoElement2.qml</file>
         <file>ui/elements/ErrorMessageBox.qml</file>
         <file>ui/elements/ColorDialoque.qml</file>
+        <file>ui/sidebar/ChoiceSelector.qml</file>
+        <file>ui/sidebar/BaseJoyEditElement2.qml</file>
     </qresource>
 </RCC>
