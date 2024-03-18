@@ -23,7 +23,7 @@ SideBarBasePanel{
         anchors.topMargin: secondaryUiHeight/8
         spacing: 5
 
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: recording_mode
             m_title: "RECORDING MODE"
             m_param_id: "AIR_RECORDING_E"

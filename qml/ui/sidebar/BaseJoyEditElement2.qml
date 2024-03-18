@@ -35,49 +35,12 @@ Item{
 
     property bool m_is_enabled: true
 
-    // Set to true if the "select element left" button should be activated
-    property bool m_button_left_activated: false
-     // Set to true if the "select element right" button should be activated
-    property bool  m_button_right_activated: false
-
     // Allows the parent to override the text color
     // Right now only used by the change frequency element
     property bool override_show_red_text: false
 
-    // Emitted if the button left is clicked
-    signal choice_left();
-    // Emitted if the button right is clicked
-    signal choice_right();
-
-    // Emitted if the button up is clicked (navigate to previous eelement)
-    signal goto_previous();
-    signal goto_next();
-
-    Keys.onPressed: (event)=> {
-                        console.log("BaseJoyElement"+m_title+" key was pressed:"+event);
-                        if(event.key == Qt.Key_Left){
-                           /*if(m_button_left_activated){
-                                choice_left()
-                            }else{
-                                _qopenhd.show_toast("NOT AVAILABLE");
-                            }*/
-                            event.accepted=true;
-                        }else if(event.key == Qt.Key_Right){
-                            /*if(m_button_right_activated){
-                                 choice_right()
-                             }else{
-                                 _qopenhd.show_toast("NOT AVAILABLE");
-                             }*/
-                            choiceSelector.open_choices(m_param_id,0,override_takes_string_param,base_joy_edit_element);
-                            event.accepted=true;
-                        }else if(event.key==Qt.Key_Up){
-                            goto_previous()
-                            event.accepted=true;
-                        }else if(event.key==Qt.Key_Down){
-                            goto_next();
-                            event.accepted=true;
-                        }
-                    }
+    // Emitted if the the element is clicked (for non-joystick usage)
+    signal base_joy_edit_element_clicked();
 
     function takeover_control(){
         focus=true;
@@ -93,12 +56,11 @@ Item{
     }
 
 
-
     Text {
         id: title_str
         text: qsTr(m_title)
         width: parent.width/2
-        height: 30
+        height: parent.height
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
         font.pixelSize: 18
@@ -115,7 +77,13 @@ Item{
         horizontalAlignment: Qt.AlignHCenter
         font.pixelSize: 15
         color: override_show_red_text? "red" :  "white"
-        anchors.left: title_str.right
+        anchors.right: parent.right
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                base_joy_edit_element_clicked()
+            }
+        }
     }
 
 
@@ -126,9 +94,4 @@ Item{
         opacity: 0.7
         visible: !m_is_enabled
     }
-
-    ChoiceSelector{
-        id: choiceSelector
-    }
-
 }

@@ -9,28 +9,69 @@ Rectangle{
     color: "green"
     visible: false
 
-    // Needs to contain the unique ID of the param inside the param set
-    property string m_param_id: "FILL ME"
-    // Set to air / ground /air cam 1 / air cam 2 depending on where the param is stored
-    property var m_settings_model: _ohdSystemGroundSettings
-    // Int param is much more common, but string param is also possible
-    property bool override_takes_string_param: false
-
+    // Index of the element that is selected when the selector is opened (current value)
     property int m_initial_index: -1
+    // Changed as the user navigates around
     property int m_current_user_selected_index: -1;
 
     property var m_parent
 
-    function open_choices(param_id,current_value,takes_string_param,parent){
-        m_param_id=param_id;
-        m_initial_index=0;
-        m_current_user_selected_index=0;
+    function open_choices(x_model,current_value_index,parent){
+        availableChociesModel.clear();
+        for(var i=0;i<x_model.count;i++){
+            const tmp=x_model.get(i).verbose;
+            var data = {'verbose': tmp};
+            availableChociesModel.insert(i,{ verbose: tmp});
+        }
+        if(current_value_index>=availableChociesModel.count || current_value_index<0){
+            console.log("index out of bounds !");
+            return false;
+        }
+        m_initial_index=current_value_index;
+        m_current_user_selected_index=m_initial_index;
+        visible=true;
+        focus=true;
+        m_parent=parent
+    }
+
+    function open_choices2(x_model,current_value,parent){
+        // First, find the current selection inside the model
+        availableChociesModel.clear();
+        var current_value_index=0
+        var current_value_found_in_model=false;
+        for(var i=0;i<x_model.count;i++){
+            const value=x_model.get(i).value;
+            const verbose=x_model.get(i).verbose;
+            availableChociesModel.insert(i,{'value': value,'verbose': verbose});
+            if(!current_value_found_in_model && value==current_value){
+                current_value_index=i;
+                current_value_found_in_model=true;
+            }
+        }
+        if(!current_value_found_in_model){
+            // If the current value is not 'known' to us (not inside the model) we add an extra element
+            // to the model containing exactly this value (and a dummy description)
+            console.log("Current value not found in model");
+            const value=current_value;
+            const verbose="{"+value+"}\n"+"custom";
+            console.log(value+""+verbose)
+            availableChociesModel.insert(0,{'value': value,'verbose': verbose});
+            current_value_index=0;
+        }
+        m_initial_index=current_value_index;
+        m_current_user_selected_index=m_initial_index;
         visible=true;
         focus=true;
         m_parent=parent
     }
 
     function close_choices(){
+        if(m_current_user_selected_index!=m_initial_index){
+            const value_old=availableChociesModel.get(m_initial_index).value;
+            const value_new=availableChociesModel.get(m_current_user_selected_index).value;
+            console.log("Changed from ["+m_initial_index+":"+value_old+"] to ["+m_current_user_selected_index+":"+value_new+"]");
+            m_parent.user_selected_value(value_new);
+        }
         m_current_user_selected_index=-1;
         m_initial_index=-1;
         visible=false;
@@ -40,7 +81,7 @@ Rectangle{
 
 
     Keys.onPressed: (event)=> {
-                        console.log("ChoiceSelector"+m_param_id+" key was pressed:"+event);
+                        console.log("ChoiceSelector key was pressed:"+event);
                         if(event.key == Qt.Key_Left){
                             // Give back
                             close_choices();
@@ -49,15 +90,15 @@ Rectangle{
                             // Do nothing
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Up){
-                            if(m_current_user_selected_index+1<availableChociesModel.count){
-                                m_current_user_selected_index++;
+                            if(m_current_user_selected_index>0){
+                                m_current_user_selected_index--;
                             }else{
                                 // Out of bounds
                             }
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Down){
-                            if(m_current_user_selected_index>0){
-                                m_current_user_selected_index--;
+                            if(m_current_user_selected_index+1<availableChociesModel.count){
+                                m_current_user_selected_index++;
                             }else{
                                 // Out of bounds
                             }
@@ -68,25 +109,33 @@ Rectangle{
 
     ListModel {
         id: availableChociesModel
-        ListElement {value: 0; verbose:"0%"}
-        ListElement {value: 1; verbose:"1%"}
+        //ListElement { value:0; verbose:"0 def"}
+        //ListElement { value:1; verbose:"1 def"}
+        //ListElement { value:2; verbose:"2 def"}
+        //ListElement { value:3; verbose:"3 def"}
     }
 
     Component {
         id: availableChociesDelegate
         Rectangle {
             width: 200
-            height: 50
+            height: 80
             id: choice
-            color: index==m_current_user_selected_index ? "yellow" : "orange"
+            color: index==m_initial_index ? "yellow" : "orange"
+
+            border.color: "white"
+            border.width: (index==m_current_user_selected_index) ? 3 : 0
+
             Text {
                 text: verbose
+                anchors.fill: parent
+                verticalAlignment: Qt.AlignVCenter
+                horizontalAlignment: Qt.AlignHCenter
             }
         }
     }
 
     ListView {
-        property color fruit_color: "green"
         model: availableChociesModel
         delegate: availableChociesDelegate
         anchors.fill: parent
