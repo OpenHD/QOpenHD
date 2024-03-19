@@ -278,6 +278,12 @@ Item {
         width: parent.width
         height: parent.height
         visible: !quickPanel.visible
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                sidebar.notify_sidebar_user_clicked_outside();
+            }
+        }
 
         // By default on top row
         // --------------------------------------------------------------------------

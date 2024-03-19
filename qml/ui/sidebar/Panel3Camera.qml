@@ -22,7 +22,7 @@ SideBarBasePanel{
         anchors.top: parent.top
         anchors.topMargin: secondaryUiHeight/8
         spacing: 5
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: brightness
             m_title: "BRIGHTNESS"
             m_param_id: "BRIGHTNESS"
@@ -34,7 +34,7 @@ SideBarBasePanel{
                 saturation.takeover_control();
             }
         }
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: saturation
             m_title: "SATURATION"
             m_param_id: "SATURATION"
@@ -46,7 +46,7 @@ SideBarBasePanel{
                 contrast.takeover_control();
             }
         }
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: contrast
             m_title: "CONTRAST"
             m_param_id: "CONTRAST"
@@ -58,7 +58,7 @@ SideBarBasePanel{
                 sharpness.takeover_control();
             }
         }
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: sharpness
             m_title: "SHARPNESS"
             m_param_id: "SHARPNESS"

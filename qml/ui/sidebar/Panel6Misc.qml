@@ -22,7 +22,7 @@ SideBarBasePanel{
         anchors.top: parent.top
         anchors.topMargin: secondaryUiHeight/8
         spacing: 5
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: air_wifi_hs
             m_title: "AIR WIFI HS"
             m_param_id: "WIFI_HOTSPOT_E"
@@ -34,7 +34,7 @@ SideBarBasePanel{
                 gnd_wifi_hs.takeover_control();
             }
         }
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: gnd_wifi_hs
             m_title: "GND WIFI HS"
             m_param_id: "WIFI_HOTSPOT_E"

@@ -29,7 +29,7 @@ SideBarBasePanel{
         spacing: 5
 
 
-        MavlinkChoiceElement{
+        MavlinkChoiceElement2{
             id: joy_rc_enable
             m_title: "JOY RC"
             m_param_id: "ENABLE_JOY_RC";

@@ -54,12 +54,7 @@ Item {
         anchors.fill: parent
         onClicked: {
             console.log("Item clicked: " + override_tag)
-            if(override_index<0){
-                // close the sidebar
-                sidebar.close();
-            }else{
-                sidebar.m_stack_index=override_index;
-            }
+            sidebar.update_stack_index(override_index)
         }
     }
 

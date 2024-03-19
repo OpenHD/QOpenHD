@@ -13,7 +13,7 @@ SideBarBasePanel{
         anchors.topMargin: secondaryUiHeight/8
         spacing: 5
 
-        EditFrequencyElement{
+        /*EditFrequencyElement{
             id: edit_frequency_element
             onGoto_previous: {
                 sidebar.regain_control_on_sidebar_stack()
@@ -41,6 +41,43 @@ SideBarBasePanel{
             onGoto_next: {
                 sidebar.regain_control_on_sidebar_stack()
             }
+        }*/
+        MavlinkChoiceElement2{
+            id:edit_frequency_element
+            m_title: "Frequency"
+            m_param_id: mPARAM_ID_FREQUENCY
+            m_settings_model: _ohdSystemAirSettingsModel
+            onGoto_previous: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+            onGoto_next: {
+                edit_channel_width_element.takeover_control()
+            }
         }
+        MavlinkChoiceElement2{
+            id: edit_channel_width_element
+            m_title: "Channel Width"
+            m_param_id: mPARAM_ID_CHANNEL_WIDTH
+            m_settings_model: _ohdSystemAirSettingsModel
+            onGoto_previous: {
+                edit_frequency_element.takeover_control();
+            }
+            onGoto_next: {
+                edit_rate_element.takeover_control()
+            }
+        }
+        MavlinkChoiceElement2{
+            id: edit_rate_element
+            m_title: "Rate (BW)"
+            m_param_id: mPARAM_ID_RATE
+            m_settings_model: _ohdSystemAirSettingsModel
+            onGoto_previous: {
+               edit_channel_width_element.takeover_control()
+            }
+            onGoto_next: {
+                sidebar.regain_control_on_sidebar_stack()
+            }
+        }
+
     }
 }
