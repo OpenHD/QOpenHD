@@ -527,6 +527,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                 {"disable",""},
                 {"serial0","/dev/serial0"},
                 {"serial1","/dev/serial1"},
+                {"ttyS1","/dev/ttyS1"},
+                {"ttyS2","/dev/ttyS2"},
                 {"ttyUSB0","/dev/ttyUSB0"},
                 {"ttyACM0","/dev/ttyACM0"},
                 {"ttyACM1","/dev/ttyACM1"},
