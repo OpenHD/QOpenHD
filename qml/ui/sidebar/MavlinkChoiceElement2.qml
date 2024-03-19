@@ -96,6 +96,7 @@ BaseJoyEditElement2{
     onVisibleChanged: {
         if(visible){
             populate();
+            extra_populate();
         }
     }
 
@@ -221,26 +222,52 @@ BaseJoyEditElement2{
     // -------------- EXTRA --------------
     property int curr_channel_mhz: _ohdSystemAir.curr_channel_mhz
     onCurr_channel_mhzChanged: {
-        if(m_param_id==mPARAM_ID_FREQUENCY){
-            update_display_text(curr_channel_mhz);
-            m_param_exists=true;
-        }
+        extra_populate();
     }
     property int curr_mcs_index:_ohdSystemAir.curr_mcs_index;
     onCurr_mcs_indexChanged: {
-        if(m_param_id==mPARAM_ID_RATE){
-            update_display_text(curr_mcs_index);
-            m_param_exists=true;
-        }
+        extra_populate();
     }
     property int curr_bandwidth_mhz: _ohdSystemAir.curr_channel_width_mhz
     onCurr_bandwidth_mhzChanged: {
-        if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
+        extra_populate();
+    }
+    function extra_populate(){
+        if(!(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE)){
+            return;
+        }
+        // First, check if the system is alive
+        if(!m_settings_model.system_is_alive()){
+            // Do not enable the elements, system is not alive
+            m_param_exists=false;
+            populate_display_text="N/A";
+            return;
+        }
+        if(m_param_id==mPARAM_ID_FREQUENCY){
+            if(curr_channel_mhz<=0){
+                m_param_exists=false;
+                populate_display_text="N/A";
+                return;
+            }
+            update_display_text(curr_channel_mhz);
+            m_param_exists=true;
+        }else if(m_param_id==mPARAM_ID_RATE){
+            if(curr_mcs_index<0){
+                m_param_exists=false;
+                populate_display_text="N/A";
+                return;
+            }
+            update_display_text(curr_mcs_index);
+            m_param_exists=true;
+        }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
+            if(curr_bandwidth_mhz<=0){
+                m_param_exists=false;
+                populate_display_text="N/A";
+                return;
+            }
             update_display_text(curr_bandwidth_mhz);
             m_param_exists=true;
         }
     }
-
-
 
 }

@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include <logging/logmessagesmodel.h>
+#include "../util/qopenhd.h"
 
 G_BEGIN_DECLS
 // The static plugins we use
@@ -79,7 +80,19 @@ static std::string construct_gstreamer_pipeline(){
     //ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)L16, encoding-params=(string)1, channels=(int)1, payload=(int)96\" ! rtpL16depay ! queue ! autoaudiosink sync=false";
     ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)PCMA\"";
     ss<<" ! rtppcmadepay ! audio/x-alaw, rate=8000, channels=1 ! alawdec ! ";
-    ss<<"autoaudiosink sync=false";
+    if(QOpenHD::instance().is_platform_rpi()){
+        // RPI FKMS HDMI 0 is card 0, device 0
+        //          BCM audio (the headphone jack) is card 1, device 0
+        // We 'just' send things to both of them ;)
+        ss<<" tee name=t ! queue ! ";
+        ss<<"alsasink device=hw:0,0 "; // No '!' needed before tee
+        ss<<"t. ! queue ! ";
+        ss<<"alsasink device=hw:1,0";
+        //ss<<"alsasink device=hw:3,0";
+    }else{
+        ss<<"autoaudiosink sync=false";
+    }
+    //ss<<"autoaudiosink sync=false";
     //ss<<"openslessink";
     return ss.str();
 }
