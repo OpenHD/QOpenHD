@@ -136,24 +136,24 @@ Item {
     // 5700,5745,5785,5825,5865
     ListModel{
         id: frequencies_model
-        ListElement {frequency: 5700; verbose:"5700Mhz\nOHD 1"}
-        ListElement {frequency: 5745; verbose:"5745Mhz\nOHD 2"}
-        ListElement {frequency: 5785; verbose:"5785Mhz\nOHD 3"}
-        ListElement {frequency: 5825; verbose:"5825Mhz\nOHD 4"}
-        ListElement {frequency: 5865; verbose:"5865Mhz\nOHD 5"}
+        ListElement {value: 5700; verbose:"5700Mhz\nOHD 1"}
+        ListElement {value: 5745; verbose:"5745Mhz\nOHD 2"}
+        ListElement {value: 5785; verbose:"5785Mhz\nOHD 3"}
+        ListElement {value: 5825; verbose:"5825Mhz\nOHD 4"}
+        ListElement {value: 5865; verbose:"5865Mhz\nOHD 5"}
     }
     ListModel{
         id: frequencies_model_with_5180mhz_lowband
-        ListElement {frequency: 5180; verbose:"5180Mhz\n{CUSTOM LB}"}
-        ListElement {frequency: 5220; verbose:"5220Mhz\n{CUSTOM LB}"}
-        ListElement {frequency: 5260; verbose:"5260Mhz\n{CUSTOM LB}"}
-        ListElement {frequency: 5300; verbose:"5300Mhz\n{CUSTOM LB}"}
+        ListElement {value: 5180; verbose:"5180Mhz\n{CUSTOM LB}"}
+        ListElement {value: 5220; verbose:"5220Mhz\n{CUSTOM LB}"}
+        ListElement {value: 5260; verbose:"5260Mhz\n{CUSTOM LB}"}
+        ListElement {value: 5300; verbose:"5300Mhz\n{CUSTOM LB}"}
         //
-        ListElement {frequency: 5700; verbose:"5700Mhz\nOHD 1"}
-        ListElement {frequency: 5745; verbose:"5745Mhz\nOHD 2"}
-        ListElement {frequency: 5785; verbose:"5785Mhz\nOHD 3"}
-        ListElement {frequency: 5825; verbose:"5825Mhz\nOHD 4"}
-        ListElement {frequency: 5865; verbose:"5865Mhz\nOHD 5"}
+        ListElement {value: 5700; verbose:"5700Mhz\nOHD 1"}
+        ListElement {value: 5745; verbose:"5745Mhz\nOHD 2"}
+        ListElement {value: 5785; verbose:"5785Mhz\nOHD 3"}
+        ListElement {value: 5825; verbose:"5825Mhz\nOHD 4"}
+        ListElement {value: 5865; verbose:"5865Mhz\nOHD 5"}
     }
     ListModel{
         id: elements_model_channel_width

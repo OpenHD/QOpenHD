@@ -71,11 +71,32 @@ Item {
         m_is_active=false;
         m_extra_is_visible=false;
         stack_manager.visible=false;
+        choiceSelector.discard_and_close();
         hudOverlayGrid.focus=true;
     }
 
     function regain_control_on_sidebar_stack(){
+        choiceSelector.discard_and_close();
         handover_joystick_control_to_button(m_stack_index);
+    }
+
+    function update_stack_index(index_stack_new){
+        choiceSelector.discard_and_close();
+        if(index_stack_new<0){
+            // close the sidebar
+            close();
+        }else{
+            m_stack_index=index_stack_new;
+        }
+
+    }
+
+    // Called when the sidebar is opened and the user clicked somewhere on the screen where there is no sidebar
+    function notify_sidebar_user_clicked_outside(){
+        if(visible){
+            console.log("Outside area clicked, closing sidebar");
+            close();
+        }
     }
 
     function handover_joystick_control_to_button(stack_index){
@@ -203,6 +224,7 @@ Item {
 
 
     Item{
+        id: panels_item
         width: secondaryUiWidth
         height: secondaryUiHeight
         anchors.left: stack_manager.right
@@ -239,6 +261,13 @@ Item {
             id: panel7
             visible: m_stack_index==6;
         }
+    }
+
+    ChoiceSelector{
+        id: choiceSelector
+        anchors.left: panels_item.right
+        anchors.top: panels_item.top
+        anchors.topMargin: secondaryUiHeight/8
     }
 
 }

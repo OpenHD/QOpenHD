@@ -25,7 +25,7 @@ import "../elements"
 Item{
     id: base_joy_edit_element
     width: 320
-    height: 50+30
+    height: 70
 
     property string m_title: "FILL ME"
 
@@ -78,12 +78,6 @@ Item{
         font.pixelSize: 15
         color: override_show_red_text? "red" :  "white"
         anchors.right: parent.right
-        MouseArea{
-            anchors.fill: parent
-            onClicked: {
-                base_joy_edit_element_clicked()
-            }
-        }
     }
 
 
@@ -93,5 +87,12 @@ Item{
         color: "gray"
         opacity: 0.7
         visible: !m_is_enabled
+    }
+
+    MouseArea{
+        anchors.fill: parent
+        onClicked: {
+            base_joy_edit_element_clicked()
+        }
     }
 }

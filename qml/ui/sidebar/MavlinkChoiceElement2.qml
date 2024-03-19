@@ -32,6 +32,12 @@ BaseJoyEditElement2{
     // set to true if the value exists inside the param set
     property bool m_param_exists: false
 
+    // EXTRA
+    property string mPARAM_ID_CHANNEL_WIDTH: "CHANNEL_WIDTH"
+    property string mPARAM_ID_FREQUENCY: "FREQUENCY"
+    property string mPARAM_ID_RATE: "RATE"
+
+
     signal goto_previous();
     signal goto_next();
 
@@ -45,13 +51,18 @@ BaseJoyEditElement2{
                             sidebar.regain_control_on_sidebar_stack();
                             event.accepted=true;
                         }else if(event.key == Qt.Key_Right){
-                            open_choices_menu();
+                            open_choices_menu(false);
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Up){
+                            choiceSelector.discard_and_close();
                             goto_previous()
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Down){
+                            choiceSelector.discard_and_close();
                             goto_next();
+                            event.accepted=true;
+                        }else if(event.key==Qt.Key_Enter || event.key==Qt.Key_Return){
+                            open_choices_menu(false);
                             event.accepted=true;
                         }
                     }
@@ -60,11 +71,11 @@ BaseJoyEditElement2{
         if(choiceSelector.visible){
             choiceSelector.close_choices();
         }else{
-            open_choices_menu();
+            open_choices_menu(true);
         }
     }
 
-    function open_choices_menu(){
+    function open_choices_menu(clickable){
         if(!m_param_exists){
             _qopenhd.show_toast("N/A");
             return;
@@ -75,10 +86,11 @@ BaseJoyEditElement2{
         }
         const m_elements_model=mappedMavlinkChoices.get_model(m_param_id);
         if(override_takes_string_param){
-            choiceSelector.open_choices2(m_elements_model,m_actual_value_string,mavlinkChoiceElement2)
+            choiceSelector.open_choices(m_elements_model,m_actual_value_string,mavlinkChoiceElement2)
         }else{
-            choiceSelector.open_choices2(m_elements_model,m_actual_value_int,mavlinkChoiceElement2)
+            choiceSelector.open_choices(m_elements_model,m_actual_value_int,mavlinkChoiceElement2)
         }
+        choiceSelector.set_clickable(clickable)
     }
 
     onVisibleChanged: {
@@ -106,6 +118,10 @@ BaseJoyEditElement2{
     property string populate_display_text:"I SHOULD NEVER APPEAR"
 
     function populate(){
+        // Don't mind those 3
+        if(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE){
+            return;
+        }
         // First, check if the system is alive
         if(!m_settings_model.system_is_alive()){
             // Do not enable the elements, system is not alive
@@ -172,21 +188,21 @@ BaseJoyEditElement2{
 
     function user_selected_value(value_new){
         // A few need to be handled specially
-        if(m_param_id=="FREQUENCY"){
+        if(m_param_id==mPARAM_ID_FREQUENCY){
             const new_frequency=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQUENCY");
             _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
             return;
-        }else if(m_param_id=="BANDWIDTH"){
+        }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
+            const channel_width_mhz=value_new;
             if(!_ohdSystemAir.is_alive){
                 _hudLogMessagesModel.add_message_warning("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive");
                 return;
             }
-            const channel_width_mhz=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING BW");
             _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
             return;
-        }else if(m_param_id=="RATE"){
+        }else if(m_param_id==mPARAM_ID_RATE){
             const mcs_index=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING RATE");
            _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
@@ -201,9 +217,30 @@ BaseJoyEditElement2{
         }
     }
 
-    ChoiceSelector{
-        id: choiceSelector
+
+    // -------------- EXTRA --------------
+    property int curr_channel_mhz: _ohdSystemAir.curr_channel_mhz
+    onCurr_channel_mhzChanged: {
+        if(m_param_id==mPARAM_ID_FREQUENCY){
+            update_display_text(curr_channel_mhz);
+            m_param_exists=true;
+        }
     }
+    property int curr_mcs_index:_ohdSystemAir.curr_mcs_index;
+    onCurr_mcs_indexChanged: {
+        if(m_param_id==mPARAM_ID_RATE){
+            update_display_text(curr_mcs_index);
+            m_param_exists=true;
+        }
+    }
+    property int curr_bandwidth_mhz: _ohdSystemAir.curr_channel_width_mhz
+    onCurr_bandwidth_mhzChanged: {
+        if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
+            update_display_text(curr_bandwidth_mhz);
+            m_param_exists=true;
+        }
+    }
+
 
 
 }

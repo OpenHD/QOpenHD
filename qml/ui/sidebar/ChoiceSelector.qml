@@ -2,39 +2,22 @@ import QtQuick 2.12
 
 Rectangle{
     id: choiceSelector
-    anchors.left: parent.right
-    anchors.top: parent.top
     width: 200
-    height: 300
-    color: "green"
+    height: secondaryUiHeight - (secondaryUiHeight/8)
+    //color: "green"
+    color: "transparent"
     visible: false
 
     // Index of the element that is selected when the selector is opened (current value)
     property int m_initial_index: -1
     // Changed as the user navigates around
     property int m_current_user_selected_index: -1;
+    // We are only 'clickable' if no joystick usage
+    property bool m_allow_clickable: false
 
     property var m_parent
 
-    function open_choices(x_model,current_value_index,parent){
-        availableChociesModel.clear();
-        for(var i=0;i<x_model.count;i++){
-            const tmp=x_model.get(i).verbose;
-            var data = {'verbose': tmp};
-            availableChociesModel.insert(i,{ verbose: tmp});
-        }
-        if(current_value_index>=availableChociesModel.count || current_value_index<0){
-            console.log("index out of bounds !");
-            return false;
-        }
-        m_initial_index=current_value_index;
-        m_current_user_selected_index=m_initial_index;
-        visible=true;
-        focus=true;
-        m_parent=parent
-    }
-
-    function open_choices2(x_model,current_value,parent){
+    function open_choices(x_model,current_value,parent){
         // First, find the current selection inside the model
         availableChociesModel.clear();
         var current_value_index=0
@@ -42,7 +25,7 @@ Rectangle{
         for(var i=0;i<x_model.count;i++){
             const value=x_model.get(i).value;
             const verbose=x_model.get(i).verbose;
-            availableChociesModel.insert(i,{'value': value,'verbose': verbose});
+            availableChociesModel.insert(i,{'value': (""+value),'verbose': verbose});
             if(!current_value_found_in_model && value==current_value){
                 current_value_index=i;
                 current_value_found_in_model=true;
@@ -63,8 +46,15 @@ Rectangle{
         visible=true;
         focus=true;
         m_parent=parent
+        const ui_required_height=availableChociesModel.count*73;
+        availableChociesListView.height=ui_required_height;
     }
 
+    function set_clickable(clickable){
+        m_allow_clickable=clickable;
+    }
+
+    // Calls the parent's update method if there is any change and closes
     function close_choices(){
         if(m_current_user_selected_index!=m_initial_index){
             const value_old=availableChociesModel.get(m_initial_index).value;
@@ -79,15 +69,32 @@ Rectangle{
         m_parent.takeover_control();
     }
 
+    // Discards a change selected by the user (if there is any) and closes
+    function discard_and_close(){
+        m_current_user_selected_index=-1;
+        m_initial_index=-1;
+        visible=false;
+        focus=false;
+    }
+
 
     Keys.onPressed: (event)=> {
                         console.log("ChoiceSelector key was pressed:"+event);
                         if(event.key == Qt.Key_Left){
-                            // Give back
-                            close_choices();
+                            // Either close immediately or go back to the initial choice (don't save)
+                            if(m_current_user_selected_index==m_initial_index){
+                                close_choices();
+                            }else{
+                                m_current_user_selected_index=m_initial_index;
+                            }
                             event.accepted=true;
                         }else if(event.key == Qt.Key_Right){
-                            // Do nothing
+                            // Save and close or do nothing
+                            if(m_current_user_selected_index==m_initial_index){
+                                // Do nothing
+                            }else{
+                                close_choices();
+                            }
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Up){
                             if(m_current_user_selected_index>0){
@@ -103,6 +110,9 @@ Rectangle{
                                 // Out of bounds
                             }
                             event.accepted=true;
+                        }else if(event.key==Qt.Key_Enter || event.key==Qt.Key_Return){
+                            close_choices();
+                            event.accepted=true;
                         }
                     }
 
@@ -117,27 +127,69 @@ Rectangle{
 
     Component {
         id: availableChociesDelegate
-        Rectangle {
+        Item {
             width: 200
-            height: 80
+            height: 70
             id: choice
-            color: index==m_initial_index ? "yellow" : "orange"
-
-            border.color: "white"
-            border.width: (index==m_current_user_selected_index) ? 3 : 0
-
+            // Background
+            Rectangle{
+                anchors.fill: parent
+                //color: index==m_initial_index ? "yellow" : "orange"
+                color: "#333c4c"
+                opacity: index==m_initial_index ? 1.0 : 0.7
+            }
             Text {
                 text: verbose
                 anchors.fill: parent
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
+                color: "white"
+                font.pixelSize: 15
+            }
+            // Outline current value
+            Rectangle{
+                anchors.fill: parent
+                color: "transparent"
+                border.color: "white"
+                border.width: index==m_initial_index ? 2 : 0;
+            }
+            // Outline current selection by user
+            Rectangle{
+                anchors.fill: parent
+                color: "transparent"
+                border.color: "white"
+                border.width: (index==m_current_user_selected_index) ? 3 : 0
+            }
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    if(m_allow_clickable){
+                        m_current_user_selected_index=index;
+                        close_choices();
+                    }
+                }
             }
         }
     }
 
+    Rectangle{
+        implicitWidth: availableChociesListView.width
+        implicitHeight: availableChociesListView.height
+        anchors.left: availableChociesListView.left
+        anchors.top: availableChociesListView.top
+        color: secondaryUiColor
+        opacity: secondaryUiOpacity
+    }
+
     ListView {
+        id: availableChociesListView
         model: availableChociesModel
         delegate: availableChociesDelegate
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.left: parent.left
+        width: parent.width
+        height: parent.height*2
+        //clip: false
+        spacing: 3
     }
 }
