@@ -189,6 +189,16 @@ BaseJoyEditElement2{
 
     function user_selected_value(value_new){
         // A few need to be handled specially
+         if(m_param_id==mPARAM_ID_FREQUENCY){
+            if(_fcMavlinkSystem.armed){
+                if(settings.dev_allow_freq_change_when_armed){
+                    // okay
+                }else{
+                    _qopenhd.show_toast("ARMED, change not possible");
+                    return;
+                }
+            }
+        }
         if(m_param_id==mPARAM_ID_FREQUENCY){
             const new_frequency=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQUENCY");
