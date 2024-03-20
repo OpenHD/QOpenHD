@@ -283,6 +283,7 @@ Item {
             onClicked: {
                 sidebar.notify_sidebar_user_clicked_outside();
             }
+            enabled: sidebar.visible
         }
 
         // By default on top row
