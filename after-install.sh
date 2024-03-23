@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# the openhd scripts start the correct OSD depending on the distro and settings
 if [ -f /etc/systemd/system/qopenhd.service ]; then
-    systemctl enable qopenhd.service
+    # systemctl enable qopenhd.service
+    echo "QOpenHD can be started from OpenHD ,via systemctl or manually."
 else
     echo "QOpenHD is not started with a service on this system"
 fi
