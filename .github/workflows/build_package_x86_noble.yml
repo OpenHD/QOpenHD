@@ -1,4 +1,4 @@
-name: build_package_LUNAR
+name: build_package_NOBLE
 
 on:
   push:
@@ -28,30 +28,30 @@ jobs:
           apt update
           apt install -y git sudo
 
-      # - name: clone QOpenHD
-      #   run: |
-      #     git clone -b ${{ github.ref_name }} https://github.com/OpenHD/QOpenHD --recursive
+      - name: clone QOpenHD
+        run: |
+          git clone -b ${{ github.ref_name }} https://github.com/OpenHD/QOpenHD --recursive
 
-      # - name: Install Dependencies
-      #   run: |
-      #     ls
-      #     cd QOpenHD
-      #     sudo -H ./install_build_dep.sh ubuntu-x86
+      - name: Install Dependencies
+        run: |
+          ls
+          cd QOpenHD
+          sudo -H ./install_build_dep.sh ubuntu-x86
 
-      # - name: Build with make
-      #   run: |
-      #     cd QOpenHD
-      #     ./package.sh x86_64 ubuntu noble
-      #     ls -a
+      - name: Build with make
+        run: |
+          cd QOpenHD
+          ./package.sh x86_64 ubuntu noble
+          ls -a
 
-      # - name: Upload to Github
-      #   uses: 'actions/upload-artifact@v2'
-      #   with:
-      #     name: "QOpenHD"
-      #     path: |
-      #       QOpenHD/*.deb
-      #       *.log
-      #     if-no-files-found: error
+      - name: Upload to Github
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: "QOpenHD"
+          path: |
+            QOpenHD/*.deb
+            *.log
+          if-no-files-found: error
 
       # - name: Push
       #   id: push
