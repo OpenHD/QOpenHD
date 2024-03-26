@@ -178,8 +178,9 @@ Card {
     ListModel{
         id: generic_secondary_camera_options
         ListElement {title: "DISABLED (Default)"; value: 255}
-        ListElement {title: "INFIRAY USB"; value: 11}
         ListElement {title: "EXP USB GENERIC"; value: 10}
+        ListElement {title: "INFIRAY USB"; value: 11}
+        ListElement {title: "INFIRAY USB T2"; value: 12}
         ListElement {title: "Dummy (debug)"; value: 0}
         ListElement {title: "External (DEV)"; value: 2}
         ListElement {title: "External IP (DEV)"; value: 3}
