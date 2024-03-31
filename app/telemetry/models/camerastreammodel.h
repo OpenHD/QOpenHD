@@ -3,8 +3,7 @@
 
 #include <QObject>
 
-#include "../tutil/mavlink_include.h"
-
+#include "tutil/mavlink_include.h"
 #include "util/lqutils_include.h"
 
 // NOTE1: This class exists to avoid duplicated code for primary and secondary camera(stream)-stats displayed in the HUD

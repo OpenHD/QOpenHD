@@ -1,15 +1,13 @@
 #include "audio_playback.h"
-#include "qdebug.h"
-
+#include <qdebug.h>
 #include <qsettings.h>
 
-
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
-#include "../gstreamer/gstrtpaudioplayer.h"
+#include "gstreamer/gstrtpaudioplayer.h"
 #endif
 
-#include <util/qopenhd.h>
-#include <logging/logmessagesmodel.h>
+#include "util/qopenhd.h"
+#include "logging/logmessagesmodel.h"
 
 void platform_start_audio_streaming_if_enabled()
 {

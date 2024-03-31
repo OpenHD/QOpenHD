@@ -3,9 +3,11 @@
 //
 
 #include "gl_videorenderer.h"
-#include "../color_helper.h"
 #include <GL/gl.h>
 #include <chrono>
+
+#include "color_helper.h"
+
 
 static EGLint texgen_attrs[] = {
 	EGL_DMA_BUF_PLANE0_FD_EXT,

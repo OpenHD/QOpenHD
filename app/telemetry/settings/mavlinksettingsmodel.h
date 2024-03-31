@@ -9,9 +9,9 @@
 #include <mutex>
 #include <QJSValue>
 
-#include "../tutil/mavlink_include.h"
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
-#include "../action/impl/xparam.h"
+#include "tutil/mavlink_include.h"
+#include "lib/lqtutils_master/lqtutils_prop.h"
+#include "action/impl/xparam.h"
 
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
 // (the side that changes parameter(s) provided by a specific system & component).

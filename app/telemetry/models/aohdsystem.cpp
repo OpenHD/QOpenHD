@@ -1,13 +1,5 @@
 #include "aohdsystem.h"
 
-#include "../../common/StringHelper.hpp"
-#include "../../common/TimeHelper.hpp"
-#include "QOpenHDVideoHelper.hpp"
-#include "tutil/telemetryutil.hpp"
-#include "wificard.h"
-#include "rcchannelsmodel.h"
-#include "camerastreammodel.h"
-
 #include <string>
 #include <sstream>
 #include <MavlinkTelemetry.h>
@@ -15,12 +7,20 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 
-#include "util/qopenhd.h"
-#include "../tutil/qopenhdmavlinkhelper.hpp"
+#include "common/StringHelper.hpp"
+#include "common/TimeHelper.hpp"
+#include "QOpenHDVideoHelper.hpp"
+#include "tutil/telemetryutil.hpp"
+#include "wificard.h"
+#include "rcchannelsmodel.h"
+#include "camerastreammodel.h"
 
-#include <../util/WorkaroundMessageBox.h>
-#include "../settings/wblinksettingshelper.h"
-#include "../settings/mavlinksettingsmodel.h"
+#include "util/qopenhd.h"
+#include "tutil/qopenhdmavlinkhelper.hpp"
+
+#include "util/WorkaroundMessageBox.h"
+#include "settings/wblinksettingshelper.h"
+#include "settings/mavlinksettingsmodel.h"
 
 #include "openhd_core/platform.hpp"
 
