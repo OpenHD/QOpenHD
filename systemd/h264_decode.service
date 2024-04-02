@@ -5,7 +5,7 @@ Description=rock_h264_decode
 User=root
 
 # Video decode via mpp, started by QOpenHD if needed (and stopped if needed)
-ExecStart=/usr/local/bin/h265.sh
+ExecStart=/usr/local/bin/h264.sh
 
 Restart=always
 RestartSec=2
