@@ -57,17 +57,16 @@ ls -a release/
 echo "here we should have built the file correctly"
 
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
+cp systemd/h264_decode.service /tmp/qopenhd/etc/systemd/system/ || exit 1
+cp systemd/h265_decode.service /tmp/qopenhd/etc/systemd/system/ || exit 1
 
 # copying services
 if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
 PACKAGE_NAME=qopenhd
 cp systemd/rpi_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
-cp systemd/rpi_h264_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
 mkdir -p /tmp/qopenhd/etc/systemd/system/
 cp systemd/rock3_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
-# cp systemd/rock3_h264_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service
-# cp systemd/rock3_h265_decode.service /tmp/qopenhd/etc/systemd/system/h265_decode.service
 PACKAGE_NAME=qopenhd_rk3566
 else
 PACKAGE_NAME=qopenhd
@@ -103,28 +102,16 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     ${PLATFORM_PACKAGES} || exit 1
     
     #Rock5Package
-
     rm /tmp/qopenhd/etc/systemd/system/qopenhd.service
-    # rm /tmp/qopenhd/etc/systemd/system/h264_decode.service
-    # rm /tmp/qopenhd/etc/systemd/system/h265_decode.service
-
     cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
-    # cp systemd/rock5_h264_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service
-    # cp systemd/rock5_h265_decode.service /tmp/qopenhd/etc/systemd/system/h265_decode.service
 
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588 -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_rk3588_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
     #Rock5aPackage
-
     rm /tmp/qopenhd/etc/systemd/system/qopenhd.service
-    rm /tmp/qopenhd/etc/systemd/system/h264_decode.service
-    rm /tmp/qopenhd/etc/systemd/system/h265_decode.service
-
     cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
-    cp systemd/rock5_h264a_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service
-    cp systemd/rock5_h265a_decode.service /tmp/qopenhd/etc/systemd/system/h265_decode.service
 
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588a -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_rk3588a_VERSION_ARCH.deb \
