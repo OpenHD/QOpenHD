@@ -2,8 +2,7 @@
 #define RESTARTQOPENHDMESSAGEBOX_H
 
 #include <QObject>
-
-#include "lib/lqtutils_master/lqtutils_prop.h"
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
 
 // Also Quite dirty
 // There are a couple of places in QOpenHD where we need to prompt the user to restart QOpenHD.

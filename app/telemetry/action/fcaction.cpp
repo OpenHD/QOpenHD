@@ -1,12 +1,12 @@
 #include "fcaction.h"
 #include "qdebug.h"
 
-#include "logging/hudlogmessagesmodel.h"
-#include "MavlinkTelemetry.h"
+#include "../../logging/hudlogmessagesmodel.h"
+#include "../MavlinkTelemetry.h"
 #include "impl/cmdsender.h"
 
 #include "create_cmd_helper.hpp"
-#include "models/fcmavlinksystem.h"
+#include "../models/fcmavlinksystem.h"
 #include "tutil/mavlink_enum_to_string.h"
 
 FCAction::FCAction(QObject *parent)

@@ -4,7 +4,7 @@
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
-#include "lib/lqtutils_master/lqtutils_prop.h"
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
 
 class HorizonLadder : public QQuickPaintedItem {
     Q_OBJECT

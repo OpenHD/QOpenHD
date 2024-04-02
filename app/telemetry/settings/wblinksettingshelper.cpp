@@ -1,14 +1,13 @@
 #include "wblinksettingshelper.h"
+#include "../action/impl/xparam.h"
 
-#include <sstream>
+#include "../models/aohdsystem.h"
 
+#include "../logging/hudlogmessagesmodel.h"
 #include <qsettings.h>
-
-#include "models/aohdsystem.h"
-#include "logging/hudlogmessagesmodel.h"
-#include "action/impl/xparam.h"
-#include "action/ohdaction.h"
-#include "util/qopenhd.h"
+#include <sstream>
+#include "../action/ohdaction.h"
+#include "../../util/qopenhd.h"
 
 #include "pollutionhelper.h"
 #include "frequencyhelper.h"

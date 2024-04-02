@@ -8,8 +8,9 @@
 #include <QQmlContext>
 #include <atomic>
 
+#include "../tutil/mavlink_include.h"
+
 #include "util/lqutils_include.h"
-#include "tutil/mavlink_include.h"
 #include "tutil/openhd_defines.hpp"
 
 /**

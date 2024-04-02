@@ -9,7 +9,7 @@
 #include <functional>
 #include <vector>
 
-#include "tutil/mavlink_include.h"
+#include "../../tutil/mavlink_include.h"
 
 class XParam
 {

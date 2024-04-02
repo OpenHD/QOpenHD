@@ -4,12 +4,11 @@
 
 #include "common/StringHelper.hpp"
 #include "common/openhd-util.hpp"
-#include "common/openhd-util.hpp"
 
 #include "QOpenHDVideoHelper.hpp"
 #include "decodingstatistcs.h"
-
-#include "logging/hudlogmessagesmodel.h"
+#include "common/openhd-util.hpp"
+#include "../../logging/hudlogmessagesmodel.h"
 
 
 #ifdef OPENHD_USE_LIB_UVGRTP

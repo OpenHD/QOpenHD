@@ -6,8 +6,8 @@
 #include <algorithm>
 
 #include "decodingstatistcs.h"
-#include "vscommon/QOpenHDVideoHelper.hpp"
-#include "vscommon/video_ratio_helper.hpp"
+#include "../vscommon/QOpenHDVideoHelper.hpp"
+#include "../vscommon/video_ratio_helper.hpp"
 
 static bool get_dev_draw_alternating_rgb_dummy_frames(){
     QSettings settings;

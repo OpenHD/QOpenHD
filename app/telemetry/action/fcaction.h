@@ -4,8 +4,8 @@
 #include <QObject>
 #include <mutex>
 
-#include "tutil/mavlink_include.h"
-#include "lib/lqtutils_master/lqtutils_prop.h"
+#include "../tutil/mavlink_include.h"
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 /**
  * This is the one and only class from which messages / actions can be sent to the FC.

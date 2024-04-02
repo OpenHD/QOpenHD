@@ -1,13 +1,14 @@
 #include "camerastreammodel.h"
+#include "qdebug.h"
+#include "../tutil/telemetryutil.hpp"
+#include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
-#include <regex>
 #include <qsettings.h>
-#include <qdebug.h>
+#include <regex>
 
-#include "tutil/telemetryutil.hpp"
-#include "videostreaming/vscommon/QOpenHDVideoHelper.hpp"
-#include "logging/hudlogmessagesmodel.h"
-#include "logging/logmessagesmodel.h"
+#include <logging/hudlogmessagesmodel.h>
+#include <logging/logmessagesmodel.h>
+
 #include "openhd_core/camera.hpp"
 
 static std::string video_codec_to_string(int value){

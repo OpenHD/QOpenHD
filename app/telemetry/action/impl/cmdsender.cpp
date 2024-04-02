@@ -2,8 +2,8 @@
 
 #include <qdebug.h>
 
-#include "tutil/qopenhdmavlinkhelper.hpp"
-#include "MavlinkTelemetry.h"
+#include "../../tutil/qopenhdmavlinkhelper.hpp"
+#include "../../MavlinkTelemetry.h"
 #include "tutil/mavlink_enum_to_string.h"
 #include <future>
 

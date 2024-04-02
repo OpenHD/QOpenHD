@@ -1,14 +1,14 @@
 #ifndef CMDSENDER_H
 #define CMDSENDER_H
 
+#include "../../tutil/mavlink_include.h"
+
 #include <optional>
 #include <functional>
 #include <mutex>
 #include <list>
 #include <thread>
 #include <memory>
-
-#include "tutil/mavlink_include.h"
 
 /**
  * Simple, threadsafe class for sending mavlink command (long) over a lossy link.

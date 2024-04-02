@@ -10,7 +10,7 @@
 #include <QTextToSpeech>
 #endif
 
-#include "lib/lqtutils_master/lqtutils_prop.h"
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
 
 /**
  * Dirty, but for some reason stephen made translation(s) and a bit more work this way.

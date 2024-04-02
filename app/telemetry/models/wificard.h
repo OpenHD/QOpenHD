@@ -2,12 +2,10 @@
 #define WIFICARD_H
 
 #include <memory>
-
 #include <qobject.h>
 #include <qtimer.h>
-
 #include "util/lqutils_include.h"
-#include "tutil/mavlink_include.h"
+#include "../tutil/mavlink_include.h"
 
 // Stats unique per each connected (wifibroadcast) wfi card
 // Air has only one card, ground can have one or more card(s)

@@ -1,18 +1,16 @@
 #ifndef TELEMETRYUTIL_H
 #define TELEMETRYUTIL_H
 
-#include <cstring>
-#include <optional>
-#include <array>
-
 #include <QString>
 #include <QDebug>
 
 #include "mavlink_include.h"
-#include "common/TimeHelper.hpp"
-#include "common/StringHelper.hpp"
+#include "../../common/TimeHelper.hpp"
+#include "../../common/StringHelper.hpp"
 #include "mavlink_enum_to_string.h"
-
+#include <cstring>
+#include <optional>
+#include <array>
 
 // Various utility methods for telemetry that are static and take simple imputs.
 namespace Telemetryutil{

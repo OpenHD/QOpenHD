@@ -1,17 +1,22 @@
 #include "fcmavlinksystem.h"
-
-#include <QDebug>
-#include <QDateTime>
-
-#include "util/qopenhd.h"
-#include "tutil/geodesi_helper.h"
-#include "logging/logmessagesmodel.h"
-#include "logging/hudlogmessagesmodel.h"
-#include "tutil/qopenhdmavlinkhelper.hpp"
-#include "tutil/telemetryutil.hpp"
-#include "action/fcaction.h"
 #include "rcchannelsmodel.h"
 
+#include <QDebug>
+#include "util/qopenhd.h"
+
+#include "../tutil/geodesi_helper.h"
+
+#include <QDateTime>
+
+#include <logging/logmessagesmodel.h>
+#include <logging/hudlogmessagesmodel.h>
+
+#include "tutil/qopenhdmavlinkhelper.hpp"
+#include "tutil/telemetryutil.hpp"
+
+#include "../action/fcaction.h"
+
+#include <QDateTime>
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = std::make_unique<QTimer>(this);

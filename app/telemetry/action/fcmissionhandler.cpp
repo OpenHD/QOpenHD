@@ -1,9 +1,9 @@
 #include "fcmissionhandler.h"
-#include "tutil/qopenhdmavlinkhelper.hpp"
-#include "tutil/telemetryutil.hpp"
-#include "MavlinkTelemetry.h"
+#include "../tutil/qopenhdmavlinkhelper.hpp"
+#include "../tutil/telemetryutil.hpp"
+#include "../MavlinkTelemetry.h"
 
-#include "models/fcmavlinkmissionitemsmodel.h"
+#include "../models/fcmavlinkmissionitemsmodel.h"
 
 FCMissionHandler::FCMissionHandler(QObject *parent): QObject(parent)
 {

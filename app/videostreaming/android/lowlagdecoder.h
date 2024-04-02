@@ -1,19 +1,19 @@
 #ifndef LOWLAGDECODER_H
 #define LOWLAGDECODER_H
 
-#include <iostream>
-#include <thread>
-#include <atomic>
 
 #include <android/native_window.h>
 #include <media/NdkMediaCodec.h>
 #include <android/log.h>
 #include <jni.h>
+#include <iostream>
+#include <thread>
+#include <atomic>
 
+#include <nalu/NALU.hpp>
+#include <nalu/CodecConfigFinder.hpp>
 
-#include "nalu/NALU.hpp"
-#include "nalu/CodecConfigFinder.hpp"
-#include "common/TimeHelper.hpp"
+#include "../../common/TimeHelper.hpp"
 
 struct DecodingInfo{
     std::chrono::steady_clock::time_point lastCalculation=std::chrono::steady_clock::now();
