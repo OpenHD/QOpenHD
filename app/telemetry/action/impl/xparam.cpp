@@ -6,7 +6,8 @@
 #include <future>
 
 #include <qdebug.h>
-#include "../../MavlinkTelemetry.h"
+
+#include "MavlinkTelemetry.h"
 
 XParam::XParam()
 {

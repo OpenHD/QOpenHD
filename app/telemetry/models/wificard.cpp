@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include "../../logging/hudlogmessagesmodel.h"
+#include "logging/hudlogmessagesmodel.h"
 #include "tutil/qopenhdmavlinkhelper.hpp"
 
 

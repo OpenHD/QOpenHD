@@ -11,9 +11,9 @@
 #include <mutex>
 #include <optional>
 
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "lib/lqtutils_master/lqtutils_prop.h"
 
-#include "../tutil/mavlink_include.h"
+#include "tutil/mavlink_include.h"
 
 /**
  * Simple class to (semi-reliably) get all the mission waypoints from the FC and more.

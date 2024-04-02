@@ -5,7 +5,7 @@
 #include <qqmlapplicationengine.h>
 #include <qquickwindow.h>
 
-#include "../common/TimeHelper.hpp"
+#include "common/TimeHelper.hpp"
 #include "util/lqutils_include.h"
 
 // Stats about the QT (QOpenHD) OpenGL rendering.

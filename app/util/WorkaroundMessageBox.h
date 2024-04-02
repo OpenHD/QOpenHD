@@ -8,7 +8,7 @@
 #include <mutex>
 #include <QTimer>
 
-#include "../../lib/lqtutils_master/lqtutils_prop.h"
+#include "lib/lqtutils_master/lqtutils_prop.h"
 
 // QT Message popup's (their default ones) don't work in kms, since they are opened in a new window.
 // This exposes the following functionality:

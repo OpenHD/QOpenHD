@@ -4,8 +4,8 @@
 #include <QSGGeometryNode>
 #include <QSGSimpleMaterialShader>
 
-#include "../vscommon/QOpenHDVideoHelper.hpp"
-#include "../vscommon/video_ratio_helper.hpp"
+#include "vscommon/QOpenHDVideoHelper.hpp"
+#include "vscommon/video_ratio_helper.hpp"
 
 struct State {
     // the texture transform matrix

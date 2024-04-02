@@ -8,8 +8,8 @@
 #include <thread>
 
 #include "tutil/mavlink_include.h"
-#include "../../lib/lqtutils_master/lqtutils_prop.h"
-#include "../common/TimeHelper.hpp"
+#include "lib/lqtutils_master/lqtutils_prop.h"
+#include "common/TimeHelper.hpp"
 
 #include "connection/udp_connection.h"
 #include "connection/tcp_connection.h"

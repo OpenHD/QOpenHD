@@ -7,7 +7,7 @@
 #include <optional>
 #include <qsettings.h>
 
-#include "../tutil/mavlink_include.h"
+#include "tutil/mavlink_include.h"
 
 /**
  * We need to manually request / set the message interval(s) for specific messages on ardupilot

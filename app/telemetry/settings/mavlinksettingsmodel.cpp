@@ -1,20 +1,20 @@
 ﻿#include "mavlinksettingsmodel.h"
-#include "qdebug.h"
-#include "documentedparam.h"
 
-#include "../../util/qopenhd.h"
-#include "improvedintsetting.h"
-#include "improvedstringsetting.h"
-#include "tutil/openhd_defines.hpp"
-
+#include <qdebug.h>
 #include <QSettings>
 #include <QVariant>
 
-#include "../action/impl/xparam.h"
+#include "documentedparam.h"
+
+#include "util/qopenhd.h"
+#include "improvedintsetting.h"
+#include "improvedstringsetting.h"
+#include "tutil/openhd_defines.hpp"
+#include "action/impl/xparam.h"
 // Dirty
-#include "../models/openhd_core/camera.hpp"
-#include "../models/aohdsystem.h"
-#include "../util/WorkaroundMessageBox.h"
+#include "models/openhd_core/camera.hpp"
+#include "models/aohdsystem.h"
+#include "util/WorkaroundMessageBox.h"
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {

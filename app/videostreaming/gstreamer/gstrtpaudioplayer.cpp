@@ -1,13 +1,14 @@
 #include "gstrtpaudioplayer.h"
+
+#include <assert.h>
+#include <sstream>
+#include <qdebug.h>
+
 #include "gst/gstparse.h"
 #include "gst/gstpipeline.h"
 
-#include <assert.h>
-#include <qdebug.h>
-#include <sstream>
-
-#include <logging/logmessagesmodel.h>
-#include "../util/qopenhd.h"
+#include "logging/logmessagesmodel.h"
+#include "util/qopenhd.h"
 
 G_BEGIN_DECLS
 // The static plugins we use

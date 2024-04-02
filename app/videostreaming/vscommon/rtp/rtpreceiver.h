@@ -1,17 +1,15 @@
 #ifndef RTPRECEIVER_H
 #define RTPRECEIVER_H
 
-
-#include "ParseRTP.h"
 #include <memory>
-#include "../udp/UDPReceiver.h"
-
 #include <fstream>
 #include <mutex>
 #include <functional>
 
-#include "../nalu/NALU.hpp"
-#include "../nalu/CodecConfigFinder.hpp"
+#include "ParseRTP.h"
+#include "udp/UDPReceiver.h"
+#include "nalu/NALU.hpp"
+#include "nalu/CodecConfigFinder.hpp"
 
 #include "common/TimeHelper.hpp"
 #include "common/ThreadsafeQueue.hpp"

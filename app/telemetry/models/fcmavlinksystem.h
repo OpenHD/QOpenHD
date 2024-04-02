@@ -1,17 +1,16 @@
 #ifndef FC_MAVLINK_SYSTEM_H
 #define FC_MAVLINK_SYSTEM_H
 
+#include <atomic>
+#include <optional>
+#include <memory>
+
 #include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
 #include <QQmlContext>
 
-#include "../tutil/mavlink_include.h"
-
-#include <atomic>
-#include <optional>
-#include <memory>
-
+#include "tutil/mavlink_include.h"
 #include "util/lqutils_include.h"
 
 /**

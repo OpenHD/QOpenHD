@@ -1,15 +1,15 @@
 #ifndef SynchronizedSettings_H
 #define SynchronizedSettings_H
 
-#include <QObject>
-#include <qsettings.h>
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
-#include "param_names.h"
-
 #include <mutex>
 #include <optional>
 
-#include "../tutil/mavlink_include.h"
+#include <QObject>
+#include <qsettings.h>
+
+#include "lib/lqtutils_master/lqtutils_prop.h"
+#include "param_names.h"
+#include "tutil/mavlink_include.h"
 #include "tutil/openhd_defines.hpp"
 
 

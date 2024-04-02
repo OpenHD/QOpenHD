@@ -1,8 +1,6 @@
 #ifndef TCPCONNECTION2_H
 #define TCPCONNECTION2_H
 
-#include "../tutil/mavlink_include.h"
-
 #include <thread>
 #include <memory.h>
 #include <atomic>
@@ -10,6 +8,8 @@
 #include <optional>
 #include <mutex>
 #include <functional>
+
+#include "tutil/mavlink_include.h"
 
 // TCP client connection that handles the following edge-case:
 // If the server becomes unavailable (no message for more than X seconds)
