@@ -587,9 +587,17 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                "No effect if joy rc is disabled.");
     }
     {
-        append_int(ret,"AUDIO_ENABLE",
+        /*append_int(ret,"AUDIO_ENABLE",
                    ImprovedIntSetting::createEnumEnableDisable(),
                    "enables / disables audio streaming from air to ground. In development. Enabling automatically restarts the air unit !"
+                   );*/
+        auto audio_items=std::vector<ImprovedIntSetting::Item>{
+         {"DISABLE",0},
+         {"ENABLE",1},
+         {"TEST",100},
+         };
+        append_int(ret,"AUDIO_ENABLE",ImprovedIntSetting(0,1000000,audio_items),
+                "enables / disables audio streaming from air to ground. In development. Use test mode to validate your ground audio output."
                    );
     }
     return ret;
