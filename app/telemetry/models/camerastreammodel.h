@@ -2,10 +2,22 @@
 #define AIRCAMERAMODEL_H
 
 #include <QObject>
+#include <QVariant>
 
 #include "../tutil/mavlink_include.h"
 
 #include "util/lqutils_include.h"
+
+struct QCameraNameAndType{
+    QString name;
+    int type;
+};
+struct QManufacturerForPlatform{
+    QString manufacturer_name;
+    QList<QCameraNameAndType> cameras;
+};
+Q_DECLARE_METATYPE(QCameraNameAndType);
+Q_DECLARE_METATYPE(QManufacturerForPlatform);
 
 // NOTE1: This class exists to avoid duplicated code for primary and secondary camera(stream)-stats displayed in the HUD
 // NOTE2: Here we have only stats for one camera / camera stream that are transmitted via lossy
@@ -114,6 +126,11 @@ private:
 private:
     std::chrono::steady_clock::time_point m_last_tx_frame_drop_calculation=std::chrono::steady_clock::now();
     int m_last_tx_frame_drop_calculation_count=-1;
+public:
+    Q_INVOKABLE QVariantList get_camera_choices(int platform_type);
+    Q_INVOKABLE QStringList get_manufacturer_choices(int platform_type);
+    Q_INVOKABLE QList<int> get_manufacturer_cameras_type(int platform_type,int index);
+    Q_INVOKABLE QStringList get_manufacturer_cameras_names(int platform_type,int index);
 };
 
 #endif // AIRCAMERAMODEL_H

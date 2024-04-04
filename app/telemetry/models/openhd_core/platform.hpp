@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace openhd{
+
 
 // When this one shows up a bit more work has to be done to run openhd on the platform (probably) ;)
 static constexpr int X_PLATFORM_TYPE_UNKNOWN=0;
@@ -30,7 +30,7 @@ static constexpr int X_PLATFORM_TYPE_ALWINNER_X20=30;
 // @Buldo is working on openipc / sigmastar, 36..40
 static constexpr int X_PLATFORM_TYPE_SIGMASTAR_UNDEFINED=36;
 
-std::string x_platform_type_to_string(int platform_type) {
+static std::string x_platform_type_to_string(int platform_type) {
   switch (platform_type) {
     case X_PLATFORM_TYPE_UNKNOWN:return "UNKNOWN";
     case X_PLATFORM_TYPE_X86:return "X86";
@@ -49,7 +49,7 @@ std::string x_platform_type_to_string(int platform_type) {
   }
   return "ERR-UNDEFINED";
 }
-}
+
 
 
 
