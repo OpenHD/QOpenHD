@@ -298,7 +298,7 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_air_reported_fc_sys_id(air_reported_sys_id);
     const uint8_t ohd_platform=msg.link_type[0];
     set_ohd_platform(ohd_platform);
-    const auto platform_as_str=openhd::x_platform_type_to_string(ohd_platform);
+    const auto platform_as_str=x_platform_type_to_string(ohd_platform);
     set_ohd_platform_type_as_string(platform_as_str.c_str());
 }
 
