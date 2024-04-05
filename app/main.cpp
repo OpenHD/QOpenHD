@@ -70,6 +70,9 @@ RESOLVEFUNC(SSL_get1_peer_certificate);
 RESOLVEFUNC(EVP_PKEY_get_base_id);
 #endif // OPENSSL_VERSION_MAJOR >= 3
 
+#include <qpa/qplatformnativeinterface.h>
+//#include <xf86drm.h>
+//#include <xf86drmMode.h>
 
 // Load all the fonts we use ?!
 static void load_fonts(){
@@ -196,6 +199,39 @@ static void android_check_permissions(){
     }
 #endif
 }
+
+static void debug_kms(){
+    qDebug()<<"platform name:"<<QGuiApplication::platformName();
+    if(QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)){
+        int fd = 0;
+        uint32_t crtc = 0;
+        uint32_t connector = 0;
+        bool useatomic = false;
+        auto * pni = QGuiApplication::platformNativeInterface();
+        QScreen *qScreen=QGuiApplication::primaryScreen();
+        auto * drifd = pni->nativeResourceForIntegration("dri_fd");
+        if (drifd)
+            fd = static_cast<int>(reinterpret_cast<qintptr>(drifd));
+        auto * crtcid = pni->nativeResourceForScreen("dri_crtcid", qScreen);
+        if (crtcid)
+            crtc = static_cast<uint32_t>(reinterpret_cast<qintptr>(crtcid));
+        auto * connid = pni->nativeResourceForScreen("dri_connectorid", qScreen);
+        if (connid)
+            connector = static_cast<uint32_t>(reinterpret_cast<qintptr>(connid));
+        auto * atomic = pni->nativeResourceForIntegration("dri_atomic_request");
+        if (atomic){
+            //auto * request = reinterpret_cast<drmModeAtomicReq*>(atomic);
+            auto * request = atomic;
+            if (request != nullptr)
+                useatomic = true;
+        }
+        qDebug()<<QString("%1 Qt EGLFS/KMS Fd:%2 Crtc id:%3 Connector id:%4 Atomic: %5")
+                        .arg("xx").arg(fd).arg(crtc).arg(connector).arg(useatomic);
+    }else{
+        qDebug()<<"No eglfs";
+    }
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -438,6 +474,7 @@ int main(int argc, char *argv[]) {
     MavlinkTelemetry::instance().start();
 
     QRenderStats::instance().register_to_root_window(engine);
+    debug_kms();
     LogMessagesModel::instanceGround().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
     // Terminating needs a bit of special care due to the singleton usage and threads
