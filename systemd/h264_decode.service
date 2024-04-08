@@ -4,7 +4,7 @@ Description=rock_h264_decode
 [Service]
 User=root
 
-# Video decode via mpp, started by QOpenHD if needed (and stopped if needed)
+# Platform-specific video decode service
 ExecStart=/usr/local/bin/h264_decode.sh
 
 Restart=always
