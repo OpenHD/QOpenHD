@@ -70,7 +70,7 @@ RESOLVEFUNC(SSL_get1_peer_certificate);
 RESOLVEFUNC(EVP_PKEY_get_base_id);
 #endif // OPENSSL_VERSION_MAJOR >= 3
 
-#include <qpa/qplatformnativeinterface.h>
+//#include <qpa/qplatformnativeinterface.h>
 //#include <xf86drm.h>
 //#include <xf86drmMode.h>
 
@@ -200,7 +200,7 @@ static void android_check_permissions(){
 #endif
 }
 
-static void debug_kms(){
+/*static void debug_kms(){
     qDebug()<<"platform name:"<<QGuiApplication::platformName();
     if(QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)){
         int fd = 0;
@@ -230,7 +230,7 @@ static void debug_kms(){
     }else{
         qDebug()<<"No eglfs";
     }
-}
+}*/
 
 
 int main(int argc, char *argv[]) {
@@ -474,7 +474,7 @@ int main(int argc, char *argv[]) {
     MavlinkTelemetry::instance().start();
 
     QRenderStats::instance().register_to_root_window(engine);
-    debug_kms();
+    //debug_kms();
     LogMessagesModel::instanceGround().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
     // Terminating needs a bit of special care due to the singleton usage and threads

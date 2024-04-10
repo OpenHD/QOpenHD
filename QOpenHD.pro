@@ -72,7 +72,7 @@ QT +=core quick qml gui \
     widgets
 QT += opengl
 QT += charts
-QT += gui-private
+#QT += gui-private
 #LIBS += Ldrm
 
 INCLUDEPATH += $$PWD/lib
