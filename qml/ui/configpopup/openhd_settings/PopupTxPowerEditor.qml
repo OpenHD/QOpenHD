@@ -79,7 +79,7 @@ PopupBigGeneric{
 
     ListModel{
         id: model_rtl8812au_manufacturers
-        ListElement {title: "Wifi Card [RTL88XXAU]"; value: -1}
+        ListElement {title: "Please Select"; value: -1}
         ListElement {title: "AC56/AWUS036ACH [RTL88XXAU]"; value: 0}
         ListElement {title: "AC180 [RTL88XXAU]"; value: 1}
         ListElement {title: "OpenHD HW [RTL88XXAU]"; value: 2}
@@ -125,7 +125,8 @@ PopupBigGeneric{
     ListModel{
         id: model_rtl8812au_manufacturer_openhd
         ListElement {title: "Please select"; value: -1}
-        ListElement {title: "LOW    [3]   ~25mW"; value: 3}
+        ListElement {title: "BENCH  [1]        "; value: 1}
+        ListElement {title: "LOW    [2]   ~25mW"; value: 2}
         ListElement {title: "MEDIUM [5]   ~200mW"; value: 5}
         ListElement {title: "HIGH   [14]  ~800mW"; value: 14}
         ListElement {title: "MAX1   [18]   >1W"; value: 18}
