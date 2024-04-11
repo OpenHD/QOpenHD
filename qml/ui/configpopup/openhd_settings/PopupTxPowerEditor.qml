@@ -79,7 +79,7 @@ PopupBigGeneric{
 
     ListModel{
         id: model_rtl8812au_manufacturers
-        ListElement {title: "Wifi Card [RTL88XXAU]"; value: -1}
+        ListElement {title: "Please Select"; value: -1}
         ListElement {title: "AC56/AWUS036ACH [RTL88XXAU]"; value: 0}
         ListElement {title: "AC180 [RTL88XXAU]"; value: 1}
         ListElement {title: "OpenHD HW [RTL88XXAU]"; value: 2}
