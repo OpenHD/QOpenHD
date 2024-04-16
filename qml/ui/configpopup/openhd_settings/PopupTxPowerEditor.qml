@@ -32,6 +32,8 @@ PopupBigGeneric{
     property int left_text_preferred_width: 100
     property bool isSynced:false
 
+    property bool m_card_type_provided_by_openhd: false
+
     function open(){
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
             _qopenhd.show_toast("WARNING: Changing TX power while armed is not recommended !");
@@ -45,7 +47,17 @@ PopupBigGeneric{
         comboBoxCardSelectManufacturer.currentIndex=0;
         combo_box_txpower_disarmed.currentIndex=0;
         combo_box_txpower_armed.currentIndex=0;
-        m_user_selected_card_manufacturer=-1;
+
+        const card_sub_type=m_is_air ? _wifi_card_air.card_sub_type : _wifi_card_gnd0.card_sub_type
+        if(card_sub_type==10){
+            // rtl8812 x20
+            m_user_selected_card_manufacturer=2;
+            m_card_type_provided_by_openhd=true;
+        }else{
+            // User has to set the card type ...
+            m_user_selected_card_manufacturer=-1;
+            m_card_type_provided_by_openhd=false;
+        }
         visible=true;
         enabled=true;
     }
@@ -258,9 +270,10 @@ PopupBigGeneric{
                             m_user_selected_card_manufacturer = manufacturer;
                         }
                         font.pixelSize: 14
+                        // If the card type is provided by openhd, no need to let the user select
+                        enabled: !m_card_type_provided_by_openhd
                     }
                 }
-
                 RowLayout {
                     Layout.fillWidth: true
                     Button {
