@@ -32,6 +32,8 @@ PopupBigGeneric{
     property int left_text_preferred_width: 100
     property bool isSynced:false
 
+    property bool m_card_type_provided_by_openhd: false
+
     function open(){
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
             _qopenhd.show_toast("WARNING: Changing TX power while armed is not recommended !");
@@ -41,11 +43,31 @@ PopupBigGeneric{
             _messageBoxInstance.set_text_and_show("Changing tx power is only possible on openhd supported cards.");
             return;
         }
+        comboBoxCardSelectManufacturer.model= get_model_manufacturer_for_chip_type()
+
+        const card_sub_type=m_is_air ? _wifi_card_air.card_sub_type : _wifi_card_gnd0.card_sub_type
+        if(card_sub_type==_wifi_card_air.mWIFI_CARD_SUB_TYPE_RTL8812AU_ASUS){
+            // rtl8812 ASUS
+            m_user_selected_card_manufacturer=2;
+            m_card_type_provided_by_openhd=true;
+        }else if(card_sub_type==_wifi_card_air.mWIFI_CARD_SUB_TYPE_RTL8812AU_X20){
+            // rtl8812 x20
+            m_user_selected_card_manufacturer=3;
+            m_card_type_provided_by_openhd=true;
+        }else{
+            // we don't know the card type .. user has to set it
+            m_user_selected_card_manufacturer=-1;
+            m_card_type_provided_by_openhd=false;
+        }
         // The user has to enter the card type every time - otherwise, we have issues with air and ground
-        comboBoxCardSelectManufacturer.currentIndex=0;
+        if(m_user_selected_card_manufacturer>=0){
+            comboBoxCardSelectManufacturer.currentIndex=m_user_selected_card_manufacturer;
+        }else{
+            comboBoxCardSelectManufacturer.currentIndex=0;
+        }
         combo_box_txpower_disarmed.currentIndex=0;
         combo_box_txpower_armed.currentIndex=0;
-        m_user_selected_card_manufacturer=-1;
+
         visible=true;
         enabled=true;
     }
@@ -62,19 +84,10 @@ PopupBigGeneric{
         return _wifi_card_gnd0.card_type;
     }
 
-    function get_card_chipset_str(){
-        var chipset=get_chipset_type();
-        if(chipset==0){
-            return "RTL88XXAU";
-        }else if(chipset==1){
-            return "RTL88XXBU";
-        }
-        return "ERROR";
-    }
     // Should never show up !
     ListModel{
-        id: model_error
-        ListElement {title: "Not Enabled"; value: -1}
+        id: model_manufacturer_unknown_chipset
+        ListElement {title: "Unknown chipset"; value: -1}
     }
 
     ListModel{
@@ -99,7 +112,7 @@ PopupBigGeneric{
         }else if(chip_type==1){
             return model_rtl8812bu_manufacturers;
         }
-        return model_error;
+        return model_manufacturer_unknown_chipset;
     }
 
     // TX power choices for each chipset / manufacturer
@@ -172,7 +185,7 @@ PopupBigGeneric{
         var chip_type=get_chipset_type();
         var manufacturer=m_user_selected_card_manufacturer;
         if(manufacturer<0){
-            return model_error;
+            return model_manufacturer_unknown_chipset;
         }
         var ret;
         if(chip_type==0){
@@ -251,16 +264,17 @@ PopupBigGeneric{
                         id: comboBoxCardSelectManufacturer
                         Layout.minimumWidth: 180
                         Layout.preferredWidth: 480
-                        model: get_model_manufacturer_for_chip_type()
+                        model: model_manufacturer_unknown_chipset
                         textRole: "title"
                         onCurrentIndexChanged: {
                             var manufacturer = comboBoxCardSelectManufacturer.model.get(comboBoxCardSelectManufacturer.currentIndex).value;
                             m_user_selected_card_manufacturer = manufacturer;
                         }
                         font.pixelSize: 14
+                        // If the card type is provided by openhd, no need to let the user select
+                        enabled: !m_card_type_provided_by_openhd
                     }
                 }
-
                 RowLayout {
                     Layout.fillWidth: true
                     Button {

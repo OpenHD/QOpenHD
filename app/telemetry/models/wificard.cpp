@@ -139,6 +139,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     bool supported = false;
     if(card_type==0 || card_type==1)supported=true;
     set_card_type_supported(supported);
+    set_card_sub_type(msg.dummy2);
 }
 
 int WiFiCard::helper_get_gnd_curr_best_rssi()
