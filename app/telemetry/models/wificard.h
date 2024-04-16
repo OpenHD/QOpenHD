@@ -35,6 +35,9 @@ class WiFiCard : public QObject
     // exta
     L_RO_PROP(int,card_sub_type,set_card_sub_type,-1)
 public:
+    L_RO_PROP(int,mWIFI_CARD_SUB_TYPE_RTL8812AU_ASUS,unused_WIFI_CARD_SUB_TYPE_RTL8812AU_ASUS,1)
+    L_RO_PROP(int,mWIFI_CARD_SUB_TYPE_RTL8812AU_X20,unused_WIFI_CARD_SUB_TYPE_RTL8812AU_X20,2)
+public:
     explicit WiFiCard(bool is_air,int card_idx,QObject *parent = nullptr);
     static constexpr int N_CARDS=4;
     // Ground might have multiple rx-es
