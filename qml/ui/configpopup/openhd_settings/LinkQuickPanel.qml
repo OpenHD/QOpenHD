@@ -226,6 +226,14 @@ Rectangle{
                             }
                             TabButton{
                                 text: "2.4G"
+                                enabled: {
+                                    if(_ohdSystemAir.is_alive && _ohdSystemAir.ohd_platform_type==30){
+                                        // X20 does not support 2.4G
+                                        return false;
+                                    }
+                                    return true;
+
+                                }
                             }
                             TabButton{
                                 text: "5.8G"
