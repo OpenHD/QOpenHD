@@ -51,6 +51,7 @@ PopupBigGeneric{
             m_user_selected_card_manufacturer=2;
             m_card_type_provided_by_openhd=true;
         }else if(card_sub_type==_wifi_card_air.mWIFI_CARD_SUB_TYPE_RTL8812AU_X20){
+            console.log("rtl8812au x20");
             // rtl8812 x20
             m_user_selected_card_manufacturer=3;
             m_card_type_provided_by_openhd=true;
@@ -65,9 +66,9 @@ PopupBigGeneric{
         }else{
             comboBoxCardSelectManufacturer.currentIndex=0;
         }
+        update_ui_txpower_for_chip_type_manufacturer();
         combo_box_txpower_disarmed.currentIndex=0;
         combo_box_txpower_armed.currentIndex=0;
-
         visible=true;
         enabled=true;
     }
@@ -221,6 +222,13 @@ PopupBigGeneric{
         return ret;
     }
 
+    function update_ui_txpower_for_chip_type_manufacturer(){
+        combo_box_txpower_disarmed.model=get_model_txpower_for_chip_type_manufacturer(false)
+        combo_box_txpower_armed.model=get_model_txpower_for_chip_type_manufacturer(true)
+        combo_box_txpower_disarmed.currentIndex=0;
+        combo_box_txpower_armed.currentIndex=0;
+    }
+
     // state 0: current state 1: disarmed state 2: armed
     //
     function get_current_tx_power_int(state){
@@ -266,7 +274,7 @@ PopupBigGeneric{
                         Layout.preferredWidth: 480
                         model: model_manufacturer_unknown_chipset
                         textRole: "title"
-                        onCurrentIndexChanged: {
+                        onActivated: {
                             var manufacturer = comboBoxCardSelectManufacturer.model.get(comboBoxCardSelectManufacturer.currentIndex).value;
                             m_user_selected_card_manufacturer = manufacturer;
                         }
