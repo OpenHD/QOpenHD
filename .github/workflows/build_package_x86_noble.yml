@@ -1,8 +1,8 @@
-name: build_package_LUNAR
+name: build_package_NOBLE
 
 on:
   push:
-    branches:
+   branches:
       - "2.5-evo"
       - "dev-release"
       - "release"
@@ -13,9 +13,10 @@ env:
 
 jobs:
   build:
+    #runs-on: ubuntu-18.04
     runs-on: ubuntu-22.04
     container:
-      image: docker://ubuntu:lunar
+      image: docker://ubuntu:noble
     env:
       CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
     steps:
@@ -39,11 +40,11 @@ jobs:
       - name: Build with make
         run: |
           cd QOpenHD
-          ./package.sh x86_64 ubuntu lunar
+          ./package.sh x86_64 ubuntu noble
           ls -a
 
       - name: Upload to Github
-        uses: actions/upload-artifact@v2
+        uses: 'actions/upload-artifact@v2'
         with:
           name: "QOpenHD"
           path: |
@@ -51,17 +52,17 @@ jobs:
             *.log
           if-no-files-found: error
 
-      - name: Push
-        id: push
-        if: ${{ github.ref != 'refs/heads/2.5-evo' }}
-        uses: cloudsmith-io/action@master
-        with:
-          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-          command: "push"
-          format: "deb"
-          owner: "openhd"
-          repo: ${{ github.ref_name }}
-          distro: "ubuntu"
-          release: "lunar"
-          republish: "true" # needed ONLY if version is not changing
-          file: "QOpenHD/*.deb"
+      # - name: Push
+      #   id: push
+      #   uses: cloudsmith-io/action@master
+      #   with:
+      #     api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+      #     command: "push"
+      #     format: "deb"
+      #     owner: "openhd"
+      #     repo: ${{ github.ref_name }}
+      #     distro: "ubuntu"
+      #     release: "noble"
+      #     republish: "true" # needed ONLY if version is not changing
+      #     file: "QOpenHD/*.deb"
+      #  if: ${{ github.ref != 'refs/heads/2.5-evo' }}

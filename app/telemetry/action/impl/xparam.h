@@ -8,6 +8,8 @@
 #include <thread>
 #include <functional>
 #include <vector>
+#include <string>
+
 
 #include "../../tutil/mavlink_include.h"
 
