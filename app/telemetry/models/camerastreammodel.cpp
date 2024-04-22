@@ -246,3 +246,48 @@ std::string CameraStreamModel::resolution_framerate_to_string(const ResolutionFr
     ss<<(int)data.width<<"x"<<(int)data.height<<"@"<<data.framerate;
     return ss.str();
 }
+
+QVariantList CameraStreamModel::get_camera_choices(int platform_type)
+{
+    QList<QCameraNameAndType> list{
+        QCameraNameAndType{"XLOL",1}
+    };
+    auto tmp= QManufacturerForPlatform{
+        "LOL",
+        list
+    };
+    QVariantList ret;
+    return ret;
+}
+
+QStringList CameraStreamModel::get_manufacturer_choices(int platform_type)
+{
+    auto all_choices=get_camera_choices_for_platform(platform_type,m_camera_index!=0);
+    QStringList ret;
+    for(auto& choice: all_choices){
+        ret.push_back(choice.manufacturer_name.c_str());
+    }
+    return ret;
+}
+
+QList<int> CameraStreamModel::get_manufacturer_cameras_type(int platform_type, int index)
+{
+    auto all_choices=get_camera_choices_for_platform(platform_type,m_camera_index!=0);
+    QList<int> ret;
+    if(index>=all_choices.size())index=0;
+    for(auto& choice: all_choices[index].cameras){
+        ret.push_back(choice.type);
+    }
+    return ret;
+}
+
+QStringList CameraStreamModel::get_manufacturer_cameras_names(int platform_type, int index)
+{
+    auto all_choices=get_camera_choices_for_platform(platform_type,m_camera_index!=0);
+    QStringList ret;
+    if(index>=all_choices.size())index=0;
+    for(auto& choice: all_choices[index].cameras){
+        ret.push_back(choice.name.c_str());
+    }
+    return ret;
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=rock_h264_decode
+
+[Service]
+User=root
+
+# Platform-specific video decode service
+ExecStart=/usr/local/bin/h264_decode.sh
+
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

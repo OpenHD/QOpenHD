@@ -13,8 +13,12 @@
 
 void platform_start_audio_streaming_if_enabled()
 {
+    if(QOpenHD::instance().is_android()){
+        // audio r.n crashes on android
+        return;
+    }
     QSettings settings;
-    const bool dev_enable_live_audio_playback=settings.value("dev_enable_live_audio_playback", false).toBool();
+    const bool dev_enable_live_audio_playback=settings.value("dev_enable_live_audio_playback", true).toBool();
     if(!dev_enable_live_audio_playback){
         qDebug()<<"Live audio playback is disabled";
         return;

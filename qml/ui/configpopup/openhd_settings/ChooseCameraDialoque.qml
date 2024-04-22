@@ -17,11 +17,6 @@ Card {
     cardNameColor: "black"
     visible: false
 
-    // Supported platform types:
-    readonly property int mPLATFORM_TYPE_RPI:0;
-    readonly property int mPLATFORM_TYPE_ROCK:1;
-    readonly property int mPLATFORM_TYPE_X20:2;
-    readonly property int mPLATFORM_TYPE_X86:3;
     property int m_platform_type: 0;
 
     // Secondary camera only supports a few options - we can omit
@@ -40,34 +35,15 @@ Card {
     function set_ohd_platform_type(){
         const ohd_platform_type=_ohdSystemAir.ohd_platform_type;
         console.log("Platform:"+ohd_platform_type)
-        if(ohd_platform_type>=10 && ohd_platform_type<20){
-            m_platform_type=mPLATFORM_TYPE_RPI;
-            return true;
-        }
-        if(ohd_platform_type>=20 && ohd_platform_type<30){
-            m_platform_type=mPLATFORM_TYPE_ROCK;
-            return true;
-        }
-        if(ohd_platform_type==1){
-            m_platform_type=mPLATFORM_TYPE_X86;
-            return true;
-        }
-        if(ohd_platform_type==30){
-            m_platform_type=mPLATFORM_TYPE_X20;
+        m_platform_type=ohd_platform_type;
+        if(ohd_platform_type>=1){
             return true;
         }
         return false;
     }
 
     function get_platform_name(){
-        if(m_platform_type==mPLATFORM_TYPE_RPI){
-            return "RPI";
-        }else if(m_platform_type==mPLATFORM_TYPE_ROCK){
-            return "ROCK";
-        }else if(m_platform_type==mPLATFORM_TYPE_X20){
-            return "X20";
-        }
-        return "X86";
+        return _ohdSystemAir.ohd_platform_type_as_string
     }
 
     // For debugging
@@ -91,100 +67,13 @@ Card {
 
     // The manufacturer model(s) don't need a value
     ListModel{
-        id: model_manufacturers_rpi
-        ListElement {title: "ARDUCAM"}
-        ListElement {title: "VEYE"}
-        ListElement {title: "RPI FOUNDATION"}
-        ListElement {title: "GEEKWORM"}
-        ListElement {title: "USB"}
-        ListElement {title: "DEV/DEBUG"}
+        id: model_manufacturers
+        ListElement {title: "DUMMY_MANUFACTURER"}
     }
     ListModel{
-        id: model_manufacturers_rock
-        ListElement {title: "ARDUCAM"}
-        ListElement {title: "RADXA"}
-        ListElement {title: "USB"}
-        ListElement {title: "DEV/DEBUG"}
+        id: model_cameras_for_this_manufacturer
+        ListElement {title: "CAM TYPE"; value: 0}
     }
-    ListModel{
-        id: model_manufacturers_x20
-        ListElement {title: "RUNCAM"}
-    }
-    ListModel{ // X86 doesn't reall have manufacturers
-        id: model_manufacturers_x86
-        ListElement {title: "USB"}
-        ListElement {title: "DEV/DEBUG"}
-    }
-    ListModel{ // Secondary camera doesn't reall have manufacturers
-        id: model_manufacturers_secondary_cam
-        ListElement {title: "SECONDARY CAM"}
-    }
-
-    // Actual CAMERA model(s)
-    // Value needs to map to the corrseponding openhd camera type !
-    ListModel{
-        id: rpi_arducam_cameras
-        ListElement {title: "SKYMASTERHDR"; value: 40}
-        ListElement {title: "SKYVISIONPRO"; value: 41}
-        ListElement {title: "IMX477m"; value: 42}
-        ListElement {title: "IMX462"; value: 43}
-        ListElement {title: "IMX327"; value: 44}
-        ListElement {title: "IMX290"; value: 45}
-        ListElement {title: "IMX462_LOWLIGHT_MINI"; value: 46}
-    }
-    ListModel{
-        id: rpi_veye_cameras
-        ListElement {title: "2MP"; value: 60}
-        ListElement {title: "CSIMX307"; value: 61}
-        ListElement {title: "CSSC132"; value: 62}
-        ListElement {title: "MVCAM"; value: 63}
-    }
-    ListModel{
-        id: rpi_rpif_cameras
-        ListElement {title: "V1 OV5647"; value: 30}
-        ListElement {title: "V2 IMX219"; value: 31}
-        ListElement {title: "V3 IMX708"; value: 32}
-        ListElement {title: "HQ IMX477"; value: 33}
-    }
-    ListModel{
-        id: rpi_geekworm_cameras
-        ListElement {title: "HDMI to CSI"; value: 20}
-    }
-    ListModel{
-        id: cameras_usb
-        ListElement {title: "INFIRAY USB"; value: 11}
-        ListElement {title: "EXP USB GENERIC"; value: 10}
-    }
-    ListModel{
-        id: cameras_debug
-        ListElement {title: "Dummy (debug)"; value: 0}
-        ListElement {title: "External (DEV)"; value: 2}
-        ListElement {title: "External IP (DEV)"; value: 3}
-        ListElement {title: "DEV Filecamera"; value: 4}
-    }
-    ListModel{
-        id: x20_runcam_cameras
-        ListElement {title: "RUNCAM NANO"; value: 70}
-    }
-    ListModel{
-        id: rock_arducam_cameras
-        ListElement {title: "ARDUCAM ROCK 0"; value: 0}
-        ListElement {title: "ARDUCAM ROCK 1"; value: 1}
-    }
-    ListModel{
-        id: rock_raxca_cameras
-        ListElement {title: "HDMI IN"; value: 0}
-    }
-    ListModel{
-        id: generic_secondary_camera_options
-        ListElement {title: "DISABLED (Default)"; value: 255}
-        ListElement {title: "INFIRAY USB"; value: 11}
-        ListElement {title: "EXP USB GENERIC"; value: 10}
-        ListElement {title: "Dummy (debug)"; value: 0}
-        ListElement {title: "External (DEV)"; value: 2}
-        ListElement {title: "External IP (DEV)"; value: 3}
-    }
-
 
     function initialize_and_show(){
         console.log("Choose camera dialoque opened with "+get_platform_name());
@@ -210,12 +99,7 @@ Card {
             combobox_cameras.model=get_cameras_model(0);
             combobox_cameras.currentIndex=0;
         }
-        if(m_is_for_secondary_camera){
-            comboBoxManufacturers.model=model_manufacturers_secondary_cam;
-            combobox_cameras.model=generic_secondary_camera_options;
-        }else{
-            comboBoxManufacturers.enabled=true;
-        }
+        comboBoxManufacturers.enabled=true;
         // If there is only one manufacturer choice, disable the combobox.
         if(comboBoxManufacturers.model.count<=1){
             comboBoxManufacturers.enabled=false;
@@ -225,65 +109,34 @@ Card {
         m_user_selected_camera_type=-1;
         visible=true;
         enabled=true;
+        populate_main_camera_selector()
     }
+
     function get_manufacturers_model(){
-        if(m_is_for_secondary_camera){
-            return model_manufacturers_secondary_cam
+        var manufacturers=m_cam_model.get_manufacturer_choices(m_platform_type);
+        model_manufacturers.clear();
+        for(var i=0;i<manufacturers.length;i++){
+            //var x_title="XX"+manufacturers[i];
+            var x_title=manufacturers[i];
+            model_manufacturers.append({title: x_title});
         }
-        if(m_platform_type==mPLATFORM_TYPE_RPI){
-            return model_manufacturers_rpi;
-        }else if(m_platform_type==mPLATFORM_TYPE_ROCK){
-            return model_manufacturers_rock
-        }else if(m_platform_type==mPLATFORM_TYPE_X20){
-            return model_manufacturers_x20
-        }else if(m_platform_type==mPLATFORM_TYPE_X86){
-            return model_manufacturers_x86
-        }
+        return model_manufacturers;
     }
 
     function get_cameras_model(index_manufacturer){
-        if(m_is_for_secondary_camera){
-            return generic_secondary_camera_options
+        model_cameras_for_this_manufacturer.clear();
+        var names=m_cam_model.get_manufacturer_cameras_names(m_platform_type,index_manufacturer);
+        var types=m_cam_model.get_manufacturer_cameras_type(m_platform_type,index_manufacturer);
+        for(var i=0;i<names.length;i++){
+            model_cameras_for_this_manufacturer.append({title: names[i], value: types[i]});
         }
-        if(m_platform_type==mPLATFORM_TYPE_RPI){
-            if(index_manufacturer==0){
-                return rpi_arducam_cameras
-            }else if(index_manufacturer==1){
-                return rpi_veye_cameras
-            }else if(index_manufacturer==2){
-                return rpi_rpif_cameras;
-            }else if(index_manufacturer==3){
-                return rpi_geekworm_cameras;
-            }else if(index_manufacturer==4){
-                return cameras_usb;
-            }else{
-                return cameras_debug
-            }
-        }else if(m_platform_type==mPLATFORM_TYPE_ROCK){
-            if(index_manufacturer==0){
-                return rock_arducam_cameras;
-            }else if(index_manufacturer==1){
-                return rock_raxca_cameras;
-            }else if(index_manufacturer==2){
-                return cameras_usb;
-            }else{
-                return cameras_debug;
-            }
-        }else if(m_platform_type==mPLATFORM_TYPE_X20){
-            return x20_runcam_cameras;
-        }else if(m_platform_type==mPLATFORM_TYPE_X86){
-            if(index_manufacturer==0){
-                return cameras_usb;
-            }else{
-                return cameras_debug;
-            }
-        }
+        return model_cameras_for_this_manufacturer;
     }
 
     function populate_main_camera_selector(){
-        combobox_cameras.currentIndex=0;
         var index_manufacturer=comboBoxManufacturers.currentIndex;
         combobox_cameras.model=get_cameras_model(index_manufacturer)
+        combobox_cameras.currentIndex=0;
         m_user_selected_camera_type=combobox_cameras.model.get(combobox_cameras.currentIndex).value;
     }
 
@@ -297,7 +150,7 @@ Card {
         ComboBox {
             width: 300
             id: comboBoxManufacturers
-            model: model_manufacturers_rpi
+            model: model_manufacturers
             textRole: "title"
             implicitWidth:  elementComboBoxWidth
             currentIndex: 0
@@ -308,7 +161,7 @@ Card {
         ComboBox {
             width: 300
             id: combobox_cameras
-            model: rpi_arducam_cameras
+            model: model_cameras_for_this_manufacturer
             textRole: "title"
             implicitWidth:  elementComboBoxWidth
             currentIndex: 0

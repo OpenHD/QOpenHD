@@ -1,0 +1,14 @@
+[Unit]
+Description=rock_h265_decode
+
+[Service]
+User=root
+
+# Platform-specific video decode service
+ExecStart=/usr/local/bin/h265_decode.sh
+
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
