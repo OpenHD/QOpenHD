@@ -496,6 +496,10 @@ Item {
         MessageHUD {
             id: messageHUD
         }
+
+        X20OverheatWidget{
+
+        }
     }
 
     // Extra element - allows customizing the OSD color(s) and more
