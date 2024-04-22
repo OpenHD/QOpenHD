@@ -60,7 +60,7 @@ static std::string safe_av_get_pix_fmt_name(enum AVPixelFormat pix_fmt){
   return {tmp};
 }
 static std::string safe_av_get_colorspace_name(enum AVColorSpace val){
-  auto tmp= av_get_colorspace_name(val);
+  auto tmp= av_color_space_name(val);
   if(tmp== nullptr){
 	return "null";
   }
