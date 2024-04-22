@@ -1,0 +1,37 @@
+name: ubuntu22_build_test
+
+# @Rapha please keep this one without any packaging or similar ;)
+# NOTE: This test only checks if the code in the repository builds under ubuntu x86 (dependencies installed)
+# Which is - simply put - the most basic test. If this test fails, there is something wrong with the code.
+
+on: [push]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    #runs-on: ubuntu-18.04
+    #runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt-mark hold unixodbc-dev unixodbc odbcinst odbcinst1debian2 grub-efi-amd64-signed
+          echo unixodbc hold | sudo dpkg --set-selections   
+          sudo apt upgrade -y
+          sudo apt remove libunwind-13-dev 
+          sudo apt install -y libunwind-dev libgstreamer-plugins-base1.0-dev
+          sudo ./install_build_dep.sh ubuntu-x86
+          qmake --version
+      - name: Build with make
+        run: |
+          ./build_qmake.sh

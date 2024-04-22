@@ -1,0 +1,57 @@
+name: build_package_x86_22
+
+on:
+  push:
+   branches:
+      - "2.5-evo"
+      - "dev-release"
+      - "release"
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install Dependencies
+      run: |
+        ls -a
+        sudo apt update
+        sudo apt-mark hold unixodbc-dev unixodbc
+        echo unixodbc hold | sudo dpkg --set-selections        
+        sudo apt remove libunwind-13-dev 
+        sudo apt install -y libunwind-dev libgstreamer-plugins-base1.0-dev
+        sudo apt install -y curl
+        sudo rm -Rf /etc/apt/sources.list.d/openhd*
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo apt upgrade -y
+        sudo add-apt-repository universe
+        sudo ./install_build_dep.sh ubuntu-x86
+
+    - name: Build with make
+      run: |
+        sudo ./package.sh x86_64 ubuntu jammy
+    
+    - name: Push
+      id: push
+      uses: cloudsmith-io/action@master
+      with:
+        api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+        command: "push"
+        format: "deb"
+        owner: "openhd"
+        repo: ${{ github.ref_name }}
+        distro: "ubuntu"
+        release: "jammy"
+        republish: "true" # needed ONLY if version is not changing
+        file: "*.deb"
+      if: ${{ github.ref != 'refs/heads/2.5-evo' }}
+
