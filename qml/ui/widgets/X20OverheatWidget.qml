@@ -13,6 +13,10 @@ Item {
     // 2 - error, overheating protection on (Video disabled)
     property int m_x20_state: {
         //return 1;
+        if(_ohdSystemAir.ohd_platform_type!=30){
+            // only on x20
+            return 0;
+        }
         if(_ohdSystemAir.video_disabled_due_to_overheating<0){
             return 0; // Unknown
         }
