@@ -12,7 +12,7 @@ Item {
     // 1 - warning, soon overheating
     // 2 - error, overheating protection on (Video disabled)
     property int m_x20_state: {
-        return 1;
+        //return 1;
         if(_ohdSystemAir.video_disabled_due_to_overheating<0){
             return 0; // Unknown
         }
