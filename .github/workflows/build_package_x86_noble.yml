@@ -52,17 +52,17 @@ jobs:
             *.log
           if-no-files-found: error
 
-      # - name: Push
-      #   id: push
-      #   uses: cloudsmith-io/action@master
-      #   with:
-      #     api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-      #     command: "push"
-      #     format: "deb"
-      #     owner: "openhd"
-      #     repo: ${{ github.ref_name }}
-      #     distro: "ubuntu"
-      #     release: "noble"
-      #     republish: "true" # needed ONLY if version is not changing
-      #     file: "QOpenHD/*.deb"
-      #  if: ${{ github.ref != 'refs/heads/2.5-evo' }}
+      - name: Push
+        id: push
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "deb"
+          owner: "openhd"
+          repo: ${{ github.ref_name }}
+          distro: "ubuntu"
+          release: "noble"
+          republish: "true" # needed ONLY if version is not changing
+          file: "QOpenHD/*.deb"
+       if: ${{ github.ref != 'refs/heads/2.5-evo' }}
