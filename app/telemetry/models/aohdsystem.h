@@ -126,7 +126,7 @@ public: // public for QT
     //
     L_RO_PROP(bool,dirty_air_has_secondary_cam,set_dirty_air_has_secondary_cam,false)
     // x20 only right now
-    L_RO_PROP(int,video_disabled_due_to_overheating,set_video_disabled_due_to_overheating,-1)
+    L_RO_PROP(int,thermal_protection_level,set_thermal_protection_level,-1)
 public:
     Q_INVOKABLE QString get_rate_for_mcs_bw(int mcs,int bw);
 private:

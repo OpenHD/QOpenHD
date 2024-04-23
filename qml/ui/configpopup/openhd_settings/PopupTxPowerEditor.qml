@@ -62,7 +62,7 @@ PopupBigGeneric{
         }
         // The user has to enter the card type every time - otherwise, we have issues with air and ground
         if(m_user_selected_card_manufacturer>=1){
-            comboBoxCardSelectManufacturer.currentIndex=m_user_selected_card_manufacturer-1;
+            comboBoxCardSelectManufacturer.currentIndex=m_user_selected_card_manufacturer+1;
         }else{
             comboBoxCardSelectManufacturer.currentIndex=0;
         }

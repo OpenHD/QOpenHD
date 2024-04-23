@@ -429,7 +429,7 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
             set_tx_is_currently_dropping_packets(false);
         }
     }
-    set_video_disabled_due_to_overheating(msg.dummy0);
+    set_thermal_protection_level(msg.dummy0);
 }
 
 void AOHDSystem::process_x3b(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
