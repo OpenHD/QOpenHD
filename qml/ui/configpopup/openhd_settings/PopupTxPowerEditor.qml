@@ -48,11 +48,12 @@ PopupBigGeneric{
         const card_sub_type=m_is_air ? _wifi_card_air.card_sub_type : _wifi_card_gnd0.card_sub_type
         if(card_sub_type==_wifi_card_air.mWIFI_CARD_SUB_TYPE_RTL8812AU_ASUS){
             // rtl8812 ASUS
-            m_user_selected_card_manufacturer=2;
+            m_user_selected_card_manufacturer=1;
             m_card_type_provided_by_openhd=true;
         }else if(card_sub_type==_wifi_card_air.mWIFI_CARD_SUB_TYPE_RTL8812AU_X20){
+            console.log("rtl8812au x20");
             // rtl8812 x20
-            m_user_selected_card_manufacturer=3;
+            m_user_selected_card_manufacturer=2;
             m_card_type_provided_by_openhd=true;
         }else{
             // we don't know the card type .. user has to set it
@@ -60,14 +61,12 @@ PopupBigGeneric{
             m_card_type_provided_by_openhd=false;
         }
         // The user has to enter the card type every time - otherwise, we have issues with air and ground
-        if(m_user_selected_card_manufacturer>=0){
-            comboBoxCardSelectManufacturer.currentIndex=m_user_selected_card_manufacturer;
+        if(m_user_selected_card_manufacturer>=1){
+            comboBoxCardSelectManufacturer.currentIndex=m_user_selected_card_manufacturer+1;
         }else{
             comboBoxCardSelectManufacturer.currentIndex=0;
         }
-        combo_box_txpower_disarmed.currentIndex=0;
-        combo_box_txpower_armed.currentIndex=0;
-
+        update_ui_txpower_for_chip_type_manufacturer();
         visible=true;
         enabled=true;
     }
@@ -88,6 +87,10 @@ PopupBigGeneric{
     ListModel{
         id: model_manufacturer_unknown_chipset
         ListElement {title: "Unknown chipset"; value: -1}
+    }
+    ListModel{
+        id: model_error
+        ListElement {title: "ERROR"; value: -1}
     }
 
     ListModel{
@@ -185,7 +188,8 @@ PopupBigGeneric{
         var chip_type=get_chipset_type();
         var manufacturer=m_user_selected_card_manufacturer;
         if(manufacturer<0){
-            return model_manufacturer_unknown_chipset;
+            console.log("Unknown manufacturer");
+            return model_error;
         }
         var ret;
         if(chip_type==0){
@@ -219,6 +223,13 @@ PopupBigGeneric{
             return model_txpower_for_chip_type_manufacturer_armed;
         }
         return ret;
+    }
+
+    function update_ui_txpower_for_chip_type_manufacturer(){
+        combo_box_txpower_disarmed.model=get_model_txpower_for_chip_type_manufacturer(false)
+        combo_box_txpower_armed.model=get_model_txpower_for_chip_type_manufacturer(true)
+        combo_box_txpower_disarmed.currentIndex=0;
+        combo_box_txpower_armed.currentIndex=0;
     }
 
     // state 0: current state 1: disarmed state 2: armed
@@ -266,9 +277,11 @@ PopupBigGeneric{
                         Layout.preferredWidth: 480
                         model: model_manufacturer_unknown_chipset
                         textRole: "title"
-                        onCurrentIndexChanged: {
+                        onActivated: {
                             var manufacturer = comboBoxCardSelectManufacturer.model.get(comboBoxCardSelectManufacturer.currentIndex).value;
+                            console.log("Set: "+manufacturer);
                             m_user_selected_card_manufacturer = manufacturer;
+                            update_ui_txpower_for_chip_type_manufacturer();
                         }
                         font.pixelSize: 14
                         // If the card type is provided by openhd, no need to let the user select

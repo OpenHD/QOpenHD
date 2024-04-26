@@ -119,6 +119,7 @@ public: // public for QT
     // ---------- WIFI HOTSPOT ----------------------
     L_RO_PROP(int,wifi_hotspot_state,set_wifi_hotspot_state,-1) // 0 - not available, 1 - off, 2 - on
     L_RO_PROP(int,wifi_hotspot_frequency,set_wifi_hotspot_frequency,-1)
+    L_RO_PROP(int,external_devices_count,set_external_devices_count,-1)
     //
     L_RO_PROP(int,wb_gnd_operating_mode,set_wb_gnd_operating_mode,-1)
     //
@@ -126,7 +127,7 @@ public: // public for QT
     //
     L_RO_PROP(bool,dirty_air_has_secondary_cam,set_dirty_air_has_secondary_cam,false)
     // x20 only right now
-    L_RO_PROP(int,video_disabled_due_to_overheating,set_video_disabled_due_to_overheating,-1)
+    L_RO_PROP(int,thermal_protection_level,set_thermal_protection_level,-1)
 public:
     Q_INVOKABLE QString get_rate_for_mcs_bw(int mcs,int bw);
 private:

@@ -220,6 +220,19 @@ Column {
             return m_right_text=="UNAVAILABLE";
         }
     }
+    StatusCardRow{
+        visible: m_is_ground;
+        m_left_text: "EXTERNAL DEVICES:"
+        m_right_text: {
+            if(_ohdSystemGround.external_devices_count<0){
+                return "N/A";
+            }
+            if(_ohdSystemGround.external_devices_count==0){
+                return "NONE";
+            }
+            return _ohdSystemGround.external_devices_count+"x";
+        }
+    }
 
     // Padding
     Item{

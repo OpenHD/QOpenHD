@@ -312,5 +312,6 @@
         <file>ui/sidebar/MavlinkChoiceElement2.qml</file>
         <file>ui/sidebar/MappedMavlinkChoices.qml</file>
         <file>ui/widgets/X20OverheatWidget.qml</file>
+        <file>ui/sidebar/ActionElement.qml</file>
     </qresource>
 </RCC>
