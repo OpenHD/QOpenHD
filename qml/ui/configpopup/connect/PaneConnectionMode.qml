@@ -21,6 +21,8 @@ Rectangle{
 
     property bool m_is_air_or_ground_connected: _ohdSystemAir.is_alive || _ohdSystemGround.is_alive
 
+    property int m_prefered_width: 230
+
     ScrollView {
         id: main_item
         width: parent.width
@@ -112,7 +114,7 @@ Rectangle{
                     }
                     Button{
                         text: "Android Tethering"
-                        Layout.preferredWidth: 180
+                        Layout.preferredWidth: m_prefered_width
                         Layout.alignment: Qt.AlignCenter
                         onClicked: {
                             if(_qopenhd.is_android()){
@@ -139,8 +141,8 @@ Rectangle{
                         Layout.fillWidth: true
                     }
                     Button{
-                        text: "Wifi tethering"
-                        Layout.preferredWidth: 180
+                        text: "Wifi Hotspot"
+                        Layout.preferredWidth: m_prefered_width
                         Layout.alignment: Qt.AlignCenter
                         //TODO enable hotspot
                         onClicked: {
@@ -162,8 +164,8 @@ Rectangle{
                         Layout.fillWidth: true
                     }
                     Button{
-                        text: "Passive Eth tethering"
-                        Layout.preferredWidth: 180
+                        text: "ETHERNET FORWARD+INTERNET"
+                        Layout.preferredWidth: m_prefered_width
                         Layout.alignment: Qt.AlignCenter
                         //TODO disable active tethering and enable passive when clicking the button
                         onClicked: {
@@ -171,10 +173,11 @@ Rectangle{
                         }
                     }
                     ButtonIconInfoText {
-                        m_info_text: "1) Disable ETH_HOTSPOT_E and Enable ETH_PASSIVE_F\n\n"+
-                                     "2) Connect your external device to your ground station via ethernet.\n\n"+
-                                     "3) Select 'share my internet with ...' when the android connection setup pops up\n\n"+
-                                     "Video and telemetry forwarding should start automatically, internet will be forwarded from your phone."
+                        m_info_text: "1) Set ETHERNET to FORWARD+INTERNET\n"+
+                                     "2) Reboot ground\n"+
+                                     "3) Connect your external device (phone) to your ground station via ethernet.\n\n"+
+                                     "4) Select 'share my internet with ...' when the (android) connection setup pops up\n\n"+
+                                     "Video and telemetry forwarding is started automatically, internet will be forwarded from your phone."
                     }
                     Item{ // filler
                         Layout.fillWidth: true
@@ -185,8 +188,8 @@ Rectangle{
                         Layout.fillWidth: true
                     }
                     Button{
-                        text: "Active Eth tethering"
-                        Layout.preferredWidth: 180
+                        text: "ETHERNET HOTSPOT"
+                        Layout.preferredWidth: m_prefered_width
                         Layout.alignment: Qt.AlignCenter
                         //TODO disable passive tethering and enable active when clicking the button
                         onClicked: {
@@ -194,8 +197,9 @@ Rectangle{
                         }
                     }
                     ButtonIconInfoText {
-                        m_info_text: "1) Disable ETH_PASSIVE_F and Enable ETH_HOTSPOT_E\n\n"+
-                                     "2) Connect your external device to your ground station via ethernet.\n\n"+
+                        m_info_text: "1) Set ETHERNET to HOTSPOT\n"+
+                                     "2) Reboot ground\n"+
+                                     "3) Connect your external device to your ground station via ethernet.\n\n"+
                                      "You might need to disable wifi and cellular on your phone\n\n"+
                                      "Video and telemetry forwarding should start automatically, internet will not be available."
                     }
