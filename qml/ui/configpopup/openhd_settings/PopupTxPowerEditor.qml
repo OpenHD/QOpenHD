@@ -141,12 +141,11 @@ PopupBigGeneric{
     ListModel{
         id: model_rtl8812au_manufacturer_openhd
         ListElement {title: "Please select"; value: -1}
-        ListElement {title: "BENCH  [1]        "; value: 1}
-        ListElement {title: "LOW    [2]   ~25mW"; value: 2}
-        ListElement {title: "MEDIUM [5]   ~200mW"; value: 5}
-        ListElement {title: "HIGH   [14]  ~800mW"; value: 14}
-        ListElement {title: "MAX1   [18]   >1W"; value: 18}
-        ListElement {title: "MAX2   [20]   >1W"; value: 20}
+        ListElement {title: "HIGH PWR  [1]"; value: 1}
+        ListElement {title: "HIGH PWR  [5]"; value: 5}
+        ListElement {title: "HIGH PWR  [10]"; value: 10}
+        ListElement {title: "HIGH PWR  [15]"; value: 15}
+        ListElement {title: "HIGH PWR  [20]"; value: 20}
     }
     ListModel{
         id: model_rtl8812au_manufacturer_generic
