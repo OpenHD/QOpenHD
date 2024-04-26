@@ -119,6 +119,7 @@ public: // public for QT
     // ---------- WIFI HOTSPOT ----------------------
     L_RO_PROP(int,wifi_hotspot_state,set_wifi_hotspot_state,-1) // 0 - not available, 1 - off, 2 - on
     L_RO_PROP(int,wifi_hotspot_frequency,set_wifi_hotspot_frequency,-1)
+    L_RO_PROP(int,external_devices_count,set_external_devices_count,-1)
     //
     L_RO_PROP(int,wb_gnd_operating_mode,set_wb_gnd_operating_mode,-1)
     //

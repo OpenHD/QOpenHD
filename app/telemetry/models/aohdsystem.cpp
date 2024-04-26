@@ -472,6 +472,7 @@ void AOHDSystem::process_sys_status1(const mavlink_openhd_sys_status1_t &msg)
 {
     set_wifi_hotspot_state(msg.wifi_hotspot_state);
     set_wifi_hotspot_frequency(msg.wifi_hotspot_frequency);
+    set_external_devices_count(msg.external_devices_count);
 }
 
 void AOHDSystem::process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t &msg)

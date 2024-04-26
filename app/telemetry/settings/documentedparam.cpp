@@ -515,6 +515,11 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "Enable automatic video & telemetry forwarding via ethernet if EITH_HOTSPOT_E is false (Recommended)."
                    "Cannot be used simultaneously with ETH_HOTSPOT_E. Doesn't require reboot.",false);
         {
+            auto values=std::vector<std::string>{"UNMANAGED","HOTSPOT","FORWARD+INTERNET"};
+            append_int(ret,"ETHERNET",ImprovedIntSetting::createEnum(values),
+                       "Specify the intended usage of the ground station ethernet port (for connecting external devices).");
+        }
+        {
             auto values=std::vector<std::string>{"untouched","high","low"};
             append_int(ret,"GPIO_2",ImprovedIntSetting::createEnum(values),
                        "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...");
