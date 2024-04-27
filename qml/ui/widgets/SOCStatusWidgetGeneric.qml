@@ -40,6 +40,16 @@ BaseWidget {
     // 1 - caution
     // 2 - warning
     function get_cpuload_warning_level(){
+        if(m_is_air && _ohdSystemAir.ohd_platform_type==30){
+            // X20
+            if(m_cpuload_perc>=95){
+                return 2;
+            }
+            if(m_cpuload_perc>=85){
+                return 1;
+            }
+            return 0;
+        }
         if (m_cpuload_perc>= m_cpuload_perc_warn) {
             return 2;
         }
@@ -49,6 +59,16 @@ BaseWidget {
         return 0;
     }
     function get_temperature_warning_level(){
+        if(m_is_air && _ohdSystemAir.ohd_platform_type==30){
+            // X20, it's not the SOC temperature
+            if (m_soc_temperature_deg>= 79-1) {
+                return 2;
+            }
+            if (m_soc_temperature_deg>= 75-1) {
+                return 1;
+            }
+            return 0;
+        }
         if (m_soc_temperature_deg>= m_soc_temperature_deg_warn) {
             return 2;
         }
