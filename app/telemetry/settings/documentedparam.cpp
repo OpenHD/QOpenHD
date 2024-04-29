@@ -517,7 +517,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         {
             auto values=std::vector<std::string>{"UNMANAGED","HOTSPOT","FORWARD+INTERNET"};
             append_int(ret,"ETHERNET",ImprovedIntSetting::createEnum(values),
-                       "Specify the intended usage of the ground station ethernet port (for connecting external devices).");
+                       "Specify the intended usage of the ground station ethernet port (for connecting external devices). A reboot might be required after changing this param.");
         }
         {
             auto values=std::vector<std::string>{"untouched","high","low"};
@@ -529,8 +529,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         //
         {
             auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
-                {"disable",""},
-                {"OHD TELEMETRY 0","OHD_TELEMETRY_0"},
+                {"DISABLE",""},
+                {"DEFAULT","DEFAULT"},
                 {"/dev/serial0","/dev/serial0"},
                 {"/dev/serial1","/dev/serial1"},
                 {"/dev/ttyS1","/dev/ttyS1"},
@@ -541,7 +541,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                 {"/dev/ttyS7","/dev/ttyS7"}
             };
             append_string(ret,"FC_UART_CONN",ImprovedStringSetting{fc_uart_conn_values},
-                          "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. OHD TELEMETRY 0 - default, primary telemetry serial of this platform (see wiki)."
+                          "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. DEFAULT - primary telemetry serial of this platform (see wiki)."
                           "Otherwise, any linux serial fd filename (dev/testing).");
             //same for ground uart out
             append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
