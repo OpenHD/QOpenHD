@@ -517,7 +517,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         {
             auto values=std::vector<std::string>{"UNMANAGED","HOTSPOT","FORWARD+INTERNET"};
             append_int(ret,"ETHERNET",ImprovedIntSetting::createEnum(values),
-                       "Specify the intended usage of the ground station ethernet port (for connecting external devices).");
+                       "Specify the intended usage of the ground station ethernet port (for connecting external devices). A reboot might be required after changing this param.");
         }
         {
             auto values=std::vector<std::string>{"untouched","high","low"};
