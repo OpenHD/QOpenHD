@@ -530,7 +530,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         {
             auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
                 {"disable",""},
-                {"SERIAL_0","SERIAL_0"},
+                {"OHD TELEMETRY 0","OHD_TELEMETRY_0"},
                 {"/dev/serial0","/dev/serial0"},
                 {"/dev/serial1","/dev/serial1"},
                 {"/dev/ttyS1","/dev/ttyS1"},
@@ -541,7 +541,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                 {"/dev/ttyS7","/dev/ttyS7"}
             };
             append_string(ret,"FC_UART_CONN",ImprovedStringSetting{fc_uart_conn_values},
-                          "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. SERIAL_0 - default, primary telemetry serial of this platform (see wiki)."
+                          "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. OHD TELEMETRY 0 - default, primary telemetry serial of this platform (see wiki)."
                           "Otherwise, any linux serial fd filename (dev/testing).");
             //same for ground uart out
             append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
