@@ -313,6 +313,10 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         QString ret=DocumentedParam::get_short_description(data.unique_id.toStdString()).c_str();
         return ret;
     } else if(role ==ReadOnlyRole){
+        if(data.unique_id=="CAMERA_TYPE" && AOHDSystem::instanceAir().ohd_platform_type()==30){
+            // X20 - camera type is not changeable by the user
+            return true;
+        }
         return DocumentedParam::read_only(data.unique_id.toStdString());
     }else if(role == WhitelistedRole){
         return DocumentedParam::is_param_whitelisted(data.unique_id.toStdString());
