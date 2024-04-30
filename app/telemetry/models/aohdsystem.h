@@ -170,6 +170,8 @@ private:
     std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point m_last_n_cameras_message=std::chrono::steady_clock::now();
     void update_alive_status_with_hud_message(bool alive);
+private:
+    bool m_x20_rpi_upgrade_warning_logged=false;
 };
 
 
