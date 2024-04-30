@@ -298,6 +298,13 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_air_reported_fc_sys_id(air_reported_sys_id);
     const uint8_t ohd_platform=msg.link_type[0];
     set_ohd_platform(ohd_platform);
+    if(m_is_air && QOpenHD::instance().is_platform_rpi() && ohd_platform==30){
+        // Air is x20, and qopenhd is running on rpi
+        if(!m_x20_rpi_upgrade_warning_logged){
+            QOpenHD::instance().show_toast("X20 -> RPI has high latency.\nPlease upgrade your ground station to next gen.");
+            m_x20_rpi_upgrade_warning_logged=true;
+        }
+    }
     const auto platform_as_str=x_platform_type_to_string(ohd_platform);
     set_ohd_platform_type_as_string(platform_as_str.c_str());
 }
