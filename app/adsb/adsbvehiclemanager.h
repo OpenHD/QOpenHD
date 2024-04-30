@@ -104,6 +104,7 @@ private slots:
 private:
     QString _groundAddress = "";
     bool _adsb_show_sdr_data;
+    bool m_adsb_reply_error_logged_once=false;
 };
 
 class ADSBVehicleManager : public QObject {

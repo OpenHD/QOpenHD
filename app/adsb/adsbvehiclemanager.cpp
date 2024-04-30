@@ -471,8 +471,11 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
-        qDebug() << "ADSB SDR request error!";
-        qDebug() << reply->errorString();
+        if(!m_adsb_reply_error_logged_once){
+            m_adsb_reply_error_logged_once=true;
+            qDebug() << "ADSB SDR request error!";
+            qDebug() << reply->errorString();
+        }
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Reply Error", 4);
         reply->deleteLater();
