@@ -18,6 +18,10 @@
 #include "mavlinkchannel.h"
 
 static int linux_tcp_socket_try_connect(const std::string remote_ip, const int remote_port,const int timeout_seconds){
+#ifdef __windows__
+    qDebug()<<"Not supported on Windows";
+
+#else
     //qDebug()<<"linux_tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";
     int sockfd=socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd<0){
@@ -68,6 +72,7 @@ static int linux_tcp_socket_try_connect(const std::string remote_ip, const int r
     }
     qDebug()<<"Success";
     return sockfd;
+#endif
 }
 
 static bool linux_send_message(int sockfd,const std::string& dest_ip,const int dest_port,const uint8_t* data,int data_len){
@@ -247,6 +252,7 @@ void TCPConnection::receive_until_stopped()
 
 void TCPConnection::loop_connect_receive()
 {
+#ifdef __linux__
     qDebug()<<"TCPConnection2::loop_connect_receive begin";
     while(m_keep_receiving){
          m_socket_fd=linux_tcp_socket_try_connect(m_remote_ip,m_remote_port,3);
@@ -265,4 +271,5 @@ void TCPConnection::loop_connect_receive()
          }
     }
     qDebug()<<"TCPConnection2::loop_connect_receive end";
+#endif
 }

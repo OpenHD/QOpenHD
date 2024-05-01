@@ -7,6 +7,7 @@
 RawReceiver::RawReceiver(int port,std::string ip,bool is_h265,bool unused):
         is_h265(is_h265)
 {
+#ifdef __linux__
     m_keyframe_finder=std::make_unique<CodecConfigFinder>();
     auto udp_config=UDPReceiver::Configuration{std::nullopt,port};
     udp_config.opt_os_receive_buff_size=UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE;
@@ -16,13 +17,16 @@ RawReceiver::RawReceiver(int port,std::string ip,bool is_h265,bool unused):
         this->udp_raw_data_callback(payload,payloadSize);
     });
     m_udp_receiver->startReceiving();
+#endif
 }
 
 RawReceiver::~RawReceiver()
 {
+#ifdef __linux__
     if(m_udp_receiver){
         m_udp_receiver->stopReceiving();
     }
+#endif
 }
 
 std::shared_ptr<NALUBuffer> RawReceiver::get_next_frame(std::optional<std::chrono::microseconds> timeout)
