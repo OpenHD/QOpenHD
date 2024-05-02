@@ -6,15 +6,13 @@
 #include <winsock2.h>
 #include <Ws2tcpip.h> // For InetPton
 #include <Windows.h>
-#include <unistd.h>
-#include <fcntl.h>
 #else
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#endif
 #include <unistd.h>
 #include <fcntl.h>
-#endif
 
 #include <qdebug.h>
 
