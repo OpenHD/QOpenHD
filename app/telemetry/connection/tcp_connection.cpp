@@ -5,6 +5,9 @@
 #define _WIN32_WINNT 0x0600 //TODO dirty
 #include <winsock2.h>
 #include <Ws2tcpip.h> // For InetPton
+#include <Windows.h>
+#include <unistd.h>
+#include <fcntl.h>
 #else
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -17,12 +20,8 @@
 
 #include "mavlinkchannel.h"
 
-static int linux_tcp_socket_try_connect(const std::string remote_ip, const int remote_port,const int timeout_seconds){
-#ifdef __windows__
-    qDebug()<<"Not supported on Windows";
-
-#else
-    //qDebug()<<"linux_tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";
+static int tcp_socket_try_connect(const std::string remote_ip, const int remote_port,const int timeout_seconds){
+    //qDebug()<<"tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";
     int sockfd=socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd<0){
         qDebug()<<"Cannot create socket"<<strerror(errno);
@@ -33,6 +32,7 @@ static int linux_tcp_socket_try_connect(const std::string remote_ip, const int r
         close(sockfd);
         return -1;
     }
+    #endif
     struct sockaddr_in remote_addr {};
     remote_addr.sin_family = AF_INET;
     remote_addr.sin_port = htons(remote_port);
@@ -64,15 +64,16 @@ static int linux_tcp_socket_try_connect(const std::string remote_ip, const int r
     int so_error;
     // data to read
     socklen_t len = sizeof(so_error);
+    #ifdef __linux__
     getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &so_error, &len);
     if (so_error != 0) {
         qDebug()<<"Any socket error:"<<strerror(errno);
         close(sockfd);
         return -1;
     }
+    #endif
     qDebug()<<"Success";
     return sockfd;
-#endif
 }
 
 static bool linux_send_message(int sockfd,const std::string& dest_ip,const int dest_port,const uint8_t* data,int data_len){
@@ -255,7 +256,7 @@ void TCPConnection::loop_connect_receive()
 #ifdef __linux__
     qDebug()<<"TCPConnection2::loop_connect_receive begin";
     while(m_keep_receiving){
-         m_socket_fd=linux_tcp_socket_try_connect(m_remote_ip,m_remote_port,3);
+         m_socket_fd=tcp_socket_try_connect(m_remote_ip,m_remote_port,3);
          if(m_socket_fd>0){
              m_last_data_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
              receive_until_stopped();
