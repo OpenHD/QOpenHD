@@ -27,6 +27,7 @@ static int tcp_socket_try_connect(const std::string remote_ip, const int remote_
         qDebug()<<"Cannot create socket"<<strerror(errno);
         return -1;
     }
+    #ifdef __linux__
     if(fcntl(sockfd, F_SETFL, O_NONBLOCK)<0){
         qDebug()<<"Cannot set non-blocking";
         close(sockfd);
