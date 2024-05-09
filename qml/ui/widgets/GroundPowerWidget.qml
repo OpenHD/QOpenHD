@@ -257,20 +257,7 @@ BaseWidget {
                     // Define symbols based on battery level
                     var symbol;
                     if (_ohdSystemGround.ina219_current_milliamps===1337) {
-                        //charging
-                        if (percent < 20) {
-                            symbol = "\uf0a2"; // Change the symbol for battery level below 10%
-                        } else if (percent < 30) {
-                            symbol = "\uf0a3"; // Change the symbol for battery level below 30%
-                        } else if (percent < 50) {
-                            symbol = "\uf0a4"; // Change the symbol for battery level below 50%
-                        } else if (percent < 60) {
-                            symbol = "\uf0a5"; // Change the symbol for battery level below 60%
-                        } else if (percent < 80) {
-                            symbol = "\uf0a6"; // Change the symbol for battery level below 80%
-                        } else{
-                            symbol = "\ue1a3"; // Change the symbol for battery level below 90%
-                        } 
+                        symbol = "\ue1a3"; // Charging
                     }
                     else if (percent < 10) {
                         symbol = "\uf07a"; // Change the symbol for battery level below 10%
