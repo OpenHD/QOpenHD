@@ -179,9 +179,14 @@ BaseWidget {
                     var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
                     if (_ohdSystemGround.ina219_current_milliamps===1338) {
                     var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                    battery_volt_text.visible= false;
+                    battery_amp_text.visible=false;
                     }
                     else if (_ohdSystemGround.ina219_current_milliamps===1337) {
                     var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                    battery_volt_text.visible= false;
+                    battery_amp_text.visible= false;
+                    batteryGauge.color= "green";
                     }
                     else {
                     var percentage = calculateBatteryPercentage(currentVoltage);
