@@ -181,11 +181,13 @@ BaseWidget {
                     var percentage = _ohdSystemGround.ina219_voltage_millivolt;
                     battery_volt_text.visible= false;
                     battery_amp_text.visible=false;
+                    battery_charging.visible= false;
                     }
                     else if (_ohdSystemGround.ina219_current_milliamps===1337) {
                     var percentage = _ohdSystemGround.ina219_voltage_millivolt;
                     battery_volt_text.visible= false;
                     battery_amp_text.visible= false;
+                    battery_charging.visible= true;
                     batteryGauge.color= "green";
                     }
                     else {
@@ -238,6 +240,23 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+
+        Text {
+            id: battery_charging
+            visible: false
+            color: settings.color_text
+            anchors.top: battery_percent.bottom
+            anchors.left: batteryGauge.right
+            anchors.leftMargin: 0
+            clip: true
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
+            text:"\uf5e7"
 
         Text {
             id: batteryGauge
