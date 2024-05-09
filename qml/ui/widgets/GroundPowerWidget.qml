@@ -257,6 +257,7 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
             text:"\uf5e7"
+        }
 
         Text {
             id: batteryGauge
