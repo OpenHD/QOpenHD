@@ -177,7 +177,15 @@ BaseWidget {
 
                 onTriggered: {
                     var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
+                    if (_ohdSystemGround.ina219_current_milliamps===1338) {
+                    var percentage = 90;
+                    }
+                    else if (_ohdSystemGround.ina219_current_milliamps===1337) {
+                    var percentage = 100;
+                    }
+                    else {
                     var percentage = calculateBatteryPercentage(currentVoltage);
+                    }
                     settings.ground_voltage_in_percent = percentage;
                 }
             }
