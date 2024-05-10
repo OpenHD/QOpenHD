@@ -177,7 +177,19 @@ BaseWidget {
 
                 onTriggered: {
                     var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
+                    if (_ohdSystemGround.ina219_current_milliamps===1338) {
+                    var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                    battery_volt_text.visible= false;
+                    battery_amp_text.visible=false;
+                    }
+                    else if (_ohdSystemGround.ina219_current_milliamps===1337) {
+                    var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                    battery_volt_text.visible= false;
+                    battery_amp_text.visible= false;
+                    }
+                    else {
                     var percentage = calculateBatteryPercentage(currentVoltage);
+                    }
                     settings.ground_voltage_in_percent = percentage;
                 }
             }
@@ -244,7 +256,10 @@ BaseWidget {
 
                     // Define symbols based on battery level
                     var symbol;
-                    if (percent < 10) {
+                    if (_ohdSystemGround.ina219_current_milliamps===1337) {
+                        symbol = "\uF084"; // Charging
+                    }
+                    else if (percent < 10) {
                         symbol = "\uf07a"; // Change the symbol for battery level below 10%
                     } else if (percent < 20) {
                         symbol = "\uf07b"; // Change the symbol for battery level below 20%
