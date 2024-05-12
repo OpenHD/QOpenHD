@@ -31,50 +31,56 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements {
             id: idBaseWidgetDefaultUiControlElements
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Show single cell voltage")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.ground_battery_show_single_cell
-                    onCheckedChanged: settings.ground_battery_show_single_cell = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
 
-                Text {
-                    text: qsTr("Battery Type")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
+            ColumnLayout {
+                width: 230 // Set the width of the layout
+                spacing: 10 // Adjust spacing between elements if needed
+                Layout.alignment: Qt.AlignHCenter // Center the layout horizontally
+
+                Item {
+                    width: 230
+                    height: 32
+                    Text {
+                        text: qsTr("Show single cell voltage")
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Switch {
+                        width: 32
+                        height: parent.height
+                        anchors.rightMargin: 6
+                        anchors.right: parent.right
+                        checked: settings.ground_battery_show_single_cell
+                        onCheckedChanged: settings.ground_battery_show_single_cell = checked
+                    }
                 }
 
-                ComboBox {
-                    id: batteryComboBox
-                    width: 100
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    model: ["Lipo", "LiIon", "LiFe"]
-                    onCurrentIndexChanged: {
-                        switch (batteryComboBox.currentIndex) {
+                Item {
+                    Layout.fillWidth: true // Expand to fill the width of the layout
+                    height: 32
+
+                    Text {
+                        text: qsTr("Battery Type")
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.pixelSize: detailPanelFontPixels
+                        Layout.alignment: Qt.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    ComboBox {
+                        id: batteryComboBox
+                        width: 100
+                        height: parent.height
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter // Align to the right and vertically center
+                        model: ["Lipo", "LiIon", "LiFe"]
+                        onCurrentIndexChanged: {
+                            switch (batteryComboBox.currentIndex) {
                             case 0:
                                 settings.ground_battery_type = 0;
                                 settings.ground_battery_low = 33;
@@ -93,70 +99,72 @@ BaseWidget {
                                 settings.ground_battery_mid = 35;
                                 settings.ground_battery_full = 37;
                                 break;
+                            }
                         }
                     }
                 }
-            }
-            Text {
+
+                Text {
                     text: qsTr("Battery Low")
                     color: "white"
-                    height: parent.height
+                    height: 32
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    anchors.margins: 25,0,25
+                    Layout.topMargin: 25
+                    Layout.alignment: Qt.AlignLeft
                     verticalAlignment: Text.AlignVCenter
                 }
                 TextField {
-                id: battery_low
-                color: "white"
-                width: 200
-                height: 40
-                placeholderText: settings.ground_battery_low
-            }
-            Text {
+                    id: battery_low
+                    color: "white"
+                    width: 200
+                    height: 40
+                    placeholderText: (settings.ground_battery_low/10)
+                }
+
+                Text {
                     text: qsTr("Battery Mid")
                     color: "white"
-                    height: parent.height
+                    height: 32
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    anchors.margins: 0,0,25
+                    Layout.alignment: Qt.AlignLeft
                     verticalAlignment: Text.AlignVCenter
                 }
                 TextField {
-                id: battery_mid
-                color: "white"
-                width: 200
-                height: 40
-                placeholderText: settings.ground_battery_mid
-            }
-            Text {
+                    id: battery_mid
+                    color: "white"
+                    width: 200
+                    height: 40
+                    placeholderText: (settings.ground_battery_mid/10)
+                }
+
+                Text {
                     text: qsTr("Battery Full")
                     color: "white"
-                    height: parent.height
+                    height: 32
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    anchors.margins: 0,0,25
+                    Layout.alignment: Qt.AlignLeft
                     verticalAlignment: Text.AlignVCenter
                 }
                 TextField {
-                id: battery_full
-                color: "white"
-                width: 200
-                height: 40
-                placeholderText: settings.ground_battery_full
+                    id: battery_full
+                    color: "white"
+                    width: 200
+                    height: 40
+                    placeholderText: (settings.ground_battery_full/10)
+                }
             }
         }
     }
 
     function calculateBatteryPercentage(currentVoltage) {
-            var currentVoltage2 = ((currentVoltage/settings.ground_battery_cells) / 100).toFixed(0);
-            var fullVoltage = settings.ground_battery_full;
-            var midVoltage = settings.ground_battery_mid;
-            var emptyVoltage = settings.ground_battery_low;
-            var percentage;
+        var currentVoltage2 = ((currentVoltage/settings.ground_battery_cells) / 100).toFixed(0);
+        var fullVoltage = settings.ground_battery_full;
+        var midVoltage = settings.ground_battery_mid;
+        var emptyVoltage = settings.ground_battery_low;
+        var percentage;
 
         if (currentVoltage2 >= fullVoltage) {
             percentage = 100;
@@ -173,9 +181,9 @@ BaseWidget {
                 percentage = 0;
             }
         }
-            return percentage; // Ensure the percentage is within [0, 100]
+        return percentage; // Ensure the percentage is within [0, 100]
 
-        }
+    }
 
 
     Item {
@@ -229,17 +237,17 @@ BaseWidget {
                 onTriggered: {
                     var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
                     if (_ohdSystemGround.ina219_current_milliamps===1338) {
-                    var percentage = _ohdSystemGround.ina219_voltage_millivolt;
-                    battery_volt_text.visible= false;
-                    battery_amp_text.visible=false;
+                        var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                        battery_volt_text.visible= false;
+                        battery_amp_text.visible=false;
                     }
                     else if (_ohdSystemGround.ina219_current_milliamps===1337) {
-                    var percentage = _ohdSystemGround.ina219_voltage_millivolt;
-                    battery_volt_text.visible= false;
-                    battery_amp_text.visible= false;
+                        var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                        battery_volt_text.visible= false;
+                        battery_amp_text.visible= false;
                     }
                     else {
-                    var percentage = calculateBatteryPercentage(currentVoltage);
+                        var percentage = calculateBatteryPercentage(currentVoltage);
                     }
                     settings.ground_voltage_in_percent = percentage;
                 }
@@ -303,37 +311,37 @@ BaseWidget {
             }
             opacity: bw_current_opacity
             text: {
-                    var percent = settings.ground_voltage_in_percent;
+                var percent = settings.ground_voltage_in_percent;
 
-                    // Define symbols based on battery level
-                    var symbol;
-                    if (_ohdSystemGround.ina219_current_milliamps===1337) {
-                        symbol = "\uF084"; // Charging
-                    }
-                    else if (percent < 10) {
-                        symbol = "\uf07a"; // Change the symbol for battery level below 10%
-                    } else if (percent < 20) {
-                        symbol = "\uf07b"; // Change the symbol for battery level below 20%
-                    } else if (percent < 30) {
-                        symbol = "\uf07c"; // Change the symbol for battery level below 30%
-                    } else if (percent < 40) {
-                        symbol = "\uf07d"; // Change the symbol for battery level below 40%
-                    } else if (percent < 50) {
-                        symbol = "\uf07e"; // Change the symbol for battery level below 50%
-                    } else if (percent < 60) {
-                        symbol = "\uf07f"; // Change the symbol for battery level below 60%
-                    } else if (percent < 70) {
-                        symbol = "\uf080"; // Change the symbol for battery level below 70%
-                    } else if (percent < 80) {
-                        symbol = "\uf081"; // Change the symbol for battery level below 80%
-                    } else if (percent < 90) {
-                        symbol = "\uf082"; // Change the symbol for battery level below 90%
-                    } else {
-                        symbol = "\uf079"; // Default symbol for battery level above or equal to 100%
-                    }
-
-                    return symbol;
+                // Define symbols based on battery level
+                var symbol;
+                if (_ohdSystemGround.ina219_current_milliamps===1337) {
+                    symbol = "\uF084"; // Charging
                 }
+                else if (percent < 10) {
+                    symbol = "\uf07a"; // Change the symbol for battery level below 10%
+                } else if (percent < 20) {
+                    symbol = "\uf07b"; // Change the symbol for battery level below 20%
+                } else if (percent < 30) {
+                    symbol = "\uf07c"; // Change the symbol for battery level below 30%
+                } else if (percent < 40) {
+                    symbol = "\uf07d"; // Change the symbol for battery level below 40%
+                } else if (percent < 50) {
+                    symbol = "\uf07e"; // Change the symbol for battery level below 50%
+                } else if (percent < 60) {
+                    symbol = "\uf07f"; // Change the symbol for battery level below 60%
+                } else if (percent < 70) {
+                    symbol = "\uf080"; // Change the symbol for battery level below 70%
+                } else if (percent < 80) {
+                    symbol = "\uf081"; // Change the symbol for battery level below 80%
+                } else if (percent < 90) {
+                    symbol = "\uf082"; // Change the symbol for battery level below 90%
+                } else {
+                    symbol = "\uf079"; // Default symbol for battery level above or equal to 100%
+                }
+
+                return symbol;
+            }
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
