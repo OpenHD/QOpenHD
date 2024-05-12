@@ -28,6 +28,7 @@ static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W =
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A = 21;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B = 22;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1126_UNDEFINED = 23;  // FUTURE
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;  // FUTURE
 
 // Numbers 30..35 are reserved for allwinner
 static constexpr int X_PLATFORM_TYPE_ALWINNER_X20 = 30;
@@ -53,6 +54,8 @@ static std::string x_platform_type_to_string(int platform_type) {
     // RPI END
     case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W:
         return "RADXA ZERO3W";
+    case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3:
+        return "RADXA CM3";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A:
         return "RADXA ROCK5 A";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B:
