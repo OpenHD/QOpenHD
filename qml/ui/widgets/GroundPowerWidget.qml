@@ -97,6 +97,57 @@ BaseWidget {
                     }
                 }
             }
+            Text {
+                    text: qsTr("Battery Low")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    anchors.margins: 25,0,25
+                    verticalAlignment: Text.AlignVCenter
+                }
+                TextField {
+                id: battery_low
+                color: "white"
+                width: 200
+                height: 40
+                placeholderText: settings.ground_battery_low
+            }
+            Text {
+                    text: qsTr("Battery Mid")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    anchors.margins: 0,0,25
+                    verticalAlignment: Text.AlignVCenter
+                }
+                TextField {
+                id: battery_mid
+                color: "white"
+                width: 200
+                height: 40
+                placeholderText: settings.ground_battery_mid
+            }
+            Text {
+                    text: qsTr("Battery Full")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    anchors.margins: 0,0,25
+                    verticalAlignment: Text.AlignVCenter
+                }
+                TextField {
+                id: battery_full
+                color: "white"
+                width: 200
+                height: 40
+                placeholderText: settings.ground_battery_full
+            }
         }
     }
 
@@ -177,7 +228,19 @@ BaseWidget {
 
                 onTriggered: {
                     var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
+                    if (_ohdSystemGround.ina219_current_milliamps===1338) {
+                    var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                    battery_volt_text.visible= false;
+                    battery_amp_text.visible=false;
+                    }
+                    else if (_ohdSystemGround.ina219_current_milliamps===1337) {
+                    var percentage = _ohdSystemGround.ina219_voltage_millivolt;
+                    battery_volt_text.visible= false;
+                    battery_amp_text.visible= false;
+                    }
+                    else {
                     var percentage = calculateBatteryPercentage(currentVoltage);
+                    }
                     settings.ground_voltage_in_percent = percentage;
                 }
             }
@@ -244,7 +307,10 @@ BaseWidget {
 
                     // Define symbols based on battery level
                     var symbol;
-                    if (percent < 10) {
+                    if (_ohdSystemGround.ina219_current_milliamps===1337) {
+                        symbol = "\uF084"; // Charging
+                    }
+                    else if (percent < 10) {
                         symbol = "\uf07a"; // Change the symbol for battery level below 10%
                     } else if (percent < 20) {
                         symbol = "\uf07b"; // Change the symbol for battery level below 20%
