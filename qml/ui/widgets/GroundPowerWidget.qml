@@ -78,7 +78,7 @@ BaseWidget {
                         width: 100
                         height: parent.height
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter // Align to the right and vertically center
-                        model: ["Lipo", "LiIon", "LiFe"]
+                        model: ["Lipo", "LiIon", "LiFe", "Custom"]
                         onCurrentIndexChanged: {
                             switch (batteryComboBox.currentIndex) {
                             case 0:
@@ -99,13 +99,17 @@ BaseWidget {
                                 settings.ground_battery_mid = 35;
                                 settings.ground_battery_full = 37;
                                 break;
+                            case 3:
+                                customType.visible=true;
+                                break;
                             }
                         }
                     }
                 }
-
                 Text {
+                    id:customType
                     text: qsTr("Battery Low")
+                    visible: false
                     color: "white"
                     height: 32
                     font.bold: true
@@ -116,6 +120,7 @@ BaseWidget {
                 }
                 TextField {
                     id: battery_low
+                    visible: customType.visible
                     color: "white"
                     width: 200
                     height: 40
@@ -124,6 +129,7 @@ BaseWidget {
 
                 Text {
                     text: qsTr("Battery Mid")
+                    visible: customType.visible
                     color: "white"
                     height: 32
                     font.bold: true
@@ -133,6 +139,7 @@ BaseWidget {
                 }
                 TextField {
                     id: battery_mid
+                    visible: customType.visible
                     color: "white"
                     width: 200
                     height: 40
@@ -141,6 +148,7 @@ BaseWidget {
 
                 Text {
                     text: qsTr("Battery Full")
+                    visible: customType.visible
                     color: "white"
                     height: 32
                     font.bold: true
@@ -150,10 +158,22 @@ BaseWidget {
                 }
                 TextField {
                     id: battery_full
+                    visible: customType.visible
                     color: "white"
                     width: 200
                     height: 40
                     placeholderText: (settings.ground_battery_full/10)
+                }
+                Button {
+                    text: "Save"
+                    visible: customType.visible
+                    Layout.alignment: Qt.AlignHCenter // Center the button horizontally
+                    onClicked: {
+                        settings.ground_battery_type = 3;
+                        settings.ground_battery_low = (battery_low.text*10);
+                        settings.ground_battery_mid = (battery_mid.text*10);
+                        settings.ground_battery_full = (battery_full.text*10);
+                    }
                 }
             }
         }
