@@ -154,11 +154,11 @@ Settings {
 
 
     property bool show_air_battery: true
+    property bool show_ground_battery: true
     property bool air_battery_show_voltage_current: true
     property bool air_battery_show_single_cell: false
     property bool air_battery_use_batt_id_0_only: false
 
-    property bool show_ground_battery: false
     property bool ground_battery_show_voltage_current: false
     property bool ground_battery_show_single_cell: false
     property bool ground_battery_show_fc_percent: false
@@ -413,7 +413,7 @@ Settings {
     property double hide_identity_latitude_offset: 0.0
     property double hide_identity_longitude_offset: 0.0
 
-    property bool show_sidebar: false
+    property bool show_sidebar: true
 
     property int qopenhd_mavlink_connection_mode: 0;
     property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.178.36"

@@ -1343,7 +1343,7 @@ ScrollView {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                     enabled: true//false // Not yet functional
                     Text {
-                        text: qsTr("Show Sidebar ProofOfConcept")
+                        text: qsTr("Show Sidebar")
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
