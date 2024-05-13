@@ -98,6 +98,22 @@ Rectangle {
                 }
             }
             Button {
+                id: write_local_log
+                text: "Write GND log to SD"
+                onClicked: {
+                    var text = _qopenhd.write_local_log()
+                    write_local_log.text = text
+                }
+            }
+            Button {
+                id: write_air_log
+                text: "Write AIR log to SD"
+                onClicked: {
+                    var text = "Not implemented yet"
+                    write_air_log.text = text
+                }
+            }
+            Button {
                 text: "Set Tele rates"
                 onClicked: {
                     _mavlinkTelemetry.re_apply_rates()

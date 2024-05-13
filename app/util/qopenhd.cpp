@@ -234,6 +234,16 @@ QString QOpenHD::show_local_ip()
 #else
     return QString("Only works on linux");
 #endif
+}
+
+QString QOpenHD::write_local_log()
+{
+#ifdef __linux__
+    auto res=OHDUtil::run_command_out("journalctl > /boot/openhd/openhd.log");
+    return QString("Groundstation Log written !");
+#else
+    return QString("Only works on linux");
+#endif
 
 }
 
