@@ -77,7 +77,7 @@ Rectangle {
                 text: qsTr("Tele in" + _mavlinkTelemetry.telemetry_pps_in + " pps")
             }
             GridLayout {
-                columns: 2
+                columns: 4
                 Button {
                     width: 400
                     text: "Restart local OHD service"
@@ -115,31 +115,32 @@ Rectangle {
                         _mavlinkTelemetry.re_apply_rates()
                     }
                 }
-                RowLayout {
+                Button {
                     visible: _qopenhd.is_linux()
-                    Button {
-                        text: "Start openhd"
-                        onClicked: {
-                            _qopenhd.sysctl_openhd(0);
-                        }
+                    text: "Start openhd"
+                    onClicked: {
+                        _qopenhd.sysctl_openhd(0);
                     }
-                    Button {
-                        text: "Stop openhd"
-                        onClicked: {
-                            _qopenhd.sysctl_openhd(1);
-                        }
+                }
+                Button {
+                    visible: _qopenhd.is_linux()
+                    text: "Stop openhd"
+                    onClicked: {
+                        _qopenhd.sysctl_openhd(1);
                     }
-                    Button {
-                        text: "Enable openhd"
-                        onClicked: {
-                            _qopenhd.sysctl_openhd(2);
-                        }
+                }
+                Button {
+                    visible: _qopenhd.is_linux()
+                    text: "Enable openhd"
+                    onClicked: {
+                        _qopenhd.sysctl_openhd(2);
                     }
-                    Button {
-                        text: "Disable openhd"
-                        onClicked: {
-                            _qopenhd.sysctl_openhd(3);
-                        }
+                }
+                Button {
+                    visible: _qopenhd.is_linux()
+                    text: "Disable openhd"
+                    onClicked: {
+                        _qopenhd.sysctl_openhd(3);
                     }
                 }
                 Button {
