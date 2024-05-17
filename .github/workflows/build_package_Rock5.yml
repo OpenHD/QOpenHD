@@ -6,7 +6,7 @@ on:
       - "2.5-evo"
       - "dev-release"
       - "release"
-      - "experiments"
+      - "rapha-dev"
 
 jobs:
   build:
@@ -24,23 +24,58 @@ jobs:
           remove-android: 'true'
           remove-haskell: 'true'
           overprovision-lvm: 'true'
-      - name: Add environment variables
+      - name: test
         run: |
           echo "DT=$(date +'%Y-%m-%d_%H%M')" >> $GITHUB_ENV
-          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV 
-          sudo apt install git -y
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV    
              
       - name: Checkout repository and submodules
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          
-      - name: Build Package
+      - name: Building QOpenHD in CHROOT
         run: |
-          git clone https://github.com/OpenHD/ChrootCompilationTest /opt/ChrootCompilationTest
-          git clone -b ${{ github.ref_name }} https://github.com/OpenHD/QOpenHD --recursive /opt/ChrootCompilationTest/additionalFiles
-          echo $CLOUDSMITH_API_KEY > /opt/ChrootCompilationTest/additionalFiles/cloudsmith_api_key.txt
-          cd /opt/ChrootCompilationTest/
+          git clone https://github.com/OpenHD/OpenHD-ChrootCompiler /opt/OpenHD-ChrootCompiler
+          mkdir -p /opt/OpenHD-ChrootCompiler/additionalFiles
+          git clone https://github.com/OpenHD/QOpenHD -b ${{ github.ref_name }} /opt/OpenHD-ChrootCompiler/additionalFiles/ --recursive
+          echo $CLOUDSMITH_API_KEY > /opt/OpenHD-ChrootCompiler/additionalFiles/cloudsmith_api_key.txt
+          echo "standard" > /opt/OpenHD-ChrootCompiler/additionalFiles/custom.txt
+          echo "arm64" > /opt/OpenHD-ChrootCompiler/additionalFiles/arch.txt
+          echo "debian" > /opt/OpenHD-ChrootCompiler/additionalFiles/distro.txt
+          echo "bullseye" > /opt/OpenHD-ChrootCompiler/additionalFiles/flavor.txt
+          echo "${{ github.ref_name }}" > /opt/OpenHD-ChrootCompiler/additionalFiles/repo.txt
+
+          cd /opt/OpenHD-ChrootCompiler/
           sudo apt update
           sudo bash install_dep.sh
-          sudo bash build.sh rock5-debian $API_KEY
+          sudo bash build.sh rock5b $API_KEY debian bullseye
+    
+      - name: debug
+        run:
+          cp -r /opt/OpenHD-ChrootCompiler/out/* .
+
+      - name: Compose release filename
+        run: echo "artifact_name=QOpenHD-${{ env.DT }}" >> $GITHUB_ENV
+        
+      - name: Upload to Github
+        uses: 'actions/upload-artifact@v4'
+        with:
+          name: "QOpenHD-${{ env.DT }}"
+          path: |
+            *.deb
+
+      - name: Push
+        id: push
+        if: github.ref_name == 'release' || github.ref_name == 'dev-release'
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "deb"
+          owner: "openhd"
+          repo: ${{ github.ref_name }}
+          distro: "debian"
+          release: "bullseye"
+          republish: "true" # needed ONLY if version is not changing
+          file: "*.deb"
+
