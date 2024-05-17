@@ -125,5 +125,7 @@ else
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 fi
+if [ -d "/out" ]; then
   ls -a
   cp *.deb /out/
+fi
