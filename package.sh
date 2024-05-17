@@ -125,3 +125,5 @@ else
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 fi
+  ls -a
+  cp *.deb /out/

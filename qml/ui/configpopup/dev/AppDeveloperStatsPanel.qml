@@ -76,63 +76,80 @@ Rectangle {
                 height: 23
                 text: qsTr("Tele in" + _mavlinkTelemetry.telemetry_pps_in + " pps")
             }
-            Switch{
-                text: "SHOW DEV OVERLAY"
-                checked: settings.show_dev_stats_overlay
-                onCheckedChanged: {
-                    settings.show_dev_stats_overlay=checked
-                }
-            }
-            Button {
-                text: "Restart local OHD service"
-                onClicked: {
-                    _qopenhd.restart_local_oenhd_service()
-                }
-            }
-            Button {
-                id: local_ip_button
-                text: "Show local IP"
-                onClicked: {
-                    var text = _qopenhd.show_local_ip()
-                    local_ip_button.text = text
-                }
-            }
-            Button {
-                text: "Set Tele rates"
-                onClicked: {
-                    _mavlinkTelemetry.re_apply_rates()
-                }
-            }
-            Row {
-                spacing: 5
-                visible: _qopenhd.is_linux()
+            GridLayout {
+                columns: 4
                 Button {
+                    width: 400
+                    text: "Restart local OHD service"
+                    onClicked: {
+                        _qopenhd.restart_local_oenhd_service()
+                    }
+                }
+                Button {
+                    id: local_ip_button
+                    text: "Show local IP"
+                    onClicked: {
+                        var text = _qopenhd.show_local_ip()
+                        local_ip_button.text = text
+                    }
+                }
+                Button {
+                    id: write_local_log
+                    text: "Write GND log to SD"
+                    onClicked: {
+                        var text = _qopenhd.write_local_log()
+                        write_local_log.text = text
+                    }
+                }
+                Button {
+                    id: write_air_log
+                    text: "Write AIR log to SD"
+                    onClicked: {
+                        var text = "Not implemented yet"
+                        write_air_log.text = text
+                    }
+                }
+                Button {
+                    text: "Set Tele rates"
+                    onClicked: {
+                        _mavlinkTelemetry.re_apply_rates()
+                    }
+                }
+                Button {
+                    visible: _qopenhd.is_linux()
                     text: "Start openhd"
                     onClicked: {
                         _qopenhd.sysctl_openhd(0);
                     }
                 }
                 Button {
+                    visible: _qopenhd.is_linux()
                     text: "Stop openhd"
                     onClicked: {
                         _qopenhd.sysctl_openhd(1);
                     }
                 }
                 Button {
+                    visible: _qopenhd.is_linux()
                     text: "Enable openhd"
                     onClicked: {
                         _qopenhd.sysctl_openhd(2);
                     }
                 }
                 Button {
+                    visible: _qopenhd.is_linux()
                     text: "Disable openhd"
                     onClicked: {
                         _qopenhd.sysctl_openhd(3);
                     }
                 }
-            }
-            Row {
-                spacing: 5
+                Button {
+                    id:sdbut
+                    text: "Self Distruct"
+                    onClicked: {
+                        sdbut.text="just kidding";
+                    }
+                }
                 Button {
                     font.capitalization: Font.MixedCase
                     text: qsTr("Restart QOpenHD")
@@ -150,7 +167,6 @@ Rectangle {
             }
         }
     }
-
     QOpenHDServiceDialoque{
         id: qopenhdservicedialoque
     }
