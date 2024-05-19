@@ -235,6 +235,7 @@ WindowsBuild {
 QMAKE_CXXFLAGS += -Wno-unused-variable
 QMAKE_CXXFLAGS += -Wno-unused-function
 QMAKE_CXXFLAGS += -Wno-attributes
+QMAKE_CXXFLAGS += -Wno-unused-parameter
 }
 
 AndroidBuild {
