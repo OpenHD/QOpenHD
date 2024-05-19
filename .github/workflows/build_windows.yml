@@ -58,6 +58,20 @@ jobs:
           modules: qtcharts
           setup-python: true
 
+      - name: Download JOM
+        uses: suisei-cn/actions-download-file@v1.6.0
+        with:
+          url:    http://download.qt.io/official_releases/jom/jom.zip
+          target: ${{ runner.temp }}\
+
+      - name: Unzip JOM
+        working-directory: ${{ runner.temp }}
+        run:  |
+              7z x jom.zip -ojom
+
+      - name: Install Gstreamer
+        run: choco install --no-progress gstreamer gstreamer-devel --version=1.18.6
+
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run: cmake -S ${{ github.workspace }} -B . -G Ninja ^
@@ -66,7 +80,9 @@ jobs:
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
-        run: cmake --build . --target all --config ${{ matrix.BuildType }}
+        run:  |
+              qmake -r ${{ env.SOURCE_DIR }}\QOpenHD.pro
+              ${{ runner.temp }}\jom\jom -j2
 
       - name: Install
         working-directory: ${{ runner.temp }}\shadow_build_dir
