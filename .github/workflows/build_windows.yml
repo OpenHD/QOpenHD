@@ -51,7 +51,6 @@ jobs:
           target: ${{ runner.temp }}\
 
       - name: Unzip JOM
-        working-directory: ${{ runner.temp }}
         run:  |
               7z x jom.zip -ojom
 
