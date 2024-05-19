@@ -47,7 +47,7 @@ jobs:
           aqtversion: ==3.1.*
           host: windows
           target: desktop
-          arch: win64_msvc2019_64
+          arch: win64_mingw
           dir: ${{ runner.temp }}
           modules: qtcharts qtlocation qtpositioning qtspeech qt5compat qtmultimedia qtserialport qtimageformats qtshadertools qtconnectivity qtquick3d
           setup-python: true
