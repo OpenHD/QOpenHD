@@ -34,11 +34,6 @@ jobs:
             msystem: mingw32
             release: false
 
-      - name: Install Dependencies
-        run: |
-          choco install --no-progress sccache ninja -y
-          choco install --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System' --apply-install-arguments-to-dependencies
-
       - name: Install Gstreamer
         uses: blinemedical/setup-gstreamer@v1
         with:
