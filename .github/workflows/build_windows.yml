@@ -51,4 +51,4 @@ jobs:
       - name: Build
         run:  |
               qmake -r QOpenHD.pro
-              jom
+              make
