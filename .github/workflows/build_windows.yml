@@ -60,4 +60,4 @@ jobs:
       - name: Build
         run:  |
               qmake -r QOpenHD.pro
-              jom
+              jom/jom ../
