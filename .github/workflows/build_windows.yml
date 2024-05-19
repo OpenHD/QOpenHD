@@ -18,7 +18,7 @@ jobs:
         shell: cmd
 
     env:
-      QT_VERSION: 6.6.3
+      QT_VERSION: 5.15.2
       GST_VERSION: 1.22.11
       ARTIFACT: QGroundControl-Installer.exe
 
@@ -47,7 +47,7 @@ jobs:
           aqtversion: ==3.1.*
           host: windows
           target: desktop
-          arch: win64_mingw
+          arch: win32_mingw81
           dir: ${{ runner.temp }}
           modules: qtcharts qtlocation qtpositioning qtspeech qt5compat qtmultimedia qtserialport qtimageformats qtshadertools qtconnectivity qtquick3d
           setup-python: true
