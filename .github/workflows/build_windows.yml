@@ -61,5 +61,5 @@ jobs:
 
       - name: Build
         run:  |
-              qmake -r ${{ env.SOURCE_DIR }}\QOpenHD.pro
+              qmake -r QOpenHD.pro
               ${{ runner.temp }}\jom\jom -j2
