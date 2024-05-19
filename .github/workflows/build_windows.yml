@@ -19,8 +19,6 @@ jobs:
 
     env:
       QT_VERSION: 5.15.2
-      GST_VERSION: 1.22.11
-      ARTIFACT: QGroundControl-Installer.exe
 
     steps:
       - name: Checkout repo
@@ -57,8 +55,11 @@ jobs:
         run:  |
               7z x jom.zip -ojom
 
+      - name: Debug
+        run:  |
+              dir
+
       - name: Build
-        working-directory: ${{ runner.temp }}\shadow_build_dir
         run:  |
               qmake -r ${{ env.SOURCE_DIR }}\QOpenHD.pro
               ${{ runner.temp }}\jom\jom -j2
