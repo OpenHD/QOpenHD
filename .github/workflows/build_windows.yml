@@ -48,7 +48,6 @@ jobs:
         uses: suisei-cn/actions-download-file@v1.6.0
         with:
           url:    http://download.qt.io/official_releases/jom/jom.zip
-          target: ${{ runner.temp }}\
 
       - name: Unzip JOM
         run:  |
