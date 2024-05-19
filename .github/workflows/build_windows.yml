@@ -62,4 +62,4 @@ jobs:
       - name: Build
         run:  |
               qmake -r QOpenHD.pro
-              ${{ runner.temp }}\jom\jom -j2
+              make
