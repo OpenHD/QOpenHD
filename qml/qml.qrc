@@ -148,7 +148,7 @@
         <file>resources/ic128.png</file>
         <file>resources/ic.png</file>
         <file>resources/homemarker.png</file>
-        <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
+        <file>resources/Font-Awesome-5-Free-Solid-900.otf</file>
         <file>ui/widgets/QRenderStatsWidget.qml</file>
         <file>ui/widgets/map/MapComponent.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
