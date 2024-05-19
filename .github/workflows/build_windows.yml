@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        shell: cmdmsys2 
+        shell: msys2 
 
     env:
       QT_VERSION: 5.15.2
