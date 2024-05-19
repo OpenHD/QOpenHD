@@ -32,13 +32,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
             msystem: mingw32
-            release: false
-
-      - name: Install Gstreamer
-        uses: blinemedical/setup-gstreamer@v1
-        with:
-          version: ${{ env.GST_VERSION }}
-        # run: choco install --no-progress gstreamer gstreamer-devel --version=1.22.8
+            release: true
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
@@ -68,7 +62,3 @@ jobs:
         run:  |
               qmake -r ${{ env.SOURCE_DIR }}\QOpenHD.pro
               ${{ runner.temp }}\jom\jom -j2
-
-      - name: Install
-        working-directory: ${{ runner.temp }}\shadow_build_dir
-        run: cmake --install . --config ${{ matrix.BuildType }}
