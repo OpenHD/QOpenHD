@@ -232,6 +232,8 @@ JetsonBuild {
 WindowsBuild {
     # This aparently makes qt use absolute paths, otherwise we get compile issues ?
     QMAKE_PROJECT_DEPTH = 0
+QMAKE_CXXFLAGS += -Wno-unused-variable
+QMAKE_CXXFLAGS += -Wno-unused-function
 }
 
 AndroidBuild {
