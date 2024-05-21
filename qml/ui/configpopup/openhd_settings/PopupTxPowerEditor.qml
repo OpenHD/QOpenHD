@@ -103,7 +103,7 @@ PopupBigGeneric{
     }
     ListModel{
         id: model_rtl8812bu_manufacturers
-        ListElement {title: "Wifi Card [RTL88XXBU]"; value: -1}
+        ListElement {title: "Please Select"; value: -1}
         ListElement {title: "COMFAST [RTL88XXBU]"; value: 0}
         ListElement {title: "OTHER [RTL88XXBU]"; value: 1}
     }
@@ -365,7 +365,7 @@ PopupBigGeneric{
                         Text {
                             Layout.fillWidth: true
                             Layout.minimumHeight: 50
-                            text: "Tx-Power Disarmed: ";
+                            text: "Disarmed: ";
                             color: "black"
                             wrapMode: Text.WordWrap
                             verticalAlignment: Qt.AlignVCenter
@@ -390,7 +390,7 @@ PopupBigGeneric{
                         Text {
                             Layout.fillWidth: true
                             Layout.minimumHeight: 50
-                            text: "Tx-Power Armed: ";
+                            text: "Armed: ";
                             color: "black"
                             wrapMode: Text.WordWrap
                             verticalAlignment: Qt.AlignVCenter
