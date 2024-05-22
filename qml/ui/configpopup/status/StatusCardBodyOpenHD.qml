@@ -24,10 +24,10 @@ Column {
 
     property var m_model: m_is_ground ? _ohdSystemGround : _ohdSystemAir
 
-    property string m_version: m_model.openhd_version.substring(0, 5)
+    property string m_version: m_model.openhd_version
     property string m_last_ping: m_model.last_ping_result_openhd
     property bool m_is_alive: m_model.is_alive
-    property string m_qopenhd_version: _qopenhd.version_string.substring(0, 5)
+    property string m_qopenhd_version: _qopenhd.version_string
 
     //fucking hell qt
     property int m_font_pixel_size: 13
@@ -80,13 +80,13 @@ Column {
                 if(_ohdSystemGround.openhd_version=="N/A"){
                     return false;
                 }
-                return _ohdSystemGround.openhd_version.substring(0, 5) != m_qopenhd_version.substring(0, 5);
+                return _ohdSystemGround.openhd_version != m_qopenhd_version;
             }else{
                 // Show if ground and air reported version is valid and there is a mismatch
                 if(_ohdSystemGround.openhd_version=="N/A" || _ohdSystemAir.openhd_version=="N/A"){
                     return false;
                 }
-                return _ohdSystemGround.openhd_version.substring(0, 5) != _ohdSystemAir.openhd_version.substring(0, 5)
+                return _ohdSystemGround.openhd_version != _ohdSystemAir.openhd_version
             }
         }
         m_error_text: {

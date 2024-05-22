@@ -62,19 +62,20 @@ static MonitorModeLinkBitfield parse_monitor_link_bitfield(uint8_t bitfield){
     return ret;
 }
 
-static std::string ohd_version_as_string(uint8_t major,uint8_t minor,uint8_t patch,uint8_t release_type){
-  std::stringstream ss;
-  ss<<(int)major<<"."<<(int)minor<<"."<<(int)patch<<"-evo";
-  if(release_type==0){
-    ss<<"-release";
-  }else if(release_type==1){
-    ss<<"-beta";
-  }else if(release_type==2){
-    ss<<"-alpha";
-  }else{
-    ss<<"-unknown";
-  }
-  return ss.str();
+static std::string ohd_version_as_string(uint8_t major, uint8_t minor,
+                                         uint8_t patch, uint8_t release_type) {
+    std::stringstream ss;
+    ss << (int)major << "." << (int)minor << "." << (int)patch << "-evo";
+    if (release_type == 0) {
+        // This is a 'proper' release
+    } else if (release_type == 1) {
+        ss << "-beta";  // testers only
+    } else if (release_type == 2) {
+        ss << "-alpha";  // internal only
+    } else {
+        ss << "-unknown";
+    }
+    return ss.str();
 }
 
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
