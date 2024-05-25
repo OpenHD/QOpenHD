@@ -17,7 +17,7 @@ BaseWidget {
     defaultYOffset: 128+40
     dragging: false
 
-    visible: settings.show_distance_sensor_widget
+    visible: settings.show_distance_sensor_widget && settings.show_widgets
 
     widgetIdentifier: "distance_sensor_widget"
     bw_verbose_name: "DISTANCE SENSOR"

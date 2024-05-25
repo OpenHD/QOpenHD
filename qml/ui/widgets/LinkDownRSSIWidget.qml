@@ -16,7 +16,7 @@ BaseWidget {
     width: 112
     height: 48
 
-    visible: settings.show_downlink_rssi
+    visible: settings.show_downlink_rssi && settings.show_widgets
 
     widgetIdentifier: "downlink_rssi_widget"
     bw_verbose_name: "DOWNLINK/GND RSSI"

@@ -15,7 +15,7 @@ BaseWidget {
     width: 50
     height: 48
 
-    visible: settings.qrenderstats_show
+    visible: settings.qrenderstats_show && settings.show_widgets
 
     widgetIdentifier: "q_render_stats_widget"
 

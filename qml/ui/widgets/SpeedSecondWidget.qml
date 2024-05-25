@@ -17,7 +17,7 @@ BaseWidget {
     defaultYOffset: 128
     dragging: false
 
-    visible: settings.show_speed_second && !sidebar.m_is_active
+    visible: settings.show_speed_second && !sidebar.m_is_active && settings.show_widgets
 
     widgetIdentifier: "speed_second_widget"
     bw_verbose_name: "SECOND SPEED"

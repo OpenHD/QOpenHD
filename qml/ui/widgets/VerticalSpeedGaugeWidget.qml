@@ -16,7 +16,7 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: true
 
-    visible: settings.show_vertical_speed_gauge_widget
+    visible: settings.show_vertical_speed_gauge_widget && settings.show_widgets
 
     widgetIdentifier: "vertical_speed_gauge_widget"
     bw_verbose_name: "VERTICAL SPEED (CLIMB)"

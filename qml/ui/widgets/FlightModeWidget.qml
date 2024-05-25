@@ -13,7 +13,7 @@ BaseWidget {
     width: 212
     height: 48
 
-    visible: settings.show_flight_mode
+    visible: settings.show_flight_mode && settings.show_widgets
 
     widgetIdentifier: "flight_mode_widget"
     bw_verbose_name: "FLIGHT MODE"

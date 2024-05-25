@@ -12,7 +12,7 @@ BaseWidget {
     width: 96
     height: 24
 
-    visible: settings.show_gps
+    visible: settings.show_gps && settings.show_widgets
 
     widgetIdentifier: "gps_widget"
     bw_verbose_name: "GPS WIDGET"

@@ -13,7 +13,7 @@ BaseWidget {
     height: 48
     defaultYOffset: 135
 
-    visible: settings.show_arrow
+    visible: settings.show_arrow && settings.show_widgets
 
     widgetIdentifier: "arrow_widget"
     bw_verbose_name: "HOME ARROW"

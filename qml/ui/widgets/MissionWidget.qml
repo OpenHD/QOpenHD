@@ -16,7 +16,7 @@ BaseWidget {
     width: 96
     height: 25
 
-    visible: settings.show_mission
+    visible: settings.show_mission && settings.show_widgets
 
     widgetIdentifier: "mission_widget"
     bw_verbose_name: "MISSIONS"

@@ -11,7 +11,7 @@ BaseWidget {
     width: 96
     height: 55
 
-    visible: settings.show_ground_battery
+    visible: settings.show_ground_battery && settings.show_widgets
 
     widgetIdentifier: "ground_battery_widget"
     bw_verbose_name: "GROUND BATTERY"

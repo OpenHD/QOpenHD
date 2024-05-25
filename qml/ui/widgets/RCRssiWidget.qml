@@ -13,7 +13,7 @@ BaseWidget {
     width: 50
     height: 30
 
-    visible: settings.show_rc_rssi
+    visible: settings.show_rc_rssi && settings.show_widgets
 
     widgetIdentifier: "rc_rssi_widget"
     bw_verbose_name: "RC RSSI"

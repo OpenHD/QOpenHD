@@ -11,7 +11,7 @@ SOCStatusWidgetGeneric {
     width: 112
     height: 24
 
-    visible: settings.show_air_status
+    visible: settings.show_air_status && settings.show_widgets
 
     defaultAlignment: 1
     defaultXOffset: 128

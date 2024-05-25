@@ -9,7 +9,7 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 VideoBitrateWidgetGeneric{
-    visible: settings.show_bitrate
+    visible: settings.show_bitrate && settings.show_widgets
 
     m_is_for_primary_camera: true
 

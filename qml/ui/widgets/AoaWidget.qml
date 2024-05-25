@@ -18,7 +18,7 @@ BaseWidget {
     defaultXOffset: 60
     defaultVCenter: true
 
-    visible: settings.show_aoa
+    visible: settings.show_aoa && settings.show_widgets
 
     widgetIdentifier: "aoa_widget"
     bw_verbose_name: "ANGLE OF ATTACK"

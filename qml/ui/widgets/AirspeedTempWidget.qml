@@ -11,7 +11,7 @@ BaseWidget {
     width: 30
     height: 30
 
-    visible: settings.show_airspeed_temp
+    visible: settings.show_airspeed_temp && settings.show_widgets
 
     widgetIdentifier: "airspeed_temp_widget"
     bw_verbose_name: "AIRSPEED SENSOR TEMP"

@@ -12,7 +12,7 @@ BaseWidget {
     width: 250
     height: 48
 
-    visible: settings.show_performance_horizon
+    visible: settings.show_performance_horizon && settings.show_widgets
 
     widgetIdentifier: "horizon_performance2"
     bw_verbose_name: "ARTIFICIAL HORIZON 2"

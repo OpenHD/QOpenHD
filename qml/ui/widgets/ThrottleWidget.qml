@@ -19,7 +19,7 @@ BaseWidget {
     width: 96
     height: 68
 
-    visible: settings.show_throttle
+    visible: settings.show_throttle && settings.show_widgets
 
     widgetIdentifier: "throttle_widget"
     bw_verbose_name: "THROTTLE"

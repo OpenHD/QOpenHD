@@ -11,7 +11,7 @@ BaseWidget {
     width: 112
     height: 24
 
-    visible: settings.show_air_status
+    visible: settings.show_air_status && settings.show_widgets
 
     widgetIdentifier: "air_status_widget"
     bw_verbose_name: "CPU LOAD AIR"

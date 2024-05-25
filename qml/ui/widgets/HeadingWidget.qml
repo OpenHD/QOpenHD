@@ -12,7 +12,7 @@ BaseWidget {
     width: 48
     height: 48
 
-    visible: settings.show_heading
+    visible: settings.show_heading && settings.show_widgets
 
     defaultYOffset: 50
 

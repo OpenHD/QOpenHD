@@ -13,7 +13,7 @@ BaseWidget {
     width: 64
     height: 24
 
-    visible: settings.speed_ladder_show && !sidebar.m_is_active
+    visible: settings.speed_ladder_show && !sidebar.m_is_active && settings.show_widgets
 
     defaultXOffset: 20
     defaultVCenter: true

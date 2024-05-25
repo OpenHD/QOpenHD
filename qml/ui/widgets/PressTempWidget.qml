@@ -11,7 +11,7 @@ BaseWidget {
     width: 30
     height: 30
 
-    visible: settings.show_press_temp
+    visible: settings.show_press_temp && settings.show_widgets
 
     widgetIdentifier: "press_temp_widget"
     bw_verbose_name: "PREASSURE SENSOR TEMP"

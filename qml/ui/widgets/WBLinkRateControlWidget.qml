@@ -17,7 +17,7 @@ BaseWidget {
     width: 90
     height: 40
 
-    visible: settings.wb_link_rate_control_widget_show
+    visible: settings.wb_link_rate_control_widget_show && settings.show_widgets
 
     widgetIdentifier: "wb_link_rate_control_widget"
     bw_verbose_name: "WB LIVE RATE CONTROL"

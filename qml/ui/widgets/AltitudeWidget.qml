@@ -19,7 +19,7 @@ BaseWidget {
     defaultXOffset: 40
     defaultVCenter: true
 
-    visible: settings.altitude_ladder_show
+    visible: settings.altitude_ladder_show && settings.show_widgets
 
     widgetIdentifier: "altitude_widget"
     bw_verbose_name: "ALTITUDE"

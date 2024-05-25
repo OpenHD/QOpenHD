@@ -12,7 +12,7 @@ BaseWidget {
     width: 100
     height: 30
 
-    visible: settings.bank_angle_indicator_widget_show
+    visible: settings.bank_angle_indicator_widget_show && settings.show_widgets
 
     widgetIdentifier: "roll_widget"
     bw_verbose_name: "BANK ANGLE INDICATOR"
