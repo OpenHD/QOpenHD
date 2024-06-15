@@ -11,7 +11,7 @@ BaseWidget {
     width: 30
     height: 30
 
-    visible: settings.show_esc_temp
+    visible: settings.show_esc_temp && settings.show_widgets
 
     widgetIdentifier: "esc_temp_widget"
     bw_verbose_name: "EST TEMPERATURE"

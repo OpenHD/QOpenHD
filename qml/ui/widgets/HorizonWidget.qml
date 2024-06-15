@@ -11,7 +11,7 @@ BaseWidget {
     width: 250
     height: 48
 
-    visible: settings.show_horizon
+    visible: settings.show_horizon && settings.show_widgets
 
     widgetIdentifier: "horizon_widget"
     bw_verbose_name: "ARTIFICIAL HORIZON"

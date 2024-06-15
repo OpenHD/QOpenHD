@@ -11,7 +11,7 @@ BaseWidget {
     width: 112
     height: 48
 
-    visible: settings.show_uplink_rssi
+    visible: settings.show_uplink_rssi && settings.show_widgets
 
     widgetIdentifier: "uplink_rssi_widget"
     bw_verbose_name: "UPLINK/AIR RSSI"

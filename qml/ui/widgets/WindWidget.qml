@@ -20,7 +20,7 @@ BaseWidget {
     width: 50
     height: 50
 
-    visible: settings.show_wind
+    visible: settings.show_wind && settings.show_widgets
 
     widgetIdentifier: "wind_widget"
     bw_verbose_name: "WIND"

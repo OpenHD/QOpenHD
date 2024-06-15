@@ -14,7 +14,7 @@ BaseWidget {
     width: 96
     height: 24
 
-    visible: settings.show_home_distance
+    visible: settings.show_home_distance && settings.show_widgets
 
     widgetIdentifier: "home_distance_widget"
     bw_verbose_name: "HOME DISTANCE"

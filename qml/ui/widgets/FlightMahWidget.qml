@@ -11,7 +11,7 @@ BaseWidget {
     width: 96
     height: 24
 
-    visible: settings.show_flight_mah
+    visible: settings.show_flight_mah && settings.show_widgets
 
     widgetIdentifier: "flight_mah_widget"
     bw_verbose_name: "MAH (FC CONSUMED)"

@@ -11,7 +11,7 @@ BaseWidget {
     width: 30
     height: 30
 
-    visible: settings.show_imu_temp
+    visible: settings.show_imu_temp && settings.show_widgets
 
     widgetIdentifier: "imu_temp_widget"
     bw_verbose_name: "IMU TEMPERATURE"

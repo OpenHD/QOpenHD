@@ -15,7 +15,7 @@ BaseWidget {
     width: 64
     height: 64
 
-    visible: settings.show_gpio
+    visible: settings.show_gpio && settings.show_widgets
 
     widgetIdentifier: "gpio_widget"
 

@@ -12,7 +12,7 @@ BaseWidget {
     width: 50
     height: 55
 
-    visible: settings.show_flight_path_vector
+    visible: settings.show_flight_path_vector && settings.show_widgets
 
     widgetIdentifier: "fpv_widget"
     bw_verbose_name: "FLIGHT PATH VECTOR"

@@ -19,7 +19,7 @@ BaseWidget {
     defaultYOffset: 128+80
     dragging: false
 
-    visible: settings.show_time_widget
+    visible: settings.show_time_widget && settings.show_widgets
 
     widgetIdentifier: "timer_widget"
     bw_verbose_name: "GPS TIME"

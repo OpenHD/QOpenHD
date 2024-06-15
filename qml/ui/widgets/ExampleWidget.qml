@@ -10,7 +10,7 @@ BaseWidget {
 
     visible: settings.show_example_widget
 
-    widgetIdentifier: "example_widget"
+    widgetIdentifier: "example_widget" && settings.show_widgets
 
     defaultAlignment: 0
     defaultXOffset: 92

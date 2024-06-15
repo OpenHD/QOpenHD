@@ -11,7 +11,7 @@ BaseWidget {
     width: 96
     height: 24
 
-    visible: settings.show_flight_time
+    visible: settings.show_flight_time && settings.show_widgets
 
     widgetIdentifier: "flight_time_widget"
     bw_verbose_name: "FLIGHT TIME"

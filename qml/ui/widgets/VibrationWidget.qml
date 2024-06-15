@@ -18,7 +18,7 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
-    visible: settings.show_vibration
+    visible: settings.show_vibration && settings.show_widgets
 
     widgetIdentifier: "vibration_widget"
     bw_verbose_name: "VIBRATION"

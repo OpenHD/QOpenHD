@@ -11,7 +11,7 @@ BaseWidget {
     width: 96
     height: 24
 
-    visible: settings.show_flight_distance
+    visible: settings.show_flight_distance && settings.show_widgets
 
     widgetIdentifier: "flight_distance_widget"
     bw_verbose_name: "TOTAL FLIGHT DISTANCE"

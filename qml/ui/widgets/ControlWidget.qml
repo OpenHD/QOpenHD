@@ -11,7 +11,7 @@ BaseWidget {
     width: 100
     height: 50
 
-    visible: settings.show_control
+    visible: settings.show_control && settings.show_widgets
 
     widgetIdentifier: "control_widget"
     bw_verbose_name: "CONTROL INPUTS"

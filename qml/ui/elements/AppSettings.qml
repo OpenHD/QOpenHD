@@ -115,6 +115,7 @@ Settings {
     // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here
     property int smoothing: 33
 
+    property bool show_widgets: true
     property bool show_downlink_rssi: true
     //Const10
     property bool downlink_show_dbm_and_packets_per_card: true

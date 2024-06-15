@@ -14,7 +14,7 @@ BaseWidget {
     width: 480
     height: 5*25 // Up to 5 simultaneous messages
 
-    visible: settings.show_message_hud
+    visible: settings.show_message_hud && settings.show_widgets
 
     widgetIdentifier: "message_hud_widget"
 

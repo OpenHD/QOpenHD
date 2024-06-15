@@ -11,7 +11,7 @@ BaseWidget {
     width: 130
     height: 24
 
-    visible: settings.show_flight_mah_km
+    visible: settings.show_flight_mah_km && settings.show_widgets
 
     widgetIdentifier: "flight_mah_km_widget"
     bw_verbose_name: "EFFICIENCY IN MAH/KM"

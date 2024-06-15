@@ -153,9 +153,22 @@ ScrollView {
                 }
             }*/
 
-
             SettingsCategory{
                 m_description: "OHD LINK / STREAMING WIDGETS"
+
+                SettingBaseElement{
+                    m_short_description: "Show Widgets"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_widgets
+                        onCheckedChanged: settings.show_widgets = checked
+                    }
+                }
 
                 SettingBaseElement{
                     m_short_description: "Show Downlink RSSI"
