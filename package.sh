@@ -20,8 +20,7 @@ mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
 
 VER2=$(git rev-parse --short HEAD)
 
-
-if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
+if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] && [[ "${PACKAGE_ARCH}" = "armhf" ]] ; then
     QT_VERSION=Qt5.15.4
     echo "debug"
     /opt/Qt5.15.4/bin/qmake
