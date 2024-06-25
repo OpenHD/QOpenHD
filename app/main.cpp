@@ -260,6 +260,9 @@ int main(int argc, char *argv[]) {
             settings.setValue(TAG_QOPENHD_INITIAL_FONT_DPI_HAS_BEEN_SET,true);
             settings.setValue("screen_custom_font_dpi",100);
         }
+    else{
+        qDebug()<<"Platform Detection failed!";    
+    }
     }
     if(QOpenHD::instance().is_platform_rock()){
         if(!settings.value("dev_rpi_use_external_omx_decode_service",true).toBool()){
