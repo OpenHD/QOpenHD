@@ -14,6 +14,7 @@ echo ${FLAVOR}
 echo ${CUSTOM}
 echo ${ARCH}
 
+mkdir -p /usr/local/share/openhd/platform/rock/
 bash install_build_dep.sh rock5
 sudo ./package.sh ${CUSTOM} ${ARCH} ${DISTRO} ${FLAVOR} || exit 1
 
