@@ -6,12 +6,12 @@
 #ifdef __linux__
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #else
 #include <winsock2.h>
 #include <Ws2tcpip.h> // For InetPton
 #include <Windows.h>
 #endif
-#include <unistd.h>
 #include <iostream>
 #include <thread>
 #include <atomic>

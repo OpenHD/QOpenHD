@@ -17,6 +17,11 @@
 // This file holds various classes/namespaces usefully for measuring and comparing
 // latency samples
 
+#ifdef _MSC_VER
+#undef max
+#undef min
+#endif
+
 namespace MyTimeHelper{
     static std::chrono::steady_clock::duration abs(const std::chrono::steady_clock::duration& dur){
         return dur>=std::chrono::nanoseconds(0) ? dur : -dur;

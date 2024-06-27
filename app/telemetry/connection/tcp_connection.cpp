@@ -10,13 +10,19 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#endif
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 
 #include <qdebug.h>
 
 #include "mavlinkchannel.h"
+
+#ifdef __windows__
+static int close(SOCKET s){
+    return closesocket(s);
+}
+#endif
 
 static int tcp_socket_try_connect(const std::string remote_ip, const int remote_port,const int timeout_seconds){
     //qDebug()<<"tcp_socket_try_connect:"<<remote_ip.c_str()<<":"<<remote_port<<" timeout:"<<timeout_seconds<<"s";

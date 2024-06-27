@@ -26,6 +26,10 @@
 #include <pps_parser.h>
 #include <qdebug.h>
 
+#ifdef _MSC_VER
+#define ssize_t std::ptrdiff_t
+#endif
+
 /**
  * NOTE: NALU only takes a c-style data pointer - it does not do any memory management. Use NALUBuffer if you need to store a NALU.
  * Since H264 and H265 are that similar, we use this class for both (make sure to not call methds only supported on h265 with a h264 nalu,though)
