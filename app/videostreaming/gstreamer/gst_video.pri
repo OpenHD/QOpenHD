@@ -1,6 +1,6 @@
 DEFINES += QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 
-#DEFINES += QOPENHD_GSTREAMER_PRIMARY_VIDEO
+DEFINES += QOPENHD_GSTREAMER_PRIMARY_VIDEO
 DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
 
 SOURCES += \
@@ -69,7 +69,8 @@ android{
             -lgsttcp \
             -lgstapp \
             -lgstalaw \
-            -lgstautodetect
+            -lgstautodetect \
+            -lgstqmlgl
 
 
         # Rest of GStreamer dependencies
@@ -93,8 +94,37 @@ android{
     }else {
         message(Gstreamer prebuilt directory does not exist)
     }
-}else {
+}
+else:linux {
     message(gst linux)
     CONFIG += link_pkgconfig
     PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
+} else:WindowsBuild {
+#- gstreamer installed by default under c:/gstreamer
+    GST_ROOT = f:/gstreamer/1.0/msvc_x86_64
+
+    exists($$GST_ROOT) {
+        message(gst windows)
+        CONFIG      += VideoEnabled
+
+        LIBS        += -L$$GST_ROOT/lib -lgstreamer-1.0 -lgstgl-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstapp-1.0
+        LIBS        += -lglib-2.0 -lintl -lgobject-2.0
+
+        INCLUDEPATH += \
+            $$GST_ROOT/include \
+            $$GST_ROOT/include/gstreamer-1.0 \
+            $$GST_ROOT/include/glib-2.0 \
+            $$GST_ROOT/lib/gstreamer-1.0/include \
+            $$GST_ROOT/lib/glib-2.0/include
+
+        DESTDIR_WIN = $$replace(DESTDIR, "/", "\\")
+        GST_ROOT_WIN = $$replace(GST_ROOT, "/", "\\")
+
+        # Copy main GStreamer runtime files
+        QMAKE_POST_LINK += $$escape_expand(\\n) xcopy \"$$GST_ROOT_WIN\\bin\*.dll\" \"$$DESTDIR_WIN\" /S/Y $$escape_expand(\\n)
+        QMAKE_POST_LINK += xcopy \"$$GST_ROOT_WIN\\bin\*.\" \"$$DESTDIR_WIN\" /S/Y $$escape_expand(\\n)
+
+        # Copy GStreamer plugins
+        QMAKE_POST_LINK += $$escape_expand(\\n) xcopy \"$$GST_ROOT_WIN\\lib\\gstreamer-1.0\\*.dll\" \"$$DESTDIR_WIN\\gstreamer-plugins\\\" /Y $$escape_expand(\\n)
+    }
 }

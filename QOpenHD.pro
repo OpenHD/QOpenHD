@@ -103,6 +103,14 @@ LinuxBuild {
     include(app/videostreaming/gstreamer/gst_video.pri)
 }
 
+WindowsBuild {
+    QT += gui-private
+    include(app/videostreaming/gstreamer/gst_video.pri)
+    DEFINES += HAVE_QT_WIN32 HAVE_QT_QPA_HEADER
+    DEFINES += GST_USE_UNSTABLE_API
+    LIBS += opengl32.lib user32.lib
+}
+
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
     app/adsb/adsbvehicle.cpp \

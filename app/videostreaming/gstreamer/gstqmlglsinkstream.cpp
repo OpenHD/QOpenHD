@@ -149,18 +149,21 @@ GstQmlGlSinkStream::~GstQmlGlSinkStream() {
 
 GstQmlGlSinkStream& GstQmlGlSinkStream::instancePrimary()
 {
+    qDebug() << "GstQmlGlSinkStream::instancePrimary()";
     static GstQmlGlSinkStream instancePrimary{true};
     return instancePrimary;
 }
 
 GstQmlGlSinkStream& GstQmlGlSinkStream::instanceSecondary()
 {
+    qDebug() << "GstQmlGlSinkStream::instanceSecondary()";
     static GstQmlGlSinkStream instanceSecondary{false};
     return instanceSecondary;
 }
 
 
 void GstQmlGlSinkStream::init(QQuickItem* videoOutputWindow) {
+    qDebug() << "GstQmlGlSinkStream::init();START";
     // we do not support changing the output window once it is assigned
     assert(m_videoOutputWindow==nullptr);
     assert(videoOutputWindow);
@@ -169,7 +172,7 @@ void GstQmlGlSinkStream::init(QQuickItem* videoOutputWindow) {
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
     QObject::connect(timer, &QTimer::timeout, this, &GstQmlGlSinkStream::timerCallback);
     timer->start(1000);
-    qDebug() << "GstQmlGlSinkStream::init()";
+    qDebug() << "GstQmlGlSinkStream::init();END";
 }
 
 void GstQmlGlSinkStream::check_common_mistakes_then_init(QQuickItem* qmlglsinkvideoitem)

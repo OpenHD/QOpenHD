@@ -17,6 +17,37 @@
 #include <QDebug>
 #include <logging/logmessagesmodel.h>
 
+G_BEGIN_DECLS
+// The static plugins we use
+#if defined(__android__) || defined(__ios__)
+    GST_PLUGIN_STATIC_DECLARE(coreelements);
+GST_PLUGIN_STATIC_DECLARE(playback);
+GST_PLUGIN_STATIC_DECLARE(libav);
+GST_PLUGIN_STATIC_DECLARE(rtp);
+GST_PLUGIN_STATIC_DECLARE(rtsp);
+GST_PLUGIN_STATIC_DECLARE(udp);
+GST_PLUGIN_STATIC_DECLARE(videoparsersbad);
+GST_PLUGIN_STATIC_DECLARE(x264);
+GST_PLUGIN_STATIC_DECLARE(rtpmanager);
+GST_PLUGIN_STATIC_DECLARE(isomp4);
+GST_PLUGIN_STATIC_DECLARE(matroska);
+GST_PLUGIN_STATIC_DECLARE(mpegtsdemux);
+GST_PLUGIN_STATIC_DECLARE(opengl);
+GST_PLUGIN_STATIC_DECLARE(tcp);
+GST_PLUGIN_STATIC_DECLARE(app);//XX
+#if defined(__android__)
+GST_PLUGIN_STATIC_DECLARE(androidmedia);
+#elif defined(__ios__)
+GST_PLUGIN_STATIC_DECLARE(applemedia);
+#endif
+#endif
+#ifndef __windows__
+// at windows we use dynamic libraries
+GST_PLUGIN_STATIC_DECLARE(qmlgl);
+GST_PLUGIN_STATIC_DECLARE(qgc);
+#endif
+G_END_DECLS
+
 /**
  * @brief initGstreamer, throw a run time exception when failing
  */
@@ -31,10 +62,23 @@ static void initGstreamerOrThrow(){
     }
 }
 
+#if (defined(Q_OS_MAC) && defined(QGC_INSTALL_RELEASE)) || defined(Q_OS_WIN)
+static void qgcputenv(const QString& key, const QString& root, const QString& path)
+{
+    QString value = root + path;
+    qputenv(key.toStdString().c_str(), QByteArray(value.toStdString().c_str()));
+}
+#endif
+
 // Similar to above, but takes argc/ argv from command line.
 // This way it is possible to pass on extra stuff at run time onto gstreamer by launching
 // QOpenHD with some argc/ argvalues
 static void init_gstreamer(int argc,char* argv[]){
+#ifdef __windows__
+    QString currentDir = QCoreApplication::applicationDirPath();
+    qgcputenv("GST_PLUGIN_PATH", currentDir, "/gstreamer-plugins");
+#endif
+
     GError* error = nullptr;
     if (!gst_init_check(&argc,&argv, &error)) {
         std::stringstream ss;
@@ -44,6 +88,7 @@ static void init_gstreamer(int argc,char* argv[]){
         qWarning("gst_init_check failed");
         return;
     }
+
     qDebug("gst_init_check success");
 }
 

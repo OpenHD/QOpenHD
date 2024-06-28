@@ -37,17 +37,21 @@
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
 #include "decodingstatistcs.h"
+
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
 #include "QSGVideoTextureItem.h"
 #endif
+
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #include "videostreaming/gstreamer/gst_helper.hpp"
 #include "videostreaming/gstreamer/gstqmlglsinkstream.h"
 #endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
 #include <videostreaming/android/qandroidmediaplayer.h>
 #include <videostreaming/android/qsurfacetexture.h>
 #endif
+
 #include "videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 #include "videostreaming/vscommon/audio_playback.h"
 // Video end
@@ -405,15 +409,18 @@ int main(int argc, char *argv[]) {
 
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(true));
-#ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
+    #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
     engine.rootContext()->setContextProperty("_primary_video_gstreamer_qml", &GstQmlGlSinkStream::instancePrimary());
-#endif
-#ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
+    #endif
+
+    #ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
     engine.rootContext()->setContextProperty("_secondary_video_gstreamer_qml", &GstQmlGlSinkStream::instanceSecondary());
-#endif
+    #endif
+
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(false));
 #endif
+
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
     // QT doesn't have the define(s) from c++
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(true));
@@ -435,7 +442,7 @@ int main(int argc, char *argv[]) {
 #else
      engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(false));
 #endif
-    platform_start_audio_streaming_if_enabled();
+    //platform_start_audio_streaming_if_enabled();
 // Platform - dependend video end  -----------------------------------------------------------------
 
     // This allows to use the defines as strings in qml

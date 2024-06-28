@@ -12,7 +12,7 @@ GstGLVideoItem {
 
     Component.onCompleted: {
         console.log("mainVideoGStreamer (Qmlglsink) created")
-        _secondary_video_gstreamer_qml.check_common_mistakes_then_init(mainVideoGStreamer)
+        _primary_video_gstreamer_qml.check_common_mistakes_then_init(mainVideoGStreamer)
     }
 
 }
