@@ -69,7 +69,7 @@ jobs:
         run: |
           ls -a
           sudo apt install -y python3-pip
-          pip install cloudsmith-api --break-system-packages
-          pip install cloudsmith-cli --break-system-packages
+          pip install cloudsmith-api
+          pip install cloudsmith-cli
           cloudsmith push deb -k ${{ secrets.CLOUDSMITH_API_KEY }} openhd/${{ github.ref_name }}/debian/bullseye *.deb
 
