@@ -51,7 +51,6 @@ ScrollView {
 
             SettingBaseElement{
                 m_short_description: "Show FC Messages in HUD"
-                m_long_description: "When enabled, FC log messages are shown in the HUD log messages element,e.g. they might apear before,during and after flight"
                 Switch {
                     width: 32
                     height: elementHeight

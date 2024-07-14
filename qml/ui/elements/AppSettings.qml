@@ -231,7 +231,7 @@ Settings {
 
     property bool show_message_hud: true
 
-    property bool show_horizon: true
+    property bool show_horizon: false
     property bool horizon_invert_pitch: false
     property bool horizon_invert_roll: false
     property double horizon_width: 2
@@ -250,7 +250,7 @@ Settings {
     property bool show_heading_ladder: true
 
     // experimental
-    property bool show_performance_horizon: false
+    property bool show_performance_horizon: true
     // experimental end
 
     // false by default for now, since it has a big performance hit. (only noticeable on embedded devices like rpi -
@@ -284,7 +284,7 @@ Settings {
     property bool altitude_ladder_show_unit: true
 
     property bool show_altitude_second: true
-    property bool altitude_second_msl_rel: true
+    property bool altitude_second_msl_rel: false
 
     property bool show_arrow: true
     property bool arrow_invert: false
@@ -306,7 +306,7 @@ Settings {
     property double map_size: 1
     property bool show_throttle: true
 
-    property bool show_control: true
+    property bool show_control: false
     property bool double_control: true
     property bool control_rev_pitch: false
     property bool control_rev_roll: false

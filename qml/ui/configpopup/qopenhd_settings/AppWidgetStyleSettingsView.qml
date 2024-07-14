@@ -49,7 +49,7 @@ ScrollView {
                         Layout.fillHeight: true
                     }
                     Button{
-                        text: "GREEN-Norbert"
+                        text: "Matrix"
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
@@ -58,6 +58,20 @@ ScrollView {
                             settings.color_glow="black"
                             settings.color_shape="#ff14ff00"
                             settings.color_text="#ff05ff00"
+                            settings.color_warn="red"
+                            settings.font_text="Quicksand"
+                        }
+                    }
+                    Button{
+                        text: "Trainwreck"
+                        Layout.alignment: Qt.AlignRight
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        onClicked: {
+                            settings.color_caution="yellow"
+                            settings.color_glow="black"
+                            settings.color_shape="#ec71bf"
+                            settings.color_text="#ffff00"
                             settings.color_warn="red"
                             settings.font_text="Quicksand"
                         }

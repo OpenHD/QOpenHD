@@ -131,7 +131,7 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
             set_has_params_fetched(true);
         }else{
             if(log_result){
-                QOpenHD::instance().show_toast("Fetch all parameters failed, is your uplink working ? Use the status view for more info..",true);
+                QOpenHD::instance().show_toast("Fetch all parameters failed",true);
             }
         }
         m_is_currently_busy=false;
@@ -240,7 +240,7 @@ QString MavlinkSettingsModel::try_update_parameter_int(const QString param_id,in
         return ss.str().c_str();
     }
     if(result==SetParamResult::NO_CONNECTION){
-        return "Update failed,please try again";
+        return "Update failed,try again";
     }
     return "Update failed, unknown error";
 }
@@ -261,7 +261,7 @@ QString MavlinkSettingsModel::try_update_parameter_string(const QString param_id
         return ss.str().c_str();
     }
     if(result==SetParamResult::NO_CONNECTION){
-        return "Update failed,please try again";
+        return "Update failed,try again";
     }
     return "Update failed, unknown error";
 }
@@ -551,7 +551,7 @@ MavlinkSettingsModel::ParamStringEnum MavlinkSettingsModel::string_param_get_enu
 QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 {
     if(param_id=="V_OS_CAM_CONFIG"){
-        return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi after a 3second delay";
+        return "WARNING: Changing this parameter will reboot the Air Unit";
     }
     return "";
 }

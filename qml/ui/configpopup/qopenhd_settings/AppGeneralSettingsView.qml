@@ -29,8 +29,7 @@ ScrollView {
             anchors.right: parent.right
 
             SettingBaseElement{
-                m_short_description: "Enable speech"
-                m_long_description: "Enable text to speech - events like flight mode change are given as audio messages"
+                m_short_description: "Enable text to speech"
 
                 Switch {
                     width: 32
@@ -44,7 +43,7 @@ ScrollView {
             }
 
             SettingBaseElement{
-                m_short_description: "Imperial units"
+                m_short_description: "Use Imperial units"
 
                 Switch {
                     width: 32
@@ -64,7 +63,7 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Animation Smoothing,0 to disable")
+                    text: qsTr("Animation Smoothing")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -129,7 +128,7 @@ ScrollView {
             }
 
             SettingBaseElement{
-                m_short_description: "Language / Locale"
+                m_short_description: "Language"
 
                 LanguageSelect {
                     id: languageSelectBox
@@ -143,31 +142,6 @@ ScrollView {
             }
 
             // exp
-            SettingBaseElement{
-                m_short_description: "N Cameras to controll"
-
-                SpinBox {
-                    id: dev_qopenhd_n_cameras_spinbox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 1
-                    to: 2
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.dev_qopenhd_n_cameras
-                    onValueChanged: {
-                        var actually_changed=settings.dev_qopenhd_n_cameras!=value
-                        settings.dev_qopenhd_n_cameras = value
-                        if(actually_changed){
-                            _restartqopenhdmessagebox.show()
-                        }
-                    }
-                }
-            }
             SettingBaseElement{
                 m_short_description: "Mavlink sys id"
                 m_long_description: "Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart."
@@ -195,7 +169,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Hide identity offset lattitude"
+                m_short_description: "Latitude GPS offset"
                 m_long_description: "Set this to a random value only you know to hide lat identity"
 
                 /*SpinBox {
@@ -235,7 +209,7 @@ ScrollView {
 
             }
             SettingBaseElement{
-                m_short_description: "Hide identity offset longitude"
+                m_short_description: "Longitude GPS offset"
                 m_long_description: "Set this to a random value only you know to hide lon identity"
 
                 XDecimalSpinBox{

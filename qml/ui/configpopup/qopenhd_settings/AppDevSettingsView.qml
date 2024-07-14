@@ -29,8 +29,7 @@ ScrollView {
             anchors.right: parent.right
             //
             SettingBaseElement{
-                m_short_description: "DEV_SHOW_WHITELISTED_PARAMS"
-                m_long_description: "Enabling this gives you full controll over the mavlink parameters set openhd exposes (both air and ground) BUT BE WARNED yu can easily break things!"
+                m_short_description: "Enable advanced settings"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -39,26 +38,14 @@ ScrollView {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.dev_show_whitelisted_params
-                    onCheckedChanged: settings.dev_show_whitelisted_params = checked
+                    onCheckedChanged: {
+                        settings.dev_show_whitelisted_params = checked
+                        settings.dev_show_advanced_button = checked
+                    }
                 }
             }
             SettingBaseElement{
-                m_short_description:"DEV_SHOW_ADVANCED_BUTTON"
-                m_long_description: "Allows more customization of the mavlink parameters set than what openhd exposes, BE WARNED you can easily break things this way !"
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_show_advanced_button
-                    onCheckedChanged: settings.dev_show_advanced_button = checked
-                }
-            }
-            SettingBaseElement{
-                m_short_description:"dev_allow_freq_change_when_armed"
-                m_long_description: "Allows changing the frequency and channel width while armed, THIS CAN BREAK YOUR LINK DURING FLIGHT !"
+                m_short_description:"Allow frequency change when armed"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -71,8 +58,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description:"dev_show_5180mhz_lowband"
-                m_long_description: "Shows the 5180Mhz, 5200Mhz and 5220Mhz channels by default (NOTE: These channels are rarely free)"
+                m_short_description:"Show all wifi channels"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -85,8 +71,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description:"dev_disable_autofetch_params"
-                m_long_description: "Disables automatic fetching of the air / ground openhd param set(s)"
+                m_short_description:"Disable auto fetch"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -124,7 +109,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "Load Settings from file"
-                m_long_description: "Load a previosuly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux."
+                m_long_description: "Load a previosly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux."
 
                 Button {
                     id:load
@@ -148,7 +133,6 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "Reset all QOpenHD Settings"
-                m_long_description: "Reset all QOpenHD Settings (e.g. OSD layout,...). Does not reset your openhd settings on the air or ground unit. Only works from/to linux."
 
                 Button {
                     id:reset
@@ -167,7 +151,6 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "Enable audio playback"
-                m_long_description: "Enable live audio playback in QOpenHD, NOTE: audio streaming is not supported in OpenHD yet. Requires restart of QOpenHD."
 
                 Switch {
                     width: 32
@@ -181,8 +164,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "dirty_enable_inav_hacks"
-                m_long_description: "NEVER ENABLE UNLESS YOU HAVE TO. INAV mavlink support is quirky in some ways to say the least."
+                m_short_description: "Improve Inav support"
 
                 Switch {
                     width: 32
@@ -196,8 +178,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "dev_wb_show_no_stbc_enabled_warning"
-                m_long_description: "Do not show the STBC recommended enabled message"
+                m_short_description: "Disable STBC warning"
                 Switch {
                     width: 32
                     height: elementHeight

@@ -30,7 +30,6 @@ ScrollView {
 
             SettingBaseElement{
                 m_short_description: "Screen Scale"
-                m_long_description: "Increase OSD elements and text size, requires restart of QOpenHD"
                 Text {
                     text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
                     font.pixelSize: 16
@@ -67,8 +66,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Cursor AutoHide"
-                m_long_description: "Automatically hide cursor on inactivity"
+                m_short_description: "Auto hide cursor"
 
                 Switch {
                     width: 32
@@ -87,8 +85,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Custom cursor"
-                m_long_description: "Customize cursor for high visibility in the field"
+                m_short_description: "Set cursor Skin"
                 SpinBox {
                     width: 210
                     font.pixelSize: 14
@@ -108,8 +105,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Custom cursor scale"
-                m_long_description: "Scale of your custom cursor. NOTE: Only works if custom cursor is not 0 !"
+                m_short_description: "Cursor Scale"
 
                 SpinBox {
                     width: 210
@@ -130,12 +126,11 @@ ScrollView {
                 }
             }
             SettingsCategory{
-                m_description: "ADVANCED USERS ONLY"
+                m_description: "Advanced settings"
                 m_hide_elements: true
 
                 SettingBaseElement{
                     m_short_description: "Screen rotation"
-                    m_long_description: "Rotate QOpenHD, can be usefull if your screen is installed the wrong way around. Might or might not work."
                     // anything other than 0 and 180 can breaks things
                     ComboBox {
                         height: elementHeight
@@ -166,8 +161,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Background transparent"
-                    m_long_description: "Use a transparent surface, such that another application can play (hw composer accelerated) video behind the QOpenHD surface."
+                    m_short_description: "Transparent Background"
 
                     Switch {
                         width: 32
@@ -181,8 +175,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Force full screen"
-                    m_long_description: "Force Full screen if QOpenHD is not already full screen"
+                    m_short_description: "Full screen"
 
                     Switch {
                         width: 32
@@ -211,30 +204,28 @@ ScrollView {
                     }
                 }
 
-                SettingBaseElement{
-                    m_short_description: "Settings window size"
-                    m_long_description: "Change the size of the settings window, such that you can view the live video while changing settings"
+                // SettingBaseElement{
+                //     m_short_description: "Settings window scale"
 
-                    SpinBox {
-                        width: 210
-                        font.pixelSize: 14
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
+                //     SpinBox {
+                //         width: 210
+                //         font.pixelSize: 14
+                //         height: elementHeight
+                //         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                //         anchors.right: parent.right
+                //         anchors.verticalCenter: parent.verticalCenter
 
-                        from: 50
-                        to: 100
-                        stepSize: 1
-                        value: settings.screen_settings_overlay_size_percent
-                        onValueChanged: {
-                            settings.screen_settings_overlay_size_percent = value
-                        }
-                    }
-                }
+                //         from: 50
+                //         to: 100
+                //         stepSize: 1
+                //         value: settings.screen_settings_overlay_size_percent
+                //         onValueChanged: {
+                //             settings.screen_settings_overlay_size_percent = value
+                //         }
+                //     }
+                // }
                 SettingBaseElement{
-                    m_short_description: "Settings window transparency"
-                    m_long_description: "make the openhd parameters window semi-transparent"
+                    m_short_description: "Transparent settings"
 
                     Switch {
                         width: 32
