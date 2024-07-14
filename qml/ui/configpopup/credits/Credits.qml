@@ -38,55 +38,35 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "Consti"
-                    font.bold: true
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
-                    color: "black"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-
-                Image {
-                    id: ee1
-                    visible: true
-                    source: "../../../resources/master1.png"
-                    width: creditsRectangle.width/5
-                    height: creditsRectangle.width/5
-                }
-            }
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            color: "#f6f6f6"
-
-            Column {
-                anchors.centerIn: parent
-                spacing: 5
-
-                Text {
                     text: "Raphael"
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
+                Text {
+                    text: "raphaelscholle"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*0.7
+                    color: "grey"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
 
                 Image {
-                    id: ee2
+                    id: ee1
                     visible: true
                     source: "../../../resources/master2.png"
                     width: creditsRectangle.width/5
                     height: creditsRectangle.width/5
                 }
             }
-
         }
 
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: "#f6f6f6"
+
             Column {
                 anchors.centerIn: parent
                 spacing: 5
@@ -100,11 +80,49 @@ Rectangle {
                 }
 
                 Image {
-                    id: ee3
+                    id: ee2
                     visible: true
                     source: "../../../resources/master3.png"
                     width: creditsRectangle.width/5
                     height: creditsRectangle.width/5
+                }
+            }
+
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: "#f6f6f6"
+            Column {
+                anchors.centerIn: parent
+                spacing: 5
+
+                Text {
+                    text: "Former Developers"
+                    font.bold: true
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
+                    color: "black"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                Text {
+                    text: "   "
+                    color: "black"
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size*1.2
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                }
+
+                Repeater {
+                    model: ["","","consti10","steveatinfincia","rodizio1","befinitv"]
+
+                    Text {
+                        text: modelData
+                        color: "black"
+                        font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                    }
                 }
             }
 
@@ -140,7 +158,7 @@ Rectangle {
                 Repeater {
                     model: ["pilotnbr1", "limitlessgreen", "michell", "roman", "jweijs", "user1321",
                             "flavio", "hdfpv", "htcohio", "raymond", "yes21", "mjc506", "cq112358",
-                            "steveatinfincia", "norbert", "macdaddyfpv", "ivan"]
+                            "norbert", "macdaddyfpv", "ivan"]
 
                     Text {
                         text: modelData
