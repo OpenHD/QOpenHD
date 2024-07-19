@@ -64,7 +64,15 @@ MapWidgetForm {
     function createMap(parent, provider) {
         console.log("createMap(" + provider + ")");
         var plugin
-        plugin = Qt.createQmlObject('import QtLocation 5.15; Plugin{ name:"' + provider + '"}', mapWidget);
+        plugin = Qt.createQmlObject(`
+                                    import QtLocation 5.15
+                                    Plugin {
+                                    name: "` + provider + `"
+                                    PluginParameter {
+                                    name: "osm.mapping.custom.host";
+                                    value: "https://tile.openstreetmap.org/" }
+                                    }
+                                    `, mapWidget);
         console.log("Using plugin: " + plugin.name);
 
         if (plugin.supportsMapping()) {
