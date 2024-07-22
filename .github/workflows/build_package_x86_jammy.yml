@@ -38,7 +38,7 @@ jobs:
 
     - name: Build with make
       run: |
-        sudo ./package.sh x86_64 ubuntu jammy
+        sudo ./package.sh regular x86_64 ubuntu jammy
     
     - name: Push
       id: push

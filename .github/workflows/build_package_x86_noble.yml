@@ -39,7 +39,7 @@ jobs:
       - name: Build with make
         run: |
           cd QOpenHD
-          ./package.sh x86_64 ubuntu noble
+          ./package.sh regular x86_64 ubuntu noble
           ls -a
 
       - name: Upload to Github

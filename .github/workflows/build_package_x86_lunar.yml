@@ -42,7 +42,7 @@ jobs:
       - name: Build with make
         run: |
           cd QOpenHD
-          ./package.sh x86_64 ubuntu lunar
+          ./package.sh regular x86_64 ubuntu lunar
           ls -a
 
       - name: Upload to Github
