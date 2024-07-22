@@ -10,7 +10,7 @@ import OpenHD 1.0
 BaseJoyEditElement{
     m_title: "Frequency"
 
-    // 5700,5745,5785,5825,5865
+    // 5700,5745,5785,5825,5865,5280,5260
     ListModel{
         id: frequencies_model
         ListElement {frequency: 5700; verbose:"5700Mhz\nOHD 1"}
@@ -18,6 +18,8 @@ BaseJoyEditElement{
         ListElement {frequency: 5785; verbose:"5785Mhz\nOHD 3"}
         ListElement {frequency: 5825; verbose:"5825Mhz\nOHD 4"}
         ListElement {frequency: 5865; verbose:"5865Mhz\nOHD 5"}
+        ListElement {frequency: 5280; verbose:"5280Mhz\nOHD 6"}
+        ListElement {frequency: 5260; verbose:"5260Mhz\nOHD 7"}
     }
     ListModel{
         id: frequencies_model_with_5180mhz_lowband
@@ -31,6 +33,8 @@ BaseJoyEditElement{
         ListElement {frequency: 5785; verbose:"5785Mhz\nOHD 3"}
         ListElement {frequency: 5825; verbose:"5825Mhz\nOHD 4"}
         ListElement {frequency: 5865; verbose:"5865Mhz\nOHD 5"}
+        ListElement {frequency: 5260; verbose:"5260Mhz\nOHD 6"}
+        ListElement {frequency: 5280; verbose:"5280Mhz\nOHD 7"}
     }
     function get_model(){
         if(settings.dev_show_5180mhz_lowband){

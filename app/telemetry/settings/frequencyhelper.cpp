@@ -16,7 +16,7 @@ QList<int> FrequencyHelper::get_frequencies(int filter)
 {
     QList<int> ret;
     if(filter==0){
-        auto tmp=openhd::get_openhd_channels_1_to_5();
+        auto tmp=openhd::get_openhd_channels_1_to_7();
         for(auto& channel:tmp){
             ret.push_back(channel.frequency);
         }
@@ -83,11 +83,11 @@ bool FrequencyHelper::get_frequency_radar(int frequency_mhz)
 
 int FrequencyHelper::get_frequency_openhd_race_band(int frequency_mhz)
 {
-    // 5700,5745,5785,5825,5865
+    // 5700,5745,5785,5825,5865,5260,5280
     if(frequency_mhz==5700){
         return 1;
     }
-    if(frequency_mhz==5745){
+    if(frequency_mhz== ){
         return 2;
     }
     if(frequency_mhz==5785){
@@ -98,6 +98,12 @@ int FrequencyHelper::get_frequency_openhd_race_band(int frequency_mhz)
     }
     if(frequency_mhz==5865){
         return 5;
+    }
+    if(frequency_mhz==5260){
+        return 6;
+    }
+    if(frequency_mhz==5280){
+        return 7;
     }
     return -1;
 }

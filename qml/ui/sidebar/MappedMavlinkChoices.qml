@@ -133,7 +133,7 @@ Item {
     }
 
     // Built dynamically depending on the settings
-    // 5700,5745,5785,5825,5865
+    // 5700,5745,5785,5825,5865,5260,5280
     ListModel{
         id: frequencies_model
         ListElement {value: 5700; verbose:"5700Mhz\nOHD 1"}
@@ -141,6 +141,8 @@ Item {
         ListElement {value: 5785; verbose:"5785Mhz\nOHD 3"}
         ListElement {value: 5825; verbose:"5825Mhz\nOHD 4"}
         ListElement {value: 5865; verbose:"5865Mhz\nOHD 5"}
+        ListElement {value: 5260; verbose:"5260Mhz\nOHD 6"}
+        ListElement {value: 5280; verbose:"5280Mhz\nOHD 7"}
     }
     ListModel{
         id: frequencies_model_with_5180mhz_lowband
@@ -154,6 +156,8 @@ Item {
         ListElement {value: 5785; verbose:"5785Mhz\nOHD 3"}
         ListElement {value: 5825; verbose:"5825Mhz\nOHD 4"}
         ListElement {value: 5865; verbose:"5865Mhz\nOHD 5"}
+        ListElement {value: 5260; verbose:"5260Mhz\nOHD 6"}
+        ListElement {value: 5280; verbose:"5280Mhz\nOHD 7"}
     }
     ListModel{
         id: elements_model_channel_width
