@@ -245,7 +245,7 @@ Rectangle{
                     visible:false
                     onClicked: {
                         var text="Please select a channel / frequency free of noise and interference. The current loss / pollution stats below can help,"+
-                                "as well as the analyze channels feature or a frequency analyzer on your phone. DEF: Show OpenHD standard channels [1-5] only - they "+
+                                "as well as the analyze channels feature or a frequency analyzer on your phone. DEF: Show OpenHD standard channels [1-7] only - they "+
                                 " often are free of wifi pollution and should be used."
                         _messageBoxInstance.set_text_and_show(text)
                     }

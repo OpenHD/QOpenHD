@@ -46,7 +46,7 @@ PopupBigGeneric{
 
     ListModel{
         id: model_filter
-        ListElement {title: "OHD [1-5]"; value: 0}
+        ListElement {title: "OHD [1-7]"; value: 0}
         ListElement {title: "All 2.4G"; value: 1}
         ListElement {title: "All 5.8G"; value: 2}
     }
@@ -155,7 +155,7 @@ PopupBigGeneric{
                 //width: main_background.width>m_chart_view_minimum_width ? main_background.width : m_chart_view_minimum_width;
                 width: {
                     const screen_width = main_background.width-10;
-                    // 2.4G and OHD 1-5 should always fit into screen size
+                    // 2.4G and OHD 1-7 should always fit into screen size
                     const filter=comboBoxWhichFrequencyToAnalyze.currentIndex;
                     if(filter==0 || filter==1){
                          return screen_width;
