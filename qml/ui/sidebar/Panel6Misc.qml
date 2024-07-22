@@ -24,7 +24,7 @@ SideBarBasePanel{
         spacing: 5
         MavlinkChoiceElement2{
             id: air_wifi_hs
-            m_title: "AIR WIFI HS"
+            m_title: "Air Hotspot"
             m_param_id: "WIFI_HOTSPOT_E"
             m_settings_model: _ohdSystemAirSettingsModel
             onGoto_previous: {
@@ -36,7 +36,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: gnd_wifi_hs
-            m_title: "GND WIFI HS"
+            m_title: "Ground Hotspot"
             m_param_id: "WIFI_HOTSPOT_E"
             m_settings_model: _ohdSystemGroundSettings
             onGoto_previous: {

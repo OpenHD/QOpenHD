@@ -18,25 +18,31 @@ Card {
     cardName: qsTr("QOpenHD")
     cardNameColor: "black"
     visible:  _restartqopenhdmessagebox.visible
-    cardBody: Column {
-        height: 200
-        width: 320
-        Text {
-            id: text
-            text:  _restartqopenhdmessagebox.text
-            width: parent.width-24
-            height:parent.height
-            leftPadding: 12
-            rightPadding: 12
-            font.pixelSize: 14
-            wrapMode: Text.WordWrap
+    Rectangle {
+        width: parent.width-24
+        height: parent.height-75
+        color: "transparent"
+        anchors.centerIn: parent
+
+        Column {
+            anchors.fill: parent
+
+            Text {
+                id: text
+                text: _restartqopenhdmessagebox.text
+                width: parent.width - 24
+                height: parent.height
+                font.pixelSize: 14
+                wrapMode: Text.WordWrap
+            }
         }
     }
     hasFooter: true
     cardFooter: Item {
         anchors.fill: parent
+        anchors.leftMargin: 12
         Button {
-            width: 140
+            width: 120
             height: 48
             anchors.right: parent.right
             anchors.rightMargin: 12
@@ -46,7 +52,7 @@ Card {
             font.capitalization: Font.MixedCase
             Material.accent: Material.Grey
             highlighted: true
-            text:  qsTr("Restart now")
+            text:  qsTr("Restart")
             onPressed: {
                 _restartqopenhdmessagebox.hide_element()
                 // Let service restart
@@ -54,7 +60,7 @@ Card {
             }
         }
         Button {
-            width: 140
+            width: 120
             height: 48
             anchors.left: parent.left
             anchors.rightMargin: 12

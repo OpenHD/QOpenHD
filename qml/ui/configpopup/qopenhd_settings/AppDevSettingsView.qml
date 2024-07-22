@@ -207,7 +207,7 @@ ScrollView {
                 width: parent.width
                 Text {
                     id: simplePopupHackText
-                    text: "This will erase all your QOpenHD settings (Layout of OSD elements, ...) and is irreversible, continue only if you know what you're doing!"
+                    text: "Do you really want to erase all your QOpenHD settings?"
                     width: parent.width-24
                     height:parent.height
                     leftPadding: 12

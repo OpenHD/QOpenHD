@@ -38,9 +38,9 @@ PopupBigGeneric{
 
     ListModel{
         id: model_chann_to_scan
-        ListElement {title: "OpenHD [1-5] only (fast)"; value: 0}
-        ListElement {title: "All 2.4G channels (slow)"; value: 1}
-        ListElement {title: "All 5.8G channels (slow)"; value: 2}
+        ListElement {title: "OpenHD [1-7] only"; value: 0}
+        ListElement {title: "All 2.4G channels"; value: 1}
+        ListElement {title: "All 5.8G channels"; value: 2}
     }
 
     ColumnLayout{

@@ -24,7 +24,7 @@ SideBarBasePanel{
         spacing: 5
         MavlinkChoiceElement2{
             id: brightness
-            m_title: "BRIGHTNESS"
+            m_title: "Brightness"
             m_param_id: "BRIGHTNESS"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
@@ -36,7 +36,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: saturation
-            m_title: "SATURATION"
+            m_title: "Saturation"
             m_param_id: "SATURATION"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
@@ -48,7 +48,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: contrast
-            m_title: "CONTRAST"
+            m_title: "Contrast"
             m_param_id: "CONTRAST"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
@@ -60,7 +60,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: sharpness
-            m_title: "SHARPNESS"
+            m_title: "Sharpness"
             m_param_id: "SHARPNESS"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {

@@ -14,6 +14,7 @@ import "../elements"
 RowLayout {
     property string override_text_left: "TODO"
     property string override_text_right: "TODO"
+    property string override_color_right: "#fff"
 
     Text {
         width: 150
@@ -29,7 +30,7 @@ RowLayout {
         text: override_text_right
         font.pixelSize: 14
         font.family: "AvantGarde-Medium"
-        color: "#ffffff"
+        color: override_color_right
         smooth: true
 
     }

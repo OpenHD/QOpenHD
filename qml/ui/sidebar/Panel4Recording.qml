@@ -11,7 +11,7 @@ import OpenHD 1.0
 
 import "../elements"
 
-SideBarBasePanel{
+SideBarBasePanel {
     override_title: "Air recording"
 
     function takeover_control(){
@@ -20,35 +20,51 @@ SideBarBasePanel{
 
     Column {
         anchors.top: parent.top
-        anchors.topMargin: secondaryUiHeight/8
+        anchors.topMargin: secondaryUiHeight / 8
         spacing: 5
 
-        MavlinkChoiceElement2{
-            id: recording_mode
-            m_title: "RECORDING MODE"
-            m_param_id: "AIR_RECORDING_E"
-            m_settings_model: _airCameraSettingsModel
-            onGoto_previous: {
-                sidebar.regain_control_on_sidebar_stack()
-            }
-            onGoto_next: {
-                // Do nothing
-            }
-        }
-        Text{
-            text: {
-                var tmp="CAM1 AIR RECORDING:";
-                if(!_ohdSystemAir.is_alive){
-                    return tmp+" N/A";
+        Rectangle {
+            color: "transparent"
+            height: recording_mode.height
+            width: recording_mode.width
+            MavlinkChoiceElement2 {
+                id: recording_mode
+                anchors.centerIn: parent
+                anchors.leftMargin: 40
+                m_title: "Recording"
+                m_param_id: "AIR_RECORDING_E"
+                m_settings_model: _airCameraSettingsModel
+                onGoto_previous: {
+                    sidebar.regain_control_on_sidebar_stack()
                 }
-                return tmp+_cameraStreamModelPrimary.camera_recording_mode_to_string(_cameraStreamModelPrimary.air_recording_active)
+                onGoto_next: {
+                    // Do nothing
+                }
             }
-            font.pixelSize: 14
-            font.family: "AvantGarde-Medium"
-            color: "#ffffff"
-            smooth: true
         }
-
+        Rectangle {
+            color: "#171d25"
+            height: recording_mode.height
+            width: recording_mode.width
+            Text {
+                anchors.centerIn: parent
+                anchors.leftMargin: 40
+                text: {
+                    var tmp = "  Status";
+                    if (!_ohdSystemAir.is_alive) {
+                        return tmp + "                   disabled ";
+                    }
+                    return tmp + _cameraStreamModelPrimary.camera_recording_mode_to_string(_cameraStreamModelPrimary.air_recording_active)
+                }
+                font.pixelSize: 18
+                color: "white"
+                smooth: true
+            }
+        }
+        Rectangle {
+            color: secondaryUiColor
+            height: recording_mode.height+120
+            width: recording_mode.width
+        }
     }
-
 }

@@ -68,7 +68,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: edit_rate_element
-            m_title: "Rate (BW)"
+            m_title: "Bandwith"
             m_param_id: mPARAM_ID_RATE
             m_settings_model: _ohdSystemAirSettingsModel
             onGoto_previous: {

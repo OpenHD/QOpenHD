@@ -44,14 +44,6 @@ Rectangle {
                     color: "black"
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
-                Text {
-                    text: "raphaelscholle"
-                    font.bold: true
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size*0.7
-                    color: "grey"
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-
                 Image {
                     id: ee1
                     visible: true

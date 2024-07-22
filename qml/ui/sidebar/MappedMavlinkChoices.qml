@@ -78,7 +78,7 @@ Item {
         id: elements_model_air_recording
         ListElement {value: 0; verbose:"ALWAYS\nOFF"}
         ListElement {value: 1; verbose:"ALWAYS\nON"}
-         ListElement {value: 2; verbose:"AUTO\n(WHEN ARMED)"}
+        ListElement {value: 2; verbose:"AUTO\n(WHEN ARMED)"}
     }
     ListModel{
         id: elements_model_hotspot

@@ -39,7 +39,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: rotation_flip
-            m_title: "ROTATION/FLIP"
+            m_title: "Rotation"
             m_param_id: "ROTATION_FLIP"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
