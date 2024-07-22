@@ -87,7 +87,7 @@ int FrequencyHelper::get_frequency_openhd_race_band(int frequency_mhz)
     if(frequency_mhz==5700){
         return 1;
     }
-    if(frequency_mhz== ){
+    if(frequency_mhz==5745 ){
         return 2;
     }
     if(frequency_mhz==5785){
