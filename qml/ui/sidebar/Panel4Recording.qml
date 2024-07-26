@@ -44,6 +44,7 @@ SideBarBasePanel {
         }
         Rectangle {
             color: "#171d25"
+            opacity: 0.85
             height: recording_mode.height
             width: recording_mode.width
             Text {
@@ -63,6 +64,7 @@ SideBarBasePanel {
         }
         Rectangle {
             color: secondaryUiColor
+            opacity: 0.20
             height: recording_mode.height+120
             width: recording_mode.width
         }
