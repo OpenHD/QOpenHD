@@ -92,13 +92,23 @@ Card {
     }
 
 
-    cardBody: Column{
+    cardBody: Column {
         spacing: 10
         padding: 10
-        Text{
+        Text {
             width: 200
-            text: "Your Camera: "+m_cam_type_as_string;
+            text: {
+                var camType = m_cam_type_as_string;
+                if (camType.length > 18) {
+                    var underscoreIndex = camType.indexOf('_');
+                    if (underscoreIndex !== -1) {
+                        camType = camType.substring(underscoreIndex + 1);
+                    }
+                }
+                return "Your Camera: " + camType;
+            }
         }
+
         Text{
             width: 200
             text: "Default Resolution: "+m_default_resolution_fps
@@ -167,7 +177,7 @@ Card {
                 Layout.preferredWidth: 150
                 text: "CANCEL"
                 onPressed: {
-                   close();
+                    close();
                 }
             }
             Button{
