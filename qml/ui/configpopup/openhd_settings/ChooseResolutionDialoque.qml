@@ -168,46 +168,55 @@ Card {
         }
     }
     hasFooter: true
-    cardFooter: Item {
+    Item {
         anchors.fill: parent
-        RowLayout{
-            anchors.fill: parent
+        anchors.top: parent.top
+        anchors.topMargin: 285
 
-            Button{
-                Layout.preferredWidth: 150
-                text: "CANCEL"
-                onPressed: {
-                    close();
-                }
-            }
-            Button{
-                Layout.preferredWidth: 150
-                text: "SAVE"
-                onPressed: {
-                    var success=false;
-                    const selected_res_fps=get_user_selected_resolution();
-                    console.log("Setting "+(m_is_for_secondary ? "CAM2" : "CAM1")+" to {"+selected_res_fps+"}");
-                    if(m_is_for_secondary){
-                        success=_airCameraSettingsModel2.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
-                    }else{
-                        success=_airCameraSettingsModel.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
-                    }
-                    if(success){
-                        _messageBoxInstance.set_text_and_show("Saved "+selected_res_fps);
+        Rectangle {
+            width: parent.width
+            height: parent.height
+            color: "transparent"
+
+            RowLayout {
+                anchors.centerIn: parent
+
+                Button {
+                    Layout.preferredWidth: 150
+                    text: "CANCEL"
+                    onPressed: {
                         close();
-                    }else{
-                        _messageBoxInstance.set_text_and_show("Failed,please try again");
                     }
                 }
-                enabled: {
-                    if(argh_is_changing_model){
-                        return false;
+                Button{
+                    Layout.preferredWidth: 150
+                    text: "SAVE"
+                    onPressed: {
+                        var success=false;
+                        const selected_res_fps=get_user_selected_resolution();
+                        console.log("Setting "+(m_is_for_secondary ? "CAM2" : "CAM1")+" to {"+selected_res_fps+"}");
+                        if(m_is_for_secondary){
+                            success=_airCameraSettingsModel2.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
+                        }else{
+                            success=_airCameraSettingsModel.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
+                        }
+                        if(success){
+                            _messageBoxInstance.set_text_and_show("Saved "+selected_res_fps);
+                            close();
+                        }else{
+                            _messageBoxInstance.set_text_and_show("Failed,please try again");
+                        }
                     }
-                    const selected_res_fps=get_user_selected_resolution();
-                    return _cameraStreamModelPrimary.is_valid_resolution_fps_string(selected_res_fps) && selected_res_fps!=m_current_resolution_fps;
+                    enabled: {
+                        if(argh_is_changing_model){
+                            return false;
+                        }
+                        const selected_res_fps=get_user_selected_resolution();
+                        return _cameraStreamModelPrimary.is_valid_resolution_fps_string(selected_res_fps) && selected_res_fps!=m_current_resolution_fps;
+                    }
                 }
             }
         }
     }
-}
 
+}
