@@ -15,7 +15,7 @@ Card {
     anchors.centerIn: parent
     cardName: "Resolution Selection"
     cardNameColor: "black"
-    visible: true
+    visible: false
 
     property string m_current_resolution_fps: "1920x1080@30"
     property bool m_is_for_secondary: false
