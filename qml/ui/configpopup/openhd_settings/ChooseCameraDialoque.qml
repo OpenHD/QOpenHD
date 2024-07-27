@@ -53,9 +53,9 @@ Card {
 
         var success= false;
         if(m_is_for_secondary_camera){
-            success=_airCameraSettingsModel2.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
+             success=_airCameraSettingsModel2.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
         }else{
-            success=_airCameraSettingsModel.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
+             success=_airCameraSettingsModel.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
         }
         if(!success){
             _qopenhd.show_toast("Cannot save, please try again");
@@ -140,19 +140,19 @@ Card {
         m_user_selected_camera_type=combobox_cameras.model.get(combobox_cameras.currentIndex).value;
     }
 
-    cardBody: Column {
+    cardBody: Column{
         padding: 10
         spacing: 10
-        Text {
+        Text{
             width: 300
-            text: "Your AIR Platform: " + get_platform_name();
+            text: "Your AIR Platform: "+get_platform_name();
         }
         ComboBox {
             width: 300
             id: comboBoxManufacturers
             model: model_manufacturers
             textRole: "title"
-            implicitWidth: elementComboBoxWidth
+            implicitWidth:  elementComboBoxWidth
             currentIndex: 0
             onActivated: {
                 populate_main_camera_selector();
@@ -163,44 +163,45 @@ Card {
             id: combobox_cameras
             model: model_cameras_for_this_manufacturer
             textRole: "title"
-            implicitWidth: elementComboBoxWidth
+            implicitWidth:  elementComboBoxWidth
             currentIndex: 0
             onActivated: {
-                m_user_selected_camera_type = model.get(currentIndex).value;
+                m_user_selected_camera_type=model.get(currentIndex).value;
             }
         }
-        Text {
+        Text{
             width: 300
             text: "NOTE: Changing your camera automatically\nreboots your air unit";
             visible: button_save.enabled
             font.pixelSize: 13
+
         }
     }
     hasFooter: true
     cardFooter: Item {
         anchors.fill: parent
-        RowLayout {
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 20
+        RowLayout{
+            anchors.fill: parent
 
-            Button {
+            Button{
                 Layout.preferredWidth: 150
                 text: "CANCEL"
                 onPressed: {
-                    close();
+                   close();
                 }
             }
-            Button {
+            Button{
                 id: button_save
                 Layout.preferredWidth: 150
                 text: "SAVE"
                 onPressed: {
-                    on_user_clicked_save();
+                   on_user_clicked_save();
                 }
                 enabled: {
-                    m_user_selected_camera_type >= 0 && m_user_selected_camera_type != (m_is_secondary_cam ? _cameraStreamModelSecondary.camera_type : _cameraStreamModelPrimary.camera_type);
+                    m_user_selected_camera_type>=0 && m_user_selected_camera_type!=(m_is_secondary_cam ? _cameraStreamModelSecondary.camera_type : _cameraStreamModelPrimary.camera_type);
                 }
             }
         }
     }
 }
+
