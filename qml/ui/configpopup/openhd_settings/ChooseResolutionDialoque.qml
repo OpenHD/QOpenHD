@@ -158,16 +158,18 @@ Card {
         }
     }
     hasFooter: true
-    cardFooter: Item {
-        anchors.fill: parent
-        RowLayout{
-            anchors.fill: parent
+    cardFooter:
+        Item {
+        anchors.horizontalCenter: parent.horizontalCenter
+        RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter  // Center the RowLayout horizontally within the parent
+            spacing: 20  // Add spacing between the buttons (optional)
 
-            Button{
+            Button {
                 Layout.preferredWidth: 150
                 text: "CANCEL"
                 onPressed: {
-                   close();
+                    close();
                 }
             }
             Button{
