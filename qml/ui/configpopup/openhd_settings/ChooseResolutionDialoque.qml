@@ -15,7 +15,7 @@ Card {
     anchors.centerIn: parent
     cardName: "Resolution Selection"
     cardNameColor: "black"
-    visible: false
+    visible: true
 
     property string m_current_resolution_fps: "1920x1080@30"
     property bool m_is_for_secondary: false
@@ -197,11 +197,14 @@ Card {
                         console.log("Setting "+(m_is_for_secondary ? "CAM2" : "CAM1")+" to {"+selected_res_fps+"}");
                         if(m_is_for_secondary){
                             success=_airCameraSettingsModel2.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
+                            console.log("debug1");
                         }else{
                             success=_airCameraSettingsModel.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
+                            console.log("debug2");
                         }
                         if(success){
                             _messageBoxInstance.set_text_and_show("Saved "+selected_res_fps);
+                            console.log("debug3");
                             close();
                         }else{
                             _messageBoxInstance.set_text_and_show("Failed,please try again");
