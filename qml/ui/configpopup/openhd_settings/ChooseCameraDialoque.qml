@@ -15,7 +15,7 @@ Card {
     anchors.centerIn: parent
     cardName: "Camera Selection"
     cardNameColor: "black"
-    visible: true
+    visible: false
 
     property int m_platform_type: 0;
 
