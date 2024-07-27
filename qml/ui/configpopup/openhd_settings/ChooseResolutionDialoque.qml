@@ -15,7 +15,7 @@ Card {
     anchors.centerIn: parent
     cardName: "Resolution Selection"
     cardNameColor: "black"
-    visible: false
+    visible: true
 
     property string m_current_resolution_fps: "1920x1080@30"
     property bool m_is_for_secondary: false
@@ -169,6 +169,7 @@ Card {
     }
     hasFooter: true
     cardFooter: Item {
+        anchors.fill: parent
         anchors.top: parent.top
         anchors.topMargin: 285
 
@@ -200,5 +201,6 @@ Card {
             }
         }
     }
+
 }
 
