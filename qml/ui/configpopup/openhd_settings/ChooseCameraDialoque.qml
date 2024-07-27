@@ -178,30 +178,39 @@ Card {
         }
     }
     hasFooter: true
-    cardFooter: Item {
-        anchors.fill: parent
-        RowLayout{
-            anchors.fill: parent
-            Layout.alignment: Qt.AlignHCenter
-            Button{
+Item {
+    anchors.fill: parent
+    anchors.top: parent.top
+    anchors.topMargin: 285
+
+    Rectangle {
+        width: parent.width
+        height: parent.height
+        color: "transparent"
+
+        RowLayout {
+            anchors.centerIn: parent
+
+            Button {
                 Layout.preferredWidth: 150
                 text: "CANCEL"
                 onPressed: {
-                   close();
+                    close();
                 }
             }
-            Button{
+
+            Button {
                 id: button_save
                 Layout.preferredWidth: 150
                 text: "SAVE"
                 onPressed: {
-                   on_user_clicked_save();
+                    on_user_clicked_save();
                 }
-                enabled: {
-                    m_user_selected_camera_type>=0 && m_user_selected_camera_type!=(m_is_secondary_cam ? _cameraStreamModelSecondary.camera_type : _cameraStreamModelPrimary.camera_type);
-                }
+                enabled: m_user_selected_camera_type >= 0 && m_user_selected_camera_type != (m_is_secondary_cam ? _cameraStreamModelSecondary.camera_type : _cameraStreamModelPrimary.camera_type)
             }
         }
     }
+}
+
 }
 
