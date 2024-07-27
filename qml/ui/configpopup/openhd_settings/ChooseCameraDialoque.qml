@@ -182,7 +182,7 @@ Card {
         anchors.fill: parent
         RowLayout{
             anchors.fill: parent
-
+            Layout.alignment: Qt.AlignHCenter
             Button{
                 Layout.preferredWidth: 150
                 text: "CANCEL"
