@@ -53,9 +53,9 @@ Card {
 
         var success= false;
         if(m_is_for_secondary_camera){
-             success=_airCameraSettingsModel2.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
+            success=_airCameraSettingsModel2.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
         }else{
-             success=_airCameraSettingsModel.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
+            success=_airCameraSettingsModel.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
         }
         if(!success){
             _qopenhd.show_toast("Cannot save, please try again");
@@ -178,30 +178,40 @@ Card {
         }
     }
     hasFooter: true
-    cardFooter: Item {
+    Item {
+        id: cardFooter
         anchors.fill: parent
-        RowLayout{
-            anchors.fill: parent
-            Layout.alignment: Qt.AlignHCenter
-            Button{
-                Layout.preferredWidth: 150
+
+        Item {
+            id: buttonContainer
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width
+            height: parent.height
+
+            Button {
+                id: cancelButton
+                width: 150
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
                 text: "CANCEL"
                 onPressed: {
-                   close();
+                    close();
                 }
             }
-            Button{
+
+            Button {
                 id: button_save
-                Layout.preferredWidth: 150
+                width: 150
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
                 text: "SAVE"
                 onPressed: {
-                   on_user_clicked_save();
+                    on_user_clicked_save();
                 }
-                enabled: {
-                    m_user_selected_camera_type>=0 && m_user_selected_camera_type!=(m_is_secondary_cam ? _cameraStreamModelSecondary.camera_type : _cameraStreamModelPrimary.camera_type);
-                }
+                enabled: m_user_selected_camera_type >= 0 && m_user_selected_camera_type != (m_is_secondary_cam ? _cameraStreamModelSecondary.camera_type : _cameraStreamModelPrimary.camera_type)
             }
         }
     }
+
 }
 
