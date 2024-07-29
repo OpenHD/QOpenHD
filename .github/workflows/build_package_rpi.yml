@@ -51,7 +51,7 @@ jobs:
             ls -a
             cd QOpenHD
             sudo ./install_build_dep.sh rpi custom
-            sudo ./package.sh armhf raspbian bullseye
+            sudo ./package.sh standard armhf raspbian bullseye
             ls -a
 
     - name: Upload to Github
