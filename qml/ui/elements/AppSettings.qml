@@ -331,7 +331,7 @@ Settings {
 
 
     property bool show_wind: true
-    property bool wind_plane_copter: true //should default to plane
+    property bool wind_plane_copter: false //should default to plane
     property bool wind_arrow_circle: false
     //tumbler value had to be split into two values..
     property double wind_tumbler_decimal: 5

@@ -14,7 +14,7 @@ class FrequencyHelper : public QObject
 public:
     explicit FrequencyHelper(QObject *parent = nullptr);
     static FrequencyHelper &instance();
-    // Filter: 0 - OpenHD 1-5 only, 1= all 2.4G freq, 2 = all 5.8G freq
+    // Filter: 0 - OpenHD 1-7 only, 1= all 2.4G freq, 2 = all 5.8G freq
     Q_INVOKABLE QList<int> get_frequencies(int filter);
     Q_INVOKABLE QList<int> filter_frequencies_40mhz_ht40plus_only(QList<int>);
 
