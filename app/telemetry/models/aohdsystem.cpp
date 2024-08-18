@@ -291,6 +291,13 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_curr_v3d_freq_mhz(msg.storage_usage[0]);
     set_curr_space_left_mb(msg.storage_usage[1]);
     set_rpi_undervolt_error(msg.link_tx_rate[0]==1);
+    set_microhard_enabled(msg.link_rx_rate[0]);
+    set_microhard_rssi(msg.link_rx_rate[1]);
+    set_microhard_tx_pwr(msg.link_rx_rate[2]);
+    set_microhard_bw(msg.link_rx_rate[3]);
+    set_microhard_freq(msg.link_rx_rate[4]);
+    set_microhard_noise(msg.link_rx_rate[5]);
+    set_microhard_snr(msg.link_rx_rate[6]);
     set_ina219_voltage_millivolt(msg.storage_usage[2]);
     set_ina219_current_milliamps(msg.storage_usage[3]);
     set_ram_usage_perc(msg.ram_usage);
