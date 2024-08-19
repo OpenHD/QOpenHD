@@ -143,7 +143,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     set_card_type_as_string(wifi_card_type_to_string(msg.card_type).c_str());
     const int card_type=msg.card_type;
     bool supported = false;
-    if(card_type==0 || card_type==1)supported=true;
+    if(card_type==0 || card_type==1 || card_type==2 || card_type==3 || card_type==4)supported=true;
     set_card_type_supported(supported);
     set_card_sub_type(msg.dummy2);
 }
