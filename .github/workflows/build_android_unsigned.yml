@@ -36,7 +36,7 @@ jobs:
         run: sudo apt-mark hold grub-efi-amd64-signed
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version:      ${{ env.QT_VERSION }}
           host:         linux
