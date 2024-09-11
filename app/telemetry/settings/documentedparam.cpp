@@ -538,7 +538,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                 {"/dev/ttyUSB0","/dev/ttyUSB0"},
                 {"/dev/ttyACM0","/dev/ttyACM0"},
                 {"/dev/ttyACM1","/dev/ttyACM1"},
-                {"/dev/ttyS7","/dev/ttyS7"}
+                {"/dev/ttyS7","/dev/ttyS7"},
+                {"/dev/ttyAMA4","//dev/ttyAMA4"}
             };
             append_string(ret,"FC_UART_CONN",ImprovedStringSetting{fc_uart_conn_values},
                           "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. DEFAULT - primary telemetry serial of this platform (see wiki)."
