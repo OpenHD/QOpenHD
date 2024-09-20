@@ -189,7 +189,7 @@ BaseJoyEditElement2{
 
     function user_selected_value(value_new){
         // A few need to be handled specially
-         if(m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_FREQUENCY_SCAN){   // Added FREQUENCY_SCAN case
+         if(m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_FREQUENCY_SCAN){
             if(_fcMavlinkSystem.armed){
                 if(settings.dev_allow_freq_change_when_armed){
                     // okay
@@ -204,7 +204,7 @@ BaseJoyEditElement2{
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQUENCY");
             _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
             return;
-        }else if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){   // New logic for FREQUENCY_SCAN
+        }else if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){
             const new_frequency_scan=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQ SCAN");
             _wbLinkSettingsHelper.change_param_frequency_scan_async(new_frequency_scan)
@@ -247,13 +247,13 @@ BaseJoyEditElement2{
     onCurr_bandwidth_mhzChanged: {
         extra_populate();
     }
-    property bool curr_frequency_scan: false;  // Added frequency scan state
-    onCurr_frequency_scanChanged: {   // Handle changes to the frequency scan state
+    property bool curr_frequency_scan: false;
+    onCurr_frequency_scanChanged: {
         extra_populate();
     }
 
     function extra_populate(){
-        if(!(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE || m_param_id==mPARAM_ID_FREQUENCY_SCAN)){
+        if(!(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE )){
             return;
         }
         // First, check if the system is alive
@@ -287,10 +287,6 @@ BaseJoyEditElement2{
             }
             update_display_text(curr_bandwidth_mhz);
             m_param_exists=true;
-        }else if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){   // New logic for FREQUENCY_SCAN
-            update_display_text(curr_frequency_scan ? "ENABLED" : "DISABLED");
-            m_param_exists=true;
-        }
     }
 
 }
