@@ -120,7 +120,7 @@ BaseJoyEditElement2{
     property string populate_display_text:"I SHOULD NEVER APPEAR"
 
     function populate(){
-        if(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE){
+        if(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || mPARAM_ID_FREQUENCY_SCAN || m_param_id==mPARAM_ID_RATE){
             return;
         }
         // First, check if the system is alive
@@ -205,9 +205,9 @@ BaseJoyEditElement2{
             _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
             return;
         }else if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){
-            const new_frequency_scan=value_new;
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQ SCAN");
-            _wbLinkSettingsHelper.change_param_frequency_scan_async(new_frequency_scan)
+            const frequency_scan=value_new;
+            _qopenhd.set_busy_for_milliseconds(2000,"Starting scan");
+            //PLATZHALTER
             return;
         }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
             const channel_width_mhz=value_new;
@@ -247,13 +247,13 @@ BaseJoyEditElement2{
     onCurr_bandwidth_mhzChanged: {
         extra_populate();
     }
-    property bool curr_frequency_scan: false;
+    property bool curr_frequency_scan: _ohdSystemGround.curr_channel_mhz
     onCurr_frequency_scanChanged: {
         extra_populate();
     }
 
     function extra_populate(){
-        if(!(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE )){
+        if(!(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || mPARAM_ID_FREQUENCY_SCAN || m_param_id==mPARAM_ID_RATE )){
             return;
         }
         // First, check if the system is alive
@@ -263,6 +263,13 @@ BaseJoyEditElement2{
             populate_display_text="N/A";
             return;
         }
+         if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){
+                populate_display_text="Debug";
+                return;
+            }
+            update_display_text(curr_frequency_scan);
+            m_param_exists=true;
+            }
         if(m_param_id==mPARAM_ID_FREQUENCY){
             if(curr_channel_mhz<=0){
                 m_param_exists=false;
