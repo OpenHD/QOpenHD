@@ -57,7 +57,7 @@ SideBarBasePanel{
         MavlinkChoiceElement2{
             id:scan_frequency_element
             m_title: "Scan for Air"
-            m_param_id: mPARAM_ID_FREQUENCY_SCAN
+            m_param_id: ENABLE_JOY_RC
             m_settings_model: _ohdSystemGroundSettings
             onGoto_previous: {
                 edit_frequency_element.takeover_control();
