@@ -263,13 +263,10 @@ BaseJoyEditElement2{
             populate_display_text="N/A";
             return;
         }
-         if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){
-                populate_display_text="Debug";
-                return;
-            }
-            update_display_text(curr_frequency_scan);
-            m_param_exists=true;
-            }
+        if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){
+               populate_display_text="Debug";
+               return;
+        }
         if(m_param_id==mPARAM_ID_FREQUENCY){
             if(curr_channel_mhz<=0){
                 m_param_exists=false;
