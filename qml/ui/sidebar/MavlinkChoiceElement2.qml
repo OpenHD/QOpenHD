@@ -35,7 +35,7 @@ BaseJoyEditElement2{
     // EXTRA
     property string mPARAM_ID_CHANNEL_WIDTH: "CHANNEL_WIDTH"
     property string mPARAM_ID_FREQUENCY: "FREQUENCY"
-    property string mPARAM_ID_FREQUENCY_SCAN: "FREQUENCY_SCAN"   // Added frequency scan param
+    property string mPARAM_ID_FREQUENCY_SCAN: "FREQUENCY_SCAN"
     property string mPARAM_ID_RATE: "RATE"
 
 
@@ -120,7 +120,7 @@ BaseJoyEditElement2{
     property string populate_display_text:"I SHOULD NEVER APPEAR"
 
     function populate(){
-        if(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE || m_param_id==mPARAM_ID_FREQUENCY_SCAN){
+        if(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE){
             return;
         }
         // First, check if the system is alive
