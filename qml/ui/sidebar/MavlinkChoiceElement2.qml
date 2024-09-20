@@ -186,49 +186,49 @@ BaseJoyEditElement2{
         return populate_display_text;
     }
 
-
     function user_selected_value(value_new){
         // A few need to be handled specially
-         if(m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_FREQUENCY_SCAN){   // Added FREQUENCY_SCAN case
-            if(_fcMavlinkSystem.armed){
-                if(settings.dev_allow_freq_change_when_armed){
+        if (m_param_id == mPARAM_ID_FREQUENCY || m_param_id == mPARAM_ID_FREQUENCY_SCAN) { // Added FREQUENCY_SCAN case
+            if (_fcMavlinkSystem.armed) {
+                if (settings.dev_allow_freq_change_when_armed) {
                     // okay
-                }else{
+                } else {
                     _qopenhd.show_toast("ARMED, change not possible");
                     return;
                 }
             }
         }
-        if(m_param_id==mPARAM_ID_FREQUENCY){
-            const new_frequency=value_new;
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQUENCY");
-            _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
+
+        if (m_param_id == mPARAM_ID_FREQUENCY) {
+            const new_frequency = value_new;
+            _qopenhd.set_busy_for_milliseconds(2000, "CHANGING FREQUENCY");
+            _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new);
             return;
-        }else if(m_param_id==mPARAM_ID_FREQUENCY_SCAN){   // New logic for FREQUENCY_SCAN
-            const new_frequency_scan=value_new;
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQ SCAN");
-            _wbLinkSettingsHelper.change_param_frequency_scan_async(new_frequency_scan)
+        } else if (m_param_id == mPARAM_ID_FREQUENCY_SCAN) { // New logic for FREQUENCY_SCAN
+            const new_frequency_scan = value_new;
+            _qopenhd.set_busy_for_milliseconds(2000, "CHANGING FREQ SCAN");
+            _wbLinkSettingsHelper.change_param_frequency_scan_async(new_frequency_scan);
             return;
-        }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
-            const channel_width_mhz=value_new;
-            if(!_ohdSystemAir.is_alive){
-                _hudLogMessagesModel.add_message_warning("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive");
+        } else if (m_param_id == mPARAM_ID_CHANNEL_WIDTH) {
+            const channel_width_mhz = value_new;
+            if (!_ohdSystemAir.is_alive) {
+                _hudLogMessagesModel.add_message_warning("Cannot change BW:" + channel_width_mhz + "Mhz, AIR not alive");
                 return;
             }
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING BW");
-            _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
+            _qopenhd.set_busy_for_milliseconds(2000, "CHANGING BW");
+            _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz, true);
             return;
-        }else if(m_param_id==mPARAM_ID_RATE){
-            const mcs_index=value_new;
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING RATE");
-           _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
+        } else if (m_param_id == mPARAM_ID_RATE) {
+            const mcs_index = value_new;
+            _qopenhd.set_busy_for_milliseconds(2000, "CHANGING RATE");
+            _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index);
             return;
-        }else{
+        } else {
             // 'normal' params
-            if(override_takes_string_param){
-                m_settings_model.try_set_param_string_async(m_param_id,value_new);
-            }else{
-                m_settings_model.try_set_param_int_async(m_param_id,value_new);
+            if (override_takes_string_param) {
+                m_settings_model.try_set_param_string_async(m_param_id, value_new);
+            } else {
+                m_settings_model.try_set_param_int_async(m_param_id, value_new);
             }
         }
     }
