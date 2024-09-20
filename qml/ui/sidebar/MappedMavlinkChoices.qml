@@ -205,7 +205,7 @@ Item {
                 return frequencies_model_with_5180mhz_lowband
             }
             return frequencies_model;
-        else if(param_id=="FREQUENCY_SCAN"){
+        }else if(param_id=="FREQUENCY_SCAN"){
             return elements_frequency_scan;
         }else if(param_id=="CHANNEL_WIDTH"){
             return elements_model_channel_width;
