@@ -287,6 +287,6 @@ BaseJoyEditElement2{
             }
             update_display_text(curr_bandwidth_mhz);
             m_param_exists=true;
+        }
     }
-
 }
