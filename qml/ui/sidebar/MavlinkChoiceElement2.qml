@@ -247,7 +247,7 @@ BaseJoyEditElement2{
     onCurr_bandwidth_mhzChanged: {
         extra_populate();
     }
-    property bool curr_frequency_scan: _ohdSystemGround.curr_channel_mhz
+    property bool curr_frequency_scan: (_ohdSystemGround.wb_gnd_operating_mode == 0)
     onCurr_frequency_scanChanged: {
         extra_populate();
     }
