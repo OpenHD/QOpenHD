@@ -201,6 +201,11 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    ImprovedIntSetting::createEnum(disable_or_channels),
                    "Dynamically change the BW via RC. NOT ALWAYS SAFE TO USE !"
                    );
+        append_int(ret,openhd::WB_POWER_VIA_RC_CHANNEL,
+                   ImprovedIntSetting::createEnum(disable_or_channels),
+                   "Dynamically change the POWER during flight using your RC and a specific channel "
+                   "(similar to how flight modes work)."
+                   );
 
     }
 
