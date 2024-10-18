@@ -98,19 +98,23 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         //58: 420-450 mW
         // NOTE: We now have the tx power wizzard !
         auto values_WB_TX_PWR_INDEX=std::vector<ImprovedIntSetting::Item>{
+            {"Unitless [1]",3},
             {"Unitless [3]",3},
             {"Unitless [6]",6},
             {"Unitless [10]",10},
             {"Unitless [20]",20},
+            {"Unitless [26]",26},
             {"Unitless [40]",40},
             {"Unitless [60]",60},
             {"Unitless [63]",63},                                                                   };
         auto values_WB_TX_PWR_INDEX_ARMED=std::vector<ImprovedIntSetting::Item>{
             {"Disabled [0]",0},
+            {"Unitless [1]",3},
             {"Unitless [3]",3},
             {"Unitless [6]",6},
             {"Unitless [10]",10},
             {"Unitless [20]",20},
+            {"Unitless [26]",26},
             {"Unitless [40]",40},
             {"Unitless [60]",60},
             {"Unitless [63]",63},
