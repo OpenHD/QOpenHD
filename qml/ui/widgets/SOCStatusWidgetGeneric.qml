@@ -26,8 +26,6 @@ BaseWidget {
     property int m_soc_temperature_deg_warn: m_is_air ? settings.air_status_temp_warn : settings.ground_status_temp_warn
     property int m_soc_temperature_deg_caution: m_is_air ? settings.air_status_temp_caution : settings.ground_status_temp_caution
 
-    property int m_txc_temperature_deg: m_is_air ? _ohdSystemAir.curr_txc_temp_degree : _ohdSystemGround.curr_txc_temp_degree
-
     // These do not need warning level(s) and are hidden in the action popup
     property int m_curr_cpu_freq_mhz: m_is_air ?_ohdSystemAir.curr_cpu_freq_mhz : _ohdSystemGround.curr_cpu_freq_mhz
     property int m_curr_isp_freq_mhz: m_is_air ?_ohdSystemAir.curr_isp_freq_mhz : _ohdSystemGround.curr_isp_freq_mhz
@@ -510,29 +508,5 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
-        
-        Text {
-            id: temp_transceiver
-            x: 0
-            y: 0
-            width: 36
-            height: 30
-            visible: m_txc_temperature_deg > 0
-            color: m_txc_temperature_deg <= 80 ? "white" : "red"
-            opacity: bw_current_opacity
-            text: Number(m_txc_temperature_deg).toLocaleString(Qt.locale(),
-                                                            'f', 0) + "°"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 2
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignRight
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
     }
 }

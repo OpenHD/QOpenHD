@@ -209,6 +209,19 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
+            Text {
+                    visible: _ohdSystemAir.curr_txc_temp_degree_1 !== 0
+                    text: "temp : " + _ohdSystemAir.curr_txc_temp_degree_1 + " °C"
+                    color: _ohdSystemAir.curr_txc_temp_degree_1 > 80 ? "red" : settings.color_text
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 12
+                    font.family: settings.font_text
+                    horizontalAlignment: Text.AlignLeft
+                    wrapMode: Text.NoWrap
+                    elide: Text.ElideRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
         }
     }
 }

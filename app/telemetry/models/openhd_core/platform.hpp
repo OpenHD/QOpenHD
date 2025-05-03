@@ -27,10 +27,11 @@ static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W =
     20;  // Zero 3 W
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A = 21;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B = 22;
-static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;
-
-static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1126_UNDEFINED = 23;  // FUTURE
-
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;  
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1126 = 23;
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1106 = 25;
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1103 = 26;
+    
 // Numbers 30..35 are reserved for allwinner
 static constexpr int X_PLATFORM_TYPE_ALWINNER_X20 = 30;
 
@@ -43,7 +44,7 @@ static constexpr int X_PLATFORM_TYPE_NVIDIA_XAVIER = 40;
 // Numbers 46..50 are reserved for QUALCOMM
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QRB5165 = 46;
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QCS405 = 47;
-static constexpr int X_PLATFORM_TYPE_QUALCOMM_UNKNOWN = 48;
+static constexpr int X_PLATFORM_TYPE_WILLY = 48;
 static std::string x_platform_type_to_string(int platform_type) {
     switch (platform_type) {
     case X_PLATFORM_TYPE_UNKNOWN:
@@ -65,11 +66,13 @@ static std::string x_platform_type_to_string(int platform_type) {
         return "RADXA ROCK5 A";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B:
         return "RADXA ROCK5 B";
-    case X_PLATFORM_TYPE_ROCKCHIP_RV1126_UNDEFINED:
-        return "RV1126 UNDEFINED";
     // ROCK END
     case X_PLATFORM_TYPE_ALWINNER_X20:
         return "X20";
+    case X_PLATFORM_TYPE_ROCKCHIP_RV1126:
+        return "SCHWANZUS LONGUS";
+    case X_PLATFORM_TYPE_WILLY:
+        return "FREE WILLY";
     case X_PLATFORM_TYPE_OPENIPC_SIGMASTAR_UNDEFINED:
         return "OPENIPC SIGMASTAR";
     case X_PLATFORM_TYPE_NVIDIA_XAVIER:
