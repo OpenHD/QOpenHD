@@ -15,12 +15,12 @@ BaseWidget {
     id: airTempTxc
     width: 50
     height: 50
-
-    visible: true
-
+    
+    visible: _ohdSystemAir.curr_txc_temp_degree_1 !== 0
+    
     widgetIdentifier: "Air Transceiver Temperature"
     bw_verbose_name: "AIR_RCX_TEMP"
-    property real airTemp: 80
+    property real airTemp: _ohdSystemAir.curr_txc_temp_degree_1
 
     defaultAlignment: 1
     defaultXOffset: 350
@@ -29,7 +29,7 @@ BaseWidget {
     defaultVCenter: false
 
 
-    hasWidgetDetail: true
+    hasWidgetDetail: false
     hasWidgetAction: true
 
     widgetActionHeight: 164+50+30

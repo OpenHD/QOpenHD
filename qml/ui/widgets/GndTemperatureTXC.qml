@@ -16,12 +16,12 @@ BaseWidget {
     width: 50
     height: 50
 
-    visible: true
+    visible: _ohdSystemGround.curr_txc_temp_degree_1 !== 0
 
     widgetIdentifier: "Ground Transceiver Temperature"
     bw_verbose_name: "GND_RCX_TEMP"
-    property real gndTemp1: 20
-    property real gndTemp2: 50
+    property real gndTemp1: _ohdSystemGround.curr_txc_temp_degree_1 
+    property real gndTemp2: _ohdSystemGround.curr_txc_temp_degree_2
 
     defaultAlignment: 0
     defaultXOffset: 175
@@ -30,7 +30,7 @@ BaseWidget {
     defaultVCenter: false
 
 
-    hasWidgetDetail: true
+    hasWidgetDetail: false
     hasWidgetAction: true
 
     widgetActionHeight: 164+50+30
