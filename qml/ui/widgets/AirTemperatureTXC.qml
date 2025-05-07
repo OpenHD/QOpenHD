@@ -12,7 +12,7 @@ import "../../ui/elements"
 import "../elements"
 
 BaseWidget {
-    id: linkDownRSSIWidget
+    id: airTempTxc
     width: 112
     height: 48
 
