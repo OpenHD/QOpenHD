@@ -560,19 +560,6 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
-            Text {
-                visible: _ohdSystemGround.curr_txc_temp_degree_1 !== 0
-                text: "[1] temp : " + _ohdSystemGround.curr_txc_temp_degree_1 + " °C"
-                color: _ohdSystemGround.curr_txc_temp_degree_1 > 80 ? "red" : settings.color_text
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 12
-                font.family: settings.font_text
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.NoWrap
-                elide: Text.ElideRight
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }
             // dBm and packets for card index 2
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd2.alive
@@ -592,19 +579,6 @@ BaseWidget {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd3.alive
                 text: text_for_card(3)
                 color: settings.color_text
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 12
-                font.family: settings.font_text
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.NoWrap
-                elide: Text.ElideRight
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }
-            Text {
-                visible: _ohdSystemGround.curr_txc_temp_degree_2 !== 0
-                text: "[2] temp : " + _ohdSystemGround.curr_txc_temp_degree_2 + " °C"
-                color: _ohdSystemGround.curr_txc_temp_degree_2 > 80 ? "red" : settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
                 font.family: settings.font_text

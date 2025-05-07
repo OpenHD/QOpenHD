@@ -291,6 +291,12 @@ Item {
         LinkDownRSSIWidget {
             id: downlink
         }
+        AirTemperatureTXC {
+            id:airTempTxc
+        }
+        GndTemperatureTXC {
+            id:gndTempTxc
+        }
         WBLinkRateControlWidget{
             id: wBLinkRateControlWidget
         }
