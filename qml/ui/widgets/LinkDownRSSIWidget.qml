@@ -20,9 +20,6 @@ BaseWidget {
 
     widgetIdentifier: "downlink_rssi_widget"
     bw_verbose_name: "DOWNLINK/GND RSSI"
-    property real airTemp: 80
-    property real gndTemp1: 20
-    property real gndTemp2: 20
 
     defaultAlignment: 0
     defaultXOffset: 80
@@ -73,7 +70,7 @@ BaseWidget {
         // dBm of card in general
         ret += card.curr_rx_rssi_dbm + " dBm";
         if(settings.downlink_dbm_per_card_show_multiple_antennas){
-            ret+=(card.curr_rx_rssi_dbm_antenna1+"/"+card.curr_rx_rssi_dbm_antenna2+" dBm");
+             ret+=(card.curr_rx_rssi_dbm_antenna1+"/"+card.curr_rx_rssi_dbm_antenna2+" dBm");
         }
         /*var dbm_antenna2=card.curr_rx_rssi_dbm_antenna2;
         var show_2_antenna_dbm_values=settings.downlink_dbm_per_card_show_multiple_antennas && dbm_antenna2>-127;
@@ -467,10 +464,7 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
-        // Consti10 temporary begin - r.n we only have the n of injected and received packets per card, no FEC statistics (and the fec statistics also have changed such
-        // that what was displayed previosly doesn't make sense anymore
         ColumnLayout{
-            id: rssi_column
             anchors.top: downlink_rssi.bottom
             spacing:0
             Text {
@@ -594,140 +588,6 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
-            Item {
-                id: tempGauge
-                anchors.top: rssi_column.bottom
-                width: parent.width
-                height: parent.width  // make it square
-
-                property real normalizedSize: Math.min(width, height)
-
-                Canvas {
-                    id: gaugeCanvas
-                    anchors.centerIn: parent
-                    width: tempGauge.normalizedSize
-                    height: tempGauge.normalizedSize
-
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.clearRect(0, 0, width, height);
-
-                        var cx = width / 2;
-                        var cy = height / 2;
-                        var r = width * 0.45;
-                        var start = Math.PI * 0.75;
-                        var end = Math.PI * 2.25;
-
-                        ctx.lineWidth = width * 0.08;
-                        ctx.strokeStyle = "#333";
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, r, start, end);
-                        ctx.stroke();
-
-                        var zones = [
-                                    { color: "grey", from: start, to: start + Math.PI * 1.0 },
-                                    { color: "red", from: start + Math.PI * 1.0, to: end }
-                                ];
-
-                        for (var i = 0; i < zones.length; i++) {
-                            var z = zones[i];
-                            ctx.strokeStyle = z.color;
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, r, z.from, z.to);
-                            ctx.stroke();
-                        }
-                    }
-                }
-
-                // Needle group (for centered rotation)
-                Item {
-                    id: needleGroup
-                    width: 1
-                    height: 1
-                    anchors.centerIn: gaugeCanvas
-
-                    // Apply rotation to this whole group
-                    rotation: (airTemp / 100.0) * 270 + 20
-
-                    Rectangle {
-                        width: tempGauge.normalizedSize * 0.08
-                        height: tempGauge.normalizedSize * 0.45
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        radius: width / 2
-                        color: "white"
-                    }
-                }
-                Item {
-                    id: needleGroup2
-                    width: 1
-                    height: 1
-                    anchors.centerIn: gaugeCanvas
-
-                    // Apply rotation to this whole group
-                    rotation: (airTemp / 100.0) * 270
-
-                    Rectangle {
-                        width: tempGauge.normalizedSize * 0.08
-                        height: tempGauge.normalizedSize * 0.5
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.top
-                        radius: width / 2
-                        color: "green"
-                    }
-                }
-
-
-
-                Rectangle {
-                    width: tempGauge.normalizedSize * 0.06
-                    height: tempGauge.normalizedSize * 0.06
-                    radius: width / 2
-                    color: "white"
-                    anchors.centerIn: needle
-                }
-
-                Text {
-                    text: "\uf1eb"
-                    font.pixelSize: tempGauge.normalizedSize * 0.3
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: gaugeCanvas.bottom
-                    anchors.topMargin: -80 * 0.3
-                    color: "white"
-                }
-
-                Text {
-                    id: airTemp_text
-                    text: airTemp.toFixed(1) + "°C"
-                    font.pixelSize: tempGauge.normalizedSize * 0.2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: gaugeCanvas.bottom
-                    anchors.topMargin: 4
-                    color: "white"
-                }
-                Text {
-                    id: gndTemp1_text
-                    text: "GND [1]" + gndTemp1.toFixed(1) + "°C"
-                    font.pixelSize: tempGauge.normalizedSize * 0.15
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: airTemp_text.bottom
-                    anchors.topMargin: 4
-                    color: "white"
-                }
-                Text {
-                    id: gndTemp2_text
-                    text: "GND [2]" + gndTemp2.toFixed(1) + "°C"
-                    visible: gndTemp1!=0
-                    font.pixelSize: tempGauge.normalizedSize * 0.15
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: gndTemp1_text.bottom
-                    anchors.topMargin: 4
-                    color: "white"
-                }
-
-            }
-
         }
     }
 }
-
