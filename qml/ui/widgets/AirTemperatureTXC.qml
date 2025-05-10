@@ -16,7 +16,7 @@ BaseWidget {
     width: 50
     height: 50
     
-    visible: _ohdSystemAir.curr_txc_temp_degree_1 !== 0
+    visible: _ohdSystemAir.curr_txc_temp_degree_1 > 5 && settings.show_widgets && settings.show_txc_temp_air
     
     widgetIdentifier: "Air Transceiver Temperature"
     bw_verbose_name: "AIR_RCX_TEMP"

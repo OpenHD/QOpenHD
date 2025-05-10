@@ -173,6 +173,34 @@ ScrollView {
                         onCheckedChanged: settings.show_widgets = checked
                     }
                 }
+                
+                SettingBaseElement{
+                    m_short_description: "Show Transceiver Temperature Air"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_txc_temp_air
+                        onCheckedChanged: settings.show_txc_temp_air = checked
+                    }
+                }
+                
+                SettingBaseElement{
+                    m_short_description: "Show Transceiver Temperature Ground"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_txc_temp_gnd
+                        onCheckedChanged: settings.show_txc_temp_gnd = checked
+                    }
+                }
 
                 SettingBaseElement{
                     m_short_description: "Show Downlink RSSI"

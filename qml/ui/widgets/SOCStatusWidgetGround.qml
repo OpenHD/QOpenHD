@@ -14,7 +14,7 @@ SOCStatusWidgetGeneric {
     visible: settings.show_ground_status && settings.show_widgets
 
     defaultAlignment: 1
-    defaultXOffset: 128
+    defaultXOffset: 50
     defaultYOffset: 24
     defaultHCenter: false
     defaultVCenter: false

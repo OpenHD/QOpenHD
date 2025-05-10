@@ -411,6 +411,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
+        
         scale: bw_current_scale
 
         Text {
@@ -473,8 +474,32 @@ BaseWidget {
             text: Number(m_cpuload_perc).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
+            anchors.right: temp_air.left
             anchors.rightMargin: 2
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            font.family: settings.font_text
+            horizontalAlignment: Text.AlignRight
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+        Text {
+            id: temp_air
+            x: 0
+            y: 0
+            width: 36
+            height: 24
+            color: {
+                var level=get_temperature_warning_level()
+                return warning_level_to_color(level)
+            }
+            opacity: bw_current_opacity
+            text: Number(m_soc_temperature_deg).toLocaleString(Qt.locale(),
+                                                         'f', 0) + "°"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: temp_transceiver.left
+            anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
             font.family: settings.font_text

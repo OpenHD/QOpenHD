@@ -16,7 +16,7 @@ BaseWidget {
     width: 50
     height: 50
 
-    visible: _ohdSystemGround.curr_txc_temp_degree_1 !== 0
+    visible: _ohdSystemGround.curr_txc_temp_degree_1 > 5 && settings.show_widgets && show_txc_temp_gnd
 
     widgetIdentifier: "Ground Transceiver Temperature"
     bw_verbose_name: "GND_RCX_TEMP"
