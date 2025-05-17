@@ -85,8 +85,8 @@ BaseWidget {
                         ctx.stroke();
 
                         var zones = [
-                                    { color: "grey", from: start, to: start + Math.PI * 1.0 },
-                                    { color: "red", from: start + Math.PI * 1.0, to: end }
+                                    { color: settings.color_text, from: start, to: start + Math.PI * 1.0 },
+                                    { color: settings.color_shape, from: start + Math.PI * 1.0, to: end }
                                 ];
 
                         for (var i = 0; i < zones.length; i++) {
@@ -115,7 +115,7 @@ BaseWidget {
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
                         radius: width / 2
-                        color: "white"
+                        color: settings.color_text
                     }
                 }
                 Item {
@@ -143,7 +143,7 @@ BaseWidget {
                     width: tempGauge.normalizedSize * 0.06
                     height: tempGauge.normalizedSize * 0.06
                     radius: width / 2
-                    color: "white"
+                    color: settings.color_text
                     anchors.centerIn: needleGroup
                 }
 
@@ -153,7 +153,7 @@ BaseWidget {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: gaugeCanvas.bottom
                     anchors.topMargin: -80 * 0.3
-                    color: "white"
+                    color: settings.color_text
                 }
 
                 Text {
@@ -163,7 +163,7 @@ BaseWidget {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: gaugeCanvas.bottom
                     anchors.topMargin: 4
-                    color: "white"
+                    color: settings.color_text
                 }
                 Text {
                     id: gndTemp2_text
@@ -173,7 +173,7 @@ BaseWidget {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: gndTemp1_text.bottom
                     anchors.topMargin: 4
-                    color: "white"
+                    color: settings.color_text
                 }
 
             }

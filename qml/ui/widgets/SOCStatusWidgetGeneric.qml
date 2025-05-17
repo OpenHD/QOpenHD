@@ -498,7 +498,6 @@ BaseWidget {
             text: Number(m_soc_temperature_deg).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: temp_transceiver.left
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
