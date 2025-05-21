@@ -85,7 +85,7 @@ BaseWidget {
 
                         var zones = [
                                     { color: settings.color_text, from: start, to: start + Math.PI * 1.0 },
-                                    { color: settings.color_shape, from: start + Math.PI * 1.0, to: end }
+                                    { color: "red", from: start + Math.PI * 1.0, to: end }
                                 ];
 
                         for (var i = 0; i < zones.length; i++) {
