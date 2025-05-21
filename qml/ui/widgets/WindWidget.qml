@@ -238,7 +238,12 @@
                         anchors.right: parent.right
                         anchors.rightMargin: 6
                         model: ["m/s", "km/h", "mph"]
-                        currentIndex: ["m/s", "km/h", "mph"].indexOf(settings.wind_unit)
+
+                        currentIndex: {
+                            var idx = model.indexOf(settings.wind_unit);
+                            return idx >= 0 ? idx : 1; // 1 = "km/h"
+                        }
+
                         onCurrentIndexChanged: settings.wind_unit = model[currentIndex]
                     }
                 }
@@ -459,10 +464,20 @@
                     anchors.centerIn: parent
                     font.pixelSize: 12
                     text: {
-                        // @disable-check M223
-                        Number(settings.enable_imperial ? (settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed * 2.237 : _fcMavlinkSystem.mav_wind_speed * 2.237) : (settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed * 3.6 : _fcMavlinkSystem.mav_wind_speed * 3.6)).toLocaleString(
-                                    Qt.locale(), 'f', 0)
-                    } // @disable-check M222
+                        var raw = settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed : _fcMavlinkSystem.mav_wind_speed;
+                        var factor = 1.0;
+                        var unitLabel = "m/s";
+
+                        if (settings.wind_unit === "km/h") {
+                            factor = 3.6;
+                            unitLabel = "km/h";
+                        } else if (settings.wind_unit === "mph") {
+                            factor = 2.237;
+                            unitLabel = "mph";
+                        }
+
+                        Number(raw * factor).toLocaleString(Qt.locale(), 'f', 0) + " " + unitLabel;
+                    }
                     anchors.fill: parent
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
