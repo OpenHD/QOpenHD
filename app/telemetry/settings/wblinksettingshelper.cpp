@@ -66,7 +66,7 @@ void WBLinkSettingsHelper::validate_and_set_gnd_channel_mhz(int channel_mhz)
 
 void WBLinkSettingsHelper::validate_and_set_gnd_channel_width_mhz(int channel_width_mhz)
 {
-    if(!(channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
+    if(!(channel_width_mhz==10 || channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
         qDebug()<<"Invalid channel width "<<channel_width_mhz<<" Mhz";
         return;
     }
@@ -79,7 +79,7 @@ void WBLinkSettingsHelper::validate_and_set_gnd_channel_width_mhz(int channel_wi
 
 void WBLinkSettingsHelper::validate_and_set_air_channel_width_mhz(int channel_width_mhz)
 {
-    if(!(channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
+    if(!(channel_width_mhz==10 || channel_width_mhz==20 || channel_width_mhz==40 || channel_width_mhz==80)){
         qDebug()<<"Invalid channel width "<<channel_width_mhz<<" Mhz";
         return;
     }

@@ -180,10 +180,11 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     }
 
     {
-        std::pair<std::string,int> val1{"20Mhz",20};
-        std::pair<std::string,int> val2{"40Mhz",40};
+        std::pair<std::string,int> val1{"10Mhz",10};
+        std::pair<std::string,int> val2{"20Mhz",20};
+        std::pair<std::string,int> val3{"40Mhz",40};
         append_int(ret,openhd::WB_CHANNEL_WIDTH,
-                   ImprovedIntSetting::createEnumSimple({val1,val2}),
+                   ImprovedIntSetting::createEnumSimple({val1,val2,val3}),
                    "!!!Editing this param manually without care will result in a broken link!!!"
                    );
     }
