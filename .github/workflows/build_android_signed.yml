@@ -19,7 +19,7 @@ defaults:
 
 env:
   SOURCE_DIR:   ${{ github.workspace }}
-  QT_VERSION:   '5.15.19'
+  QT_VERSION:   5.15.19
   BUILD_TYPE:   ${{ fromJSON('["DailyBuild", "StableBuild"]')[ github.ref_type == 'tag' || contains(github.ref, 'Stable_' ) ] }}
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version:      ${{ env.QT_VERSION }}
+          version:      '5.15.19'
           host:         linux
           target:       android
           use-official: true
