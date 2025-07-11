@@ -7,7 +7,7 @@ Makefile
 QOpenHD.pro.user
 QOpenHD.pro.user*
 *.stash
-gstreamer-*
+#gstreamer-*
 mac/include
 mac/lib
 mac/share
