@@ -52,7 +52,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r24
+          ndk-version: r25c
           add-to-path: false
 
       - name: Prepare ccache timestamp
