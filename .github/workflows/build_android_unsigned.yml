@@ -100,7 +100,7 @@ jobs:
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
-          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-34 --gradle
+          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-35 --gradle
 
       - name: ccache post-run
         run:  ccache -s
