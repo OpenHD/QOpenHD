@@ -65,7 +65,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r25c
+          ndk-version: r23e
           add-to-path: false
 
       - name: Prepare ccache timestamp
@@ -125,4 +125,3 @@ jobs:
         with:
           name: ${{ matrix.ARTIFACT }}
           path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/bundle/release/*.aab
-
