@@ -2,11 +2,11 @@ name: build_android_signed
 
 on:
   push:
-   branches:
+    branches:
       - "2.6-evo"
       - "dev-release"
       - "new_testing"
-   paths-ignore:
+    paths-ignore:
       - '**.md'
       - '**.asciidoc'
       - '**.adoc'
@@ -24,7 +24,7 @@ env:
 
 jobs:
   build:
-    runs-on:  ubuntu-22.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -42,11 +42,11 @@ jobs:
         with:
           submodules: recursive
 
-      - name: fix ci
+      - name: Fix CI grub error
         run: sudo apt-mark hold grub-efi-amd64-signed
 
       - name: Install ccache
-        run:  sudo apt-get install -y ccache
+        run: sudo apt-get install -y ccache
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -55,8 +55,8 @@ jobs:
           host:         linux
           target:       android
           use-official: true
-          email: ${{ secrets.QT_EMAIL }}
-          pw: ${{ secrets.QT_PASSWORD }}
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}
           modules:      qtcharts
           setup-python: true
@@ -92,10 +92,10 @@ jobs:
           ccache -z
 
       - name: Create build directory
-        run:  mkdir ${{ runner.temp }}/shadow_build_dir
+        run: mkdir ${{ runner.temp }}/shadow_build_dir
 
-      - name:               Install gstreamer
-        working-directory:  ${{ github.workspace }}
+      - name: Install gstreamer prebuilts
+        working-directory: ${{ github.workspace }}
         run: |
           cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
@@ -108,17 +108,37 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run:  |
+        run: |
+          set -e
+
           qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}" BUILD_TYPE=Release
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
-          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-34 --gradle --aab --release --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
+
+          echo ">>> Starting androiddeployqt..."
+          androiddeployqt \
+            --output android \
+            --verbose \
+            --input android-QOpenHD-deployment-settings.json \
+            --android-platform android-34 \
+            --gradle \
+            --aab \
+            --release \
+            --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
+            --storepass "${ANDROID_KEYSTORE_PASSWORD}" \
+            || { echo "androiddeployqt failed!"; exit 1; }
 
           zip -r file.zip .
 
+      - name: Print Android build logs (optional)
+        if: failure()
+        run: |
+          echo "🪵 Dumping Android logs..."
+          find android -type f \( -name "*.log" -o -name "*.txt" \) -exec echo "== {} ==" \; -exec cat {} \; || true
+
       - name: ccache post-run
-        run:  ccache -s
+        run: ccache -s
 
       - name: Save artifact
         uses: actions/upload-artifact@master
