@@ -2,7 +2,6 @@ name: build_android_unsigned
 
 on: [push]
 
-
 defaults:
   run:
     shell: bash
@@ -11,10 +10,12 @@ env:
   SOURCE_DIR:   ${{ github.workspace }}
   QT_VERSION:   5.15.2
   BUILD_TYPE:   ${{ fromJSON('["DailyBuild", "StableBuild"]')[ github.ref_type == 'tag' || contains(github.ref, 'Stable_' ) ] }}
+  ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+  ANDROID_HOME: /usr/local/lib/android/sdk
 
 jobs:
   build:
-    runs-on:  ubuntu-22.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -34,18 +35,18 @@ jobs:
 
       - name: fix ci
         run: sudo apt-mark hold grub-efi-amd64-signed
-  
+
       - name: Install ccache
-        run:  sudo apt-get install -y ccache
-  
+        run: sudo apt-get install -y ccache
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version:      ${{ env.QT_VERSION }}
-          host:         linux
-          target:       android
-          dir:          ${{ runner.temp }}
-          modules:      qtcharts
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: android
+          dir: ${{ runner.temp }}
+          modules: qtcharts
           setup-python: true
 
       - name: Install Android NDK
@@ -53,20 +54,23 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r22b
-          add-to-path: false
+          add-to-path: true
+
+      - name: Install required Android SDK packages
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager --install "platforms;android-35" "build-tools;33.0.2"
 
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
-        shell: cmake -P {0}
         run: |
-          string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
-          message("::set-output name=timestamp::${current_date}")
+          echo "::set-output name=timestamp::$(date -u +'%Y-%m-%d-%H:%M:%S')"
 
       - name: ccache cache files
         uses: actions/cache@v4
         with:
-          path:         ~/.ccache
-          key:          ${{ runner.os }}-ccache-${{steps.ccache_cache_timestamp.outputs.timestamp}}
+          path: ~/.ccache
+          key: ${{ runner.os }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
           restore-keys: ${{ runner.os }}-ccache-
 
       - name: Setup ccache
@@ -79,10 +83,10 @@ jobs:
           ccache -z
 
       - name: Create build directory
-        run:  mkdir ${{ runner.temp }}/shadow_build_dir
+        run: mkdir ${{ runner.temp }}/shadow_build_dir
 
       - name: Install gstreamer
-        working-directory:  ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}
         run: |
           cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
@@ -95,19 +99,20 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run:  |
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        run: |
           qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}"
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
-          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-35 --gradle
+          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json --android-platform android-35 --gradle
 
       - name: ccache post-run
-        run:  ccache -s
+        run: ccache -s
 
       - name: Save artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.ARTIFACT }}
           path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug/*.apk
-
