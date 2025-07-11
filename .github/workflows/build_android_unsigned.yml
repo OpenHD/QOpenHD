@@ -7,9 +7,9 @@ defaults:
     shell: bash
 
 env:
-  SOURCE_DIR:   ${{ github.workspace }}
-  QT_VERSION:   5.15.2
-  BUILD_TYPE:   ${{ fromJSON('["DailyBuild", "StableBuild"]')[ github.ref_type == 'tag' || contains(github.ref, 'Stable_' ) ] }}
+  SOURCE_DIR: ${{ github.workspace }}
+  QT_VERSION: 5.15.2
+  BUILD_TYPE: ${{ fromJSON('["DailyBuild", "StableBuild"]')[ github.ref_type == 'tag' || contains(github.ref, 'Stable_' ) ] }}
   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
   ANDROID_HOME: /usr/local/lib/android/sdk
 
@@ -68,16 +68,20 @@ jobs:
         env:
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
 
-
       - name: Install required Android SDK packages
         run: |
-          yes | sdkmanager --licenses
-          sdkmanager --install "platforms;android-35" "build-tools;33.0.2"
+          SDKMANAGER_PATH=$(find $ANDROID_SDK_ROOT -type f -name sdkmanager | head -n 1 || true)
+          if [[ -x "$SDKMANAGER_PATH" ]]; then
+            "$SDKMANAGER_PATH" "platforms;android-35" "build-tools;33.0.2"
+          else
+            echo "sdkmanager not found, skipping SDK package installation"
+          fi
+        env:
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
 
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
-        run: |
-          echo "::set-output name=timestamp::$(date -u +'%Y-%m-%d-%H:%M:%S')"
+        run: echo "::set-output name=timestamp::$(date -u +'%Y-%m-%d-%H:%M:%S')"
 
       - name: ccache cache files
         uses: actions/cache@v4
