@@ -5,6 +5,8 @@ wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.20.7/gstreamer
 
 tar xf gstreamer-1.0-android-universal-*.tar.xz
 
+ls
+
 cp -rv gstreamer-1.0-android-universal_pre/* gstreamer-1.0-android-universal-1.20.7/
 
 ls -l gstreamer-1.0-android-universal-1.20.7/
