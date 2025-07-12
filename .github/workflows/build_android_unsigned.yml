@@ -56,31 +56,6 @@ jobs:
           ndk-version: r22b
           add-to-path: true
 
-      - name: Accept Android SDK licenses if sdkmanager exists
-        run: |
-          SDKMANAGER_PATH=$(find $ANDROID_SDK_ROOT -type f -name sdkmanager | head -n 1 || true)
-          if [[ -x "$SDKMANAGER_PATH" ]]; then
-            echo "Found sdkmanager at $SDKMANAGER_PATH"
-            yes | "$SDKMANAGER_PATH" --licenses
-          else
-            echo "sdkmanager not found, skipping licenses acceptance"
-          fi
-        env:
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-
-      - name: Accept Android SDK licenses if sdkmanager exists
-        run: |
-            SDKMANAGER_PATH=$(find $ANDROID_SDK_ROOT -type f -name sdkmanager | head -n 1 || true)
-            if [[ -x "$SDKMANAGER_PATH" ]]; then
-              echo "Found sdkmanager at $SDKMANAGER_PATH"
-              while true; do echo y; done | "$SDKMANAGER_PATH" --licenses
-            else
-              echo "sdkmanager not found, skipping licenses acceptance"
-            fi
-        env:
-            ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-        
-
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
         run: echo "::set-output name=timestamp::$(date -u +'%Y-%m-%d-%H:%M:%S')"
