@@ -1,11 +1,10 @@
-# #bin/bash
+#!/bin/bash
+set -e
 
-# wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.20.7/gstreamer-1.0-android-universal-1.20.7.tar.xz
+wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.20.7/gstreamer-1.0-android-universal-1.20.7.tar.xz
 
-# # NOTE: We intentionally do not include the version in the extracted folder
-# mkdir -p gstreamer-1.0-android-universal
+tar xf gstreamer-1.0-android-universal-*.tar.xz
 
-# tar xf gstreamer-1.0-android-universal-* -C gstreamer-1.0-android-universal
+cp -rv gstreamer-1.0-android-universal_pre/* gstreamer-1.0-android-universal-1.20.7/
 
-# ls
-
+ls -l gstreamer-1.0-android-universal-1.20.7/
