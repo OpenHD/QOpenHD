@@ -9,4 +9,4 @@ ls
 
 cp -rv gstreamer-1.0-android-universal_pre/* .
 
-tree gstreamer-1.0-android-universal_pre
+tree .
