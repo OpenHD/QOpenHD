@@ -48,7 +48,7 @@ android {
         QMAKE_VERBOSE = 1
 
         # Sanity check: verify gstelement.h exists
-        GST_HEADER_PATH = $$GST_ROOT/include/gstreamer-1.0/gst/gstelement.h
+        GST_HEADER_PATH = $$GST_ROOT/gstreamer-1.0/include/gst/gstelement.h
         exists($$GST_HEADER_PATH) {
             message("Found gstelement.h at: $$GST_HEADER_PATH")
         } else {
@@ -91,7 +91,7 @@ android {
 
         INCLUDEPATH += \
             $$GST_ROOT/include/gstreamer-1.0 \
-            $$GST_ROOT/lib/gstreamer-1.0/include \
+            $$GST_ROOT/gstreamer-1.0/include \
             $$GST_ROOT/include/glib-2.0 \
             $$GST_ROOT/lib/glib-2.0/include
     } else {

@@ -27,4 +27,4 @@ find . -name gstelement.h || echo "[WARNING] No gstelement.h found!"
 echo "[INFO] Print current full path"
 echo $PWD
 echo "[INFO] Print real Gstreamer path and whats inside"
-ls -a /home/runner/work/QOpenHD/QOpenHD/lib/gstreamer_prebuilts/gstreamer-1.0/arm64/include
+ls -a /home/runner/work/QOpenHD/QOpenHD/lib/gstreamer_prebuilts/arm64/gstreamer-1.0/include
