@@ -58,7 +58,6 @@ jobs:
           key: qt-install-${{ runner.os }}-${{ env.QT_VERSION }}
 
       - name: Install Qt (only if not cached)
-        if: steps.qt-cache.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v4
         with:
           version:      '5.15.19'

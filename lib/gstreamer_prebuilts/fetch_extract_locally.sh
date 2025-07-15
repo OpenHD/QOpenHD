@@ -21,8 +21,8 @@ cp -rv "${GST_DIR}_pre/"* . || {
   echo "[ERROR] Failed to copy precompiled GStreamer files."; exit 1;
 }
 
-echo "[INFO] Directory layout after copy:"
-tree . || ls -R .
+# echo "[INFO] Directory layout after copy:"
+# tree . || ls -R .
 
 echo "[DEBUG] Looking for 'gst/gstelement.h'..."
 FOUND_HEADER=$(find . -name gstelement.h | head -n 1 || true)
