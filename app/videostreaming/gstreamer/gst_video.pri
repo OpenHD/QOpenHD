@@ -91,14 +91,29 @@ android {
 
         INCLUDEPATH += \
             $$GST_ROOT/include/gstreamer-1.0 \
-            $$GST_ROOT/gstreamer-1.0/include \
+            $$GST_ROOT/include/gstreamer-1.0/gst \
             $$GST_ROOT/include/glib-2.0 \
             $$GST_ROOT/lib/glib-2.0/include
+        message("==== Debug: Include paths being used ====")
+        for(includePath, INCLUDEPATH) {
+            message($$includePath)
+        }
+
+        message("==== Debug: Checking gst/gstelement.h in INCLUDEPATH ====")
+        GST_HEADER_NAME = gst/gstelement.h
+        for(includePath, INCLUDEPATH) {
+            FULL_HEADER_PATH = $$includePath/$$GST_HEADER_NAME
+            exists($$FULL_HEADER_PATH) {
+                message("Found gstelement.h at: $$FULL_HEADER_PATH")
+            } else {
+                message("Not found in: $$FULL_HEADER_PATH")
+            }
+        }
     } else {
         message(Gstreamer prebuilt directory does not exist)
     }
-}else {
+} else {
     message(gst linux)
     CONFIG += link_pkgconfig
-    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
+    PKGCONFIG += gstreamer-1.0 gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0
 }
