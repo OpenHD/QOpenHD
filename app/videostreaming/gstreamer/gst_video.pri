@@ -56,7 +56,7 @@ android {
         }
 
         # Show the include paths being used
-        message("INCLUDEPATH += $$GST_ROOT/include")
+        message("INCLUDEPATH += $$GST_ROOT/include/gstreamer-1.0")
         message("INCLUDEPATH += $$GST_ROOT/lib/gstreamer-1.0/include")
         message("INCLUDEPATH += $$GST_ROOT/include/glib-2.0")
         message("INCLUDEPATH += $$GST_ROOT/lib/glib-2.0/include")
