@@ -7,6 +7,7 @@ BUILD_ARCH="arm64"
 INSTALL_DIR="$PWD/lib/gstreamer_prebuilts/$BUILD_ARCH"
 
 echo "[INFO] Cloning Cerbero..."
+rm -rf CERBERO_DIR
 git clone --depth=1 https://gitlab.freedesktop.org/gstreamer/cerbero.git "$CERBERO_DIR"
 pip3 install --user distro
 
