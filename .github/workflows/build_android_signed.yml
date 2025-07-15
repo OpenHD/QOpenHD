@@ -100,12 +100,13 @@ jobs:
           echo "compression_level = 5" >> ~/.ccache/ccache.conf
           ccache -s
           ccache -z
-      - name: Symlink NDK to Cerbero path
-        run: |
-          echo "Linking installed NDK to Cerbero expected path"
-          mkdir -p $HOME/cerbero/build
-          ln -sfn "${{ steps.setup-ndk.outputs.ndk-path }}" "$HOME/cerbero/build/android-ndk-25"
 
+      - name: Symlink NDK to Cerbero path (with structure fix)
+        run: |
+          echo "Fixing NDK layout for Cerbero compatibility"
+          mkdir -p $HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt
+          ln -sfn "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm" "$HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64"
+  
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
