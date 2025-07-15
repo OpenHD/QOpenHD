@@ -101,6 +101,11 @@ jobs:
           ccache -s
           ccache -z
 
+      - name: Debug GitHub NDK layout
+        run: |
+          echo "[INFO] GitHub NDK path: ${{ steps.setup-ndk.outputs.ndk-path }}"
+          find ${{ steps.setup-ndk.outputs.ndk-path }} -type f -name "clang" -exec ls -l {} \;
+      
       - name: Patch NDK layout for Cerbero
         run: |
           set -e
