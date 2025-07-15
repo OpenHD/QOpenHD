@@ -77,6 +77,7 @@ jobs:
         with:
           ndk-version: r25c
           add-to-path: false
+          local-cache: true
 
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
@@ -103,8 +104,13 @@ jobs:
 
       - name: List hosted NDK layout
         run: |
+          ls -a ${{ steps.setup-ndk.outputs.ndk-path }}
           echo "[INFO] Checking real layout:"
           find /opt/hostedtoolcache/ndk/r25c/x64 -name clang -type f
+          echo "[INFO] Change to ndk path"
+          tree ${{ steps.setup-ndk.outputs.ndk-path }}
+          echo "[INFO] Show pwd"
+          echo $PWD
         
       - name: Patch NDK layout for Cerbero
         run: |
