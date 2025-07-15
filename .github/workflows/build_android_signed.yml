@@ -78,61 +78,6 @@ jobs:
           ndk-version: r25c
           add-to-path: false
 
-      # - name: Cache FFmpeg Build
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ffmpeg-build
-      #     key: ${{ runner.os }}-ffmpeg-${{ matrix.ffmpeg_arch }}-v1
-
-      # - name: Build FFmpeg for ${{ matrix.ffmpeg_arch }}
-      #   run: |
-      #     set -e
-      #     if [ ! -d ffmpeg-build/${{ matrix.ffmpeg_arch }} ]; then
-      #       git clone --depth=1 https://git.ffmpeg.org/ffmpeg.git ffmpeg-src
-      #       cd ffmpeg-src
-
-      #       export NDK="${{ steps.setup-ndk.outputs.ndk-path }}"
-      #       export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin
-      #       export API=21
-      #       export PREFIX=$GITHUB_WORKSPACE/ffmpeg-build/${{ matrix.ffmpeg_arch }}
-
-      #       if [[ "${{ matrix.ffmpeg_arch }}" == "arm64" ]]; then
-      #         export TARGET=aarch64-linux-android
-      #         export CC=$TOOLCHAIN/${TARGET}${API}-clang
-      #       else
-      #         export TARGET=armv7a-linux-androideabi
-      #         export CC=$TOOLCHAIN/${TARGET}${API}-clang
-      #       fi
-
-      #       ./configure \
-      #         --prefix=$PREFIX \
-      #         --target-os=android \
-      #         --arch=${{ matrix.ffmpeg_arch }} \
-      #         --cc=$CC \
-      #         --cross-prefix=$TOOLCHAIN/${TARGET/armv7a/arm}- \
-      #         --enable-cross-compile \
-      #         --enable-static \
-      #         --disable-shared \
-      #         --disable-programs \
-      #         --disable-doc \
-      #         --disable-everything \
-      #         --enable-avcodec \
-      #         --enable-avformat \
-      #         --enable-avutil \
-      #         --enable-swresample \
-      #         --enable-pic \
-      #         --extra-cflags="-fPIC"
-
-      #       make -j$(nproc)
-      #       make install
-      #     fi
-
-      # - name: Upload FFmpeg .a libraries
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ffmpeg-static-libs-${{ matrix.eabi }}
-      #     path: ffmpeg-build/${{ matrix.ffmpeg_arch }}/lib/*.a
-
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
         shell: cmake -P {0}
@@ -155,6 +100,11 @@ jobs:
           echo "compression_level = 5" >> ~/.ccache/ccache.conf
           ccache -s
           ccache -z
+      - name: Symlink NDK to Cerbero path
+        run: |
+          echo "Linking installed NDK to Cerbero expected path"
+          mkdir -p $HOME/cerbero/build
+          ln -sfn "${{ steps.setup-ndk.outputs.ndk-path }}" "$HOME/cerbero/build/android-ndk-25"
 
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
