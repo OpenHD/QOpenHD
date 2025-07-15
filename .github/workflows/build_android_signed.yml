@@ -101,12 +101,21 @@ jobs:
           ccache -s
           ccache -z
 
-      - name: Symlink NDK to Cerbero path (with structure fix)
+      - name: Fix NDK folder structure for Cerbero compatibility
         run: |
-          echo "Fixing NDK layout for Cerbero compatibility"
-          mkdir -p $HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt
-          ln -sfn "${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm" "$HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64"
-  
+          NDK_PATH="${{ steps.setup-ndk.outputs.ndk-path }}"
+          TARGET_PATH="$HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64"
+
+          echo "Fixing NDK layout: $NDK_PATH → $TARGET_PATH"
+          mkdir -p "$TARGET_PATH"
+          
+          # Symlink the actual toolchain contents into the fake path
+          ln -sf "$NDK_PATH/toolchains/llvm/bin" "$TARGET_PATH/bin"
+          ln -sf "$NDK_PATH/toolchains/llvm/lib" "$TARGET_PATH/lib"
+          ln -sf "$NDK_PATH/toolchains/llvm/include" "$TARGET_PATH/include"
+          ln -sf "$NDK_PATH/toolchains/llvm/lib64" "$TARGET_PATH/lib64"
+          ln -sf "$NDK_PATH/toolchains/llvm/sysroot" "$TARGET_PATH/sysroot"
+
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
