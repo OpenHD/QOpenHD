@@ -48,7 +48,7 @@ jobs:
         run: sudo apt-mark hold grub-efi-amd64-signed
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y ccache curl yasm pkg-config build-essential git
+        run: sudo apt-get update && sudo apt-get install -y ccache curl yasm pkg-config build-essential git python3-distro
 
       - name: Cache Qt installation
         uses: actions/cache@v4
