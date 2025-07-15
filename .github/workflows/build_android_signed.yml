@@ -50,7 +50,15 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y ccache curl yasm pkg-config build-essential git
 
-      - name: Install Qt
+      - name: Cache Qt installation
+        uses: actions/cache@v4
+        id: qt-cache
+        with:
+          path: ${{ runner.temp }}/Qt
+          key: qt-install-${{ runner.os }}-${{ env.QT_VERSION }}
+
+      - name: Install Qt (only if not cached)
+        if: steps.qt-cache.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v4
         with:
           version:      '5.15.19'
@@ -62,6 +70,7 @@ jobs:
           dir:          ${{ runner.temp }}
           modules:      qtcharts
           setup-python: true
+
 
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
