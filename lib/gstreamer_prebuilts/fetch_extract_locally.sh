@@ -21,11 +21,8 @@ cp -rv "${GST_DIR}_pre/"* . || {
   echo "[ERROR] Failed to copy precompiled GStreamer files."; exit 1;
 }
 
-# echo "[INFO] Directory layout after copy:"
-# tree . || ls -R .
-
 echo "[DEBUG] Looking for all 'gst/gstelement.h' headers..."
 find . -name gstelement.h || echo "[WARNING] No gstelement.h found!"
 
 echo "[INFO] Print real Gstreamer path and whats inside"
-ls -a /home/runner/work/QOpenHD/QOpenHD/lib/gstreamer_prebuilts/arm64/include
+ls -a /home/runner/work/QOpenHD/QOpenHD/lib/gstreamer_prebuilts/gstreamer-1.0/arm64/include
