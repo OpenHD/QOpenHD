@@ -101,25 +101,38 @@ jobs:
           ccache -s
           ccache -z
 
-      - name: Fix NDK folder structure for Cerbero compatibility
+      - name: Create fake prebuilt path for Cerbero
         run: |
           NDK_PATH="${{ steps.setup-ndk.outputs.ndk-path }}"
-          TARGET_PATH="$HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64"
+          CERBERO_NDK_PATH="$HOME/cerbero/build/android-ndk-25"
+          CLANG_REAL="$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
 
-          echo "Fixing NDK layout: $NDK_PATH → $TARGET_PATH"
-          mkdir -p "$TARGET_PATH"
-          
-          # Symlink the actual toolchain contents into the fake path
-          ln -sf "$NDK_PATH/toolchains/llvm/bin" "$TARGET_PATH/bin"
-          ln -sf "$NDK_PATH/toolchains/llvm/lib" "$TARGET_PATH/lib"
-          ln -sf "$NDK_PATH/toolchains/llvm/include" "$TARGET_PATH/include"
-          ln -sf "$NDK_PATH/toolchains/llvm/lib64" "$TARGET_PATH/lib64"
-          ln -sf "$NDK_PATH/toolchains/llvm/sysroot" "$TARGET_PATH/sysroot"
+          echo "NDK Path from GitHub action: $NDK_PATH"
+          echo "Creating fake NDK path: $CERBERO_NDK_PATH"
 
+          # Create full expected folder structure
+          mkdir -p "$CERBERO_NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64"
+
+          # Check if actual clang exists somewhere (fallback path GitHub Action NDK uses)
+          if [ -f "$NDK_PATH/toolchains/llvm/bin/clang" ]; then
+              echo "Creating manual mapping for toolchain"
+              ln -s "$NDK_PATH/toolchains/llvm" "$CERBERO_NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64"
+          elif [ -f "$CLANG_REAL" ]; then
+              echo "NDK already matches Cerbero format"
+              ln -s "$NDK_PATH" "$CERBERO_NDK_PATH"
+          else
+              echo "[ERROR] Cannot locate clang in GitHub-provided NDK"
+              find "$NDK_PATH/toolchains" -name clang || true
+              exit 1
+          fi
+
+          # Verify the symlinked path works
+          ls -l "$CERBERO_NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+
+  
       - name: Verify clang exists
         run: ls -l "$HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
-  
-  
+     
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
