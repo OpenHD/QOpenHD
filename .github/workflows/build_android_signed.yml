@@ -116,6 +116,10 @@ jobs:
           ln -sf "$NDK_PATH/toolchains/llvm/lib64" "$TARGET_PATH/lib64"
           ln -sf "$NDK_PATH/toolchains/llvm/sysroot" "$TARGET_PATH/sysroot"
 
+      - name: Verify clang exists
+        run: ls -l "$HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+  
+  
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
