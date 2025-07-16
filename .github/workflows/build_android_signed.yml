@@ -79,6 +79,14 @@ jobs:
           add-to-path: false
           local-cache: true
 
+      - name: Install Android NDK manually for Cerbero
+        run: |
+          mkdir -p "$HOME/cerbero/build"
+          cd "$HOME/cerbero/build"
+          curl -LO https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
+          unzip -q android-ndk-r25c-linux.zip
+          mv android-ndk-r25c android-ndk-25
+
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
         shell: cmake -P {0}
