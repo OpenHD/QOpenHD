@@ -110,7 +110,8 @@ jobs:
         env:
           NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          ./fetch_extract_locally.sh
+          export NDK_ROOT="${{ steps.setup-ndk.outputs.ndk-path }}"
+          ./fetch_extract_locally.sh "$NDK_ROOT"
 
       - name: Build QOpenHD
         working-directory: ${{ runner.temp }}/shadow_build_dir
