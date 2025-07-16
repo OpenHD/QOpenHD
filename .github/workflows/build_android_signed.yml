@@ -79,15 +79,6 @@ jobs:
           add-to-path: false
           local-cache: true
 
-      - name: Install Android NDK manually for Cerbero
-        run: |
-          mkdir -p "$HOME/cerbero/build"
-          cd "$HOME/cerbero/build"
-          curl -LO https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
-          unzip -q android-ndk-r25c-linux.zip
-          mv -v android-ndk-r25c android-ndk-25
-          ls /home/runner/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64/bin/
-
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
         shell: cmake -P {0}
@@ -115,12 +106,8 @@ jobs:
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
       - name: Bootstrap and build GStreamer
-        working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
-        env:
-          NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          export NDK_ROOT="${{ steps.setup-ndk.outputs.ndk-path }}"
-          ./fetch_extract_locally.sh "$NDK_ROOT"
+          ./fetch_extract_locally.sh
 
       - name: Build QOpenHD
         working-directory: ${{ runner.temp }}/shadow_build_dir

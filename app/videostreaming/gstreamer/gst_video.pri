@@ -14,10 +14,14 @@ HEADERS += \
     $$PWD/gstrtpaudioplayer.h \
     $$PWD/gstrtpreceiver.h
 
-android {
+android{
     message("gst android")
     # More or less taken from QGroundControl.
-    DOWNLOADED_GST_FOLDER = $$PWD/../../../lib/gstreamer_prebuilts
+    # this is already the "least dirty" solution I could come up with :/
+    #DOWNLOADED_GST_FOLDER= /home/hyperion/gstreamer-1.0-android-universal-1.20.5
+    #DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+    #DOWNLOADED_GST_FOLDER= $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
+    DOWNLOADED_GST_FOLDER= $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal
 
     # Set the right folder for the compile arch
     GSTREAMER_ARCH_FOLDER = armv7
@@ -32,6 +36,8 @@ android {
         GSTREAMER_ARCH_FOLDER = armv7
     }
 
+    #GSTREAMER_ARCH_FOLDER = arm64
+
     GSTREAMER_ROOT_ANDROID = $$DOWNLOADED_GST_FOLDER/$$GSTREAMER_ARCH_FOLDER
     message(gstreamer root android:)
     message($$GSTREAMER_ROOT_ANDROID)
@@ -40,21 +46,9 @@ android {
     exists($$GST_ROOT) {
         message(Doing QGC gstreamer stuff)
         message($$GST_ROOT)
-        QMAKE_CXXFLAGS += -pthread
-        CONFIG += VideoEnabled
+        QMAKE_CXXFLAGS  += -pthread
+        CONFIG          += VideoEnabled
 
-        # Debug flags to see include search paths and included headers
-        QMAKE_CXXFLAGS += -v -H
-        QMAKE_VERBOSE = 1
-
-        # Sanity check: verify gstelement.h exists
-        GST_HEADER_PATH = $$GST_ROOT/gstreamer-1.0/include/gst/gstelement.h
-        exists($$GST_HEADER_PATH) {
-            message("Found gstelement.h at: $$GST_HEADER_PATH")
-        } else {
-            warning("gstelement.h NOT found at: $$GST_HEADER_PATH")
-        }
-   
         LIBS += -L$$GST_ROOT/lib/gstreamer-1.0 \
             -lgstvideo-1.0 \
             -lgstcoreelements \
@@ -77,9 +71,11 @@ android {
             -lgstalaw \
             -lgstautodetect
 
+
+        # Rest of GStreamer dependencies
         LIBS += -L$$GST_ROOT/lib \
             -lgraphene-1.0 -ljpeg -lpng16 \
-            -lgstfft-1.0 -lm \
+            -lgstfft-1.0 -lm  \
             -lgstnet-1.0 -lgio-2.0 \
             -lgstphotography-1.0 -lgstgl-1.0 -lEGL \
             -lgstaudio-1.0 -lgstcodecparsers-1.0 -lgstbase-1.0 \
@@ -91,29 +87,14 @@ android {
 
         INCLUDEPATH += \
             $$GST_ROOT/include/gstreamer-1.0 \
-            $$GST_ROOT/include/gstreamer-1.0/gst \
+            $$GST_ROOT/lib/gstreamer-1.0/include \
             $$GST_ROOT/include/glib-2.0 \
             $$GST_ROOT/lib/glib-2.0/include
-        message("==== Debug: Include paths being used ====")
-        for(includePath, INCLUDEPATH) {
-            message($$includePath)
-        }
-
-        message("==== Debug: Checking gst/gstelement.h in INCLUDEPATH ====")
-        GST_HEADER_NAME = gst/gstelement.h
-        for(includePath, INCLUDEPATH) {
-            FULL_HEADER_PATH = $$includePath/$$GST_HEADER_NAME
-            exists($$FULL_HEADER_PATH) {
-                message("Found gstelement.h at: $$FULL_HEADER_PATH")
-            } else {
-                message("Not found in: $$FULL_HEADER_PATH")
-            }
-        }
-    } else {
+    }else {
         message(Gstreamer prebuilt directory does not exist)
     }
-} else {
+}else {
     message(gst linux)
     CONFIG += link_pkgconfig
-    PKGCONFIG += gstreamer-1.0 gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0
+    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
 }

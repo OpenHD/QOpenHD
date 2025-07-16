@@ -1,54 +1,11 @@
-#!/bin/bash
-set -euo pipefail
+#bin/bash
 
-GST_VERSION="1.20.7"
-CERBERO_DIR="$HOME/cerbero"
-BUILD_ARCH="arm64"
-INSTALL_DIR="$PWD/lib/gstreamer_prebuilts/$BUILD_ARCH"
+wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.24.13/gstreamer-1.0-android-universal-1.24.13.tar.xz
 
-if [[ $# -lt 1 ]]; then
-    echo "[ERROR] NDK path not provided!"
-    exit 1
-fi
+# NOTE: We intentionally do not include the version in the extracted folder
+mkdir -p gstreamer-1.0-android-universal
 
-NDK_PATH="$1"
+tar xf gstreamer-1.0-android-universal-* -C gstreamer-1.0-android-universal
 
-echo "[INFO] Using NDK path: $NDK_PATH"
-echo "[INFO] Cloning Cerbero into $CERBERO_DIR..."
-rm -rf "$CERBERO_DIR"
-git clone --depth=1 https://gitlab.freedesktop.org/gstreamer/cerbero.git "$CERBERO_DIR"
+ls
 
-echo "[INFO] Installing required Python package..."
-pip3 install --user distro
-
-echo "[INFO] Patching config/cross-android-$BUILD_ARCH.cbc with NDK path..."
-CONFIG_PATH="$CERBERO_DIR/config/cross-android-$BUILD_ARCH.cbc"
-# Backup original for reference
-cp "$CONFIG_PATH" "$CONFIG_PATH.bak"
-# Overwrite or add the ndk_path line
-if grep -q "ndk_path" "$CONFIG_PATH"; then
-    sed -i "s|^ndk_path *=.*|ndk_path = '$NDK_PATH'|" "$CONFIG_PATH"
-else
-    echo "ndk_path = '$NDK_PATH'" >> "$CONFIG_PATH"
-fi
-
-echo "[INFO] Bootstrapping Cerbero..."
-cd "$CERBERO_DIR"
-./cerbero-uninstalled bootstrap
-
-echo "[INFO] Building GStreamer $GST_VERSION for Android ($BUILD_ARCH)..."
-./cerbero-uninstalled -c config/cross-android-$BUILD_ARCH.cbc package gstreamer-1.0
-
-echo "[INFO] Installing built headers and libs to: $INSTALL_DIR"
-rm -rf "$INSTALL_DIR"
-mkdir -p "$INSTALL_DIR"
-
-cp -rv build/dist/android_$BUILD_ARCH/include "$INSTALL_DIR"
-cp -rv build/dist/android_$BUILD_ARCH/lib "$INSTALL_DIR"
-
-echo "[DEBUG] Looking for 'gst/gstelement.h'..."
-find "$INSTALL_DIR" -name gstelement.h || echo "[WARNING] Not found!"
-
-echo "[INFO] Final install location: $INSTALL_DIR"
-echo "[INFO] Contents of include/gstreamer-1.0:"
-ls -a "$INSTALL_DIR/include/gstreamer-1.0" || echo "[ERROR] include/gstreamer-1.0 not found"
