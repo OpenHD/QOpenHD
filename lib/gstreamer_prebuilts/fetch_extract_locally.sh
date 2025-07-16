@@ -83,3 +83,7 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
+
+
+echo "[INFO] LIBAV...."
+find "$GST_DIR" -type f -name "libavutil.a" -print
