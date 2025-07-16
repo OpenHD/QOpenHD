@@ -105,8 +105,10 @@ jobs:
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
-      - name: Bootstrap and build GStreamer
+      - name: Install gstreamer
+        working-directory:  ${{ github.workspace }}
         run: |
+          cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
 
       - name: Build QOpenHD
