@@ -119,6 +119,13 @@ jobs:
           echo "GStreamer & FFmpeg setup done for ${{ matrix.architecture }}"
           ls -a
       
+      - name: list failiours
+        if: failure()
+        working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
+        run: |
+            ls -a
+            tree
+      
       - name: Upload FFmpeg config.log on failure
         if: failure()
         uses: actions/upload-artifact@v4
