@@ -118,6 +118,13 @@ jobs:
           fi
           echo "GStreamer & FFmpeg setup done for ${{ matrix.architecture }}"
           ls -a
+      
+      - name: Upload FFmpeg config.log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-config-log-${{ matrix.architecture }}
+          path: lib/gstreamer_prebuilts/ffmpeg/ffbuild/config.log
 
       - name: Build QOpenHD
         working-directory: ${{ runner.temp }}/shadow_build_dir
