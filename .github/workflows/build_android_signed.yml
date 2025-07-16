@@ -104,7 +104,7 @@ jobs:
 
       - name: List hosted NDK layout
         run: |
-          ls -a /home/runner/.setup-ndk/r25c//x64/toolchains/llvm/prebuilt/linux-x86_64/bin/
+          ls -a /home/runner/.setup-ndk/r25c/x64/toolchains/llvm/prebuilt/linux-x86_64/bin/
           exit 1
         
       - name: 🔍 Find actual clang binary in NDK
