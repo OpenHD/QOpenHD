@@ -45,10 +45,10 @@ android{
     GST_ROOT = $$GSTREAMER_ROOT_ANDROID
 
     # FFmpeg override path (built with fPIC, static)
-    FFMPEG_ROOT = $$GSTREAMER_ROOT_ANDROID/ffmpeg-6.1.1/build-android
+    FFMPEG_ROOT = $$DOWNLOADED_GST_FOLDER/../ffmpeg-6.1.1/build-android
 
     # Optional: x264 path (if not built into FFmpeg directly)
-    X264_ROOT = $$GSTREAMER_ROOT_ANDROID/ffmpeg-6.1.1/build-android
+    X264_ROOT = $$DOWNLOADED_GST_FOLDER/../ffmpeg-6.1.1/build-android
 
     # Add FFmpeg libs BEFORE gstlibav, so it resolves symbols
     LIBS += -L$$FFMPEG_ROOT/lib \
