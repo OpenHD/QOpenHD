@@ -39,6 +39,8 @@ GST_DIR="gstreamer-1.0-android-universal"
 mkdir -p "$GST_DIR"
 tar xf gstreamer-1.0-android-universal-*.tar.xz -C "$GST_DIR"
 
+find "$GST_DIR" -type f -name "libavutil.a" -exec rm -v {} +
+
 # --- FFmpeg fetch + build ---
 echo "[INFO] Downloading FFmpeg ${FFMPEG_VERSION}..."
 curl -sSL "https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.xz" -o ffmpeg.tar.xz
@@ -81,6 +83,3 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
-
-GST_ARCH_LIB="$GST_DIR/$ARCH/lib"
-rm -v $GST_DIR/$ARCH/lib/gstreamer-1.0/libgstlibav.a || true

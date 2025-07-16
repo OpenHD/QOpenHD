@@ -74,7 +74,6 @@ android{
             -lgstrtp \
             -lgstrtsp \
             -lgstx264 \
-            -lgstlibav \
             -lgstsdpelem \
             -lgstvideoparsersbad \
             -lgstrtpmanager \
