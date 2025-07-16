@@ -81,21 +81,6 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
-cd ..
 
-# --- Copy over .a files into GStreamer folder ---
 GST_ARCH_LIB="$GST_DIR/$ARCH/lib"
-FFMPEG_LIBS="libavcodec.a libavformat.a libavutil.a libswresample.a"
-
-echo "[INFO] Copying FFmpeg static libs to $GST_ARCH_LIB..."
-for lib in $FFMPEG_LIBS; do
-  src="ffmpeg-${FFMPEG_VERSION}/build-android/lib/$lib"
-  if [[ -f "$src" ]]; then
-    echo "[COPY] $lib -> $GST_ARCH_LIB"
-    cp -v "$src" "$GST_ARCH_LIB/"
-  else
-    echo "[WARNING] $lib not found in $src"
-  fi
-done
-
-echo "[DONE] FFmpeg replacement complete for $ARCH."
+rm -v $GST_DIR/$ARCH/lib/gstreamer-1.0/libgstlibav.a || true

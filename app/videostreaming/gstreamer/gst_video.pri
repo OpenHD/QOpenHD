@@ -43,6 +43,23 @@ android{
     message($$GSTREAMER_ROOT_ANDROID)
 
     GST_ROOT = $$GSTREAMER_ROOT_ANDROID
+
+    # FFmpeg override path (built with fPIC, static)
+    FFMPEG_ROOT = $$GSTREAMER_ROOT_ANDROID/ffmpeg-6.1.1/build-android
+
+    # Optional: x264 path (if not built into FFmpeg directly)
+    X264_ROOT = $$GSTREAMER_ROOT_ANDROID/ffmpeg-6.1.1/build-android
+
+    # Add FFmpeg libs BEFORE gstlibav, so it resolves symbols
+    LIBS += -L$$FFMPEG_ROOT/lib \
+            -lavcodec -lavformat -lavutil -lswresample
+
+    # If x264 built separately
+    LIBS += -L$$X264_ROOT/lib -lx264
+
+    # Add FFmpeg include paths too
+    INCLUDEPATH += $$FFMPEG_ROOT/include
+
     exists($$GST_ROOT) {
         message(Doing QGC gstreamer stuff)
         message($$GST_ROOT)
