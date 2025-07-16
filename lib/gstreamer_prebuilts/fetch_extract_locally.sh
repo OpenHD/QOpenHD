@@ -61,21 +61,21 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
   --arch="$ARCH" \
   --cc="$CC" \
   --cross-prefix="$CROSS_PREFIX" \
+  --ar="$AR" \
   --enable-cross-compile \
-  --enable-static \
   --disable-shared \
+  --enable-static \
   --enable-pic \
   --disable-doc \
   --disable-programs \
-  --disable-runtime-cpudetect \
   --disable-everything \
   --enable-avcodec \
   --enable-avformat \
   --enable-avutil \
   --enable-swresample \
+  --disable-runtime-cpudetect \
   --extra-cflags="-fPIC" \
-  --extra-ldflags="-fPIC" \
-  --logfile=ffbuild/config.log
+  --extra-ldflags="-fPIC"
 
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)

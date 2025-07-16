@@ -113,6 +113,9 @@ jobs:
           export API=21
           export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
 
+          echo "AR binary: $AR"
+          ls -l "$AR"
+          
           if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
             export TARGET=armv7a-linux-androideabi
             export CC=$TOOLCHAIN/bin/${TARGET}${API}-clang
@@ -127,7 +130,7 @@ jobs:
             echo "Unsupported architecture: ${{ matrix.architecture }}"
             exit 1
           fi
-          
+
       - name: list failiours
         if: failure()
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
