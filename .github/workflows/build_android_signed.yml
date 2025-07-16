@@ -107,18 +107,25 @@ jobs:
 
       - name: Install GStreamer & FFmpeg (matching arch)
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
+        env:
+          NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
+          export API=21
+          export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
+
           if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
+            export TARGET=armv7a-linux-androideabi
+            export CC=$TOOLCHAIN/bin/${TARGET}${API}-clang
             ./fetch_extract_locally.sh -armv7
           elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
+            export TARGET=aarch64-linux-android
+            export CC=$TOOLCHAIN/bin/${TARGET}${API}-clang
             ./fetch_extract_locally.sh -arm64
           else
             echo "Unsupported architecture: ${{ matrix.architecture }}"
             exit 1
           fi
-          echo "GStreamer & FFmpeg setup done for ${{ matrix.architecture }}"
-          ls -a
-      
+
       - name: list failiours
         if: failure()
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
