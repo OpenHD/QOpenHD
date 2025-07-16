@@ -104,13 +104,8 @@ jobs:
 
       - name: List hosted NDK layout
         run: |
-          ls -a ${{ steps.setup-ndk.outputs.ndk-path }}
-          echo "[INFO] Checking real layout:"
-          find /opt/hostedtoolcache/ndk/r25c/x64 -name aarch64-linux-android-clang -type f
-          echo "[INFO] Change to ndk path"
-          tree ${{ steps.setup-ndk.outputs.ndk-path }}
-          echo "[INFO] Show pwd"
-          echo $PWD
+          ls -a /home/runner/.setup-ndk/r25c//x64/toolchains/llvm/prebuilt/linux-x86_64/bin/
+          exit 1
         
       - name: 🔍 Find actual clang binary in NDK
         run: |
