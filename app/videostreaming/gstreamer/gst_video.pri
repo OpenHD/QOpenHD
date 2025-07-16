@@ -65,6 +65,8 @@ android{
         message($$GST_ROOT)
         QMAKE_CXXFLAGS  += -pthread
         CONFIG          += VideoEnabled
+        QMAKE_LFLAGS -= -lgstlibav
+        LIBS -= -lgstlibav
 
         LIBS += -L$$GST_ROOT/lib/gstreamer-1.0 \
             -lgstvideo-1.0 \
