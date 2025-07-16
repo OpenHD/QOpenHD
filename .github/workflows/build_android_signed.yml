@@ -112,24 +112,10 @@ jobs:
           echo "[INFO] Show pwd"
           echo $PWD
         
-      - name: Patch NDK layout for Cerbero
+      - name: 🔍 Find actual clang binary in NDK
         run: |
-          set -e
-          NDK_PATH="${{ steps.setup-ndk.outputs.ndk-path }}"
-          CERBERO_NDK="$HOME/cerbero/build/android-ndk-25"
-
-          echo "[INFO] Creating Cerbero-compatible NDK structure..."
-          mkdir -p "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64"
-
-          # Manually map GitHub NDK structure into what Cerbero expects
-          ln -sf "$NDK_PATH/toolchains/llvm/bin"       "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin"
-          ln -sf "$NDK_PATH/toolchains/llvm/include"   "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/include"
-          ln -sf "$NDK_PATH/toolchains/llvm/lib64"     "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/lib64"
-          ln -sf "$NDK_PATH/toolchains/llvm/lib"       "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/lib"
-          ln -sf "$NDK_PATH/toolchains/llvm/sysroot"   "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-
-          echo "[INFO] Verifying clang is in place..."
-          ls -l "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          echo "[INFO] Searching for clang..."
+          find "${{ steps.setup-ndk.outputs.ndk-path }}" -name clang -type f
 
       - name: Verify clang exists
         run: ls -l "$HOME/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
