@@ -54,6 +54,7 @@ elif [[ "$ARCH" == "arm64" ]]; then
 fi
 
 echo "[INFO] Configuring FFmpeg for $ARCH..."
+
 ./configure \
   --prefix="$PWD/build-android" \
   --target-os=android \
@@ -61,18 +62,20 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
   --cc="$CC" \
   --cross-prefix="$CROSS_PREFIX" \
   --enable-cross-compile \
-  --disable-shared \
   --enable-static \
+  --disable-shared \
   --enable-pic \
   --disable-doc \
   --disable-programs \
+  --disable-runtime-cpudetect \
   --disable-everything \
   --enable-avcodec \
   --enable-avformat \
   --enable-avutil \
   --enable-swresample \
   --extra-cflags="-fPIC" \
-  --extra-ldflags="-fPIC"
+  --extra-ldflags="-fPIC" \
+  --logfile=ffbuild/config.log
 
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
