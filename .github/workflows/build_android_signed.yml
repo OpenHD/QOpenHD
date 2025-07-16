@@ -102,30 +102,14 @@ jobs:
           ccache -s
           ccache -z
 
-      - name: Patch NDK layout for Cerbero
-        run: |
-          set -e
-          echo "[INFO] Copying NDK for Cerbero compatibility..."
-
-          REAL_NDK="/home/runner/.setup-ndk/r25c"
-          CERBERO_NDK="$HOME/cerbero/build/android-ndk-25"
-
-          echo "[INFO] Copying from: $REAL_NDK"
-          echo "[INFO] To: $CERBERO_NDK"
-
-          mkdir -p "$CERBERO_NDK"
-          cp -r "$REAL_NDK/"* "$CERBERO_NDK/"
-
-          echo "[INFO] Done. Verifying clang:"
-          ls "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
-
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
-      - name: Install gstreamer prebuilts
-        working-directory: ${{ github.workspace }}
+      - name: Bootstrap and build GStreamer
+        working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
+        env:
+          NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
 
       - name: Build QOpenHD
