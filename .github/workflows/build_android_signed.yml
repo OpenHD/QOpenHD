@@ -85,7 +85,8 @@ jobs:
           cd "$HOME/cerbero/build"
           curl -LO https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
           unzip -q android-ndk-r25c-linux.zip
-          mv android-ndk-r25c android-ndk-25
+          mv -v android-ndk-r25c android-ndk-25
+          ls /home/runner/cerbero/build/android-ndk-25/toolchains/llvm/prebuilt/linux-x86_64/bin/
 
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
