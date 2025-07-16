@@ -105,22 +105,20 @@ jobs:
       - name: Patch NDK layout for Cerbero
         run: |
           set -e
-          echo "[INFO] Patching NDK layout for Cerbero compatibility..."
+          echo "[INFO] Copying NDK for Cerbero compatibility..."
 
           REAL_NDK="/home/runner/.setup-ndk/r25c"
           CERBERO_NDK="$HOME/cerbero/build/android-ndk-25"
 
-          echo "[INFO] Using NDK from: $REAL_NDK"
-          echo "[INFO] Linking to Cerbero path: $CERBERO_NDK"
+          echo "[INFO] Copying from: $REAL_NDK"
+          echo "[INFO] To: $CERBERO_NDK"
 
-          mkdir -p "$CERBERO_NDK/toolchains/llvm/prebuilt"
-          ln -sfn "$REAL_NDK/toolchains/llvm/prebuilt/linux-x86_64" \
-                  "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64"
+          mkdir -p "$CERBERO_NDK"
+          cp -r "$REAL_NDK/"* "$CERBERO_NDK/"
 
           echo "[INFO] Done. Verifying clang:"
           ls "$CERBERO_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
 
-          
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
