@@ -14,7 +14,7 @@ G_BEGIN_DECLS
 #if defined(__android__) || defined(__ios__)
     GST_PLUGIN_STATIC_DECLARE(coreelements);
     GST_PLUGIN_STATIC_DECLARE(playback);
-    GST_PLUGIN_STATIC_DECLARE(libav);
+    //GST_PLUGIN_STATIC_DECLARE(libav);
     GST_PLUGIN_STATIC_DECLARE(rtp);
     GST_PLUGIN_STATIC_DECLARE(rtsp);
     GST_PLUGIN_STATIC_DECLARE(udp);
