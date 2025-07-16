@@ -57,6 +57,7 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 
 ./configure \
   --prefix="$PWD/build-android" \
+  --ranlib="$RANLIB" \
   --target-os=android \
   --arch="$ARCH" \
   --cc="$CC" \
