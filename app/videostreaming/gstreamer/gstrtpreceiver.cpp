@@ -42,7 +42,7 @@ GstRtpReceiver::GstRtpReceiver(int udp_port, QOpenHDVideoHelper::VideoCodec vide
 #if defined(__android__) || defined(__ios__)
     GST_PLUGIN_STATIC_REGISTER(coreelements);
     GST_PLUGIN_STATIC_REGISTER(playback);
-    GST_PLUGIN_STATIC_REGISTER(libav);
+    //GST_PLUGIN_STATIC_REGISTER(libav);
     GST_PLUGIN_STATIC_REGISTER(rtp);
     GST_PLUGIN_STATIC_REGISTER(rtsp);
     GST_PLUGIN_STATIC_REGISTER(udp);
