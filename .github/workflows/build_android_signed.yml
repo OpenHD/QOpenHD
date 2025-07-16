@@ -110,6 +110,7 @@ jobs:
         run: |
           cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
+          ls -a
 
       - name: Build QOpenHD
         working-directory: ${{ runner.temp }}/shadow_build_dir
@@ -120,32 +121,14 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          set -e
-
-          # Inject FFmpeg path if needed
-          export FF_PREFIX=$GITHUB_WORKSPACE/ffmpeg-build/${{ matrix.ffmpeg_arch }}
-          export LDFLAGS="-L$FF_PREFIX/lib"
-          export CFLAGS="-I$FF_PREFIX/include"
-
           qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}" BUILD_TYPE=Release
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
-
-          echo ">>> Starting androiddeployqt..."
-          androiddeployqt \
-            --output android \
-            --verbose \
-            --input android-QOpenHD-deployment-settings.json \
-            --android-platform android-34 \
-            --gradle \
-            --aab \
-            --release \
-            --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
-            --storepass "${ANDROID_KEYSTORE_PASSWORD}" \
-            || { echo "androiddeployqt failed!"; exit 1; }
+          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-34 --gradle --aab --release --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
           zip -r file.zip .
+
 
       - name: Print Android build logs (optional)
         if: failure()
