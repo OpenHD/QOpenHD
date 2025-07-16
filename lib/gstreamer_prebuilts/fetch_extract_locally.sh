@@ -86,4 +86,4 @@ make install
 
 
 echo "[INFO] LIBAV...."
-find "$GST_DIR" -type f -name "libavutil.a" -print
+find . -type f -name "libavutil.a" -print
