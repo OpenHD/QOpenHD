@@ -105,11 +105,18 @@ jobs:
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
-      - name: Install gstreamer
-        working-directory:  ${{ github.workspace }}
+      - name: Install GStreamer & FFmpeg (matching arch)
+        working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
         run: |
-          cd lib/gstreamer_prebuilts/
-          ./fetch_extract_locally.sh
+          if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
+            ./fetch_extract_locally.sh -armv7
+          elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
+            ./fetch_extract_locally.sh -arm64
+          else
+            echo "Unsupported architecture: ${{ matrix.architecture }}"
+            exit 1
+          fi
+          echo "GStreamer & FFmpeg setup done for ${{ matrix.architecture }}"
           ls -a
 
       - name: Build QOpenHD
