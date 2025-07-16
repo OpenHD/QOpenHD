@@ -21,9 +21,20 @@ git clone --depth=1 https://gitlab.freedesktop.org/gstreamer/cerbero.git "$CERBE
 echo "[INFO] Installing required Python package..."
 pip3 install --user distro
 
-echo "[INFO] Bootstrapping Cerbero with --ndk-path..."
+echo "[INFO] Patching config/cross-android-$BUILD_ARCH.cbc with NDK path..."
+CONFIG_PATH="$CERBERO_DIR/config/cross-android-$BUILD_ARCH.cbc"
+# Backup original for reference
+cp "$CONFIG_PATH" "$CONFIG_PATH.bak"
+# Overwrite or add the ndk_path line
+if grep -q "ndk_path" "$CONFIG_PATH"; then
+    sed -i "s|^ndk_path *=.*|ndk_path = '$NDK_PATH'|" "$CONFIG_PATH"
+else
+    echo "ndk_path = '$NDK_PATH'" >> "$CONFIG_PATH"
+fi
+
+echo "[INFO] Bootstrapping Cerbero..."
 cd "$CERBERO_DIR"
-./cerbero-uninstalled bootstrap --ndk-path "$NDK_PATH"
+./cerbero-uninstalled bootstrap
 
 echo "[INFO] Building GStreamer $GST_VERSION for Android ($BUILD_ARCH)..."
 ./cerbero-uninstalled -c config/cross-android-$BUILD_ARCH.cbc package gstreamer-1.0
