@@ -113,9 +113,9 @@ jobs:
           export API=35
           export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
 
-          if [[ "$ARCH" == "arm64" ]]; then
+          if [[ "${{ matrix.architecture }}" == "armv8" ]]; then
             AR="$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
-          elif [[ "$ARCH" == "armv7" ]]; then
+          elif [[ "${{ matrix.architecture }}" == "armv7" ]]; then
             AR="$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
           else
             echo "[ERROR] Unknown arch: $ARCH"
