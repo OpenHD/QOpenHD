@@ -84,9 +84,27 @@ echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
 
+# --- x264 fetch + build ---
+echo "[INFO] Downloading and building x264..."
+git clone --depth 1 https://code.videolan.org/videolan/x264.git x264
+cd x264
 
-echo "[INFO] LIBAV...."
-find . -type f -name "libavutil.a" -exec realpath {} \;
+./configure \
+  --prefix="$PWD/build-android" \
+  --host="${TARGET}" \
+  --enable-static \
+  --disable-cli \
+  --enable-pic \
+  --cross-prefix="$CROSS_PREFIX" \
+  --sysroot="$TOOLCHAIN/sysroot" \
+  --extra-cflags="-fPIC" \
+  --extra-ldflags="-fPIC" \
+  --cc="$CC" \
+  --ar="$AR" \
+  --ranlib="$RANLIB"
 
+make -j$(nproc)
+make install
+cd ..
 
 tree
