@@ -84,6 +84,8 @@ echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
 
+ls -a
+
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
 git clone --depth 1 https://code.videolan.org/videolan/x264.git x264
