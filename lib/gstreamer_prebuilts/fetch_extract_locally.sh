@@ -101,18 +101,33 @@ export AS="$CC"    # Avoid using gas
 
 ls -a /home/runner/.setup-ndk/r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/
 
-# Avoid the `strings` check for endianness
+echo "[INFO] Building x264 manually for $ARCH..."
+cd x264
+
+if [[ "$ARCH" == "armv7" ]]; then
+  CC="$TOOLCHAIN/bin/armv7a-linux-androideabi${API}-clang"
+  CFLAGS="-march=armv7-a"
+  HOST="arm-linux"
+  CROSS_PREFIX="arm-linux-androideabi-"
+elif [[ "$ARCH" == "arm64" ]]; then
+  CC="$TOOLCHAIN/bin/aarch64-linux-android${API}-clang"
+  CFLAGS=""
+  HOST="aarch64-linux"
+  CROSS_PREFIX="aarch64-linux-android-"
+fi
+
+# Set up proper configure flags
 ./configure \
-  --prefix="$PWD/build-android" \
-  --host="${TARGET}" \
+  --prefix="../ffmpeg-${FFMPEG_VERSION}/build-android" \
   --enable-static \
   --disable-cli \
-  --enable-pic \
-  --cross-prefix="$CROSS_PREFIX" \
+  --disable-asm \
+  --host=$HOST \
+  --cross-prefix="$TOOLCHAIN/bin/$CROSS_PREFIX" \
   --sysroot="$TOOLCHAIN/sysroot" \
-  --extra-cflags="-fPIC" \
-  --extra-ldflags="-fPIC" \
-  --disable-asm  # <- disables NEON but avoids broken detection
+  CC="$CC" \
+  CFLAGS="$CFLAGS" \
+  ac_cv_c_bigendian=no
 
 make -j$(nproc)
 make install
