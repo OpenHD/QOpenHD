@@ -91,6 +91,15 @@ echo "[INFO] Downloading and building x264..."
 git clone --depth 1 https://code.videolan.org/videolan/x264.git x264
 cd x264
 
+# NDK r25+ does not ship binutils 'strings', so we skip endian check
+export CROSS_PREFIX="$CROSS_PREFIX"
+export CC="$CC"
+export AR="$AR"
+export RANLIB="$RANLIB"
+export STRIP=true  # Disable strip
+export AS="$CC"    # Avoid using gas
+
+# Avoid the `strings` check for endianness
 ./configure \
   --prefix="$PWD/build-android" \
   --host="${TARGET}" \
@@ -101,12 +110,12 @@ cd x264
   --sysroot="$TOOLCHAIN/sysroot" \
   --extra-cflags="-fPIC" \
   --extra-ldflags="-fPIC" \
-  --cc="$CC" \
-  --ar="$AR" \
-  --ranlib="$RANLIB"
+  --disable-asm  # <- disables NEON but avoids broken detection
 
 make -j$(nproc)
 make install
 cd ..
+
+ls -a
 
 tree
