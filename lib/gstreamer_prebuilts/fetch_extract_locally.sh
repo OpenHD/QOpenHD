@@ -99,6 +99,8 @@ export RANLIB="$RANLIB"
 export STRIP=true  # Disable strip
 export AS="$CC"    # Avoid using gas
 
+ls -a /home/runner/.setup-ndk/r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/
+
 # Avoid the `strings` check for endianness
 ./configure \
   --prefix="$PWD/build-android" \
