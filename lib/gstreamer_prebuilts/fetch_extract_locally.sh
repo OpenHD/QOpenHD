@@ -89,7 +89,7 @@ echo "[Info]Tree _________"
 tree $PWD
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
-git clone --depth 1 https://code.videolan.org/videolan/x264.git x264
+git clone --progress --verbose --depth 1 https://code.videolan.org/videolan/x264.git x264
 cd x264
 
 # NDK r25+ does not ship binutils 'strings', so we skip endian check
