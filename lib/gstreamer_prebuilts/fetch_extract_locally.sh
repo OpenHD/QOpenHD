@@ -84,18 +84,11 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
-
-ls -a
-echo "[Info]Tree _________"
-tree $PWD
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
 mkdir cd x264
 git clone --progress --verbose --depth 1 https://code.videolan.org/videolan/x264.git x264
-ls -a
 cd x264
-ls -a
-
 # NDK r25+ does not ship binutils 'strings', so we skip endian check
 export CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
 export AR="$TOOLCHAIN/bin/llvm-ar"
@@ -135,6 +128,8 @@ make -j$(nproc)
 make install
 cd ..
 
-ls -a
+ls -a ffmpeg-6.1.1/
+ls -a ffmpeg-6.1.1/build-android/
+ls -a ffmpeg-6.1.1/build-android/lib/
 echo "PWD"
 echo "$PWD"
