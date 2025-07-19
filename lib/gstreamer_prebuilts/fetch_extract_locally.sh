@@ -80,7 +80,8 @@ fi
   --extra-cflags="-fPIC" \
   --extra-ldflags="-fPIC" \
   --as=clang \
-  --extra-asflags="-fPIC"
+  --extra-asflags="-fPIC" \
+  --disable-asm  # ← optional fallback if nothing else works
 
 make -j$(nproc)
 make install
