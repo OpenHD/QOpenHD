@@ -126,6 +126,7 @@ find "." -type f -name "x264.pc" -exec rm -v {} +
   --enable-swresample \
   --enable-libx264 \
   --enable-gpl \
+  --pkg-config=":" \
   --extra-cflags="-fPIC -I../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
   --extra-ldflags="-L../ffmpeg-${FFMPEG_VERSION}/build-android/lib -lx264 -fPIC" \
   --disable-runtime-cpudetect \
