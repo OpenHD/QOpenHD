@@ -96,12 +96,12 @@ cd x264
 ls -a
 
 # NDK r25+ does not ship binutils 'strings', so we skip endian check
-export CROSS_PREFIX="$CROSS_PREFIX"
-export CC="$CC"
-export AR="$AR"
-export RANLIB="$RANLIB"
-export STRIP=true  # Disable strip
-export AS="$CC"    # Avoid using gas
+export CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
+export AR="$TOOLCHAIN/bin/llvm-ar"
+export RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
+export STRINGS="/usr/bin/strings"  # or any valid 'strings' path
+# Disable endian check by forcing result via env var (and avoid CLI entirely)
+export ac_cv_c_bigendian=no
 
 ls -a /home/runner/.setup-ndk/r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/
 
@@ -124,13 +124,11 @@ fi
   --prefix="../ffmpeg-${FFMPEG_VERSION}/build-android" \
   --enable-static \
   --disable-cli \
-  --disable-asm \
-  --host=$HOST \
-  --cross-prefix="$TOOLCHAIN/bin/$CROSS_PREFIX" \
+  --host="${TARGET}" \
+  --cross-prefix="$TOOLCHAIN/bin/${TARGET}-" \
   --sysroot="$TOOLCHAIN/sysroot" \
-  CC="$CC" \
-  CFLAGS="$CFLAGS" \
-  ac_cv_c_bigendian=no
+  --extra-cflags="-fPIC" \
+  --extra-ldflags="-fPIC"
 
 make -j$(nproc)
 make install
