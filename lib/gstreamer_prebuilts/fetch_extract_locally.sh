@@ -89,8 +89,11 @@ echo "[Info]Tree _________"
 tree $PWD
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
+mkdir cd x264
 git clone --progress --verbose --depth 1 https://code.videolan.org/videolan/x264.git x264
+ls -a
 cd x264
+ls -a
 
 # NDK r25+ does not ship binutils 'strings', so we skip endian check
 export CROSS_PREFIX="$CROSS_PREFIX"
@@ -103,8 +106,6 @@ export AS="$CC"    # Avoid using gas
 ls -a /home/runner/.setup-ndk/r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/
 
 echo "[INFO] Building x264 manually for $ARCH..."
-ls -a
-cd x264
 
 if [[ "$ARCH" == "armv7" ]]; then
   CC="$TOOLCHAIN/bin/armv7a-linux-androideabi${API}-clang"
