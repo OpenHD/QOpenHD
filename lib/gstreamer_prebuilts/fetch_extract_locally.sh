@@ -115,7 +115,7 @@ fi
 
 # Set up proper configure flags
 ./configure \
-  --prefix="../ffmpeg-${FFMPEG_VERSION}/build-android" \
+  --prefix="../../ffmpeg-${FFMPEG_VERSION}/build-android" \
   --enable-static \
   --disable-cli \
   --host="${TARGET}" \
