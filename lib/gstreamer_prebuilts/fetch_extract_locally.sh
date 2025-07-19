@@ -84,6 +84,10 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
+ls -a
+echo $PWD
+ls -a *
+exit 1
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
 mkdir cd x264
