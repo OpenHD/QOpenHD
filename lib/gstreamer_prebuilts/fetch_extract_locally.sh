@@ -115,7 +115,7 @@ fi
 
 # Set up proper configure flags
 ./configure \
-  --prefix="../../ffmpeg-${FFMPEG_VERSION}/build-android" \
+  --prefix="../ffmpeg-${FFMPEG_VERSION}/build-android" \
   --enable-static \
   --disable-cli \
   --host="${TARGET}" \
@@ -126,10 +126,10 @@ fi
 
 make -j$(nproc)
 make install
-cd ..
-
+ls -a
 ls -a ffmpeg-6.1.1/
 ls -a ffmpeg-6.1.1/build-android/
 ls -a ffmpeg-6.1.1/build-android/lib/
+ls -a *
 echo "PWD"
 echo "$PWD"
