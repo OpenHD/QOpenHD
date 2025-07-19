@@ -97,8 +97,6 @@ export STRINGS="/usr/bin/strings"  # or any valid 'strings' path
 # Disable endian check by forcing result via env var (and avoid CLI entirely)
 export ac_cv_c_bigendian=no
 
-ls -a /home/runner/.setup-ndk/r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/
-
 echo "[INFO] Building x264 manually for $ARCH..."
 
 if [[ "$ARCH" == "armv7" ]]; then
@@ -128,4 +126,4 @@ make -j$(nproc)
 make install
 
 echo $PWD
-ls -a ../*
+tree ../../

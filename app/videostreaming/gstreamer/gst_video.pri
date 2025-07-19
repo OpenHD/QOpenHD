@@ -49,6 +49,8 @@ android{
 
     # Optional: x264 path (if not built into FFmpeg directly)
     X264_ROOT = $$DOWNLOADED_GST_FOLDER/../ffmpeg-6.1.1/build-android
+    LIBS += -L$$X264_ROOT/lib \
+            -lgstx264
 
     # Add FFmpeg libs BEFORE gstlibav, so it resolves symbols
     LIBS += -L$$FFMPEG_ROOT/lib \
@@ -75,7 +77,6 @@ android{
             -lgstudp \
             -lgstrtp \
             -lgstrtsp \
-            -lgstx264 \
             -lgstsdpelem \
             -lgstvideoparsersbad \
             -lgstrtpmanager \
