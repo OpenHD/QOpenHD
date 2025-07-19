@@ -40,6 +40,7 @@ mkdir -p "$GST_DIR"
 tar xf gstreamer-1.0-android-universal-*.tar.xz -C "$GST_DIR"
 
 find "$GST_DIR" -type f -name "libavutil.a" -exec rm -v {} +
+find "$GST_DIR" -type f -name "libx264.a" -exec rm -v {} +
 
 # --- FFmpeg fetch + build ---
 echo "[INFO] Downloading FFmpeg ${FFMPEG_VERSION}..."
@@ -135,5 +136,5 @@ make install
 cd ..
 
 ls -a
-
-tree
+echo "PWD"
+echo "$PWD"
