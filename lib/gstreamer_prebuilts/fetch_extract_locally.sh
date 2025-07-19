@@ -124,6 +124,3 @@ fi
 
 make -j$(nproc)
 make install
-
-echo $PWD
-tree ../../
