@@ -103,6 +103,7 @@ export AS="$CC"    # Avoid using gas
 ls -a /home/runner/.setup-ndk/r25c/toolchains/llvm/prebuilt/linux-x86_64/bin/
 
 echo "[INFO] Building x264 manually for $ARCH..."
+ls -a
 cd x264
 
 if [[ "$ARCH" == "armv7" ]]; then
