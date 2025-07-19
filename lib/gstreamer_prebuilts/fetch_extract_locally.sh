@@ -42,48 +42,6 @@ tar xf gstreamer-1.0-android-universal-*.tar.xz -C "$GST_DIR"
 find "$GST_DIR" -type f -name "libavutil.a" -exec rm -v {} +
 find "$GST_DIR" -type f -name "libx264.a" -exec rm -v {} +
 
-# --- FFmpeg fetch + build ---
-echo "[INFO] Downloading FFmpeg ${FFMPEG_VERSION}..."
-curl -sSL "https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.xz" -o ffmpeg.tar.xz
-tar -xf ffmpeg.tar.xz
-cd ffmpeg-${FFMPEG_VERSION}
-
-if [[ "$ARCH" == "armv7" ]]; then
-  CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
-  CROSS_PREFIX="$TOOLCHAIN/bin/arm-linux-androideabi-"
-elif [[ "$ARCH" == "arm64" ]]; then
-  CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
-  CROSS_PREFIX="$TOOLCHAIN/bin/aarch64-linux-android-"
-fi
-
-echo "[INFO] Configuring FFmpeg for $ARCH..."
-
-./configure \
-  --prefix="$PWD/build-android" \
-  --ranlib="$RANLIB" \
-  --target-os=android \
-  --arch="$ARCH" \
-  --cc="$CC" \
-  --cross-prefix="$CROSS_PREFIX" \
-  --ar="$AR" \
-  --enable-cross-compile \
-  --disable-shared \
-  --enable-static \
-  --enable-pic \
-  --disable-doc \
-  --disable-programs \
-  --disable-everything \
-  --enable-avcodec \
-  --enable-avformat \
-  --enable-avutil \
-  --enable-swresample \
-  --disable-runtime-cpudetect \
-  --extra-cflags="-fPIC" \
-  --extra-ldflags="-fPIC"
-
-echo "[INFO] Building FFmpeg..."
-make -j$(nproc)
-make install
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
 mkdir cd x264
@@ -122,5 +80,51 @@ fi
   --extra-cflags="-fPIC" \
   --extra-ldflags="-fPIC"
 
+make -j$(nproc)
+make install
+cd ..
+
+# --- FFmpeg fetch + build ---
+echo "[INFO] Downloading FFmpeg ${FFMPEG_VERSION}..."
+curl -sSL "https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.xz" -o ffmpeg.tar.xz
+tar -xf ffmpeg.tar.xz
+cd ffmpeg-${FFMPEG_VERSION}
+
+if [[ "$ARCH" == "armv7" ]]; then
+  CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
+  CROSS_PREFIX="$TOOLCHAIN/bin/arm-linux-androideabi-"
+elif [[ "$ARCH" == "arm64" ]]; then
+  CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
+  CROSS_PREFIX="$TOOLCHAIN/bin/aarch64-linux-android-"
+fi
+
+echo "[INFO] Configuring FFmpeg for $ARCH..."
+
+./configure \
+  --prefix="$PWD/build-android" \
+  --ranlib="$RANLIB" \
+  --target-os=android \
+  --arch="$ARCH" \
+  --cc="$CC" \
+  --cross-prefix="$CROSS_PREFIX" \
+  --ar="$AR" \
+  --enable-cross-compile \
+  --disable-shared \
+  --enable-static \
+  --enable-pic \
+  --disable-doc \
+  --disable-programs \
+  --disable-everything \
+  --enable-avcodec \
+  --enable-avformat \
+  --enable-avutil \
+  --enable-swresample \
+  --enable-libx264 \
+  --enable-gpl \
+  --disable-runtime-cpudetect \
+  --extra-cflags="-fPIC -I$PWD/../x264" \
+  --extra-ldflags="-L$PWD/../x264 -lx264 -fPIC"
+
+echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
