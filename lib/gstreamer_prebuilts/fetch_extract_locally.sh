@@ -102,12 +102,12 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 
 ./configure \
   --prefix="$PWD/build-android" \
-  --ranlib="$RANLIB" \
   --target-os=android \
   --arch="$ARCH" \
   --cc="$CC" \
   --cross-prefix="$CROSS_PREFIX" \
   --ar="$AR" \
+  --ranlib="$RANLIB" \
   --enable-cross-compile \
   --disable-shared \
   --enable-static \
@@ -121,9 +121,10 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
   --enable-swresample \
   --enable-libx264 \
   --enable-gpl \
+  --extra-cflags="-fPIC -I../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  --extra-ldflags="-L../ffmpeg-${FFMPEG_VERSION}/build-android/lib -lx264 -fPIC" \
   --disable-runtime-cpudetect \
-  --extra-cflags="-fPIC -I$PWD/../x264" \
-  --extra-ldflags="-L$PWD/../x264 -lx264 -fPIC"
+  --nm="$TOOLCHAIN/bin/llvm-nm"
 
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
