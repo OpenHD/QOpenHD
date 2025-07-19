@@ -100,6 +100,11 @@ fi
 
 echo "[INFO] Configuring FFmpeg for $ARCH..."
 
+unset PKG_CONFIG_PATH
+unset PKG_CONFIG_LIBDIR
+
+find "." -type f -name "x264.pc" -exec rm -v {} +
+
 ./configure \
   --prefix="$PWD/build-android" \
   --target-os=android \
