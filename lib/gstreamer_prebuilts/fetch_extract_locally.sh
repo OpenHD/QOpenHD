@@ -85,7 +85,7 @@ make -j$(nproc)
 make install
 
 ls -a
-echo"[Info]Tree _________"
+echo "[Info]Tree _________"
 tree $PWD
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
