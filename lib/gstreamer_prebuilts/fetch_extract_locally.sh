@@ -84,10 +84,6 @@ echo "[INFO] Configuring FFmpeg for $ARCH..."
 echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
-ls -a
-echo $PWD
-ls -a *
-exit 1
 # --- x264 fetch + build ---
 echo "[INFO] Downloading and building x264..."
 mkdir cd x264
@@ -130,10 +126,6 @@ fi
 
 make -j$(nproc)
 make install
-ls -a
-ls -a ../ffmpeg-6.1.1/
-ls -a ../ffmpeg-6.1.1/build-android/
-ls -a ../ffmpeg-6.1.1/build-android/lib/
+
+echo $PWD
 ls -a ../*
-echo "PWD"
-echo "$PWD"
