@@ -78,7 +78,9 @@ fi
   --cross-prefix="$TOOLCHAIN/bin/${TARGET}-" \
   --sysroot="$TOOLCHAIN/sysroot" \
   --extra-cflags="-fPIC" \
-  --extra-ldflags="-fPIC"
+  --extra-ldflags="-fPIC" \
+  --as=clang \
+  --extra-asflags="-fPIC"
 
 make -j$(nproc)
 make install
