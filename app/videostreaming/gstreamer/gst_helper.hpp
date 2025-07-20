@@ -118,32 +118,40 @@ static void link_gstreamer_pipe_to_qt_window(GstElement * m_pipeline,QQuickItem 
 }
 
 
-// Creates a pipeline whose last element produces rtp h264,h265 or mjpeg data
-static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+// Creates a pipeline whose last element produces rtp h264, h265 or mjpeg data
+static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::VideoCodec& videoCodec) {
+#ifdef __ANDROID__
+    // On Android, avoid using encoders that require plugin registration
+    Q_UNUSED(videoCodec);
+    return "videotestsrc ! queue ! fakesink";
+#else
     std::stringstream ss;
-    ss<<"videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";
-    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
-        ss<<"rtph264pay mtu=1024 ! ";
-    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
-        ss<<"x265enc bitrate=5000 tune=zerolatency ! ";
-        ss<<"rtph265pay mtu=1024 ! ";
-    }else{
-        ss<<"jpegenc ! ";
+    ss << "videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";
+    if (videoCodec == QOpenHDVideoHelper::VideoCodecH264) {
+        ss << "x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
+        ss << "rtph264pay mtu=1024 ! ";
+    } else if (videoCodec == QOpenHDVideoHelper::VideoCodecH265) {
+        ss << "x265enc bitrate=5000 tune=zerolatency ! ";
+        ss << "rtph265pay mtu=1024 ! ";
+    } else {
+        ss << "jpegenc ! ";
         ss << "rtpjpegpay mtu=1024 ! ";
     }
-    ss<<"queue ! ";
+    ss << "queue ! ";
     return ss.str();
+#endif
 }
-namespace pipeline{
+
+namespace pipeline {
 enum class VideoCodec {
-  H264=0,
+  H264 = 0,
   H265,
   MJPEG
 };
-static VideoCodec conv_codec(const QOpenHDVideoHelper::VideoCodec codec){
-    if(codec==QOpenHDVideoHelper::VideoCodecH264)return VideoCodec::H264;
-    if(codec==QOpenHDVideoHelper::VideoCodecH265)return VideoCodec::H265;
+
+static VideoCodec conv_codec(const QOpenHDVideoHelper::VideoCodec codec) {
+    if (codec == QOpenHDVideoHelper::VideoCodecH264) return VideoCodec::H264;
+    if (codec == QOpenHDVideoHelper::VideoCodecH265) return VideoCodec::H265;
     return VideoCodec::MJPEG;
 }
 
