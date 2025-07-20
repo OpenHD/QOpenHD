@@ -108,19 +108,27 @@ jobs:
       - name: Install Android SDK Platform 35
         run: |
           set -e
-          sudo mkdir -p /usr/local/lib/android/sdk/cmdline-tools
-          cd /usr/local/lib/android/sdk/cmdline-tools
+
+          export SDK_ROOT=/usr/local/lib/android/sdk
+          export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
+          export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
+
+          sudo mkdir -p "$CMDLINE_DIR"
+          cd "$CMDLINE_DIR"
 
           sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
           sudo unzip -q tools.zip -d latest
 
-          # Accept licenses manually to avoid prompts
-          mkdir -p /usr/local/lib/android/sdk/licenses
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee /usr/local/lib/android/sdk/licenses/android-sdk-license > /dev/null
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee /usr/local/lib/android/sdk/licenses/android-sdk-preview-license > /dev/null
+          # Set environment to use the new tools
+          export PATH="$CMDLINE_BIN:$PATH"
 
-          # Now install platform 35
-          yes | sudo ./latest/bin/sdkmanager --sdk_root=/usr/local/lib/android/sdk "platforms;android-35"
+          # Accept licenses silently (fixes CI crash!)
+          sudo mkdir -p "$SDK_ROOT/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee "$SDK_ROOT/licenses/android-sdk-license" > /dev/null
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license" > /dev/null
+
+          # Install platform 35 (NO sudo here to avoid stdin issues)
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35"
 
       - name: Install GStreamer & FFmpeg (matching arch)
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
