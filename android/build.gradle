@@ -11,15 +11,14 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
+    namespace "org.openhd.qopenhd" // Required for AGP 7.3+
+
     compileSdkVersion 35
 
     defaultConfig {
+        applicationId "org.openhd.qopenhd" // Needed for AAB
         minSdkVersion 21
         targetSdkVersion 35
-
-        // Disable RenderScript (which causes Gradle 7.x failures)
-        renderscriptTargetApi 21
-        renderscriptSupportModeEnabled false
     }
 
     sourceSets {
@@ -31,9 +30,6 @@ android {
             resources.srcDirs = ['resources']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
-
-            // DO NOT include renderscript.srcDirs unless you're actually using .rs files
-            // renderscript.srcDirs = ['src']
         }
     }
 
@@ -50,7 +46,6 @@ android {
         noCompress 'rcc'
     }
 
-    // Optional: Fix for Gradle 7.0+ that might complain about missing packaging config
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
@@ -65,5 +60,5 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0' // You can keep this for now if not using AndroidX
+    implementation 'androidx.appcompat:appcompat:1.6.1' // Replace deprecated support lib
 }
