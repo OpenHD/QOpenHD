@@ -57,18 +57,18 @@ jobs:
           path: ${{ runner.temp }}/Qt
           key: qt-install-${{ runner.os }}-${{ env.QT_VERSION }}
 
-      # - name: Install Qt (only if not cached)
-      #   uses: jurplel/install-qt-action@v4
-      #   with:
-      #     version:      '5.15.19'
-      #     host:         linux
-      #     target:       android
-      #     use-official: true
-      #     email:        ${{ secrets.QT_EMAIL }}
-      #     pw:           ${{ secrets.QT_PASSWORD }}
-      #     dir:          ${{ runner.temp }}
-      #     modules:      qtcharts
-      #     setup-python: true
+      - name: Install Qt (only if not cached)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version:      '5.15.19'
+          host:         linux
+          target:       android
+          use-official: true
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
+          dir:          ${{ runner.temp }}
+          modules:      qtcharts
+          setup-python: true
 
 
       - name: Install Android NDK
