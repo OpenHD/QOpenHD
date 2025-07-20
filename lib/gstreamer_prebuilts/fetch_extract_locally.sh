@@ -131,7 +131,7 @@ find "." -type f -name "x264.pc" -exec rm -v {} +
   --enable-gpl \
   --pkg-config=":" \
   --extra-cflags="-fPIC -I../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
-  --extra-ldflags="-L../ffmpeg-${FFMPEG_VERSION}/build-android/lib -lx264 -fPIC" \
+  --extra-ldflags="-L../ffmpeg-${FFMPEG_VERSION}/build-android/lib -lx264 -fPIC -lm" \
   --disable-runtime-cpudetect \
   --nm="$TOOLCHAIN/bin/llvm-nm"
 
