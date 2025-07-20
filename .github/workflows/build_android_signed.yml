@@ -228,8 +228,7 @@ jobs:
           EOF
 
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          ls -a
-          ls -a /usr/local/lib/android/sdk/platforms
+          ls /usr/local/lib/android/sdk/platforms/android-35/
 
 
           androiddeployqt \
