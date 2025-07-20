@@ -142,6 +142,11 @@ jobs:
           file "$SDK_ROOT/platforms/android-35/android.jar"
 
           echo "Done installing Android SDK platform 35."
+          
+      - name: Install Android Build Tools 35.0.0
+        run: |
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/local/lib/android/sdk "build-tools;35.0.0"
+          ls -lh /usr/local/lib/android/sdk/build-tools/
 
       - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
         run: |
