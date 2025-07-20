@@ -57,18 +57,18 @@ jobs:
           path: ${{ runner.temp }}/Qt
           key: qt-install-${{ runner.os }}-${{ env.QT_VERSION }}
 
-      - name: Install Qt (only if not cached)
-        uses: jurplel/install-qt-action@v4
-        with:
-          version:      '5.15.19'
-          host:         linux
-          target:       android
-          use-official: true
-          email:        ${{ secrets.QT_EMAIL }}
-          pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ runner.temp }}
-          modules:      qtcharts
-          setup-python: true
+      # - name: Install Qt (only if not cached)
+      #   uses: jurplel/install-qt-action@v4
+      #   with:
+      #     version:      '5.15.19'
+      #     host:         linux
+      #     target:       android
+      #     use-official: true
+      #     email:        ${{ secrets.QT_EMAIL }}
+      #     pw:           ${{ secrets.QT_PASSWORD }}
+      #     dir:          ${{ runner.temp }}
+      #     modules:      qtcharts
+      #     setup-python: true
 
 
       - name: Install Android NDK
@@ -180,6 +180,14 @@ jobs:
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
+
+          mkdir -p android/gradle/wrapper
+          cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
+          distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-bin.zip
+          EOF
+
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+          ls -a
 
           androiddeployqt \
             --output android \
