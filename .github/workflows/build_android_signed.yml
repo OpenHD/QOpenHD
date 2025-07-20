@@ -107,28 +107,40 @@ jobs:
 
       - name: Install Android SDK Platform 35
         run: |
-          set -e
+          set -euxo pipefail
 
           export SDK_ROOT=/usr/local/lib/android/sdk
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
 
+          echo "Cleaning previous android-35 platform if present..."
+          sudo rm -rf "$SDK_ROOT/platforms/android-35"
+
+          echo "Creating SDK tool directory: $CMDLINE_DIR"
           sudo mkdir -p "$CMDLINE_DIR"
           cd "$CMDLINE_DIR"
 
-          sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
-          sudo unzip -q tools.zip -d latest
+          echo "Downloading command line tools..."
+          sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
 
-          # Set environment to use the new tools
+          echo "Unzipping command line tools..."
+          sudo unzip -v tools.zip -d latest
+
+          echo "Setting PATH and verifying tool installation..."
           export PATH="$CMDLINE_BIN:$PATH"
+          "$CMDLINE_BIN/sdkmanager" --version
 
-          # Accept licenses silently (fixes CI crash!)
+          echo "Accepting SDK licenses..."
           sudo mkdir -p "$SDK_ROOT/licenses"
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee "$SDK_ROOT/licenses/android-sdk-license" > /dev/null
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license" > /dev/null
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee "$SDK_ROOT/licenses/android-sdk-license"
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license"
 
-          # Install platform 35 (NO sudo here to avoid stdin issues)
-          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35"
+          echo "Installing Android platform 35..."
+          yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35"
+
+          echo "Verifying android.jar..."
+          ls -lh "$SDK_ROOT/platforms/android-35/android.jar"
+          file "$SDK_ROOT/platforms/android-35/android.jar"
 
       - name: Install GStreamer & FFmpeg (matching arch)
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
@@ -140,7 +152,7 @@ jobs:
           export RANLIB="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib"
 
 
-          tree /usr/local/lib/android/sdk/platforms
+          ls /usr/local/lib/android/sdk/platforms
 
           if [[ "${{ matrix.architecture }}" == "armv8" ]]; then
             AR="$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
@@ -216,6 +228,8 @@ jobs:
 
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
           ls -a
+          ls -a /usr/local/lib/android/sdk/platforms
+
 
           androiddeployqt \
             --output android \
