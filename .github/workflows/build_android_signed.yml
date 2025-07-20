@@ -193,7 +193,7 @@ jobs:
             --output android \
             --verbose \
             --input android-QOpenHD-deployment-settings.json \
-            --android-platform android-34 \
+            --android-platform android-35 \
             --gradle \
             --gradle-template ${SOURCE_DIR}/android/build.gradle \
             --release \
