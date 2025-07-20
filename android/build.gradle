@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 
     dependencies {
@@ -12,15 +12,15 @@ buildscript {
 allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 }
 
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 35
-    buildToolsVersion '30.0.3' // Use a recent one; 28.0.3 is too old for SDK 35
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 21
@@ -38,10 +38,6 @@ android {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
         }
-    }
-
-    buildFeatures {
-        renderScript false
     }
 
     lintOptions {
