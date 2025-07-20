@@ -11,12 +11,12 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    namespace "org.openhd.qopenhd" // Required for AGP 7.3+
+    namespace "org.openhd.qopenhd"
 
     compileSdkVersion 35
 
     defaultConfig {
-        applicationId "org.openhd.qopenhd" // Needed for AAB
+        applicationId "org.openhd.qopenhd"
         minSdkVersion 21
         targetSdkVersion 35
     }
@@ -60,5 +60,5 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'androidx.appcompat:appcompat:1.6.1' // Replace deprecated support lib
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 }

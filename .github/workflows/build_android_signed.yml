@@ -237,8 +237,14 @@ jobs:
           make install INSTALL_ROOT=android
 
           mkdir -p android/gradle/wrapper
+
+          # Inject gradle.properties with AndroidX settings BEFORE any gradle/Android build
+          echo "android.useAndroidX=true" > android/gradle.properties
+          echo "android.enableJetifier=true" >> android/gradle.properties
+          cat android/gradle.properties
+
           cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
-          distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-bin.zip
+          distributionUrl=https\://services.gradle.org/distributions/gradle-7.6-bin.zip
           EOF
 
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -256,11 +262,6 @@ jobs:
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-          #Inject gradle.properties with AndroidX settings
-          echo "android.useAndroidX=true" >> android/gradle.properties
-          echo "android.enableJetifier=true" >> android/gradle.properties
-          cat android/gradle.properties
 
           # Ensure androiddeployqt does NOT download old Gradle
           WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
@@ -284,7 +285,6 @@ jobs:
           if [ -f "$WRAPPER_PATH" ]; then
             sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-bin.zip#' "$WRAPPER_PATH"
           fi
-
 
       - name: Build .aab with Gradle 7.6
         id: gradle
