@@ -172,7 +172,7 @@ jobs:
           make -j12
           make install INSTALL_ROOT=android
 
-          # Step 1: Run androiddeployqt normally to FORCE Gradle project creation
+          # Step 1: Run androiddeployqt to generate Gradle project
           androiddeployqt \
             --output android \
             --verbose \
@@ -184,13 +184,13 @@ jobs:
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
-          # Step 2: Save apk path in case Gradle fails
+          # Step 2: Save fallback .apk in case Gradle fails later
           APK_PATH="android/build/outputs/apk/android-release-signed.apk"
           if [ -f "$APK_PATH" ]; then
             cp "$APK_PATH" android-release-fallback.apk
           fi
 
-          # Step 3: Patch gradle-wrapper.properties to force Gradle 7.6
+          # Step 3: Patch Gradle wrapper to use 7.6 before Gradle runs
           WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
           if [ -f "$WRAPPER_PATH" ]; then
             echo "Patching Gradle wrapper to use 7.6"
@@ -200,16 +200,27 @@ jobs:
             exit 1
           fi
 
-          # Step 4: Build using Gradle (this creates the AAB properly)
-          cd android
-          if ! ./gradlew bundleRelease; then
-            echo "Gradle build failed! Preserving fallback APK..."
-            exit 66  # special exit code used to trigger APK upload
-          fi
+      - name: Build .aab with Gradle
+        id: gradle
+        working-directory: ${{ runner.temp }}/shadow_build_dir/android
+        continue-on-error: true
+        run: |
+          ./gradlew bundleRelease || exit 66
 
-          cd ..
-          zip -r file.zip .
-      
+      - name: Upload fallback APK if Gradle failed
+        if: steps.gradle.outcome != 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: FallbackAPK_${{ matrix.eabi }}
+          path: ${{ runner.temp }}/shadow_build_dir/android-release-fallback.apk
+
+      - name: Upload final .aab if Gradle succeeded
+        if: steps.gradle.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.ARTIFACT }}
+          path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/bundle/release/*.aab
+
       - name: Upload fallback APK if Gradle failed
         if: failure() && steps.build.outcome != 'success'
         uses: actions/upload-artifact@v4
