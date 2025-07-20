@@ -113,34 +113,35 @@ jobs:
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
 
-          echo "Cleaning previous android-35 platform if present..."
+          echo "Cleaning any stale SDK platform..."
           sudo rm -rf "$SDK_ROOT/platforms/android-35"
 
-          echo "Creating SDK tool directory: $CMDLINE_DIR"
+          echo "Creating cmdline-tools structure..."
           sudo mkdir -p "$CMDLINE_DIR"
           cd "$CMDLINE_DIR"
 
-          echo "Downloading command line tools..."
+          echo "Downloading SDK cmdline tools..."
           sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
 
-          echo "Unzipping command line tools..."
+          echo "Unzipping cmdline tools..."
           sudo unzip -v tools.zip -d latest
 
-          echo "Setting PATH and verifying tool installation..."
+          echo "Setting PATH..."
           export PATH="$CMDLINE_BIN:$PATH"
-          "$CMDLINE_BIN/sdkmanager" --version
 
           echo "Accepting SDK licenses..."
           sudo mkdir -p "$SDK_ROOT/licenses"
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee "$SDK_ROOT/licenses/android-sdk-license"
           echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license"
 
-          echo "Installing Android platform 35..."
-          yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35"
+          echo "Installing Android platform 35 (wait for sdkmanager)..."
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35" --verbose
 
-          echo "Verifying android.jar..."
+          echo "Confirming android.jar exists:"
           ls -lh "$SDK_ROOT/platforms/android-35/android.jar"
           file "$SDK_ROOT/platforms/android-35/android.jar"
+
+          echo "Done installing Android SDK platform 35."
 
       - name: Install GStreamer & FFmpeg (matching arch)
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
