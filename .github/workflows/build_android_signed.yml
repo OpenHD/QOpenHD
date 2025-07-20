@@ -154,7 +154,7 @@ jobs:
         with:
           name: ffmpeg-config-log-${{ matrix.architecture }}
           path: ${{ github.workspace }}/lib/gstreamer_prebuilts/ffmpeg-6.1.1/ffbuild/config.log
-          
+
       - name: Check Gradle version
         run: gradle --version
 
@@ -191,6 +191,19 @@ jobs:
             --release \
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
+
+          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+          # Ensure androiddeployqt does NOT download old Gradle
+          WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
+          if [ -f "$WRAPPER_PATH" ]; then
+            echo "Patching Gradle wrapper to 7.6"
+            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-bin.zip#' "$WRAPPER_PATH"
+            cat "$WRAPPER_PATH"
+          else
+            echo "Gradle wrapper properties not found"
+            exit 1
+          fi
 
           # Save fallback APK in case Gradle fails later
           APK_PATH="android/build/outputs/apk/android-release-signed.apk"
