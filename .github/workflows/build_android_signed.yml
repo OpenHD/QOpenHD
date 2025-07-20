@@ -164,12 +164,14 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
+          set -e
+
           qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}" BUILD_TYPE=Release
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
 
-          # Step 1: Generate Gradle project with --no-build so we can patch it
+          # Step 1: Try to generate Gradle files without triggering a build
           androiddeployqt \
             --output android \
             --verbose \
@@ -177,25 +179,44 @@ jobs:
             --android-platform android-34 \
             --gradle \
             --gradle-template ${SOURCE_DIR}/android/build.gradle \
-            --no-build \
             --release \
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
-            --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
+            --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}' \
+            --no-build || true
 
-          # Step 2: Patch the generated gradle-wrapper.properties to use Gradle 7.6
+          # Step 2: Patch the Gradle wrapper if it exists
           WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
           if [ -f "$WRAPPER_PATH" ]; then
             echo "Patching Gradle wrapper to use 7.6"
             sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-all.zip#' "$WRAPPER_PATH"
           else
-            echo "gradle-wrapper.properties not found, build will likely fail"
-            exit 1
+            echo "Gradle wrapper not found. Retrying androiddeployqt to force Gradle project creation..."
+            androiddeployqt \
+              --output android \
+              --verbose \
+              --input android-QOpenHD-deployment-settings.json \
+              --android-platform android-34 \
+              --gradle \
+              --gradle-template ${SOURCE_DIR}/android/build.gradle \
+              --release \
+              --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
+              --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}' \
+              --no-build
+            WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
+            if [ -f "$WRAPPER_PATH" ]; then
+              echo "Patching Gradle wrapper to use 7.6"
+              sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-all.zip#' "$WRAPPER_PATH"
+            else
+              echo "Still no Gradle wrapper. Cannot continue build."
+              exit 1
+            fi
           fi
 
-          # Step 3: Manually invoke the bundleRelease task
+          # Step 3: Manually run the Gradle build
           cd android
           ./gradlew bundleRelease
 
+          # Optional: zip full build output for debugging or caching
           cd ..
           zip -r file.zip .
 
