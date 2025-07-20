@@ -168,6 +168,8 @@ jobs:
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
+
+          # Step 1: Generate Gradle project with --no-build so we can patch it
           androiddeployqt \
             --output android \
             --verbose \
@@ -175,13 +177,27 @@ jobs:
             --android-platform android-34 \
             --gradle \
             --gradle-template ${SOURCE_DIR}/android/build.gradle \
-            --aab \
+            --no-build \
             --release \
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
-          zip -r file.zip .
+          # Step 2: Patch the generated gradle-wrapper.properties to use Gradle 7.6
+          WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
+          if [ -f "$WRAPPER_PATH" ]; then
+            echo "Patching Gradle wrapper to use 7.6"
+            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-all.zip#' "$WRAPPER_PATH"
+          else
+            echo "gradle-wrapper.properties not found, build will likely fail"
+            exit 1
+          fi
 
+          # Step 3: Manually invoke the bundleRelease task
+          cd android
+          ./gradlew bundleRelease
+
+          cd ..
+          zip -r file.zip .
 
       - name: Print Android build logs (optional)
         if: failure()
