@@ -155,6 +155,12 @@ jobs:
           name: ffmpeg-config-log-${{ matrix.architecture }}
           path: ${{ github.workspace }}/lib/gstreamer_prebuilts/ffmpeg-6.1.1/ffbuild/config.log
 
+      - name: Install Gradle 7.6
+        run: |
+          wget https://services.gradle.org/distributions/gradle-7.6-bin.zip
+          unzip -q gradle-7.6-bin.zip -d $HOME/gradle-7.6
+          echo "$HOME/gradle-7.6/gradle-7.6/bin" >> $GITHUB_PATH
+
       - name: Build QOpenHD
         id: build
         working-directory: ${{ runner.temp }}/shadow_build_dir
@@ -172,7 +178,6 @@ jobs:
           make -j12
           make install INSTALL_ROOT=android
 
-          # Step 1: Run androiddeployqt to generate Gradle project
           androiddeployqt \
             --output android \
             --verbose \
@@ -184,28 +189,24 @@ jobs:
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
-          # Step 2: Save fallback .apk in case Gradle fails later
+          # Save fallback APK in case Gradle fails later
           APK_PATH="android/build/outputs/apk/android-release-signed.apk"
           if [ -f "$APK_PATH" ]; then
             cp "$APK_PATH" android-release-fallback.apk
           fi
 
-          # Step 3: Patch Gradle wrapper to use 7.6 before Gradle runs
+          # Patch Gradle wrapper version to prevent errors (even though we don't use it)
           WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
           if [ -f "$WRAPPER_PATH" ]; then
-            echo "Patching Gradle wrapper to use 7.6"
-            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-all.zip#' "$WRAPPER_PATH"
-          else
-            echo "Gradle wrapper not found. This is unexpected at this point."
-            exit 1
+            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-bin.zip#' "$WRAPPER_PATH"
           fi
 
-      - name: Build .aab with Gradle
+      - name: Build .aab with Gradle 7.6
         id: gradle
         working-directory: ${{ runner.temp }}/shadow_build_dir/android
         continue-on-error: true
         run: |
-          ./gradlew bundleRelease || exit 66
+          gradle bundleRelease || exit 66
 
       - name: Upload fallback APK if Gradle failed
         if: steps.gradle.outcome != 'success'
@@ -221,17 +222,10 @@ jobs:
           name: ${{ matrix.ARTIFACT }}
           path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/bundle/release/*.aab
 
-      - name: Upload fallback APK if Gradle failed
-        if: failure() && steps.build.outcome != 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: FallbackAPK_${{ matrix.eabi }}
-          path: ${{ runner.temp }}/shadow_build_dir/android-release-fallback.apk
-
       - name: Print Android build logs (optional)
         if: failure()
         run: |
-          echo "🪵 Dumping Android logs..."
+          echo "Dumping Android logs..."
           find android -type f \( -name "*.log" -o -name "*.txt" \) -exec echo "== {} ==" \; -exec cat {} \; || true
 
       - name: ccache post-run
