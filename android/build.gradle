@@ -1,30 +1,25 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
+        classpath 'com.android.tools.build:gradle:7.4.2'
     }
 }
 
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 35
 
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 35
+
+        // Disable RenderScript (which causes Gradle 7.x failures)
+        renderscriptTargetApi 21
+        renderscriptSupportModeEnabled false
     }
 
     sourceSets {
@@ -34,22 +29,41 @@ android {
             aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
             res.srcDirs = [qt5AndroidDir + '/res', 'res']
             resources.srcDirs = ['resources']
-            renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
+
+            // DO NOT include renderscript.srcDirs unless you're actually using .rs files
+            // renderscript.srcDirs = ['src']
         }
     }
 
-    lintOptions {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint {
         abortOnError false
     }
 
     aaptOptions {
         noCompress 'rcc'
     }
+
+    // Optional: Fix for Gradle 7.0+ that might complain about missing packaging config
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0' // You can keep this for now if not using AndroidX
 }
