@@ -143,6 +143,14 @@ jobs:
 
           echo "Done installing Android SDK platform 35."
 
+      - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+      
+      - name: Ensure SDK permissions
+        run: sudo chmod -R a+rX /usr/local/lib/android/sdk
+      
       - name: Install GStreamer & FFmpeg (matching arch)
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
         env:
