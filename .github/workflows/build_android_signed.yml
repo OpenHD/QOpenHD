@@ -105,7 +105,7 @@ jobs:
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
-      - name: Install Android SDK Platform 35
+      - name: Install Android SDK Platform 35 and Build Tools
         run: |
           set -euxo pipefail
 
@@ -124,7 +124,7 @@ jobs:
           sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
 
           echo "Unzipping cmdline tools..."
-          sudo unzip -v tools.zip -d latest
+          sudo unzip -o tools.zip -d latest
 
           echo "Setting PATH..."
           export PATH="$CMDLINE_BIN:$PATH"
@@ -134,20 +134,21 @@ jobs:
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee "$SDK_ROOT/licenses/android-sdk-license"
           echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license"
 
-          echo "Installing Android platform 35 (wait for sdkmanager)..."
-          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35" --verbose
+          echo "Installing Android platform 35 and build-tools 35.0.0 ..."
+          # Use --licenses to accept all and avoid prompts
+          yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --licenses || true
+
+          # Install both platform and build-tools
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35" "build-tools;35.0.0" --verbose
 
           echo "Confirming android.jar exists:"
           ls -lh "$SDK_ROOT/platforms/android-35/android.jar"
           file "$SDK_ROOT/platforms/android-35/android.jar"
 
-          echo "Done installing Android SDK platform 35."
-          
-      - name: Install Android Build Tools 35.0.0
-        run: |
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/usr/local/lib/android/sdk "build-tools;35.0.0"
-          ls -lh /usr/local/lib/android/sdk/build-tools/
+          echo "Confirming build-tools 35.0.0 exists:"
+          ls -lh "$SDK_ROOT/build-tools/35.0.0/" || true
 
+          echo "Done installing Android SDK platform 35 and build-tools 35.0.0."
       - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
         run: |
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
