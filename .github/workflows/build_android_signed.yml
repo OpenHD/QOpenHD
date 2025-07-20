@@ -114,6 +114,9 @@ jobs:
           export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
           export RANLIB="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib"
 
+
+          tree /usr/local/lib/android/sdk/platforms
+
           if [[ "${{ matrix.architecture }}" == "armv8" ]]; then
             AR="$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
           elif [[ "${{ matrix.architecture }}" == "armv7" ]]; then
