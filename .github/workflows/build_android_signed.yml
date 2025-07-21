@@ -262,6 +262,7 @@ jobs:
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
+          echo "[Info patching Manifest ??]"
           # Patch AndroidManifest.xml to remove deprecated 'package' attribute
           MANIFEST=$(find android -name AndroidManifest.xml | head -n1)
           if [ -f "$MANIFEST" ]; then
