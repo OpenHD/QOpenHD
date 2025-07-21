@@ -265,8 +265,8 @@ jobs:
             --release \
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}' \
-            || true
-        
+            --no-ministro || true
+      
       - name: Patch AndroidManifest.xml (remove `package`)
         working-directory: ${{ runner.temp }}/shadow_build_dir/android
         run: |
