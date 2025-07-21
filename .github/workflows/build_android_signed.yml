@@ -213,11 +213,11 @@ jobs:
       - name: Check Gradle version
         run: gradle --version
 
-      - name: Install Gradle 7.6
+      - name: Install Gradle 8.4
         run: |
-          wget https://services.gradle.org/distributions/gradle-7.6-bin.zip
-          unzip -q gradle-7.6-bin.zip -d $HOME/gradle-7.6
-          echo "$HOME/gradle-7.6/gradle-7.6/bin" >> $GITHUB_PATH
+          wget https://services.gradle.org/distributions/gradle-8.4-bin.zip
+          unzip -q gradle-8.4-bin.zip -d $HOME/gradle-8.4
+          echo "$HOME/gradle-8.4/gradle-8.4/bin" >> $GITHUB_PATH
 
       - name: Build QOpenHD
         id: build
@@ -244,7 +244,7 @@ jobs:
           cat android/gradle.properties
 
           cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
-          distributionUrl=https\://services.gradle.org/distributions/gradle-7.6-bin.zip
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-bin.zip
           EOF
 
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -266,8 +266,8 @@ jobs:
           # Ensure androiddeployqt does NOT download old Gradle
           WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
           if [ -f "$WRAPPER_PATH" ]; then
-            echo "Patching Gradle wrapper to 7.6"
-            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-bin.zip#' "$WRAPPER_PATH"
+          echo "Patching Gradle wrapper to 8.4"
+            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-8.4-bin.zip#' "$WRAPPER_PATH"
             cat "$WRAPPER_PATH"
           else
             echo "Gradle wrapper properties not found"
@@ -283,10 +283,10 @@ jobs:
           # Patch Gradle wrapper version to prevent errors (even though we don't use it)
           WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
           if [ -f "$WRAPPER_PATH" ]; then
-            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6-bin.zip#' "$WRAPPER_PATH"
+            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-8.4-bin.zip#' "$WRAPPER_PATH"
           fi
 
-      - name: Build .aab with Gradle 7.6
+      - name: Build .aab with Gradle 8.4
         id: gradle
         working-directory: ${{ runner.temp }}/shadow_build_dir/android
         continue-on-error: true
