@@ -48,7 +48,7 @@ jobs:
         run: sudo apt-mark hold grub-efi-amd64-signed
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y ccache curl yasm pkg-config build-essential git python3-distro
+        run: sudo apt-get update && sudo apt-get install -y ccache curl yasm pkg-config build-essential git python3-distro unzip tree libxml2-utils
 
       - name: Cache Qt installation
         uses: actions/cache@v4
@@ -124,7 +124,8 @@ jobs:
           sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
 
           echo "Unzipping cmdline tools..."
-          sudo unzip -o tools.zip -d latest
+          sudo unzip -q tools.zip
+          sudo mv cmdline-tools latest
 
           echo "Setting PATH..."
           export PATH="$CMDLINE_BIN:$PATH"
@@ -260,6 +261,13 @@ jobs:
             --release \
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
+
+          echo "Validating AndroidManifest.xml..."
+          MANIFEST=android/AndroidManifest.xml
+          if ! grep -q 'package=' "$MANIFEST"; then
+            sed -i 's#<manifest#<manifest package="com.openhd.qopenhd"#' "$MANIFEST"
+          fi
+          xmllint --noout "$MANIFEST"
 
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
