@@ -252,7 +252,7 @@ jobs:
           distributionUrl=https\://services.gradle.org/distributions/gradle-8.6-bin.zip
           EOF
 
-      - name: Run androiddeployqt
+      - name: Run androiddeployqt (no gradle)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -262,8 +262,6 @@ jobs:
             --verbose \
             --input android-QOpenHD-deployment-settings.json \
             --android-platform android-35 \
-            --gradle \
-            --gradle-template ${SOURCE_DIR}/android/build.gradle \
             --release \
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
@@ -282,20 +280,20 @@ jobs:
             echo "Manifest not found"
             exit 1
           fi
-  
-      - name: Build .aab with Gradle 8.6
+      
+      - name: Build .aab with Gradle
         id: gradle
         working-directory: ${{ runner.temp }}/shadow_build_dir/android
         continue-on-error: true
-        run: |
-          gradle bundleRelease || exit 66
+        run: gradle bundleRelease || exit 66
 
-      - name: Upload fallback APK if Gradle failed
-        if: steps.gradle.outcome != 'success'
+      - name: Upload signed APK (if exists)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: FallbackAPK_${{ matrix.eabi }}
-          path: ${{ runner.temp }}/shadow_build_dir/android-release-fallback.apk
+          name: SignedAPK_${{ matrix.eabi }}
+          path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/android-release-signed.apk
+      
 
       - name: Upload final .aab if Gradle succeeded
         if: steps.gradle.outcome == 'success'
