@@ -262,10 +262,20 @@ jobs:
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
-          echo "Validating AndroidManifest.xml..."
-          MANIFEST=android/AndroidManifest.xml
-          xmllint --noout "$MANIFEST"
+          # Patch AndroidManifest.xml to remove deprecated 'package' attribute
+          MANIFEST=$(find android -name AndroidManifest.xml | head -n1)
+          if [ -f "$MANIFEST" ]; then
+            echo "Patching $MANIFEST: removing 'package' attribute..."
+            sed -i '/<manifest /s/ package="[^"]*"//' "$MANIFEST"
+            echo "Final manifest preview:"
+            head -n 10 "$MANIFEST"
 
+            echo "Validating patched manifest..."
+            xmllint --noout "$MANIFEST"
+          else
+            echo "ERROR: AndroidManifest.xml not found after androiddeployqt"
+            exit 1
+          fi
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
           # Ensure androiddeployqt does NOT download old Gradle
