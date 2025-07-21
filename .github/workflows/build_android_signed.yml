@@ -264,9 +264,6 @@ jobs:
 
           echo "Validating AndroidManifest.xml..."
           MANIFEST=android/AndroidManifest.xml
-          if ! grep -q 'package=' "$MANIFEST"; then
-            sed -i 's#<manifest#<manifest package="com.openhd.qopenhd"#' "$MANIFEST"
-          fi
           xmllint --noout "$MANIFEST"
 
           echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
