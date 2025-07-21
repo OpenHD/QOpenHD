@@ -220,37 +220,43 @@ jobs:
           unzip -q gradle-8.6-bin.zip -d $HOME/gradle-8.6
           echo "$HOME/gradle-8.6/gradle-8.6/bin" >> $GITHUB_PATH
 
-      - name: Build QOpenHD
-        id: build
+      - name: QMake Configure QOpenHD
+        id: qmake
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-          ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-          ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          set -e
-
           qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}" BUILD_TYPE=Release
-          make -j$(($(nproc)/2)) qmake_all
-          make -j12
-          make install INSTALL_ROOT=android
 
-          mkdir -p android/gradle/wrapper
+      - name: Run make qmake_all
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        run: make -j$(($(nproc)/2)) qmake_all
 
-          # Inject gradle.properties with AndroidX settings BEFORE any gradle/Android build
-          echo "android.useAndroidX=true" > android/gradle.properties
-          echo "android.enableJetifier=true" >> android/gradle.properties
-          cat android/gradle.properties
+      - name: Run make
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        run: make -j12
 
-          cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
+      - name: Run make install
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        run: make install INSTALL_ROOT=android
+
+      - name: Prepare Gradle wrapper and AndroidX config
+        working-directory: ${{ runner.temp }}/shadow_build_dir/android
+        run: |
+          mkdir -p gradle/wrapper
+
+          echo "android.useAndroidX=true" > gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+
+          cat > gradle/wrapper/gradle-wrapper.properties <<EOF
           distributionUrl=https\://services.gradle.org/distributions/gradle-8.6-bin.zip
           EOF
 
-          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          ls /usr/local/lib/android/sdk/platforms/android-35/
-
+      - name: Run androiddeployqt
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
           androiddeployqt \
             --output android \
             --verbose \
@@ -262,46 +268,21 @@ jobs:
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
             --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
 
-          echo "[Info patching Manifest ??]"
-          # Patch AndroidManifest.xml to remove deprecated 'package' attribute
-          MANIFEST=$(find android -name AndroidManifest.xml | head -n1)
+      - name: Patch AndroidManifest.xml (remove `package`)
+        working-directory: ${{ runner.temp }}/shadow_build_dir/android
+        run: |
+          MANIFEST=$(find . -name AndroidManifest.xml | head -n1)
           if [ -f "$MANIFEST" ]; then
-            echo "Patching $MANIFEST: removing 'package' attribute..."
+            echo "Patching $MANIFEST"
             sed -i '/<manifest /s/ package="[^"]*"//' "$MANIFEST"
-            echo "Final manifest preview:"
+            echo "Validated patched manifest:"
             head -n 10 "$MANIFEST"
-
-            echo "Validating patched manifest..."
             xmllint --noout "$MANIFEST"
           else
-            echo "ERROR: AndroidManifest.xml not found after androiddeployqt"
+            echo "Manifest not found"
             exit 1
           fi
-          echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-          # Ensure androiddeployqt does NOT download old Gradle
-          WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
-          if [ -f "$WRAPPER_PATH" ]; then
-          echo "Patching Gradle wrapper to 8.6"
-            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-8.6-bin.zip#' "$WRAPPER_PATH"
-            cat "$WRAPPER_PATH"
-          else
-            echo "Gradle wrapper properties not found"
-            exit 1
-          fi
-
-          # Save fallback APK in case Gradle fails later
-          APK_PATH="android/build/outputs/apk/android-release-signed.apk"
-          if [ -f "$APK_PATH" ]; then
-            cp "$APK_PATH" android-release-fallback.apk
-          fi
-
-          # Patch Gradle wrapper version to prevent errors (even though we don't use it)
-          WRAPPER_PATH=$(find android -name gradle-wrapper.properties | head -n1)
-          if [ -f "$WRAPPER_PATH" ]; then
-            sed -i 's#distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-8.6-bin.zip#' "$WRAPPER_PATH"
-          fi
-
+  
       - name: Build .aab with Gradle 8.6
         id: gradle
         working-directory: ${{ runner.temp }}/shadow_build_dir/android
