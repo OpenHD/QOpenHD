@@ -196,7 +196,16 @@ jobs:
             echo "Unsupported architecture: ${{ matrix.architecture }}"
             exit 1
           fi
-
+      - name: Patch Qt Java files to remove obsolete Ministro references
+        run: |
+          QT_BINDINGS_DIR=$(find ${{ runner.temp }}/Qt -type d -path "*/android/src/android/java/src/org/qtproject/qt5/android/bindings" | head -n1)
+          if [[ -f "$QT_BINDINGS_DIR/QtLoader.java" ]]; then
+            echo "Patching $QT_BINDINGS_DIR/QtLoader.java"
+            sed -i '/org.kde.necessitas.ministro/d' "$QT_BINDINGS_DIR/QtLoader.java"
+            sed -i '/IMinistro/d' "$QT_BINDINGS_DIR/QtLoader.java"
+            sed -i '/IMinistroCallback/d' "$QT_BINDINGS_DIR/QtLoader.java"
+          fi
+      
       - name: list failiours
         if: failure()
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
