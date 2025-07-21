@@ -252,7 +252,7 @@ jobs:
           distributionUrl=https\://services.gradle.org/distributions/gradle-8.6-bin.zip
           EOF
 
-      - name: Run androiddeployqt (no gradle)
+      - name: Run androiddeployqt (non-fatal)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -264,8 +264,9 @@ jobs:
             --android-platform android-35 \
             --release \
             --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key \
-            --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
-
+            --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}' \
+            || true
+        
       - name: Patch AndroidManifest.xml (remove `package`)
         working-directory: ${{ runner.temp }}/shadow_build_dir/android
         run: |
