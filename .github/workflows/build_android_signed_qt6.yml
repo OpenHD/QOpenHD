@@ -2,16 +2,7 @@ name: build_android_signed_qt6
 
 on:
   push:
-    branches:
-      - "2.6-evo"
-      - "dev-release"
-      - "release"
-    paths-ignore:
-      - '**.md'
-      - '**.asciidoc'
-      - '**.adoc'
-      - '.gitignore'
-      - 'LICENSE'
+
 
 defaults:
   run:
