@@ -37,7 +37,7 @@ jobs:
         run: sudo apt-mark hold grub-efi-amd64-signed
 
       - name: Install ccache
-        run: sudo apt-get install -y ccache tree
+        run: sudo apt-get install -y ccache tree cmake
 
       - name: Install Qt for Android (Qt 6)
         uses: jurplel/install-qt-action@v3
@@ -159,7 +159,7 @@ jobs:
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
-          QT_HOST_PATH: ${{ steps.install-qt.outputs.qt_root_dir }}
+          QT_HOST_PATH: ${{ env.QT_ROOT_DIR }}
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cmake ${SOURCE_DIR} \
