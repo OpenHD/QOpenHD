@@ -196,21 +196,35 @@ jobs:
             echo "Unsupported architecture: ${{ matrix.architecture }}"
             exit 1
           fi
-      
-      - name: Patch QtLoader.java to remove Ministro
+      - name: Replace QtLoader.java to remove Ministro
         run: |
           QT_BINDINGS_DIR=$(find ${{ runner.temp }}/Qt -type d -path "*/android/src/android/java/src/org/qtproject/qt5/android/bindings" | head -n1)
           TARGET="$QT_BINDINGS_DIR/QtLoader.java"
 
           if [[ -f "$TARGET" ]]; then
-            echo "Patching $TARGET to remove Ministro reference..."
-            sed -i '/org.kde.necessitas.ministro/d' "$TARGET"
-            sed -i 's/IMinistro/\/\/IMinistro/g' "$TARGET"
-            echo "Patch complete."
-          else
-            echo "QtLoader.java not found, build may fail."
-            exit 1
-          fi
+            echo "Replacing $TARGET with minimal static launcher..."
+            cat > "$TARGET" <<'EOF'
+              package org.qtproject.qt5.android.bindings;
+
+              import android.app.Activity;
+              import android.content.Intent;
+              import android.os.Bundle;
+
+              public class QtLoader extends Activity {
+                  @Override
+                  protected void onCreate(Bundle savedInstanceState) {
+                      super.onCreate(savedInstanceState);
+                      Intent intent = new Intent(getApplicationContext(), QOpenHDActivity.class);
+                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                      getApplicationContext().startActivity(intent);
+                      finish();
+                  }
+              }
+              EOF
+                  else
+                    echo "QtLoader.java not found, build will likely fail."
+                    exit 1
+                  fi
 
       - name: list failiours
         if: failure()
