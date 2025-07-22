@@ -196,30 +196,28 @@ jobs:
             echo "Unsupported architecture: ${{ matrix.architecture }}"
             exit 1
           fi
-      - name: Replace QtLoader.java to avoid Ministro
+
+      - name: Replace QtLoader.java to avoid Ministro (single-line echo version)
+        run: |
+            QT_BINDINGS_DIR=$(find ${{ runner.temp }}/Qt -type d -path "*/android/src/android/java/src/org/qtproject/qt5/android/bindings" | head -n1)
+            TARGET="$QT_BINDINGS_DIR/QtLoader.java"
+
+            echo "Replacing $TARGET"
+
+            echo 'package org.qtproject.qt5.android.bindings; import android.app.Activity; import android.content.Intent; import android.os.Bundle; public class QtLoader extends Activity { @Override protected void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); Intent intent = new Intent(getApplicationContext(), QOpenHDActivity.class); intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); getApplicationContext().startActivity(intent); finish(); } }' > "$TARGET"
+      
+      - name: Check QtLoader.java content
         run: |
           QT_BINDINGS_DIR=$(find ${{ runner.temp }}/Qt -type d -path "*/android/src/android/java/src/org/qtproject/qt5/android/bindings" | head -n1)
-          TARGET="$QT_BINDINGS_DIR/QtLoader.java"
+          echo "Content of QtLoader.java:"
+          cat "$QT_BINDINGS_DIR/QtLoader.java"
 
-          echo "Overwriting $TARGET..."
-          cat > "$TARGET" <<'EOF'
-            package org.qtproject.qt5.android.bindings;
-
-            import android.app.Activity;
-            import android.content.Intent;
-            import android.os.Bundle;
-
-            public class QtLoader extends Activity {
-                @Override
-                protected void onCreate(Bundle savedInstanceState) {
-                    super.onCreate(savedInstanceState);
-                    Intent intent = new Intent(getApplicationContext(), QOpenHDActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    getApplicationContext().startActivity(intent);
-                    finish();
-                }
-            }
-            EOF
+      - name: Upload patched QtLoader.java
+        uses: actions/upload-artifact@v4
+        with:
+          name: Patched-QtLoader-${{ matrix.eabi }}
+          path: |
+            ${{ runner.temp }}/Qt/**/android/src/android/java/src/org/qtproject/qt5/android/bindings/QtLoader.java
 
       - name: list failiours
         if: failure()
