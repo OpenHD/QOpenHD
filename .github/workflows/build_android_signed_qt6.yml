@@ -31,9 +31,11 @@ jobs:
         include:
           - architecture: armv7
             eabi: armeabi-v7a
+            qt_arch: android_armv7
             ARTIFACT: QOpenHD_armv7.aab
           - architecture: armv8
             eabi: arm64-v8a
+            qt_arch: android_arm64_v8a
             ARTIFACT: QOpenHD_armv8.aab
 
     steps:
@@ -49,11 +51,13 @@ jobs:
         run: sudo apt-get install -y ccache
 
       - name: Install Qt for Android (Qt 6)
+        id: install-qt
         uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
           host: linux
           target: android
+          arch: ${{ matrix.qt_arch }}
           modules: qtcharts
           setup-python: true
 
@@ -61,7 +65,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r23c
+          ndk-version: r26b
           add-to-path: true
 
       - name: Setup ccache
@@ -84,7 +88,7 @@ jobs:
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
-          QT_HOST_PATH: ${{ steps.install-qt.outputs.qt_root_dir }}
+          QT_HOST_PATH: ${{ steps.install-qt.outputs.qtPath }}
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cmake ${SOURCE_DIR} \
