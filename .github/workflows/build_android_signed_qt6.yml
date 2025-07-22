@@ -39,6 +39,9 @@ jobs:
       - name: Install ccache
         run: sudo apt-get install -y ccache tree
 
+      - name: Install Ninja build tool
+        run: sudo apt-get install -y ninja-build
+
       - name: Install Qt for Android (Qt 6)
         uses: jurplel/install-qt-action@v3
         with:
@@ -63,8 +66,60 @@ jobs:
           echo "compression_level = 5" >> ~/.ccache/ccache.conf
           ccache -z
 
+
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
+
+      - name: Install Android SDK Platform 35 and Build Tools
+        run: |
+          set -euxo pipefail
+
+          export SDK_ROOT=/usr/local/lib/android/sdk
+          export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
+          export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
+
+          echo "Cleaning any stale SDK platform..."
+          sudo rm -rf "$SDK_ROOT/platforms/android-35"
+
+          echo "Creating cmdline-tools structure..."
+          sudo mkdir -p "$CMDLINE_DIR"
+          cd "$CMDLINE_DIR"
+
+          echo "Downloading SDK cmdline tools..."
+          sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
+
+          echo "Unzipping cmdline tools..."
+          sudo unzip -q tools.zip
+          sudo mv cmdline-tools latest
+
+          echo "Setting PATH..."
+          export PATH="$CMDLINE_BIN:$PATH"
+
+          echo "Accepting SDK licenses..."
+          sudo mkdir -p "$SDK_ROOT/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee "$SDK_ROOT/licenses/android-sdk-license"
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license"
+
+          echo "Installing Android platform 35 and build-tools 35.0.0 ..."
+          yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --licenses || true
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35" "build-tools;35.0.0" --verbose
+
+          echo "Confirming android.jar exists:"
+          ls -lh "$SDK_ROOT/platforms/android-35/android.jar"
+          file "$SDK_ROOT/platforms/android-35/android.jar"
+
+          echo "Confirming build-tools 35.0.0 exists:"
+          ls -lh "$SDK_ROOT/build-tools/35.0.0/" || true
+
+          echo "Done installing Android SDK platform 35 and build-tools 35.0.0."
+
+      - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+
+      - name: Ensure SDK permissions
+        run: sudo chmod -R a+rX /usr/local/lib/android/sdk
 
       - name: Install GStreamer & FFmpeg (matching arch)
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
@@ -108,10 +163,13 @@ jobs:
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
-          QT_HOST_PATH: ${{ steps.install-qt.outputs.qt_root_dir }}
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
+          set -euxo pipefail
+          echo "QT_ROOT_DIR is: $QT_ROOT_DIR"
+          QT_HOST_PATH="${QT_ROOT_DIR}"
           cmake ${SOURCE_DIR} \
+            -GNinja \
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DCMAKE_TOOLCHAIN_FILE=${QT_HOST_PATH}/lib/cmake/Qt6/qt.toolchain.cmake \
             -DQT_HOST_PATH=${QT_HOST_PATH} \
