@@ -196,35 +196,30 @@ jobs:
             echo "Unsupported architecture: ${{ matrix.architecture }}"
             exit 1
           fi
-      - name: Replace QtLoader.java to remove Ministro
+      - name: Replace QtLoader.java to avoid Ministro
         run: |
           QT_BINDINGS_DIR=$(find ${{ runner.temp }}/Qt -type d -path "*/android/src/android/java/src/org/qtproject/qt5/android/bindings" | head -n1)
           TARGET="$QT_BINDINGS_DIR/QtLoader.java"
 
-          if [[ -f "$TARGET" ]]; then
-            echo "Replacing $TARGET with minimal static launcher..."
-            cat > "$TARGET" <<'EOF'
-              package org.qtproject.qt5.android.bindings;
+          echo "Overwriting $TARGET..."
+          cat > "$TARGET" <<'EOF'
+            package org.qtproject.qt5.android.bindings;
 
-              import android.app.Activity;
-              import android.content.Intent;
-              import android.os.Bundle;
+            import android.app.Activity;
+            import android.content.Intent;
+            import android.os.Bundle;
 
-              public class QtLoader extends Activity {
-                  @Override
-                  protected void onCreate(Bundle savedInstanceState) {
-                      super.onCreate(savedInstanceState);
-                      Intent intent = new Intent(getApplicationContext(), QOpenHDActivity.class);
-                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                      getApplicationContext().startActivity(intent);
-                      finish();
-                  }
-              }
-              EOF
-                  else
-                    echo "QtLoader.java not found, build will likely fail."
-                    exit 1
-                  fi
+            public class QtLoader extends Activity {
+                @Override
+                protected void onCreate(Bundle savedInstanceState) {
+                    super.onCreate(savedInstanceState);
+                    Intent intent = new Intent(getApplicationContext(), QOpenHDActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(intent);
+                    finish();
+                }
+            }
+            EOF
 
       - name: list failiours
         if: failure()
