@@ -81,25 +81,39 @@ curl -sSL "https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.xz" -o ffmpe
 tar -xf ffmpeg.tar.xz
 cd ffmpeg-${FFMPEG_VERSION}
 
-# 🔧 Patch Vulkan assignment issue
+# 🛠️ Fix Vulkan API null handle assignment
 sed -i 's/common->session = NULL;/common->session = VK_NULL_HANDLE;/' libavcodec/vulkan_video.c
 
-CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
-CROSS_PREFIX="$TOOLCHAIN/bin/${TARGET}-"
+# --- Configure variables ---
+if [[ "$ARCH" == "armv7" ]]; then
+  CC="$TOOLCHAIN/bin/armv7a-linux-androideabi${API}-clang"
+  CROSS_PREFIX="$TOOLCHAIN/bin/arm-linux-androideabi-"
+  CPU="armv7-a"
+  EXTRA_CFLAGS="-fPIC -march=armv7-a"
+elif [[ "$ARCH" == "arm64" ]]; then
+  CC="$TOOLCHAIN/bin/aarch64-linux-android${API}-clang"
+  CROSS_PREFIX="$TOOLCHAIN/bin/aarch64-linux-android-"
+  CPU="armv8-a"
+  EXTRA_CFLAGS="-fPIC"
+fi
 
 echo "[INFO] Configuring FFmpeg for $ARCH..."
 
+# Unset pkg-config vars to avoid conflicts
 unset PKG_CONFIG_PATH
 unset PKG_CONFIG_LIBDIR
 
+# --- Run FFmpeg configure ---
 ./configure \
   --prefix="$PWD/build-android" \
   --target-os=android \
   --arch="$ARCH" \
+  --cpu="$CPU" \
   --cc="$CC" \
   --cross-prefix="$CROSS_PREFIX" \
-  --ar="$AR" \
-  --ranlib="$RANLIB" \
+  --ar="$TOOLCHAIN/bin/llvm-ar" \
+  --ranlib="$TOOLCHAIN/bin/llvm-ranlib" \
+  --sysroot="$TOOLCHAIN/sysroot" \
   --enable-cross-compile \
   --disable-shared \
   --enable-static \
@@ -114,10 +128,12 @@ unset PKG_CONFIG_LIBDIR
   --enable-libx264 \
   --enable-gpl \
   --pkg-config=":" \
-  --extra-cflags="-fPIC -I../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  --extra-cflags="$EXTRA_CFLAGS -I../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
   --extra-ldflags="-L../ffmpeg-${FFMPEG_VERSION}/build-android/lib -lx264 -fPIC -lm" \
   --disable-runtime-cpudetect \
   --nm="$TOOLCHAIN/bin/llvm-nm"
 
+# --- Build FFmpeg ---
+echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
