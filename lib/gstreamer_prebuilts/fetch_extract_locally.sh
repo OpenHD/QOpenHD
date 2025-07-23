@@ -11,10 +11,12 @@ case "$1" in
   -armv7)
     ARCH="armv7"
     TARGET="armv7a-linux-androideabi"
+    CPU="armv7-a"
     ;;
   -arm64)
     ARCH="arm64"
     TARGET="aarch64-linux-android"
+    CPU="armv8-a"
     ;;
   *)
     echo "Unknown argument: $1"
@@ -28,6 +30,7 @@ FFMPEG_VERSION=6.1.1
 GST_VERSION=1.24.13
 NDK_ROOT="${NDK_ROOT:-$HOME/android-ndk-r27}"
 TOOLCHAIN="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64"
+SYSROOT="$TOOLCHAIN/sysroot"
 
 echo "[INFO] Building for ARCH=$ARCH using TARGET=$TARGET (API $API)"
 
@@ -54,16 +57,15 @@ export STRINGS="/usr/bin/strings"
 export ac_cv_c_bigendian=no
 
 CFLAGS="-fPIC"
-HOST="$TARGET"
 CROSS_PREFIX="$TOOLCHAIN/bin/${TARGET}-"
 
 ./configure \
-  --prefix="../ffmpeg-${FFMPEG_VERSION}/build-android" \
+  --prefix="../x264-build" \
   --enable-static \
   --disable-cli \
   --host="${TARGET}" \
   --cross-prefix="$CROSS_PREFIX" \
-  --sysroot="$TOOLCHAIN/sysroot" \
+  --sysroot="$SYSROOT" \
   --extra-cflags="$CFLAGS" \
   --extra-ldflags="-fPIC" \
   --as=clang \
@@ -81,29 +83,23 @@ curl -sSL "https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.xz" -o ffmpe
 tar -xf ffmpeg.tar.xz
 cd ffmpeg-${FFMPEG_VERSION}
 
-# 🛠️ Fix Vulkan API null handle assignment
+# 🛠️ Patch Vulkan NULL bug
 sed -i 's/common->session = NULL;/common->session = VK_NULL_HANDLE;/' libavcodec/vulkan_video.c
 
-# --- Configure variables ---
-if [[ "$ARCH" == "armv7" ]]; then
-  CC="$TOOLCHAIN/bin/armv7a-linux-androideabi${API}-clang"
-  CROSS_PREFIX="$TOOLCHAIN/bin/arm-linux-androideabi-"
-  CPU="armv7-a"
-  EXTRA_CFLAGS="-fPIC -march=armv7-a"
-elif [[ "$ARCH" == "arm64" ]]; then
-  CC="$TOOLCHAIN/bin/aarch64-linux-android${API}-clang"
-  CROSS_PREFIX="$TOOLCHAIN/bin/aarch64-linux-android-"
-  CPU="armv8-a"
-  EXTRA_CFLAGS="-fPIC"
-fi
+# --- Set toolchain paths ---
+CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
+CROSS_PREFIX="$TOOLCHAIN/bin/${TARGET}-"
+AR="$TOOLCHAIN/bin/llvm-ar"
+RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
+NM="$TOOLCHAIN/bin/llvm-nm"
+EXTRA_CFLAGS="-I../x264-build/include -fPIC"
+EXTRA_LDFLAGS="-L../x264-build/lib -lx264 -fPIC -lm"
 
 echo "[INFO] Configuring FFmpeg for $ARCH..."
 
-# Unset pkg-config vars to avoid conflicts
 unset PKG_CONFIG_PATH
 unset PKG_CONFIG_LIBDIR
 
-# --- Run FFmpeg configure ---
 ./configure \
   --prefix="$PWD/build-android" \
   --target-os=android \
@@ -111,15 +107,16 @@ unset PKG_CONFIG_LIBDIR
   --cpu="$CPU" \
   --cc="$CC" \
   --cross-prefix="$CROSS_PREFIX" \
-  --ar="$TOOLCHAIN/bin/llvm-ar" \
-  --ranlib="$TOOLCHAIN/bin/llvm-ranlib" \
-  --sysroot="$TOOLCHAIN/sysroot" \
+  --ar="$AR" \
+  --ranlib="$RANLIB" \
+  --nm="$NM" \
+  --sysroot="$SYSROOT" \
   --enable-cross-compile \
   --disable-shared \
   --enable-static \
   --enable-pic \
-  --disable-doc \
   --disable-programs \
+  --disable-doc \
   --disable-everything \
   --enable-avcodec \
   --enable-avformat \
@@ -127,13 +124,10 @@ unset PKG_CONFIG_LIBDIR
   --enable-swresample \
   --enable-libx264 \
   --enable-gpl \
+  --extra-cflags="$EXTRA_CFLAGS" \
+  --extra-ldflags="$EXTRA_LDFLAGS" \
   --pkg-config=":" \
-  --extra-cflags="$EXTRA_CFLAGS -I../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
-  --extra-ldflags="-L../ffmpeg-${FFMPEG_VERSION}/build-android/lib -lx264 -fPIC -lm" \
-  --disable-runtime-cpudetect \
-  --nm="$TOOLCHAIN/bin/llvm-nm"
+  --disable-runtime-cpudetect
 
-# --- Build FFmpeg ---
-echo "[INFO] Building FFmpeg..."
 make -j$(nproc)
 make install
