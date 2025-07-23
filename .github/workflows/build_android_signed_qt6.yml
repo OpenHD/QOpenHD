@@ -20,6 +20,9 @@ jobs:
     strategy:
       matrix:
         include:
+          - architecture: armv7
+            eabi: armeabi-v7a
+            ARTIFACT: QOpenHD_armv7.aab
           - architecture: armv8
             eabi: arm64-v8a
             ARTIFACT: QOpenHD_armv8.aab
@@ -38,28 +41,28 @@ jobs:
           sudo apt-get install -y ccache tree cmake ninja-build
           sudo ./install_qt6_build_dep.sh
 
-      - name: Install Qt 6.4.3 for Desktop
-        uses: jurplel/install-qt-action@v3
+      - name: Cache Qt installation
+        uses: actions/cache@v4
+        id: qt-cache
         with:
-          version: ${{ env.QT_VERSION }}
-          host: linux
-          target: desktop
-          arch: gcc_64
-          modules: qtcharts qtpositioning
+          path: ${{ runner.temp }}/Qt
+          key: qt6-install-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
 
-      - name: Store host Qt path
-        run: echo "QT_HOST_PATH=$Qt6_DIR" >> $GITHUB_ENV
-
-      - name: Install Qt 6.4.3 for Android
-        uses: jurplel/install-qt-action@v3
+      - name: Install Qt 6.4.3 for Android (Enterprise)
+        if: steps.qt-cache.outputs.cache-hit != 'true'
+        uses: jurplel/install-qt-action@v4
         with:
-          version: ${{ env.QT_VERSION }}
-          host: linux
-          target: android
-          arch: ${{ matrix.architecture == 'armv7' && 'android_armv7' || 'android_arm64_v8a' }}
-          modules: qtcharts qtpositioning
+          version:      ${{ env.QT_VERSION }}
+          host:         linux
+          target:       android
+          use-official: true
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
+          dir:          ${{ runner.temp }}
+          modules:      qtcharts qtsvg qtlocation qtpositioning
+          arch:         android_${{ matrix.architecture }}
           setup-python: true
-      
+
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
         id: setup-ndk
@@ -118,25 +121,25 @@ jobs:
           export API=35
           export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
 
-          # if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
-          #   ./fetch_extract_locally.sh -armv7
-          # elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
+          if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
+            ./fetch_extract_locally.sh -armv7
+          elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
             ./fetch_extract_locally.sh -arm64
-          # else
-          #   echo "Unsupported architecture: ${{ matrix.architecture }}"
-          #   exit 1
-          # fi
+          else
+            echo "Unsupported architecture: ${{ matrix.architecture }}"
+            exit 1
+          fi
 
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
-          QT_HOST_PATH: ${{ env.QT_HOST_PATH }}
+          QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cmake ${SOURCE_DIR} -G "Ninja" \
             -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
             -DQT_HOST_PATH=${QT_HOST_PATH} \
-            -DCMAKE_TOOLCHAIN_FILE=$Qt6_DIR/lib/cmake/Qt6/qt.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$QT_HOST_PATH/lib/cmake/Qt6/qt.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.eabi }} \
             -DANDROID_PLATFORM=android-35 \
             -DQT_ANDROID_SIGNING_KEYSTORE=${SOURCE_DIR}/android/qopenhd_key.jks \
