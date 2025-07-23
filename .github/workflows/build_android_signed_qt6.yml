@@ -45,7 +45,7 @@ jobs:
           host: linux
           target: desktop
           arch: gcc_64
-          modules: qtcharts qtsvg qtlocation qtpositioning
+          modules: qtcharts qtpositioning
 
       - name: Store host Qt path
         run: echo "QT_HOST_PATH=$Qt6_DIR" >> $GITHUB_ENV
