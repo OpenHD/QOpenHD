@@ -58,10 +58,10 @@ jobs:
           version: ${{ env.QT_VERSION }}
           host: linux
           target: android
+          arch: ${{ matrix.architecture == 'armv7' && 'android_armv7' || 'android_arm64_v8a' }}
           modules: qtcharts
-          arch: android_${{ matrix.architecture }}
           setup-python: true
-
+      
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
         id: setup-ndk
