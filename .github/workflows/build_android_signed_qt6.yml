@@ -118,14 +118,14 @@ jobs:
           export API=35
           export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
 
-          if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
-            ./fetch_extract_locally.sh -armv7
-          elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
+          # if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
+          #   ./fetch_extract_locally.sh -armv7
+          # elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
             ./fetch_extract_locally.sh -arm64
-          else
-            echo "Unsupported architecture: ${{ matrix.architecture }}"
-            exit 1
-          fi
+          # else
+          #   echo "Unsupported architecture: ${{ matrix.architecture }}"
+          #   exit 1
+          # fi
 
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
