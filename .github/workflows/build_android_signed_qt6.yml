@@ -20,9 +20,6 @@ jobs:
     strategy:
       matrix:
         include:
-          # - architecture: armv7
-          #   eabi: armeabi-v7a
-          #   ARTIFACT: QOpenHD_armv7.aab
           - architecture: armv8
             eabi: arm64-v8a
             ARTIFACT: QOpenHD_armv8.aab
