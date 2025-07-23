@@ -57,7 +57,7 @@ jobs:
           host: linux
           target: android
           arch: ${{ matrix.architecture == 'armv7' && 'android_armv7' || 'android_arm64_v8a' }}
-          modules: qtcharts qtsvg qtlocation qtpositioning
+          modules: qtcharts qtpositioning
           setup-python: true
       
       - name: Install Android NDK
