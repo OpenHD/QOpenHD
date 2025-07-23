@@ -41,13 +41,6 @@ jobs:
           sudo apt-get install -y ccache tree cmake ninja-build
           sudo ./install_qt6_build_dep.sh
 
-      - name: Cache Qt installation
-        uses: actions/cache@v4
-        id: qt-cache
-        with:
-          path: ${{ runner.temp }}/Qt
-          key: qt6-install-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
-
       - name: Install Qt 6.4.3 for Android (Enterprise)
         if: steps.qt-cache.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v4
