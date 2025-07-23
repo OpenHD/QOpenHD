@@ -45,6 +45,7 @@ jobs:
           host: linux
           target: desktop
           arch: gcc_64
+          modules: qtcharts qtsvg qtlocation qtpositioning
 
       - name: Store host Qt path
         run: echo "QT_HOST_PATH=$Qt6_DIR" >> $GITHUB_ENV
@@ -56,7 +57,7 @@ jobs:
           host: linux
           target: android
           arch: ${{ matrix.architecture == 'armv7' && 'android_armv7' || 'android_arm64_v8a' }}
-          modules: qtcharts
+          modules: qtcharts qtsvg qtlocation qtpositioning
           setup-python: true
       
       - name: Install Android NDK
