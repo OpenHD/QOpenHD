@@ -37,7 +37,10 @@ jobs:
         run: sudo apt-mark hold grub-efi-amd64-signed
 
       - name: Install ccache
-        run: sudo apt-get install -y ccache tree cmake ninja-build
+        run: |
+          sudo apt-get install -y ccache tree cmake ninja-build
+          sudo ./install_qt6_build_dep.sh
+
 
       - name: Install Qt for Android (Qt 6)
         uses: jurplel/install-qt-action@v3
@@ -52,7 +55,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r23c
+          ndk-version: r27
           add-to-path: true
 
       - name: Install Android SDK Platform 35 and Build Tools
