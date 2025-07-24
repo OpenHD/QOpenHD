@@ -53,7 +53,7 @@ jobs:
           host:         linux
           target:       android
           arch:         android_arm64_v8a
-          modules:      qtcharts qtlocation qtpositioning qtsvg
+          modules:      qtlocation qtpositioning
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
@@ -61,6 +61,11 @@ jobs:
           cache:        true
           cache-key-prefix: qt-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
       
+      - name: Debug available Qt modules
+        run: |
+          curl -s https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt6_643/ | grep qt.qt6
+      
+
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
         id: setup-ndk
