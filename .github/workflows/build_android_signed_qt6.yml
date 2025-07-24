@@ -54,7 +54,6 @@ jobs:
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ github.workspace }}
           modules:      qtcharts qtsvg qtlocation qtpositioning
           arch:         android_arm64_v8a
           setup-python: true
