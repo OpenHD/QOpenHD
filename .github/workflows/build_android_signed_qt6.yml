@@ -3,6 +3,7 @@ name: build_android_signed_qt6
 on:
   push:
 
+
 defaults:
   run:
     shell: bash
@@ -14,7 +15,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -41,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         id: qt-cache
         with:
-          path: ${{ github.workspace }}/qt
+          path: ${{ runner.temp }}/Qt
           key: qt6_4_3-install-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
 
       - name: Install Qt 6.4.3 for Android (Enterprise)
@@ -54,7 +55,8 @@ jobs:
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          modules:      qtcharts qtsvg qtlocation qtpositioning
+          dir:          ${{ runner.temp }}
+          modules:      qtsvg qtlocation
           arch:         android_arm64_v8a
           setup-python: true
 
@@ -128,7 +130,7 @@ jobs:
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
-          QT_HOST_PATH: ${{ github.workspace }}/qt/${{ env.QT_VERSION }}/gcc_64
+          QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           cmake ${SOURCE_DIR} -G "Ninja" \
