@@ -10,7 +10,7 @@ defaults:
 
 env:
   SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: 6.5.9
+  QT_VERSION: 6.4.3
   BUILD_TYPE: Release
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
           pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}
           modules:      qtcharts qtsvg qtlocation qtpositioning
-          arch:         android_${{ matrix.architecture }}
+          arch:         android_arm64_v8a
           setup-python: true
 
       - name: Install Android NDK
