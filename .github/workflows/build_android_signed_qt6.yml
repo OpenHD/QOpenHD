@@ -49,17 +49,18 @@ jobs:
         if: steps.qt-cache.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v4
         with:
-          version:      ${{ env.QT_VERSION }}
+          version:      6.4.3
           host:         linux
           target:       android
+          arch:         android_arm64_v8a
+          modules:      qtcharts qtlocation qtpositioning qtsvg
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ runner.temp }}
-          modules:      qtsvg qtlocation
-          arch:         android_arm64_v8a
-          setup-python: true
-
+          dir:          ${{ github.workspace }}
+          cache:        true
+          cache-key-prefix: qt-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
+      
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
         id: setup-ndk
