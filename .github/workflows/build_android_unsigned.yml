@@ -105,9 +105,16 @@ jobs:
       - name: ccache post-run
         run:  ccache -s
 
-      - name: Save artifact
+      - name: Rename APK with datetime
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%d_%H-%M")
+          APK_PATH=$(find ${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          NEW_NAME="build_android_unsigned_${TIMESTAMP}.apk"
+          mv "$APK_PATH" "${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug/${NEW_NAME}"
+          echo "RENAMED_APK=${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug/${NEW_NAME}" >> $GITHUB_ENV
+
+      - name: Upload renamed artifact
         uses: actions/upload-artifact@master
         with:
           name: ${{ matrix.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug/*.apk
-
+          path: ${{ env.RENAMED_APK }}

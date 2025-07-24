@@ -245,24 +245,28 @@ void LowLagDecoder::checkOutputLoop() {
     bool decoderProducedUnknown=false;
     while(!decoderSawEOS && !decoderProducedUnknown) {
         const ssize_t index=AMediaCodec_dequeueOutputBuffer(decoder.codec,&info,BUFFER_TIMEOUT_US);
+        static int renderedFrameCount = 0;
         if (index >= 0) {
-            const auto now=steady_clock::now();
-            const int64_t nowNS=(int64_t)duration_cast<nanoseconds>(now.time_since_epoch()).count();
-            const int64_t nowUS=(int64_t)duration_cast<microseconds>(now.time_since_epoch()).count();
-            //the timestamp for releasing the buffer is in NS, just release as fast as possible (e.g. now)
-            //https://android.googlesource.com/platform/frameworks/av/+/master/media/ndk/NdkMediaCodec.cpp
-            //-> renderOutputBufferAndRelease which is in https://android.googlesource.com/platform/frameworks/av/+/3fdb405/media/libstagefright/MediaCodec.cpp
-            //-> Message kWhatReleaseOutputBuffer -> onReleaseOutputBuffer
-            // also https://android.googlesource.com/platform/frameworks/native/+/5c1139f/libs/gui/SurfaceTexture.cpp
-            MLOGD << "Releasing output buffer index: " << index;
-            MLOGD << "Decoded frame count: " << nDecodedFrames.getAbsolute();
-            AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)index, false);
-            //but the presentationTime is in US
+            const auto now = steady_clock::now();
+            const int64_t nowNS = (int64_t)duration_cast<nanoseconds>(now.time_since_epoch()).count();
+            const int64_t nowUS = (int64_t)duration_cast<microseconds>(now.time_since_epoch()).count();
+
+            // Drop frames to reduce Surface pressure on Exynos
+            if (renderedFrameCount % 4 == 0) {
+                AMediaCodec_releaseOutputBufferAtTime(decoder.codec, (size_t)index, nowNS);
+                MLOGD << "Rendering frame index: " << renderedFrameCount;
+            } else {
+                AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)index, false);
+                MLOGD << "Skipping frame index: " << renderedFrameCount;
+            }
+
             decodingTime.add(std::chrono::microseconds(nowUS - info.presentationTimeUs));
             nDecodedFrames.add(1);
+            renderedFrameCount++;
+
             if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
-                MLOGD<<"Decoder saw EOS";
-                decoderSawEOS=true;
+                MLOGD << "Decoder saw EOS";
+                decoderSawEOS = true;
                 continue;
             }
         } else if (index == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED ) {
