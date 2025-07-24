@@ -10,7 +10,7 @@ defaults:
 
 env:
   SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: 6.4.3
+  QT_VERSION: 6.5.9
   BUILD_TYPE: Release
 
 jobs:
