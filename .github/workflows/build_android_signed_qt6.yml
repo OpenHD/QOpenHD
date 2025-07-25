@@ -35,7 +35,7 @@ jobs:
 
       - name: Install ccache and tools
         run: |
-          sudo apt-get install -y ccache tree cmake ninja-build
+          sudo apt-get install -y ccache tree cmake ninja-build meson
           sudo ./install_qt6_build_dep.sh
 
       - name: Cache Qt installation
