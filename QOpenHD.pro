@@ -251,6 +251,7 @@ AndroidBuild {
     include(app/videostreaming/gstreamer/gst_video.pri)
     include(app/videostreaming/android/videostreamingandroid.pri)
     # needed to build android from windows, but not from linux
+    QMAKE_LFLAGS += -Wl,-u,stdout -Wl,-u,stderr
     QMAKE_PROJECT_DEPTH = 0
 }
 
