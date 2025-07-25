@@ -80,6 +80,12 @@ jobs:
           ndk-version: r27
           add-to-path: true
 
+      - name: Set Qt environment variables
+        run: |
+          echo "QT_ANDROID_PATH=${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a" >> $GITHUB_ENV
+          echo "QT_HOST_PATH=${{ runner.temp }}/Qt/6.6.3/gcc_64" >> $GITHUB_ENV
+
+
       - name: Install Android SDK Platform 35 and Build Tools
         run: |
           set -euxo pipefail
@@ -125,14 +131,10 @@ jobs:
 
       - name: Install GStreamer & FFmpeg (matching arch)
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
-        env:
-          NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
-          QT_ANDROID_PATH: ${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a
-          QT_HOST_PATH: ${{ runner.temp }}/Qt/6.6.3/gcc_64
         run: |
           export PATH="$QT_HOST_PATH/bin:$PATH"
           export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig"
-
+          
           if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
             ./fetch_extract_locally.sh -armv7
           elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
@@ -141,7 +143,7 @@ jobs:
             echo "Unsupported architecture: ${{ matrix.architecture }}"
             exit 1
           fi
-
+          
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
