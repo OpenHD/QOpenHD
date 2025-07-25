@@ -13,7 +13,7 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#define MLOGD qDebug()
+// #define MLOGD qDebug()
 
 using namespace std::chrono;
 
@@ -212,8 +212,8 @@ void LowLagDecoder::configureStartDecoder(){
         //mKeyFrameFinder.h264_configureAMediaFormat(format);
     }
 
-    MLOGD << "Configuring decoder:" << AMediaFormat_toString(format);
-
+// '    MLOGD << "Configuring decoder:" << AMediaFormat_toString(format);
+'
     AMediaCodec_configure(decoder.codec,format, decoder.window, nullptr, 0);
     AMediaFormat_delete(format);
     format=AMediaCodec_getOutputFormat(decoder.codec);
@@ -300,10 +300,10 @@ void LowLagDecoder::checkOutputLoop() {
             // Drop frames to reduce Surface pressure on Exynos
             if (renderedFrameCount % 4 == 0) {
                 AMediaCodec_releaseOutputBufferAtTime(decoder.codec, (size_t)index, nowNS);
-                MLOGD << "Rendering frame index: " << renderedFrameCount;
+                // MLOGD << "Rendering frame index: " << renderedFrameCount;
             } else {
                 AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)index, false);
-                MLOGD << "Skipping frame index: " << renderedFrameCount;
+                // MLOGD << "Skipping frame index: " << renderedFrameCount;
             }
 
             decodingTime.add(std::chrono::microseconds(nowUS - info.presentationTimeUs));
@@ -311,7 +311,7 @@ void LowLagDecoder::checkOutputLoop() {
             renderedFrameCount++;
 
             if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
-                MLOGD << "Decoder saw EOS";
+                // MLOGD << "Decoder saw EOS";
                 decoderSawEOS = true;
                 continue;
             }
@@ -320,18 +320,18 @@ void LowLagDecoder::checkOutputLoop() {
             int width=0,height=0;
             AMediaFormat_getInt32(format,AMEDIAFORMAT_KEY_WIDTH,&width);
             AMediaFormat_getInt32(format,AMEDIAFORMAT_KEY_HEIGHT,&height);
-            MLOGD<<"Actual Width and Height in output "<<width<<","<<height;
+            // MLOGD<<"Actual Width and Height in output "<<width<<","<<height;
             if(onDecoderRatioChangedCallback!= nullptr && width != 0 && height != 0){
                 onDecoderRatioChangedCallback({width, height});
             }
-            MLOGD << "AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED " << width << " " << height << " " << AMediaFormat_toString(format);
+            // MLOGD << "AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED " << width << " " << height << " " << AMediaFormat_toString(format);
         } else if(index==AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED){
-            MLOGD<<"AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED";
+            // MLOGD<<"AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED";
         } else if(index==AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
             //MLOGD<<"AMEDIACODEC_INFO_TRY_AGAIN_LATER";
         } else {
             // Most like AMediaCodec_stop() was called
-            MLOGD<<"dequeueOutputBuffer idx: "<<(int)index<<" .Exit.";
+            // MLOGD<<"dequeueOutputBuffer idx: "<<(int)index<<" .Exit.";
             decoderProducedUnknown=true;
             continue;
         }
@@ -391,7 +391,7 @@ void LowLagDecoder::startDrainSurface() {
     if (drainRunning || decoder.window == nullptr || !my_ASurfaceTexture_create)
         return;
 
-    MLOGD << "Starting Exynos drain surface workaround";
+    // MLOGD << "Starting Exynos drain surface workaround";
 
     drainRunning = true;
 
@@ -403,13 +403,13 @@ void LowLagDecoder::startDrainSurface() {
 
         drainSurfaceTexture = my_ASurfaceTexture_create(drainTextureId);
         if (!drainSurfaceTexture) {
-            MLOGD << "Failed to create ASurfaceTexture";
+            // MLOGD << "Failed to create ASurfaceTexture";
             return;
         }
 
         drainNativeWindow = my_ASurfaceTexture_createNativeWindow(drainSurfaceTexture);
         if (!drainNativeWindow) {
-            MLOGD << "Failed to create ANativeWindow from ASurfaceTexture";
+            // MLOGD << "Failed to create ANativeWindow from ASurfaceTexture";
             my_ASurfaceTexture_release(drainSurfaceTexture);
             drainSurfaceTexture = nullptr;
             return;
@@ -428,7 +428,7 @@ void LowLagDecoder::stopDrainSurface() {
     if (!drainRunning)
         return;
 
-    MLOGD << "Stopping Exynos drain surface workaround";
+    // MLOGD << "Stopping Exynos drain surface workaround";
 
     drainRunning = false;
     if (drainThread.joinable())
