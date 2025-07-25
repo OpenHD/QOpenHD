@@ -25,6 +25,9 @@ typedef void (*ASurfaceTexture_release_t)(ASurfaceTexture*);
 typedef ANativeWindow* (*ASurfaceTexture_createNativeWindow_t)(ASurfaceTexture*);
 typedef void (*ASurfaceTexture_updateTexImage_t)(ASurfaceTexture*);
 
+typedef media_status_t (*AMediaCodec_setOutputSurface_t)(AMediaCodec*, ANativeWindow*);
+static AMediaCodec_setOutputSurface_t my_AMediaCodec_setOutputSurface = nullptr;
+
 static ASurfaceTexture_create_t my_ASurfaceTexture_create = nullptr;
 static ASurfaceTexture_release_t my_ASurfaceTexture_release = nullptr;
 static ASurfaceTexture_createNativeWindow_t my_ASurfaceTexture_createNativeWindow = nullptr;
@@ -32,12 +35,23 @@ static ASurfaceTexture_updateTexImage_t my_ASurfaceTexture_updateTexImage = null
 
 static bool load_ASurfaceTexture_symbols() {
     libandroid_handle = dlopen("libandroid.so", RTLD_NOW);
-    if (!libandroid_handle) return false;
+    void* libmediandk_handle = dlopen("libmediandk.so", RTLD_NOW); // <== this was missing
+
+    if (!libandroid_handle || !libmediandk_handle)
+        return false;
+
+    my_AMediaCodec_setOutputSurface = (AMediaCodec_setOutputSurface_t)dlsym(libmediandk_handle, "AMediaCodec_setOutputSurface");
+
     my_ASurfaceTexture_create = (ASurfaceTexture_create_t)dlsym(libandroid_handle, "ASurfaceTexture_create");
     my_ASurfaceTexture_release = (ASurfaceTexture_release_t)dlsym(libandroid_handle, "ASurfaceTexture_release");
     my_ASurfaceTexture_createNativeWindow = (ASurfaceTexture_createNativeWindow_t)dlsym(libandroid_handle, "ASurfaceTexture_createNativeWindow");
     my_ASurfaceTexture_updateTexImage = (ASurfaceTexture_updateTexImage_t)dlsym(libandroid_handle, "ASurfaceTexture_updateTexImage");
-    return my_ASurfaceTexture_create && my_ASurfaceTexture_release && my_ASurfaceTexture_createNativeWindow && my_ASurfaceTexture_updateTexImage;
+
+    return my_AMediaCodec_setOutputSurface &&
+           my_ASurfaceTexture_create &&
+           my_ASurfaceTexture_release &&
+           my_ASurfaceTexture_createNativeWindow &&
+           my_ASurfaceTexture_updateTexImage;
 }
 
 static void h264_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* format){
