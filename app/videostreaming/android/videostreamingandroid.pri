@@ -21,4 +21,3 @@ QT += multimedia
 QT += multimediawidgets
 
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID
-DEFINES += __ANDROID_API__=26
