@@ -170,8 +170,14 @@ qt6_dir = '${QT_ANDROID_PATH}'
 EOF
 
 export PATH="$QT_ANDROID_PATH/bin:$PATH"
-export CMAKE_PREFIX_PATH="$QT_ANDROID_PATH"
 export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+
+# Override Qt toolchain detection manually
+export QT6_DIR="$QT_ANDROID_PATH"
+export QMAKE="$QT_ANDROID_PATH/bin/qmake6"
+export MOC="$QT_ANDROID_PATH/bin/moc"
+export UIC="$QT_ANDROID_PATH/bin/uic"
+export RCC="$QT_ANDROID_PATH/bin/rcc"
 
 echo "[INFO] Configuring GStreamer with x264, libav, and qmlglsink..."
 meson setup build-android \
