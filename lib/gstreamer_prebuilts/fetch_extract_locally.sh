@@ -169,6 +169,10 @@ needs_exe_wrapper = true
 qt6_dir = '${QT_ANDROID_PATH}'
 EOF
 
+export PATH="$QT_ANDROID_PATH/bin:$PATH"
+export CMAKE_PREFIX_PATH="$QT_ANDROID_PATH"
+export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig:$PKG_CONFIG_PATH"
+
 echo "[INFO] Configuring GStreamer with x264, libav, and qmlglsink..."
 meson setup build-android \
   --cross-file "$MESON_CROSS_FILE" \
