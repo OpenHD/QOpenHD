@@ -6,12 +6,36 @@
 
 #include <android/native_window_jni.h>
 #include <media/NdkMediaFormat.h>
-#include <android/surface_texture.h>
+#include <dlfcn.h>
+#include <android/native_window.h>
 #include <GLES2/gl2.h>
 
 #define MLOGD qDebug()
 
 using namespace std::chrono;
+
+// Shim for ASurfaceTexture support with runtime linking
+static void* libandroid_handle = nullptr;
+typedef struct ASurfaceTexture ASurfaceTexture;
+typedef ASurfaceTexture* (*ASurfaceTexture_create_t)(GLuint texName);
+typedef void (*ASurfaceTexture_release_t)(ASurfaceTexture*);
+typedef ANativeWindow* (*ASurfaceTexture_createNativeWindow_t)(ASurfaceTexture*);
+typedef void (*ASurfaceTexture_updateTexImage_t)(ASurfaceTexture*);
+
+static ASurfaceTexture_create_t my_ASurfaceTexture_create = nullptr;
+static ASurfaceTexture_release_t my_ASurfaceTexture_release = nullptr;
+static ASurfaceTexture_createNativeWindow_t my_ASurfaceTexture_createNativeWindow = nullptr;
+static ASurfaceTexture_updateTexImage_t my_ASurfaceTexture_updateTexImage = nullptr;
+
+static bool load_ASurfaceTexture_symbols() {
+    libandroid_handle = dlopen("libandroid.so", RTLD_NOW);
+    if (!libandroid_handle) return false;
+    my_ASurfaceTexture_create = (ASurfaceTexture_create_t)dlsym(libandroid_handle, "ASurfaceTexture_create");
+    my_ASurfaceTexture_release = (ASurfaceTexture_release_t)dlsym(libandroid_handle, "ASurfaceTexture_release");
+    my_ASurfaceTexture_createNativeWindow = (ASurfaceTexture_createNativeWindow_t)dlsym(libandroid_handle, "ASurfaceTexture_createNativeWindow");
+    my_ASurfaceTexture_updateTexImage = (ASurfaceTexture_updateTexImage_t)dlsym(libandroid_handle, "ASurfaceTexture_updateTexImage");
+    return my_ASurfaceTexture_create && my_ASurfaceTexture_release && my_ASurfaceTexture_createNativeWindow && my_ASurfaceTexture_updateTexImage;
+}
 
 static void h264_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* format){
     const auto sps=kff.getCSD0();
@@ -49,6 +73,7 @@ static void h265_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* form
 LowLagDecoder::LowLagDecoder(JNIEnv* env){
     //env->GetJavaVM(&javaVm);
     resetStatistics();
+    load_ASurfaceTexture_symbols();
 }
 
 void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
@@ -346,7 +371,7 @@ void LowLagDecoder::resetStatistics() {
 }
 
 void LowLagDecoder::startDrainSurface() {
-    if (drainRunning || decoder.window == nullptr)
+    if (drainRunning || decoder.window == nullptr || !my_ASurfaceTexture_create)
         return;
 
     MLOGD << "Starting Exynos drain surface workaround";
@@ -354,33 +379,30 @@ void LowLagDecoder::startDrainSurface() {
     drainRunning = true;
 
     drainThread = std::thread([this]() {
-        // Create a dummy texture
         glGenTextures(1, &drainTextureId);
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, drainTextureId);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        drainSurfaceTexture = ASurfaceTexture_create(drainTextureId);
+        drainSurfaceTexture = my_ASurfaceTexture_create(drainTextureId);
         if (!drainSurfaceTexture) {
             MLOGD << "Failed to create ASurfaceTexture";
             return;
         }
 
-        drainNativeWindow = ASurfaceTexture_createNativeWindow(drainSurfaceTexture);
+        drainNativeWindow = my_ASurfaceTexture_createNativeWindow(drainSurfaceTexture);
         if (!drainNativeWindow) {
             MLOGD << "Failed to create ANativeWindow from ASurfaceTexture";
-            ASurfaceTexture_release(drainSurfaceTexture);
+            my_ASurfaceTexture_release(drainSurfaceTexture);
             drainSurfaceTexture = nullptr;
             return;
         }
 
-        // Attach the dummy surface to the MediaCodec (to unblock rendering)
         AMediaCodec_setOutputSurface(decoder.codec, drainNativeWindow);
 
-        // Loop to simulate rendering
         while (drainRunning) {
-            ASurfaceTexture_updateTexImage(drainSurfaceTexture);
-            usleep(10000); // ~100fps polling
+            my_ASurfaceTexture_updateTexImage(drainSurfaceTexture);
+            usleep(10000);
         }
     });
 }
@@ -401,7 +423,7 @@ void LowLagDecoder::stopDrainSurface() {
     }
 
     if (drainSurfaceTexture) {
-        ASurfaceTexture_release(drainSurfaceTexture);
+        my_ASurfaceTexture_release(drainSurfaceTexture);
         drainSurfaceTexture = nullptr;
     }
 

@@ -5,6 +5,7 @@
 #include <android/native_window.h>
 #include <android/surface_texture.h>
 #include <GLES2/gl2.h>
+struct ASurfaceTexture;  // Forward declaration to avoid compile error
 #include <media/NdkMediaCodec.h>
 #include <android/log.h>
 #include <jni.h>
