@@ -7,6 +7,14 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
+# Validate required env var
+if [[ -z "${QT_ANDROID_PATH:-}" ]]; then
+  echo "[ERROR] QT_ANDROID_PATH is not set!"
+  exit 1
+fi
+
+echo "[INFO] Using Qt path: $QT_ANDROID_PATH"
+
 case "$1" in
   -armv7)
     ARCH="armv7"
@@ -158,7 +166,7 @@ endian = 'little'
 
 [properties]
 needs_exe_wrapper = true
-qt5_dir = '${QT_ANDROID_PATH}'
+qt6_dir = '${QT_ANDROID_PATH}'
 EOF
 
 echo "[INFO] Configuring GStreamer with x264, libav, and qmlglsink..."
@@ -171,8 +179,8 @@ meson setup build-android \
   -Dugly=enabled \
   -Dbad=enabled \
   -Dgood=enabled \
-  -Dqt5=enabled \
-  -Dgst-plugins-good:qt5=enabled \
+  -Dqt6=enabled \
+  -Dgst-plugins-good:qt6=enabled \
   -Dgst-plugins-good:qmlgl=enabled \
   -Dgst-plugins-ugly:x264=enabled \
   -Dgst-libav:enabled=true \

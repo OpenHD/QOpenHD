@@ -10,7 +10,7 @@ defaults:
 
 env:
   SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: 6.4.3
+  QT_VERSION: 6.6.3
   BUILD_TYPE: Release
 
 jobs:
@@ -115,6 +115,7 @@ jobs:
         working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
         env:
           NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+          QT_ANDROID_PATH: ${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a
         run: |
           export API=35
           export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
