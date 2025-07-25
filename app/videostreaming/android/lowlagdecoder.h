@@ -3,6 +3,7 @@
 
 
 #include <android/native_window.h>
+#include <android/surface_texture.h>
 #include <media/NdkMediaCodec.h>
 #include <android/log.h>
 #include <jni.h>
@@ -12,6 +13,7 @@
 
 #include <nalu/NALU.hpp>
 #include <nalu/CodecConfigFinder.hpp>
+
 
 #include "../../common/TimeHelper.hpp"
 
