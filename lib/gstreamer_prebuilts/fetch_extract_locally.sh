@@ -171,7 +171,7 @@ EOF
 
 export PATH="$QT_ANDROID_PATH/bin:$PATH"
 export CMAKE_PREFIX_PATH="$QT_ANDROID_PATH"
-export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
 
 echo "[INFO] Configuring GStreamer with x264, libav, and qmlglsink..."
 meson setup build-android \
