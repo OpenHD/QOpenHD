@@ -68,8 +68,6 @@ CROSS_PREFIX="$TOOLCHAIN/bin/${TARGET}-"
   --sysroot="$SYSROOT" \
   --extra-cflags="$CFLAGS" \
   --extra-ldflags="-fPIC" \
-  --as=clang \
-  --extra-asflags="-fPIC" \
   --disable-asm
 
 make -j$(nproc)
