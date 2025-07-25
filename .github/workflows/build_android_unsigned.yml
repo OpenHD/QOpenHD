@@ -87,6 +87,62 @@ jobs:
           cd lib/gstreamer_prebuilts/
           ./fetch_extract_locally.sh
 
+      - name: Build qmlglsink
+        run: |
+          sudo apt-get update && sudo apt-get install -y ninja-build python3-pip
+          pip3 install meson==1.2.3
+
+          API=34
+          NDK_PATH="${{ steps.setup-ndk.outputs.ndk-path }}"
+          QT_DIR="${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/android_${{ matrix.eabi }}"
+          GST_ANDROID_DIR="${GITHUB_WORKSPACE}/lib/gstreamer_prebuilts/gstreamer-1.0-android-universal"
+          
+          if [[ "${{ matrix.eabi }}" == "armeabi-v7a" ]]; then
+            TARGET="armv7a-linux-androideabi"
+            CPU="armv7"
+            CPU_FAMILY="arm"
+          else
+            TARGET="aarch64-linux-android"
+            CPU="aarch64"
+            CPU_FAMILY="aarch64"
+          fi
+
+          CC="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${TARGET}${API}-clang"
+          CXX="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/${TARGET}${API}-clang++"
+          STRIP="${NDK_PATH}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip"
+
+          TEMPLATE="${GITHUB_WORKSPACE}/android/cross-android.template.txt"
+          CROSS_FILE="${GITHUB_WORKSPACE}/android/generated-cross-${{ matrix.eabi }}.txt"
+
+          sed \
+            -e "s|@CC@|$CC|" \
+            -e "s|@CXX@|$CXX|" \
+            -e "s|@STRIP@|$STRIP|" \
+            -e "s|@CPU@|$CPU|" \
+            -e "s|@CPU_FAMILY@|$CPU_FAMILY|" \
+            -e "s|@QT_DIR@|$QT_DIR|" \
+            "$TEMPLATE" > "$CROSS_FILE"
+
+          git clone --depth 1 https://gitlab.freedesktop.org/gstreamer/gstreamer-qt.git
+          cd gstreamer-qt
+
+          meson setup build-android \
+            --cross-file "$CROSS_FILE" \
+            --prefix="$(pwd)/install" \
+            -Dqml=enabled \
+            -Dexamples=disabled \
+            -Dandroid_ndk="$NDK_PATH" \
+            -Dandroid_sdk_version="$API" \
+            -Dgstreamer-1.0:gi=false
+
+          ninja -C build-android install
+
+          # Determine sub-ABI path from install (auto-matched to universal path)
+          ABI_PATH=$(find "${GST_ANDROID_DIR}/lib" -name "${TARGET}" -type d | head -n1)
+          mkdir -p "${ABI_PATH}/gstreamer-1.0"
+          cp build-android/plugins/aqmlglsink/libgstaqmlglsink.so "${ABI_PATH}/gstreamer-1.0/"
+
+
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:

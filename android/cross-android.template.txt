@@ -1,0 +1,15 @@
+[binaries]
+c = '@CC@'
+cpp = '@CXX@'
+pkgconfig = 'pkg-config'
+strip = '@STRIP@'
+
+[host_machine]
+system = 'android'
+cpu_family = '@CPU_FAMILY@'
+cpu = '@CPU@'
+endian = 'little'
+
+[properties]
+needs_exe_wrapper = true
+qt5_dir = '@QT_DIR@'
