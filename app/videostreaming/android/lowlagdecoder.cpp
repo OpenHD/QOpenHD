@@ -6,10 +6,53 @@
 
 #include <android/native_window_jni.h>
 #include <media/NdkMediaFormat.h>
+#include <dlfcn.h>
+#include <android/native_window.h>
+#include <cstdio>
 
+#define GL_GLEXT_PROTOTYPES
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #define MLOGD qDebug()
 
 using namespace std::chrono;
+
+// Shim for ASurfaceTexture support with runtime linking
+static void* libandroid_handle = nullptr;
+typedef struct ASurfaceTexture ASurfaceTexture;
+typedef ASurfaceTexture* (*ASurfaceTexture_create_t)(GLuint texName);
+typedef void (*ASurfaceTexture_release_t)(ASurfaceTexture*);
+typedef ANativeWindow* (*ASurfaceTexture_createNativeWindow_t)(ASurfaceTexture*);
+typedef void (*ASurfaceTexture_updateTexImage_t)(ASurfaceTexture*);
+
+typedef media_status_t (*AMediaCodec_setOutputSurface_t)(AMediaCodec*, ANativeWindow*);
+static AMediaCodec_setOutputSurface_t my_AMediaCodec_setOutputSurface = nullptr;
+
+static ASurfaceTexture_create_t my_ASurfaceTexture_create = nullptr;
+static ASurfaceTexture_release_t my_ASurfaceTexture_release = nullptr;
+static ASurfaceTexture_createNativeWindow_t my_ASurfaceTexture_createNativeWindow = nullptr;
+static ASurfaceTexture_updateTexImage_t my_ASurfaceTexture_updateTexImage = nullptr;
+
+static bool load_ASurfaceTexture_symbols() {
+    libandroid_handle = dlopen("libandroid.so", RTLD_NOW);
+    void* libmediandk_handle = dlopen("libmediandk.so", RTLD_NOW); // <== this was missing
+
+    if (!libandroid_handle || !libmediandk_handle)
+        return false;
+
+    my_AMediaCodec_setOutputSurface = (AMediaCodec_setOutputSurface_t)dlsym(libmediandk_handle, "AMediaCodec_setOutputSurface");
+
+    my_ASurfaceTexture_create = (ASurfaceTexture_create_t)dlsym(libandroid_handle, "ASurfaceTexture_create");
+    my_ASurfaceTexture_release = (ASurfaceTexture_release_t)dlsym(libandroid_handle, "ASurfaceTexture_release");
+    my_ASurfaceTexture_createNativeWindow = (ASurfaceTexture_createNativeWindow_t)dlsym(libandroid_handle, "ASurfaceTexture_createNativeWindow");
+    my_ASurfaceTexture_updateTexImage = (ASurfaceTexture_updateTexImage_t)dlsym(libandroid_handle, "ASurfaceTexture_updateTexImage");
+
+    return my_AMediaCodec_setOutputSurface &&
+           my_ASurfaceTexture_create &&
+           my_ASurfaceTexture_release &&
+           my_ASurfaceTexture_createNativeWindow &&
+           my_ASurfaceTexture_updateTexImage;
+}
 
 static void h264_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* format){
     const auto sps=kff.getCSD0();
@@ -47,6 +90,7 @@ static void h265_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* form
 LowLagDecoder::LowLagDecoder(JNIEnv* env){
     //env->GetJavaVM(&javaVm);
     resetStatistics();
+    load_ASurfaceTexture_symbols();
 }
 
 void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
@@ -62,6 +106,7 @@ void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
         inputPipeClosed=true;
         if(decoder.configured){
             AMediaCodec_stop(decoder.codec);
+            stopDrainSurface();
             AMediaCodec_delete(decoder.codec);
             mKeyFrameFinder.reset();
             decoder.configured=false;
@@ -182,6 +227,7 @@ void LowLagDecoder::configureStartDecoder(){
         return;
     }
     AMediaCodec_start(decoder.codec);
+    startDrainSurface();
     mCheckOutputThread=std::make_unique<std::thread>(&LowLagDecoder::checkOutputLoop,this);
     //NDKThreadHelper::setName(mCheckOutputThread->native_handle(),"LLDCheckOutput");
     decoder.configured=true;
@@ -245,22 +291,28 @@ void LowLagDecoder::checkOutputLoop() {
     bool decoderProducedUnknown=false;
     while(!decoderSawEOS && !decoderProducedUnknown) {
         const ssize_t index=AMediaCodec_dequeueOutputBuffer(decoder.codec,&info,BUFFER_TIMEOUT_US);
+        static int renderedFrameCount = 0;
         if (index >= 0) {
-            const auto now=steady_clock::now();
-            const int64_t nowNS=(int64_t)duration_cast<nanoseconds>(now.time_since_epoch()).count();
-            const int64_t nowUS=(int64_t)duration_cast<microseconds>(now.time_since_epoch()).count();
-            //the timestamp for releasing the buffer is in NS, just release as fast as possible (e.g. now)
-            //https://android.googlesource.com/platform/frameworks/av/+/master/media/ndk/NdkMediaCodec.cpp
-            //-> renderOutputBufferAndRelease which is in https://android.googlesource.com/platform/frameworks/av/+/3fdb405/media/libstagefright/MediaCodec.cpp
-            //-> Message kWhatReleaseOutputBuffer -> onReleaseOutputBuffer
-            // also https://android.googlesource.com/platform/frameworks/native/+/5c1139f/libs/gui/SurfaceTexture.cpp
-            AMediaCodec_releaseOutputBufferAtTime(decoder.codec,(size_t)index,nowNS);
-            //but the presentationTime is in US
+            const auto now = steady_clock::now();
+            const int64_t nowNS = (int64_t)duration_cast<nanoseconds>(now.time_since_epoch()).count();
+            const int64_t nowUS = (int64_t)duration_cast<microseconds>(now.time_since_epoch()).count();
+
+            // Drop frames to reduce Surface pressure on Exynos
+            if (renderedFrameCount % 4 == 0) {
+                AMediaCodec_releaseOutputBufferAtTime(decoder.codec, (size_t)index, nowNS);
+                MLOGD << "Rendering frame index: " << renderedFrameCount;
+            } else {
+                AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)index, false);
+                MLOGD << "Skipping frame index: " << renderedFrameCount;
+            }
+
             decodingTime.add(std::chrono::microseconds(nowUS - info.presentationTimeUs));
             nDecodedFrames.add(1);
+            renderedFrameCount++;
+
             if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
-                MLOGD<<"Decoder saw EOS";
-                decoderSawEOS=true;
+                MLOGD << "Decoder saw EOS";
+                decoderSawEOS = true;
                 continue;
             }
         } else if (index == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED ) {
@@ -333,4 +385,67 @@ void LowLagDecoder::resetStatistics() {
     waitForInputB.reset();
     decodingTime.reset();
     decodingInfo={};
+}
+
+void LowLagDecoder::startDrainSurface() {
+    if (drainRunning || decoder.window == nullptr || !my_ASurfaceTexture_create)
+        return;
+
+    MLOGD << "Starting Exynos drain surface workaround";
+
+    drainRunning = true;
+
+    drainThread = std::thread([this]() {
+        glGenTextures(1, &drainTextureId);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, drainTextureId);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        drainSurfaceTexture = my_ASurfaceTexture_create(drainTextureId);
+        if (!drainSurfaceTexture) {
+            MLOGD << "Failed to create ASurfaceTexture";
+            return;
+        }
+
+        drainNativeWindow = my_ASurfaceTexture_createNativeWindow(drainSurfaceTexture);
+        if (!drainNativeWindow) {
+            MLOGD << "Failed to create ANativeWindow from ASurfaceTexture";
+            my_ASurfaceTexture_release(drainSurfaceTexture);
+            drainSurfaceTexture = nullptr;
+            return;
+        }
+
+        my_AMediaCodec_setOutputSurface(decoder.codec, drainNativeWindow);
+
+        while (drainRunning) {
+            my_ASurfaceTexture_updateTexImage(drainSurfaceTexture);
+            usleep(10000);
+        }
+    });
+}
+
+void LowLagDecoder::stopDrainSurface() {
+    if (!drainRunning)
+        return;
+
+    MLOGD << "Stopping Exynos drain surface workaround";
+
+    drainRunning = false;
+    if (drainThread.joinable())
+        drainThread.join();
+
+    if (drainNativeWindow) {
+        ANativeWindow_release(drainNativeWindow);
+        drainNativeWindow = nullptr;
+    }
+
+    if (drainSurfaceTexture) {
+        my_ASurfaceTexture_release(drainSurfaceTexture);
+        drainSurfaceTexture = nullptr;
+    }
+
+    if (drainTextureId != 0) {
+        glDeleteTextures(1, &drainTextureId);
+        drainTextureId = 0;
+    }
 }
