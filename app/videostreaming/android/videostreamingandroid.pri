@@ -14,6 +14,9 @@ SOURCES += \
 
 LIBS += -lmediandk
 LIBS += -landroid
+LIBS += -llog
+LIBS += -lOpenSLES
+LIBS += -lGLESv2
 QT += androidextras
 QT += multimedia
 QT += multimediawidgets
