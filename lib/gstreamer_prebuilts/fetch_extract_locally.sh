@@ -58,14 +58,22 @@ find "$GST_DIR" -type f -name "libx264.a" -exec rm -v {} +
 echo "[INFO] Downloading and building x264..."
 rm -rf x264 && mkdir x264 && cd x264
 git clone --depth 1 https://code.videolan.org/videolan/x264.git .
+export PATH="$TOOLCHAIN/bin:$PATH"
 export CC="$TOOLCHAIN/bin/${TARGET}${API}-clang"
+export CXX="$TOOLCHAIN/bin/${TARGET}${API}-clang++"
 export AR="$TOOLCHAIN/bin/llvm-ar"
 export RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
 export STRINGS="/usr/bin/strings"
 export ac_cv_c_bigendian=no
 
+# Add a sanity check
+echo "[INFO] Testing compiler at: $CC"
+"$CC" --version || { echo "[ERROR] Compiler not found!"; exit 1; }
+
 CFLAGS="-fPIC"
 CROSS_PREFIX="$TOOLCHAIN/bin/${TARGET}-"
+
+
 
 ./configure \
   --prefix="../x264-build" \
