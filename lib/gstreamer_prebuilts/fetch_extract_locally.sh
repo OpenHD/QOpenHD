@@ -131,3 +131,68 @@ unset PKG_CONFIG_LIBDIR
 
 make -j$(nproc)
 make install
+
+cd ../
+
+# --- Build GStreamer full from source ---
+echo "[INFO] Cloning GStreamer mono-repo..."
+rm -rf gstreamer && git clone --depth 1 https://gitlab.freedesktop.org/gstreamer/gstreamer.git
+cd gstreamer
+
+GST_INSTALL_DIR="$PWD/gst-install"
+MESON_CROSS_FILE="cross-android-${ARCH}.txt"
+
+echo "[INFO] Generating Meson cross file..."
+cat > "$MESON_CROSS_FILE" <<EOF
+[binaries]
+c = '$TOOLCHAIN/bin/${TARGET}${API}-clang'
+cpp = '$TOOLCHAIN/bin/${TARGET}${API}-clang++'
+ar = '$TOOLCHAIN/bin/llvm-ar'
+nm = '$TOOLCHAIN/bin/llvm-nm'
+strip = '$TOOLCHAIN/bin/llvm-strip'
+pkgconfig = 'pkg-config'
+
+[host_machine]
+system = 'android'
+cpu_family = '${ARCH}'
+cpu = '${TARGET}'
+endian = 'little'
+
+[properties]
+needs_exe_wrapper = true
+qt5_dir = '${QT_ANDROID_PATH}'
+EOF
+
+echo "[INFO] Configuring GStreamer with x264, libav, and qmlglsink..."
+meson setup build-android \
+  --cross-file "$MESON_CROSS_FILE" \
+  --prefix="$GST_INSTALL_DIR" \
+  -Ddefault_library=shared \
+  -Dbuildtype=release \
+  -Dgpl=enabled \
+  -Dugly=enabled \
+  -Dbad=enabled \
+  -Dgood=enabled \
+  -Dqt5=enabled \
+  -Dgst-plugins-good:qt5=enabled \
+  -Dgst-plugins-good:qmlgl=enabled \
+  -Dgst-plugins-ugly:x264=enabled \
+  -Dgst-libav:enabled=true \
+  -Dx264_library="../x264-build/lib/libx264.a" \
+  -Dx264_include="../x264-build/include" \
+  -Dlibavcodec_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavcodec.a" \
+  -Dlibavformat_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavformat.a" \
+  -Dlibavutil_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavutil.a" \
+  -Dlibswresample_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libswresample.a" \
+  -Dlibavcodec_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  -Dlibavformat_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  -Dlibavutil_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  -Dlibswresample_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  -Dandroid_ndk="$NDK_ROOT" \
+  -Dandroid_sdk_version="$API" \
+  -Dexamples=disabled
+
+echo "[INFO] Building GStreamer..."
+ninja -C build-android install
+
+echo "[INFO] GStreamer successfully built to $GST_INSTALL_DIR"
