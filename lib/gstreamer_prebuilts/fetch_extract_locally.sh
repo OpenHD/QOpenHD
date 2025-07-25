@@ -180,6 +180,11 @@ export UIC="$QT6_DIR/bin/uic"
 export RCC="$QT6_DIR/bin/rcc"
 
 echo "[INFO] Configuring GStreamer with x264, libav, and qmlglsink..."
+
+echo "[INFO] Patching libffi Meson to allow android + arm64..."
+sed -i 's/Unsupported pair: system "android", cpu family "arm64"/# patched: allow android arm64/' subprojects/libffi/meson.build
+sed -i '/Unsupported pair: system "android", cpu family "arm64"/,+2 d' subprojects/libffi/meson.build
+
 meson setup build-android \
   --cross-file "$MESON_CROSS_FILE" \
   --prefix="$GST_INSTALL_DIR" \
