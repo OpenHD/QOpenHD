@@ -182,20 +182,19 @@ meson setup build-android \
   -Dqt6=enabled \
   -Dgst-plugins-good:qt6=enabled \
   -Dgst-plugins-good:qmlgl=enabled \
+  -Dgst-plugins-ugly:enabled=true \
   -Dgst-plugins-ugly:x264=enabled \
+  -Dgst-plugins-ugly:x264_library="../x264-build/lib/libx264.a" \
+  -Dgst-plugins-ugly:x264_include="../x264-build/include" \
   -Dgst-libav:enabled=true \
-  -Dx264_library="../x264-build/lib/libx264.a" \
-  -Dx264_include="../x264-build/include" \
-  -Dlibavcodec_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavcodec.a" \
-  -Dlibavformat_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavformat.a" \
-  -Dlibavutil_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavutil.a" \
-  -Dlibswresample_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libswresample.a" \
-  -Dlibavcodec_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
-  -Dlibavformat_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
-  -Dlibavutil_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
-  -Dlibswresample_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
-  -Dandroid_ndk="$NDK_ROOT" \
-  -Dandroid_sdk_version="$API" \
+  -Dgst-libav:libavcodec_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavcodec.a" \
+  -Dgst-libav:libavformat_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavformat.a" \
+  -Dgst-libav:libavutil_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libavutil.a" \
+  -Dgst-libav:libswresample_library="../ffmpeg-${FFMPEG_VERSION}/build-android/lib/libswresample.a" \
+  -Dgst-libav:libavcodec_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  -Dgst-libav:libavformat_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  -Dgst-libav:libavutil_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
+  -Dgst-libav:libswresample_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
   -Dexamples=disabled
 
 echo "[INFO] Building GStreamer..."
