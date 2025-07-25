@@ -1,6 +1,5 @@
-# Based on https://www.kdab.com/qt-android-create-zero-copy-android-surfacetexture-qml-item/
-# Not completely ideal, since we still render the video with opengl instead of using the HW composer
-# but should give usable latency on most android devices
+# Android low-latency decoder (ASurfaceTexture-based)
+# Reference: https://www.kdab.com/qt-android-create-zero-copy-android-surfacetexture-qml-item/
 
 HEADERS += \
     $$PWD/lowlagdecoder.h \
@@ -12,13 +11,20 @@ SOURCES += \
     $$PWD/qandroidmediaplayer.cpp \
     $$PWD/qsurfacetexture.cpp
 
-LIBS += -lmediandk
-LIBS += -landroid
-LIBS += -llog
-LIBS += -lOpenSLES
-LIBS += -lGLESv2
-QT += androidextras
-QT += multimedia
-QT += multimediawidgets
+# Link required Android system libraries
+LIBS += -lmediandk \
+        -landroid \
+        -llog \
+        -lOpenSLES \
+        -lGLESv2
 
+QT += androidextras \
+      multimedia \
+      multimediawidgets
+
+# Make sure ASurfaceTexture API is enabled
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+DEFINES += __ANDROID_API__=26
+
+# Include path for surface_texture.h (if not already present via NDK setup)
+INCLUDEPATH += $$NDK_ROOT/sysroot/usr/include/android
