@@ -16,7 +16,8 @@ LIBS += -lmediandk \
         -landroid \
         -llog \
         -lOpenSLES \
-        -lGLESv2
+        -lGLESv2 \
+        -lc
 
 QT += androidextras \
       multimedia \

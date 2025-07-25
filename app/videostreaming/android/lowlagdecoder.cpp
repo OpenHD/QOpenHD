@@ -415,7 +415,7 @@ void LowLagDecoder::startDrainSurface() {
             return;
         }
 
-        AMediaCodec_setOutputSurface(decoder.codec, drainNativeWindow);
+        my_AMediaCodec_setOutputSurface(decoder.codec, drainNativeWindow);
 
         while (drainRunning) {
             my_ASurfaceTexture_updateTexImage(drainSurfaceTexture);
