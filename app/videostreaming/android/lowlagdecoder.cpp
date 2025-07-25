@@ -8,6 +8,7 @@
 #include <media/NdkMediaFormat.h>
 #include <dlfcn.h>
 #include <android/native_window.h>
+#include <cstdio>
 
 #define GL_GLEXT_PROTOTYPES
 #include <GLES2/gl2.h>

@@ -13,6 +13,7 @@ struct ASurfaceTexture;  // Forward declaration to avoid compile error
 #include <thread>
 #include <atomic>
 
+#include <cstdio>
 #include <nalu/NALU.hpp>
 #include <nalu/CodecConfigFinder.hpp>
 

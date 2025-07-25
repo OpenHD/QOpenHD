@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <manifest package="com.openhd.qopenhd" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="v30" android:versionCode="30" android:installLocation="auto">
-    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34"/>
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="34"/>
 
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
          Remove the comment if you do not require these default permissions. -->
