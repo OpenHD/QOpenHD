@@ -6,6 +6,8 @@
 
 #include <android/native_window_jni.h>
 #include <media/NdkMediaFormat.h>
+#include <android/surface_texture.h>
+#include <GLES2/gl2.h>
 
 #define MLOGD qDebug()
 
@@ -62,6 +64,7 @@ void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
         inputPipeClosed=true;
         if(decoder.configured){
             AMediaCodec_stop(decoder.codec);
+            stopDrainSurface();
             AMediaCodec_delete(decoder.codec);
             mKeyFrameFinder.reset();
             decoder.configured=false;
@@ -182,6 +185,7 @@ void LowLagDecoder::configureStartDecoder(){
         return;
     }
     AMediaCodec_start(decoder.codec);
+    startDrainSurface();
     mCheckOutputThread=std::make_unique<std::thread>(&LowLagDecoder::checkOutputLoop,this);
     //NDKThreadHelper::setName(mCheckOutputThread->native_handle(),"LLDCheckOutput");
     decoder.configured=true;
@@ -339,4 +343,70 @@ void LowLagDecoder::resetStatistics() {
     waitForInputB.reset();
     decodingTime.reset();
     decodingInfo={};
+}
+
+void LowLagDecoder::startDrainSurface() {
+    if (drainRunning || decoder.window == nullptr)
+        return;
+
+    MLOGD << "Starting Exynos drain surface workaround";
+
+    drainRunning = true;
+
+    drainThread = std::thread([this]() {
+        // Create a dummy texture
+        glGenTextures(1, &drainTextureId);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, drainTextureId);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        drainSurfaceTexture = ASurfaceTexture_create(drainTextureId);
+        if (!drainSurfaceTexture) {
+            MLOGD << "Failed to create ASurfaceTexture";
+            return;
+        }
+
+        drainNativeWindow = ASurfaceTexture_createNativeWindow(drainSurfaceTexture);
+        if (!drainNativeWindow) {
+            MLOGD << "Failed to create ANativeWindow from ASurfaceTexture";
+            ASurfaceTexture_release(drainSurfaceTexture);
+            drainSurfaceTexture = nullptr;
+            return;
+        }
+
+        // Attach the dummy surface to the MediaCodec (to unblock rendering)
+        AMediaCodec_setOutputSurface(decoder.codec, drainNativeWindow);
+
+        // Loop to simulate rendering
+        while (drainRunning) {
+            ASurfaceTexture_updateTexImage(drainSurfaceTexture);
+            usleep(10000); // ~100fps polling
+        }
+    });
+}
+
+void LowLagDecoder::stopDrainSurface() {
+    if (!drainRunning)
+        return;
+
+    MLOGD << "Stopping Exynos drain surface workaround";
+
+    drainRunning = false;
+    if (drainThread.joinable())
+        drainThread.join();
+
+    if (drainNativeWindow) {
+        ANativeWindow_release(drainNativeWindow);
+        drainNativeWindow = nullptr;
+    }
+
+    if (drainSurfaceTexture) {
+        ASurfaceTexture_release(drainSurfaceTexture);
+        drainSurfaceTexture = nullptr;
+    }
+
+    if (drainTextureId != 0) {
+        glDeleteTextures(1, &drainTextureId);
+        drainTextureId = 0;
+    }
 }

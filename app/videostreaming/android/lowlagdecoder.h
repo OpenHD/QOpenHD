@@ -114,6 +114,15 @@ private:
 private:
     CodecConfigFinder mKeyFrameFinder;
     bool IS_H265= false;
+    // --- Exynos drain surface workaround ---
+    ASurfaceTexture* drainSurfaceTexture = nullptr;
+    ANativeWindow* drainNativeWindow = nullptr;
+    GLuint drainTextureId = 0;
+    std::atomic<bool> drainRunning = false;
+    std::thread drainThread;
+
+    void startDrainSurface();
+    void stopDrainSurface();
 };
 
 #endif // LOWLAGDECODER_H
