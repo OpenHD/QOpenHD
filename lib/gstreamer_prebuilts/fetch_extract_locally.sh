@@ -181,6 +181,7 @@ export RCC="$QT6_DIR/bin/rcc"
 
 echo "[INFO] Configuring GStreamer with x264, libav, and qmlglsink..."
 
+echo "[INFO] Running Meson to download dependencies (may fail)..."
 meson setup build-android \
   --cross-file "$MESON_CROSS_FILE" \
   --prefix="$GST_INSTALL_DIR" \
@@ -206,12 +207,31 @@ meson setup build-android \
   -Dgst-libav:libavformat_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
   -Dgst-libav:libavutil_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
   -Dgst-libav:libswresample_include="../ffmpeg-${FFMPEG_VERSION}/build-android/include" \
-  -Dexamples=disabled
+  -Dexamples=disabled || true
+
+echo "[INFO] Waiting for libffi/meson.build to become available..."
+for i in {1..15}; do
+  [ -f "subprojects/libffi/meson.build" ] && break
+  echo "[INFO] Waiting for libffi/meson.build... (${i}s)"
+  sleep 1
+done
+
+if [ ! -f "subprojects/libffi/meson.build" ]; then
+  echo "[ERROR] libffi/meson.build not found — Meson failed to fetch subprojects?"
+  exit 1
+fi
+# --- Patch libffi for Android arm64 ---
+echo "[INFO] Patching libffi for Android arm64..."
 
 echo "[INFO] Patching libffi Meson to allow android + arm64..."
 sed -i 's/Unsupported pair: system "android", cpu family "arm64"/# patched: allow android arm64/' subprojects/libffi/meson.build || true
 sed -i '/Unsupported pair: system "android", cpu family "arm64"/,+2 d' subprojects/libffi/meson.build || true
 
+echo "[INFO] Reconfiguring GStreamer after patch..."
+meson setup build-android --reconfigure
+
+echo "[INFO] Verifying patch..."
+grep 'Unsupported pair' subprojects/libffi/meson.build || echo "✅ Patch confirmed removed"
 
 echo "[INFO] Building GStreamer..."
 ninja -C build-android install
