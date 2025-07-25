@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+export NDK_ROOT="${NDK_ROOT:?NDK_ROOT not set}"
+
 # --- Parse architecture argument ---
 if [[ $# -ne 1 ]]; then
   echo "Usage: $0 -armv7 | -arm64"
