@@ -61,6 +61,17 @@ jobs:
           dir:          ${{ github.workspace }}
           cache:        true
           cache-key-prefix: qt-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
+      
+      - name: Install host Qt 6.6.3 (gcc_64) for build tools
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.6.3
+          host: linux
+          target: desktop
+          arch: gcc_64
+          modules: qtcharts
+          use-official: false
+          dir: ${{ runner.temp }}/Qt
 
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
@@ -117,9 +128,10 @@ jobs:
         env:
           NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
           QT_ANDROID_PATH: ${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a
+          QT_HOST_PATH: ${{ runner.temp }}/Qt/6.6.3/gcc_64
         run: |
-          export API=35
-          export TOOLCHAIN=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64
+          export PATH="$QT_HOST_PATH/bin:$PATH"
+          export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig"
 
           if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
             ./fetch_extract_locally.sh -armv7
