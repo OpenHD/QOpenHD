@@ -45,26 +45,21 @@ jobs:
           path: ${{ runner.temp }}/Qt
           key: qt6_4_3-install-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
 
-      - name: Install Qt 6.4.3 for Android (Enterprise)
+      - name: Install Qt 6.6.3 for Android
         if: steps.qt-cache.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v4
         with:
-          version:      6.4.3
+          version:      6.6.3
           host:         linux
           target:       android
           arch:         android_arm64_v8a
-          modules:      qtlocation qtpositioning
-          use-official: true
-          email:        ${{ secrets.QT_EMAIL }}
-          pw:           ${{ secrets.QT_PASSWORD }}
+          modules:      qtcharts
+          use-official: false
+          # email:        ${{ secrets.QT_EMAIL }}
+          # pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ github.workspace }}
           cache:        true
           cache-key-prefix: qt-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
-      
-      - name: Debug available Qt modules
-        run: |
-          curl -s https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt6_643/ | grep qt.qt6
-      
 
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
