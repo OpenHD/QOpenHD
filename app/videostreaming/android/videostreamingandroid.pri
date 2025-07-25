@@ -14,8 +14,11 @@ SOURCES += \
 
 LIBS += -lmediandk
 LIBS += -landroid
+LIBS += -lOpenSLES 
+LIBS += -lGLESv2 
 QT += androidextras
 QT += multimedia
 QT += multimediawidgets
 
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+DEFINES += __ANDROID_API__=26
