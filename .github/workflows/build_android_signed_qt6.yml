@@ -140,12 +140,16 @@ jobs:
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DQT_HOST_PATH="${QT_HOST_PATH}" \
-            -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
+            -DCMAKE_TOOLCHAIN_FILE="${QT_HOST_PATH}/lib/cmake/Qt6/qt.toolchain.cmake" \
+            -DQt6_DIR="${QT_ANDROID_PATH}/lib/cmake/Qt6" \
+            -DCMAKE_PREFIX_PATH="${QT_ANDROID_PATH}/lib/cmake" \
             -DANDROID_ABI=${{ matrix.eabi }} \
             -DANDROID_PLATFORM=android-35 \
+            -DQT_ANDROID_PATH=${QT_ANDROID_PATH} \
             -DQT_ANDROID_SIGNING_KEYSTORE=${SOURCE_DIR}/android/qopenhd_key.jks \
             -DQT_ANDROID_SIGNING_ALIAS=qopenhd_key \
             -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
