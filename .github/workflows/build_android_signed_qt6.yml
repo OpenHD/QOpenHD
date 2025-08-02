@@ -57,15 +57,13 @@ jobs:
         run: |
           python3 -m aqt install-qt linux android 6.6.3 android_arm64_v8a --outputdir "${{ github.workspace }}/Qt"
 
-
-
-      - name: Inspect host Qt install
-        run: |
-          QT_HOST_PATH="${{ runner.temp }}/Qt/6.6.3/gcc_64"
-          echo "Looking for expected CMake/Qt6 files under $QT_HOST_PATH/lib/cmake/Qt6"
-          ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
-          echo "--- fallback search ---"
-          find "$QT_HOST_PATH/lib/cmake" -maxdepth 4 -type f | head -100
+      # - name: Inspect host Qt install
+      #   run: |
+      #     QT_HOST_PATH="${{ runner.temp }}/Qt/6.6.3/gcc_64"
+      #     echo "Looking for expected CMake/Qt6 files under $QT_HOST_PATH/lib/cmake/Qt6"
+      #     ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
+      #     echo "--- fallback search ---"
+      #     find "$QT_HOST_PATH/lib/cmake" -maxdepth 4 -type f | head -100
 
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
