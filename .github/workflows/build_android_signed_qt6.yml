@@ -39,37 +39,23 @@ jobs:
           sudo ./install_qt6_build_dep.sh
           sudo pip install meson
 
-      - name: Cache Qt installation
-        uses: actions/cache@v4
-        id: qt-cache
-        with:
-          path: ${{ runner.temp }}/Qt
-          key: qt6_4_3-install-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
+      - name: Install aqtinstall
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install aqtinstall
+
+      - name: List available Qt modules (desktop + android)
+        run: |
+          python3 -m aqt list-qt linux desktop 6.6.3 gcc_64 || true
+          python3 -m aqt list-qt linux android 6.6.3 android_arm64_v8a || true
+
+      - name: Install host Qt 6.6.3 (gcc_64)
+        run: |
+          python3 -m aqt install-qt linux desktop 6.6.3 gcc_64 --outputdir "${{ runner.temp }}/Qt" --autodesktop
 
       - name: Install Qt 6.6.3 for Android
-        if: steps.qt-cache.outputs.cache-hit != 'true'
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: 6.6.3
-          host: linux
-          target: android
-          arch: android_arm64_v8a
-          modules: qtcharts
-          use-official: false
-          dir: ${{ github.workspace }}
-          cache: true
-          cache-key-prefix: qt-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
-
-      - name: Install host Qt 6.6.3 (gcc_64) for build tools
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: 6.6.3
-          host: linux
-          target: desktop
-          arch: gcc_64
-          modules: qtbase
-          use-official: false
-          dir: ${{ runner.temp }}/Qt
+        run: |
+          python3 -m aqt install-qt linux android 6.6.3 android_arm64_v8a --outputdir "${{ github.workspace }}/Qt"
 
 
 
