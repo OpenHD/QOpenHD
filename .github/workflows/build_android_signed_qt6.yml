@@ -60,24 +60,24 @@ jobs:
           cache:        true
           cache-key-prefix: qt-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
 
-      - name: Install host Qt 6.6.3 (gcc_64) for build tools
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: 6.6.3
-          host: linux
-          target: desktop
-          arch: gcc_64
-          modules: qtbase,qtcharts
-          use-official: false
-          dir: ${{ runner.temp }}/Qt
+      # - name: Install host Qt 6.6.3 (gcc_64) for build tools
+      #   uses: jurplel/install-qt-action@v4
+      #   with:
+      #     version: 6.6.3
+      #     host: linux
+      #     target: desktop
+      #     arch: gcc_64
+      #     modules: qtbase,qtcharts
+      #     use-official: false
+      #     dir: ${{ runner.temp }}/Qt
 
-      - name: Inspect host Qt install
-        run: |
-          QT_HOST_PATH="${{ runner.temp }}/Qt/6.6.3/gcc_64"
-          echo "Listing expected CMake/Qt6 directory:"
-          ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
-          echo "--- Searching for toolchain and config files ---"
-          find "$QT_HOST_PATH/lib/cmake" -maxdepth 4 -type f | head -100
+      # - name: Inspect host Qt install
+      #   run: |
+      #     QT_HOST_PATH="${{ runner.temp }}/Qt/6.6.3/gcc_64"
+      #     echo "Listing expected CMake/Qt6 directory:"
+      #     ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
+      #     echo "--- Searching for toolchain and config files ---"
+      #     find "$QT_HOST_PATH/lib/cmake" -maxdepth 4 -type f | head -100
 
       - name: Install Android NDK
         uses: nttld/setup-ndk@v1
