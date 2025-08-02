@@ -50,14 +50,14 @@ jobs:
         if: steps.qt-cache.outputs.cache-hit != 'true'
         uses: jurplel/install-qt-action@v4
         with:
-          version:      6.6.3
-          host:         linux
-          target:       android
-          arch:         android_arm64_v8a
-          modules:      qtcharts
+          version: 6.6.3
+          host: linux
+          target: android
+          arch: android_arm64_v8a
+          modules: qtcharts
           use-official: false
-          dir:          ${{ github.workspace }}
-          cache:        true
+          dir: ${{ github.workspace }}
+          cache: true
           cache-key-prefix: qt-${{ runner.os }}-${{ env.QT_VERSION }}-${{ matrix.architecture }}
 
       - name: Install host Qt 6.6.3 (gcc_64) for build tools
@@ -67,8 +67,10 @@ jobs:
           host: linux
           target: desktop
           arch: gcc_64
+          modules: qtbase
           use-official: false
           dir: ${{ runner.temp }}/Qt
+
 
 
       - name: Inspect host Qt install
