@@ -35,7 +35,7 @@ jobs:
       - name: Install ccache and tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y ccache tree cmake ninja-build wget unzip
+          sudo apt-get install -y ccache tree cmake ninja-build wget unzip python3
           sudo ./install_qt6_build_dep.sh
           sudo pip install meson
 
