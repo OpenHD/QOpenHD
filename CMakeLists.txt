@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.26)
 
 project(QOpenHDProject VERSION 0.1 LANGUAGES C CXX)
 
-# Use the same Qt version you're installing (6.6.3)
+# Use the same Qt version you're installing
 set(X_QT_VERSION 6.6.3)
 
 set(CMAKE_AUTOMOC ON)
@@ -10,13 +10,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Qt policy to avoid JSON generator-expression warning on Android
-qt_policy(QTP0002 NEW)
-
 # Find required Qt modules in one call
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core Quick Gui Widgets)
 
-# Standard project setup (optional, keeps consistent behavior)
+# Standard project setup
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
 # Ensure an Android ABI is defined (fallback if not passed from outside)
