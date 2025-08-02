@@ -129,28 +129,28 @@ jobs:
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
 
-      - name: Install GStreamer & FFmpeg (matching arch)
-        working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
-        env:
-          QT_ANDROID_PATH: ${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a
-          QT_HOST_PATH: ${{ runner.temp }}/Qt/6.6.3/gcc_64
-        run: |
-          export PATH="$QT_HOST_PATH/bin:$PATH"
-          export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig"
+      # - name: Install GStreamer & FFmpeg (matching arch)
+      #   working-directory: ${{ github.workspace }}/lib/gstreamer_prebuilts
+      #   env:
+      #     QT_ANDROID_PATH: ${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a
+      #     QT_HOST_PATH: ${{ runner.temp }}/Qt/6.6.3/gcc_64
+      #   run: |
+      #     export PATH="$QT_HOST_PATH/bin:$PATH"
+      #     export PKG_CONFIG_PATH="$QT_ANDROID_PATH/lib/pkgconfig"
 
-          export NDK_ROOT="${{ steps.setup-ndk.outputs.ndk-path }}"
+      #     export NDK_ROOT="${{ steps.setup-ndk.outputs.ndk-path }}"
 
-          echo "[DEBUG] NDK_ROOT = $NDK_ROOT"
-          echo "[DEBUG] QT_ANDROID_PATH = $QT_ANDROID_PATH"
+      #     echo "[DEBUG] NDK_ROOT = $NDK_ROOT"
+      #     echo "[DEBUG] QT_ANDROID_PATH = $QT_ANDROID_PATH"
 
-          if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
-            ./fetch_extract_locally.sh -armv7
-          elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
-            ./fetch_extract_locally.sh -arm64
-          else
-            echo "Unsupported architecture: ${{ matrix.architecture }}"
-            exit 1
-          fi
+      #     if [[ "${{ matrix.architecture }}" == "armv7" ]]; then
+      #       ./fetch_extract_locally.sh -armv7
+      #     elif [[ "${{ matrix.architecture }}" == "armv8" ]]; then
+      #       ./fetch_extract_locally.sh -arm64
+      #     else
+      #       echo "Unsupported architecture: ${{ matrix.architecture }}"
+      #       exit 1
+      #     fi
 
 
       - name: Configure (CMake for Android Qt6)
