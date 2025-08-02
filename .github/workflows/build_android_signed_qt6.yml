@@ -67,9 +67,9 @@ jobs:
           host: linux
           target: desktop
           arch: gcc_64
-          modules: qtbase,qtcharts
           use-official: false
           dir: ${{ runner.temp }}/Qt
+
 
       - name: Inspect host Qt install
         run: |
