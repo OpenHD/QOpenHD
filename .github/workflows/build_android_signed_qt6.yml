@@ -147,9 +147,9 @@ jobs:
             -DQT_ANDROID_ABIS=arm64-v8a \
             -DANDROID_PLATFORM=android-35 \
             -DQT_ANDROID_PATH=${QT_ANDROID_PATH} \
-            -DQT_ANDROID_SIGNING_KEYSTORE=${SOURCE_DIR}/android/qopenhd_key.jks \
-            -DQT_ANDROID_SIGNING_ALIAS=qopenhd_key \
-            -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+            -DQT_ANDROID_SIGNING_STORE_FILE=${SOURCE_DIR}/android/qopenhd_key.jks \
+            -DQT_ANDROID_SIGNING_KEY_ALIAS=qopenhd_key \
+            -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
