@@ -9,15 +9,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(X_QT_VERSION 6.4)
 
-# Silence Android JSON policy warning for Qt 6
-qt_policy(SET QTP0002 NEW)
-
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
+
+# Now that Qt is found, qt_policy is available
+qt_policy(SET QTP0002 NEW)
 
 set(QOPENHD_SOURCE_FILES_LIST
     app/main.cpp
