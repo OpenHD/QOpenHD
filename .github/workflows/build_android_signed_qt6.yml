@@ -105,8 +105,16 @@ jobs:
           "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --uninstall \
             "platforms;android-36-ext18" "platforms;android-35-ext15" || true
 
-          sudo rm -rf "$SDK_ROOT/platforms/android-36-ext18" "$SDK_ROOT/platforms/android-35-ext15" || true
-          sudo rm -rf /usr/local/lib/android/sdk/platforms/android-*-ext* || true
+          sudo rm -rf "$SDK_ROOT/platforms" || true
+          sudo mkdir -p "$SDK_ROOT/platforms"
+
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --uninstall \
+            "platforms;android-36-ext18" "platforms;android-36" "platforms;android-35-ext15" || true
+
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" \
+            "platforms;android-35" "build-tools;35.0.0" --verbose
+
+          ls -al "$SDK_ROOT/platforms" || true
 
           # Install the exact ones we want
           "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" \
@@ -170,6 +178,9 @@ jobs:
             -DQT_ANDROID_SIGNING_STORE_FILE=${SOURCE_DIR}/android/qopenhd_key.jks \
             -DQT_ANDROID_SIGNING_KEY_ALIAS=qopenhd_key \
             -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+
+            grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
+            ls -1 /usr/local/lib/android/sdk/platforms
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
