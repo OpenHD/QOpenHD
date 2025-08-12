@@ -85,11 +85,12 @@ jobs:
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
 
-          sudo rm -rf "$SDK_ROOT/platforms/android-35"
+          sudo rm -rf "$SDK_ROOT/platforms/android-35" || true
           sudo mkdir -p "$CMDLINE_DIR"
           cd "$CMDLINE_DIR"
           sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
           sudo unzip -q tools.zip
+          sudo rm -rf latest || true
           sudo mv cmdline-tools latest
 
           export PATH="$CMDLINE_BIN:$PATH"
@@ -99,7 +100,21 @@ jobs:
           echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license"
 
           yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --licenses || true
-          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" "platforms;android-35" "build-tools;35.0.0" --verbose
+
+          # Ensure ONLY standard android-35 is present; remove preview/extension platforms
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --uninstall \
+            "platforms;android-36-ext18" "platforms;android-35-ext15" || true
+
+          sudo rm -rf "$SDK_ROOT/platforms/android-36-ext18" "$SDK_ROOT/platforms/android-35-ext15" || true
+          sudo rm -rf /usr/local/lib/android/sdk/platforms/android-*-ext* || true
+
+          # Install the exact ones we want
+          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" \
+            "platforms;android-35" "build-tools;35.0.0" --verbose
+
+          # Sanity check
+          ls -al "$SDK_ROOT/platforms" || true
+
 
       - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
         run: |
@@ -136,10 +151,6 @@ jobs:
             exit 1
           fi
 
-          sudo rm -rf /usr/local/lib/android/sdk/platforms/android-36* || true
-          ls -al /usr/local/lib/android/sdk/platforms
-
-
           cmake "${SOURCE_DIR}" -G "Ninja" \
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
@@ -155,6 +166,7 @@ jobs:
             -DQT_ANDROID_TARGET_SDK_VERSION=35 \
             -DQT_ANDROID_SDK_PLATFORM=android-35 \
             -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
+            -DANDROID_PACKAGE_FORMAT=aab \
             -DQT_ANDROID_SIGNING_STORE_FILE=${SOURCE_DIR}/android/qopenhd_key.jks \
             -DQT_ANDROID_SIGNING_KEY_ALIAS=qopenhd_key \
             -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
