@@ -85,7 +85,8 @@ jobs:
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
 
-          sudo rm -rf "$SDK_ROOT/platforms/android-35" || true
+          # Fresh cmdline-tools
+          sudo rm -rf "$SDK_ROOT/platforms" || true
           sudo mkdir -p "$CMDLINE_DIR"
           cd "$CMDLINE_DIR"
           sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
@@ -93,30 +94,23 @@ jobs:
           sudo rm -rf latest || true
           sudo mv cmdline-tools latest
 
+          # Make the whole SDK tree writable by the current user
+          sudo chown -R "$USER":"$USER" "$SDK_ROOT"
+
           export PATH="$CMDLINE_BIN:$PATH"
 
-          sudo mkdir -p "$SDK_ROOT/licenses"
-          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" | sudo tee "$SDK_ROOT/licenses/android-sdk-license"
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" | sudo tee "$SDK_ROOT/licenses/android-sdk-preview-license"
+          mkdir -p "$SDK_ROOT/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK_ROOT/licenses/android-sdk-license"
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$SDK_ROOT/licenses/android-sdk-preview-license"
 
           yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --licenses || true
 
-          # Ensure ONLY standard android-35 is present; remove preview/extension platforms
-          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --uninstall \
-            "platforms;android-36-ext18" "platforms;android-35-ext15" || true
-
-          sudo rm -rf "$SDK_ROOT/platforms" || true
-          sudo mkdir -p "$SDK_ROOT/platforms"
-
+          # Remove any preview/extension platforms (defensive)
           "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --uninstall \
             "platforms;android-36-ext18" "platforms;android-36" "platforms;android-35-ext15" || true
+          rm -rf "$SDK_ROOT/platforms/android-*-ext*" || true
 
-          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" \
-            "platforms;android-35" "build-tools;35.0.0" --verbose
-
-          ls -al "$SDK_ROOT/platforms" || true
-
-          # Install the exact ones we want
+          # Install exactly what we want
           "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" \
             "platforms;android-35" "build-tools;35.0.0" --verbose
 
