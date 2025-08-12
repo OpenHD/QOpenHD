@@ -9,7 +9,7 @@ defaults:
 
 env:
   SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: 6.6.3
+  QT_VERSION: 6.7.3
   BUILD_TYPE: Release
 
 jobs:
@@ -46,20 +46,20 @@ jobs:
 
       - name: List available Qt modules (desktop + android)
         run: |
-          python3 -m aqt list-qt linux desktop 6.6.3 gcc_64 || true
-          python3 -m aqt list-qt linux android 6.6.3 android_arm64_v8a || true
+          python3 -m aqt list-qt linux desktop 6.7.3 gcc_64 || true
+          python3 -m aqt list-qt linux android 6.7.3 android_arm64_v8a || true
 
-      - name: Install host Qt 6.6.3 (gcc_64)
+      - name: Install host Qt 6.7.3 (gcc_64)
         run: |
-          python3 -m aqt install-qt linux desktop 6.6.3 gcc_64 --outputdir "${{ runner.temp }}/Qt" --autodesktop
+          python3 -m aqt install-qt linux desktop 6.7.3 gcc_64 --outputdir "${{ runner.temp }}/Qt" --autodesktop
 
-      - name: Install Qt 6.6.3 for Android
+      - name: Install Qt 6.7.3 for Android
         run: |
-          python3 -m aqt install-qt linux android 6.6.3 android_arm64_v8a --outputdir "${{ github.workspace }}/Qt"
+          python3 -m aqt install-qt linux android 6.7.3 android_arm64_v8a --outputdir "${{ github.workspace }}/Qt"
 
       # - name: Inspect host Qt install
       #   run: |
-      #     QT_HOST_PATH="${{ runner.temp }}/Qt/6.6.3/gcc_64"
+      #     QT_HOST_PATH="${{ runner.temp }}/Qt/6.7.3/gcc_64"
       #     echo "Looking for expected CMake/Qt6 files under $QT_HOST_PATH/lib/cmake/Qt6"
       #     ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
       #     echo "--- fallback search ---"
@@ -74,8 +74,8 @@ jobs:
 
       - name: Set Qt environment variables
         run: |
-          echo "QT_ANDROID_PATH=${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a" >> $GITHUB_ENV
-          echo "QT_HOST_PATH=${{ runner.temp }}/Qt/6.6.3/gcc_64" >> $GITHUB_ENV
+          echo "QT_ANDROID_PATH=${{ github.workspace }}/Qt/6.7.3/android_arm64_v8a" >> $GITHUB_ENV
+          echo "QT_HOST_PATH=${{ runner.temp }}/Qt/6.7.3/gcc_64" >> $GITHUB_ENV
 
       - name: Install Android SDK Platform 35 and Build Tools
         run: |
@@ -133,7 +133,11 @@ jobs:
           echo "compression = true" >> ~/.ccache/ccache.conf
           echo "compression_level = 5" >> ~/.ccache/ccache.conf
           ccache -z
-
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
 
