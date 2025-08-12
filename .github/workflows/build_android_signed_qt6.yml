@@ -136,6 +136,10 @@ jobs:
             exit 1
           fi
 
+          sudo rm -rf /usr/local/lib/android/sdk/platforms/android-36* || true
+          ls -al /usr/local/lib/android/sdk/platforms
+
+
           cmake "${SOURCE_DIR}" -G "Ninja" \
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
@@ -147,9 +151,13 @@ jobs:
             -DQT_ANDROID_ABIS=arm64-v8a \
             -DANDROID_PLATFORM=android-35 \
             -DQT_ANDROID_PATH=${QT_ANDROID_PATH} \
+            -DQT_ANDROID_MIN_SDK_VERSION=23 \
+            -DQT_ANDROID_TARGET_SDK_VERSION=35 \
+            -DQT_ANDROID_SDK_PLATFORM=android-35 \
+            -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
             -DQT_ANDROID_SIGNING_STORE_FILE=${SOURCE_DIR}/android/qopenhd_key.jks \
             -DQT_ANDROID_SIGNING_KEY_ALIAS=qopenhd_key \
-            -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+            -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
