@@ -122,8 +122,8 @@ target_link_libraries(QOpenHDApp
 )
 
 # Point Qt to your Android package (Manifest, resources, Gradle bits)
-set_property(TARGET QOpenHDApp PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-             ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
+# set_property(TARGET QOpenHDApp PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#              ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
 
 include(lib/h264/h264.cmake)
 # include(app/videostreaming/avcodec/avcodec_video.cmake)
