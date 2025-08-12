@@ -81,6 +81,7 @@ set(QOPENHD_SOURCE_FILES_LIST
 )
 
 qt_add_executable(QOpenHDApp
+    GUI
     MANUAL_FINALIZATION
     ${QOPENHD_SOURCE_FILES_LIST}
     ##
