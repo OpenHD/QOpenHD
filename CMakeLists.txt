@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 
 project(QOpenHDProject VERSION 0.1 LANGUAGES C CXX)
 
@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(X_QT_VERSION 6.4)
 
+# Silence Android JSON policy warning for Qt 6
+qt_policy(SET QTP0002 NEW)
 
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
@@ -85,8 +87,6 @@ qt_add_executable(QOpenHDApp
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
     qml/qml.qrc
-    ##
-    androidqt6/AndroidManifest.xml
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
@@ -117,23 +117,24 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 #    PREFIX "/"
 #    qml/qml.qrc)
 
-
 target_link_libraries(QOpenHDApp
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets
 )
 
-set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+# Point Qt to your Android package (Manifest, resources, Gradle bits)
+set_property(TARGET QOpenHDApp PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
              ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
 
 include(lib/h264/h264.cmake)
-#include(app/videostreaming/avcodec/avcodec_video.cmake)
-#include(app/videostreaming/android/videostreamingandroid.cmake)
-#include(app/videostreaming/gstreamer/gst_video.cmake)
+# include(app/videostreaming/avcodec/avcodec_video.cmake)
+# include(app/videostreaming/android/videostreamingandroid.cmake)
+# include(app/videostreaming/gstreamer/gst_video.cmake)
 
 qt_finalize_executable(QOpenHDApp)
-#include(GNUInstallDirs)
-#install(TARGETS QOpenHD
-#    BUNDLE DESTINATION .
-#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-#)
+
+# include(GNUInstallDirs)
+# install(TARGETS QOpenHD
+#     BUNDLE DESTINATION .
+#     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+# )
