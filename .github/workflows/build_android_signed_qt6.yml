@@ -129,7 +129,7 @@ jobs:
           set -euxo pipefail
           echo "Using Ninja at: $(which ninja)"
           QT_HOST_PATH=${QT_HOST_PATH}
-          TOOLCHAIN_FILE="$QT_HOST_PATH/lib/cmake/Qt6/qt.toolchain.cmake"
+          TOOLCHAIN_FILE="${QT_ANDROID_PATH}/lib/cmake/Qt6/qt.toolchain.cmake"
           if [ ! -f "$TOOLCHAIN_FILE" ]; then
             echo "ERROR: Qt toolchain file missing at expected location: $TOOLCHAIN_FILE"
             ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
