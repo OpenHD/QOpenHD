@@ -81,7 +81,7 @@ jobs:
           echo "QT_ANDROID_PATH=${{ github.workspace }}/Qt/6.6.3/android_arm64_v8a" >> $GITHUB_ENV
           echo "QT_HOST_PATH=${{ runner.temp }}/Qt/6.6.3/gcc_64" >> $GITHUB_ENV
 
-      - name: Install Android SDK Platform 35 and Build Tools
+      - name: Install Android SDK Platform 35 and Build Tools (clean)
         run: |
           set -euxo pipefail
 
@@ -89,35 +89,45 @@ jobs:
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
 
-          # Fresh cmdline-tools
-          sudo rm -rf "$SDK_ROOT/platforms" || true
+          # start from a pristine SDK dir
+          sudo rm -rf "$SDK_ROOT"
           sudo mkdir -p "$CMDLINE_DIR"
           cd "$CMDLINE_DIR"
-          sudo wget -v https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
+
+          # fresh cmdline-tools
+          sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
           sudo unzip -q tools.zip
-          sudo rm -rf latest || true
+          sudo rm -f tools.zip
           sudo mv cmdline-tools latest
 
-          # Make the whole SDK tree writable by the current user
+          # hand SDK over to the runner user so we don't need sudo for sdkmanager
           sudo chown -R "$USER":"$USER" "$SDK_ROOT"
 
           export PATH="$CMDLINE_BIN:$PATH"
 
+          # accept licenses
           mkdir -p "$SDK_ROOT/licenses"
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK_ROOT/licenses/android-sdk-license"
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$SDK_ROOT/licenses/android-sdk-preview-license"
+          yes | sdkmanager --sdk_root="$SDK_ROOT" --licenses || true
 
-          yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --licenses || true
+          # install ONLY the stable bits we need (no -extXX)
+          sdkmanager --sdk_root="$SDK_ROOT" \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
 
-          # remove previews/extensions to avoid the corrupt android.jar issue
-          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --uninstall \
-            "platforms;android-36" "platforms;android-36-ext*" "platforms;android-35-ext*" || true
-          rm -rf "$SDK_ROOT/platforms/android-*-ext*" || true
+          # sanity: ensure no preview/extension platforms
+          rm -rf "$SDK_ROOT/platforms"/android-*-ext* || true
 
-          # install stable API 35 + build-tools 35
-          "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" \
-            "platforms;android-35" "build-tools;35.0.0" --verbose
-                    ls -al "$SDK_ROOT/platforms" || true
+          # verify android.jar isn't corrupt
+          test -f "$SDK_ROOT/platforms/android-35/android.jar"
+          unzip -t "$SDK_ROOT/platforms/android-35/android.jar" >/dev/null
+
+          # print versions to the log for debugging
+          "$SDK_ROOT/build-tools/35.0.0/aapt2" version || true
+          ls -al "$SDK_ROOT/platforms" || true
+
 
       - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
         run: |
