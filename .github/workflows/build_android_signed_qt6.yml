@@ -109,18 +109,15 @@ jobs:
 
           yes | "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --licenses || true
 
-          # Remove any platforms completely, then install only android-34
-          rm -rf "$SDK_ROOT/platforms" || true
-          mkdir -p "$SDK_ROOT/platforms"
-
+          # remove previews/extensions to avoid the corrupt android.jar issue
           "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" --uninstall \
-            "platforms;android-36" "platforms;android-36-ext*" "platforms;android-35" "platforms;android-35-ext*" || true
+            "platforms;android-36" "platforms;android-36-ext*" "platforms;android-35-ext*" || true
           rm -rf "$SDK_ROOT/platforms/android-*-ext*" || true
 
+          # install stable API 35 + build-tools 35
           "$CMDLINE_BIN/sdkmanager" --sdk_root="$SDK_ROOT" \
-            "platforms;android-34" "build-tools;34.0.0" --verbose
-
-          ls -al "$SDK_ROOT/platforms" || true
+            "platforms;android-35" "build-tools;35.0.0" --verbose
+                    ls -al "$SDK_ROOT/platforms" || true
 
       - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
         run: |
@@ -175,9 +172,9 @@ jobs:
             -DANDROID_PLATFORM=android-23 \
             -DQT_ANDROID_PATH=${QT_ANDROID_PATH} \
             -DQT_ANDROID_MIN_SDK_VERSION=23 \
-            -DQT_ANDROID_TARGET_SDK_VERSION=34 \
-            -DQT_ANDROID_SDK_PLATFORM=android-34 \
-            -DQT_ANDROID_BUILD_TOOLS_REVISION=34.0.0 \
+            -DQT_ANDROID_TARGET_SDK_VERSION=35 \
+            -DQT_ANDROID_SDK_PLATFORM=android-35 \
+            -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
             -DANDROID_PACKAGE_FORMAT=apk
             # REMOVE these for debug build:
             # -DQT_ANDROID_SIGNING_STORE_FILE=...
