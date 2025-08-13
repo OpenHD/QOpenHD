@@ -186,6 +186,7 @@ jobs:
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run: |
           cmake --build . --parallel 12
+          ls -a
 
       - name: ccache stats
         run: ccache -s
@@ -194,4 +195,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/bundle/release/android-build-release-unsigned.apk
+          path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/*
