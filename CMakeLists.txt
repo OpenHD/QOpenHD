@@ -87,6 +87,8 @@ qt_add_executable(QOpenHDApp
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
     qml/qml.qrc
+    ##
+    androidqt6/AndroidManifest.xml
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)

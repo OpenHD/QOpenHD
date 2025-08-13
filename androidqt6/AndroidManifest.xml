@@ -1,32 +1,71 @@
-<?xml version="1.0"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" android:versionName="v16" android:versionCode="16">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.openhd.qopenhd"
+    android:installLocation="auto"
+    android:versionCode="16"
+    android:versionName="v16">
 
-    <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
-         Remove the comment if you do not require these default permissions. -->
+    <!-- Require at least GLES 2 for Qt Quick -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+
+    <!-- Network / location basics -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-    <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
-         Remove the comment if you do not require these default features. -->
+    <!-- Android 13+ Wi-Fi APIs (if you scan/manage wifi directly). Safe to keep. -->
+    <uses-permission
+        android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation"/>
+
+    <!-- Do NOT request legacy external storage on targetSdk>=30; it’s ignored and noisy.
+         Also skip READ_/WRITE_EXTERNAL_STORAGE for targetSdk 33+ (use SAF/Media* perms instead). -->
+
+    <!-- Let Qt insert permissions/features it needs for linked modules (keep both placeholders): -->
+    <!-- %%INSERT_PERMISSIONS -->
     <!-- %%INSERT_FEATURES -->
 
-    <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:anyDensity="true"/>
 
-    <application android:name="org.qtproject.qt.android.bindings.QtApplication" android:extractNativeLibs="true" android:hardwareAccelerated="true" android:label="QOpenHD" android:requestLegacyExternalStorage="true" android:icon="@drawable/icon" android:allowBackup="true" android:fullBackupOnly="false">
+    <application
+        android:name="org.qtproject.qt.android.bindings.QtApplication"
+        android:label="QOpenHD"
+        android:icon="@mipmap/ic_launcher"
+        android:hardwareAccelerated="true"
+        android:extractNativeLibs="true"
+        android:allowBackup="true"
+        android:usesCleartextTraffic="true">
+        <!-- usesCleartextTraffic=true: helpful if you connect to local devices over http/ws without TLS -->
 
-    <activity android:name="org.qtproject.qt.android.bindings.QtActivity" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:label="QOpenHDActivity" android:launchMode="singleTop" android:screenOrientation="userLandscape" android:exported="true">
+        <activity
+            android:name="org.qtproject.qt.android.bindings.QtActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- Required by androiddeployqt to point at your libQOpenHDApp_*.so -->
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
-            <meta-data android:name="android.app.background_running" android:value="false"/>
+
+            <!-- Keep Qt styling default extraction behavior -->
             <meta-data android:name="android.app.extract_android_style" android:value="none"/>
+
+            <!-- Turn on extra Qt logging at runtime (optional, remove for release)
+            <meta-data android:name="android.app.arguments" android:value="--verbose"/>
+            -->
         </activity>
-        <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
+
+        <!-- If you later add a Service, put it here -->
+        <!-- See: https://wiki.qt.io/AndroidServices -->
     </application>
 </manifest>
