@@ -194,4 +194,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/bundle/release/*.aab
+          path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/bundle/release/android-build-release-unsigned.apk
