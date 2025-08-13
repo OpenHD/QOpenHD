@@ -13,6 +13,8 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Charts)
+
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
@@ -120,7 +122,7 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 #    qml/qml.qrc)
 
 target_link_libraries(QOpenHDApp
-    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets
+    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Charts
 )
 
 # Point Qt to your Android package (Manifest, resources, Gradle bits)

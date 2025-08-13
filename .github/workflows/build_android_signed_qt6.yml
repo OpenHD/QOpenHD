@@ -49,13 +49,17 @@ jobs:
           python3 -m aqt list-qt linux desktop 6.6.3 gcc_64 || true
           python3 -m aqt list-qt linux android 6.6.3 android_arm64_v8a || true
 
-      - name: Install host Qt 6.6.3 (gcc_64)
-        run: |
-          python3 -m aqt install-qt linux desktop 6.6.3 gcc_64 --outputdir "${{ runner.temp }}/Qt" --autodesktop
+        - name: Install host Qt 6.6.3 (gcc_64)
+          run: |
+            python3 -m aqt install-qt linux desktop 6.6.3 gcc_64 \
+              --outputdir "${{ runner.temp }}/Qt" --autodesktop \
+              --modules qtcharts
 
-      - name: Install Qt 6.6.3 for Android
-        run: |
-          python3 -m aqt install-qt linux android 6.6.3 android_arm64_v8a --outputdir "${{ github.workspace }}/Qt"
+        - name: Install Qt 6.6.3 for Android
+          run: |
+            python3 -m aqt install-qt linux android 6.6.3 android_arm64_v8a \
+              --outputdir "${{ github.workspace }}/Qt" \
+              --modules qtcharts
 
       # - name: Inspect host Qt install
       #   run: |
