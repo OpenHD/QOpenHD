@@ -46,8 +46,24 @@ jobs:
 
       - name: List available Qt modules (desktop + android)
         run: |
-          python3 -m aqt list-qt linux desktop 6.6.3 gcc_64 || true
-          python3 -m aqt list-qt linux android 6.6.3 android_arm64_v8a || true
+          # Try a few 6.7.x versions until we find one that has qtcharts for both desktop and android
+          QT_CANDIDATES=(6.7.3 6.7.2 6.7.1 6.7.0)
+
+          for v in "${QT_CANDIDATES[@]}"; do
+            echo "Checking Qt $v…"
+            if python3 -m aqt list-qt linux desktop --modules "$v" gcc_64 | grep -qx 'qtcharts' \
+            && python3 -m aqt list-qt linux android --modules "$v" android_arm64_v8a | grep -qx 'qtcharts'; then
+              echo "Installing Qt $v with qtcharts…"
+              python3 -m aqt install-qt linux desktop "$v" gcc_64 \
+                --outputdir "${RUNNER_TEMP}/Qt" \
+                --modules qtcharts
+              python3 -m aqt install-qt linux android "$v" android_arm64_v8a \
+                --outputdir "${GITHUB_WORKSPACE}/Qt" \
+                --modules qtcharts
+              echo "QT_VERSION=$v" >> "$GITHUB_ENV"
+              break
+            fi
+          done
 
       - name: Install host Qt (gcc_64)
         run: |
