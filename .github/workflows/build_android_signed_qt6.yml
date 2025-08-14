@@ -9,7 +9,6 @@ defaults:
 
 env:
   SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: 6.7.2
   BUILD_TYPE: Debug
 
 jobs:
@@ -21,7 +20,7 @@ jobs:
         include:
           - architecture: armv8
             eabi: arm64-v8a
-            ARTIFACT: QOpenHD_armv8.aab
+            ARTIFACT: QOpenHD_armv8_debug_apk
 
     steps:
       - name: Checkout repository and submodules
@@ -32,88 +31,26 @@ jobs:
       - name: Fix grub EFI CI issue
         run: sudo apt-mark hold grub-efi-amd64-signed
 
-      - name: Install ccache and tools
+      - name: Install build tools
         run: |
           sudo apt-get update
           sudo apt-get install -y ccache tree cmake ninja-build wget unzip python3 python3-pip
-          sudo ./install_qt6_build_dep.sh
-          sudo pip install meson
+          ccache -z
 
-      - name: Install aqtinstall
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install aqtinstall
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-      - name: List available Qt modules (desktop + android)
-        run: |
-          # Install Qt 6.7.x (with QtCharts) for desktop and Android, with mirror fallbacks
-          QT_VERSIONS=(6.7.3 6.7.2)
-          BASEURLS=(
-            https://download.qt.io/online/qtsdkrepository
-            https://mirrors.ocf.berkeley.edu/qt/online/qtsdkrepository
-          )
-
-          ok=0
-          for v in "${QT_VERSIONS[@]}"; do
-            for url in "${BASEURLS[@]}"; do
-              echo "Trying Qt $v from $url …"
-              if python3 -m aqt install-qt linux desktop "$v" gcc_64 \
-                  --outputdir "${RUNNER_TEMP}/Qt" \
-                  --baseurl "$url" \
-                  --modules qtcharts \
-                && python3 -m aqt install-qt linux android "$v" android_arm64_v8a \
-                  --outputdir "${GITHUB_WORKSPACE}/Qt" \
-                  --baseurl "$url" \
-                  --modules qtcharts; then
-                echo "QT_VERSION=$v" >> "$GITHUB_ENV"
-                echo "QT_HOST_PATH=${RUNNER_TEMP}/Qt/$v/gcc_64" >> "$GITHUB_ENV"
-                echo "QT_ANDROID_PATH=${GITHUB_WORKSPACE}/Qt/$v/android_arm64_v8a" >> "$GITHUB_ENV"
-                ok=1
-                break 2
-              fi
-            done
-          done
-
-          if [ "$ok" -ne 1 ]; then
-            echo "::error::Failed to install Qt 6.7.x with qtcharts on any mirror"
-            exit 1
-          fi
-
-          # Sanity: make sure Charts cmake files exist (fail early if not)
-          test -f "${QT_HOST_PATH}/lib/cmake/Qt6Charts/Qt6ChartsConfig.cmake" \
-            && test -f "${QT_ANDROID_PATH}/lib/cmake/Qt6Charts/Qt6ChartsConfig.cmake" \
-            || { echo "::error::QtCharts not found after installation"; exit 1; }
-
-
-      - name: Install host Qt (gcc_64)
-        run: |
-          python3 -m aqt install-qt linux desktop ${QT_VERSION} gcc_64 \
-            --outputdir "${{ runner.temp }}/Qt" --modules qtcharts
-      - name: Install Qt for Android (arm64)
-        run: |
-          python3 -m aqt install-qt linux android ${QT_VERSION} android_arm64_v8a \
-            --outputdir "${{ github.workspace }}/Qt" --modules qtcharts
-      
-      # - name: Inspect host Qt install
-      #   run: |
-      #     QT_HOST_PATH="${{ runner.temp }}/Qt/6.6.3/gcc_64"
-      #     echo "Looking for expected CMake/Qt6 files under $QT_HOST_PATH/lib/cmake/Qt6"
-      #     ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
-      #     echo "--- fallback search ---"
-      #     find "$QT_HOST_PATH/lib/cmake" -maxdepth 4 -type f | head -100
-
-      - name: Install Android NDK
-        uses: nttld/setup-ndk@v1
+      - name: Install Android NDK (r27)
         id: setup-ndk
+        uses: nttld/setup-ndk@v1
         with:
           ndk-version: r27
           add-to-path: true
 
-      - name: Set Qt env
-        run: |
-          echo "QT_ANDROID_PATH=${{ github.workspace }}/Qt/${{ env.QT_VERSION }}/android_arm64_v8a" >> $GITHUB_ENV
-          echo "QT_HOST_PATH=${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64" >> $GITHUB_ENV
-
+      # --- Clean install SDK 35 (no -extXX) + build-tools 35.0.0 ----------------
       - name: Install Android SDK Platform 35 and Build Tools (clean)
         run: |
           set -euxo pipefail
@@ -122,18 +59,19 @@ jobs:
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
 
-          # start from a pristine SDK dir
+          # fresh SDK root
           sudo rm -rf "$SDK_ROOT"
           sudo mkdir -p "$CMDLINE_DIR"
-          cd "$CMDLINE_DIR"
+          pushd "$CMDLINE_DIR" >/dev/null
 
-          # fresh cmdline-tools
+          # commandline-tools
           sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
           sudo unzip -q tools.zip
           sudo rm -f tools.zip
           sudo mv cmdline-tools latest
+          popd >/dev/null
 
-          # hand SDK over to the runner user so we don't need sudo for sdkmanager
+          # hand over ownership to runner
           sudo chown -R "$USER":"$USER" "$SDK_ROOT"
 
           export PATH="$CMDLINE_BIN:$PATH"
@@ -144,64 +82,77 @@ jobs:
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$SDK_ROOT/licenses/android-sdk-preview-license"
           yes | sdkmanager --sdk_root="$SDK_ROOT" --licenses || true
 
-          # install ONLY the stable bits we need (no -extXX)
+          # install ONLY stable 35 (no extension platforms)
           sdkmanager --sdk_root="$SDK_ROOT" \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
 
-          # sanity: ensure no preview/extension platforms
+          # ensure no preview/extension platforms
           rm -rf "$SDK_ROOT/platforms"/android-*-ext* || true
 
-          # verify android.jar isn't corrupt
+          # sanity check android.jar
           test -f "$SDK_ROOT/platforms/android-35/android.jar"
           unzip -t "$SDK_ROOT/platforms/android-35/android.jar" >/dev/null
 
-          # print versions to the log for debugging
+          # print versions
           "$SDK_ROOT/build-tools/35.0.0/aapt2" version || true
           ls -al "$SDK_ROOT/platforms" || true
 
-
-      - name: Set ANDROID_HOME and ANDROID_SDK_ROOT
+      - name: Export ANDROID env vars
         run: |
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
+          sudo chmod -R a+rX /usr/local/lib/android/sdk
 
-      - name: Ensure SDK permissions
-        run: sudo chmod -R a+rX /usr/local/lib/android/sdk
+      # --- Qt 6.7.2 host (desktop/gcc_64) with Charts ---------------------------
+      - name: Install Qt (host, 6.7.2 + Charts)
+        id: qt-host
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.7.2'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          modules: 'qtcharts'
+          cache: true
 
-      - name: Setup ccache
-        run: |
-          mkdir -p ~/.ccache
-          echo "base_dir = ${GITHUB_WORKSPACE}" > ~/.ccache/ccache.conf
-          echo "compression = true" >> ~/.ccache/ccache.conf
-          echo "compression_level = 5" >> ~/.ccache/ccache.conf
-          ccache -z
+      - name: Export QT_HOST_PATH
+        run: echo "QT_HOST_PATH=$Qt6_DIR" >> $GITHUB_ENV
+
+      # --- Qt 6.7.2 android (arm64-v8a) with Charts -----------------------------
+      - name: Install Qt (android, 6.7.2 + Charts)
+        id: qt-android
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.7.2'
+          host: 'linux'
+          target: 'android'
+          arch: 'android_arm64_v8a'
+          modules: 'qtcharts'
+          cache: true
+
+      - name: Export QT_ANDROID_PATH
+        run: echo "QT_ANDROID_PATH=$Qt6_DIR" >> $GITHUB_ENV
 
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
       - name: Configure (CMake for Android Qt6)
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
-          QT_HOST_PATH: ${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           set -euxo pipefail
           echo "Using Ninja at: $(which ninja)"
-          QT_HOST_PATH=${QT_HOST_PATH}
+          echo "QT_HOST_PATH=$QT_HOST_PATH"
+          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH"
+
           TOOLCHAIN_FILE="${QT_ANDROID_PATH}/lib/cmake/Qt6/qt.toolchain.cmake"
-          if [ ! -f "$TOOLCHAIN_FILE" ]; then
-            echo "ERROR: Qt toolchain file missing at expected location: $TOOLCHAIN_FILE"
-            ls -R "$QT_HOST_PATH/lib/cmake/Qt6" || true
-            exit 1
-          fi
+          test -f "$TOOLCHAIN_FILE"
 
           cmake "${SOURCE_DIR}" -G "Ninja" \
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
@@ -219,12 +170,8 @@ jobs:
             -DQT_ANDROID_SDK_PLATFORM=android-35 \
             -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
             -DANDROID_PACKAGE_FORMAT=apk
-            # REMOVE these for debug build:
-            # -DQT_ANDROID_SIGNING_STORE_FILE=...
-            # -DQT_ANDROID_SIGNING_KEY_ALIAS=...
-            # -DQT_ANDROID_SIGNING_STORE_PASSWORD=...
 
-
+          echo "--- androiddeployqt settings sanity ---"
           grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
           ls -1 /usr/local/lib/android/sdk/platforms
 
@@ -232,13 +179,17 @@ jobs:
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run: |
           cmake --build . --parallel 12
-          ls -a
+          echo "Built files:"
+          find . -maxdepth 4 -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
 
       - name: ccache stats
         run: ccache -s
 
-      - name: Upload AAB artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/*
+          path: |
+            ${{ runner.temp }}/shadow_build_dir/android-build/*.apk
+            ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/**/*.apk
+          if-no-files-found: warn
