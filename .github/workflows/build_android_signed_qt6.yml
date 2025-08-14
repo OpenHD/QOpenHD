@@ -11,9 +11,8 @@ env:
   SOURCE_DIR: ${{ github.workspace }}
   BUILD_TYPE: Debug
   QT_VERSION: 6.7.2
-  # Fixed, deterministic locations inside the repo workspace:
-  QT_BASE_PARENT: ${{ github.workspace }}/.qt
-  BUILD_DIR: ${{ github.workspace }}/.build-android
+  QT_BASE_PARENT: ${{ github.workspace }}/.qt        # deterministic aqt install root
+  BUILD_DIR: ${{ github.workspace }}/.build-android  # deterministic build dir
 
 jobs:
   build:
@@ -54,7 +53,7 @@ jobs:
           ndk-version: r27
           add-to-path: true
 
-      # --- Clean SDK 35 + build-tools 35.0.0 (no preview/extension platforms)
+      # --- SDK 35 + build-tools 35.0.0 (clean, no preview/ext platforms)
       - name: Install Android SDK Platform 35 and Build Tools (clean)
         run: |
           set -euxo pipefail
@@ -95,7 +94,7 @@ jobs:
           echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
           sudo chmod -R a+rX /usr/local/lib/android/sdk
 
-      # -------------------- Qt (host via aqt) --------------------
+      # -------------------- Qt via aqt (host + android) --------------------
       - name: Install Qt 6.7.2 (host, aqt)
         uses: jurplel/install-qt-action@v4
         with:
@@ -103,11 +102,11 @@ jobs:
           host:         linux
           target:       desktop
           arch:         linux_gcc_64
-          modules:      qtcharts
+          # Add modules you actually use
+          modules:      qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
-      # -------------------- Qt (android via aqt) --------------------
       - name: Install Qt 6.7.2 (android arm64-v8a, aqt)
         uses: jurplel/install-qt-action@v4
         with:
@@ -115,11 +114,11 @@ jobs:
           host:         linux
           target:       android
           arch:         android_arm64_v8a
-          modules:      qtcharts
+          modules:      qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
-      # --- Hardcode Qt paths (aqt layout; no discovery) ---
+      # --- Hardcode Qt paths (aqt layout) ---
       - name: Export hardcoded Qt paths
         run: |
           set -euxo pipefail
@@ -128,12 +127,9 @@ jobs:
           QT_ANDROID_DIR="${QT_ROOT}/${QT_VERSION}/android_arm64_v8a"
           QT_TOOLCHAIN_FILE="${QT_ANDROID_DIR}/lib/cmake/Qt6/qt.toolchain.cmake"
           QT_ANDROID_CMAKE_DIR="${QT_ANDROID_DIR}/lib/cmake/Qt6"
-
-          # Fail fast if aqt didn't lay these down
           for p in "$QT_HOST_DIR" "$QT_ANDROID_DIR" "$QT_TOOLCHAIN_FILE" "$QT_ANDROID_CMAKE_DIR"; do
             [ -e "$p" ] || { echo "Missing: $p"; exit 1; }
           done
-
           {
             echo "QT_ROOT=$QT_ROOT"
             echo "QT_HOST_DIR=$QT_HOST_DIR"
@@ -145,7 +141,7 @@ jobs:
       - name: Create build directory
         run: mkdir -p "${BUILD_DIR}"
 
-      - name: Configure (CMake for Android Qt6)
+      - name: Configure (CMake for Android Qt6; API 35)
         working-directory: ${{ env.BUILD_DIR }}
         env:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
@@ -169,12 +165,48 @@ jobs:
             -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
             -DANDROID_PACKAGE_FORMAT=apk
 
-          echo "--- androiddeployqt settings sanity ---"
-          grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
-
-      - name: Build
+      # --- PRE-GENERATE Gradle project (no build), then PATCH to AGP 8.6 + Gradle 8.7 ---
+      - name: Pre-generate Android Gradle project (no-build)
         working-directory: ${{ env.BUILD_DIR }}
         run: |
+          set -euxo pipefail
+          JSON_FILE="$(ls android-*-deployment-settings.json | head -n1)"
+          test -f "$JSON_FILE"
+          "$QT_HOST_DIR/bin/androiddeployqt" \
+            --input "$JSON_FILE" \
+            --output "$BUILD_DIR/android-build" \
+            --no-build
+
+      - name: Patch Gradle wrapper + AGP for compileSdk 35
+        working-directory: ${{ env.BUILD_DIR }}/android-build
+        run: |
+          set -euxo pipefail
+          # 1) Bump Gradle wrapper to 8.7 (min required for AGP 8.6)
+          sed -i 's#^distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip#' gradle/wrapper/gradle-wrapper.properties
+          grep distributionUrl gradle/wrapper/gradle-wrapper.properties
+
+          # 2) Bump Android Gradle Plugin to 8.6.x
+          sed -i 's/com\.android\.tools\.build:gradle:[0-9.]\+/com.android.tools.build:gradle:8.6.0/g' build.gradle
+          grep -n 'com.android.tools.build:gradle' build.gradle || true
+
+          # 3) (Optional but nice) Define namespace to silence AGP warning
+          pkg="$(grep -oP 'package="\\K[^"]+' AndroidManifest.xml || true)"
+          if ! grep -q 'namespace' build.gradle && [ -n "$pkg" ]; then
+            awk -v ns="$pkg" '
+              BEGIN{added=0}
+              /android *\{/ && !added { print; print "    namespace \"" ns "\""; added=1; next }
+              { print }
+            ' build.gradle > build.gradle.new && mv build.gradle.new build.gradle
+          fi
+          grep -n 'namespace' build.gradle || true
+
+          # 4) (Optional) Silence old AGP warning if any remains (harmless on AGP 8.6)
+          echo 'android.suppressUnsupportedCompileSdk=35' >> gradle.properties || true
+
+      - name: Build (Ninja will call androiddeployqt; now with patched Gradle/AGP)
+        working-directory: ${{ env.BUILD_DIR }}
+        run: |
+          set -euxo pipefail
           cmake --build . --parallel 12
           echo "Built files:"
           find . -maxdepth 6 -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
