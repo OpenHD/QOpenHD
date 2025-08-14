@@ -47,6 +47,7 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
+            android:resizeableActivity="false"
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density">
 
             <intent-filter>
