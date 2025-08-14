@@ -125,7 +125,7 @@ jobs:
       # --- Hardcode deterministic Qt paths based on install dirs
       - name: Discover official Qt install (minimal search, then hardcode)
         run: |
-          tree
+          tree /home/runner/work/QOpenHD/Qt/6.7.2/
           set -euo pipefail
 
           # Hard constants we no longer search for
