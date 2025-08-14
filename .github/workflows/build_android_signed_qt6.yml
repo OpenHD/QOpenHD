@@ -118,45 +118,50 @@ jobs:
           modules:      qtcharts
           cache:        true
 
-      - name: Discover Qt paths (search, no guessing)
+      - name: Discover Qt paths (robust)
         shell: bash
         run: |
           set -euo pipefail
+          ROOTS=("$RUNNER_TEMP/Qt" "$RUNNER_TEMP" "$HOME/Qt" "/opt/Qt" "$GITHUB_WORKSPACE")
 
-          # Places to search (install-qt puts both under $RUNNER_TEMP/Qt)
-          ROOTS=("$RUNNER_TEMP/Qt" "$RUNNER_TEMP" "$GITHUB_WORKSPACE" "$HOME/Qt" "/opt/Qt")
-          echo "Searching in: ${ROOTS[*]}"
+          echo "Searching roots: ${ROOTS[*]}"
 
-          find_first () { # find first match of a pattern across roots
-            pat="$1"
+          find_first() { # $1: path pattern
             for r in "${ROOTS[@]}"; do
-              mapfile -t hits < <(find "$r" -type f -path "$pat" 2>/dev/null | sort)
-              if [ ${#hits[@]} -gt 0 ]; then
-                echo "${hits[0]}"
-                return 0
-              fi
+              # shellcheck disable=SC2038
+              found=$(find "$r" -type f -path "$1" 2>/dev/null | sort | head -n1 || true)
+              [ -n "$found" ] && { echo "$found"; return 0; }
             done
             return 1
           }
 
-          # Host: look for the generic Qt6 CMake config
+          # Host Qt: look for the generic config
           host_cfg="$(find_first '*/lib/cmake/Qt6/Qt6Config.cmake')" || {
-            echo "Could not find host Qt6Config.cmake"; find "${ROOTS[@]}" -maxdepth 4 -type d | head -200; exit 1; }
+            echo "ERROR: could not find host Qt6Config.cmake"; exit 1; }
 
-          # Android: look for the Qt toolchain file (only in the Android tree)
-          android_toolchain="$(find_first '*/lib/cmake/Qt6/qt.toolchain.cmake')" || {
-            echo "Could not find Android qt.toolchain.cmake"; find "${ROOTS[@]}" -maxdepth 4 -type d | head -200; exit 1; }
+          # Android Qt: prefer a path that contains /android_*/
+          android_toolchain="$(for r in "${ROOTS[@]}"; do
+              find "$r" -type f -name qt.toolchain.cmake -path '*/android_*/lib/cmake/Qt6/*' 2>/dev/null
+            done | sort | head -n1)"
+          if [ -z "$android_toolchain" ]; then
+            android_toolchain="$(find_first '*/lib/cmake/Qt6/qt.toolchain.cmake')" || {
+              echo "ERROR: could not find Android qt.toolchain.cmake"; exit 1; }
+          fi
 
-          # Go up: Qt6 -> cmake -> lib -> <QT_PREFIX>
-          QT_HOST_PATH="$(dirname "$(dirname "$(dirname "$host_cfg")")")"
-          QT_ANDROID_PATH="$(dirname "$(dirname "$(dirname "$android_toolchain")")")"
+          # Go up FOUR times: Qt6Config.cmake -> Qt6 -> cmake -> lib -> <QT_PREFIX>
+          up4() { dirname "$(dirname "$(dirname "$(dirname "$1")")")"; }
 
-          echo "QT_HOST_PATH=$QT_HOST_PATH"     | tee -a "$GITHUB_ENV"
+          QT_HOST_PATH="$(up4 "$host_cfg")"
+          QT_ANDROID_PATH="$(up4 "$android_toolchain")"
+
+          echo "QT_HOST_PATH=$QT_HOST_PATH"       | tee -a "$GITHUB_ENV"
           echo "QT_ANDROID_PATH=$QT_ANDROID_PATH" | tee -a "$GITHUB_ENV"
 
-          echo "--- sanity ---"
+          echo "--- host cmake dir ---"
           ls -al "$QT_HOST_PATH/lib/cmake/Qt6" || true
+          echo "--- android cmake dir ---"
           ls -al "$QT_ANDROID_PATH/lib/cmake/Qt6" || true
+
 
       - name: Sanity check Qt env
         run: |
