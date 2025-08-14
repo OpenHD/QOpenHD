@@ -62,7 +62,7 @@ ApplicationWindow {
         id: debugHud
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.margins: 8
+        anchors.margins: 100
         radius: 6
         color: "#66000000"
         z: 10000
@@ -124,7 +124,8 @@ ApplicationWindow {
             color: "#20252b"
             border.color: "#40464f"
             Text {
-                anchors.centerIn: parent
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: (parent.height * 2 / 3) - height / 2
                 text: (videoLoader.source==="" ? "No video source selected" : "Loading video…")
                 color: "white"
                 font.pixelSize: 20

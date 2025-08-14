@@ -30,7 +30,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: 6.6.3
+          version: 6.9.1
           modules: qtcharts
 
       - name: Install non-qt dependencies

@@ -41,7 +41,7 @@ Item {
             width: 24
             anchors.left: parent.left
             anchors.leftMargin: 12
-            color: "#2a2b2bff"
+            color: "#dde4ed"
         }
 
         Text {

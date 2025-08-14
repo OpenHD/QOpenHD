@@ -89,35 +89,40 @@ Rectangle {
         Column {
             width: parent.width
             anchors.top: parent.top
+            // Close
+            Item {
+                height: 48
+                width: parent.width
 
-            // Close
-            Item {
-                height: 48
-                width: parent.width
+                Button{
+                    id: closeButton
+                    height: 35
+                    width: 35
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    
+                    contentItem: Text {
+                        text: "\uf060"
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 22
+                        color: closeButton.hovered ? "black" : "#e1e1e1e6"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
 
-                Button{
-                    id: closeButton
-                    text: "\uf060"
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 22
-                    height: 35
-                    width: 35
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: closeButton.hovered ? "grey" : "white" // I update background color by this
-                    }
-                    onClicked: {
-                        close_all();
-                    }
-                }
-            }
-        }
-    }
+                    background: Rectangle {
+                        opacity: .5
+                        radius: 5
+                        //later this can be changed to focus
+                        color: closeButton.hovered ? "white" : "white"   
+                    }
+                    onClicked: {
+                        close_all();
+                    }
+                }
+            }
+        }
+    }
 
     // This is the settings row on the left. When an item is clicked, the stack layout index is changed which
     // means a different category is displayed.
