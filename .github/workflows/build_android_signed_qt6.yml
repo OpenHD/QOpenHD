@@ -123,51 +123,77 @@ jobs:
           modules:      qtcharts
 
       # --- Hardcode deterministic Qt paths based on install dirs
-      - name: Discover Qt paths (official install; one-shot via find)
+      - name: Discover official Qt install (minimal search, then hardcode)
         run: |
+          tree
           set -euo pipefail
 
-          # Search roots (both your chosen dirs and the general runner temp)
-          SR=("$RUNNER_TEMP/qt-android" "$RUNNER_TEMP/qt-host" "$RUNNER_TEMP")
-          printf 'Searching in:\n%s\n' "${SR[@]}"
+          # Hard constants we no longer search for
+          QT_VERSION="${QT_VERSION:-6.7.2}"
+          QT_ANDROID_SUFFIX="android_arm64_v8a"
+          QT_HOST_SUFFIX="gcc_64"
 
-          # 1) Android toolchain file (this guarantees we found the Android payload)
-          QT_TOOLCHAIN_FILE="$(find "${SR[@]}" -type f \
-            -path "*/Qt/${QT_VERSION}/android_*/lib/cmake/Qt6/qt.toolchain.cmake" \
-            | head -n1 || true)"
-          if [ -z "${QT_TOOLCHAIN_FILE:-}" ]; then
-            echo "ERROR: Could not find Qt Android toolchain file (qt.toolchain.cmake)."
-            echo "This usually means the official installer didn’t install the Android payload for ${QT_VERSION}."
-            echo "Listing a hint of what exists under $RUNNER_TEMP:"
-            ls -R "$RUNNER_TEMP" | sed -n '1,200p' || true
+          # Only search bases that make sense for the official installer
+          CANDIDATES=(
+            "$RUNNER_TEMP"
+            "$HOME"
+            "$HOME/Qt"
+            "/home/runner/work/_temp"           # GitHub's ${{ runner.temp }}
+            "/opt/hostedtoolcache"              # occasionally used by actions
+          )
+          echo "Search roots:"
+          printf ' - %s\n' "${CANDIDATES[@]}"
+
+          # 1) Find the Android toolchain file (proves Android payload is present)
+          QT_TOOLCHAIN_FILE=""
+          for base in "${CANDIDATES[@]}"; do
+            [ -d "$base" ] || continue
+            hit="$(find "$base" -type f -path "*/Qt/${QT_VERSION}/android_*/lib/cmake/Qt6/qt.toolchain.cmake" | head -n1 || true)"
+            if [ -n "${hit:-}" ]; then
+              QT_TOOLCHAIN_FILE="$hit"
+              break
+            fi
+          done
+          if [ -z "$QT_TOOLCHAIN_FILE" ]; then
+            echo "ERROR: qt.toolchain.cmake not found. The official installer likely did not install Qt ${QT_VERSION} Android payload."
+            echo "Hint: list $RUNNER_TEMP to see what exists:"
+            ls -al "$RUNNER_TEMP" || true
             exit 1
           fi
 
-          # 2) Android CMake package dir and Android prefix
+          # 2) Derive Android package dirs from the toolchain file
           QT_ANDROID_CMAKE_DIR="$(dirname "$QT_TOOLCHAIN_FILE")"
-          # toolchain path ends with: .../android_*_*/lib/cmake/Qt6/qt.toolchain.cmake
-          QT_ANDROID_DIR="$(dirname "$(dirname "$(dirname "$(dirname "$QT_TOOLCHAIN_FILE")")")")"
+          QT_ANDROID_DIR="$(cd "$QT_ANDROID_CMAKE_DIR/../../.." && pwd)"
 
-          # 3) Host prefix (where moc/rcc live). Prefer exact 6.x gcc_64 layout.
-          QT_HOST_DIR="$(find "${SR[@]}" -type d -path "*/Qt/${QT_VERSION}/gcc_64" | head -n1 || true)"
-          if [ -z "${QT_HOST_DIR:-}" ]; then
-            # Fallback: infer from a 'moc' binary if path layout is unusual
-            MOC_BIN="$(find "${SR[@]}" -type f -name moc -path "*/bin/moc" | head -n1 || true)"
+          # 3) Find the host prefix (gcc_64)
+          QT_HOST_DIR=""
+          for base in "${CANDIDATES[@]}"; do
+            [ -d "$base" ] || continue
+            d="$(find "$base" -type d -path "*/Qt/${QT_VERSION}/${QT_HOST_SUFFIX}" | head -n1 || true)"
+            if [ -n "${d:-}" ]; then
+              QT_HOST_DIR="$d"
+              break
+            fi
+          done
+          # Fallback: locate by moc if layout differs
+          if [ -z "$QT_HOST_DIR" ]; then
+            MOC_BIN="$(find "${CANDIDATES[@]}" -type f -name moc -path "*/Qt/${QT_VERSION}/*/bin/moc" | head -n1 || true)"
             if [ -n "${MOC_BIN:-}" ]; then
               QT_HOST_DIR="$(dirname "$(dirname "$MOC_BIN")")"
             fi
           fi
-          if [ -z "${QT_HOST_DIR:-}" ]; then
-            echo "ERROR: Could not locate Qt host prefix (gcc_64)."
+          if [ -z "$QT_HOST_DIR" ]; then
+            echo "ERROR: Qt host dir (gcc_64) not found."
             exit 1
           fi
 
           # Sanity checks
-          test -d "$QT_ANDROID_DIR"
+          test -f "$QT_TOOLCHAIN_FILE"
           test -d "$QT_ANDROID_CMAKE_DIR"
+          test -d "$QT_ANDROID_DIR"
           test -d "$QT_HOST_DIR"
 
-          # Export for subsequent steps
+          # Export once; from here on we don't search again
           {
             echo "QT_TOOLCHAIN_FILE=$QT_TOOLCHAIN_FILE"
             echo "QT_ANDROID_CMAKE_DIR=$QT_ANDROID_CMAKE_DIR"
@@ -175,16 +201,15 @@ jobs:
             echo "QT_HOST_DIR=$QT_HOST_DIR"
           } >> "$GITHUB_ENV"
 
-          echo "Discovered:"
+          echo "Locked paths:"
           echo "  QT_TOOLCHAIN_FILE=$QT_TOOLCHAIN_FILE"
           echo "  QT_ANDROID_CMAKE_DIR=$QT_ANDROID_CMAKE_DIR"
           echo "  QT_ANDROID_DIR=$QT_ANDROID_DIR"
           echo "  QT_HOST_DIR=$QT_HOST_DIR"
 
-          # Optional: quick versions for debugging
+          # Optional: quick versions for signal
           test -x "$QT_ANDROID_DIR/bin/androiddeployqt" && "$QT_ANDROID_DIR/bin/androiddeployqt" --version || true
           test -x "$QT_HOST_DIR/bin/moc" && "$QT_HOST_DIR/bin/moc" -v || true
-
 
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
