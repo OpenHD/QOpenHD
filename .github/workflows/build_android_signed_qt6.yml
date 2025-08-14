@@ -11,8 +11,8 @@ env:
   SOURCE_DIR: ${{ github.workspace }}
   BUILD_TYPE: Debug
   QT_VERSION: 6.7.2
-  # Hardcoded Qt base dir for the official installer:
-  QT_BASE_DIR: ${{ github.workspace }}/Qt
+  # Single base for aqt installs; action lays out as: $QT_BASE_PARENT/Qt/<version>/...
+  QT_BASE_PARENT: ${{ runner.temp }}/qt
 
 jobs:
   build:
@@ -94,8 +94,8 @@ jobs:
           echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
           sudo chmod -R a+rX /usr/local/lib/android/sdk
 
-      # -------------------- Qt (host / desktop via official installer) --------------------
-      - name: Install Qt 6.7.2 (host, official)
+      # -------------------- Qt (host via aqt) --------------------
+      - name: Install Qt 6.7.2 (host, aqt)
         uses: jurplel/install-qt-action@v4
         with:
           version:      ${{ env.QT_VERSION }}
@@ -103,10 +103,11 @@ jobs:
           target:       desktop
           arch:         linux_gcc_64
           modules:      qtcharts
-          dir:          ${{ env.QT_BASE_DIR }}
+          dir:          ${{ env.QT_BASE_PARENT }}
+          cache:        true
 
-      # -------------------- Qt (android arm64-v8a via official installer) --------------------
-      - name: Install Qt 6.7.2 (android arm64-v8a, official)
+      # -------------------- Qt (android via aqt) --------------------
+      - name: Install Qt 6.7.2 (android arm64-v8a, aqt)
         uses: jurplel/install-qt-action@v4
         with:
           version:      ${{ env.QT_VERSION }}
@@ -114,29 +115,26 @@ jobs:
           target:       android
           arch:         android_arm64_v8a
           modules:      qtcharts
-          dir:          ${{ env.QT_BASE_DIR }}/android/
+          dir:          ${{ env.QT_BASE_PARENT }}
+          cache:        true
 
-      # --- Hardcode Qt paths (no discovery) ---
+      # --- Hardcode Qt paths (aqt layout; no discovery) ---
       - name: Export hardcoded Qt paths
         run: |
-
-          ls -a /home/runner/work/QOpenHD/QOpenHD/Qt/Qt/*
-
           set -euxo pipefail
-          QT_BASE="${QT_BASE_DIR}"
-          QT_VERSION="${QT_VERSION}"
-
-          QT_HOST_DIR="${QT_BASE}/${QT_VERSION}/gcc_64"
-          QT_ANDROID_DIR="${QT_BASE}/${QT_VERSION}/android_arm64_v8a"
+          QT_ROOT="${QT_BASE_PARENT}/Qt"
+          QT_HOST_DIR="${QT_ROOT}/${QT_VERSION}/gcc_64"
+          QT_ANDROID_DIR="${QT_ROOT}/${QT_VERSION}/android_arm64_v8a"
           QT_TOOLCHAIN_FILE="${QT_ANDROID_DIR}/lib/cmake/Qt6/qt.toolchain.cmake"
           QT_ANDROID_CMAKE_DIR="${QT_ANDROID_DIR}/lib/cmake/Qt6"
 
-          # Fail fast if the official installer didn't lay these down
+          # Fail fast if aqt didn't lay these down
           for p in "$QT_HOST_DIR" "$QT_ANDROID_DIR" "$QT_TOOLCHAIN_FILE" "$QT_ANDROID_CMAKE_DIR"; do
             [ -e "$p" ] || { echo "Missing: $p"; exit 1; }
           done
 
           {
+            echo "QT_ROOT=$QT_ROOT"
             echo "QT_HOST_DIR=$QT_HOST_DIR"
             echo "QT_ANDROID_DIR=$QT_ANDROID_DIR"
             echo "QT_TOOLCHAIN_FILE=$QT_TOOLCHAIN_FILE"
