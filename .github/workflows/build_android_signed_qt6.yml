@@ -112,11 +112,12 @@ jobs:
           version:      '6.7.2'
           host:         linux
           target:       desktop
-          arch: gcc_64
+          arch: 'linux_gcc_64'
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}
+          modules: 'qtcharts'
           cache: true
 
       - name: Export QT_HOST_PATH
