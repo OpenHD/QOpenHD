@@ -11,8 +11,9 @@ env:
   SOURCE_DIR: ${{ github.workspace }}
   BUILD_TYPE: Debug
   QT_VERSION: 6.7.2
-  # Single base for aqt installs; action lays out as: $QT_BASE_PARENT/Qt/<version>/...
-  QT_BASE_PARENT: ${{ runner.temp }}/qt
+  # Fixed, deterministic locations inside the repo workspace:
+  QT_BASE_PARENT: ${{ github.workspace }}/.qt
+  BUILD_DIR: ${{ github.workspace }}/.build-android
 
 jobs:
   build:
@@ -142,10 +143,10 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Create build directory
-        run: mkdir -p ${{ runner.temp }}/shadow_build_dir
+        run: mkdir -p "${BUILD_DIR}"
 
       - name: Configure (CMake for Android Qt6)
-        working-directory: ${{ runner.temp }}/shadow_build_dir
+        working-directory: ${{ env.BUILD_DIR }}
         env:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
@@ -172,7 +173,7 @@ jobs:
           grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
 
       - name: Build
-        working-directory: ${{ runner.temp }}/shadow_build_dir
+        working-directory: ${{ env.BUILD_DIR }}
         run: |
           cmake --build . --parallel 12
           echo "Built files:"
@@ -186,6 +187,6 @@ jobs:
         with:
           name: ${{ matrix.ARTIFACT }}
           path: |
-            ${{ runner.temp }}/shadow_build_dir/android-build/*.apk
-            ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/**/*.apk
+            ${{ env.BUILD_DIR }}/android-build/*.apk
+            ${{ env.BUILD_DIR }}/android-build/build/outputs/**/*.apk
           if-no-files-found: warn
