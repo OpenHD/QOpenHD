@@ -162,13 +162,6 @@ jobs:
           echo "--- android cmake dir ---"
           ls -al "$QT_ANDROID_PATH/lib/cmake/Qt6" || true
 
-
-      - name: Sanity check Qt env
-        run: |
-          echo "QT_HOST_PATH=$QT_HOST_PATH"
-          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH"
-          ls -al "$QT_ANDROID_PATH/lib/cmake/Qt6" | head
-
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
 
