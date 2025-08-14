@@ -119,7 +119,7 @@ jobs:
           target:       android
           arch:         android_arm64_v8a
           modules:      qtcharts
-          dir:          ${{ env.QT_BASE_DIR }}
+          dir:          ${{ env.QT_BASE_DIR }}/android/
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
 
