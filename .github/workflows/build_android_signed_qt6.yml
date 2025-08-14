@@ -98,16 +98,12 @@ jobs:
       - name: Install Qt 6.7.2 (host, official)
         uses: jurplel/install-qt-action@v4
         with:
-          use-official: true
           version:      ${{ env.QT_VERSION }}
           host:         linux
           target:       desktop
           arch:         linux_gcc_64
           modules:      qtcharts
           dir:          ${{ env.QT_BASE_DIR }}
-          email:        ${{ secrets.QT_EMAIL }}
-          pw:           ${{ secrets.QT_PASSWORD }}
-          cache:        true
 
       # -------------------- Qt (android arm64-v8a via official installer) --------------------
       - name: Install Qt 6.7.2 (android arm64-v8a, official)
@@ -119,7 +115,7 @@ jobs:
           arch:         android_arm64_v8a
           modules:      qtcharts
           dir:          ${{ env.QT_BASE_DIR }}/android/
-          
+
       # --- Hardcode Qt paths (no discovery) ---
       - name: Export hardcoded Qt paths
         run: |
