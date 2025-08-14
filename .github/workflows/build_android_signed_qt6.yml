@@ -109,7 +109,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version:      '6.7.3'
+          version:      '6.7.2'
           host:         linux
           target:       desktop
           arch: gcc_64
@@ -118,6 +118,7 @@ jobs:
           pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}
           modules:      qtcharts
+          cache: true
 
       - name: Export QT_HOST_PATH
         run: echo "QT_HOST_PATH=$Qt6_DIR" >> $GITHUB_ENV
@@ -125,7 +126,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version:      '6.7.3'
+          version:      '6.7.2'
           host:         linux
           target:       android
           arch: android_arm64_v8a
@@ -133,7 +134,8 @@ jobs:
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}
-          modules:      qtcharts      
+          modules:      qtcharts
+          cache: true
 
       - name: Export QT_ANDROID_PATH
         run: echo "QT_ANDROID_PATH=$Qt6_DIR" >> $GITHUB_ENV
