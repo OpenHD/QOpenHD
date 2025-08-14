@@ -122,7 +122,6 @@ jobs:
           dir:          ${{ env.QT_BASE_DIR }}
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          cache:        true
 
       # --- Hardcode Qt paths (no discovery) ---
       - name: Export hardcoded Qt paths
