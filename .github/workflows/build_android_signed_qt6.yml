@@ -79,3 +79,120 @@ jobs:
           yes | sdkmanager --sdk_root="$SDK_ROOT" --licenses || true
 
           sdkmanager --sdk_root="$SDK_ROOT" \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
+
+          rm -rf "$SDK_ROOT/platforms"/android-*-ext* || true
+          test -f "$SDK_ROOT/platforms/android-35/android.jar"
+          "$SDK_ROOT/build-tools/35.0.0/aapt2" version || true
+
+      - name: Export ANDROID env vars
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
+          sudo chmod -R a+rX /usr/local/lib/android/sdk
+
+      # -------------------- Qt (host / desktop via official installer) --------------------
+      - name: Install Qt 6.7.2 (host, official)
+        uses: jurplel/install-qt-action@v4
+        with:
+          use-official: true
+          version:      ${{ env.QT_VERSION }}
+          host:         linux
+          target:       desktop
+          arch:         linux_gcc_64
+          modules:      qtcharts
+          dir:          ${{ env.QT_BASE_DIR }}
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
+          cache:        true
+
+      # -------------------- Qt (android arm64-v8a via official installer) --------------------
+      - name: Install Qt 6.7.2 (android arm64-v8a, official)
+        uses: jurplel/install-qt-action@v4
+        with:
+          use-official: true
+          version:      ${{ env.QT_VERSION }}
+          host:         linux
+          target:       android
+          arch:         android_arm64_v8a
+          modules:      qtcharts
+          dir:          ${{ env.QT_BASE_DIR }}
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
+          cache:        true
+
+      # --- Hardcode Qt paths (no discovery) ---
+      - name: Export hardcoded Qt paths
+        run: |
+          set -euxo pipefail
+          QT_BASE="${QT_BASE_DIR}"
+          QT_VERSION="${QT_VERSION}"
+
+          QT_HOST_DIR="${QT_BASE}/${QT_VERSION}/gcc_64"
+          QT_ANDROID_DIR="${QT_BASE}/${QT_VERSION}/android_arm64_v8a"
+          QT_TOOLCHAIN_FILE="${QT_ANDROID_DIR}/lib/cmake/Qt6/qt.toolchain.cmake"
+          QT_ANDROID_CMAKE_DIR="${QT_ANDROID_DIR}/lib/cmake/Qt6"
+
+          # Fail fast if the official installer didn't lay these down
+          for p in "$QT_HOST_DIR" "$QT_ANDROID_DIR" "$QT_TOOLCHAIN_FILE" "$QT_ANDROID_CMAKE_DIR"; do
+            [ -e "$p" ] || { echo "Missing: $p"; exit 1; }
+          done
+
+          {
+            echo "QT_HOST_DIR=$QT_HOST_DIR"
+            echo "QT_ANDROID_DIR=$QT_ANDROID_DIR"
+            echo "QT_TOOLCHAIN_FILE=$QT_TOOLCHAIN_FILE"
+            echo "QT_ANDROID_CMAKE_DIR=$QT_ANDROID_CMAKE_DIR"
+          } >> "$GITHUB_ENV"
+
+      - name: Create build directory
+        run: mkdir -p ${{ runner.temp }}/shadow_build_dir
+
+      - name: Configure (CMake for Android Qt6)
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        env:
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          set -euxo pipefail
+          cmake "$SOURCE_DIR" -G Ninja \
+            -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+            -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
+            -DCMAKE_TOOLCHAIN_FILE="$QT_TOOLCHAIN_FILE" \
+            -DQt6_DIR="$QT_ANDROID_CMAKE_DIR" \
+            -DCMAKE_PREFIX_PATH="$QT_ANDROID_DIR;$QT_HOST_DIR" \
+            -DQT_HOST_PATH="$QT_HOST_DIR" \
+            -DANDROID_SDK_ROOT="$ANDROID_SDK_ROOT" \
+            -DANDROID_NDK_ROOT="$ANDROID_NDK_ROOT" \
+            -DANDROID_ABI=${{ matrix.eabi }} \
+            -DQT_ANDROID_ABIS=arm64-v8a \
+            -DANDROID_PLATFORM=android-23 \
+            -DQT_ANDROID_MIN_SDK_VERSION=23 \
+            -DQT_ANDROID_TARGET_SDK_VERSION=35 \
+            -DQT_ANDROID_SDK_PLATFORM=android-35 \
+            -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
+            -DANDROID_PACKAGE_FORMAT=apk
+
+          echo "--- androiddeployqt settings sanity ---"
+          grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
+
+      - name: Build
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        run: |
+          cmake --build . --parallel 12
+          echo "Built files:"
+          find . -maxdepth 6 -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
+
+      - name: ccache stats
+        run: ccache -s
+
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.ARTIFACT }}
+          path: |
+            ${{ runner.temp }}/shadow_build_dir/android-build/*.apk
+            ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/**/*.apk
+          if-no-files-found: warn
