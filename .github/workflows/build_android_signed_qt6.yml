@@ -111,7 +111,7 @@ jobs:
         id: qt-host
         uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==3.1.*'
+          aqtversion: '==3.3.*'
           version: '6.7.2'
           host: 'linux'
           target: 'desktop'
@@ -127,7 +127,7 @@ jobs:
         id: qt-android
         uses: jurplel/install-qt-action@v3
         with:
-          aqtversion: '==3.1.*'
+          aqtversion: '==3.3.*'
           version: '6.7.2'
           host: 'linux'
           target: 'android'
