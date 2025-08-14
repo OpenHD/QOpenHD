@@ -34,31 +34,40 @@ extern "C" Q_DECL_EXPORT void openhd_hide_navbar(bool transientSwipe, const char
     }
 
     const jint sdk = QJniObject::getStaticField<jint>("android/os/Build$VERSION","SDK_INT");
-    if (sdk >= 30) {
-        QJniObject controller = win.callObjectMethod(
-            "getInsetsController",
-            "(Landroid/view/View;)Landroid/view/WindowInsetsController;",
-            decor.object());
-        if (!controller.isValid()) return;
+if (sdk >= 30) {
+    QJniObject controller = win.callObjectMethod(
+        "getInsetsController",
+        "(Landroid/view/View;)Landroid/view/WindowInsetsController;",
+        decor.object());
+    if (!controller.isValid()) return;
 
-        const jint navBars = QJniObject::callStaticMethod<jint>(
-            "android/view/WindowInsets$Type","navigationBars","()I");
-        controller.callMethod<void>("hide","(I)V", navBars);
+    const jint sysBars    = QJniObject::callStaticMethod<jint>(
+        "android/view/WindowInsets$Type", "systemBars", "()I");
+    const jint statusBars = QJniObject::callStaticMethod<jint>(
+        "android/view/WindowInsets$Type", "statusBars", "()I");
+    const jint navBars    = QJniObject::callStaticMethod<jint>(
+        "android/view/WindowInsets$Type", "navigationBars", "()I");
 
-        if (transientSwipe) {
-            const jint behavior = QJniObject::getStaticField<jint>(
-                "android/view/WindowInsetsController",
-                "BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE");
-            controller.callMethod<void>("setSystemBarsBehavior","(I)V", behavior);
-        }
-    } else {
-        jint flags =
-            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_LAYOUT_STABLE") |
-            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION") |
-            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_HIDE_NAVIGATION") |
-            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_IMMERSIVE_STICKY");
-        decor.callMethod<void>("setSystemUiVisibility","(I)V", flags);
+    // 1) Hide ALL bars so the taskbar/nav really goes away
+    controller.callMethod<void>("hide", "(I)V", sysBars);
+
+    // 2) Keep the top (status) bar visible
+    controller.callMethod<void>("show", "(I)V", statusBars);
+
+    if (transientSwipe) {
+        const jint behavior = QJniObject::getStaticField<jint>(
+            "android/view/WindowInsetsController",
+            "BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE");
+        controller.callMethod<void>("setSystemBarsBehavior", "(I)V", behavior);
     }
+} else {
+    jint flags =
+        QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_LAYOUT_STABLE") |
+        QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION") |
+        QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_HIDE_NAVIGATION") |
+        QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_IMMERSIVE_STICKY");
+    decor.callMethod<void>("setSystemUiVisibility","(I)V", flags);
+}
 #else
     Q_UNUSED(transientSwipe)
     Q_UNUSED(statusBarColorHex)
