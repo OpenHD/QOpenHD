@@ -103,6 +103,16 @@ jobs:
           modules:      qtcharts
           cache:        true
 
+      - name: Remember host Qt path (simple)
+        shell: bash
+        run: |
+          set -e
+          host="$(ls -d "$RUNNER_TEMP"/Qt/*/{gcc_64,linux_gcc_64} 2>/dev/null | head -n1)"
+          [ -n "$host" ] || { echo "Host Qt not found under $RUNNER_TEMP/Qt"; exit 1; }
+          echo "QT_HOST_PATH=$host" >> "$GITHUB_ENV"
+          echo "Qt6_DIR_HOST=$host/lib/cmake/Qt6" >> "$GITHUB_ENV"
+          ls -al "$host/lib/cmake/Qt6" || true
+
       # Android Qt
       - name: Install Qt (android)
         uses: jurplel/install-qt-action@v4
@@ -118,49 +128,15 @@ jobs:
           modules:      qtcharts
           cache:        true
 
-      - name: Discover Qt paths (robust)
+      - name: Remember Android Qt path (simple)
         shell: bash
         run: |
-          set -euo pipefail
-          ROOTS=("$RUNNER_TEMP/Qt" "$RUNNER_TEMP" "$HOME/Qt" "/opt/Qt" "$GITHUB_WORKSPACE")
-
-          echo "Searching roots: ${ROOTS[*]}"
-
-          find_first() { # $1: path pattern
-            for r in "${ROOTS[@]}"; do
-              # shellcheck disable=SC2038
-              found=$(find "$r" -type f -path "$1" 2>/dev/null | sort | head -n1 || true)
-              [ -n "$found" ] && { echo "$found"; return 0; }
-            done
-            return 1
-          }
-
-          # Host Qt: look for the generic config
-          host_cfg="$(find_first '*/lib/cmake/Qt6/Qt6Config.cmake')" || {
-            echo "ERROR: could not find host Qt6Config.cmake"; exit 1; }
-
-          # Android Qt: prefer a path that contains /android_*/
-          android_toolchain="$(for r in "${ROOTS[@]}"; do
-              find "$r" -type f -name qt.toolchain.cmake -path '*/android_*/lib/cmake/Qt6/*' 2>/dev/null
-            done | sort | head -n1)"
-          if [ -z "$android_toolchain" ]; then
-            android_toolchain="$(find_first '*/lib/cmake/Qt6/qt.toolchain.cmake')" || {
-              echo "ERROR: could not find Android qt.toolchain.cmake"; exit 1; }
-          fi
-
-          # Go up FOUR times: Qt6Config.cmake -> Qt6 -> cmake -> lib -> <QT_PREFIX>
-          up4() { dirname "$(dirname "$(dirname "$(dirname "$1")")")"; }
-
-          QT_HOST_PATH="$(up4 "$host_cfg")"
-          QT_ANDROID_PATH="$(up4 "$android_toolchain")"
-
-          echo "QT_HOST_PATH=$QT_HOST_PATH"       | tee -a "$GITHUB_ENV"
-          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH" | tee -a "$GITHUB_ENV"
-
-          echo "--- host cmake dir ---"
-          ls -al "$QT_HOST_PATH/lib/cmake/Qt6" || true
-          echo "--- android cmake dir ---"
-          ls -al "$QT_ANDROID_PATH/lib/cmake/Qt6" || true
+          set -e
+          android="$(ls -d "$RUNNER_TEMP"/Qt/*/android_arm64_v8a 2>/dev/null | head -n1)"
+          [ -n "$android" ] || { echo "Android Qt not found under $RUNNER_TEMP/Qt"; exit 1; }
+          echo "QT_ANDROID_PATH=$android" >> "$GITHUB_ENV"
+          echo "Qt6_DIR_ANDROID=$android/lib/cmake/Qt6" >> "$GITHUB_ENV"
+          ls -al "$android/lib/cmake/Qt6" || true
 
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
@@ -175,22 +151,22 @@ jobs:
           TOOLCHAIN_FILE="${QT_ANDROID_PATH}/lib/cmake/Qt6/qt.toolchain.cmake"
           test -f "$TOOLCHAIN_FILE"
 
-          cmake "${SOURCE_DIR}" -G "Ninja" \
+          cmake "$SOURCE_DIR" -G Ninja \
+            -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
-            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-            -DQT_HOST_PATH="${QT_HOST_PATH}" \
-            -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
-            -DQt6_DIR="${QT_ANDROID_PATH}/lib/cmake/Qt6" \
-            -DCMAKE_PREFIX_PATH="${QT_ANDROID_PATH}/lib/cmake" \
+            -DQT_HOST_PATH="$QT_HOST_PATH" \
+            -DCMAKE_TOOLCHAIN_FILE="$QT_ANDROID_PATH/lib/cmake/Qt6/qt.toolchain.cmake" \
+            -DQt6_DIR="$Qt6_DIR_ANDROID" \
+            -DCMAKE_PREFIX_PATH="$Qt6_DIR_ANDROID" \
             -DANDROID_ABI=${{ matrix.eabi }} \
             -DQT_ANDROID_ABIS=arm64-v8a \
             -DANDROID_PLATFORM=android-23 \
-            -DQT_ANDROID_PATH=${QT_ANDROID_PATH} \
             -DQT_ANDROID_MIN_SDK_VERSION=23 \
             -DQT_ANDROID_TARGET_SDK_VERSION=35 \
             -DQT_ANDROID_SDK_PLATFORM=android-35 \
             -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
             -DANDROID_PACKAGE_FORMAT=apk
+
 
           echo "--- androiddeployqt settings sanity ---"
           grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
