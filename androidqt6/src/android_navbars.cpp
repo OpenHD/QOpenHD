@@ -3,7 +3,6 @@
 #include <QColor>
 
 #ifdef Q_OS_ANDROID
-#include <QtAndroid>
 #include <QJniObject>
 #endif
 
@@ -13,12 +12,17 @@
 extern "C" Q_DECL_EXPORT void openhd_hide_navbar(bool transientSwipe, const char* statusBarColorHex)
 {
 #ifdef Q_OS_ANDROID
-    QJniObject activity = QtAndroid::androidActivity();
+    // Get the Activity via Qt's QtNative helper (no QtAndroid/QNativeInterface needed)
+    QJniObject activity = QJniObject::callStaticObjectMethod(
+        "org/qtproject/qt/android/QtNative",
+        "activity",
+        "()Landroid/app/Activity;");
     if (!activity.isValid()) return;
 
     QJniObject win   = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
     QJniObject decor = win.callObjectMethod("getDecorView", "()Landroid/view/View;");
     if (!win.isValid() || !decor.isValid()) return;
+
 
     if (statusBarColorHex && statusBarColorHex[0]) {
         const QColor c(QString::fromUtf8(statusBarColorHex));
