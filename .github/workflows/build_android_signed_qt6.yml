@@ -121,7 +121,7 @@ jobs:
           cache: true
 
       - name: Export QT_HOST_PATH
-        run: echo "QT_HOST_PATH=$Qt6_DIR" >> $GITHUB_ENV
+        run: echo "QT_HOST_PATH=${{ env.Qt6_DIR }}" >> $GITHUB_ENV
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -138,7 +138,7 @@ jobs:
           cache: true
 
       - name: Export QT_ANDROID_PATH
-        run: echo "QT_ANDROID_PATH=$Qt6_DIR" >> $GITHUB_ENV
+        run: echo "QT_ANDROID_PATH=${{ env.Qt6_DIR }}" >> $GITHUB_ENV
 
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
