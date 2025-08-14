@@ -13,6 +13,17 @@ env:
   QT_VERSION: 6.9.1
   QT_BASE_PARENT: ${{ github.workspace }}/.qt          # aqt install root (stable)
   BUILD_DIR: ${{ github.workspace }}/.build-android    # shadow build dir
+  # ---- ccache (make paths stable & maximize hits) ----
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
+  CCACHE_BASEDIR: ${{ github.workspace }}
+  CCACHE_COMPILERCHECK: content
+  CCACHE_NOHASHDIR: "true"
+  CCACHE_SLOPPINESS: file_macro,include_file_mtime,time_macros,pch_defines
+  CCACHE_CPP2: "true"
+  CCACHE_COMPRESS: "true"
+  CCACHE_COMPRESSLEVEL: "5"
+  CCACHE_MAXSIZE: 10G
+  CCACHE_UMASK: "002"
 
 jobs:
   build:
@@ -31,6 +42,18 @@ jobs:
         with:
           submodules: recursive
 
+      # Restore ccache as early as possible
+      - name: Restore ccache cache
+        id: ccache-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ runner.os }}-qt${{ env.QT_VERSION }}-ndk-r27c-${{ matrix.eabi }}-${{ env.BUILD_TYPE }}
+          restore-keys: |
+            ccache-${{ runner.os }}-qt${{ env.QT_VERSION }}-ndk-r27c-${{ matrix.eabi }}-
+            ccache-${{ runner.os }}-qt${{ env.QT_VERSION }}-
+            ccache-${{ runner.os }}-
+
       - name: Fix grub EFI CI issue
         run: sudo apt-mark hold grub-efi-amd64-signed
 
@@ -38,7 +61,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ccache tree cmake ninja-build wget unzip python3 python3-pip
+          # Ensure directory exists (safe if already cached)
+          mkdir -p "${CCACHE_DIR}"
+          # Reset stats for this job and set cache size
           ccache -z
+          ccache -M "${CCACHE_MAXSIZE}"
+          echo "ccache dir: ${CCACHE_DIR}"
+          ccache -p || true
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -164,7 +193,9 @@ jobs:
             -DQT_ANDROID_TARGET_SDK_VERSION=35 \
             -DQT_ANDROID_SDK_PLATFORM=android-35 \
             -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.1 \
-            -DANDROID_PACKAGE_FORMAT=apk
+            -DANDROID_PACKAGE_FORMAT=apk \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
           echo "--- androiddeployqt settings sanity ---"
           grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
@@ -178,7 +209,8 @@ jobs:
           find . -maxdepth 6 -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
 
       - name: ccache stats
-        run: ccache -s
+        run: |
+          ccache -sv || ccache -s
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
