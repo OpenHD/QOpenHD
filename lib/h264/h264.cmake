@@ -8,9 +8,9 @@ set(H264_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/zero_memory.cc
 )
 
-target_sources(QOpenHDApp PRIVATE ${H264_SOURCES})
+target_sources(QOpenHD PRIVATE ${H264_SOURCES})
 
-target_include_directories(QOpenHDApp
+target_include_directories(QOpenHD
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )

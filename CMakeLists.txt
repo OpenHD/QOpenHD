@@ -83,7 +83,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/videostreaming/vscommon/decodingstatistcs.cpp
 )
 
-qt_add_executable(QOpenHDApp
+qt_add_executable(QOpenHD
     MANUAL_FINALIZATION
     ${QOPENHD_SOURCE_FILES_LIST}
     ##
@@ -95,25 +95,25 @@ qt_add_executable(QOpenHDApp
 )
 
 if(ANDROID)
-    target_sources(QOpenHDApp PRIVATE
+    target_sources(QOpenHD PRIVATE
         androidqt6/src/android_navbars.cpp
     )
 endif()
 
-target_include_directories(QOpenHDApp PUBLIC app)
-target_include_directories(QOpenHDApp PUBLIC app/common)
-target_include_directories(QOpenHDApp PUBLIC app/adsb)
-target_include_directories(QOpenHDApp PUBLIC app/logging)
-target_include_directories(QOpenHDApp PUBLIC app/osd)
-target_include_directories(QOpenHDApp PUBLIC app/util)
-target_include_directories(QOpenHDApp PUBLIC app/telemetry)
-target_include_directories(QOpenHDApp PUBLIC app/telemetry/util)
+target_include_directories(QOpenHD PUBLIC app)
+target_include_directories(QOpenHD PUBLIC app/common)
+target_include_directories(QOpenHD PUBLIC app/adsb)
+target_include_directories(QOpenHD PUBLIC app/logging)
+target_include_directories(QOpenHD PUBLIC app/osd)
+target_include_directories(QOpenHD PUBLIC app/util)
+target_include_directories(QOpenHD PUBLIC app/telemetry)
+target_include_directories(QOpenHD PUBLIC app/telemetry/util)
 
-target_include_directories(QOpenHDApp PUBLIC app/videostreaming/vscommon)
-target_include_directories(QOpenHDApp PUBLIC lib)
-target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
+target_include_directories(QOpenHD PUBLIC app/videostreaming/vscommon)
+target_include_directories(QOpenHD PUBLIC lib)
+target_include_directories(QOpenHD PUBLIC lib/geographiclib-c-2.0/src)
 
-#qt_add_qml_module(QOpenHDApp
+#qt_add_qml_module(QOpenHD
 #    URI hello
 #    VERSION 1.0
 #    QML_FILES
@@ -128,12 +128,12 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 #    PREFIX "/"
 #    qml/qml.qrc)
 
-target_link_libraries(QOpenHDApp
+target_link_libraries(QOpenHD
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Charts Qt6::Qml
 )
 
 # Point Qt to your Android package (Manifest, resources, Gradle bits)
-# set_property(TARGET QOpenHDApp PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+# set_property(TARGET QOpenHD PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #              ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
 
 include(lib/h264/h264.cmake)
@@ -141,7 +141,7 @@ include(lib/h264/h264.cmake)
 # include(app/videostreaming/android/videostreamingandroid.cmake)
 # include(app/videostreaming/gstreamer/gst_video.cmake)
 
-qt_finalize_executable(QOpenHDApp)
+qt_finalize_executable(QOpenHD)
 
 # include(GNUInstallDirs)
 # install(TARGETS QOpenHD

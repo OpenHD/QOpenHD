@@ -54,7 +54,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
-            <!-- Required by androiddeployqt to point at your libQOpenHDApp_*.so -->
+            <!-- Required by androiddeployqt to point at your libQOpenHD_*.so -->
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
 
             <!-- Keep Qt styling default extraction behavior -->

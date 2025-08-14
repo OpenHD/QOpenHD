@@ -10,14 +10,14 @@ set(AVCODEC_HEADERS
     QSGVideoTextureItem.h
 )
 
-target_sources(QOpenHDApp PRIVATE ${AVCODEC_SOURCES})
+target_sources(QOpenHD PRIVATE ${AVCODEC_SOURCES})
 
-target_include_directories(QOpenHDApp
+target_include_directories(QOpenHD
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_link_libraries(QOpenHDApp PRIVATE avcodec avutil avformat)
-target_link_libraries(QOpenHDApp PRIVATE GLESv2 EGL)
+target_link_libraries(QOpenHD PRIVATE avcodec avutil avformat)
+target_link_libraries(QOpenHD PRIVATE GLESv2 EGL)
 
 add_compile_definitions(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)
