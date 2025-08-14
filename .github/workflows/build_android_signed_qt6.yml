@@ -104,12 +104,19 @@ jobs:
           cache:        true
 
       - name: Remember host Qt path
+        id: set-host-qt
         run: |
-          set -eux
-          echo "Qt6_DIR seen by this step: ${Qt6_DIR:-<unset>}"
-          # Sanity: must contain Qt6 CMake files
-          test -f "$Qt6_DIR/lib/cmake/Qt6/Qt6Config.cmake"
-          echo "QT_HOST_PATH=$Qt6_DIR" >> "$GITHUB_ENV"
+          set -euo pipefail
+          ROOT="${RUNNER_TEMP}/Qt"
+          CMAKE_FILE="$(find "$ROOT" -path '*/lib/cmake/Qt6/Qt6Config.cmake' -print -quit || true)"
+          if [ -z "$CMAKE_FILE" ]; then
+            echo "Could not find Qt6Config.cmake under $ROOT"
+            find "$ROOT" -maxdepth 4 -type d | sed -n '1,200p'
+            exit 1
+          fi
+          QT_HOST_PATH="$(dirname "$(dirname "$CMAKE_FILE")")"
+          echo "QT_HOST_PATH=$QT_HOST_PATH" | tee -a "$GITHUB_ENV"
+          ls -al "$QT_HOST_PATH/lib/cmake/Qt6" || true
           
       # Android Qt
       - name: Install Qt (android)
@@ -127,12 +134,19 @@ jobs:
           cache:        true
 
       - name: Remember Android Qt path
+        id: set-android-qt
         run: |
-          set -eux
-          echo "Qt6_DIR seen by this step: ${Qt6_DIR:-<unset>}"
-          # Sanity: Android tree must have qt.toolchain.cmake
-          test -f "$Qt6_DIR/lib/cmake/Qt6/qt.toolchain.cmake"
-          echo "QT_ANDROID_PATH=$Qt6_DIR" >> "$GITHUB_ENV"
+          set -euo pipefail
+          ROOT="${RUNNER_TEMP}/Qt"
+          TOOLCHAIN_FILE="$(find "$ROOT" -path '*/lib/cmake/Qt6/qt.toolchain.cmake' -print -quit || true)"
+          if [ -z "$TOOLCHAIN_FILE" ]; then
+            echo "Could not find qt.toolchain.cmake under $ROOT"
+            find "$ROOT" -maxdepth 4 -type d | sed -n '1,200p'
+            exit 1
+          fi
+          QT_ANDROID_PATH="$(dirname "$(dirname "$TOOLCHAIN_FILE")")"
+          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH" | tee -a "$GITHUB_ENV"
+          ls -al "$QT_ANDROID_PATH/lib/cmake/Qt6" || true
 
       - name: Sanity check Qt env
         run: |
