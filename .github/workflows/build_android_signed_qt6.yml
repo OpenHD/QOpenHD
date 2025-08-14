@@ -51,7 +51,7 @@ jobs:
           ndk-version: r27
           add-to-path: true
 
-      # --- Clean SDK 35 + build-tools 35.0.0 (no preview/extension platforms)
+      # --- Clean SDK 35 + build-tools 35.0.0
       - name: Install Android SDK Platform 35 and Build Tools (clean)
         run: |
           set -euxo pipefail
@@ -103,27 +103,13 @@ jobs:
           version:      ${{ env.QT_VERSION }}
           host:         linux
           target:       desktop
-          arch:         linux_gcc_64       # keep exactly as requested
+          arch:         linux_gcc_64
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ runner.temp }}/qt-host    # deterministic
+          dir:          ${{ runner.temp }}/qt-host
           modules:      qtcharts
           cache:        true
-
-      - name: Remember host Qt path
-        shell: bash
-        run: |
-          set -euxo pipefail
-          base="$RUNNER_TEMP/qt-host/${QT_VERSION}"
-          # Qt sometimes uses gcc_64 instead of linux_gcc_64; accept either.
-          if [ -d "$base/linux_gcc_64" ]; then host="$base/linux_gcc_64";
-          elif [ -d "$base/gcc_64" ]; then host="$base/gcc_64";
-          else
-            echo "Host Qt not found under $base"; ls -R "$RUNNER_TEMP/qt-host" || true; exit 1;
-          fi
-          echo "QT_HOST_PATH=$host" >> "$GITHUB_ENV"
-          echo "Qt6_DIR_HOST=$host/lib/cmake/Qt6" >> "$GITHUB_ENV"
 
       # -------------------- Qt (android) --------------------
       - name: Install Qt (android)
@@ -136,18 +122,22 @@ jobs:
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ runner.temp }}/qt-android  # deterministic
+          dir:          ${{ runner.temp }}/qt-android
           modules:      qtcharts
           cache:        true
 
-      - name: Remember Android Qt path
-        shell: bash
+      # --- Hardcode deterministic Qt paths based on install dirs
+      - name: Resolve hardcoded Qt paths
         run: |
           set -euxo pipefail
-          android="$RUNNER_TEMP/qt-android/${QT_VERSION}/android_arm64_v8a"
-          [ -d "$android" ] || { echo "Android Qt not found at $android"; ls -R "$RUNNER_TEMP/qt-android" || true; exit 1; }
-          echo "QT_ANDROID_PATH=$android" >> "$GITHUB_ENV"
-          echo "Qt6_DIR_ANDROID=$android/lib/cmake/Qt6" >> "$GITHUB_ENV"
+          echo "QT_HOST_DIR=$RUNNER_TEMP/qt-host/${QT_VERSION}/gcc_64" >> $GITHUB_ENV
+          echo "QT_ANDROID_DIR=$RUNNER_TEMP/qt-android/${QT_VERSION}/android_arm64_v8a" >> $GITHUB_ENV
+          echo "QT_TOOLCHAIN_FILE=$RUNNER_TEMP/qt-android/${QT_VERSION}/android_arm64_v8a/lib/cmake/Qt6/qt.toolchain.cmake" >> $GITHUB_ENV
+          echo "QT_ANDROID_CMAKE_DIR=$RUNNER_TEMP/qt-android/${QT_VERSION}/android_arm64_v8a/lib/cmake/Qt6" >> $GITHUB_ENV
+
+          test -d "$RUNNER_TEMP/qt-host/${QT_VERSION}/gcc_64"
+          test -d "$RUNNER_TEMP/qt-android/${QT_VERSION}/android_arm64_v8a"
+          test -f "$RUNNER_TEMP/qt-android/${QT_VERSION}/android_arm64_v8a/lib/cmake/Qt6/qt.toolchain.cmake"
 
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
@@ -159,19 +149,20 @@ jobs:
         run: |
           set -euxo pipefail
           echo "Using Ninja at: $(which ninja)"
-          echo "QT_HOST_PATH=$QT_HOST_PATH"
-          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH"
-
-          TOOLCHAIN_FILE="${QT_ANDROID_PATH}/lib/cmake/Qt6/qt.toolchain.cmake"
-          test -f "$TOOLCHAIN_FILE"
+          echo "QT_HOST_DIR=$QT_HOST_DIR"
+          echo "QT_ANDROID_DIR=$QT_ANDROID_DIR"
+          echo "QT_TOOLCHAIN_FILE=$QT_TOOLCHAIN_FILE"
+          echo "QT_ANDROID_CMAKE_DIR=$QT_ANDROID_CMAKE_DIR"
 
           cmake "$SOURCE_DIR" -G Ninja \
             -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
-            -DQT_HOST_PATH="$QT_HOST_PATH" \
-            -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
-            -DQt6_DIR="$Qt6_DIR_ANDROID" \
-            -DCMAKE_PREFIX_PATH="$Qt6_DIR_ANDROID" \
+            -DCMAKE_TOOLCHAIN_FILE="$QT_TOOLCHAIN_FILE" \
+            -DQt6_DIR="$QT_ANDROID_CMAKE_DIR" \
+            -DCMAKE_PREFIX_PATH="$QT_ANDROID_DIR;$QT_HOST_DIR" \
+            -DQT_HOST_PATH="$QT_HOST_DIR" \
+            -DANDROID_SDK_ROOT="$ANDROID_SDK_ROOT" \
+            -DANDROID_NDK_ROOT="$ANDROID_NDK_ROOT" \
             -DANDROID_ABI=${{ matrix.eabi }} \
             -DQT_ANDROID_ABIS=arm64-v8a \
             -DANDROID_PLATFORM=android-23 \
@@ -190,7 +181,7 @@ jobs:
         run: |
           cmake --build . --parallel 12
           echo "Built files:"
-          find . -maxdepth 4 -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
+          find . -maxdepth 6 -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
 
       - name: ccache stats
         run: ccache -s
