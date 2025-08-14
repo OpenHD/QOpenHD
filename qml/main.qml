@@ -17,6 +17,9 @@ ApplicationWindow {
     id: applicationWindow
     visible: true
 
+    //Allow drawing under system bars / notch
+    flags: Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
+
     // Window sizing
     property int m_window_width: 850
     property int m_window_height: 480
