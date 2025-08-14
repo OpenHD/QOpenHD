@@ -10,6 +10,7 @@ defaults:
 env:
   SOURCE_DIR: ${{ github.workspace }}
   BUILD_TYPE: Debug
+  QT_VERSION: 6.7.2
 
 jobs:
   build:
@@ -50,52 +51,33 @@ jobs:
           ndk-version: r27
           add-to-path: true
 
-      # --- Clean install SDK 35 (no -extXX) + build-tools 35.0.0 ----------------
       - name: Install Android SDK Platform 35 and Build Tools (clean)
         run: |
           set -euxo pipefail
-
           export SDK_ROOT=/usr/local/lib/android/sdk
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
-
-          # fresh SDK root
           sudo rm -rf "$SDK_ROOT"
           sudo mkdir -p "$CMDLINE_DIR"
           pushd "$CMDLINE_DIR" >/dev/null
-
-          # commandline-tools
           sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O tools.zip
           sudo unzip -q tools.zip
           sudo rm -f tools.zip
           sudo mv cmdline-tools latest
           popd >/dev/null
-
-          # hand over ownership to runner
           sudo chown -R "$USER":"$USER" "$SDK_ROOT"
-
           export PATH="$CMDLINE_BIN:$PATH"
-
-          # accept licenses
           mkdir -p "$SDK_ROOT/licenses"
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK_ROOT/licenses/android-sdk-license"
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$SDK_ROOT/licenses/android-sdk-preview-license"
           yes | sdkmanager --sdk_root="$SDK_ROOT" --licenses || true
-
-          # install ONLY stable 35 (no extension platforms)
           sdkmanager --sdk_root="$SDK_ROOT" \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
-
-          # ensure no preview/extension platforms
           rm -rf "$SDK_ROOT/platforms"/android-*-ext* || true
-
-          # sanity check android.jar
           test -f "$SDK_ROOT/platforms/android-35/android.jar"
           unzip -t "$SDK_ROOT/platforms/android-35/android.jar" >/dev/null
-
-          # print versions
           "$SDK_ROOT/build-tools/35.0.0/aapt2" version || true
           ls -al "$SDK_ROOT/platforms" || true
 
@@ -106,39 +88,51 @@ jobs:
           echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
           sudo chmod -R a+rX /usr/local/lib/android/sdk
 
-      - name: Install Qt
+      # Host (desktop) Qt
+      - name: Install Qt (host)
         uses: jurplel/install-qt-action@v4
         with:
-          version:      '6.7.2'
+          version:      ${{ env.QT_VERSION }}
           host:         linux
           target:       desktop
-          arch: 'linux_gcc_64'
-          use-official: true
-          email:        ${{ secrets.QT_EMAIL }}
-          pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ runner.temp }}
-          modules: 'qtcharts'
-          cache: true
-
-      - name: Export QT_HOST_PATH
-        run: echo "QT_HOST_PATH=${{ env.Qt6_DIR }}" >> $GITHUB_ENV
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version:      '6.7.2'
-          host:         linux
-          target:       android
-          arch: android_arm64_v8a
+          arch:         linux_gcc_64
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}
           modules:      qtcharts
-          cache: true
+          cache:        true
 
-      - name: Export QT_ANDROID_PATH
-        run: echo "QT_ANDROID_PATH=${{ env.Qt6_DIR }}" >> $GITHUB_ENV
+      - name: Remember host Qt path
+        run: |
+          echo "QT_HOST_PATH=${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/linux_gcc_64" >> $GITHUB_ENV
+          test -d "${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/linux_gcc_64"
+
+      # Android Qt
+      - name: Install Qt (android)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version:      ${{ env.QT_VERSION }}
+          host:         linux
+          target:       android
+          arch:         android_arm64_v8a
+          use-official: true
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
+          dir:          ${{ runner.temp }}
+          modules:      qtcharts
+          cache:        true
+
+      - name: Remember Android Qt path
+        run: |
+          echo "QT_ANDROID_PATH=${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/android_arm64_v8a" >> $GITHUB_ENV
+          test -f "${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/android_arm64_v8a/lib/cmake/Qt6/qt.toolchain.cmake"
+
+      - name: Sanity check Qt env
+        run: |
+          echo "QT_HOST_PATH=$QT_HOST_PATH"
+          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH"
+          ls -al "$QT_ANDROID_PATH/lib/cmake/Qt6" | head
 
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
@@ -150,9 +144,6 @@ jobs:
         run: |
           set -euxo pipefail
           echo "Using Ninja at: $(which ninja)"
-          echo "QT_HOST_PATH=$QT_HOST_PATH"
-          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH"
-
           TOOLCHAIN_FILE="${QT_ANDROID_PATH}/lib/cmake/Qt6/qt.toolchain.cmake"
           test -f "$TOOLCHAIN_FILE"
 
