@@ -1,8 +1,10 @@
+#include <QtCore/qglobal.h>
+#include <QString>
 #include <QColor>
 
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
-#include <QNativeInterface>
+#include <QtCore/qnativeinterface.h>
 #endif
 
 // Minimal C-style API: call from main.cpp; no QML involved.
@@ -36,3 +38,25 @@ extern "C" Q_DECL_EXPORT void openhd_hide_navbar(bool transientSwipe, const char
         if (!controller.isValid()) return;
 
         const jint navBars = QJniObject::callStaticMethod<jint>(
+            "android/view/WindowInsets$Type","navigationBars","()I");
+        controller.callMethod<void>("hide","(I)V", navBars);
+
+        if (transientSwipe) {
+            const jint behavior = QJniObject::getStaticField<jint>(
+                "android/view/WindowInsetsController",
+                "BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE");
+            controller.callMethod<void>("setSystemBarsBehavior","(I)V", behavior);
+        }
+    } else {
+        jint flags =
+            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_LAYOUT_STABLE") |
+            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION") |
+            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_HIDE_NAVIGATION") |
+            QJniObject::getStaticField<jint>("android/view/View","SYSTEM_UI_FLAG_IMMERSIVE_STICKY");
+        decor.callMethod<void>("setSystemUiVisibility","(I)V", flags);
+    }
+#else
+    Q_UNUSED(transientSwipe)
+    Q_UNUSED(statusBarColorHex)
+#endif
+}
