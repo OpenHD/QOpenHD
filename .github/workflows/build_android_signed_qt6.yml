@@ -46,24 +46,44 @@ jobs:
 
       - name: List available Qt modules (desktop + android)
         run: |
-          # Try a few 6.7.x versions until we find one that has qtcharts for both desktop and android
-          QT_CANDIDATES=(6.7.3 6.7.2 6.7.1 6.7.0)
+          # Install Qt 6.7.x (with QtCharts) for desktop and Android, with mirror fallbacks
+          QT_VERSIONS=(6.7.3 6.7.2)
+          BASEURLS=(
+            https://download.qt.io/online/qtsdkrepository
+            https://mirrors.ocf.berkeley.edu/qt/online/qtsdkrepository
+          )
 
-          for v in "${QT_CANDIDATES[@]}"; do
-            echo "Checking Qt $v…"
-            if python3 -m aqt list-qt linux desktop --modules "$v" gcc_64 | grep -qx 'qtcharts' \
-            && python3 -m aqt list-qt linux android --modules "$v" android_arm64_v8a | grep -qx 'qtcharts'; then
-              echo "Installing Qt $v with qtcharts…"
-              python3 -m aqt install-qt linux desktop "$v" gcc_64 \
-                --outputdir "${RUNNER_TEMP}/Qt" \
-                --modules qtcharts
-              python3 -m aqt install-qt linux android "$v" android_arm64_v8a \
-                --outputdir "${GITHUB_WORKSPACE}/Qt" \
-                --modules qtcharts
-              echo "QT_VERSION=$v" >> "$GITHUB_ENV"
-              break
-            fi
+          ok=0
+          for v in "${QT_VERSIONS[@]}"; do
+            for url in "${BASEURLS[@]}"; do
+              echo "Trying Qt $v from $url …"
+              if python3 -m aqt install-qt linux desktop "$v" gcc_64 \
+                  --outputdir "${RUNNER_TEMP}/Qt" \
+                  --baseurl "$url" \
+                  --modules qtcharts \
+                && python3 -m aqt install-qt linux android "$v" android_arm64_v8a \
+                  --outputdir "${GITHUB_WORKSPACE}/Qt" \
+                  --baseurl "$url" \
+                  --modules qtcharts; then
+                echo "QT_VERSION=$v" >> "$GITHUB_ENV"
+                echo "QT_HOST_PATH=${RUNNER_TEMP}/Qt/$v/gcc_64" >> "$GITHUB_ENV"
+                echo "QT_ANDROID_PATH=${GITHUB_WORKSPACE}/Qt/$v/android_arm64_v8a" >> "$GITHUB_ENV"
+                ok=1
+                break 2
+              fi
+            done
           done
+
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::Failed to install Qt 6.7.x with qtcharts on any mirror"
+            exit 1
+          fi
+
+          # Sanity: make sure Charts cmake files exist (fail early if not)
+          test -f "${QT_HOST_PATH}/lib/cmake/Qt6Charts/Qt6ChartsConfig.cmake" \
+            && test -f "${QT_ANDROID_PATH}/lib/cmake/Qt6Charts/Qt6ChartsConfig.cmake" \
+            || { echo "::error::QtCharts not found after installation"; exit 1; }
+
 
       - name: Install host Qt (gcc_64)
         run: |
