@@ -45,6 +45,7 @@ jobs:
 
       - name: List available Qt modules (desktop + android)
         run: |
+          python3 -m pip install --user --upgrade aqtinstall
           python3 -m aqt list-qt linux desktop 6.7.2 gcc_64 || true
           python3 -m aqt list-qt linux android 6.7.2 android_arm64_v8a || true
 
