@@ -7,6 +7,7 @@
 #include <QFontDatabase>
 #if defined(__android__)
 #include <QtAndroid>
+extern "C" void openhd_hide_navbar(bool transientSwipe, const char* statusBarColorHex);
 #endif
 
 #include "telemetry/models/fcmavlinksystem.h"
@@ -490,7 +491,21 @@ int main(int argc, char *argv[]) {
 
 #if defined(__android__)
     QtAndroid::hideSplashScreen();
+
+    // Hide ONLY the bottom nav bar; keep the top status bar visible & black
+    openhd_hide_navbar(true, "#000000");
+
+    // Re-apply when focus or app state changes (Android may show bars transiently)
+    QObject::connect(&app, &QGuiApplication::focusWindowChanged, &app, [](QWindow*) {
+        openhd_hide_navbar(true, "#000000");
+    });
+    QObject::connect(&app, &QGuiApplication::applicationStateChanged, &app, [](Qt::ApplicationState){
+        openhd_hide_navbar(true, "#000000");
+    });
 #endif
+
+qDebug() << "QML loaded";
+
 
     qDebug() << "QML loaded";
     // Now we start mavlink for the first time

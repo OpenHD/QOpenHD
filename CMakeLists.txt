@@ -7,13 +7,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(X_QT_VERSION 6.4)
+set(X_QT_VERSION 6.9)
 
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Charts)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Qml)
 
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
@@ -93,6 +94,12 @@ qt_add_executable(QOpenHDApp
     androidqt6/AndroidManifest.xml
 )
 
+if(ANDROID)
+    target_sources(QOpenHDApp PRIVATE
+        androidqt6/src/android_navbars.cpp
+    )
+endif()
+
 target_include_directories(QOpenHDApp PUBLIC app)
 target_include_directories(QOpenHDApp PUBLIC app/common)
 target_include_directories(QOpenHDApp PUBLIC app/adsb)
@@ -122,7 +129,7 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 #    qml/qml.qrc)
 
 target_link_libraries(QOpenHDApp
-    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Charts
+    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Charts Qt6::Qml
 )
 
 # Point Qt to your Android package (Manifest, resources, Gradle bits)
