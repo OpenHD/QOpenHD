@@ -109,7 +109,6 @@ jobs:
           pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}/qt-host
           modules:      qtcharts
-          cache:        true
 
       # -------------------- Qt (android) --------------------
       - name: Install Qt (android)
@@ -124,7 +123,6 @@ jobs:
           pw:           ${{ secrets.QT_PASSWORD }}
           dir:          ${{ runner.temp }}/qt-android
           modules:      qtcharts
-          cache:        true
 
       # --- Hardcode deterministic Qt paths based on install dirs
       - name: Resolve hardcoded Qt paths
