@@ -137,20 +137,35 @@ jobs:
           arch: gcc_64
           modules: addons.qtcharts
 
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version:      '6.7.3'
+          host:         linux
+          target:       desktop
+          arch: gcc_64
+          use-official: true
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
+          dir:          ${{ runner.temp }}
+          modules:      qtcharts
+
       - name: Export QT_HOST_PATH
         run: echo "QT_HOST_PATH=$Qt6_DIR" >> $GITHUB_ENV
 
       # --- Qt 6.7.2 android (arm64-v8a) with Charts -----------------------------
-      - name: Install Qt (android)
-        uses: jurplel/install-qt-action@v3
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
         with:
-          aqtversion: '==3.3.*'
-          version: '6.7.2'
-          host: linux
-          target: android
+          version:      '6.7.3'
+          host:         linux
+          target:       android
           arch: android_arm64_v8a
-          modules: addons.qtcharts
-          cache: true
+          use-official: true
+          email:        ${{ secrets.QT_EMAIL }}
+          pw:           ${{ secrets.QT_PASSWORD }}
+          dir:          ${{ runner.temp }}
+          modules:      qtcharts      
 
       - name: Export QT_ANDROID_PATH
         run: echo "QT_ANDROID_PATH=$Qt6_DIR" >> $GITHUB_ENV
