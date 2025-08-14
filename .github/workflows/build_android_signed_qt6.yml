@@ -10,9 +10,9 @@ defaults:
 env:
   SOURCE_DIR: ${{ github.workspace }}
   BUILD_TYPE: Debug
-  QT_VERSION: 6.7.2
-  QT_BASE_PARENT: ${{ github.workspace }}/.qt        # deterministic aqt install root
-  BUILD_DIR: ${{ github.workspace }}/.build-android  # deterministic build dir
+  QT_VERSION: 6.9.1
+  QT_BASE_PARENT: ${{ github.workspace }}/.qt          # aqt install root (stable)
+  BUILD_DIR: ${{ github.workspace }}/.build-android    # shadow build dir
 
 jobs:
   build:
@@ -46,15 +46,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android NDK (r27)
+      - name: Install Android NDK (r27c)
         id: setup-ndk
         uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r27
+          ndk-version: r27c
           add-to-path: true
 
-      # --- SDK 35 + build-tools 35.0.0 (clean, no preview/ext platforms)
-      - name: Install Android SDK Platform 35 and Build Tools (clean)
+      # --- SDK 35 + Build Tools 35.0.1 (clean install, no preview/ext platforms)
+      - name: Install Android SDK Platform 35 and Build Tools 35.0.1
         run: |
           set -euxo pipefail
           export SDK_ROOT=/usr/local/lib/android/sdk
@@ -81,11 +81,11 @@ jobs:
           sdkmanager --sdk_root="$SDK_ROOT" \
             "platform-tools" \
             "platforms;android-35" \
-            "build-tools;35.0.0"
+            "build-tools;35.0.1"
 
           rm -rf "$SDK_ROOT/platforms"/android-*-ext* || true
           test -f "$SDK_ROOT/platforms/android-35/android.jar"
-          "$SDK_ROOT/build-tools/35.0.0/aapt2" version || true
+          "$SDK_ROOT/build-tools/35.0.1/aapt2" version || true
 
       - name: Export ANDROID env vars
         run: |
@@ -95,19 +95,18 @@ jobs:
           sudo chmod -R a+rX /usr/local/lib/android/sdk
 
       # -------------------- Qt via aqt (host + android) --------------------
-      - name: Install Qt 6.7.2 (host, aqt)
+      - name: Install Qt ${{ env.QT_VERSION }} (host, aqt)
         uses: jurplel/install-qt-action@v4
         with:
           version:      ${{ env.QT_VERSION }}
           host:         linux
           target:       desktop
           arch:         linux_gcc_64
-          # Add modules you actually use
           modules:      qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
-      - name: Install Qt 6.7.2 (android arm64-v8a, aqt)
+      - name: Install Qt ${{ env.QT_VERSION }} (android arm64-v8a, aqt)
         uses: jurplel/install-qt-action@v4
         with:
           version:      ${{ env.QT_VERSION }}
@@ -118,7 +117,7 @@ jobs:
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
-      # --- Hardcode Qt paths (aqt layout) ---
+      # --- Hardcode Qt paths (aqt layout; fail fast if missing)
       - name: Export hardcoded Qt paths
         run: |
           set -euxo pipefail
@@ -127,9 +126,11 @@ jobs:
           QT_ANDROID_DIR="${QT_ROOT}/${QT_VERSION}/android_arm64_v8a"
           QT_TOOLCHAIN_FILE="${QT_ANDROID_DIR}/lib/cmake/Qt6/qt.toolchain.cmake"
           QT_ANDROID_CMAKE_DIR="${QT_ANDROID_DIR}/lib/cmake/Qt6"
+
           for p in "$QT_HOST_DIR" "$QT_ANDROID_DIR" "$QT_TOOLCHAIN_FILE" "$QT_ANDROID_CMAKE_DIR"; do
             [ -e "$p" ] || { echo "Missing: $p"; exit 1; }
           done
+
           {
             echo "QT_ROOT=$QT_ROOT"
             echo "QT_HOST_DIR=$QT_HOST_DIR"
@@ -162,48 +163,13 @@ jobs:
             -DQT_ANDROID_MIN_SDK_VERSION=23 \
             -DQT_ANDROID_TARGET_SDK_VERSION=35 \
             -DQT_ANDROID_SDK_PLATFORM=android-35 \
-            -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
+            -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.1 \
             -DANDROID_PACKAGE_FORMAT=apk
 
-      # --- PRE-GENERATE Gradle project (no build), then PATCH to AGP 8.6 + Gradle 8.7 ---
-      - name: Pre-generate Android Gradle project (no-build)
-        working-directory: ${{ env.BUILD_DIR }}
-        run: |
-          set -euxo pipefail
-          JSON_FILE="$(ls android-*-deployment-settings.json | head -n1)"
-          test -f "$JSON_FILE"
-          "$QT_HOST_DIR/bin/androiddeployqt" \
-            --input "$JSON_FILE" \
-            --output "$BUILD_DIR/android-build" \
-            --no-build
+          echo "--- androiddeployqt settings sanity ---"
+          grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
 
-      - name: Patch Gradle wrapper + AGP for compileSdk 35
-        working-directory: ${{ env.BUILD_DIR }}/android-build
-        run: |
-          set -euxo pipefail
-          # 1) Bump Gradle wrapper to 8.7 (min required for AGP 8.6)
-          sed -i 's#^distributionUrl=.*#distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip#' gradle/wrapper/gradle-wrapper.properties
-          grep distributionUrl gradle/wrapper/gradle-wrapper.properties
-
-          # 2) Bump Android Gradle Plugin to 8.6.x
-          sed -i 's/com\.android\.tools\.build:gradle:[0-9.]\+/com.android.tools.build:gradle:8.6.0/g' build.gradle
-          grep -n 'com.android.tools.build:gradle' build.gradle || true
-
-          # 3) (Optional but nice) Define namespace to silence AGP warning
-          pkg="$(grep -oP 'package="\\K[^"]+' AndroidManifest.xml || true)"
-          if ! grep -q 'namespace' build.gradle && [ -n "$pkg" ]; then
-            awk -v ns="$pkg" '
-              BEGIN{added=0}
-              /android *\{/ && !added { print; print "    namespace \"" ns "\""; added=1; next }
-              { print }
-            ' build.gradle > build.gradle.new && mv build.gradle.new build.gradle
-          fi
-          grep -n 'namespace' build.gradle || true
-
-          # 4) (Optional) Silence old AGP warning if any remains (harmless on AGP 8.6)
-          echo 'android.suppressUnsupportedCompileSdk=35' >> gradle.properties || true
-
-      - name: Build (Ninja will call androiddeployqt; now with patched Gradle/AGP)
+      - name: Build
         working-directory: ${{ env.BUILD_DIR }}
         run: |
           set -euxo pipefail
