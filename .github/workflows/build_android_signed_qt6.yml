@@ -46,8 +46,8 @@ jobs:
       - name: List available Qt modules (desktop + android)
         run: |
           python3 -m pip install --user --upgrade aqtinstall
-          python3 -m aqt list-qt linux desktop --modules 6.7.2 gcc_64 --base https://download.qt.io/online/qtsdkrepository/
-
+          python3 -m aqt list-qt linux desktop --modules 6.7.2 gcc_64
+          python3 -m aqt list-qt linux android --modules 6.7.2 android_arm64_v8a
           # Desktop + Charts (note addons.qtcharts and forced base URL):
           python3 -m aqt install-qt linux desktop 6.7.2 gcc_64 \
             -m addons.qtcharts \
