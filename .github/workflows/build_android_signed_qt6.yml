@@ -105,9 +105,12 @@ jobs:
 
       - name: Remember host Qt path
         run: |
-          echo "QT_HOST_PATH=${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/linux_gcc_64" >> $GITHUB_ENV
-          test -d "${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/linux_gcc_64"
-
+          set -eux
+          echo "Qt6_DIR seen by this step: ${Qt6_DIR:-<unset>}"
+          # Sanity: must contain Qt6 CMake files
+          test -f "$Qt6_DIR/lib/cmake/Qt6/Qt6Config.cmake"
+          echo "QT_HOST_PATH=$Qt6_DIR" >> "$GITHUB_ENV"
+          
       # Android Qt
       - name: Install Qt (android)
         uses: jurplel/install-qt-action@v4
@@ -125,8 +128,11 @@ jobs:
 
       - name: Remember Android Qt path
         run: |
-          echo "QT_ANDROID_PATH=${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/android_arm64_v8a" >> $GITHUB_ENV
-          test -f "${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/android_arm64_v8a/lib/cmake/Qt6/qt.toolchain.cmake"
+          set -eux
+          echo "Qt6_DIR seen by this step: ${Qt6_DIR:-<unset>}"
+          # Sanity: Android tree must have qt.toolchain.cmake
+          test -f "$Qt6_DIR/lib/cmake/Qt6/qt.toolchain.cmake"
+          echo "QT_ANDROID_PATH=$Qt6_DIR" >> "$GITHUB_ENV"
 
       - name: Sanity check Qt env
         run: |
