@@ -46,8 +46,22 @@ jobs:
       - name: List available Qt modules (desktop + android)
         run: |
           python3 -m pip install --user --upgrade aqtinstall
-          python3 -m aqt list-qt linux desktop 6.7.2 gcc_64 || true
-          python3 -m aqt list-qt linux android 6.7.2 android_arm64_v8a || true
+          python3 -m aqt list-qt linux desktop --modules 6.7.2 gcc_64 --base https://download.qt.io/online/qtsdkrepository/
+
+          # Desktop + Charts (note addons.qtcharts and forced base URL):
+          python3 -m aqt install-qt linux desktop 6.7.2 gcc_64 \
+            -m addons.qtcharts \
+            --base https://download.qt.io/online/qtsdkrepository/ \
+            --outputdir "$RUNNER_TEMP/Qt"
+          echo "QT_HOST_PATH=$RUNNER_TEMP/Qt/6.7.2/gcc_64" >> $GITHUB_ENV
+
+          # Android + Charts:
+          python3 -m aqt install-qt linux android 6.7.2 android_arm64_v8a \
+            -m addons.qtcharts \
+            --base https://download.qt.io/online/qtsdkrepository/ \
+            --outputdir "$GITHUB_WORKSPACE/Qt"
+          echo "QT_ANDROID_PATH=$GITHUB_WORKSPACE/Qt/6.7.2/android_arm64_v8a" >> $GITHUB_ENV
+
 
       - name: Install Android NDK (r27)
         id: setup-ndk
