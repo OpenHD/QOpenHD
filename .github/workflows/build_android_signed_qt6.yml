@@ -124,7 +124,6 @@ jobs:
           fi
           echo "QT_HOST_PATH=$host" >> "$GITHUB_ENV"
           echo "Qt6_DIR_HOST=$host/lib/cmake/Qt6" >> "$GITHUB_ENV"
-          ls -al "$host/lib/cmake/Qt6" || true
 
       # -------------------- Qt (android) --------------------
       - name: Install Qt (android)
