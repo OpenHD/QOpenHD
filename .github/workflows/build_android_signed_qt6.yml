@@ -149,7 +149,6 @@ jobs:
           [ -d "$android" ] || { echo "Android Qt not found at $android"; ls -R "$RUNNER_TEMP/qt-android" || true; exit 1; }
           echo "QT_ANDROID_PATH=$android" >> "$GITHUB_ENV"
           echo "Qt6_DIR_ANDROID=$android/lib/cmake/Qt6" >> "$GITHUB_ENV"
-          ls -al "$android/lib/cmake/Qt6" || true
 
       - name: Create build directory
         run: mkdir -p ${{ runner.temp }}/shadow_build_dir
