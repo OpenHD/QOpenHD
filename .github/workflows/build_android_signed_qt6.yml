@@ -51,12 +51,14 @@ jobs:
           ndk-version: r27
           add-to-path: true
 
+      # --- Clean SDK 35 + build-tools 35.0.0 (no preview/extension platforms)
       - name: Install Android SDK Platform 35 and Build Tools (clean)
         run: |
           set -euxo pipefail
           export SDK_ROOT=/usr/local/lib/android/sdk
           export CMDLINE_DIR=$SDK_ROOT/cmdline-tools
           export CMDLINE_BIN=$CMDLINE_DIR/latest/bin
+
           sudo rm -rf "$SDK_ROOT"
           sudo mkdir -p "$CMDLINE_DIR"
           pushd "$CMDLINE_DIR" >/dev/null
@@ -65,19 +67,25 @@ jobs:
           sudo rm -f tools.zip
           sudo mv cmdline-tools latest
           popd >/dev/null
+
           sudo chown -R "$USER":"$USER" "$SDK_ROOT"
           export PATH="$CMDLINE_BIN:$PATH"
+
           mkdir -p "$SDK_ROOT/licenses"
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK_ROOT/licenses/android-sdk-license"
           echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$SDK_ROOT/licenses/android-sdk-preview-license"
           yes | sdkmanager --sdk_root="$SDK_ROOT" --licenses || true
+
           sdkmanager --sdk_root="$SDK_ROOT" \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
+
           rm -rf "$SDK_ROOT/platforms"/android-*-ext* || true
+
           test -f "$SDK_ROOT/platforms/android-35/android.jar"
           unzip -t "$SDK_ROOT/platforms/android-35/android.jar" >/dev/null
+
           "$SDK_ROOT/build-tools/35.0.0/aapt2" version || true
           ls -al "$SDK_ROOT/platforms" || true
 
@@ -88,32 +96,37 @@ jobs:
           echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
           sudo chmod -R a+rX /usr/local/lib/android/sdk
 
-      # Host (desktop) Qt
+      # -------------------- Qt (host / desktop) --------------------
       - name: Install Qt (host)
         uses: jurplel/install-qt-action@v4
         with:
           version:      ${{ env.QT_VERSION }}
           host:         linux
           target:       desktop
-          arch:         linux_gcc_64
+          arch:         linux_gcc_64       # keep exactly as requested
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ runner.temp }}
+          dir:          ${{ runner.temp }}/qt-host    # deterministic
           modules:      qtcharts
           cache:        true
 
-      - name: Remember host Qt path (simple)
+      - name: Remember host Qt path
         shell: bash
         run: |
-          set -e
-          host="$(ls -d "$RUNNER_TEMP"/Qt/*/{gcc_64,linux_gcc_64} 2>/dev/null | head -n1)"
-          [ -n "$host" ] || { echo "Host Qt not found under $RUNNER_TEMP/Qt"; exit 1; }
+          set -euxo pipefail
+          base="$RUNNER_TEMP/qt-host/${QT_VERSION}"
+          # Qt sometimes uses gcc_64 instead of linux_gcc_64; accept either.
+          if [ -d "$base/linux_gcc_64" ]; then host="$base/linux_gcc_64";
+          elif [ -d "$base/gcc_64" ]; then host="$base/gcc_64";
+          else
+            echo "Host Qt not found under $base"; ls -R "$RUNNER_TEMP/qt-host" || true; exit 1;
+          fi
           echo "QT_HOST_PATH=$host" >> "$GITHUB_ENV"
           echo "Qt6_DIR_HOST=$host/lib/cmake/Qt6" >> "$GITHUB_ENV"
           ls -al "$host/lib/cmake/Qt6" || true
 
-      # Android Qt
+      # -------------------- Qt (android) --------------------
       - name: Install Qt (android)
         uses: jurplel/install-qt-action@v4
         with:
@@ -124,16 +137,16 @@ jobs:
           use-official: true
           email:        ${{ secrets.QT_EMAIL }}
           pw:           ${{ secrets.QT_PASSWORD }}
-          dir:          ${{ runner.temp }}
+          dir:          ${{ runner.temp }}/qt-android  # deterministic
           modules:      qtcharts
           cache:        true
 
-      - name: Remember Android Qt path (simple)
+      - name: Remember Android Qt path
         shell: bash
         run: |
-          set -e
-          android="$(ls -d "$RUNNER_TEMP"/Qt/*/android_arm64_v8a 2>/dev/null | head -n1)"
-          [ -n "$android" ] || { echo "Android Qt not found under $RUNNER_TEMP/Qt"; exit 1; }
+          set -euxo pipefail
+          android="$RUNNER_TEMP/qt-android/${QT_VERSION}/android_arm64_v8a"
+          [ -d "$android" ] || { echo "Android Qt not found at $android"; ls -R "$RUNNER_TEMP/qt-android" || true; exit 1; }
           echo "QT_ANDROID_PATH=$android" >> "$GITHUB_ENV"
           echo "Qt6_DIR_ANDROID=$android/lib/cmake/Qt6" >> "$GITHUB_ENV"
           ls -al "$android/lib/cmake/Qt6" || true
@@ -148,6 +161,9 @@ jobs:
         run: |
           set -euxo pipefail
           echo "Using Ninja at: $(which ninja)"
+          echo "QT_HOST_PATH=$QT_HOST_PATH"
+          echo "QT_ANDROID_PATH=$QT_ANDROID_PATH"
+
           TOOLCHAIN_FILE="${QT_ANDROID_PATH}/lib/cmake/Qt6/qt.toolchain.cmake"
           test -f "$TOOLCHAIN_FILE"
 
@@ -155,7 +171,7 @@ jobs:
             -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
             -DQT_HOST_PATH="$QT_HOST_PATH" \
-            -DCMAKE_TOOLCHAIN_FILE="$QT_ANDROID_PATH/lib/cmake/Qt6/qt.toolchain.cmake" \
+            -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
             -DQt6_DIR="$Qt6_DIR_ANDROID" \
             -DCMAKE_PREFIX_PATH="$Qt6_DIR_ANDROID" \
             -DANDROID_ABI=${{ matrix.eabi }} \
@@ -166,7 +182,6 @@ jobs:
             -DQT_ANDROID_SDK_PLATFORM=android-35 \
             -DQT_ANDROID_BUILD_TOOLS_REVISION=35.0.0 \
             -DANDROID_PACKAGE_FORMAT=apk
-
 
           echo "--- androiddeployqt settings sanity ---"
           grep -E '"android-platform"|"sdkBuildToolsRevision"' android-*-deployment-settings.json || true
