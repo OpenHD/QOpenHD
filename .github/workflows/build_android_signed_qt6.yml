@@ -127,6 +127,10 @@ jobs:
       # --- Hardcode Qt paths (no discovery) ---
       - name: Export hardcoded Qt paths
         run: |
+
+          find / -type d -name '6.7.2' -exec sh -c 'printf "\n==> %s\n" "$1"; ls -la -- "$1"' _ {} \; 2>/dev/null
+          echo "!!!!!!!!!!!!!!!!!!!!!!!"
+          
           set -euxo pipefail
           QT_BASE="${QT_BASE_DIR}"
           QT_VERSION="${QT_VERSION}"
