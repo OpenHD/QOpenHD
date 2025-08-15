@@ -42,6 +42,15 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Download Gstreamer
+        run: |
+          wget https://github.com/OpenHD/gst-full-android/releases/download/withoutqt/gst-android-aarch64.zip
+          unzip -q gst-android-aarch64.zip
+          rm -f gst-android-aarch64.zip
+          tar -xf gst-android-aarch64.tar.gz
+          rm -f gst-android-aarch64.tar.gz
+          ls -a
+          
       # Restore ccache as early as possible
       - name: Restore ccache cache
         id: ccache-cache
