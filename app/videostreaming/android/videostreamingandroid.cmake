@@ -40,7 +40,7 @@ set_target_properties(lowlag_android PROPERTIES
 target_include_directories(lowlag_android
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}  
-        ${CMAKE_CURRENT_SOURCE_DIR}/aarch64 
+        ${CMAKE_CURRENT_SOURCE_DIR}/aarch64/include/gstreamer-1.0/
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/h264
         ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming
         ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon
