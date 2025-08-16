@@ -30,8 +30,8 @@
 #include <QSGGeometry>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-// Qt 6: SimpleMaterial lives in a private header
-#include <QtQuick/private/qsgsimplematerial_p.h>
+// Qt 6: SimpleMaterial lives in a private header under QtQuick/<ver>/QtQuick
+#include <private/qsgsimplematerial_p.h>
 #else
 // Qt 5: public headers
 #include <QSGSimpleMaterial>
