@@ -28,8 +28,15 @@
 
 #include <QSGGeometryNode>
 #include <QSGGeometry>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+// Qt 6: SimpleMaterial lives in a private header
+#include <QtQuick/private/qsgsimplematerial_p.h>
+#else
+// Qt 5: public headers
 #include <QSGSimpleMaterial>
 #include <QSGSimpleMaterialShader>
+#endif
 
 #include "../vscommon/QOpenHDVideoHelper.hpp"
 #include "../vscommon/video_ratio_helper.hpp"
