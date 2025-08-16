@@ -49,6 +49,7 @@ target_include_directories(lowlag_android
         ${CMAKE_CURRENT_SOURCE_DIR}/aarch64/include/gstreamer-1.0
         ${CMAKE_CURRENT_SOURCE_DIR}/aarch64/include/glib-2.0
         ${CMAKE_CURRENT_SOURCE_DIR}/aarch64/lib/glib-2.0/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/lib/h264
 )
 
 target_compile_definitions(lowlag_android
