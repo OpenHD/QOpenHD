@@ -37,10 +37,7 @@ set_target_properties(lowlag_android PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-# Includes:
-# - project root (your code uses relative paths)
-# - GStreamer headers (1.0 + glib-2.0)
-# - glibconfig.h usually lives under lib/glib-2.0/include for prebuilt SDKs
+# Includes
 target_include_directories(lowlag_android
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -59,7 +56,6 @@ target_compile_definitions(lowlag_android
         QOPENHD_ENABLE_VIDEO_VIA_ANDROID
 )
 
-# Qt libs (PUBLIC so consumers of this static lib inherit headers/defines)
 target_link_libraries(lowlag_android
     PUBLIC
         Qt${QT_VERSION_MAJOR}::Core
@@ -69,7 +65,7 @@ target_link_libraries(lowlag_android
         Qt${QT_VERSION_MAJOR}::Multimedia
 )
 
-# Qt 5-only extras (if present)
+# Qt 5 extras if available
 if(QT_VERSION_MAJOR EQUAL 5)
     if(TARGET Qt5::AndroidExtras)
         target_link_libraries(lowlag_android PUBLIC Qt5::AndroidExtras)
@@ -79,18 +75,12 @@ if(QT_VERSION_MAJOR EQUAL 5)
     endif()
 endif()
 
-# Qt 6 uses a private header for QSGSimpleMaterial; add QuickPrivate to includes/link
-if(QT_VERSION_MAJOR EQUAL 6)
+# Qt 6: pull in private usage requirements for scenegraph private headers
+if(QT_VERSION_MAJOR EQUAL 6 AND TARGET Qt6::QuickPrivate)
     target_link_libraries(lowlag_android PRIVATE Qt6::QuickPrivate)
 endif()
 
-# Android system libs needed for JNI + MediaCodec + GL calls
+# Android system libs (GL/EGL/NDK)
 if(ANDROID)
-    target_link_libraries(lowlag_android
-        PRIVATE
-            android
-            mediandk
-            EGL
-            GLESv2
-    )
+    target_link_libraries(lowlag_android PRIVATE android mediandk EGL GLESv2)
 endif()
