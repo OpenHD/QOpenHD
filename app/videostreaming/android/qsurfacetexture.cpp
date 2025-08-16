@@ -28,104 +28,50 @@
 
 #include <QSGGeometryNode>
 #include <QSGGeometry>
+#include <QSGTexture>
+#include <QSGTextureMaterial>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-// Qt 6: SimpleMaterial lives in a private header under QtQuick/<ver>/QtQuick
-#include <private/qsgsimplematerial_p.h>
-#else
-// Qt 5: public headers
-#include <QSGSimpleMaterial>
-#include <QSGSimpleMaterialShader>
+// Needed for QNativeInterface::QSGOpenGLTexture::fromNativeExternalOES
+#include <qsgtextureplatform.h>
 #endif
 
 #include "../vscommon/QOpenHDVideoHelper.hpp"
 #include "../vscommon/video_ratio_helper.hpp"
 
-struct State {
-    // the texture transform matrix
-    QMatrix4x4 uSTMatrix;
-    GLuint textureId = 0;
-
-    int compare(const State *other) const
-    {
-        return (uSTMatrix == other->uSTMatrix && textureId == other->textureId) ? 0 : -1;
-    }
-};
-
-class SurfaceTextureShader : public QSGSimpleMaterialShader<State>
-{
-    QSG_DECLARE_SIMPLE_COMPARABLE_SHADER(SurfaceTextureShader, State)
-public:
-    // vertex & fragment shaders are adapted from Android samples
-    const char *vertexShader() const override {
-        return
-                "uniform mat4 qt_Matrix;                            \n"
-                "uniform mat4 uSTMatrix;                            \n"
-                "attribute vec4 aPosition;                          \n"
-                "attribute vec4 aTextureCoord;                      \n"
-                "varying vec2 vTextureCoord;                        \n"
-                "void main() {                                      \n"
-                "  gl_Position = qt_Matrix * aPosition;             \n"
-                "  vTextureCoord = (uSTMatrix * aTextureCoord).xy;  \n"
-                "}";
-    }
-
-    const char *fragmentShader() const override {
-        return
-                "#extension GL_OES_EGL_image_external : require                     \n"
-                "precision mediump float;                                           \n"
-                "varying vec2 vTextureCoord;                                        \n"
-                "uniform lowp float qt_Opacity;                                     \n"
-                "uniform samplerExternalOES sTexture;                               \n"
-                "void main() {                                                      \n"
-                "  gl_FragColor = texture2D(sTexture, vTextureCoord) * qt_Opacity;  \n"
-                "}";
-    }
-
-    QList<QByteArray> attributes() const override
-    {
-        return QList<QByteArray>() << "aPosition" << "aTextureCoord";
-    }
-
-    void updateState(const State *state, const State *) override
-    {
-        program()->setUniformValue(m_uSTMatrixLoc, state->uSTMatrix);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, state->textureId);
-    }
-
-    void resolveUniforms() override
-    {
-        m_uSTMatrixLoc = program()->uniformLocation("uSTMatrix");
-        program()->setUniformValue("sTexture", 0); // bind texture unit 0
-    }
-
-private:
-    int m_uSTMatrixLoc = -1;
-};
-
+// A node that renders an EXTERNAL_OES texture using Qt's built-in texture material.
 class SurfaceTextureNode : public QSGGeometryNode
 {
 public:
-    SurfaceTextureNode(const QAndroidJniObject &surfaceTexture, GLuint textureId)
-        : QSGGeometryNode()
-        , m_surfaceTexture(surfaceTexture)
+    SurfaceTextureNode(const QAndroidJniObject &surfaceTexture,
+                       QQuickWindow *win,
+                       GLuint textureId,
+                       const QSize &initialSize)
+        : m_surfaceTexture(surfaceTexture)
         , m_geometry(QSGGeometry::defaultAttributes_TexturedPoint2D(), 4)
         , m_textureId(textureId)
+        , m_window(win)
     {
-        // Use preprocess to update the texture image and matrix every frame
         setFlag(UsePreprocess);
-
         setGeometry(&m_geometry);
+        setFlag(OwnsGeometry, false);
 
-        // Create and set our SurfaceTextureShader
-        QSGSimpleMaterial<State> *material = SurfaceTextureShader::createMaterial();
-        material->state()->textureId = m_textureId;
-        material->setFlag(QSGMaterial::Blending, false);
-        setMaterial(material);
-        setFlag(OwnsMaterial);
+        // Wrap the external OES texture as a QSGTexture
+#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+        m_qsgTexture = QNativeInterface::QSGOpenGLTexture::fromNativeExternalOES(
+                m_textureId, m_window, initialSize, {});
+#else
+        // Fallback (should not happen on your Qt 6.9, but keeps the code compilable)
+        m_qsgTexture = QNativeInterface::QSGOpenGLTexture::fromNative(
+                m_textureId, m_window, initialSize, {});
+#endif
+        // Material that samples the QSGTexture
+        auto *mat = new QSGTextureMaterial();
+        mat->setTexture(m_qsgTexture);
+        setMaterial(mat);
+        setFlag(OwnsMaterial, true);
 
-        // Prepare a global jfloat[16] for the transform matrix
+        // Prepare a global jfloat[16] for the transform matrix (kept if you later want to apply it)
         QAndroidJniEnvironment env;
         jfloatArray array = env->NewFloatArray(16);
         m_uSTMatrixArray = jfloatArray(env->NewGlobalRef(array));
@@ -134,42 +80,46 @@ public:
 
     ~SurfaceTextureNode() override
     {
-        // Release the global JNI reference so the GC can collect it
         QAndroidJniEnvironment env;
-        env->DeleteGlobalRef(m_uSTMatrixArray);
+        if (m_uSTMatrixArray)
+            env->DeleteGlobalRef(m_uSTMatrixArray);
         m_uSTMatrixArray = nullptr;
+
+        // QSGTexture is *not* owned by the material, so clean it up.
+        delete m_qsgTexture;
+        m_qsgTexture = nullptr;
+    }
+
+    void setRect(const QRectF &rect, const QRectF &texRect)
+    {
+        // Basic rect + (0..1) tex coords. If you later want to apply uSTMatrix,
+        // you can compute transformed UVs here and fill vertex data manually.
+        QSGGeometry::updateTexturedRectGeometry(&m_geometry, rect, texRect);
+        markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     }
 
     // QSGNode interface
-    void preprocess() override;
+    void preprocess() override
+    {
+        // Update the texture content
+        m_surfaceTexture.callMethod<void>("updateTexImage");
+
+        // If you need the transform, keep retrieving it here (render thread):
+        // m_surfaceTexture.callMethod<void>("getTransformMatrix", "([F)V", m_uSTMatrixArray);
+        // QAndroidJniEnvironment env;
+        // env->GetFloatArrayRegion(m_uSTMatrixArray, 0, 16, m_uSTMatrix.data());
+    }
 
 private:
     QAndroidJniObject m_surfaceTexture;
     QSGGeometry m_geometry;
     jfloatArray m_uSTMatrixArray = nullptr;
     GLuint m_textureId = 0;
+    QQuickWindow *m_window = nullptr;
+    QSGTexture *m_qsgTexture = nullptr;
 };
 
-void SurfaceTextureNode::preprocess()
-{
-    auto mat = static_cast<QSGSimpleMaterial<State> *>(material());
-    if (!mat)
-        return;
-
-    // update the texture content
-    m_surfaceTexture.callMethod<void>("updateTexImage");
-
-    // get the new texture transform matrix
-    m_surfaceTexture.callMethod<void>("getTransformMatrix", "([F)V", m_uSTMatrixArray);
-    QAndroidJniEnvironment env;
-    env->GetFloatArrayRegion(m_uSTMatrixArray, 0, 16, mat->state()->uSTMatrix.data());
-}
-
-/*extern "C" void Java_org_openhd_SurfaceTextureListener_frameAvailable(JNIEnv *, jobject , jlong ptr, jobject)
-{
-    // a new frame was decoded, let's update our item
-    //QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(ptr), "update", Qt::QueuedConnection);
-}*/
+// ---- QSurfaceTexture item ----
 
 QSurfaceTexture::QSurfaceTexture(QQuickItem *parent)
     : QQuickItem(parent)
@@ -193,7 +143,7 @@ void QSurfaceTexture::set_video_texture_size(int width_px, int height_px)
     m_texture_height_px = height_px;
 }
 
-// Flip vertically. Despite the name, this swaps top/bottom to correct the orientation on Android.
+// Flip vertically. Despite the name, this swaps top/bottom to correct orientation on Android.
 static void qrectf_flip_horizontally(QRectF& rect){
     float tmp = rect.top();
     rect.setTop(rect.bottom());
@@ -202,9 +152,9 @@ static void qrectf_flip_horizontally(QRectF& rect){
 
 QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNodeData *)
 {
-    SurfaceTextureNode *node = static_cast<SurfaceTextureNode *>(n);
+    auto *node = static_cast<SurfaceTextureNode *>(n);
     if (!node) {
-        // Create texture
+        // Create the external OES texture
         glGenTextures(1, &m_textureId);
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, m_textureId);
 
@@ -216,19 +166,14 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        // Create SurfaceTexture Java object bound to our external texture
+        // Create the Java SurfaceTexture bound to our GL texture
         m_surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", m_textureId);
 
-        // If you need frame callbacks, wire a listener here:
-        /*
-        m_surfaceTexture.callMethod<void>("setOnFrameAvailableListener",
-                                          "(Landroid/graphics/SurfaceTexture$OnFrameAvailableListener;)V",
-                                          QAndroidJniObject("org/openhd/SurfaceTextureListener",
-                                                            "(J)V", jlong(this)).object());
-        */
-
-        // Create our render node
-        node = new SurfaceTextureNode(m_surfaceTexture, m_textureId);
+        // Build the scene graph node around it
+        const QSize texSize = (m_texture_width_px > 0 && m_texture_height_px > 0)
+                                ? QSize(m_texture_width_px, m_texture_height_px)
+                                : QSize(1, 1);
+        node = new SurfaceTextureNode(m_surfaceTexture, window(), m_textureId, texSize);
         emit surfaceTextureChanged(this);
     }
 
@@ -243,13 +188,14 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
         rect = QRectF(coords.x, coords.y, coords.width, coords.height);
     }
 
-    // Flip vertical - otherwise video appears upside down on Android
+    // Flip vertical - otherwise video can appear upside down on Android
     qrectf_flip_horizontally(rect);
 
+    // For now we use the basic 0..1 texture rect. If you need the Android uSTMatrix
+    // applied (crop/rotate), we can extend setRect() to write transformed UVs.
     const QRectF texture_coords = QRectF(0, 0, 1, 1);
 
-    QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
-    node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
+    node->setRect(rect, texture_coords);
 
     // Schedule a repaint on the GUI thread
     QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
