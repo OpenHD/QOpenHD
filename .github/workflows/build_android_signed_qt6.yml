@@ -151,7 +151,7 @@ jobs:
           host:         linux
           target:       android
           arch:         android_arm64_v8a
-          modules:      qtdeclarative qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
+          modules:      qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
