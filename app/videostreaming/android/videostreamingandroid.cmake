@@ -5,15 +5,15 @@ project(LowLagAndroid LANGUAGES CXX)
 
 # --- Sources / headers ---
 set(LOWLAG_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/android/lowlagdecoder.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/android/qandroidmediaplayer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/android/qsurfacetexture.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.cpp
 )
 
 set(LOWLAG_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/android/lowlagdecoder.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/android/qandroidmediaplayer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/android/qsurfacetexture.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.h
 )
 
 # --- Qt detection (Qt 6 preferred, falls back to Qt 5) ---
