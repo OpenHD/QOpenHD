@@ -140,7 +140,7 @@ jobs:
           host:         linux
           target:       desktop
           arch:         linux_gcc_64
-          modules:      qtdeclarative qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
+          modules:      qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
