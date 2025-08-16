@@ -14,6 +14,7 @@ set(LOWLAG_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon/nalu/NALU.hpp
 )
 
 # --- Qt detection (Qt 6 preferred, falls back to Qt 5) ---
