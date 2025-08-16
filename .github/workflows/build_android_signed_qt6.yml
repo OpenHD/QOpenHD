@@ -50,7 +50,7 @@ jobs:
           tar -xf gst-android-aarch64.tar.gz
           rm -f gst-android-aarch64.tar.gz
           ls -a
-          
+
       # Restore ccache as early as possible
       - name: Restore ccache cache
         id: ccache-cache
@@ -140,7 +140,7 @@ jobs:
           host:         linux
           target:       desktop
           arch:         linux_gcc_64
-          modules:      qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
+          modules:      qtdeclarative qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
@@ -151,7 +151,7 @@ jobs:
           host:         linux
           target:       android
           arch:         android_arm64_v8a
-          modules:      qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
+          modules:      qtdeclarative qtcharts qtpositioning qtlocation qtmultimedia qtshadertools
           dir:          ${{ env.QT_BASE_PARENT }}
           cache:        true
 
