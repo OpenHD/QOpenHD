@@ -31,17 +31,6 @@
 #include <QSGTexture>
 #include <QSGTextureMaterial>
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-// Needed for QNativeInterface::QSGOpenGLTexture::fromNativeExternalOES
-#  if __has_include(<QtQuick/qsgtextureplatform.h>)
-#    include <QtQuick/qsgtextureplatform.h>
-#  elif __has_include(<qsgtextureplatform.h>)
-#    include <qsgtextureplatform.h>
-#  else
-#    error "qsgtextureplatform.h not found. Ensure Qt Quick is installed and included."
-#  endif
-#endif
-
 #include "../vscommon/QOpenHDVideoHelper.hpp"
 #include "../vscommon/video_ratio_helper.hpp"
 
@@ -75,7 +64,7 @@ public:
         setMaterial(mat);
         setFlag(OwnsMaterial, true);
 
-        // Prepare a global jfloat[16] for the transform matrix (kept if you later want to apply it)
+        // Prepare a global jfloat[16] for the transform matrix (optional use later)
         QAndroidJniEnvironment env;
         jfloatArray array = env->NewFloatArray(16);
         m_uSTMatrixArray = jfloatArray(env->NewGlobalRef(array));
@@ -140,6 +129,7 @@ void QSurfaceTexture::set_video_texture_size(int width_px, int height_px)
     m_texture_height_px = height_px;
 }
 
+// Flip vertically (swap top/bottom).
 static void qrectf_flip_horizontally(QRectF& rect){
     float tmp = rect.top();
     rect.setTop(rect.bottom());
