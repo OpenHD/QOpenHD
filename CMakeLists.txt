@@ -138,7 +138,9 @@ target_link_libraries(QOpenHD
 
 include(lib/h264/h264.cmake)
 # include(app/videostreaming/avcodec/avcodec_video.cmake)
-include(app/videostreaming/android/videostreamingandroid.cmake)
+if(ANDROID)
+    include(app/videostreaming/android/videostreamingandroid.cmake)
+endif()
 # include(app/videostreaming/gstreamer/gst_video.cmake)
 
 qt_finalize_executable(QOpenHD)
