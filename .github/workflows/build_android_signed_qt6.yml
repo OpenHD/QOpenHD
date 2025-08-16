@@ -49,7 +49,8 @@ jobs:
           rm -f gst-android-aarch64.zip
           tar -xf gst-android-aarch64.tar.gz
           rm -f gst-android-aarch64.tar.gz
-          ls -a
+          ls -a aarch64
+          tree aarch64/
 
       # Restore ccache as early as possible
       - name: Restore ccache cache

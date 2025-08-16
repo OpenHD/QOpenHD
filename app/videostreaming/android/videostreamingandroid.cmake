@@ -39,10 +39,11 @@ set_target_properties(lowlag_android PROPERTIES
 # Make sure includes line up with how you #include files
 target_include_directories(lowlag_android
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}                                   # so "app/..." includes work if you use them
+        ${CMAKE_CURRENT_SOURCE_DIR}  
+        ${CMAKE_CURRENT_SOURCE_DIR}/aarch64 
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/h264
-        ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming                # optional, often handy
-        ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon       # <-- enables #include <nalu/NALU.hpp>
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming
+        ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon
 )
 
 target_compile_definitions(lowlag_android
