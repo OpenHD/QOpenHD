@@ -1,11 +1,12 @@
-import QtQuick
-import QtQuick.Controls
-import QtQuick.Controls.Material
-import QtQuick.Layouts
-import Qt.labs.settings
-import QtQuick.Window
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
+import QtQuick.Layouts 1.0
+import Qt.labs.settings 1.0
+import QtQuick.Window 2.12
 
-import OpenHD
+import OpenHD 1.0
+
 import "./ui"
 import "./ui/widgets"
 import "./ui/elements"
@@ -15,9 +16,6 @@ import "./video"
 ApplicationWindow {
     id: applicationWindow
     visible: true
-
-    // To prevent the screen from turning off (new for Qt 6)
-    keepScreenOn: true
 
     //Allow drawing under system bars / notch
     flags: Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
@@ -51,8 +49,8 @@ ApplicationWindow {
     title: qsTr("QOpenHD EVO")
     color: settings.app_background_transparent ? "transparent" : "#2C3E50"
 
-    // Set full-screen visibility (new for Qt 6)
-    visibility: (settings.dev_force_show_full_screen || _isMobile) ? Window.FullScreen : Window.AutomaticVisibility
+    // Be defensive if QOPENHD_IS_MOBILE is missing
+    visibility: (settings.dev_force_show_full_screen || _isMobile) ? "FullScreen" : "AutomaticVisibility"
 
     // Local app settings
     AppSettings {
