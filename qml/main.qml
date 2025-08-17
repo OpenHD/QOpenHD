@@ -16,7 +16,8 @@ import "./video"
 ApplicationWindow {
     id: applicationWindow
     visible: true
-
+    keepScreenOn: true
+    
     //Allow drawing under system bars / notch
     flags: Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
 
