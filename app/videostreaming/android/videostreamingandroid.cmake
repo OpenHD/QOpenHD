@@ -53,9 +53,10 @@ target_include_directories(lowlag_android
         ${CMAKE_CURRENT_SOURCE_DIR}/app
         ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming
         ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon
-        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/include/gstreamer-1.0>
-        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/include/glib-2.0>
-        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/lib/glib-2.0/include>
+        ${GSTREAMER_ROOT}/include/gstreamer-1.0>
+        ${GSTREAMER_ROOT}/include/gstreamer-1.0>
+        ${GSTREAMER_ROOT}/include/glib-2.0>
+        ${GSTREAMER_ROOT}/lib/glib-2.0/include>
         ${CMAKE_CURRENT_SOURCE_DIR}/lib
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/h264
 )
