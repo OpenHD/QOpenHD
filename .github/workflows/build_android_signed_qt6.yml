@@ -188,6 +188,7 @@ jobs:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           set -euxo pipefail
+          ls -a /home/runner/work/gst-full-android/gst-full-android/prefix/aarch64/include/gstreamer-1.0
           export GSTREAMER_ROOT_ANDROID="$PWD/third_party/gstreamer-android/arm64-v8a"
           cmake "$SOURCE_DIR" -G Ninja \
             -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
