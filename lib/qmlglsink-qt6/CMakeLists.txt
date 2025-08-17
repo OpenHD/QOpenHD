@@ -181,6 +181,41 @@ qt_add_library(qmlglsink STATIC
   qt6/qt6glitem.h
 )
 
+# Make sure QPA headers (QtGui/qpa/...) are visible for Qt 6
+# Many Qt 6 builds put them under a versioned include dir like:
+#   <qt>/include/QtGui/6.x.y/QtGui/qpa/...
+# Linking GuiPrivate adds those private include dirs automatically.
+if(QT_VERSION_MAJOR EQUAL 6 AND TARGET Qt6::GuiPrivate)
+    target_link_libraries(qmlglsink PRIVATE Qt6::GuiPrivate)
+endif()
+
+# Extra safety: if for some reason GuiPrivate isn't available, try to
+# discover the versioned qpa dir and add it explicitly.
+if(QT_VERSION_MAJOR EQUAL 6 AND NOT TARGET Qt6::GuiPrivate)
+    get_target_property(_qt_gui_includes Qt6::Gui INTERFACE_INCLUDE_DIRECTORIES)
+    set(_qpa_dirs "")
+    foreach(d IN LISTS _qt_gui_includes)
+        # Unversioned layout: <d>/QtGui/qpa/qplatformnativeinterface.h
+        if(EXISTS "${d}/QtGui/qpa/qplatformnativeinterface.h")
+            list(APPEND _qpa_dirs "${d}/QtGui")
+        endif()
+        # Versioned layout: <d>/QtGui/*/QtGui/qpa/qplatformnativeinterface.h
+        file(GLOB _ver_candidates "${d}/QtGui/*/QtGui/qpa/qplatformnativeinterface.h")
+        foreach(c IN LISTS _ver_candidates)
+            get_filename_component(_qpa_dir "${c}" DIRECTORY)       # .../QtGui/qpa
+            get_filename_component(_qpa_dir "${_qpa_dir}" DIRECTORY) # .../QtGui
+            list(APPEND _qpa_dirs "${_qpa_dir}")
+        endforeach()
+    endforeach()
+    list(REMOVE_DUPLICATES _qpa_dirs)
+    if(_qpa_dirs)
+        target_include_directories(qmlglsink PRIVATE ${_qpa_dirs})
+    else()
+        message(WARNING "qmlglsink: could not locate QtGui/qpa include dir; build may fail.")
+    endif()
+endif()
+
+
 target_compile_features(qmlglsink PUBLIC cxx_std_17)
 
 # --- QPA header fix ---
