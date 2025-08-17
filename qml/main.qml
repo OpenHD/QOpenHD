@@ -15,6 +15,7 @@ import "./video"
 ApplicationWindow {
     id: applicationWindow
     visible: true
+    property bool QOPENHD_ENABLE_VIDEO_VIA_ANDROID: true
 
     // To prevent the screen from turning off (new for Qt 6)
     keepScreenOn: true
