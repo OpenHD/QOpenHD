@@ -84,3 +84,22 @@ endif()
 if(ANDROID)
     target_link_libraries(lowlag_android PRIVATE android mediandk EGL GLESv2)
 endif()
+
+option(QGC_ENABLE_VIDEOSTREAMING "Enable video streaming" ON)
+
+if(QGC_ENABLE_VIDEOSTREAMING)
+  message(STATUS "Enabling video streaming support")
+
+  # Build qmlglsink from the forked folder
+  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
+
+  # Link it to your app (replace QOpenHD with your actual app target)
+  target_link_libraries(QOpenHD PRIVATE qmlglsink)
+
+  # Ensure your app sees the same GStreamer include dirs (handy if you include gst headers)
+  target_include_directories(QOpenHD PRIVATE
+    ${CMAKE_SOURCE_DIR}/aarch64/include/gstreamer-1.0
+    ${CMAKE_SOURCE_DIR}/aarch64/include/glib-2.0
+    ${CMAKE_SOURCE_DIR}/aarch64/lib/glib-2.0/include
+  )
+endif()
