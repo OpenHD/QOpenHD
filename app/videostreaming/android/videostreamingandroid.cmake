@@ -116,4 +116,19 @@ if(QGC_ENABLE_VIDEOSTREAMING AND ANDROID)
         ${GSTREAMER_ROOT}/include/glib-2.0
         ${GSTREAMER_ROOT}/lib/glib-2.0/include
     )
+
+    # 1) link the imported GStreamer targets (created by qmlglsink's CMake)
+    target_link_libraries(QOpenHD PRIVATE
+        PkgConfig::GSTREAMER
+        PkgConfig::GSTREAMER_VIDEO
+        PkgConfig::GSTREAMER_GL
+    )
+
+    # 2) add common Android lib directories (handles different layouts)
+    target_link_directories(QOpenHD PRIVATE
+        ${GSTREAMER_ROOT}/lib
+        ${GSTREAMER_ROOT}/lib64
+        ${GSTREAMER_ROOT}/lib/arm64-v8a
+        ${GSTREAMER_ROOT}/lib/aarch64-linux-android
+    )
 endif()
