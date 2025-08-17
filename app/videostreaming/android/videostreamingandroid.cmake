@@ -1,4 +1,5 @@
 # app/videostreaming/android/videostreamingandroid.cmake
+
 # Only run this on Android builds
 if(NOT ANDROID)
     message(STATUS "Android video streaming: skipped (NOT ANDROID)")
@@ -19,12 +20,10 @@ else()
 endif()
 message(STATUS "Android video: using GStreamer prefix: ${GSTREAMER_ROOT}")
 
-# --- Make sure pkg-config sees the prefix's .pc files ---
+# --- Make sure pkg-config sees ONLY our prefix's .pc files ---
 find_package(PkgConfig REQUIRED)
-# Avoid host pollution
 set(ENV{PKG_CONFIG_DIR} "")
 set(ENV{PKG_CONFIG_SYSROOT_DIR} "")
-
 set(_pcdirs "")
 foreach(d
     "${GSTREAMER_ROOT}/lib/pkgconfig"
@@ -44,7 +43,10 @@ string(JOIN ":" _pcpath ${_pcdirs})
 set(ENV{PKG_CONFIG_LIBDIR} "${_pcpath}")
 message(STATUS "PKG_CONFIG_LIBDIR=${_pcpath}")
 
-# --- Make the old qmake DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID equivalent ---
+# Prefer single full static lib if available; otherwise we’ll fail loudly here
+pkg_check_modules(GSTFULL REQUIRED IMPORTED_TARGET gstreamer-full-1.0)
+
+# --- old qmake: DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID ---
 option(QOPENHD_ENABLE_VIDEO_VIA_ANDROID "Enable Android low-latency video path" ON)
 
 # --- lowlag_android library ---
@@ -61,7 +63,7 @@ set(LOWLAG_HEADERS
     ${CMAKE_SOURCE_DIR}/app/videostreaming/vscommon/nalu/NALU.hpp
 )
 
-# Ensure Qt Multimedia is available in this scope (top-level may not have asked for it)
+# Ensure Qt Multimedia is available in this scope
 if(NOT TARGET Qt6::Multimedia AND NOT TARGET Qt5::Multimedia)
   find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Multimedia)
   find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Multimedia)
@@ -125,34 +127,33 @@ target_include_directories(QOpenHD PRIVATE
     ${GSTREAMER_ROOT}/lib/glib-2.0/include
 )
 
-# Library search dirs (helpful on some layouts)
+# Add ALL likely lib search dirs (include plugins dir for gst-full convenience libs)
 target_link_directories(QOpenHD PRIVATE
     ${GSTREAMER_ROOT}/lib
     ${GSTREAMER_ROOT}/lib64
     ${GSTREAMER_ROOT}/lib/arm64-v8a
     ${GSTREAMER_ROOT}/lib/aarch64-linux-android
+    ${GSTREAMER_ROOT}/lib/gstreamer-1.0        # <<— needed for -lgstcoreelements, -lgstplayback, etc.
 )
 
-# --- Link GStreamer (prefer gst-full; fallback to split pc files) ---
-# Try gst-full (single static library with registrants)
-pkg_check_modules(GSTFULL QUIET IMPORTED_TARGET gstreamer-full-1.0)
-if(TARGET PkgConfig::GSTFULL)
-    message(STATUS "Linking against gstreamer-full-1.0")
-    target_link_libraries(QOpenHD PRIVATE PkgConfig::GSTFULL)
-else()
-    message(WARNING "gstreamer-full-1.0 not found via pkg-config. Falling back to split packages.")
-    # Split packages
-    pkg_check_modules(GSTREAMER      REQUIRED IMPORTED_TARGET gstreamer-1.0)
-    pkg_check_modules(GSTREAMER_BASE QUIET    IMPORTED_TARGET gstreamer-base-1.0)   # sometimes needed transitively
-    pkg_check_modules(GSTREAMER_VIDEO REQUIRED IMPORTED_TARGET gstreamer-video-1.0)
-    pkg_check_modules(GSTREAMER_GL   QUIET    IMPORTED_TARGET gstreamer-gl-1.0)
-    pkg_check_modules(GSTREAMER_APP  REQUIRED IMPORTED_TARGET gstreamer-app-1.0)    # for gst_app_sink_*
+# Link GStreamer: use gst-full imported target
+message(STATUS "Linking against gstreamer-full-1.0")
+target_link_libraries(QOpenHD PRIVATE PkgConfig::GSTFULL)
 
-    target_link_libraries(QOpenHD PRIVATE
-        PkgConfig::GSTREAMER
-        $<$<TARGET_EXISTS:PkgConfig::GSTREAMER_BASE>:PkgConfig::GSTREAMER_BASE>
-        PkgConfig::GSTREAMER_VIDEO
-        $<$<TARGET_EXISTS:PkgConfig::GSTREAMER_GL>:PkgConfig::GSTREAMER_GL>
-        PkgConfig::GSTREAMER_APP
-    )
-endif()
+# --- Optional: sanity warnings if convenience libs are missing from prefix ---
+set(_gst_full_convenience
+    gstcoreelements
+    gstplayback
+    gsttypefindfunctions
+    gstopengl
+    gstlibav
+    gstapp
+)
+foreach(lib ${_gst_full_convenience})
+  if(NOT EXISTS "${GSTREAMER_ROOT}/lib/gstreamer-1.0/lib${lib}.a" AND
+     NOT EXISTS "${GSTREAMER_ROOT}/lib/gstreamer-1.0/lib${lib}.so")
+    message(WARNING "GStreamer full convenience lib not found: ${GSTREAMER_ROOT}/lib/gstreamer-1.0/lib${lib}.a|.so . \
+If link fails with -l${lib}, adjust your gst-full build to include that group \
+(e.g. add to -Dgst-full-libraries=coreelements,playback,typefindfunctions,opengl,libav,app,video,audio,codecparsers).")
+  endif()
+endforeach()
