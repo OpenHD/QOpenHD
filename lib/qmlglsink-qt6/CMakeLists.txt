@@ -4,21 +4,47 @@ project(qmlglsink LANGUAGES C CXX)
 # --- Qt6 ---
 find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Qml Quick)
 
-# --- GStreamer via pkg-config ---
+# --- pkg-config (used when .pc files are present) ---
 find_package(PkgConfig REQUIRED)
 
-# We'll fill this with the imported targets to link in the end.
+# We'll collect the imported targets to link at the end
 set(_GST_IMPORTED_TARGETS)
 
-# Make pkg-config see the Android .pc files (and provide a fallback if none exist)
+# -------- Robust Android prefix detection (prefers repo's aarch64) --------
 if(ANDROID)
-  if(DEFINED ENV{GSTREAMER_ROOT_ANDROID} AND NOT "$ENV{GSTREAMER_ROOT_ANDROID}" STREQUAL "")
-    set(GSTREAMER_ROOT "$ENV{GSTREAMER_ROOT_ANDROID}")
-  else()
-    set(GSTREAMER_ROOT "${CMAKE_SOURCE_DIR}/aarch64")
+  set(_candidate_roots "")
+
+  # 1) Prefer the repo's aarch64 prefix if it exists (your own build)
+  if(EXISTS "${CMAKE_SOURCE_DIR}/aarch64/include/gstreamer-1.0")
+    list(APPEND _candidate_roots "${CMAKE_SOURCE_DIR}/aarch64")
   endif()
 
-  # Collect potential pkg-config dirs under the Android prefix
+  # 2) Then try env override (CI/downloaded bundle)
+  if(DEFINED ENV{GSTREAMER_ROOT_ANDROID} AND NOT "$ENV{GSTREAMER_ROOT_ANDROID}" STREQUAL "")
+    list(APPEND _candidate_roots "$ENV{GSTREAMER_ROOT_ANDROID}")
+  endif()
+
+  # Pick the first candidate that actually has headers and a lib dir
+  set(GSTREAMER_ROOT "")
+  foreach(_root IN LISTS _candidate_roots)
+    if(EXISTS "${_root}/include/gstreamer-1.0" AND
+       (EXISTS "${_root}/lib" OR EXISTS "${_root}/lib64" OR EXISTS "${_root}/lib/arm64-v8a"))
+      set(GSTREAMER_ROOT "${_root}")
+      break()
+    endif()
+  endforeach()
+
+  if(NOT GSTREAMER_ROOT)
+    message(FATAL_ERROR
+      "Could not locate a usable GStreamer Android prefix.\n"
+      "Tried: ${_candidate_roots}\n"
+      "Hint: ensure either ${CMAKE_SOURCE_DIR}/aarch64 or GSTREAMER_ROOT_ANDROID points to a prefix with include/ and lib/."
+    )
+  endif()
+
+  message(STATUS "Using GStreamer Android prefix: ${GSTREAMER_ROOT}")
+
+  # Candidate pkg-config directories
   set(_pcdirs "")
   foreach(d
       "${GSTREAMER_ROOT}/lib/pkgconfig"
@@ -36,13 +62,13 @@ if(ANDROID)
   list(REMOVE_DUPLICATES _pcdirs)
 
   if(_pcdirs)
-    # Use LIBDIR (not PATH) so we don't mix host pc files
+    # Use LIBDIR so we don't mix host pc files
     set(ENV{PKG_CONFIG_DIR} "")
     set(ENV{PKG_CONFIG_SYSROOT_DIR} "")
     string(JOIN ":" _pcpath ${_pcdirs})
     set(ENV{PKG_CONFIG_LIBDIR} "${_pcpath}")
 
-    # Create imported targets – one per package (names become PkgConfig::GSTREAMER*)
+    # Create imported targets – one per package (names: PkgConfig::GSTREAMER*)
     pkg_check_modules(GSTREAMER       REQUIRED IMPORTED_TARGET gstreamer-1.0)
     pkg_check_modules(GSTREAMER_VIDEO REQUIRED IMPORTED_TARGET gstreamer-video-1.0)
     pkg_check_modules(GSTREAMER_GL    REQUIRED IMPORTED_TARGET gstreamer-gl-1.0)
@@ -53,29 +79,55 @@ if(ANDROID)
       PkgConfig::GSTREAMER_GL)
   else()
     message(WARNING
-      "No GStreamer .pc files under ${GSTREAMER_ROOT}; "
-      "falling back to manual libraries/includes")
+      "No GStreamer .pc files under ${GSTREAMER_ROOT}; falling back to manual libraries/includes")
 
-    # Manual includes from your Android prefix
+    # Common library roots used by Android packages
+    set(_GST_LIB_SEARCH_DIRS
+      "${GSTREAMER_ROOT}/lib"
+      "${GSTREAMER_ROOT}/lib64"
+      "${GSTREAMER_ROOT}/lib/arm64-v8a"
+      "${GSTREAMER_ROOT}/arm64-v8a/lib"
+      "${GSTREAMER_ROOT}/lib/aarch64-linux-android"
+    )
+    file(GLOB _more1 "${GSTREAMER_ROOT}/lib/*-android*/")
+    file(GLOB _more2 "${GSTREAMER_ROOT}/*arm64*/lib")
+    list(APPEND _GST_LIB_SEARCH_DIRS ${_more1} ${_more2})
+    list(REMOVE_DUPLICATES _GST_LIB_SEARCH_DIRS)
+
+    # Headers
     set(_GST_INC
       "${GSTREAMER_ROOT}/include/gstreamer-1.0"
       "${GSTREAMER_ROOT}/include/glib-2.0"
       "${GSTREAMER_ROOT}/lib/glib-2.0/include")
 
-    # Locate the needed libs directly
-    find_library(_LIB_GSTREAMER       NAMES gstreamer-1.0       HINTS "${GSTREAMER_ROOT}/lib")
-    find_library(_LIB_GSTREAMER_VIDEO NAMES gstreamer-video-1.0 HINTS "${GSTREAMER_ROOT}/lib")
-    find_library(_LIB_GSTREAMER_GL    NAMES gstreamer-gl-1.0    HINTS "${GSTREAMER_ROOT}/lib")
-    find_library(_LIB_GOBJECT         NAMES gobject-2.0         HINTS "${GSTREAMER_ROOT}/lib")
-    find_library(_LIB_GLIB            NAMES glib-2.0            HINTS "${GSTREAMER_ROOT}/lib")
+    macro(_find_gstlib OUT_VAR)
+      find_library(${OUT_VAR}
+        NAMES ${ARGN}
+        HINTS ${_GST_LIB_SEARCH_DIRS}
+      )
+    endmacro()
 
+    # Core libs (accept legacy gstreamer_android name too)
+    _find_gstlib(_LIB_GSTREAMER       gstreamer-1.0 gstreamer_android)
+    _find_gstlib(_LIB_GSTREAMER_VIDEO gstreamer-video-1.0)
+    _find_gstlib(_LIB_GSTREAMER_GL    gstreamer-gl-1.0)
+    _find_gstlib(_LIB_GOBJECT         gobject-2.0)
+    _find_gstlib(_LIB_GLIB            glib-2.0)
+    # Often needed
+    _find_gstlib(_LIB_GSTBASE         gstreamer-base-1.0)
+
+    set(_missing "")
     foreach(_req _LIB_GSTREAMER _LIB_GSTREAMER_VIDEO _LIB_GSTREAMER_GL _LIB_GOBJECT _LIB_GLIB)
       if(NOT ${_req})
-        message(FATAL_ERROR "Missing ${_req} in ${GSTREAMER_ROOT}/lib")
+        list(APPEND _missing "${_req}")
       endif()
     endforeach()
+    if(_missing)
+      message(FATAL_ERROR
+        "Missing required GStreamer libs: ${_missing}\n"
+        "Searched: ${_GST_LIB_SEARCH_DIRS}")
+    endif()
 
-    # Mimic pkg-config imported targets so the rest of the file stays unchanged
     add_library(PkgConfig::GSTREAMER       INTERFACE IMPORTED)
     add_library(PkgConfig::GSTREAMER_VIDEO INTERFACE IMPORTED)
     add_library(PkgConfig::GSTREAMER_GL    INTERFACE IMPORTED)
@@ -87,20 +139,23 @@ if(ANDROID)
     set_target_properties(PkgConfig::GSTREAMER_GL
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_GST_INC}")
 
-    target_link_libraries(PkgConfig::GSTREAMER
-      INTERFACE "${_LIB_GSTREAMER}" "${_LIB_GOBJECT}" "${_LIB_GLIB}")
-    target_link_libraries(PkgConfig::GSTREAMER_VIDEO
-      INTERFACE "${_LIB_GSTREAMER_VIDEO}" "${_LIB_GOBJECT}" "${_LIB_GLIB}")
-    target_link_libraries(PkgConfig::GSTREAMER_GL
-      INTERFACE "${_LIB_GSTREAMER_GL}" "${_LIB_GOBJECT}" "${_LIB_GLIB}")
+    set(_GST_CORE_LINK "${_LIB_GSTREAMER}" "${_LIB_GOBJECT}" "${_LIB_GLIB}")
+    if(_LIB_GSTBASE)
+      list(APPEND _GST_CORE_LINK "${_LIB_GSTBASE}")
+    endif()
+
+    target_link_libraries(PkgConfig::GSTREAMER       INTERFACE ${_GST_CORE_LINK})
+    target_link_libraries(PkgConfig::GSTREAMER_VIDEO INTERFACE "${_LIB_GSTREAMER_VIDEO}" "${_LIB_GOBJECT}" "${_LIB_GLIB}")
+    target_link_libraries(PkgConfig::GSTREAMER_GL    INTERFACE "${_LIB_GSTREAMER_GL}"    "${_LIB_GOBJECT}" "${_LIB_GLIB}")
 
     set(_GST_IMPORTED_TARGETS
       PkgConfig::GSTREAMER
       PkgConfig::GSTREAMER_VIDEO
       PkgConfig::GSTREAMER_GL)
   endif()
+
 else()
-  # Non-Android: rely on system pkg-config as usual
+  # Non-Android
   pkg_check_modules(GSTREAMER       REQUIRED IMPORTED_TARGET gstreamer-1.0)
   pkg_check_modules(GSTREAMER_VIDEO REQUIRED IMPORTED_TARGET gstreamer-video-1.0)
   pkg_check_modules(GSTREAMER_GL    REQUIRED IMPORTED_TARGET gstreamer-gl-1.0)
@@ -109,6 +164,7 @@ else()
     PkgConfig::GSTREAMER_VIDEO
     PkgConfig::GSTREAMER_GL)
 endif()
+
 
 # --- Library with the Qt6 sources from the fork ---
 qt_add_library(qmlglsink STATIC
