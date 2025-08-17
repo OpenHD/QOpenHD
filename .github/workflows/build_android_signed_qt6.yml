@@ -188,7 +188,7 @@ jobs:
           set -euxo pipefail
           cd ..
           ls -a $PWD/aarch64/include/gstreamer-1.0
-          sudo mkdir -p /home/runner/work/gst-full-android/gst-full-android/prefix/aarch64
+          sudo mkdir -p /home/runner/work/gst-full-android/gst-full-android/prefix
           sudo ln -s $PWD/aarch64 /home/runner/work/gst-full-android/gst-full-android/prefix/aarch64
           ls -a /home/runner/work/gst-full-android/gst-full-android/prefix/aarch64/include/gstreamer-1.0
           cd .build-android
