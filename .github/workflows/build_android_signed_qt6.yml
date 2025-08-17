@@ -187,6 +187,7 @@ jobs:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           set -euxo pipefail
+          export GSTREAMER_ROOT_ANDROID="$PWD/third_party/gstreamer-android/arm64-v8a"
           cmake "$SOURCE_DIR" -G Ninja \
             -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
             -DCMAKE_MAKE_PROGRAM="$(which ninja)" \
@@ -213,6 +214,7 @@ jobs:
       - name: Build
         working-directory: ${{ env.BUILD_DIR }}
         run: |
+          export GSTREAMER_ROOT_ANDROID="$PWD/third_party/gstreamer-android/arm64-v8a"
           set -euxo pipefail
           cmake --build . --parallel 12
           echo "Built files:"
