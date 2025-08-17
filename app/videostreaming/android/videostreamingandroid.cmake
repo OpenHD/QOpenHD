@@ -6,6 +6,12 @@ if(NOT ANDROID)
     return()
 endif()
 
+# Make sure we can import pkg-config targets here
+find_package(PkgConfig REQUIRED)
+# Prefer the single "full" lib produced by your YAML
+pkg_check_modules(GSTFULL REQUIRED IMPORTED_TARGET gstreamer-full-1.0)
+
+
 message(STATUS "Enabling video streaming support (Android)")
 
 # --- Resolve GStreamer prefix (prefer repo's aarch64, else env override) ---
@@ -105,11 +111,7 @@ target_include_directories(QOpenHD PRIVATE
 
 # Link GStreamer imported targets (now defined by qmlglsink subdir)
 if(TARGET PkgConfig::GSTREAMER AND TARGET PkgConfig::GSTREAMER_VIDEO AND TARGET PkgConfig::GSTREAMER_GL)
-    target_link_libraries(QOpenHD PRIVATE
-        PkgConfig::GSTREAMER
-        PkgConfig::GSTREAMER_VIDEO
-        PkgConfig::GSTREAMER_GL
-    )
+    target_link_libraries(QOpenHD PRIVATE PkgConfig::GSTFULL)
 else()
     message(WARNING "GStreamer imported targets not present; qmlglsink should define them. Check qmlglsink CMake.")
 endif()
