@@ -50,7 +50,8 @@ jobs:
           tar -xf gst-android-aarch64.tar.gz
           rm -f gst-android-aarch64.tar.gz
           ls -a aarch64
-          tree aarch64/
+          mkdir -p /home/runner/work/gst-full-android/gst-full-android/prefix/aarch64
+          ln -s $PWD/aarch64 /home/runner/work/gst-full-android/gst-full-android/prefix/aarch64
 
       # Restore ccache as early as possible
       - name: Restore ccache cache
