@@ -1,16 +1,9 @@
 # app/videostreaming/android/videostreamingandroid.cmake
-
 # Only run this on Android builds
 if(NOT ANDROID)
     message(STATUS "Android video streaming: skipped (NOT ANDROID)")
     return()
 endif()
-
-# Make sure we can import pkg-config targets here
-find_package(PkgConfig REQUIRED)
-# Prefer the single "full" lib produced by your YAML
-pkg_check_modules(GSTFULL REQUIRED IMPORTED_TARGET gstreamer-full-1.0)
-
 
 message(STATUS "Enabling video streaming support (Android)")
 
@@ -22,9 +15,34 @@ elseif(DEFINED ENV{GSTREAMER_ROOT_ANDROID} AND NOT "$ENV{GSTREAMER_ROOT_ANDROID}
 else()
     message(FATAL_ERROR
         "Could not find GStreamer Android prefix. "
-        "Add ${CMAKE_SOURCE_DIR}/aarch64 or set GSTREAMER_ROOT_ANDROID.")
+        "Add ${CMAKE_SOURCE_DIR}/aarch64 or set GSTREAMER_ROOT_ANDROID to your prefix.")
 endif()
 message(STATUS "Android video: using GStreamer prefix: ${GSTREAMER_ROOT}")
+
+# --- Make sure pkg-config sees the prefix's .pc files ---
+find_package(PkgConfig REQUIRED)
+# Avoid host pollution
+set(ENV{PKG_CONFIG_DIR} "")
+set(ENV{PKG_CONFIG_SYSROOT_DIR} "")
+
+set(_pcdirs "")
+foreach(d
+    "${GSTREAMER_ROOT}/lib/pkgconfig"
+    "${GSTREAMER_ROOT}/share/pkgconfig"
+    "${GSTREAMER_ROOT}/lib/gstreamer-1.0/pkgconfig"
+    "${GSTREAMER_ROOT}/lib/aarch64-linux-android/pkgconfig"
+    "${GSTREAMER_ROOT}/lib/arm64-v8a/pkgconfig"
+)
+  if(EXISTS "${d}")
+    list(APPEND _pcdirs "${d}")
+  endif()
+endforeach()
+if(NOT _pcdirs)
+  message(FATAL_ERROR "No pkg-config directories found under ${GSTREAMER_ROOT}")
+endif()
+string(JOIN ":" _pcpath ${_pcdirs})
+set(ENV{PKG_CONFIG_LIBDIR} "${_pcpath}")
+message(STATUS "PKG_CONFIG_LIBDIR=${_pcpath}")
 
 # --- Make the old qmake DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID equivalent ---
 option(QOPENHD_ENABLE_VIDEO_VIA_ANDROID "Enable Android low-latency video path" ON)
@@ -66,16 +84,15 @@ target_include_directories(lowlag_android
         ${CMAKE_SOURCE_DIR}/app/videostreaming/gstreamer
         ${CMAKE_SOURCE_DIR}/lib
         ${CMAKE_SOURCE_DIR}/lib/h264
-        # Android-only GStreamer headers
+        # GStreamer headers
         ${GSTREAMER_ROOT}/include/gstreamer-1.0
         ${GSTREAMER_ROOT}/include/glib-2.0
         ${GSTREAMER_ROOT}/lib/glib-2.0/include
 )
 
-# Define the Android video flag on our targets (qmake: DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
 if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
     target_compile_definitions(lowlag_android PUBLIC QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
-    target_compile_definitions(QOpenHD PRIVATE QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
+    target_compile_definitions(QOpenHD      PRIVATE QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
     message(STATUS "QOPENHD_ENABLE_VIDEO_VIA_ANDROID = ON")
 else()
     message(STATUS "QOPENHD_ENABLE_VIDEO_VIA_ANDROID = OFF")
@@ -95,31 +112,47 @@ endif()
 # Android NDK libs
 target_link_libraries(lowlag_android PRIVATE android mediandk EGL GLESv2)
 
-# --- qmlglsink (defines PkgConfig::GSTREAMER* targets) ---
+# --- qmlglsink ---
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
 
-# --- Wire everything into the app target ---
-# Link the two libs into QOpenHD
+# --- App wiring ---
 target_link_libraries(QOpenHD PRIVATE qmlglsink lowlag_android)
 
-# Ensure the app can include GStreamer headers (if it needs to)
+# Make sure the app sees GStreamer headers too
 target_include_directories(QOpenHD PRIVATE
     ${GSTREAMER_ROOT}/include/gstreamer-1.0
     ${GSTREAMER_ROOT}/include/glib-2.0
     ${GSTREAMER_ROOT}/lib/glib-2.0/include
 )
 
-# Link GStreamer imported targets (now defined by qmlglsink subdir)
-if(TARGET PkgConfig::GSTREAMER AND TARGET PkgConfig::GSTREAMER_VIDEO AND TARGET PkgConfig::GSTREAMER_GL)
-    target_link_libraries(QOpenHD PRIVATE PkgConfig::GSTFULL)
-else()
-    message(WARNING "GStreamer imported targets not present; qmlglsink should define them. Check qmlglsink CMake.")
-endif()
-
-# Add common Android lib search dirs for final link resolution
+# Library search dirs (helpful on some layouts)
 target_link_directories(QOpenHD PRIVATE
     ${GSTREAMER_ROOT}/lib
     ${GSTREAMER_ROOT}/lib64
     ${GSTREAMER_ROOT}/lib/arm64-v8a
     ${GSTREAMER_ROOT}/lib/aarch64-linux-android
 )
+
+# --- Link GStreamer (prefer gst-full; fallback to split pc files) ---
+# Try gst-full (single static library with registrants)
+pkg_check_modules(GSTFULL QUIET IMPORTED_TARGET gstreamer-full-1.0)
+if(TARGET PkgConfig::GSTFULL)
+    message(STATUS "Linking against gstreamer-full-1.0")
+    target_link_libraries(QOpenHD PRIVATE PkgConfig::GSTFULL)
+else()
+    message(WARNING "gstreamer-full-1.0 not found via pkg-config. Falling back to split packages.")
+    # Split packages
+    pkg_check_modules(GSTREAMER      REQUIRED IMPORTED_TARGET gstreamer-1.0)
+    pkg_check_modules(GSTREAMER_BASE QUIET    IMPORTED_TARGET gstreamer-base-1.0)   # sometimes needed transitively
+    pkg_check_modules(GSTREAMER_VIDEO REQUIRED IMPORTED_TARGET gstreamer-video-1.0)
+    pkg_check_modules(GSTREAMER_GL   QUIET    IMPORTED_TARGET gstreamer-gl-1.0)
+    pkg_check_modules(GSTREAMER_APP  REQUIRED IMPORTED_TARGET gstreamer-app-1.0)    # for gst_app_sink_*
+
+    target_link_libraries(QOpenHD PRIVATE
+        PkgConfig::GSTREAMER
+        $<$<TARGET_EXISTS:PkgConfig::GSTREAMER_BASE>:PkgConfig::GSTREAMER_BASE>
+        PkgConfig::GSTREAMER_VIDEO
+        $<$<TARGET_EXISTS:PkgConfig::GSTREAMER_GL>:PkgConfig::GSTREAMER_GL>
+        PkgConfig::GSTREAMER_APP
+    )
+endif()
