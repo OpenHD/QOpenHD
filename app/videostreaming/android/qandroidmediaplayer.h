@@ -1,6 +1,7 @@
 #ifndef QANDROIDMEDIAPLAYER_H
 #define QANDROIDMEDIAPLAYER_H
 
+#include "qsurfacetexture.h" 
 #include <QObject>
 #include <QPointer>
 #include <memory>
