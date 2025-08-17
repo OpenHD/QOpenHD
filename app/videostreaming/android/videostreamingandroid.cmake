@@ -118,7 +118,7 @@ target_link_libraries(lowlag_android PRIVATE android mediandk EGL GLESv2)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
 
 # --- App wiring ---
-target_link_libraries(QOpenHD PRIVATE qmlglsink lowlag_android)
+target_link_libraries(QOpenHD PRIVATE lowlag_android qmlglsink)
 
 # Make sure the app sees GStreamer headers too
 target_include_directories(QOpenHD PRIVATE
