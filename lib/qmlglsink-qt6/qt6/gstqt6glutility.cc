@@ -31,7 +31,7 @@
 #if GST_GL_HAVE_PLATFORM_EGL && (defined (HAVE_QT_WAYLAND) || defined (HAVE_QT_EGLFS) || defined (HAVE_QT_ANDROID))
 #include <gst/gl/egl/gstegl.h>
 #ifdef HAVE_QT_QPA_HEADER
-#include <QtGui/qpa/qplatformnativeinterface.h>
+#include <qpa/qplatformnativeinterface.h>
 #endif
 //#include <QtPlatformHeaders/QEGLNativeContext>
 #include <gst/gl/egl/gstgldisplay_egl.h>
