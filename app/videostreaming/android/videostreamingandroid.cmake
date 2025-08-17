@@ -23,6 +23,15 @@ if(QT_VERSION_MAJOR EQUAL 5)
     find_package(Qt5 QUIET COMPONENTS AndroidExtras MultimediaWidgets)
 endif()
 
+# Resolve GStreamer prefix for Android builds (env override supported)
+if(ANDROID)
+    if(DEFINED ENV{GSTREAMER_ROOT_ANDROID} AND NOT "$ENV{GSTREAMER_ROOT_ANDROID}" STREQUAL "")
+        set(GSTREAMER_ROOT "$ENV{GSTREAMER_ROOT_ANDROID}")
+    else()
+        set(GSTREAMER_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/aarch64")
+    endif()
+endif()
+
 add_library(lowlag_android STATIC
     ${LOWLAG_SOURCES}
     ${LOWLAG_HEADERS}
@@ -44,9 +53,9 @@ target_include_directories(lowlag_android
         ${CMAKE_CURRENT_SOURCE_DIR}/app
         ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming
         ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon
-        ${CMAKE_CURRENT_SOURCE_DIR}/aarch64/include/gstreamer-1.0
-        ${CMAKE_CURRENT_SOURCE_DIR}/aarch64/include/glib-2.0
-        ${CMAKE_CURRENT_SOURCE_DIR}/aarch64/lib/glib-2.0/include
+        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/include/gstreamer-1.0>
+        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/include/glib-2.0>
+        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/lib/glib-2.0/include>
         ${CMAKE_CURRENT_SOURCE_DIR}/lib
         ${CMAKE_CURRENT_SOURCE_DIR}/lib/h264
 )
@@ -87,19 +96,20 @@ endif()
 
 option(QGC_ENABLE_VIDEOSTREAMING "Enable video streaming" ON)
 
-if(QGC_ENABLE_VIDEOSTREAMING)
-  message(STATUS "Enabling video streaming support")
+# Only wire up qmlglsink and GStreamer include paths when on Android and streaming is enabled
+if(QGC_ENABLE_VIDEOSTREAMING AND ANDROID)
+    message(STATUS "Enabling video streaming support (Android)")
 
-  # Build qmlglsink from the forked folder
-  add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
+    # Build qmlglsink from the forked folder (its CMake handles pkg-config env)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
 
-  # Link it to your app (replace QOpenHD with your actual app target)
-  target_link_libraries(QOpenHD PRIVATE qmlglsink)
+    # Make sure the app links both qmlglsink and the decoder
+    target_link_libraries(QOpenHD PRIVATE qmlglsink lowlag_android)
 
-  # Ensure your app sees the same GStreamer include dirs (handy if you include gst headers)
-  target_include_directories(QOpenHD PRIVATE
-    ${CMAKE_SOURCE_DIR}/aarch64/include/gstreamer-1.0
-    ${CMAKE_SOURCE_DIR}/aarch64/include/glib-2.0
-    ${CMAKE_SOURCE_DIR}/aarch64/lib/glib-2.0/include
-  )
+    # Ensure the app sees the same GStreamer headers (if it includes any gst headers)
+    target_include_directories(QOpenHD PRIVATE
+        ${GSTREAMER_ROOT}/include/gstreamer-1.0
+        ${GSTREAMER_ROOT}/include/glib-2.0
+        ${GSTREAMER_ROOT}/lib/glib-2.0/include
+    )
 endif()
