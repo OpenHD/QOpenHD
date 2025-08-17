@@ -69,7 +69,7 @@ void QAndroidMediaPlayer::stop_cleanup_decoder_display()
 
     if (m_low_lag_decoder) {
         // Then we can safely clean up the decoder (and its surface)
-        m_low_lag_decoder->setOutputSurface(nullptr, nullptr);
+        m_low_lag_decoder->setOutputSurface(env.jniEnv(), surface.object());face(nullptr, nullptr);
         m_low_lag_decoder = nullptr;
     }
 }
@@ -109,7 +109,7 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
 
         // Hand the Surface to the low-lag decoder
         QAndroidJniEnvironment env;
-        m_low_lag_decoder->setOutputSurface(env, surface.object());
+        m_low_lag_decoder->setOutputSurface(env.jniEnv(), surface.object());face(env, surface.object());
 
         // Start receiving RTP and feed the decoder
         auto cb = [this](std::shared_ptr<std::vector<uint8_t>> sample) {
@@ -137,7 +137,7 @@ void QAndroidMediaPlayer::switch_primary_secondary()
     }
     // Then release the decoder surface
     if (m_low_lag_decoder) {
-        m_low_lag_decoder->setOutputSurface(nullptr, nullptr);
+        m_low_lag_decoder->setOutputSurface(env.jniEnv(), surface.object());face(nullptr, nullptr);
     }
     // Re-create with the new port if needed (left to your caller to trigger setup again)
 }
