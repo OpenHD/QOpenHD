@@ -1,134 +1,100 @@
-cmake_minimum_required(VERSION 3.16)
-project(LowLagAndroid LANGUAGES CXX)
+# app/videostreaming/android/videostreamingandroid.cmake
 
-# --- Sources / headers ---
+# Only run this on Android builds
+if(NOT ANDROID)
+    message(STATUS "Android video streaming: skipped (NOT ANDROID)")
+    return()
+endif()
+
+message(STATUS "Enabling video streaming support (Android)")
+
+# --- Resolve GStreamer prefix (prefer repo's aarch64, else env override) ---
+if(EXISTS "${CMAKE_SOURCE_DIR}/aarch64/include/gstreamer-1.0")
+    set(GSTREAMER_ROOT "${CMAKE_SOURCE_DIR}/aarch64")
+elseif(DEFINED ENV{GSTREAMER_ROOT_ANDROID} AND NOT "$ENV{GSTREAMER_ROOT_ANDROID}" STREQUAL "")
+    set(GSTREAMER_ROOT "$ENV{GSTREAMER_ROOT_ANDROID}")
+else()
+    message(FATAL_ERROR
+        "Could not find GStreamer Android prefix. "
+        "Add ${CMAKE_SOURCE_DIR}/aarch64 or set GSTREAMER_ROOT_ANDROID.")
+endif()
+message(STATUS "Android video: using GStreamer prefix: ${GSTREAMER_ROOT}")
+
+# --- lowlag_android library ---
 set(LOWLAG_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.cpp
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.cpp
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.cpp
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.cpp
 )
-
 set(LOWLAG_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon/nalu/NALU.hpp
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.h
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.h
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.h
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/vscommon/nalu/NALU.hpp
 )
 
-# --- Qt detection (Qt 6 preferred, fallback to Qt 5) ---
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Gui Quick Qml Multimedia)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Quick Qml Multimedia)
-
-if(QT_VERSION_MAJOR EQUAL 5)
-    find_package(Qt5 QUIET COMPONENTS AndroidExtras MultimediaWidgets)
-endif()
-
-# Resolve GStreamer prefix for Android builds (prefer repo's aarch64, fallback to env)
-if(ANDROID)
-    if(EXISTS "${CMAKE_SOURCE_DIR}/aarch64/include/gstreamer-1.0")
-        set(GSTREAMER_ROOT "${CMAKE_SOURCE_DIR}/aarch64")
-    elseif(DEFINED ENV{GSTREAMER_ROOT_ANDROID} AND NOT "$ENV{GSTREAMER_ROOT_ANDROID}" STREQUAL "")
-        set(GSTREAMER_ROOT "$ENV{GSTREAMER_ROOT_ANDROID}")
-    else()
-        message(FATAL_ERROR "Could not find GStreamer Android prefix. "
-                            "Add ${CMAKE_SOURCE_DIR}/aarch64 or set GSTREAMER_ROOT_ANDROID.")
-    endif()
-    message(STATUS "LowLagAndroid: using GStreamer prefix: ${GSTREAMER_ROOT}")
-endif()
-
-add_library(lowlag_android STATIC
-    ${LOWLAG_SOURCES}
-    ${LOWLAG_HEADERS}
-)
-
+add_library(lowlag_android STATIC ${LOWLAG_SOURCES} ${LOWLAG_HEADERS})
 set_target_properties(lowlag_android PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
-    AUTOMOC ON
-    AUTORCC ON
-    AUTOUIC ON
+    AUTOMOC ON AUTORCC ON AUTOUIC ON
     POSITION_INDEPENDENT_CODE ON
 )
 
-# Includes
 target_include_directories(lowlag_android
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/app
-        ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming
-        ${CMAKE_CURRENT_SOURCE_DIR}/app/videostreaming/vscommon
-        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/include/gstreamer-1.0>
-        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/include/glib-2.0>
-        $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/lib/glib-2.0/include>
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib/h264
-)
-
-target_compile_definitions(lowlag_android
-    PUBLIC
-        QOPENHD_ENABLE_VIDEO_VIA_ANDROID
-)
-
-target_link_libraries(lowlag_android
-    PUBLIC
-        Qt${QT_VERSION_MAJOR}::Core
-        Qt${QT_VERSION_MAJOR}::Gui
-        Qt${QT_VERSION_MAJOR}::Quick
-        Qt${QT_VERSION_MAJOR}::Qml
-        Qt${QT_VERSION_MAJOR}::Multimedia
-)
-
-# Qt 5 extras if available
-if(QT_VERSION_MAJOR EQUAL 5)
-    if(TARGET Qt5::AndroidExtras)
-        target_link_libraries(lowlag_android PUBLIC Qt5::AndroidExtras)
-    endif()
-    if(TARGET Qt5::MultimediaWidgets)
-        target_link_libraries(lowlag_android PUBLIC Qt5::MultimediaWidgets)
-    endif()
-endif()
-
-# Qt 6: pull in private usage requirements for scenegraph private headers
-if(QT_VERSION_MAJOR EQUAL 6 AND TARGET Qt6::QuickPrivate)
-    target_link_libraries(lowlag_android PRIVATE Qt6::QuickPrivate)
-endif()
-
-# Android system libs (GL/EGL/NDK)
-if(ANDROID)
-    target_link_libraries(lowlag_android PRIVATE android mediandk EGL GLESv2)
-endif()
-
-option(QGC_ENABLE_VIDEOSTREAMING "Enable video streaming" ON)
-
-# Only wire up qmlglsink and GStreamer include paths when on Android and streaming is enabled
-if(QGC_ENABLE_VIDEOSTREAMING AND ANDROID)
-    message(STATUS "Enabling video streaming support (Android)")
-
-    # Build qmlglsink from the forked folder (its CMake handles pkg-config/env/fallbacks)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
-
-    # Link it to your app (plus the decoder lib)
-    target_link_libraries(QOpenHD PRIVATE qmlglsink lowlag_android)
-
-    # Ensure the app sees the same GStreamer headers if it includes any gst headers
-    target_include_directories(QOpenHD PRIVATE
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/app
+        ${CMAKE_SOURCE_DIR}/app/videostreaming
+        ${CMAKE_SOURCE_DIR}/app/videostreaming/vscommon
+        ${CMAKE_SOURCE_DIR}/lib
+        ${CMAKE_SOURCE_DIR}/lib/h264
+        # Android-only GStreamer headers
         ${GSTREAMER_ROOT}/include/gstreamer-1.0
         ${GSTREAMER_ROOT}/include/glib-2.0
         ${GSTREAMER_ROOT}/lib/glib-2.0/include
-    )
+)
 
-    # 1) link the imported GStreamer targets (created by qmlglsink's CMake)
+# Link to Qt that top-level already found
+target_link_libraries(lowlag_android
+    PUBLIC Qt6::Core Qt6::Gui Qt6::Quick Qt6::Qml Qt6::Multimedia
+)
+# Scenegraph private (if available)
+if(TARGET Qt6::QuickPrivate)
+    target_link_libraries(lowlag_android PRIVATE Qt6::QuickPrivate)
+endif()
+# Android NDK libs
+target_link_libraries(lowlag_android PRIVATE android mediandk EGL GLESv2)
+
+# --- qmlglsink (defines PkgConfig::GSTREAMER* targets) ---
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
+
+# --- Wire everything into the app target ---
+# Link the two libs into QOpenHD
+target_link_libraries(QOpenHD PRIVATE qmlglsink lowlag_android)
+
+# Ensure the app can include GStreamer headers (if it needs to)
+target_include_directories(QOpenHD PRIVATE
+    ${GSTREAMER_ROOT}/include/gstreamer-1.0
+    ${GSTREAMER_ROOT}/include/glib-2.0
+    ${GSTREAMER_ROOT}/lib/glib-2.0/include
+)
+
+# Link GStreamer imported targets (now defined by qmlglsink subdir)
+if(TARGET PkgConfig::GSTREAMER AND TARGET PkgConfig::GSTREAMER_VIDEO AND TARGET PkgConfig::GSTREAMER_GL)
     target_link_libraries(QOpenHD PRIVATE
         PkgConfig::GSTREAMER
         PkgConfig::GSTREAMER_VIDEO
         PkgConfig::GSTREAMER_GL
     )
-
-    # 2) add common Android lib directories (handles different layouts)
-    target_link_directories(QOpenHD PRIVATE
-        ${GSTREAMER_ROOT}/lib
-        ${GSTREAMER_ROOT}/lib64
-        ${GSTREAMER_ROOT}/lib/arm64-v8a
-        ${GSTREAMER_ROOT}/lib/aarch64-linux-android
-    )
+else()
+    message(WARNING "GStreamer imported targets not present; qmlglsink should define them. Check qmlglsink CMake.")
 endif()
+
+# Add common Android lib search dirs for final link resolution
+target_link_directories(QOpenHD PRIVATE
+    ${GSTREAMER_ROOT}/lib
+    ${GSTREAMER_ROOT}/lib64
+    ${GSTREAMER_ROOT}/lib/arm64-v8a
+    ${GSTREAMER_ROOT}/lib/aarch64-linux-android
+)
