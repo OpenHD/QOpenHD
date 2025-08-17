@@ -20,6 +20,9 @@ else()
 endif()
 message(STATUS "Android video: using GStreamer prefix: ${GSTREAMER_ROOT}")
 
+# --- Make the old qmake DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID equivalent ---
+option(QOPENHD_ENABLE_VIDEO_VIA_ANDROID "Enable Android low-latency video path" ON)
+
 # --- lowlag_android library ---
 set(LOWLAG_SOURCES
     ${CMAKE_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.cpp
@@ -60,6 +63,16 @@ target_include_directories(lowlag_android
         ${GSTREAMER_ROOT}/include/glib-2.0
         ${GSTREAMER_ROOT}/lib/glib-2.0/include
 )
+
+# Define the Android video flag on our targets (qmake: DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
+if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
+    target_compile_definitions(lowlag_android PUBLIC QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
+    # QOpenHD (the app) already exists when this file is included
+    target_compile_definitions(QOpenHD PRIVATE QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
+    message(STATUS "QOPENHD_ENABLE_VIDEO_VIA_ANDROID = ON")
+else()
+    message(STATUS "QOPENHD_ENABLE_VIDEO_VIA_ANDROID = OFF")
+endif()
 
 # Link to Qt that top-level already found
 if(QT_VERSION_MAJOR EQUAL 6)
