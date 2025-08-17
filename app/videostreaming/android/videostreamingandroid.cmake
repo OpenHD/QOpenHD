@@ -28,6 +28,7 @@ set(LOWLAG_SOURCES
     ${CMAKE_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.cpp
     ${CMAKE_SOURCE_DIR}/app/videostreaming/android/qandroidmediaplayer.cpp
     ${CMAKE_SOURCE_DIR}/app/videostreaming/android/qsurfacetexture.cpp
+    ${CMAKE_SOURCE_DIR}/app/videostreaming/gstreamer/gstrtpreceiver.cpp
 )
 set(LOWLAG_HEADERS
     ${CMAKE_SOURCE_DIR}/app/videostreaming/android/lowlagdecoder.h
@@ -56,6 +57,7 @@ target_include_directories(lowlag_android
         ${CMAKE_SOURCE_DIR}/app
         ${CMAKE_SOURCE_DIR}/app/videostreaming
         ${CMAKE_SOURCE_DIR}/app/videostreaming/vscommon
+        ${CMAKE_SOURCE_DIR}/app/videostreaming/gstreamer
         ${CMAKE_SOURCE_DIR}/lib
         ${CMAKE_SOURCE_DIR}/lib/h264
         # Android-only GStreamer headers
@@ -67,7 +69,6 @@ target_include_directories(lowlag_android
 # Define the Android video flag on our targets (qmake: DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
 if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
     target_compile_definitions(lowlag_android PUBLIC QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
-    # QOpenHD (the app) already exists when this file is included
     target_compile_definitions(QOpenHD PRIVATE QOPENHD_ENABLE_VIDEO_VIA_ANDROID)
     message(STATUS "QOPENHD_ENABLE_VIDEO_VIA_ANDROID = ON")
 else()
