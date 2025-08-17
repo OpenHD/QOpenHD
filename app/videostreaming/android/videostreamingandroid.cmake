@@ -33,6 +33,12 @@ set(LOWLAG_HEADERS
     ${CMAKE_SOURCE_DIR}/app/videostreaming/vscommon/nalu/NALU.hpp
 )
 
+# Ensure Qt Multimedia is available in this scope (top-level may not have asked for it)
+if(NOT TARGET Qt6::Multimedia AND NOT TARGET Qt5::Multimedia)
+  find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Multimedia)
+  find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Multimedia)
+endif()
+
 add_library(lowlag_android STATIC ${LOWLAG_SOURCES} ${LOWLAG_HEADERS})
 set_target_properties(lowlag_android PROPERTIES
     CXX_STANDARD 17
@@ -56,9 +62,12 @@ target_include_directories(lowlag_android
 )
 
 # Link to Qt that top-level already found
-target_link_libraries(lowlag_android
-    PUBLIC Qt6::Core Qt6::Gui Qt6::Quick Qt6::Qml Qt6::Multimedia
-)
+if(QT_VERSION_MAJOR EQUAL 6)
+    target_link_libraries(lowlag_android PUBLIC Qt6::Core Qt6::Gui Qt6::Quick Qt6::Qml Qt6::Multimedia)
+elseif(QT_VERSION_MAJOR EQUAL 5)
+    target_link_libraries(lowlag_android PUBLIC Qt5::Core Qt5::Gui Qt5::Quick Qt5::Qml Qt5::Multimedia)
+endif()
+
 # Scenegraph private (if available)
 if(TARGET Qt6::QuickPrivate)
     target_link_libraries(lowlag_android PRIVATE Qt6::QuickPrivate)
