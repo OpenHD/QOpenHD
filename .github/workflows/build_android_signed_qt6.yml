@@ -204,7 +204,7 @@ jobs:
             -DANDROID_NDK_ROOT="$ANDROID_NDK_ROOT" \
             -DANDROID_ABI=${{ matrix.eabi }} \
             -DQT_ANDROID_ABIS=arm64-v8a \
-            -DANDROID_PLATFORM=android-23 \
+            -DANDROID_PLATFORM=android-28 \
             -DQT_ANDROID_MIN_SDK_VERSION=23 \
             -DQT_ANDROID_TARGET_SDK_VERSION=35 \
             -DQT_ANDROID_SDK_PLATFORM=android-35 \
