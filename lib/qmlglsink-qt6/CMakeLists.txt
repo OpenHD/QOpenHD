@@ -7,24 +7,24 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui OpenGL Qml Quick)
 # --- pkg-config (used when .pc files are present) ---
 find_package(PkgConfig REQUIRED)
 
-# We'll collect the imported targets to link at the end
+# Will collect imported targets for linking at the end
 set(_GST_IMPORTED_TARGETS)
 
 # -------- Robust Android prefix detection (prefers repo's aarch64) --------
 if(ANDROID)
   set(_candidate_roots "")
 
-  # 1) Prefer the repo's aarch64 prefix if it exists (your own build)
+  # 1) Prefer the repo's aarch64 prefix (your own build)
   if(EXISTS "${CMAKE_SOURCE_DIR}/aarch64/include/gstreamer-1.0")
     list(APPEND _candidate_roots "${CMAKE_SOURCE_DIR}/aarch64")
   endif()
 
-  # 2) Then try env override (CI/downloaded bundle)
+  # 2) Then env override
   if(DEFINED ENV{GSTREAMER_ROOT_ANDROID} AND NOT "$ENV{GSTREAMER_ROOT_ANDROID}" STREQUAL "")
     list(APPEND _candidate_roots "$ENV{GSTREAMER_ROOT_ANDROID}")
   endif()
 
-  # Pick the first candidate that actually has headers and a lib dir
+  # Pick the first candidate that has headers and a lib dir
   set(GSTREAMER_ROOT "")
   foreach(_root IN LISTS _candidate_roots)
     if(EXISTS "${_root}/include/gstreamer-1.0" AND
@@ -113,8 +113,7 @@ if(ANDROID)
     _find_gstlib(_LIB_GSTREAMER_GL    gstreamer-gl-1.0)
     _find_gstlib(_LIB_GOBJECT         gobject-2.0)
     _find_gstlib(_LIB_GLIB            glib-2.0)
-    # Often needed
-    _find_gstlib(_LIB_GSTBASE         gstreamer-base-1.0)
+    _find_gstlib(_LIB_GSTBASE         gstreamer-base-1.0) # optional but common
 
     set(_missing "")
     foreach(_req _LIB_GSTREAMER _LIB_GSTREAMER_VIDEO _LIB_GSTREAMER_GL _LIB_GOBJECT _LIB_GLIB)
@@ -128,6 +127,7 @@ if(ANDROID)
         "Searched: ${_GST_LIB_SEARCH_DIRS}")
     endif()
 
+    # Mimic pkg-config imported targets
     add_library(PkgConfig::GSTREAMER       INTERFACE IMPORTED)
     add_library(PkgConfig::GSTREAMER_VIDEO INTERFACE IMPORTED)
     add_library(PkgConfig::GSTREAMER_GL    INTERFACE IMPORTED)
@@ -165,8 +165,7 @@ else()
     PkgConfig::GSTREAMER_GL)
 endif()
 
-
-# --- Library with the Qt6 sources from the fork ---
+# --- qmlglsink library sources ---
 qt_add_library(qmlglsink STATIC
   qt6/gstplugin.cc
   qt6/gstqml6glsink.cc
@@ -184,7 +183,25 @@ qt_add_library(qmlglsink STATIC
 
 target_compile_features(qmlglsink PUBLIC cxx_std_17)
 
-# Include GStreamer headers (Android-only; desktop uses pkg-config includes)
+# --- QPA header fix ---
+# The source includes <qpa/qplatformnativeinterface.h>. That lives under QtGui/qpa.
+# Add .../include/QtGui to the include path if we can detect it.
+get_target_property(_qt_gui_includes Qt6::Gui INTERFACE_INCLUDE_DIRECTORIES)
+set(_qt_qpa_dir "")
+foreach(_d IN LISTS _qt_gui_includes)
+  if(EXISTS "${_d}/QtGui/qpa/qplatformnativeinterface.h")
+    set(_qt_qpa_dir "${_d}/QtGui")
+    break()
+  endif()
+endforeach()
+if(_qt_qpa_dir)
+  target_include_directories(qmlglsink PRIVATE "${_qt_qpa_dir}")
+else()
+  message(WARNING "Could not find QtGui/qpa in Qt6::Gui includes; using macro include as fallback")
+  target_compile_definitions(qmlglsink PRIVATE HAVE_QT_QPA_HEADER QT_QPA_HEADER=<QtGui/qpa/qplatformnativeinterface.h>)
+endif()
+
+# Include GStreamer headers explicitly on Android (desktop gets includes via pkg-config)
 target_include_directories(qmlglsink
   PUBLIC
     $<$<BOOL:${ANDROID}>:${GSTREAMER_ROOT}/include/gstreamer-1.0>
@@ -193,7 +210,7 @@ target_include_directories(qmlglsink
     ${CMAKE_CURRENT_LIST_DIR}/qt6
 )
 
-# Link Qt + GStreamer via imported targets (pkg-config or manual fallback)
+# Link Qt + GStreamer
 target_link_libraries(qmlglsink
   PUBLIC
     Qt6::Core
@@ -204,17 +221,14 @@ target_link_libraries(qmlglsink
     ${_GST_IMPORTED_TARGETS}
 )
 
-# Platform switches (match your original fork’s defines)
+# Platform switches (match your original defines)
 target_compile_definitions(qmlglsink
-  PRIVATE
-    HAVE_QT_QPA_HEADER
-    QT_QPA_HEADER=<QtGui/qpa/qplatformnativeinterface.h>
   PUBLIC
     QGC_GST_STREAMING
     QGC_CMAKE_GST
 )
 
-# Android GL/EGL/NDK libs
+# Android GL/EGL/NDK extras
 if(ANDROID)
   target_link_libraries(qmlglsink PRIVATE EGL GLESv2 android)
   target_compile_definitions(qmlglsink PRIVATE HAVE_QT_ANDROID)
