@@ -13,6 +13,12 @@
   #include <QAndroidJniEnvironment>
   #include <QtAndroid>
 #endif
+// Helper to get raw JNIEnv* across Qt5/Qt6
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  inline JNIEnv* jniPtr(QAndroidJniEnvironment& e) { return e.jniEnv(); }
+#else
+  inline JNIEnv* jniPtr(QAndroidJniEnvironment& e) { return e; }
+#endif
 // --------------------------------------
 
 #include <QDebug>
@@ -68,8 +74,8 @@ void QAndroidMediaPlayer::stop_cleanup_decoder_display()
     }
 
     if (m_low_lag_decoder) {
-        // Then we can safely clean up the decoder (and its surface)
-        m_low_lag_decoder->setOutputSurface(env.jniEnv(), surface.object());face(nullptr, nullptr);
+        // No Surface in scope here — release by passing nullptrs
+        m_low_lag_decoder->setOutputSurface(nullptr, nullptr);
         m_low_lag_decoder = nullptr;
     }
 }
@@ -109,7 +115,7 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
 
         // Hand the Surface to the low-lag decoder
         QAndroidJniEnvironment env;
-        m_low_lag_decoder->setOutputSurface(env.jniEnv(), surface.object());face(env, surface.object());
+        m_low_lag_decoder->setOutputSurface(jniPtr(env), surface.object());
 
         // Start receiving RTP and feed the decoder
         auto cb = [this](std::shared_ptr<std::vector<uint8_t>> sample) {
@@ -135,9 +141,9 @@ void QAndroidMediaPlayer::switch_primary_secondary()
     if (m_receiver) {
         m_receiver->stop_receiving();
     }
-    // Then release the decoder surface
+    // Then release the decoder surface; no Surface in scope, so pass nullptrs
     if (m_low_lag_decoder) {
-        m_low_lag_decoder->setOutputSurface(env.jniEnv(), surface.object());face(nullptr, nullptr);
+        m_low_lag_decoder->setOutputSurface(nullptr, nullptr);
     }
     // Re-create with the new port if needed (left to your caller to trigger setup again)
 }
