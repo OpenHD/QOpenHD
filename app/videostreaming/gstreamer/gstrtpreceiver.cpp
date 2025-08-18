@@ -225,7 +225,7 @@ void GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
     gst_element_set_state(m_gst_pipeline, GST_STATE_PLAYING);
 
     // Acquire appsink
-    m_app_sink_element = gst_bin_get_by_name(GST_BIN(m_gST_PIPELINE), "out_appsink");
+    m_app_sink_element = gst_bin_get_by_name(GST_BIN(m_gst_pipeline), "out_appsink");
     if (!m_app_sink_element) {
         qCritical() << "GST: appsink 'out_appsink' not found";
         gst_element_set_state(m_gst_pipeline, GST_STATE_NULL);
