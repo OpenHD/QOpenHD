@@ -20,7 +20,7 @@
 #include <vector>
 #include <cstdlib>
 
-// === Static plugin hooks (harmless if using gst-full, but kept for compatibility) ===
+// === Static plugin hooks (kept for compatibility; safe with gst-full) ===
 G_BEGIN_DECLS
 #if defined(__android__) || defined(__ios__)
     GST_PLUGIN_STATIC_DECLARE(coreelements);
@@ -43,10 +43,13 @@ G_BEGIN_DECLS
 #  endif
 #endif
 
-// Only reference these on non-Android so this TU doesn't pull them into the Android link.
-#if !defined(__android__)
-    GST_PLUGIN_STATIC_DECLARE(qmlgl);
-    GST_PLUGIN_STATIC_DECLARE(qgc);
+// Only declare optional static plugins for non-Android builds.
+// The correct plugin name is qmlglsink (not qmlgl). We do NOT statically
+// register it on Android to avoid unresolved symbols when linking.
+#if !defined(__ANDROID__)
+    GST_PLUGIN_STATIC_DECLARE(qmlglsink);
+    /* If you ever ship one:
+       GST_PLUGIN_STATIC_DECLARE(qgc); */
 #endif
 G_END_DECLS
 
@@ -56,7 +59,7 @@ void ensureGstInited()
 {
     static std::once_flag once;
     std::call_once(once, [](){
-        // With gst-full we don't want any runtime scanning/registry writes
+        // With gst-full we don't want runtime scanning or registry writes
         setenv("GST_PLUGIN_SYSTEM_PATH_1_0", "", 1);
         setenv("GST_PLUGIN_PATH_1_0", "", 1);
         setenv("GST_REGISTRY_DISABLE", "yes", 1);
@@ -69,7 +72,6 @@ void ensureGstInited()
         g_message("GStreamer initialized");
 
 #if defined(__android__) || defined(__ios__)
-        // Register statically linked essentials (no-op if not present in the final link)
         GST_PLUGIN_STATIC_REGISTER(coreelements);
         GST_PLUGIN_STATIC_REGISTER(playback);
         GST_PLUGIN_STATIC_REGISTER(rtp);
@@ -90,10 +92,10 @@ void ensureGstInited()
 #  endif
 #endif
 
-        // Keep qmlgl/qgc out of Android builds of this TU
-#if !defined(__android__)
-        GST_PLUGIN_STATIC_REGISTER(qmlgl);
-        GST_PLUGIN_STATIC_REGISTER(qgc);
+#if !defined(__ANDROID__)
+        // Only try to statically register these on non-Android
+        GST_PLUGIN_STATIC_REGISTER(qmlglsink);
+        /* GST_PLUGIN_STATIC_REGISTER(qgc); */
 #endif
     });
 }
@@ -148,7 +150,6 @@ GstRtpReceiver::GstRtpReceiver(int udp_port, QOpenHDVideoHelper::VideoCodec vide
 
 GstRtpReceiver::~GstRtpReceiver()
 {
-    // Ensure everything is stopped
     stop_receiving();
 }
 
