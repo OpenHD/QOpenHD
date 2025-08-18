@@ -30,17 +30,9 @@
 #include <QSGGeometry>
 #include <QSGTexture>
 #include <QSGTextureMaterial>
-#include <QSGSimpleRectNode>
 
 #include "../vscommon/QOpenHDVideoHelper.hpp"
 #include "../vscommon/video_ratio_helper.hpp"
-
-// -----------------------------------------------------------------------------
-// Debug Pink build switch: define to render a solid magenta rectangle and bypass
-// the Android SurfaceTexture + EXTERNAL_OES path entirely. Comment out to return
-// to normal rendering.
-// -----------------------------------------------------------------------------
-#define QST_DEBUG_PINK 1
 
 // A node that renders an EXTERNAL_OES texture using Qt's built-in texture material.
 class SurfaceTextureNode : public QSGGeometryNode
@@ -124,15 +116,11 @@ QSurfaceTexture::QSurfaceTexture(QQuickItem *parent)
 
 QSurfaceTexture::~QSurfaceTexture()
 {
-#ifndef QST_DEBUG_PINK
     if (m_textureId) {
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
         glDeleteTextures(1, &m_textureId);
         m_textureId = 0;
     }
-#else
-    Q_UNUSED(m_textureId);
-#endif
 }
 
 void QSurfaceTexture::set_video_texture_size(int width_px, int height_px)
@@ -150,22 +138,6 @@ static void qrectf_flip_horizontally(QRectF& rect){
 
 QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNodeData *)
 {
-#ifdef QST_DEBUG_PINK
-    // Debug path: always draw a solid pink rect. This bypasses all OES/SurfaceTexture work
-    // to quickly verify the item is alive, visible, and repainting.
-    if (n) {
-        delete n;  // ensure we don't keep the old texture node around
-        n = nullptr;
-    }
-
-    auto *rectNode = new QSGSimpleRectNode();
-    rectNode->setRect(boundingRect());
-    rectNode->setColor(QColor(255, 0, 255)); // bright magenta
-
-    // Keep requesting frames so you also confirm the render loop is ticking.
-    QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
-    return rectNode;
-#else
     auto *node = static_cast<SurfaceTextureNode *>(n);
     if (!node) {
         glGenTextures(1, &m_textureId);
@@ -203,5 +175,4 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
 
     QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
     return node;
-#endif
 }
