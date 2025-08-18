@@ -43,11 +43,14 @@ string(JOIN ":" _pcpath ${_pcdirs})
 set(ENV{PKG_CONFIG_LIBDIR} "${_pcpath}")
 message(STATUS "PKG_CONFIG_LIBDIR=${_pcpath}")
 
-# Prefer single full static lib if available; otherwise we’ll fail loudly here
+# Prefer single full static lib if available; fail loudly if not
 pkg_check_modules(GSTFULL REQUIRED IMPORTED_TARGET gstreamer-full-1.0)
 
-# --- old qmake: DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID ---
+# --- Flags (qmake: DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID) ---
 option(QOPENHD_ENABLE_VIDEO_VIA_ANDROID "Enable Android low-latency video path" ON)
+
+# Switch to (re)enable qmlglsink build/link later
+option(QOPENHD_ENABLE_GSTREAMER_QMLGLSINK "Build & link qmlglsink" OFF)
 
 # --- lowlag_android library ---
 set(LOWLAG_SOURCES
@@ -111,15 +114,11 @@ endif()
 if(TARGET Qt6::QuickPrivate)
     target_link_libraries(lowlag_android PRIVATE Qt6::QuickPrivate)
 endif()
+
 # Android NDK libs
 target_link_libraries(lowlag_android PRIVATE android mediandk EGL GLESv2)
 
-# --- qmlglsink ---
-add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
-
 # --- App wiring ---
-target_link_libraries(QOpenHD PRIVATE lowlag_android -Wl,--whole-archive qmlglsink -Wl,--no-whole-archive)
-
 # Make sure the app sees GStreamer headers too
 target_include_directories(QOpenHD PRIVATE
     ${GSTREAMER_ROOT}/include/gstreamer-1.0
@@ -127,18 +126,28 @@ target_include_directories(QOpenHD PRIVATE
     ${GSTREAMER_ROOT}/lib/glib-2.0/include
 )
 
-# Add ALL likely lib search dirs (include plugins dir for gst-full convenience libs)
+# Add ALL likely lib search dirs (also plugins dir; harmless with gst-full)
 target_link_directories(QOpenHD PRIVATE
     ${GSTREAMER_ROOT}/lib
     ${GSTREAMER_ROOT}/lib64
     ${GSTREAMER_ROOT}/lib/arm64-v8a
     ${GSTREAMER_ROOT}/lib/aarch64-linux-android
-    ${GSTREAMER_ROOT}/lib/gstreamer-1.0        # <<— needed for -lgstcoreelements, -lgstplayback, etc.
+    ${GSTREAMER_ROOT}/lib/gstreamer-1.0
 )
 
-# Link GStreamer: use gst-full imported target
+# Always link lowlag + gst-full
 message(STATUS "Linking against gstreamer-full-1.0")
-target_link_libraries(QOpenHD PRIVATE PkgConfig::GSTFULL)
+target_link_libraries(QOpenHD PRIVATE lowlag_android PkgConfig::GSTFULL)
+
+# --- qmlglsink (optional, OFF by default while we stabilize) ---
+if(QOPENHD_ENABLE_GSTREAMER_QMLGLSINK)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/lib/qmlglsink-qt6)
+    # Avoid --whole-archive unless absolutely required; try normal link first
+    target_link_libraries(QOpenHD PRIVATE qmlglsink)
+    message(STATUS "qmlglsink: ENABLED")
+else()
+    message(STATUS "qmlglsink: DISABLED")
+endif()
 
 # --- Optional: sanity warnings if convenience libs are missing from prefix ---
 set(_gst_full_convenience
@@ -152,8 +161,6 @@ set(_gst_full_convenience
 foreach(lib ${_gst_full_convenience})
   if(NOT EXISTS "${GSTREAMER_ROOT}/lib/gstreamer-1.0/lib${lib}.a" AND
      NOT EXISTS "${GSTREAMER_ROOT}/lib/gstreamer-1.0/lib${lib}.so")
-    message(WARNING "GStreamer full convenience lib not found: ${GSTREAMER_ROOT}/lib/gstreamer-1.0/lib${lib}.a|.so . \
-If link fails with -l${lib}, adjust your gst-full build to include that group \
-(e.g. add to -Dgst-full-libraries=coreelements,playback,typefindfunctions,opengl,libav,app,video,audio,codecparsers).")
+    message(STATUS "Note: ${lib} convenience lib not found in ${GSTREAMER_ROOT}/lib/gstreamer-1.0 (OK with gst-full).")
   endif()
 endforeach()

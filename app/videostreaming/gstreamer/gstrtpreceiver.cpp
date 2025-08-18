@@ -42,8 +42,12 @@ G_BEGIN_DECLS
     GST_PLUGIN_STATIC_DECLARE(applemedia);
 #  endif
 #endif
+
+// Only reference these on non-Android so this TU doesn't pull them into the Android link.
+#if !defined(__android__)
     GST_PLUGIN_STATIC_DECLARE(qmlgl);
     GST_PLUGIN_STATIC_DECLARE(qgc);
+#endif
 G_END_DECLS
 
 // --- Make sure GStreamer is initialized exactly once ---
@@ -64,8 +68,8 @@ void ensureGstInited()
         gst_debug_set_default_threshold(GST_LEVEL_INFO);
         g_message("GStreamer initialized");
 
-        // Optional: register statically linked plugins (no-op if not present)
 #if defined(__android__) || defined(__ios__)
+        // Register statically linked essentials (no-op if not present in the final link)
         GST_PLUGIN_STATIC_REGISTER(coreelements);
         GST_PLUGIN_STATIC_REGISTER(playback);
         GST_PLUGIN_STATIC_REGISTER(rtp);
@@ -85,8 +89,12 @@ void ensureGstInited()
         GST_PLUGIN_STATIC_REGISTER(applemedia);
 #  endif
 #endif
+
+        // Keep qmlgl/qgc out of Android builds of this TU
+#if !defined(__android__)
         GST_PLUGIN_STATIC_REGISTER(qmlgl);
         GST_PLUGIN_STATIC_REGISTER(qgc);
+#endif
     });
 }
 } // namespace
@@ -217,7 +225,7 @@ void GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
     gst_element_set_state(m_gst_pipeline, GST_STATE_PLAYING);
 
     // Acquire appsink
-    m_app_sink_element = gst_bin_get_by_name(GST_BIN(m_gst_pipeline), "out_appsink");
+    m_app_sink_element = gst_bin_get_by_name(GST_BIN(m_gST_PIPELINE), "out_appsink");
     if (!m_app_sink_element) {
         qCritical() << "GST: appsink 'out_appsink' not found";
         gst_element_set_state(m_gst_pipeline, GST_STATE_NULL);
