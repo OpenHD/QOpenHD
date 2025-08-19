@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 
 import QtQuick.Shapes 1.0
 import QtQuick.Controls.Material 2.0
+import QtQuick.XmlListModel 2.0
 
 import Qt.labs.settings 1.0
 
@@ -34,6 +35,47 @@ Item {
 
     property bool m_extra_is_visible: false
     property int m_stack_index: -1;
+
+    // Dynamic sidebar data loaded from XML
+    property int button_count: 1
+    property int max_index: 0
+    property var stack_buttons: []
+    // index of focused element inside the currently opened panel
+    property int panel_index: 0
+    property int panel_count: 0
+    // store values for dynamically created controls
+    property var controlState: ({})
+    XmlListModel {
+        id: menuModel
+        source: "Sidebar.xml"
+        query: "/sidebar/menu"
+        XmlRole { name: "text"; query: "@text" }
+        XmlRole { name: "tag"; query: "@tag" }
+        XmlRole { name: "index"; query: "@index" }
+        onCountChanged: {
+            button_count = count
+            // highest selectable index, excluding the back button (-1)
+            max_index = count > 0 ? count - 2 : 0
+        }
+    }
+
+    XmlListModel {
+        id: controlModel
+        source: "Sidebar.xml"
+        query: "/sidebar/menu[@index='" + m_stack_index + "']/control"
+        XmlRole { name: "type"; query: "@type" }
+        XmlRole { name: "text"; query: "@text" }
+        XmlRole { name: "action"; query: "@action" }
+        XmlRole { name: "setting"; query: "@setting" }
+        XmlRole { name: "min"; query: "@min" }
+        XmlRole { name: "max"; query: "@max" }
+        XmlRole { name: "step"; query: "@step" }
+        onCountChanged: {
+            panel_count = count
+            panel_index = 0
+            focusPanelItem()
+        }
+    }
 
 
     // Gives (keyboard / joystick) control to this element
@@ -100,38 +142,29 @@ Item {
     }
 
     function handover_joystick_control_to_button(stack_index){
-        if(stack_index==0){
-            b1.takeover_control();
-        }else if(stack_index==1){
-            b2.takeover_control();
-        }else if(stack_index==2){
-            b3.takeover_control();
-        }else if(stack_index==3){
-            b4.takeover_control();
-        }else if(stack_index==4){
-            b5.takeover_control();
-        }else if(stack_index==5){
-            b6.takeover_control();
-        }else if(stack_index==6){
-            b7.takeover_control();
+        for(var i=0; i<stack_buttons.length; i++){
+            if(stack_buttons[i].override_index === stack_index){
+                stack_buttons[i].takeover_control();
+                break;
+            }
         }
     }
 
-    function handover_joystick_control_to_panel(stack_index){
-        if(stack_index==0){
-            panel1.takeover_control();
-        }else if(stack_index==1){
-            panel2.takeover_control();
-        }else if(stack_index==2){
-            panel3.takeover_control();
-        }else if(stack_index==3){
-            panel4.takeover_control();
-        }else if(stack_index==4){
-            panel5.takeover_control();
-        }else if(stack_index==5){
-            panel6.takeover_control();
+    function handover_joystick_control_to_panel(){
+        panels_item.takeover_control()
+    }
+
+    function focusPanelItem(){
+        if(controlsColumn.children.length > panel_index){
+            var loader = controlsColumn.children[panel_index]
+            if(loader.item){
+                loader.item.forceActiveFocus()
+            }
         }
     }
+
+    onPanel_indexChanged: focusPanelItem()
+    onM_stack_indexChanged: panel_index = 0
 
 
     // Item that opens up the sidebar
@@ -172,56 +205,16 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         id: stack_manager
         visible: false
-        SidebarStackButton{
-            id: b0
-            override_text: "\uf053"
-            override_tag: "back"
-            override_index: -1
-        }
-        SidebarStackButton{
-            id: b1
-            override_text: "\uf1eb"
-            override_tag: "link"
-            override_index: 0
-        }
-        SidebarStackButton{
-            id: b2
-            override_text: "\uf03d"
-            override_tag: "video"
-            override_index: 1
-        }
-        SidebarStackButton{
-            id: b3
-            override_text:  "\uf030"
-            override_tag: "camera"
-            override_index: 2
-        }
-        SidebarStackButton{
-            id: b4
-            override_text: "\uf0c7"
-            override_tag: "recording"
-            override_index: 3
-        }
-        SidebarStackButton{
-            id: b5
-            override_text: "\uf11b"
-            override_tag: "rc"
-            override_index: 4
-        }
-        SidebarStackButton{
-            id: b6
-            override_text: "\uf26c"
-            override_tag: "misc"
-            override_index: 5
-        }
-        SidebarStackButton{
-            id: b7
-            override_text: "\uf55b"
-            override_tag: "status"
-            override_index: 6
+        Repeater {
+            model: menuModel
+            delegate: SidebarStackButton {
+                override_text: model.text
+                override_tag: model.tag
+                override_index: Number(model.index)
+                Component.onCompleted: stack_buttons.push(this)
+            }
         }
     }
-
 
     Item{
         id: panels_item
@@ -229,37 +222,78 @@ Item {
         height: secondaryUiHeight
         anchors.left: stack_manager.right
         anchors.top: stack_manager.top
+        focus: false
 
-        Panel1Link{
-            id: panel1
-            visible: m_stack_index==0;
-        }
-        Panel2Video{
-            id: panel2
-            visible: m_stack_index==1;
+        function takeover_control(){
+            focus = true
+            focusPanelItem()
         }
 
-        Panel3Camera{
-            id: panel3
-            visible: m_stack_index==2;
+        Keys.onPressed: (event)=>{
+            if(event.key === Qt.Key_Up){
+                panel_index--
+                if(panel_index<0){
+                    panel_index=0
+                }
+                event.accepted=true
+            }else if(event.key === Qt.Key_Down){
+                panel_index++
+                if(panel_index>panel_count-1){
+                    panel_index=panel_count-1
+                }
+                event.accepted=true
+            }else if(event.key === Qt.Key_Left){
+                sidebar.handover_joystick_control_to_button(sidebar.m_stack_index)
+                event.accepted=true
+            }
         }
 
-        Panel4Recording{
-            id: panel4
-            visible: m_stack_index==3;
+        Column {
+            id: controlsColumn
+            anchors.fill: parent
+            spacing: 6
+            Repeater {
+                model: controlModel
+                delegate: Loader {
+                    sourceComponent: model.type === "button" ? buttonComponent : model.type === "switch" ? switchComponent : model.type === "slider" ? sliderComponent : null
+                    onLoaded: if(index === panel_index) item.forceActiveFocus()
+                }
+            }
         }
 
-        Panel5RC{
-            id: panel5
-            visible: m_stack_index==4;
+        Component {
+            id: buttonComponent
+            Button {
+                text: model.text
+                onClicked: console.log("action:" + model.action)
+            }
         }
-        Panel6Misc{
-            id: panel6
-            visible: m_stack_index==5;
+
+        Component {
+            id: switchComponent
+            Row {
+                spacing: 8
+                Text { text: model.text; color: "white" }
+                Switch {
+                    checked: sidebar.controlState[model.setting] || false
+                    onToggled: sidebar.controlState[model.setting] = checked
+                }
+            }
         }
-        Panel7Status{
-            id: panel7
-            visible: m_stack_index==6;
+
+        Component {
+            id: sliderComponent
+            Column {
+                spacing: 4
+                Text { text: model.text; color: "white" }
+                Slider {
+                    from: Number(model.min)
+                    to: Number(model.max)
+                    stepSize: model.step ? Number(model.step) : 1
+                    value: sidebar.controlState[model.setting] || Number(model.min)
+                    onValueChanged: sidebar.controlState[model.setting] = value
+                }
+            }
         }
     }
 

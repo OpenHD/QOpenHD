@@ -290,15 +290,8 @@
         <file>ui/sidebar/EditChannelWidthElement.qml</file>
         <file>ui/sidebar/BaseJoyEditElement.qml</file>
         <file>ui/sidebar/MavlinkChoiceElement.qml</file>
-        <file>ui/sidebar/SideBarBasePanel.qml</file>
-        <file>ui/sidebar/Panel1Link.qml</file>
-        <file>ui/sidebar/Panel5RC.qml</file>
-        <file>ui/sidebar/Panel2Video.qml</file>
-        <file>ui/sidebar/Panel3Camera.qml</file>
-        <file>ui/sidebar/Panel4Recording.qml</file>
-        <file>ui/sidebar/Panel6Misc.qml</file>
-        <file>ui/sidebar/Panel7Status.qml</file>
         <file>ui/sidebar/SidebarStackButton.qml</file>
+        <file>ui/sidebar/Sidebar.xml</file>
         <file>ui/sidebar/RCChannelView.qml</file>
         <file>ui/widgets/map/ADSBcautionMarker.png</file>
         <file>ui/widgets/map/ADSBmarker.png</file>

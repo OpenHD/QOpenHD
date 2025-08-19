@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sidebar>
+    <menu index="-1" text="&#xF053;" tag="back"/>
+    <menu index="0" text="&#xF1EB;" tag="link">
+        <control type="button" text="Connect" action="connectLink"/>
+        <control type="button" text="Reset" action="resetLink"/>
+        <control type="button" text="Info" action="showInfo"/>
+        <control type="switch" text="Enable ABCD" setting="abcd"/>
+    </menu>
+    <menu index="1" text="&#xF03D;" tag="video">
+        <control type="slider" text="Quality" setting="quality" min="0" max="100" step="10"/>
+    </menu>
+</sidebar>

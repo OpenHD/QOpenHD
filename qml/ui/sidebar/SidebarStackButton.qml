@@ -17,7 +17,7 @@ import "../elements"
 //
 Item {
     id: sidebar_stack_button
-    height: secondaryUiHeight / 8 //number of items
+    height: secondaryUiHeight / sidebar.button_count // responsive height
     width: height
 
     property string override_text: "OVERRIDE ME"
@@ -42,7 +42,7 @@ Item {
     Text {
         anchors.fill: parent
         text: override_text
-        font.pixelSize: secondaryUiHeight / 16
+        font.pixelSize: secondaryUiHeight / (sidebar.button_count*2)
         opacity: 1.0
         font.family: "Font Awesome 5 Free"
         color: "white"
@@ -72,13 +72,13 @@ Item {
                             event.accepted=true;
                         }else if(event.key === Qt.Key_Down){
                             m_stack_index++;
-                            if(m_stack_index>6){
-                                m_stack_index=6;
+                            if(m_stack_index>sidebar.max_index){
+                                m_stack_index=sidebar.max_index;
                             }
                             sidebar.handover_joystick_control_to_button(m_stack_index);
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Right && focus){
-                            sidebar.handover_joystick_control_to_panel(sidebar.m_stack_index);
+                            sidebar.handover_joystick_control_to_panel();
                             event.accepted=true;
                         }
                     }
