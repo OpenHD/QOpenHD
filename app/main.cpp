@@ -283,8 +283,6 @@ int main(int argc, char *argv[]) {
     if (g_shared_drm_fd >= 0) {
         // Ensure Qt does not try to open the socket path as a device
         qunsetenv("QT_QPA_EGLFS_DEVICE");
-        qputenv("QT_QPA_EGLFS_KMSFD", QByteArray::number(g_shared_drm_fd));
-    }
 
     QCoreApplication::setOrganizationName("OpenHD");
     QCoreApplication::setOrganizationDomain("openhd");
