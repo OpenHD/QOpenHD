@@ -83,6 +83,9 @@ void attachConsole() {
 #include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
+#include "util/drm_fd_socket.h"
+
+#include <QByteArray>
 
 #if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 RESOLVEFUNC(SSL_get1_peer_certificate);
@@ -92,6 +95,8 @@ RESOLVEFUNC(EVP_PKEY_get_base_id);
 //#include <qpa/qplatformnativeinterface.h>
 //#include <xf86drm.h>
 //#include <xf86drmMode.h>
+
+static int g_shared_drm_fd = -1;
 
 // Load all the fonts we use ?!
 static void load_fonts(){
@@ -258,6 +263,14 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     attachConsole();
 #endif
+
+    const QByteArray drmSocket = qgetenv("FPVUE_DRM_FD_SOCKET");
+    if (!drmSocket.isEmpty()) {
+        g_shared_drm_fd = receive_fd_from_socket(drmSocket.constData());
+        if (g_shared_drm_fd >= 0) {
+            qputenv("QT_QPA_EGLFS_KMSFD", QByteArray::number(g_shared_drm_fd));
+        }
+    }
 
     QCoreApplication::setOrganizationName("OpenHD");
     QCoreApplication::setOrganizationDomain("openhd");
