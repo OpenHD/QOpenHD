@@ -86,6 +86,9 @@ void attachConsole() {
 #include "util/drm_fd_socket.h"
 
 #include <QByteArray>
+#include <QProcess>
+#include <QFile>
+#include <QThread>
 
 #if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 RESOLVEFUNC(SSL_get1_peer_certificate);
@@ -264,12 +267,20 @@ int main(int argc, char *argv[]) {
     attachConsole();
 #endif
 
-    const QByteArray drmSocket = qgetenv("FPVUE_DRM_FD_SOCKET");
-    if (!drmSocket.isEmpty()) {
-        g_shared_drm_fd = receive_fd_from_socket(drmSocket.constData());
-        if (g_shared_drm_fd >= 0) {
-            qputenv("QT_QPA_EGLFS_KMSFD", QByteArray::number(g_shared_drm_fd));
+    QByteArray drmSocket = qgetenv("FPVUE_DRM_FD_SOCKET");
+    if (drmSocket.isEmpty()) {
+        drmSocket = "/tmp/drm-master";
+        qputenv("FPVUE_DRM_FD_SOCKET", drmSocket);
+        QProcess::startDetached("display_host",
+                                QStringList() << "--socket" << QString::fromUtf8(drmSocket)
+                                              << "--clients" << "2");
+        for (int i = 0; i < 50 && !QFile::exists(QString::fromUtf8(drmSocket)); ++i) {
+            QThread::msleep(100);
         }
+    }
+    g_shared_drm_fd = receive_fd_from_socket(drmSocket.constData());
+    if (g_shared_drm_fd >= 0) {
+        qputenv("QT_QPA_EGLFS_KMSFD", QByteArray::number(g_shared_drm_fd));
     }
 
     QCoreApplication::setOrganizationName("OpenHD");
