@@ -34,6 +34,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/util/qopenhd.cpp
     app/util/qrenderstats.cpp
     app/util/restartqopenhdmessagebox.cpp
+    app/util/drm_fd_socket.cpp
     #
     app/osd/altitudeladder.cpp
     app/osd/aoagauge.cpp

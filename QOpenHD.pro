@@ -120,6 +120,7 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/util/restartqopenhdmessagebox.cpp \
+    app/util/drm_fd_socket.cpp \
     app/main.cpp \
 
 HEADERS += \
@@ -139,6 +140,7 @@ HEADERS += \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/util/restartqopenhdmessagebox.h \
+    app/util/drm_fd_socket.h \
     app/util/lqutils_include.h \
 
 
