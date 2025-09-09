@@ -74,7 +74,7 @@ Item {
             visible: get_show_power_actions() && m_type==2
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 10
-            text: qsTr("Calibrate Compass")
+            text: "\uf14e"
             onPressed: {
                 var success=_fcMavlinkAction.send_command_compass_calibration();
                 if(success){
