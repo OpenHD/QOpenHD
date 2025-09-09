@@ -22,11 +22,13 @@ MapWidgetForm {
     property variant map
 
     Component.onCompleted: {
-        // Add additional map providers
-        pluginModel.append({
-                               "name": "mapboxgl",
-                               "description": "MapboxGL"
-                           })
+        // TODO: Figure out how we can get better (terrain) maps
+        if(false){
+            pluginModel.append({
+                                   "name": "mapboxgl",
+                                   "description": "MapboxGL"
+                               })
+        }
         // Consti10: This way we need a restart of QOpenHD when the map is enabled, but we
         // save some performance in case the map is not enabled
         if(settings.show_map){
@@ -62,17 +64,13 @@ MapWidgetForm {
     function createMap(parent, provider) {
         console.log("createMap(" + provider + ")");
         var plugin
-        var pluginParameters = ""
-        if (provider === "mapboxgl") {
-            pluginParameters = 'PluginParameter { name: "mapbox.access_token"; value: "' + settings.map_api_key + '" }'
-        } else if (provider === "osm") {
-            pluginParameters = 'PluginParameter { name: "osm.mapping.custom.host"; value: "https://tile.openstreetmap.org/" }'
-        }
         plugin = Qt.createQmlObject(`
                                     import QtLocation 5.15
                                     Plugin {
                                     name: "` + provider + `"
-                                    ` + pluginParameters + `
+                                    PluginParameter {
+                                    name: "osm.mapping.custom.host";
+                                    value: "https://tile.openstreetmap.org/" }
                                     }
                                     `, mapWidget);
         console.log("Using plugin: " + plugin.name);

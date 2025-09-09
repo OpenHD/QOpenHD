@@ -338,7 +338,6 @@ Settings {
     property bool show_gpio: false
     property int selected_map_provider: 0
     property int selected_map_variant: 0
-    property string map_api_key: ""
 
     property bool show_vibration: false
 
