@@ -213,7 +213,7 @@ BaseWidget {
                     anchors.left: button_change_resolution.right
                     anchors.leftMargin: 5
                     onClicked: {
-                        sidebar.open_category(2)
+                        sidebar.open_category(3)
                         widgetAction.close()
                     }
                 }
