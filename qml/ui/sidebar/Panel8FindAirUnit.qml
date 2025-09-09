@@ -10,7 +10,7 @@ SideBarBasePanel{
     override_title: "Find Air Unit"
 
     function takeover_control(){
-        startButton.focus=true;
+        bandSelection.takeover_control();
     }
 
     ColumnLayout{
@@ -20,53 +20,55 @@ SideBarBasePanel{
         anchors.right: parent.right
         spacing: 5
 
-        ComboBox{
-            id: comboBoxWhichFrequencyToScan
+        ListModel{
+            id: scanBandModel
+            ListElement { value: 0; verbose: "OpenHD [1-7] only" }
+            ListElement { value: 1; verbose: "All 2.4G channels" }
+            ListElement { value: 2; verbose: "All 5.8G channels" }
+        }
+
+        BaseJoyEditElement2{
+            id: bandSelection
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.preferredWidth: 200
-            model: ListModel {
-                ListElement { title: "OpenHD [1-7] only" }
-                ListElement { title: "All 2.4G channels" }
-                ListElement { title: "All 5.8G channels" }
-            }
-            textRole: "title"
-            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-            hoverEnabled: true
-            background: Rectangle {
-                color: comboBoxWhichFrequencyToScan.focus ? highlightColor : "#333c4c"
-                border.color: "white"
-                border.width: comboBoxWhichFrequencyToScan.focus ? 3 : 0
-                opacity: comboBoxWhichFrequencyToScan.focus ? 1.0 : 0.3
-            }
+            m_title: "Channels"
+
+            property int currentIndex: 0
+
+            m_displayed_value: scanBandModel.get(currentIndex).verbose
+
             Keys.onPressed: (event)=> {
                 if(event.key===Qt.Key_Left){
                     sidebar.regain_control_on_sidebar_stack();
                     event.accepted=true;
-                }else if(event.key===Qt.Key_Down){
-                    if(comboBoxWhichFrequencyToScan.popup.visible){
-                        comboBoxWhichFrequencyToScan.currentIndex = Math.min(
-                                    comboBoxWhichFrequencyToScan.count - 1,
-                                    comboBoxWhichFrequencyToScan.currentIndex + 1);
-                    }else{
-                        startButton.focus=true;
-                    }
+                }else if(event.key===Qt.Key_Right || event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
+                    open_choices_menu(false);
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Up){
-                    if(comboBoxWhichFrequencyToScan.popup.visible){
-                        comboBoxWhichFrequencyToScan.currentIndex = Math.max(
-                                    0, comboBoxWhichFrequencyToScan.currentIndex - 1);
-                    }else{
-                        comboBoxWhichFrequencyToScan.popup.open();
-                    }
+                    choiceSelector.discard_and_close();
+                    sidebar.regain_control_on_sidebar_stack();
                     event.accepted=true;
-                }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
-                    if(comboBoxWhichFrequencyToScan.popup.visible){
-                        comboBoxWhichFrequencyToScan.popup.close();
-                    }else{
-                        comboBoxWhichFrequencyToScan.popup.open();
-                    }
+                }else if(event.key===Qt.Key_Down){
+                    choiceSelector.discard_and_close();
+                    startButton.focus=true;
                     event.accepted=true;
                 }
+            }
+
+            onBase_joy_edit_element_clicked: {
+                if(choiceSelector.visible){
+                    choiceSelector.close_choices();
+                }else{
+                    open_choices_menu(true);
+                }
+            }
+
+            function open_choices_menu(clickable){
+                choiceSelector.open_choices(scanBandModel, scanBandModel.get(currentIndex).value, bandSelection);
+                choiceSelector.set_clickable(clickable);
+            }
+
+            function user_selected_value(value_new){
+                currentIndex=parseInt(value_new);
             }
         }
 
@@ -84,7 +86,7 @@ SideBarBasePanel{
                 opacity: startButton.focus ? 1.0 : 0.8
             }
             function startScan(){
-                var how_many_freq_bands = comboBoxWhichFrequencyToScan.currentIndex;
+                var how_many_freq_bands = bandSelection.currentIndex;
                 var how_many_bandwidths = 2;
                 var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, how_many_bandwidths);
                 if(result){
@@ -96,7 +98,7 @@ SideBarBasePanel{
             onClicked: startScan()
             Keys.onPressed: (event)=> {
                 if(event.key===Qt.Key_Up){
-                    comboBoxWhichFrequencyToScan.focus=true;
+                    bandSelection.takeover_control();
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Left){
                     sidebar.regain_control_on_sidebar_stack();
