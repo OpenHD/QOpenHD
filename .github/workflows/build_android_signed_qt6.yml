@@ -1,0 +1,116 @@
+name: build_android_signed_qt6
+
+on:
+  push:
+    branches:
+      - "2.6-evo"
+      - "dev-release"
+      - "release"
+    paths-ignore:
+      - '**.md'
+      - '**.asciidoc'
+      - '**.adoc'
+      - '.gitignore'
+      - 'LICENSE'
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  SOURCE_DIR: ${{ github.workspace }}
+  QT_VERSION: 6.6.3
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        include:
+          - architecture: armv7
+            eabi: armeabi-v7a
+            qt_arch: android_armv7
+            ARTIFACT: QOpenHD_armv7.aab
+          - architecture: armv8
+            eabi: arm64-v8a
+            qt_arch: android_arm64_v8a
+            ARTIFACT: QOpenHD_armv8.aab
+
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Fix grub EFI CI issue
+        run: sudo apt-mark hold grub-efi-amd64-signed
+
+      - name: Install ccache
+        run: sudo apt-get install -y ccache
+
+      - name: Install Qt for Android (Qt 6)
+        id: install-qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: android
+          arch: ${{ matrix.qt_arch }}
+          modules: qtcharts
+          setup-python: true
+
+      - name: Install Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r26b
+          add-to-path: true
+
+      - name: Setup ccache
+        run: |
+          mkdir -p ~/.ccache
+          echo "base_dir = ${GITHUB_WORKSPACE}" > ~/.ccache/ccache.conf
+          echo "compression = true" >> ~/.ccache/ccache.conf
+          echo "compression_level = 5" >> ~/.ccache/ccache.conf
+          ccache -z
+
+      - name: Create build directory
+        run: mkdir -p ${{ runner.temp }}/shadow_build_dir
+
+      - name: Install GStreamer (optional, keep if needed)
+        working-directory: ${{ github.workspace }}
+        run: |
+          cd lib/gstreamer_prebuilts/
+          ./fetch_extract_locally.sh
+
+      - name: Configure (CMake for Android Qt6)
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        env:
+          QT_HOST_PATH: ${{ steps.install-qt.outputs.qtPath }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          cmake ${SOURCE_DIR} \
+            -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+            -DCMAKE_TOOLCHAIN_FILE=${QT_HOST_PATH}/lib/cmake/Qt6/qt.toolchain.cmake \
+            -DQT_HOST_PATH=${QT_HOST_PATH} \
+            -DANDROID_ABI=${{ matrix.eabi }} \
+            -DANDROID_PLATFORM=android-35 \
+            -DQT_ANDROID_SIGNING_KEYSTORE=${SOURCE_DIR}/android/qopenhd_key.jks \
+            -DQT_ANDROID_SIGNING_ALIAS=qopenhd_key \
+            -DQT_ANDROID_SIGNING_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+
+      - name: Build
+        working-directory: ${{ runner.temp }}/shadow_build_dir
+        run: |
+          cmake --build . --parallel 12
+
+      - name: ccache stats
+        run: ccache -s
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.ARTIFACT }}
+          path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/bundle/release/*.aab

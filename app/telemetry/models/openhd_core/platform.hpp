@@ -31,6 +31,7 @@ static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1126 = 23;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1106 = 25;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1103 = 26;
+static constexpr int X_PLATFORM_TYPE_LUCKFOX_LYRA = 27;
     
 // Numbers 30..35 are reserved for allwinner
 static constexpr int X_PLATFORM_TYPE_ALWINNER_X20 = 30;
@@ -67,6 +68,8 @@ static std::string x_platform_type_to_string(int platform_type) {
     case X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B:
         return "RADXA ROCK5 B";
     // ROCK END
+    case X_PLATFORM_TYPE_LUCKFOX_LYRA:
+        return "Luckfox Lyra";
     case X_PLATFORM_TYPE_ALWINNER_X20:
         return "X20";
     case X_PLATFORM_TYPE_ROCKCHIP_RV1126:

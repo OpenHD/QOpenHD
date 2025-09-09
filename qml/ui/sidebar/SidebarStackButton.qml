@@ -17,7 +17,7 @@ import "../elements"
 //
 Item {
     id: sidebar_stack_button
-    height: secondaryUiHeight / 8 //number of items
+    height: secondaryUiHeight / 9 //number of items
     width: height
 
     property string override_text: "OVERRIDE ME"
@@ -72,8 +72,8 @@ Item {
                             event.accepted=true;
                         }else if(event.key === Qt.Key_Down){
                             m_stack_index++;
-                            if(m_stack_index>6){
-                                m_stack_index=6;
+                            if(m_stack_index>7){
+                                m_stack_index=7;
                             }
                             sidebar.handover_joystick_control_to_button(m_stack_index);
                             event.accepted=true;

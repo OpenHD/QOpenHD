@@ -114,6 +114,8 @@ Item {
             b6.takeover_control();
         }else if(stack_index==6){
             b7.takeover_control();
+        }else if(stack_index==7){
+            b8.takeover_control();
         }
     }
 
@@ -130,6 +132,10 @@ Item {
             panel5.takeover_control();
         }else if(stack_index==5){
             panel6.takeover_control();
+        }else if(stack_index==6){
+            panel7.takeover_control();
+        }else if(stack_index==7){
+            panel8.takeover_control();
         }
     }
 
@@ -220,6 +226,12 @@ Item {
             override_tag: "status"
             override_index: 6
         }
+        SidebarStackButton{
+            id: b8
+            override_text: "\uf002"
+            override_tag: "scan"
+            override_index: 7
+        }
     }
 
 
@@ -260,6 +272,10 @@ Item {
         Panel7Status{
             id: panel7
             visible: m_stack_index==6;
+        }
+        Panel8FindAirUnit{
+            id: panel8
+            visible: m_stack_index==7;
         }
     }
 

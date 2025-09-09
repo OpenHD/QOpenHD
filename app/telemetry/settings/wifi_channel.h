@@ -73,23 +73,23 @@ static std::vector<WifiChannel> get_channels_2G() {
       // which is well-defined. Also read https://yo3iiu.ro/blog/?p=1301
       // NOTE: OpenHD does not use channel width <20Mhz, so we ignore a couple
       // of channels here
-      WifiChannel{2312, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2312, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2317, -1, WifiSpace::G2_4, false},
       // WifiChannel{2322, -1, WifiSpace::G2_4, false},
       // WifiChannel{2327, -1, WifiSpace::G2_4, false},
-      WifiChannel{2332, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2332, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2337, -1, WifiSpace::G2_4, false},
       // WifiChannel{2342, -1, WifiSpace::G2_4, false},
       // WifiChannel{2347, -1, WifiSpace::G2_4, false},
-      WifiChannel{2352, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2352, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2357, -1, WifiSpace::G2_4, false},
       // WifiChannel{2362, -1, WifiSpace::G2_4, false},
       // WifiChannel{2367, -1, WifiSpace::G2_4, false},
-      WifiChannel{2372, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2372, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2377, -1, WifiSpace::G2_4, false},
       // WifiChannel{2382, -1, WifiSpace::G2_4, false},
       // WifiChannel{2387, -1, WifiSpace::G2_4, false},
-      WifiChannel{2392, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2392, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2397, -1, WifiSpace::G2_4, false},
       // WifiChannel{2402, -1, WifiSpace::G2_4, false},
       // WifiChannel{2407, -1, WifiSpace::G2_4, false},
@@ -111,25 +111,25 @@ static std::vector<WifiChannel> get_channels_2G() {
       // until here it is consistent (5Mhz increments)
       // this one is neither allowed in EU nor USA
       // (only in Japan under 11b)
-      WifiChannel{2484, 14, WifiSpace::G2_4, true, true, false},
+      WifiChannel{2484, 14, WifiSpace::G2_4, true, true, false, false},
       // and these are all not valid wlan channels, but the AR9271 can do them
       // anyways
       // WifiChannel{2487, -1, WifiSpace::G2_4, false},
       // WifiChannel{2489, -1, WifiSpace::G2_4, false},
-      WifiChannel{2492, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2492, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2494, -1, WifiSpace::G2_4, false},
       // WifiChannel{2497, -1, WifiSpace::G2_4, false},
       // WifiChannel{2499, -1, WifiSpace::G2_4, false},
-      WifiChannel{2512, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2512, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2532, -1, WifiSpace::G2_4, false},
       // WifiChannel{2572, -1, WifiSpace::G2_4, false},
       // WifiChannel{2592, -1, WifiSpace::G2_4, false},
-      WifiChannel{2612, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2612, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2632, -1, WifiSpace::G2_4, false},
       // WifiChannel{2652, -1, WifiSpace::G2_4, false},
       // WifiChannel{2672, -1, WifiSpace::G2_4, false},
-      WifiChannel{2692, -1, WifiSpace::G2_4, false, false, false},
-      WifiChannel{2712, -1, WifiSpace::G2_4, false, false, false},
+      WifiChannel{2692, -1, WifiSpace::G2_4, false, false, false, false},
+      WifiChannel{2712, -1, WifiSpace::G2_4, false, false, false, false},
       // WifiChannel{2732, -1, WifiSpace::G2_4, false},
   };
 }
