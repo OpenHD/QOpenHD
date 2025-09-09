@@ -56,7 +56,10 @@ Item {
         //visible: get_show_power_actions()
         Button{
             visible: get_show_power_actions() && m_supports_reboot_actions
-            Layout.alignment: {if (m_supports_shutdown_actions == false)
+            Layout.alignment: {
+                if (m_type === 2)
+                    return Qt.AlignLeft
+                if (m_supports_shutdown_actions == false)
                     return Qt.AlignCenter
                 else
                     return Qt.AlignLeft
@@ -65,6 +68,20 @@ Item {
             text: qsTr("REBOOT")
             onPressed: {
                 open_power_action_dialoque(m_type,true)
+            }
+        }
+        Button{
+            visible: get_show_power_actions() && m_type==2
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 10
+            text: qsTr("Calibrate Compass")
+            onPressed: {
+                var success=_fcMavlinkAction.send_command_compass_calibration();
+                if(success){
+                    _qopenhd.show_toast(qsTr("Compass calibration requested"));
+                }else{
+                    _qopenhd.show_toast(qsTr("Compass calibration failed"));
+                }
             }
         }
         Button{
