@@ -11,7 +11,11 @@ SideBarBasePanel{
 
     function takeover_control(){
         startButton.focus=true;
+        startButtonNextLeftExits=false;
     }
+
+    // Tracks whether the next left key from startButton should exit back to the sidebar
+    property bool startButtonNextLeftExits: false
 
     ColumnLayout{
         anchors.top: parent.top
@@ -37,8 +41,12 @@ SideBarBasePanel{
                     }
                 }
                 Keys.onPressed: (event)=> {
-                    if(event.key===Qt.Key_Up || event.key===Qt.Key_Down){
-                        sidebar.regain_control_on_sidebar_stack();
+                    if(event.key===Qt.Key_Left){
+                        if(startButtonNextLeftExits){
+                            sidebar.regain_control_on_sidebar_stack();
+                        }else{
+                            comboBoxWhichFrequencyToScan.focus=true;
+                        }
                         event.accepted=true;
                     }
                 }
@@ -54,6 +62,31 @@ SideBarBasePanel{
                 }
                 textRole: "title"
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+                Keys.onPressed: (event)=> {
+                    if(event.key===Qt.Key_Left){
+                        startButton.focus=true;
+                        startButtonNextLeftExits=true;
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Up){
+                        if(!comboBoxWhichFrequencyToScan.popup.visible)
+                            comboBoxWhichFrequencyToScan.popup.open();
+                        comboBoxWhichFrequencyToScan.currentIndex = Math.max(
+                                    0, comboBoxWhichFrequencyToScan.currentIndex - 1);
+        
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Down){
+                        if(!comboBoxWhichFrequencyToScan.popup.visible)
+                            comboBoxWhichFrequencyToScan.popup.open();
+                        comboBoxWhichFrequencyToScan.currentIndex = Math.min(
+                                    comboBoxWhichFrequencyToScan.count - 1,
+                                    comboBoxWhichFrequencyToScan.currentIndex + 1);
+
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
+                        comboBoxWhichFrequencyToScan.popup.open();
+                        event.accepted=true;
+                    }
+                }
             }
         }
 
