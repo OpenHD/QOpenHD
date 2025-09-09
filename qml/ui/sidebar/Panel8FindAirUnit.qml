@@ -10,7 +10,7 @@ SideBarBasePanel{
     override_title: "Find Air Unit"
 
     function takeover_control(){
-        startButton.focus=true;
+        bandSelection.takeover_control();
     }
 
     ColumnLayout{
@@ -20,53 +20,36 @@ SideBarBasePanel{
         anchors.right: parent.right
         spacing: 5
 
-        ComboBox{
-            id: comboBoxWhichFrequencyToScan
+        ListModel{
+            id: scanBandModel
+            ListElement { title: "OpenHD [1-7] only" }
+            ListElement { title: "All 2.4G channels" }
+            ListElement { title: "All 5.8G channels" }
+        }
+
+        BaseJoyEditElement{
+            id: bandSelection
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.preferredWidth: 200
-            model: ListModel {
-                ListElement { title: "OpenHD [1-7] only" }
-                ListElement { title: "All 2.4G channels" }
-                ListElement { title: "All 5.8G channels" }
+            m_title: "Channels"
+
+            property int currentIndex: 0
+
+            m_button_left_activated: currentIndex>0 && _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+            m_button_right_activated: currentIndex<scanBandModel.count-1 && _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+
+            m_displayed_value: scanBandModel.get(currentIndex).title
+
+            onChoice_left: {
+                if(currentIndex>0) currentIndex--;
             }
-            textRole: "title"
-            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-            hoverEnabled: true
-            background: Rectangle {
-                color: comboBoxWhichFrequencyToScan.focus ? highlightColor : "#333c4c"
-                border.color: "white"
-                border.width: comboBoxWhichFrequencyToScan.focus ? 3 : 0
-                opacity: comboBoxWhichFrequencyToScan.focus ? 1.0 : 0.3
+            onChoice_right: {
+                if(currentIndex+1<scanBandModel.count) currentIndex++;
             }
-            Keys.onPressed: (event)=> {
-                if(event.key===Qt.Key_Left){
-                    sidebar.regain_control_on_sidebar_stack();
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Down){
-                    if(comboBoxWhichFrequencyToScan.popup.visible){
-                        comboBoxWhichFrequencyToScan.currentIndex = Math.min(
-                                    comboBoxWhichFrequencyToScan.count - 1,
-                                    comboBoxWhichFrequencyToScan.currentIndex + 1);
-                    }else{
-                        startButton.focus=true;
-                    }
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Up){
-                    if(comboBoxWhichFrequencyToScan.popup.visible){
-                        comboBoxWhichFrequencyToScan.currentIndex = Math.max(
-                                    0, comboBoxWhichFrequencyToScan.currentIndex - 1);
-                    }else{
-                        comboBoxWhichFrequencyToScan.popup.open();
-                    }
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
-                    if(comboBoxWhichFrequencyToScan.popup.visible){
-                        comboBoxWhichFrequencyToScan.popup.close();
-                    }else{
-                        comboBoxWhichFrequencyToScan.popup.open();
-                    }
-                    event.accepted=true;
-                }
+            onGoto_previous: {
+                sidebar.regain_control_on_sidebar_stack();
+            }
+            onGoto_next: {
+                startButton.focus=true;
             }
         }
 
@@ -84,7 +67,7 @@ SideBarBasePanel{
                 opacity: startButton.focus ? 1.0 : 0.8
             }
             function startScan(){
-                var how_many_freq_bands = comboBoxWhichFrequencyToScan.currentIndex;
+                var how_many_freq_bands = bandSelection.currentIndex;
                 var how_many_bandwidths = 2;
                 var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, how_many_bandwidths);
                 if(result){
@@ -96,7 +79,7 @@ SideBarBasePanel{
             onClicked: startScan()
             Keys.onPressed: (event)=> {
                 if(event.key===Qt.Key_Up){
-                    comboBoxWhichFrequencyToScan.focus=true;
+                    bandSelection.takeover_control();
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Left){
                     sidebar.regain_control_on_sidebar_stack();
