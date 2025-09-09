@@ -33,7 +33,7 @@ SideBarBasePanel{
                     border.width: startButton.focus ? 3 : 0
                     opacity: startButton.focus ? 1.0 : 0.3
                 }
-                onClicked: {
+                function startScan(){
                     var how_many_freq_bands = comboBoxWhichFrequencyToScan.currentIndex;
                     var how_many_bandwidths = 2;
                     var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, how_many_bandwidths);
@@ -43,12 +43,16 @@ SideBarBasePanel{
                         _qopenhd.show_toast("Busy,please try again later", true);
                     }
                 }
+                onClicked: startScan()
                 Keys.onPressed: (event)=> {
                     if(event.key===Qt.Key_Right){
                         comboBoxWhichFrequencyToScan.focus=true;
                         event.accepted=true;
                     }else if(event.key===Qt.Key_Left){
                         sidebar.regain_control_on_sidebar_stack();
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
+                        startScan();
                         event.accepted=true;
                     }
                 }
