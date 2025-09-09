@@ -45,6 +45,7 @@ public:
     Q_INVOKABLE void request_home_position_from_fc();
 
     Q_INVOKABLE bool send_command_reboot(bool reboot);
+    Q_INVOKABLE bool send_command_compass_calibration();
 private:
     std::atomic<bool> m_has_currently_runnning_flight_mode_change=false;
 };

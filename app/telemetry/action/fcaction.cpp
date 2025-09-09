@@ -181,3 +181,11 @@ bool FCAction::send_command_reboot(bool reboot)
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
 }
+
+bool FCAction::send_command_compass_calibration()
+{
+    const auto fc_id=MavlinkTelemetry::instance().get_fc_mav_id();
+    auto command=cmd::helper::create_cmd_compass_calibration(fc_id.sys_id,fc_id.comp_id);
+    const auto res=CmdSender::instance().send_command_long_blocking(command);
+    return res==CmdSender::Result::CMD_SUCCESS;
+}
