@@ -11,11 +11,7 @@ SideBarBasePanel{
 
     function takeover_control(){
         startButton.focus=true;
-        startButtonNextLeftExits=false;
     }
-
-    // Tracks whether the next left key from startButton should exit back to the sidebar
-    property bool startButtonNextLeftExits: false
 
     ColumnLayout{
         anchors.top: parent.top
@@ -30,7 +26,14 @@ SideBarBasePanel{
                 id: startButton
                 text: "START"
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-                onClicked: {
+                hoverEnabled: true
+                background: Rectangle {
+                    color: startButton.focus ? highlightColor : "#333c4c"
+                    border.color: "white"
+                    border.width: startButton.focus ? 3 : 0
+                    opacity: startButton.focus ? 1.0 : 0.3
+                }
+                function startScan(){
                     var how_many_freq_bands = comboBoxWhichFrequencyToScan.currentIndex;
                     var how_many_bandwidths = 2;
                     var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, how_many_bandwidths);
@@ -40,13 +43,16 @@ SideBarBasePanel{
                         _qopenhd.show_toast("Busy,please try again later", true);
                     }
                 }
+                onClicked: startScan()
                 Keys.onPressed: (event)=> {
-                    if(event.key===Qt.Key_Left){
-                        if(startButtonNextLeftExits){
-                            sidebar.regain_control_on_sidebar_stack();
-                        }else{
-                            comboBoxWhichFrequencyToScan.focus=true;
-                        }
+                    if(event.key===Qt.Key_Right){
+                        comboBoxWhichFrequencyToScan.focus=true;
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Left){
+                        sidebar.regain_control_on_sidebar_stack();
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
+                        startScan();
                         event.accepted=true;
                     }
                 }
@@ -62,17 +68,27 @@ SideBarBasePanel{
                 }
                 textRole: "title"
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+                hoverEnabled: true
+                background: Rectangle {
+                    color: comboBoxWhichFrequencyToScan.focus ? highlightColor : "#333c4c"
+                    border.color: "white"
+                    border.width: comboBoxWhichFrequencyToScan.focus ? 3 : 0
+                    opacity: comboBoxWhichFrequencyToScan.focus ? 1.0 : 0.3
+                }
                 Keys.onPressed: (event)=> {
                     if(event.key===Qt.Key_Left){
-                        startButton.focus=true;
-                        startButtonNextLeftExits=true;
+                        if(comboBoxWhichFrequencyToScan.popup.visible){
+                            comboBoxWhichFrequencyToScan.popup.close();
+                        }else{
+                            startButton.focus=true;
+                        }
                         event.accepted=true;
                     }else if(event.key===Qt.Key_Up){
                         if(!comboBoxWhichFrequencyToScan.popup.visible)
                             comboBoxWhichFrequencyToScan.popup.open();
                         comboBoxWhichFrequencyToScan.currentIndex = Math.max(
                                     0, comboBoxWhichFrequencyToScan.currentIndex - 1);
-        
+
                         event.accepted=true;
                     }else if(event.key===Qt.Key_Down){
                         if(!comboBoxWhichFrequencyToScan.popup.visible)
@@ -83,7 +99,11 @@ SideBarBasePanel{
 
                         event.accepted=true;
                     }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
-                        comboBoxWhichFrequencyToScan.popup.open();
+                        if(comboBoxWhichFrequencyToScan.popup.visible){
+                            comboBoxWhichFrequencyToScan.popup.close();
+                        }else{
+                            comboBoxWhichFrequencyToScan.popup.open();
+                        }
                         event.accepted=true;
                     }
                 }
