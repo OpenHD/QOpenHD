@@ -87,6 +87,12 @@ cd build
 qmake ..
 ```
 
+### Map API Key
+
+Some map providers such as Mapbox require an API key. The map widget now
+includes a **Map API key** field in its settings menu where you can paste
+your key so those providers can load correctly.
+
 ## Contributing
 
 **Thanks to all the people who have contributed !**

@@ -32,6 +32,7 @@ BaseWidget {
     property alias widgetInnerMap: widgetInnerMap
     property alias sidebar_wrapper: sidebar_wrapper
     property alias pluginModel: pluginModel
+    property alias apiKeyField: apiKeyField
 
     defaultAlignment: 1
     defaultXOffset: 12
@@ -533,6 +534,16 @@ BaseWidget {
 
                         Component.onCompleted: currentIndex = settings.selected_map_provider
 
+                    }
+
+                    TextField {
+                        id: apiKeyField
+                        height: 48
+                        width: parent.width
+                        placeholderText: qsTr("Map API key")
+                        text: settings.map_api_key
+                        visible: pluginModel.get(providerDropdown.currentIndex).name === "mapboxgl"
+                        onEditingFinished: settings.map_api_key = text
                     }
 
                     ComboBox {
