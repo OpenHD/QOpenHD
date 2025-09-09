@@ -55,13 +55,13 @@ Item {
     }
 
     function open_link_category(){
-        open_category(0)
+        open_category(1)
     }
 
     // This is called when the user clicks on the configure button of the CAM1 / CAM2 widget
     function open_video_stream_category(is_primary){
         if(is_primary){
-            open_category(1)
+            open_category(2)
         }
     }
 
@@ -186,50 +186,50 @@ Item {
         }
         SidebarStackButton{
             id: b1
-            override_text: "\uf1eb"
-            override_tag: "link"
+            override_text: "\uf002"
+            override_tag: "scan"
             override_index: 0
         }
         SidebarStackButton{
             id: b2
-            override_text: "\uf03d"
-            override_tag: "video"
+            override_text: "\uf1eb"
+            override_tag: "link"
             override_index: 1
         }
         SidebarStackButton{
             id: b3
-            override_text:  "\uf030"
-            override_tag: "camera"
+            override_text: "\uf03d"
+            override_tag: "video"
             override_index: 2
         }
         SidebarStackButton{
             id: b4
-            override_text: "\uf0c7"
-            override_tag: "recording"
+            override_text:  "\uf030"
+            override_tag: "camera"
             override_index: 3
         }
         SidebarStackButton{
             id: b5
-            override_text: "\uf11b"
-            override_tag: "rc"
+            override_text: "\uf0c7"
+            override_tag: "recording"
             override_index: 4
         }
         SidebarStackButton{
             id: b6
-            override_text: "\uf26c"
-            override_tag: "misc"
+            override_text: "\uf11b"
+            override_tag: "rc"
             override_index: 5
         }
         SidebarStackButton{
             id: b7
-            override_text: "\uf55b"
-            override_tag: "status"
+            override_text: "\uf26c"
+            override_tag: "misc"
             override_index: 6
         }
         SidebarStackButton{
             id: b8
-            override_text: "\uf002"
-            override_tag: "scan"
+            override_text: "\uf55b"
+            override_tag: "status"
             override_index: 7
         }
     }
@@ -242,38 +242,38 @@ Item {
         anchors.left: stack_manager.right
         anchors.top: stack_manager.top
 
-        Panel1Link{
+        Panel8FindAirUnit{
             id: panel1
             visible: m_stack_index==0;
         }
-        Panel2Video{
+        Panel1Link{
             id: panel2
             visible: m_stack_index==1;
         }
-
-        Panel3Camera{
+        Panel2Video{
             id: panel3
             visible: m_stack_index==2;
         }
 
-        Panel4Recording{
+        Panel3Camera{
             id: panel4
             visible: m_stack_index==3;
         }
 
-        Panel5RC{
+        Panel4Recording{
             id: panel5
             visible: m_stack_index==4;
         }
-        Panel6Misc{
+
+        Panel5RC{
             id: panel6
             visible: m_stack_index==5;
         }
-        Panel7Status{
+        Panel6Misc{
             id: panel7
             visible: m_stack_index==6;
         }
-        Panel8FindAirUnit{
+        Panel7Status{
             id: panel8
             visible: m_stack_index==7;
         }
