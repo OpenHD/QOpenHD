@@ -18,12 +18,12 @@ SideBarBasePanel{
         anchors.topMargin: secondaryUiHeight/8
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 10
+        spacing: 5
 
         ComboBox{
             id: comboBoxWhichFrequencyToScan
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.preferredWidth: 250
+            Layout.preferredWidth: 200
             model: ListModel {
                 ListElement { title: "OpenHD [1-7] only" }
                 ListElement { title: "All 2.4G channels" }
@@ -43,19 +43,21 @@ SideBarBasePanel{
                     sidebar.regain_control_on_sidebar_stack();
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Down){
-                    if(!comboBoxWhichFrequencyToScan.popup.visible){
-                        startButton.focus=true;
-                    }else{
+                    if(comboBoxWhichFrequencyToScan.popup.visible){
                         comboBoxWhichFrequencyToScan.currentIndex = Math.min(
                                     comboBoxWhichFrequencyToScan.count - 1,
                                     comboBoxWhichFrequencyToScan.currentIndex + 1);
+                    }else{
+                        startButton.focus=true;
                     }
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Up){
-                    if(!comboBoxWhichFrequencyToScan.popup.visible)
+                    if(comboBoxWhichFrequencyToScan.popup.visible){
+                        comboBoxWhichFrequencyToScan.currentIndex = Math.max(
+                                    0, comboBoxWhichFrequencyToScan.currentIndex - 1);
+                    }else{
                         comboBoxWhichFrequencyToScan.popup.open();
-                    comboBoxWhichFrequencyToScan.currentIndex = Math.max(
-                                0, comboBoxWhichFrequencyToScan.currentIndex - 1);
+                    }
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
                     if(comboBoxWhichFrequencyToScan.popup.visible){
@@ -76,10 +78,10 @@ SideBarBasePanel{
             enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
             hoverEnabled: true
             background: Rectangle {
-                color: startButton.focus ? highlightColor : "#333c4c"
+                color: "#2196F3"
                 border.color: "white"
                 border.width: startButton.focus ? 3 : 0
-                opacity: startButton.focus ? 1.0 : 0.3
+                opacity: startButton.focus ? 1.0 : 0.8
             }
             function startScan(){
                 var how_many_freq_bands = comboBoxWhichFrequencyToScan.currentIndex;
@@ -93,11 +95,11 @@ SideBarBasePanel{
             }
             onClicked: startScan()
             Keys.onPressed: (event)=> {
-                if(event.key===Qt.Key_Left){
-                    sidebar.regain_control_on_sidebar_stack();
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Up){
+                if(event.key===Qt.Key_Up){
                     comboBoxWhichFrequencyToScan.focus=true;
+                    event.accepted=true;
+                }else if(event.key===Qt.Key_Left){
+                    sidebar.regain_control_on_sidebar_stack();
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
                     startScan();
@@ -106,12 +108,18 @@ SideBarBasePanel{
             }
         }
 
-        SimpleProgressBar{
+        RowLayout{
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.preferredWidth: 250
-            Layout.preferredHeight: 30
-            impl_curr_progress_perc: _wbLinkSettingsHelper.scan_progress_perc
-            impl_show_progress_text: true
+            spacing: 10
+            ProgressBar{
+                Layout.preferredWidth: 150
+                value: _wbLinkSettingsHelper.scan_progress_perc/100.0
+            }
+            Text{
+                text: "Progress: " + _wbLinkSettingsHelper.scan_progress_perc + "%"
+                font.pixelSize: 21
+                color: "#fff"
+            }
         }
 
         Item{
