@@ -37,8 +37,11 @@ SideBarBasePanel{
                     }
                 }
                 Keys.onPressed: (event)=> {
-                    if(event.key===Qt.Key_Up || event.key===Qt.Key_Down){
+                    if(event.key===Qt.Key_Left || event.key===Qt.Key_Up){
                         sidebar.regain_control_on_sidebar_stack();
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Right || event.key===Qt.Key_Down){
+                        comboBoxWhichFrequencyToScan.focus=true;
                         event.accepted=true;
                     }
                 }
@@ -54,6 +57,18 @@ SideBarBasePanel{
                 }
                 textRole: "title"
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+                Keys.onPressed: (event)=> {
+                    if(event.key===Qt.Key_Left || event.key===Qt.Key_Up){
+                        startButton.focus=true;
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Right || event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
+                        comboBoxWhichFrequencyToScan.popup.open();
+                        event.accepted=true;
+                    }else if(event.key===Qt.Key_Down){
+                        sidebar.regain_control_on_sidebar_stack();
+                        event.accepted=true;
+                    }
+                }
             }
         }
 
