@@ -86,6 +86,19 @@ Rectangle{
                             _mavlinkTelemetry.change_telemetry_connection_mode(currentIndex);
                             settings.qopenhd_mavlink_connection_mode=currentIndex;
                         }
+                        if(currentIndex===2){
+                            _openhdDiscovery.refresh();
+                        }
+                    }
+                }
+                onCurrentIndexChanged: {
+                    if(currentIndex===2){
+                        _openhdDiscovery.refresh();
+                    }
+                }
+                Component.onCompleted: {
+                    if(currentIndex===2){
+                        _openhdDiscovery.refresh();
                     }
                 }
                 currentIndex: settings.qopenhd_mavlink_connection_mode
@@ -232,37 +245,105 @@ Rectangle{
                 }
             }
             // Visible when manual TCP mode is enabled ------------------------------------------------------------------------------------------
-            GridLayout {
+            ColumnLayout {
+                id: manualTcpLayout
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 visible: connection_mode_dropdown.currentIndex==2;
-                columns: 2
-                TextField {
-                    Layout.alignment: Qt.AlignCenter
-                    id: textFieldip
-                    validator: RegularExpressionValidator{
-                        regularExpression: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
+                spacing: 8
+
+                Component.onCompleted: {
+                    if(connection_mode_dropdown.currentIndex===2){
+                        _openhdDiscovery.refresh();
                     }
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: settings.qopenhd_mavlink_connection_manual_tcp_ip
                 }
-                Button{
-                    Layout.alignment: Qt.AlignCenter
-                    text: "SAVE"
-                    onClicked: {
-                        const m_text=textFieldip.text;
-                        if(!_qopenhd.is_valid_ip(m_text)){
-                            _qopenhd.show_toast("Please enter a valid ip");
-                            return;
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text {
+                        Layout.fillWidth: true
+                        text: qsTr("Select an OpenHD device to connect via TCP")
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Qt.AlignLeft
+                        font.pixelSize: settings.qopenhd_general_font_pixel_size
+                    }
+                    Button {
+                        text: qsTr("Refresh")
+                        enabled: !_openhdDiscovery.scanning
+                        onClicked: _openhdDiscovery.refresh()
+                    }
+                }
+
+                BusyIndicator {
+                    Layout.alignment: Qt.AlignHCenter
+                    running: _openhdDiscovery.scanning
+                    visible: running
+                }
+
+                ListView {
+                    id: discoveredDevices
+                    visible: count > 0
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Math.min(contentHeight, 280)
+                    clip: true
+                    interactive: contentHeight > height
+                    boundsBehavior: Flickable.StopAtBounds
+                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+                    model: _openhdDiscovery.devices
+                    delegate: Rectangle {
+                        required property int index
+                        required property var modelData
+                        width: discoveredDevices.width
+                        height: 48
+                        radius: 4
+                        color: (discoveredDevices.currentIndex === index) ? "#33007ACC" : (hoverHandler.hovered ? "#11000000" : "transparent")
+                        border.color: "#1F000000"
+                        border.width: 1
+
+                        property string hostName: modelData.hostname ? modelData.hostname : ""
+                        property string ipAddress: modelData.ip
+                        property string displayText: hostName.length > 0 ? hostName + " (" + ipAddress + ")" : ipAddress
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            text: displayText
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                            elide: Text.ElideRight
                         }
-                        settings.qopenhd_mavlink_connection_manual_tcp_ip=m_text;
-                        _mavlinkTelemetry.change_manual_tcp_ip(m_text);
+
+                        HoverHandler {
+                            id: hoverHandler
+                        }
+
+                        TapHandler {
+                            onTapped: {
+                                discoveredDevices.currentIndex = index;
+                                settings.qopenhd_mavlink_connection_manual_tcp_ip = ipAddress;
+                                _mavlinkTelemetry.change_manual_tcp_ip(ipAddress);
+                                const readable = hostName.length > 0 ? hostName : ipAddress;
+                                _qopenhd.show_toast(qsTr("Connecting to %1").arg(readable));
+                            }
+                        }
                     }
                 }
-                Text{
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.columnSpan: 2
-                    text: "TCP PORT: 5760"
+
+                Text {
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Qt.AlignHCenter
+                    visible: !_openhdDiscovery.scanning && _openhdDiscovery.devices.length === 0
+                    text: qsTr("No OpenHD devices found. Ensure your device is on the same network and broadcasting an OpenHD hostname.")
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Qt.AlignHCenter
+                    text: qsTr("TCP PORT: 5760")
                     font.pixelSize: settings.qopenhd_general_font_pixel_size
                 }
             }

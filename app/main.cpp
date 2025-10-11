@@ -82,6 +82,7 @@ void attachConsole() {
 #include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
+#include "util/openhddiscovery.h"
 
 #if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 RESOLVEFUNC(SSL_get1_peer_certificate);
@@ -376,6 +377,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_messageBoxInstance", &WorkaroundMessageBox::instance());
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
     engine.rootContext()->setContextProperty("_mouseHelper", &MouseHelper::instance());
+    engine.rootContext()->setContextProperty("_openhdDiscovery", &OpenHDDiscovery::instance());
 
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
