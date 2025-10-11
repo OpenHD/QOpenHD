@@ -15,7 +15,7 @@ Item {
         autoPlay: true
         muted: true
         loops: MediaPlayer.Infinite
-        source: "qrc:/resources/videos/secondary-test.mp4"
+        source: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4"
 
         onError: {
             console.warn("SecondaryVideoAndroidTest: failed to play fallback video", errorString)
@@ -32,7 +32,7 @@ Item {
             width: parent.width - 24
             horizontalAlignment: Qt.AlignHCenter
             wrapMode: Text.Wrap
-            text: qsTr("Unable to play Android secondary video fallback: %1").arg(video.errorString)
+            text: qsTr("Unable to play Android secondary sample stream: %1").arg(video.errorString)
             color: "white"
         }
     }
