@@ -81,6 +81,9 @@ Item {
             if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
                 return "WAITING FOR\nSECONDARY VIDEO";
             }
+            if (QOPENHD_ENABLE_VIDEO_VIA_ANDROID) {
+                return "ANDROID SAMPLE\nSECONDARY VIDEO";
+            }
             return "SECONDARY VIEO\nNOT AVAILABLE\nON THIS PLATFORM";
         }
         verticalAlignment: Qt.AlignVCenter
@@ -94,12 +97,13 @@ Item {
         anchors.fill: video_holder
         source: {
             if(settings.dev_qopenhd_n_cameras>1){
-                // R.N the only implementation for secondary video
                 if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
                     return "SecondaryVideoGstreamerPane.qml";
-                }else{
-                    console.warn("No secondary video implementation")
                 }
+                if (QOPENHD_ENABLE_VIDEO_VIA_ANDROID) {
+                    return "SecondaryVideoAndroidTest.qml";
+                }
+                console.warn("No secondary video implementation")
             }else{
                 console.debug("Scondary video disabled");
             }

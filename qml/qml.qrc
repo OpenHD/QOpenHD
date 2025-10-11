@@ -259,6 +259,8 @@
         <file>ui/configpopup/status/StatusCardsColumn.qml</file>
         <file>ui/elements/SimpleLeftRightText.qml</file>
         <file>video/SecondaryVideoGstreamerPane.qml</file>
+        <file>video/SecondaryVideoAndroidTest.qml</file>
+        <file>resources/videos/secondary-test.mp4</file>
         <file>ui/elements/SettingsHeaderElement.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml</file>
         <file>ui/elements/BaseHeaderItem.qml</file>
