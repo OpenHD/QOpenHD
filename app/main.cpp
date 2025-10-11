@@ -46,6 +46,7 @@
 #endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
 #include <videostreaming/android/qandroidmediaplayer.h>
+#include <videostreaming/android/qandroidsecondarymediaplayer.h>
 #include <videostreaming/android/qsurfacetexture.h>
 #endif
 #include "videostreaming/vscommon/QOpenHDVideoHelper.hpp"
@@ -454,7 +455,9 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<QSurfaceTexture>("OpenHD", 1, 0, "SurfaceTexture");
     // Create a player
     QAndroidMediaPlayer player;
+    QAndroidSecondaryMediaPlayer secondaryPlayer;
     engine.rootContext()->setContextProperty("_mediaPlayer", &player);
+    engine.rootContext()->setContextProperty("_secondaryMediaPlayer", &secondaryPlayer);
 #else
      engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(false));
 #endif

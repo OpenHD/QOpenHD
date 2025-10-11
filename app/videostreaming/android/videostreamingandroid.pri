@@ -5,11 +5,13 @@
 HEADERS += \
     $$PWD/lowlagdecoder.h \
     $$PWD/qandroidmediaplayer.h \
+    $$PWD/qandroidsecondarymediaplayer.h \
     $$PWD/qsurfacetexture.h
 
 SOURCES += \
     $$PWD/lowlagdecoder.cpp \
     $$PWD/qandroidmediaplayer.cpp \
+    $$PWD/qandroidsecondarymediaplayer.cpp \
     $$PWD/qsurfacetexture.cpp
 
 LIBS += -lmediandk
