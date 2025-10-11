@@ -232,38 +232,115 @@ Rectangle{
                 }
             }
             // Visible when manual TCP mode is enabled ------------------------------------------------------------------------------------------
-            GridLayout {
+            ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 visible: connection_mode_dropdown.currentIndex==2;
-                columns: 2
-                TextField {
-                    Layout.alignment: Qt.AlignCenter
-                    id: textFieldip
-                    validator: RegularExpressionValidator{
-                        regularExpression: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
-                    }
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    text: settings.qopenhd_mavlink_connection_manual_tcp_ip
-                }
-                Button{
-                    Layout.alignment: Qt.AlignCenter
-                    text: "SAVE"
-                    onClicked: {
-                        const m_text=textFieldip.text;
-                        if(!_qopenhd.is_valid_ip(m_text)){
-                            _qopenhd.show_toast("Please enter a valid ip");
-                            return;
-                        }
-                        settings.qopenhd_mavlink_connection_manual_tcp_ip=m_text;
-                        _mavlinkTelemetry.change_manual_tcp_ip(m_text);
+                spacing: 12
+                onVisibleChanged: {
+                    if (visible && _networkScanner.devices.length === 0 && !_networkScanner.scanning) {
+                        _networkScanner.refresh();
                     }
                 }
-                Text{
+
+                Text {
                     Layout.alignment: Qt.AlignCenter
-                    Layout.columnSpan: 2
-                    text: "TCP PORT: 5760"
+                    Layout.fillWidth: true
+                    text: qsTr("Select an OpenHD device to connect to (TCP port 5760).")
                     font.pixelSize: settings.qopenhd_general_font_pixel_size
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    Button {
+                        id: scanButton
+                        Layout.preferredWidth: m_prefered_width
+                        text: _networkScanner.scanning ? qsTr("Scanning...") : qsTr("Scan for devices")
+                        enabled: !_networkScanner.scanning
+                        onClicked: _networkScanner.refresh()
+                    }
+                    BusyIndicator {
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredWidth: 32
+                        Layout.preferredHeight: 32
+                        visible: _networkScanner.scanning
+                        running: _networkScanner.scanning
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                }
+
+                Text {
+                    Layout.alignment: Qt.AlignCenter
+                    text: qsTr("Currently selected: %1").arg(settings.qopenhd_mavlink_connection_manual_tcp_ip.length > 0 ? settings.qopenhd_mavlink_connection_manual_tcp_ip : qsTr("None"))
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                }
+
+                ListView {
+                    id: deviceListView
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: Math.min(count * 60, 240)
+                    clip: true
+                    model: _networkScanner.devices
+                    delegate: Item {
+                        width: deviceListView.width
+                        height: 56
+                        property var device: modelData
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            spacing: 12
+                            Text {
+                                Layout.fillWidth: true
+                                text: device.hostname
+                                font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                elide: Text.ElideRight
+                            }
+                            Text {
+                                Layout.preferredWidth: 140
+                                horizontalAlignment: Text.AlignRight
+                                verticalAlignment: Text.AlignVCenter
+                                text: device.ip
+                                font.pixelSize: settings.qopenhd_general_font_pixel_size
+                            }
+                            Button {
+                                text: qsTr("Select")
+                                onClicked: {
+                                    settings.qopenhd_mavlink_connection_manual_tcp_ip = device.ip;
+                                    _mavlinkTelemetry.change_manual_tcp_ip(device.ip);
+                                    _qopenhd.show_toast(qsTr("OpenHD device selected: %1").arg(device.ip));
+                                }
+                            }
+                        }
+                    }
+                    ScrollBar.vertical: ScrollBar { }
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignCenter
+                    visible: !_networkScanner.scanning && deviceListView.count === 0
+                    text: qsTr("No OpenHD devices found. Make sure you are connected to the same network and tap scan again.")
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Text {
+                    Layout.alignment: Qt.AlignCenter
+                    text: qsTr("TCP PORT: 5760")
+                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                }
+
+                Item {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
                 }
             }
         }

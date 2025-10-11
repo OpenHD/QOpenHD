@@ -80,6 +80,7 @@ void attachConsole() {
 #include "logging/hudlogmessagesmodel.h"
 #include "util/qopenhd.h"
 #include "util/mousehelper.h"
+#include "util/networkdevicescanner.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
 
@@ -367,6 +368,7 @@ int main(int argc, char *argv[]) {
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
+    engine.rootContext()->setContextProperty("_networkScanner", &NetworkDeviceScanner::instance());
     QOpenHD::instance().setEngine(&engine);
     write_platform_context_properties(engine);
 

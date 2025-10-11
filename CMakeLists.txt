@@ -14,6 +14,8 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Network)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Concurrent)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
@@ -26,6 +28,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     #
     app/util/WorkaroundMessageBox.cpp
     app/util/mousehelper.cpp
+    app/util/networkdevicescanner.cpp
     app/util/qopenhd.cpp
     app/util/qrenderstats.cpp
     app/util/restartqopenhdmessagebox.cpp
@@ -119,7 +122,7 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 
 
 target_link_libraries(QOpenHDApp
-    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets
+    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Concurrent
 )
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
