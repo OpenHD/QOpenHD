@@ -94,6 +94,9 @@ Item {
         anchors.fill: video_holder
         source: {
             if(settings.dev_qopenhd_n_cameras>1){
+                if (QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
+                    return "SecondaryVideoAndroid.qml";
+                }
                 // R.N the only implementation for secondary video
                 if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
                     return "SecondaryVideoGstreamerPane.qml";
