@@ -152,10 +152,13 @@ void GstRtpReceiver::debug_sample(std::shared_ptr<std::vector<uint8_t> > sample)
 }
 
 
-void GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
+bool GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
 {
     qDebug()<<"GstRtpReceiver::start_receiving begin";
-    assert(m_gst_pipeline==nullptr);
+    if(m_gst_pipeline!=nullptr){
+        qWarning()<<"GstRtpReceiver already started";
+        return true;
+    }
     m_cb=cb;
 
     const auto pipeline=construct_gstreamer_pipeline();
@@ -164,22 +167,31 @@ void GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
     qDebug() << "GSTREAMER PIPE=[" << pipeline.c_str()<<"]";
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
-        return;
+        g_clear_error(&error);
+        m_gst_pipeline=nullptr;
+        return false;
     }
     if(!m_gst_pipeline || !(GST_IS_PIPELINE(m_gst_pipeline))){
         qDebug()<<"Cannot construct pipeline";
         m_gst_pipeline = nullptr;
-        return;
+        return false;
     }
     gst_element_set_state (m_gst_pipeline, GST_STATE_PLAYING);
     //
     // we pull data out of the gst pipeline as cpu memory buffer(s) using the gstreamer "appsink" element
     m_app_sink_element=gst_bin_get_by_name(GST_BIN(m_gst_pipeline), "out_appsink");
-    assert(m_app_sink_element);
+    if(!m_app_sink_element){
+        qWarning()<<"GstRtpReceiver failed to find appsink element";
+        gst_element_set_state(m_gst_pipeline, GST_STATE_NULL);
+        gst_object_unref (m_gst_pipeline);
+        m_gst_pipeline=nullptr;
+        return false;
+    }
     m_pull_samples_run= true;
     m_pull_samples_thread=std::make_unique<std::thread>(&GstRtpReceiver::loop_pull_samples, this);
 
     qDebug()<<"GstRtpReceiver::start_receiving end";
+    return true;
 }
 
 void GstRtpReceiver::stop_receiving()

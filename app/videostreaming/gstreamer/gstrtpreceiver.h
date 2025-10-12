@@ -20,7 +20,7 @@ public:
     // The big advantage of gstreamer is that it seems to handle all those parsing quirks the best,
     // e.g. the frames on this cb should be easily passable to whatever decode api is available.
     typedef std::function<void(std::shared_ptr<std::vector<uint8_t>> frame)> NEW_FRAME_CALLBACK;
-    void start_receiving(NEW_FRAME_CALLBACK cb);
+    bool start_receiving(NEW_FRAME_CALLBACK cb);
     void stop_receiving();
     QOpenHDVideoHelper::VideoCodec get_codec()const{
         return m_video_codec;

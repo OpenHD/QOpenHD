@@ -2,6 +2,7 @@
 #include "qsurfacetexture.h"
 
 #include <QAndroidJniEnvironment>
+#include <QDebug>
 
 #include <decodingstatistcs.h>
 
@@ -97,7 +98,9 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
             //qDebug()<<"XGot frame:"<<nalu.get_nal_unit_type_as_string().c_str();
             m_low_lag_decoder->interpretNALU(nalu);
         };
-        m_receiver->start_receiving(cb);
+        if (!m_receiver->start_receiving(cb)) {
+            qWarning() << "Failed to start primary GstRtpReceiver";
+        }
     };
     if (videoOut->surfaceTexture().isValid()){
         setSurfaceTexture();

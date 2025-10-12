@@ -4,6 +4,7 @@
 #include "qsurfacetexture.h"
 
 #include <QAndroidJniEnvironment>
+#include <QDebug>
 
 #include <memory>
 #include <vector>
@@ -85,8 +86,11 @@ void QAndroidSecondaryMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
             m_low_lag_decoder->interpretNALU(nalu);
         };
 
-        m_receiver->start_receiving(cb);
-        m_receiver_running = true;
+        if (m_receiver->start_receiving(cb)) {
+            m_receiver_running = true;
+        } else {
+            qWarning() << "Failed to start secondary GstRtpReceiver";
+        }
     };
 
     if (m_videoOut && m_videoOut->surfaceTexture().isValid()) {
