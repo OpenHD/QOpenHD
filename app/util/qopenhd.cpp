@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QDebug>
+#include <QLocale>
 #include <qapplication.h>
 #include <QTimer>
 #include <QHostAddress>
@@ -82,17 +83,23 @@ void QOpenHD::switchToLanguage(const QString &language) {
     }
     QLocale::setDefault(QLocale(language));
 
-    if (!m_translator.isEmpty()) {
-        QCoreApplication::removeTranslator(&m_translator);
-    }
+    // Save the selected language to settings
+    QSettings settings;
+    settings.setValue("locale", language);
 
-    bool success = m_translator.load(":/translations/QOpenHD.qm");
+    QCoreApplication::removeTranslator(&m_translator);
+
+    QString qmFile = QString(":/translations/QOpenHD_%1.qm").arg(language);
+    bool success = m_translator.load(qmFile);
     if (!success) {
-        qDebug() << "Translation load failed";
-        return;
+        qDebug() << "Translation load failed for" << language << ", falling back to English";
+        QLocale::setDefault(QLocale("en"));
+        settings.setValue("locale", "en");
+        m_translator.load(":/translations/QOpenHD_en.qm");
     }
     QCoreApplication::installTranslator(&m_translator);
-    m_engine->retranslate();
+    // QML should automatically retranslate when translator is installed/removed
+    // Calling retranslate() can cause UI issues in QML applications
 }
 
 void QOpenHD::setFontFamily(QString fontFamily) {

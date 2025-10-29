@@ -1,34 +1,19 @@
 <RCC>
-    <qresource prefix="/translations" lang="en">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
+    <qresource prefix="/translations">
+        <file>QOpenHD_en.qm</file>
+        <file>QOpenHD_de.qm</file>
+        <file>QOpenHD_uk.qm</file>
+        <file>QOpenHD_ru.qm</file>
+        <file>QOpenHD_es.qm</file>
+        <file>QOpenHD_fr.qm</file>
+        <file>QOpenHD_nl.qm</file>
+        <file>QOpenHD_ro.qm</file>
+        <file>QOpenHD_it.qm</file>
+        <file>QOpenHD_zh.qm</file>
         <file>resources/cursors/arrow_512_green.png</file>
         <file>resources/cursors/arrow_512_transparent.png</file>
         <file>resources/cursors/arrow_512_white.png</file>
         <file>resources/cursors/hand_white.png</file>
-    </qresource>
-    <qresource prefix="/translations" lang="de">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
-    </qresource>
-    <qresource prefix="/translations" lang="ru">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_ru.qm</file>
-    </qresource>
-    <qresource prefix="/translations" lang="es">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_es.qm</file>
-    </qresource>
-    <qresource prefix="/translations" lang="fr">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_fr.qm</file>
-    </qresource>
-    <qresource prefix="/translations" lang="nl">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
-    </qresource>
-    <qresource prefix="/translations" lang="ro">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_ro.qm</file>
-    </qresource>
-    <qresource prefix="/translations" lang="it">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_it.qm</file>
-    </qresource>
-    <qresource prefix="/translations" lang="zh">
-        <file alias="QOpenHD.qm">../translations/QOpenHD_zh.qm</file>
     </qresource>
     <qresource prefix="/">
         <file>main.qml</file>

@@ -1,7 +1,9 @@
 #!/bin/bash
 
+lupdate ./QOpenHD.pro
+lrelease ./QOpenHD.pro
+cp ./translations/*.qm ./qml/
 # Convenient script to build this project with CMake
-
 rm -rf build
 mkdir build
 cd build
@@ -13,3 +15,4 @@ if [[ "$(uname)" == "Darwin" ]]; then
 else
     make -j$(( $(nproc) / 2 ))
 fi
+
