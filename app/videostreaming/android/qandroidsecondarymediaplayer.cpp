@@ -1,9 +1,15 @@
 #include "qandroidsecondarymediaplayer.h"
 
 #include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
+#include <QDebug>
+#include <QtAndroid>
+#include <QString>
 
 #include "qsurfacetexture.h"
+
+namespace {
+static constexpr const char *kSecondaryStreamUrl = "udp://@:5610";
+}
 
 QAndroidSecondaryMediaPlayer::QAndroidSecondaryMediaPlayer(QObject *parent)
     : QObject(parent)
@@ -12,7 +18,7 @@ QAndroidSecondaryMediaPlayer::QAndroidSecondaryMediaPlayer(QObject *parent)
 
 QAndroidSecondaryMediaPlayer::~QAndroidSecondaryMediaPlayer()
 {
-    stop_cleanup_decoder_display();
+    releaseMediaPlayer();
 }
 
 QSurfaceTexture *QAndroidSecondaryMediaPlayer::videoOut() const
@@ -32,104 +38,157 @@ void QAndroidSecondaryMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
     m_videoOut = videoOut;
 
     if (!m_videoOut) {
-        stop_cleanup_decoder_display();
-        emit videoOutChanged();
-        return;
-    }
-
-    auto setSurfaceTexture = [this] {
-        if (!m_videoOut)
-            return;
-
-        setup_start_video_decoder_display();
-        if (!m_low_lag_decoder)
-            return;
-
-        QAndroidJniEnvironment env;
-        QAndroidJniObject surface("android/view/Surface",
-                                  "(Landroid/graphics/SurfaceTexture;)V",
-                                  m_videoOut->surfaceTexture().object());
-        m_low_lag_decoder->setOutputSurface(env, surface.object());
-        startIfPossible();
-    };
-
-    if (m_videoOut->surfaceTexture().isValid()) {
-        setSurfaceTexture();
+        m_surface = QAndroidJniObject();
     } else {
-        connect(m_videoOut.data(), &QSurfaceTexture::surfaceTextureChanged, this, setSurfaceTexture);
+        connect(m_videoOut.data(), &QSurfaceTexture::surfaceTextureChanged, this, [this] {
+            tryStartPlayback();
+        });
     }
 
+    tryStartPlayback();
     emit videoOutChanged();
-    startIfPossible();
 }
 
 void QAndroidSecondaryMediaPlayer::playDebugLoop()
 {
-    m_should_start = true;
-    startIfPossible();
+    m_pendingDebugPlayback = true;
+    tryStartPlayback();
 }
 
-void QAndroidSecondaryMediaPlayer::setup_start_video_decoder_display()
+void QAndroidSecondaryMediaPlayer::tryStartPlayback()
 {
-    if (m_low_lag_decoder || m_receiver)
+    if (!m_pendingDebugPlayback)
         return;
 
-    m_low_lag_decoder = std::make_unique<LowLagDecoder>(nullptr);
-    auto ratio_changed_cb = [this](const VideoRatio &ratio) {
-        if (m_videoOut) {
-            m_videoOut->set_video_texture_size(ratio.width, ratio.height);
+    if (!m_mediaPlayer.isValid()) {
+        m_mediaPlayer = QAndroidJniObject("android/media/MediaPlayer");
+        if (!m_mediaPlayer.isValid()) {
+            qWarning("Failed to create Android MediaPlayer for secondary video");
+            QAndroidJniEnvironment env;
+            if (env->ExceptionCheck()) {
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+            }
+            return;
         }
-    };
-    m_low_lag_decoder->registerOnDecoderRatioChangedCallback(ratio_changed_cb);
-
-    const auto settings = QOpenHDVideoHelper::read_config_from_settings();
-    auto stream_config = settings.secondary_stream_config;
-    if (settings.generic.qopenhd_switch_primary_secondary) {
-        stream_config = settings.primary_stream_config;
     }
-    const auto codec = stream_config.video_codec;
-    const int port = stream_config.udp_rtp_input_port;
-    m_receiver = std::make_unique<GstRtpReceiver>(port, codec);
-}
 
-void QAndroidSecondaryMediaPlayer::stop_cleanup_decoder_display()
-{
-    if (m_receiver) {
-        m_receiver->stop_receiving();
-        m_receiver = nullptr;
-    }
-    if (m_low_lag_decoder) {
-        m_low_lag_decoder->setOutputSurface(nullptr, nullptr);
-        m_low_lag_decoder = nullptr;
-    }
-    m_receiving = false;
-    m_should_start = false;
-}
-
-void QAndroidSecondaryMediaPlayer::startIfPossible()
-{
-    if (!m_should_start)
-        return;
     if (!m_videoOut)
         return;
-    if (!m_videoOut->surfaceTexture().isValid())
+
+    const QAndroidJniObject surfaceTexture = m_videoOut->surfaceTexture();
+    if (!surfaceTexture.isValid())
         return;
 
-    if (!m_low_lag_decoder || !m_receiver)
-        setup_start_video_decoder_display();
+    QPointer<QAndroidSecondaryMediaPlayer> that(this);
+    QtAndroid::runOnAndroidThread([that, surfaceTexture] {
+        if (!that)
+            return;
 
-    if (!m_low_lag_decoder || !m_receiver)
+        if (!that->m_mediaPlayer.isValid())
+            return;
+
+        QAndroidJniEnvironment env;
+
+        that->m_surface = QAndroidJniObject("android/view/Surface",
+                                            "(Landroid/graphics/SurfaceTexture;)V",
+                                            surfaceTexture.object());
+        if (!that->m_surface.isValid()) {
+            if (env->ExceptionCheck()) {
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+            }
+            return;
+        }
+
+        that->m_mediaPlayer.callMethod<void>("setSurface",
+                                             "(Landroid/view/Surface;)V",
+                                             that->m_surface.object());
+        if (env->ExceptionCheck()) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+            return;
+        }
+
+        that->startDebugPlaybackOnAndroidThread();
+    });
+}
+
+void QAndroidSecondaryMediaPlayer::startDebugPlaybackOnAndroidThread()
+{
+    if (!m_pendingDebugPlayback)
+        return;
+    if (!m_mediaPlayer.isValid() || !m_surface.isValid())
         return;
 
-    if (m_receiving)
+    QAndroidJniEnvironment env;
+
+    m_mediaPlayer.callMethod<void>("reset");
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        return;
+    }
+
+    const QAndroidJniObject url = QAndroidJniObject::fromString(QString::fromUtf8(kSecondaryStreamUrl));
+    m_mediaPlayer.callMethod<void>("setDataSource",
+                                   "(Ljava/lang/String;)V",
+                                   url.object());
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        return;
+    }
+
+    m_mediaPlayer.callMethod<void>("setLooping", "(Z)V", true);
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        return;
+    }
+
+    m_mediaPlayer.callMethod<void>("prepare");
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        return;
+    }
+
+    m_mediaPlayer.callMethod<void>("start");
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        return;
+    }
+
+    m_pendingDebugPlayback = false;
+}
+
+void QAndroidSecondaryMediaPlayer::releaseMediaPlayer()
+{
+    if (!m_mediaPlayer.isValid())
         return;
 
-    auto cb = [this](std::shared_ptr<std::vector<uint8_t>> sample) {
-        const bool is_h265 = m_receiver->get_codec() == QOpenHDVideoHelper::VideoCodecH265;
-        NALU nalu(sample->data(), sample->size(), is_h265);
-        m_low_lag_decoder->interpretNALU(nalu);
-    };
+    QAndroidJniObject player = m_mediaPlayer;
+    QtAndroid::runOnAndroidThread([player] {
+        QAndroidJniEnvironment env;
+        player.callMethod<void>("stop");
+        if (env->ExceptionCheck()) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+        }
+        player.callMethod<void>("reset");
+        if (env->ExceptionCheck()) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+        }
+        player.callMethod<void>("release");
+        if (env->ExceptionCheck()) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+        }
+    });
 
-    m_receiver->start_receiving(cb);
-    m_receiving = true;
+    m_mediaPlayer = QAndroidJniObject();
+    m_surface = QAndroidJniObject();
 }
