@@ -7,6 +7,7 @@ CONFIG += resources_big
 
 TRANSLATIONS = translations/QOpenHD_en.ts \
                translations/QOpenHD_de.ts \
+               translations/QOpenHD_uk.ts \
                translations/QOpenHD_ru.ts \
                translations/QOpenHD_nl.ts \
                translations/QOpenHD_es.ts \
@@ -15,6 +16,18 @@ TRANSLATIONS = translations/QOpenHD_en.ts \
                translations/QOpenHD_it.ts \
                translations/QOpenHD_ro.ts
 
+# Generate .qm files before building
+translation_files = $$TRANSLATIONS
+translation_files ~= s/\.ts/\.qm/g
+
+# Custom build step to generate translations
+QMAKE_EXTRA_TARGETS += translations
+translations.target = $$translation_files
+translations.commands = lrelease $$TRANSLATIONS
+translations.depends = $$TRANSLATIONS
+
+# Ensure translations are built before qrc
+qml/qml_qrc.depends += translations
 
 include(platforms.pri)
 

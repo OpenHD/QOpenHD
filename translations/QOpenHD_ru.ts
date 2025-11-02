@@ -1,1468 +1,1996 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru">
+<TS version="2.1" language="ru_RU">
 <context>
-    <name>AboutPanelForm.ui</name>
+    <name>AirBatteryWidget</name>
     <message>
-        <source>QOpenHD</source>
-        <translation>QOpenHD</translation>
-    </message>
-    <message>
-        <source>Air</source>
-        <translation>Воздух</translation>
-    </message>
-    <message>
-        <source>OpenHD Version:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Ground</source>
-        <translation>Земля</translation>
-    </message>
-    <message>
-        <source>License: GPLv3</source>
-        <translation>Лицензия GPLv3</translation>
-    </message>
-</context>
-<context>
-    <name>AdsbWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Range</source>
-        <translation>Пределы</translation>
-    </message>
-    <message>
-        <source>Source OpenSky / SDR</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AirBatteryWidgetForm.ui</name>
-    <message>
-        <source>Voltage:</source>
-        <translation>Напряжение:</translation>
-    </message>
-    <message>
-        <source>Current:</source>
-        <translation>Ток:</translation>
-    </message>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="69"/>
         <source>Show volts and amps</source>
-        <translation>Показывать Напряжение и Ток</translation>
+        <translation>Показывать Вольты и Амперы</translation>
     </message>
     <message>
-        <source>Show single cell voltage</source>
-        <translation>Показ напряж. 1 ячейки</translation>
+        <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="140"/>
+        <source>Use batt id 0 only</source>
+        <translation>Использовать только батарею с ID 0</translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="172"/>
+        <source>Batt1:</source>
+        <translation>Батарея 1:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="207"/>
+        <source>Batt2:</source>
+        <translation>Батарея 2:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="271"/>
         <source>%L1%</source>
         <translation>%L1%</translation>
     </message>
+</context>
+<context>
+    <name>AirspeedTempWidget</name>
     <message>
-        <source>Use telemetry percentege</source>
+        <location filename="../qml/ui/widgets/AirspeedTempWidget.qml" line="41"/>
+        <source>AIRSPEED SENSOR TEMPERATURE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirspeedTempWidget.qml" line="64"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirspeedTempWidget.qml" line="86"/>
+        <source>Warn Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirspeedTempWidget.qml" line="126"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirspeedTempWidget.qml" line="207"/>
+        <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>AirStatusWidgetForm.ui</name>
+    <name>AltitudeSecondWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/AltitudeSecondWidget.qml" line="45"/>
+        <source>Relative / MSL</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>AltitudeSecondWidgetForm.ui</name>
+    <name>AltitudeWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/AltitudeWidget.qml" line="71"/>
+        <source>Use MSL</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Relative / MSL</source>
-        <translation>Относительная/MSL</translation>
-    </message>
-</context>
-<context>
-    <name>AltitudeWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Relative / MSL</source>
-        <translation>Относительная/MSL</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/AltitudeWidget.qml" line="92"/>
         <source>Show ladder</source>
-        <translation>Показ лестницы горизонта</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/AltitudeWidget.qml" line="113"/>
+        <source>Show unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeWidget.qml" line="134"/>
         <source>Range</source>
-        <translation>Покрытие/расстояние</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>AppSettingsPanel.ui</name>
+    <name>AoaWidget</name>
     <message>
-        <source>General</source>
-        <translation>Основное</translation>
+        <location filename="../qml/ui/widgets/AoaWidget.qml" line="41"/>
+        <source>Range</source>
+        <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>AppDevSettingsView</name>
     <message>
-        <source>Widgets</source>
-        <translation>Виджеты</translation>
-    </message>
-    <message>
-        <source>Screen</source>
-        <translation>Экран</translation>
-    </message>
-    <message>
-        <source>Video</source>
-        <translation>Видео</translation>
-    </message>
-    <message>
-        <source>Manage</source>
-        <translation>Yправлять</translation>
-    </message>
-    <message>
-        <source>Enable Speech</source>
-        <translation>Включить Голос</translation>
-    </message>
-    <message>
-        <source>Battery Cells</source>
-        <translation>Ячейки Батареи</translation>
-    </message>
-    <message>
-        <source>Imperial units</source>
-        <translation>Вкл. Футы/Дюймы</translation>
-    </message>
-    <message>
-        <source>Enable RC</source>
-        <translation>Включить Р/У через OHD</translation>
-    </message>
-    <message>
-        <source>Mavlink SysID</source>
-        <translation>Mavlink SysID</translation>
-    </message>
-    <message>
-        <source>Language / Locale</source>
-        <translation>язык</translation>
-    </message>
-    <message>
-        <source>Shape Color</source>
-        <translation>Цвет очертаний</translation>
-    </message>
-    <message>
-        <source>Choose a color</source>
-        <translation type="vanished">Выбери цвет</translation>
-    </message>
-    <message>
-        <source>Glow Color</source>
-        <translation>Цвет заполнения</translation>
-    </message>
-    <message>
-        <source>Text Color</source>
-        <translation>Цвет текста</translation>
-    </message>
-    <message>
-        <source>Top/bottom bars</source>
-        <translation>Верхняя/Нижняя полоски</translation>
-    </message>
-    <message>
-        <source>Hide</source>
-        <translation>скрывать</translation>
-    </message>
-    <message>
-        <source>Transparent black</source>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="98"/>
+        <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Hide when drone armed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Turn red when drone armed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Downlink RSSI</source>
-        <translation>Показывать УровеньСигнала Воздух</translation>
-    </message>
-    <message>
-        <source>Show Uplink RSSI</source>
-        <translation>Показывать УровеньСигнала ЗемляРУ</translation>
-    </message>
-    <message>
-        <source>Show RC RSSI (not OpenHD RC)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Bitrate</source>
-        <translation>Показывать Битрейт</translation>
-    </message>
-    <message>
-        <source>Show GPS</source>
-        <translation>Показывать GPS</translation>
-    </message>
-    <message>
-        <source>Show Home Distance</source>
-        <translation>Показывать Дистанцию До Дома</translation>
-    </message>
-    <message>
-        <source>Show Flight Timer</source>
-        <translation>Показывать ПолетноеВремя</translation>
-    </message>
-    <message>
-        <source>Show Flight Mode</source>
-        <translation>Показывать ПолетныйРежим</translation>
-    </message>
-    <message>
-        <source>Show Ground Status</source>
-        <translation>Показывать СтатусЗемли</translation>
-    </message>
-    <message>
-        <source>Show Air Status</source>
-        <translation>Показывать СтатусВоздуха</translation>
-    </message>
-    <message>
-        <source>Show Air Battery</source>
-        <translation>Показывать БатареюБорта</translation>
-    </message>
-    <message>
-        <source>Show mAh</source>
-        <translation>Показывать мА.ч.</translation>
-    </message>
-    <message>
-        <source>Show Total Flight Distance</source>
-        <translation>Показывать Полный Пройденный Путь</translation>
-    </message>
-    <message>
-        <source>Show log messages on-screen</source>
-        <translation>Показывать лог сообщений на экране</translation>
-    </message>
-    <message>
-        <source>Show Horizon</source>
-        <translation>Показывать Горизонт</translation>
-    </message>
-    <message>
-        <source>Show Flight Path Vector</source>
-        <translation>Показывать ВекторНаправленияПолета</translation>
-    </message>
-    <message>
-        <source>Show Altitude</source>
-        <translation>Показывать Высоту</translation>
-    </message>
-    <message>
-        <source>Show Speed</source>
-        <translation>Показывать Скорость</translation>
-    </message>
-    <message>
-        <source>Show Second Speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Heading</source>
-        <translation>Показывать НаправлениеПолета</translation>
-    </message>
-    <message>
-        <source>Show Second Altitude</source>
-        <translation>Показывать ВторуюВысоту</translation>
-    </message>
-    <message>
-        <source>Show Bank Angle Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Home Arrow</source>
-        <translation>Показывать СтрелкуДома</translation>
-    </message>
-    <message>
-        <source>Show Map</source>
-        <translation>Показывать Карту</translation>
-    </message>
-    <message>
-        <source>Show Throttle</source>
-        <translation>Показывать Уровень Газа</translation>
-    </message>
-    <message>
-        <source>Show Control Inputs</source>
-        <translation>Показывать ДанныеРУ</translation>
-    </message>
-    <message>
-        <source>Show GPIO</source>
-        <translation>Показывать GPIO</translation>
-    </message>
-    <message>
-        <source>Show Vibration</source>
-        <translation>Показывать Вибрацию</translation>
-    </message>
-    <message>
-        <source>Show Vertical Speed</source>
-        <translation>Показывать ВертикальнуюСкорость</translation>
-    </message>
-    <message>
-        <source>Show Wind (Experimental)</source>
-        <translation>Показывать Ветер(Экспериментальное)</translation>
-    </message>
-    <message>
-        <source>Show ADS-B Traffic</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show BlackBox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show example widget</source>
-        <translation>Показывать ПримерВиджета</translation>
-    </message>
-    <message>
-        <source>Screen Scale</source>
-        <translation>Масштаб Экрана</translation>
-    </message>
-    <message>
-        <source>Brightness</source>
-        <translation>Яркость </translation>
-    </message>
-    <message>
-        <source>Always use software video decoder</source>
-        <translation>Всегда использовать софтовое декодирование</translation>
-    </message>
-    <message>
-        <source>Enable PiP</source>
-        <translation>Включить PiP</translation>
-    </message>
-    <message>
-        <source>Enable LTE</source>
-        <translation>Включить LTE</translation>
-    </message>
-    <message>
-        <source>Hide warning watermark</source>
-        <translation>Скрыть предупреждающий водяной знак</translation>
-    </message>
-    <message>
-        <source>Enable stereo mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stereo OSD mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Load settings from file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="122"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select settings file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save settings to file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation type="unfinished">Сохранить</translation>
-    </message>
-    <message>
-        <source>Select location</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset all settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="145"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Settings reset</source>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="202"/>
+        <source>WARNING</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Log Level</source>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="233"/>
+        <source>Continue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Text font</source>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="256"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AppDeveloperStatsPanel</name>
+    <message>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="34"/>
+        <source>Developer Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="152"/>
+        <source>Restart QOpenHD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="159"/>
+        <source>Cancel QOpenHD</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AppGeneralSettingsView</name>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="66"/>
+        <source>Animation Smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AppScreenSettingsView</name>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="144"/>
+        <source>0°</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="145"/>
+        <source>90° (WARNING)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="146"/>
+        <source>180°</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="147"/>
+        <source>270° (WARNING)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="252"/>
+        <source>-1 Disable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="253"/>
+        <source>0 Auto (Recommended)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="254"/>
+        <source>50 (ultra small)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="255"/>
+        <source>72 (smaller)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="256"/>
+        <source>100</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="257"/>
+        <source>120 (bigger)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="258"/>
+        <source>150 (ultra big)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AppSettingsPanel</name>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="52"/>
+        <source>Widgets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="59"/>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="67"/>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="75"/>
+        <source>Vehicle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="82"/>
+        <source>Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="89"/>
+        <source>Video</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="96"/>
+        <source>Dev</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AppVideoSettingsView</name>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="218"/>
+        <source>Video test mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="260"/>
+        <source>Limit FPS in test file</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AppWidgetSettingsView</name>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="275"/>
+        <source>Show GPS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="304"/>
+        <source>Show Home Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="332"/>
+        <source>Show RC RSSI (not OpenHD RC)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="361"/>
+        <source>Show Flight Timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="390"/>
+        <source>Show Flight Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="419"/>
         <source>Show IMU Sensor Temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="448"/>
         <source>Show Pressure Sensor Temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="477"/>
+        <source>Show Pressure Sensor 2 Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="505"/>
+        <source>Show Pressure Sensor 3 Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="533"/>
+        <source>Show Airspeed Sensor Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="562"/>
         <source>Show Esc Temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="591"/>
+        <source>Show Battery Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="619"/>
+        <source>Show Ground Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="648"/>
+        <source>Show Ground Battery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="677"/>
+        <source>Show Air Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="706"/>
+        <source>Show Air Battery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="735"/>
+        <source>Show mAh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="764"/>
         <source>Show Efficiency in mAh/km</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="793"/>
+        <source>Show Total Flight Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="822"/>
+        <source>Show Horizon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="851"/>
+        <source>Show performance horizon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="881"/>
+        <source>Show Flight Path Vector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="910"/>
+        <source>Show Altitude</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="939"/>
+        <source>Show Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="968"/>
+        <source>Show Second Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="997"/>
+        <source>Show Heading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1026"/>
+        <source>Show Second Altitude</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1055"/>
+        <source>Show Bank Angle Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1084"/>
+        <source>Show Home Arrow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1113"/>
+        <source>Show Throttle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1142"/>
+        <source>Show Control Inputs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1173"/>
+        <source>Show Vibration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1202"/>
+        <source>Show Vertical Speed (minimal)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1230"/>
+        <source>Show Vertical Speed Gauge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1258"/>
+        <source>Show Wind (Experimental)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1287"/>
+        <source>Show Missions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1318"/>
+        <source>Show Angle of Attack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1384"/>
+        <source>Show Map</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1419"/>
+        <source>Show ADSB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1447"/>
+        <source>Show log messages on-screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1475"/>
+        <source>Show Sidebar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1503"/>
+        <source>Show QT Render stats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1534"/>
+        <source>Show GPIO</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ArrowWidgetForm</name>
+    <name>AppWidgetStyleSettingsView</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml" line="102"/>
+        <source>Shape Color</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml" line="145"/>
+        <source>Glow Color</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml" line="186"/>
+        <source>Text Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml" line="229"/>
+        <source>Text font</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ArrowWidget</name>
+    <message>
+        <location filename="../qml/ui/widgets/ArrowWidget.qml" line="38"/>
         <source>Invert Arrow</source>
-        <translation>Инверт. Стрелку</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>BitrateWidgetForm.ui</name>
+    <name>BaseWidgetDefaultUiControlElements</name>
     <message>
-        <source>Measured:</source>
-        <translation>Измерено:</translation>
-    </message>
-    <message>
-        <source>Set:</source>
-        <translation>Установить:</translation>
-    </message>
-    <message>
-        <source>Skipped packets:</source>
-        <translation>Пропущено пакетов:</translation>
-    </message>
-    <message>
-        <source>Injection failed:</source>
-        <translation>Неудачная отправка:</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/BaseWidgetDefaultUiControlElements.qml" line="53"/>
         <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/BaseWidgetDefaultUiControlElements.qml" line="144"/>
+        <source>Lock to Horizontal Center</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show skip / fail count</source>
-        <translation>Показывать счетчик пропущенные/битые пакеты</translation>
+        <location filename="../qml/ui/widgets/BaseWidgetDefaultUiControlElements.qml" line="180"/>
+        <source>Lock to Vertical Center</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>BlackBoxWidgetForm.ui</name>
+    <name>BatteryTempWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/BatteryTempWidget.qml" line="41"/>
+        <source>BATTERY SENSOR TEMPERATURE</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/BatteryTempWidget.qml" line="64"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>restart telemetry</source>
+        <location filename="../qml/ui/widgets/BatteryTempWidget.qml" line="86"/>
+        <source>Warn Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/BatteryTempWidget.qml" line="126"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/BatteryTempWidget.qml" line="206"/>
+        <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ColorPicker</name>
     <message>
+        <location filename="../qml/ui/elements/ColorPicker.qml" line="100"/>
         <source>Cancel</source>
-        <translation type="unfinished">Отменить</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/elements/ColorPicker.qml" line="126"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ControlWidgetForm.ui</name>
+    <name>ConnectPanel</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/configpopup/connect/ConnectPanel.qml" line="30"/>
+        <source>CONNECT TO OPENHD GND / AIR UNIT</source>
+        <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>ControlWidget</name>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/ControlWidget.qml" line="88"/>
         <source>Show two controls</source>
-        <translation>Показывать ДваУправления</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/ControlWidget.qml" line="109"/>
+        <source>Use FC channels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ControlWidget.qml" line="130"/>
         <source>Reverse Pitch</source>
-        <translation>Reverse Pitch</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/ControlWidget.qml" line="151"/>
         <source>Reverse Roll</source>
-        <translation>Reverse Roll</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/ControlWidget.qml" line="172"/>
         <source>Reverse yaw</source>
-        <translation>Reverse yaw</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/ControlWidget.qml" line="193"/>
         <source>Reverse Throttle</source>
-        <translation>Reverse Throttle</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>DownlinkRSSIWidgetForm.ui</name>
+    <name>DialoqueFreqChangeGndOnly</name>
     <message>
-        <source> dBm</source>
-        <translation>дБм</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="85"/>
+        <source>GND Only</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> (%L1%)</source>
-        <translation> (%L1%)</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="94"/>
+        <source>Okay</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>CTS:</source>
-        <translation>CTS:</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="107"/>
+        <source>YES,GND ONLY</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Show lost/damaged</source>
-        <translation>Показывать потеря/битые</translation>
-    </message>
-    <message>
-        <source>Show all cards to right</source>
-        <translation>Показывать все Карты Справа</translation>
-    </message>
-    <message>
-        <source>N/A</source>
-        <translation>н/а</translation>
-    </message>
-    <message>
-        <source>dBm</source>
-        <translation type="unfinished">дБм</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="123"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>EscTempWidgetForm.ui</name>
+    <name>DialoqueNotAlive</name>
     <message>
-        <source>Transparency</source>
-        <translation type="unfinished">Прозрачность</translation>
+        <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="21"/>
+        <source>QOpenHD</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation type="unfinished">Размер</translation>
+        <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="69"/>
+        <source>OKAY</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="86"/>
+        <source>TAKE ME</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ErrorMessageBox</name>
+    <message>
+        <location filename="../qml/ui/elements/ErrorMessageBox.qml" line="21"/>
+        <source>ERROR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/elements/ErrorMessageBox.qml" line="56"/>
+        <source>Okay</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EscTempWidget</name>
+    <message>
+        <location filename="../qml/ui/widgets/EscTempWidget.qml" line="40"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/EscTempWidget.qml" line="62"/>
+        <source>Warn Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/EscTempWidget.qml" line="102"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/EscTempWidget.qml" line="181"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ExampleWidgetForm.ui</name>
+    <name>ExampleWidget</name>
     <message>
+        <location filename="../qml/ui/widgets/ExampleWidget.qml" line="30"/>
         <source>Example widget</source>
-        <translation>Показывать ПримерВиджета</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>FcTempWidgetForm.ui</name>
+    <name>FCMavlinkSystem</name>
     <message>
-        <source>Transparency</source>
-        <translation type="vanished">Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation type="vanished">Размер</translation>
-    </message>
-    <message>
-        <source>N/A</source>
-        <translation type="vanished">н/а</translation>
+        <location filename="../app/telemetry/models/fcmavlinksystem.cpp" line="585"/>
+        <source>%1 flight mode</source>
+        <translation type="unfinished">%1 Полетный Режим</translation>
     </message>
 </context>
 <context>
-    <name>FlightDistanceWidgetForm.ui</name>
+    <name>FlightModeWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/FlightModeWidget.qml" line="50"/>
+        <source>Show disarmed</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-</context>
-<context>
-    <name>FlightMahKmWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation type="unfinished">Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation type="unfinished">Размер</translation>
+        <location filename="../qml/ui/widgets/FlightModeWidget.qml" line="87"/>
+        <source>Only For Ardupilot</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>FlightMahWidgetForm.ui</name>
+    <name>FooterRebootShutdownWarning</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/configpopup/status/FooterRebootShutdownWarning.qml" line="65"/>
+        <source>REBOOT</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Use telemetry data</source>
-        <translation>Использовать Данные Телеметрии</translation>
+        <location filename="../qml/ui/configpopup/status/FooterRebootShutdownWarning.qml" line="74"/>
+        <source>SHUTDOWN</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>FlightModeWidgetForm.ui</name>
+    <name>FpvWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-</context>
-<context>
-    <name>FlightTimerWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-</context>
-<context>
-    <name>FpvWidgetForm.ui</name>
-    <message>
+        <location filename="../qml/ui/widgets/FpvWidget.qml" line="36"/>
         <source>Dynamic</source>
-        <translation>Динамический</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sensitivity</source>
-        <translation>Чувствительность</translation>
+        <location filename="../qml/ui/widgets/FpvWidget.qml" line="58"/>
+        <source>Invert Pitch</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/FpvWidget.qml" line="107"/>
+        <source>Vertical Limit</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/FpvWidget.qml" line="174"/>
+        <source>Lateral Limit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>GPSWidgetForm.ui</name>
+    <name>FreqComboBoxRow</name>
     <message>
-        <source>Lat:</source>
-        <translation>Шир:</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/FreqComboBoxRow.qml" line="70"/>
+        <source></source>
+        <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>GPSWidget</name>
     <message>
-        <source>Lon:</source>
-        <translation>Долг:</translation>
-    </message>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="85"/>
         <source>Always show lat/lon</source>
-        <translation>Всегда показ. Шир./Долг.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="106"/>
+        <source>Hide identity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="134"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="156"/>
+        <source>Warn HDOP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="196"/>
+        <source>Caution HDOP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="246"/>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="490"/>
+        <source>Lat:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="268"/>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="527"/>
+        <source>Lon:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="290"/>
+        <source>GPS Count:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="312"/>
+        <source>GPS Lock:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="334"/>
+        <source>HDOP:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="356"/>
+        <source>VDOP:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="458"/>
         <source>%L1</source>
-        <translation>%L1</translation>
+        <translation type="unfinished">%L1% {1?}</translation>
     </message>
 </context>
 <context>
-    <name>GroundPiSettingsPanelForm.ui</name>
+    <name>GroundPowerWidget</name>
     <message>
-        <source>Presets</source>
-        <translation>Предопределенные установки</translation>
+        <location filename="../qml/ui/widgets/GroundPowerWidget.qml" line="44"/>
+        <source>Show single cell voltage</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation>Основные</translation>
+        <location filename="../qml/ui/widgets/GroundPowerWidget.qml" line="67"/>
+        <source>Battery Type</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Radio</source>
-        <translation>РадиоКанал</translation>
+        <location filename="../qml/ui/widgets/GroundPowerWidget.qml" line="111"/>
+        <source>Battery Low</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Video</source>
-        <translation>Видео</translation>
+        <location filename="../qml/ui/widgets/GroundPowerWidget.qml" line="131"/>
+        <source>Battery Mid</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>RC</source>
-        <translation>Р/У</translation>
-    </message>
-    <message>
-        <source>Hotspot</source>
-        <translation>Hotspot</translation>
-    </message>
-    <message>
-        <source>Smart Sync</source>
-        <translation>Smart Sync (Синхронизация)</translation>
-    </message>
-    <message>
-        <source>Other</source>
-        <translation>Другое</translation>
-    </message>
-    <message>
-        <source>Apply preset</source>
-        <translation>Применить установки</translation>
-    </message>
-    <message>
-        <source>Save</source>
-        <translation>Сохранить</translation>
-    </message>
-    <message>
-        <source>saved</source>
-        <translation>Сохранить</translation>
-    </message>
-</context>
-<context>
-    <name>GroundPiSettingsPresetView.ui</name>
-    <message>
-        <source>Presets are groups of settings that must be configured together for some OpenHD features and to make common configurations easier to use. Once you apply a preset, the ground station will reboot and enter SmartSync mode automatically, then power on your drone to let it sync the new settings.</source>
-        <translation>Пресеты это группы настроек, которые должны быть применены вместе для некоторых функций OpenHD и для того чтобы сделать общие конфигурации проще в использовании. Как только вы применяете пресет, Наземная Станция будет перезагружена и войдет в режим Синхронизации с Воздухом (Бортом)</translation>
-    </message>
-    <message>
-        <source>Note: you can apply more than one preset, but any settings that are mutually exclusive (band switcher + 2nd camera at the same time), the last preset to be configured &quot;wins&quot;</source>
-        <translation>Примечание: Вы можете применить несколько пресетов, однако установки, присутствующие в обоих пресетах, будут перезаписаны последним пресетом</translation>
-    </message>
-    <message>
-        <source>Changes that will be applied:</source>
-        <translation>Установки, которые будут применены:</translation>
-    </message>
-</context>
-<context>
-    <name>GroundPowerWidgetForm.ui</name>
-    <message>
-        <source>Voltage in:</source>
-        <translation>Напряжение на Входе:</translation>
-    </message>
-    <message>
-        <source>Voltage out:</source>
-        <translation>Напряжение На Выходе:</translation>
-    </message>
-    <message>
-        <source>Current out:</source>
-        <translation>Выходной Ток:</translation>
-    </message>
-    <message>
-        <source>Voltage bat:</source>
-        <translation>Напряжение Батареи:</translation>
-    </message>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-</context>
-<context>
-    <name>GroundStatusWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/GroundPowerWidget.qml" line="150"/>
+        <source>Battery Full</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>HeadingLadder</name>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="98"/>
         <source>N</source>
         <translation>С</translation>
     </message>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="103"/>
         <source>NE</source>
         <translation>СВ</translation>
     </message>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="108"/>
         <source>E</source>
         <translation>В</translation>
     </message>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="113"/>
         <source>SE</source>
         <translation>ЮВ</translation>
     </message>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="118"/>
         <source>S</source>
         <translation>Ю</translation>
     </message>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="123"/>
         <source>SW</source>
         <translation>ЮЗ</translation>
     </message>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="128"/>
         <source>W</source>
         <translation>З</translation>
     </message>
     <message>
+        <location filename="../app/osd/headingladder.cpp" line="133"/>
         <source>NW</source>
         <translation>СЗ</translation>
     </message>
 </context>
 <context>
-    <name>HeadingWidgetForm.ui</name>
+    <name>HeadingWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Width</source>
-        <translation>Ширина</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>UAV is iNav</source>
-        <translation>Используется INAV</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/HeadingWidget.qml" line="46"/>
         <source>Show ticks</source>
-        <translation>Показывать Черточки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/HeadingWidget.qml" line="67"/>
         <source>Show N/S/E/W</source>
-        <translation>Показывать С/Ю/В/З (компас)</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>HomeDistanceWidgetForm.ui</name>
+    <name>HomeDistanceWidget</name>
     <message>
-        <source>Lat:</source>
-        <translation>Шир:</translation>
+        <location filename="../qml/ui/widgets/HomeDistanceWidget.qml" line="98"/>
+        <source>Home Lat:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lon:</source>
-        <translation>Долг:</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/HomeDistanceWidget.qml" line="120"/>
+        <source>Home Lon:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>HorizonWidgetForm.ui</name>
+    <name>HorizonLadder</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../app/osd/horizonladder.cpp" line="297"/>
+        <source>N</source>
+        <translation type="unfinished">С</translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../app/osd/horizonladder.cpp" line="302"/>
+        <source>NE</source>
+        <translation type="unfinished">СВ</translation>
     </message>
     <message>
-        <source>Invert Pitch</source>
-        <translation>Инверт Pitch</translation>
+        <location filename="../app/osd/horizonladder.cpp" line="307"/>
+        <source>E</source>
+        <translation type="unfinished">В</translation>
     </message>
     <message>
-        <source>Invert Roll</source>
-        <translation>Инверт Roll</translation>
+        <location filename="../app/osd/horizonladder.cpp" line="312"/>
+        <source>SE</source>
+        <translation type="unfinished">ЮВ</translation>
     </message>
     <message>
+        <location filename="../app/osd/horizonladder.cpp" line="317"/>
+        <source>S</source>
+        <translation type="unfinished">Ю</translation>
+    </message>
+    <message>
+        <location filename="../app/osd/horizonladder.cpp" line="322"/>
+        <source>SW</source>
+        <translation type="unfinished">ЮЗ</translation>
+    </message>
+    <message>
+        <location filename="../app/osd/horizonladder.cpp" line="327"/>
+        <source>W</source>
+        <translation type="unfinished">З</translation>
+    </message>
+    <message>
+        <location filename="../app/osd/horizonladder.cpp" line="332"/>
+        <source>NW</source>
+        <translation type="unfinished">СЗ</translation>
+    </message>
+</context>
+<context>
+    <name>HorizonWidget</name>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="44"/>
+        <source>Clip area</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="73"/>
+        <source>Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="103"/>
         <source>Spacing</source>
-        <translation>Промежуток</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show Home</source>
-        <translation>Показывать СтрелкуДома</translation>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="132"/>
+        <source>Range</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show heading</source>
-        <translation>Показывать НаправлениеПолета</translation>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="161"/>
+        <source>Step</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show N/S/E/W</source>
-        <translation>Показывать С/Ю/В/З (компас)</translation>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="190"/>
+        <source>Invert Pitch</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>UAV is iNav</source>
-        <translation>Используется INAV</translation>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="212"/>
+        <source>Invert Roll</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="233"/>
         <source>Show Ladder</source>
-        <translation>Показывать Лестницу</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="254"/>
+        <source>Show Home</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="277"/>
+        <source>Show heading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="301"/>
+        <source>Show N/S/E/W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidget.qml" line="324"/>
+        <source>Show center indicator</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ImuTempWidgetForm.ui</name>
+    <name>ImuTempWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation type="unfinished">Прозрачность</translation>
+        <location filename="../qml/ui/widgets/ImuTempWidget.qml" line="39"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation type="unfinished">Размер</translation>
+        <location filename="../qml/ui/widgets/ImuTempWidget.qml" line="61"/>
+        <source>Warn Temp</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/ImuTempWidget.qml" line="101"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ImuTempWidget.qml" line="180"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MainVideoAndroid</name>
+    <name>LinkDownRSSIWidget</name>
     <message>
-        <source>Do not fly with this app! Video is not stable yet!</source>
-        <translation>Не летайте с этим приложением! Видео пока не стабильно!</translation>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="125"/>
+        <source>Show stats per card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="146"/>
+        <source>dBm of each ant/card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="168"/>
+        <source>Loss caution</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="196"/>
+        <source>Loss warn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="224"/>
+        <source>dBm low warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="245"/>
+        <source>Show pollution estimate %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="266"/>
+        <source>Show signal quality %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="428"/>
+        <source>dBm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="451"/>
+        <source></source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MainVideoGStreamer</name>
+    <name>LinkUpRSSIWidget</name>
     <message>
-        <source>Do not fly with this app! Video is not stable yet!</source>
-        <translation>Не летайте с этим приложением! Видео пока не стабильно!</translation>
+        <location filename="../qml/ui/widgets/LinkUpRSSIWidget.qml" line="181"/>
+        <source>dBm</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MainVideoRender</name>
+    <name>LogMessagesStatusView</name>
     <message>
-        <source>Do not fly with this app! Video is not stable yet!</source>
-        <translation>Не летайте с этим приложением! Видео пока не стабильно!</translation>
+        <location filename="../qml/ui/configpopup/log/LogMessagesStatusView.qml" line="25"/>
+        <source>LOG GND</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/log/LogMessagesStatusView.qml" line="28"/>
+        <source>LOG OpenHD AIR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/log/LogMessagesStatusView.qml" line="31"/>
+        <source>LOG FC</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MapWidgetForm.ui</name>
     <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="69"/>
+        <source>MAP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="94"/>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="553"/>
         <source>Zoom</source>
-        <translation>Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="123"/>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="150"/>
+        <source>Transparency(S)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="175"/>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="612"/>
         <source>Lock map to drone direction</source>
-        <translation>Поворачивать карту за направлением полета</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="196"/>
         <source>Show Drone Track</source>
-        <translation>Показать след дрона</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="217"/>
+        <source>Show Mission waypoints</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="238"/>
+        <source>Enable ADSB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="260"/>
+        <source>ADSB Internet Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="283"/>
+        <source>ADSB SDR Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="306"/>
+        <source>ADSB Radius</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="583"/>
+        <source>Transparency(B)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MavlinkParamPanel</name>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="83"/>
+        <source></source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="83"/>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="287"/>
+        <source></source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MissionWidget</name>
+    <message>
+        <location filename="../qml/ui/widgets/MissionWidget.qml" line="71"/>
+        <source>Waypoints curr/total:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/MissionWidget.qml" line="93"/>
+        <source>Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/MissionWidget.qml" line="115"/>
+        <source>Sync status:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/MissionWidget.qml" line="162"/>
+        <source>Mission</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NewSwitch</name>
+    <message>
+        <location filename="../qml/ui/elements/NewSwitch.qml" line="10"/>
+        <source>SwitchDelegate</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OHDSettingsPanel</name>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="40"/>
+        <source>LINK/QUICK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="43"/>
+        <source>AIR CAM 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="46"/>
+        <source>AIR CAM 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="50"/>
+        <source>AIR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="53"/>
+        <source>GROUND</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>OSDCustomizer</name>
     <message>
+        <location filename="../qml/ui/elements/OSDCustomizer.qml" line="56"/>
         <source>Shape Color</source>
-        <translation type="unfinished">Цвет очертаний</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/elements/OSDCustomizer.qml" line="96"/>
         <source>Glow Color</source>
-        <translation type="unfinished">Цвет заполнения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/elements/OSDCustomizer.qml" line="135"/>
         <source>Text Color</source>
-        <translation type="unfinished">Цвет текста</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/elements/OSDCustomizer.qml" line="209"/>
         <source>Done</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>OpenHD</name>
+    <name>PanelStatus</name>
     <message>
-        <source>%1 flight mode</source>
-        <translation>%1 Полетный Режим</translation>
+        <location filename="../qml/ui/configpopup/status/PanelStatus.qml" line="38"/>
+        <source>SYSTEM STATUS</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>PowerPanel</name>
+    <name>PowerActionDialoque</name>
     <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="72"/>
         <source>Confirm Power Change</source>
-        <translation>Подтвердить изменение</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>If your drone is in the air, rebooting or shutting down the ground or air pi may cause a crash or make it enter failsafe mode!</source>
-        <translation>Если Борт Заармлен, он может разбиться или уйти в ФС!</translation>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="78"/>
+        <source>If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode!</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="93"/>
         <source>Cancel</source>
-        <translation>Отменить</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="121"/>
         <source>Reboot Ground</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="124"/>
         <source>Shutdown Ground</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="127"/>
         <source>Reboot Air</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="130"/>
         <source>Shutdown Air</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="133"/>
+        <source>Reboot FC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="136"/>
+        <source>Shutdown FC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="138"/>
         <source>Yes</source>
-        <translation>да</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>PowerPanelForm.ui</name>
+    <name>PressTempWidget</name>
     <message>
-        <source>Reboot or safely shut down the air/ground before removing power, or to apply settings changes when it is difficult to cycle power manually. If you have a power control board or sensors connected you may also see power supply information.</source>
+        <location filename="../qml/ui/widgets/PressTempWidget.qml" line="39"/>
+        <source>Declutter Upon Arm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Air</source>
-        <translation>Воздух</translation>
-    </message>
-    <message>
-        <source>Output Voltage:</source>
-        <translation>Напряжение:</translation>
-    </message>
-    <message>
-        <source>Current:</source>
-        <translation>Ток:</translation>
-    </message>
-    <message>
-        <source>Reboot</source>
-        <translation>Перезапустить</translation>
-    </message>
-    <message>
-        <source>Shutdown</source>
+        <location filename="../qml/ui/widgets/PressTempWidget.qml" line="61"/>
+        <source>Warn Temp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ground</source>
-        <translation>Земля</translation>
+        <location filename="../qml/ui/widgets/PressTempWidget.qml" line="101"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Supply Voltage:</source>
-        <translation>Напряжение на Входе:</translation>
-    </message>
-    <message>
-        <source>Output Current:</source>
-        <translation>Ток:</translation>
-    </message>
-    <message>
-        <source>Battery Voltage:</source>
-        <translation>Напряжение батареи:</translation>
-    </message>
-</context>
-<context>
-    <name>PressTempWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation type="unfinished">Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation type="unfinished">Размер</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/PressTempWidget.qml" line="180"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>RcRSSIWidgetForm.ui</name>
+    <name>PressTempWidget2</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/PressTempWidget2.qml" line="39"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/PressTempWidget2.qml" line="61"/>
+        <source>Warn Temp</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/PressTempWidget2.qml" line="101"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/PressTempWidget2.qml" line="180"/>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PressTempWidget3</name>
+    <message>
+        <location filename="../qml/ui/widgets/PressTempWidget3.qml" line="39"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/PressTempWidget3.qml" line="61"/>
+        <source>Warn Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/PressTempWidget3.qml" line="101"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/PressTempWidget3.qml" line="180"/>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QOpenHDServiceDialoque</name>
+    <message>
+        <location filename="../qml/ui/configpopup/dev/QOpenHDServiceDialoque.qml" line="50"/>
+        <source>QOpenHD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/dev/QOpenHDServiceDialoque.qml" line="70"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QOpenHDVersionCard</name>
+    <message>
+        <location filename="../qml/ui/configpopup/status/QOpenHDVersionCard.qml" line="59"/>
+        <source>GPLv3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QRenderStatsWidget</name>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="62"/>
+        <source>QT FT:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="85"/>
+        <source>QT RP:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="108"/>
+        <source>D:R:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="130"/>
+        <source>Parse&amp;EnqT:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="152"/>
+        <source>DecT:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="174"/>
+        <source>DecRT:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="196"/>
+        <source>Doing wait_for_frame_decode:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="218"/>
+        <source>Format:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="240"/>
+        <source>Decoding type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="262"/>
+        <source>Rtp parse n gaps:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="284"/>
+        <source>RTP QOHD measured:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="306"/>
+        <source>estimate fps:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="328"/>
+        <source>estimate keyframe i:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="350"/>
+        <source>decode dropped:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RCRssiWidget</name>
+    <message>
+        <location filename="../qml/ui/widgets/RCRssiWidget.qml" line="165"/>
+        <source>%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/RCRssiWidget.qml" line="165"/>
         <source></source>
         <translation></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/RCRssiWidget.qml" line="183"/>
         <source>N/A</source>
-        <translation>н/а</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>RestartDialog</name>
+    <name>RcDebugScreenFC</name>
     <message>
-        <source>Restart required</source>
+        <location filename="../qml/ui/configpopup/rc/RcDebugScreenFC.qml" line="35"/>
+        <source>FC RC (for debugging)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must restart the app for your loaded configuration file to take effect</source>
+        <location filename="../qml/ui/configpopup/rc/RcDebugScreenFC.qml" line="38"/>
+        <source>NOTE: Only works on ardupilot!
+NOTE: Slow update rate(1Hz)-only for debugging
+Here you can see the rc channel values your FC reports via mavlink</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/rc/RcDebugScreenFC.qml" line="53"/>
+        <source>ranges: 1000-2000(pwm) 
+unused: 65535, 
+not set: -1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RcDebugScreenOpenHD</name>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcDebugScreenOpenHD.qml" line="36"/>
+        <source>OpenHD RC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcDebugScreenOpenHD.qml" line="39"/>
+        <source>Here you can view the values which OpenHD reads from your Joystick
+ and sends to the FC via wifibroadcast (If enabled)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcDebugScreenOpenHD.qml" line="54"/>
+        <source>ranges: 1000-2000(pwm) 
+unused: 65535, 
+not set: -1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RcInfoPanel</name>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="30"/>
+        <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="33"/>
+        <source>RC over OpenHD - debug</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="36"/>
+        <source>FC channels - debug</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RcInfoScreen</name>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="35"/>
+        <source>Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="38"/>
+        <source>Enable OpenHD-RC: 
+
+1. OpenHD GND: Set &apos;ENABLE_JOY_RC&apos; to &apos;ENABLED&apos;,
+2.Connect a joystick via USB to GND Station
+3.Optionally reboot
+
+You can use the other screens to validate/debug your setup.
+NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="54"/>
+        <source>Channel mapping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="57"/>
+        <source>Channel mapping is not intuitive, but it works when done correctly.
+If you cannot make it work, any proper RC controller (e.g. running EdgeTX / OpenTX)
+supports more advanced channel mapping and works via USB !</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RestartQOpenHDMessageBox</name>
+    <message>
+        <location filename="../qml/ui/elements/RestartQOpenHDMessageBox.qml" line="18"/>
+        <source>QOpenHD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/elements/RestartQOpenHDMessageBox.qml" line="55"/>
+        <source>Restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/elements/RestartQOpenHDMessageBox.qml" line="73"/>
         <source>Cancel</source>
-        <translation type="unfinished">Отменить</translation>
-    </message>
-    <message>
-        <source>Close App</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>RollWidgetForm.ui</name>
+    <name>RollWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/RollWidget.qml" line="41"/>
         <source>Invert Roll</source>
-        <translation>Инверт Roll</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/RollWidget.qml" line="63"/>
         <source>Show Arc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/RollWidget.qml" line="85"/>
         <source>Show Numbers</source>
-        <translation>Показать числа</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/RollWidget.qml" line="107"/>
         <source>Sky Pointer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>SensorPanelForm.ui</name>
+    <name>SOCStatusWidgetGeneric</name>
     <message>
-        <source>If you have temperature or IMU sensors connected you may see and/or calibrate them below.</source>
+        <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="104"/>
+        <source>Declutter Upon Arm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="131"/>
+        <source>Show undervolt icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="158"/>
+        <source>Caution CPU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="203"/>
+        <source>Warn CPU</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="247"/>
+        <source>Caution Temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="291"/>
+        <source>Warn Temp</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>SettingsPopupForm.ui</name>
+    <name>SettingsCategory</name>
     <message>
-        <source>App</source>
-        <translation>Приложение</translation>
+        <location filename="../qml/ui/elements/SettingsCategory.qml" line="68"/>
+        <source></source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ground</source>
-        <translation>Земля</translation>
-    </message>
-    <message>
-        <source>Status</source>
-        <translation>Статус</translation>
-    </message>
-    <message>
-        <source>Charts</source>
-        <translation>Схемы</translation>
-    </message>
-    <message>
-        <source>Power</source>
-        <translation>Электроэнергия</translation>
-    </message>
-    <message>
-        <source>Sensors</source>
-        <translation>датчиков</translation>
-    </message>
-    <message>
-        <source>About</source>
-        <translation>О Программе</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Закрыть</translation>
+        <location filename="../qml/ui/elements/SettingsCategory.qml" line="68"/>
+        <source></source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>SpeedSecondWidgetForm.ui</name>
+    <name>SpeedSecondWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/SpeedSecondWidget.qml" line="70"/>
+        <source>Use groundspeed</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/SpeedSecondWidget.qml" line="91"/>
+        <source>Use km/h</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Airspeed / Groundspeed</source>
-        <translation>ВоздушнаяСкорость/GPS</translation>
+        <location filename="../qml/ui/widgets/SpeedSecondWidget.qml" line="112"/>
+        <source>Show unit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>SpeedWidgetForm.ui</name>
+    <name>SpeedWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/SpeedWidget.qml" line="78"/>
+        <source>Use groundspeed</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Airspeed / Groundspeed</source>
-        <translation>ВоздушнаяСкорость/GPS</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/SpeedWidget.qml" line="100"/>
         <source>Show ladder</source>
-        <translation>Показывать Лестницу</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/SpeedWidget.qml" line="121"/>
+        <source>Show unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidget.qml" line="142"/>
+        <source>Use km/h</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidget.qml" line="163"/>
         <source>Range</source>
-        <translation>Пределы</translation>
-    </message>
-    <message>
-        <source>Minimum</source>
-        <translation>Минимум</translation>
-    </message>
-</context>
-<context>
-    <name>StatusChartForm.ui</name>
-    <message>
-        <source>Air CPU</source>
-        <translation>Воздух CPU</translation>
-    </message>
-    <message>
-        <source>Air Temp</source>
-        <translation>Воздух температура</translation>
-    </message>
-    <message>
-        <source>Gnd CPU</source>
-        <translation>Земля CPU</translation>
-    </message>
-    <message>
-        <source>Gnd Temp</source>
-        <translation>Земля температура</translation>
-    </message>
-    <message>
-        <source>Lost Pkt</source>
-        <translation>Потеряно:</translation>
-    </message>
-    <message>
-        <source>Damage Blk</source>
-        <translation>Битые:</translation>
-    </message>
-    <message>
-        <source>Down RSSI</source>
-        <translation>Показывать УровеньСигнала Воздух</translation>
-    </message>
-    <message>
-        <source>Up RSSI</source>
-        <translation>Показывать УровеньСигнала ЗемляРУ</translation>
-    </message>
-    <message>
-        <source>Inj. Fail</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Skip Pkt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bitrate</source>
-        <translation>Показывать Битрейт</translation>
-    </message>
-</context>
-<context>
-    <name>StatusPanelForm.ui</name>
-    <message>
-        <source>Last RSSI: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>  HB: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> | ATT: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> | BAT: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> | GPS: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> | VFR: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ThrottleWidgetForm.ui</name>
+    <name>StatusCardBodyFC</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyFC.qml" line="29"/>
+        <source>Firmware:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyFC.qml" line="34"/>
+        <source>Ping:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyFC.qml" line="39"/>
+        <source>Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyFC.qml" line="44"/>
+        <source>Alive:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyFC.qml" line="50"/>
+        <source>SysID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StatusCardBodyOpenHD</name>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="68"/>
+        <source>Platform:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="74"/>
+        <source>Version:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="98"/>
+        <source>Link:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StatusCardsColumn</name>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardsColumn.qml" line="29"/>
+        <source>Ground station</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardsColumn.qml" line="47"/>
+        <source>Air unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/status/StatusCardsColumn.qml" line="65"/>
+        <source>Flight Controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ThrottleWidget</name>
+    <message>
+        <location filename="../qml/ui/widgets/ThrottleWidget.qml" line="170"/>
         <source>throttle</source>
-        <translation>Газ</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>UplinkRSSIWidgetForm.ui</name>
+    <name>VerticalSpeedGaugeWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>dBm</source>
-        <translation>дБм</translation>
-    </message>
-    <message>
-        <source>N/A</source>
-        <translation>N/A</translation>
+        <location filename="../qml/ui/widgets/VerticalSpeedGaugeWidget.qml" line="49"/>
+        <source>Range</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>VibrationWidgetForm.ui</name>
+    <name>VerticalSpeedSimpleWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/VerticalSpeedSimpleWidget.qml" line="92"/>
+        <source>Show unit</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Size</source>
-        <translation>Размер</translation>
+        <location filename="../qml/ui/widgets/VerticalSpeedSimpleWidget.qml" line="114"/>
+        <source>Show up / down arrow</source>
+        <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>VibrationWidget</name>
     <message>
+        <location filename="../qml/ui/widgets/VibrationWidget.qml" line="126"/>
         <source>X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/VibrationWidget.qml" line="210"/>
         <source>Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/VibrationWidget.qml" line="294"/>
         <source>Z</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>VideoWidgetGStreamerForm.ui</name>
+    <name>VideoBitrateWidgetGeneric</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="141"/>
+        <source>Show RED recording active</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="172"/>
+        <source>Status:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="179"/>
+        <source>Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="186"/>
+        <source>Codec:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="193"/>
+        <source>Resolution:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="223"/>
+        <source>Bitrate SET:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="228"/>
+        <source>MEASURED:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="233"/>
+        <source>Injected(+FEC):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="239"/>
+        <source>TX Dropped/RX lost:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="256"/>
+        <source>FREE SPACE:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="267"/>
+        <source>AIR RECORD:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>VideoWidgetRenderForm.ui</name>
+    <name>WBLinkRateControlWidget</name>
     <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="223"/>
+        <source>Show frequency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="244"/>
+        <source>Show bitrate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="265"/>
+        <source>Show fec and keyframe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="309"/>
+        <source>Bitrate show detailed</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>VirtualJoystick</name>
+    <name>WindWidget</name>
     <message>
-        <source>Virtual Joystick</source>
-        <translation>Виртуальный Джойстик</translation>
-    </message>
-</context>
-<context>
-    <name>VsiWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
-        <source>Range</source>
-        <translation>Пределы</translation>
-    </message>
-</context>
-<context>
-    <name>WindWidgetForm.ui</name>
-    <message>
-        <source>Transparency</source>
-        <translation>Прозрачность</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation>Размер</translation>
-    </message>
-    <message>
+        <location filename="../qml/ui/widgets/WindWidget.qml" line="46"/>
         <source>Style: Arrow / Circle</source>
-        <translation>Стиль: Стрелка/Круг</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/WindWidget.qml" line="67"/>
         <source>Plane / Copter</source>
-        <translation>Самолет/Коптер</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qml/ui/widgets/WindWidget.qml" line="90"/>
         <source>45 Degree Speed M/S</source>
-        <translation>45 градусов Скорость м/с</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/WindWidget.qml" line="225"/>
+        <source>Wind Unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WorkaroundMessageBox</name>
+    <message>
+        <location filename="../qml/ui/elements/WorkaroundMessageBox.qml" line="21"/>
+        <source>QOpenHD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/elements/WorkaroundMessageBox.qml" line="56"/>
+        <source>Okay</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
-        <source>Open.HD</source>
-        <translation>Open.HD</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Отменить</translation>
-    </message>
-    <message>
-        <source>Rapidly tap between widgets to enable/disable stereo</source>
+        <location filename="../qml/main.qml" line="43"/>
+        <source>QOpenHD EVO</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -14,8 +14,30 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS LinguistTools)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
+
+# Translation files
+set(QOPENHD_TS_FILES
+    translations/QOpenHD_en.ts
+    translations/QOpenHD_de.ts
+    translations/QOpenHD_uk.ts
+    translations/QOpenHD_ru.ts
+    translations/QOpenHD_nl.ts
+    translations/QOpenHD_es.ts
+    translations/QOpenHD_fr.ts
+    translations/QOpenHD_zh.ts
+    translations/QOpenHD_it.ts
+    translations/QOpenHD_ro.ts
+)
+
+qt_add_translations(QOpenHDApp
+    TS_FILES ${QOPENHD_TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE QOPENHD_QM_FILES
+    LUPDATE_OPTIONS -no-obsolete
+    LRELEASE_OPTIONS -compress
+)
 
 set(QOPENHD_SOURCE_FILES_LIST
     app/main.cpp
@@ -85,6 +107,7 @@ qt_add_executable(QOpenHDApp
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
     qml/qml.qrc
+    ${QM_COPY_FILES}
     ##
     androidqt6/AndroidManifest.xml
 )
@@ -131,6 +154,20 @@ include(lib/h264/h264.cmake)
 #include(app/videostreaming/gstreamer/gst_video.cmake)
 
 qt_finalize_executable(QOpenHDApp)
+
+# Copy generated .qm files to qml directory for qml.qrc
+foreach(QM_FILE ${QOPENHD_QM_FILES})
+    get_filename_component(QM_FILENAME ${QM_FILE} NAME)
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/qml/${QM_FILENAME}
+        COMMAND ${CMAKE_COMMAND} -E copy ${QM_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/qml/${QM_FILENAME}
+        DEPENDS ${QM_FILE}
+        COMMENT "Copying ${QM_FILENAME} to qml directory for qrc inclusion"
+    )
+    list(APPEND QM_COPY_FILES ${CMAKE_CURRENT_SOURCE_DIR}/qml/${QM_FILENAME})
+endforeach()
+
+add_custom_target(copy_qm_files ALL DEPENDS ${QM_COPY_FILES})
+
 #include(GNUInstallDirs)
 #install(TARGETS QOpenHD
 #    BUNDLE DESTINATION .

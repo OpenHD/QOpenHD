@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="it">
+<TS version="2.1" language="uk_UA">
 <context>
     <name>AirBatteryWidget</name>
     <message>
         <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="69"/>
         <source>Show volts and amps</source>
-        <translation type="unfinished"></translation>
+        <translation>Показувати вольти і ампери</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="140"/>
         <source>Use batt id 0 only</source>
-        <translation type="unfinished"></translation>
+        <translation>Використовувати лише батарею з ID 0</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="172"/>
         <source>Batt1:</source>
-        <translation type="unfinished"></translation>
+        <translation>Батарея 1:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="207"/>
         <source>Batt2:</source>
-        <translation type="unfinished"></translation>
+        <translation>Батарея 2:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/AirBatteryWidget.qml" line="271"/>
         <source>%L1%</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -126,7 +126,7 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="256"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Відмінити</translation>
     </message>
 </context>
 <context>
@@ -152,7 +152,7 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="66"/>
         <source>Animation Smoothing</source>
-        <translation type="unfinished"></translation>
+        <translation>Зглажування анімації</translation>
     </message>
 </context>
 <context>
@@ -160,57 +160,57 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="144"/>
         <source>0°</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="145"/>
         <source>90° (WARNING)</source>
-        <translation type="unfinished"></translation>
+        <translation>90° (УВАЖНО)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="146"/>
         <source>180°</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="147"/>
         <source>270° (WARNING)</source>
-        <translation type="unfinished"></translation>
+        <translation>270° (УВАЖНО)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="252"/>
         <source>-1 Disable</source>
-        <translation type="unfinished"></translation>
+        <translation>-1 Вимкнути</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="253"/>
         <source>0 Auto (Recommended)</source>
-        <translation type="unfinished"></translation>
+        <translation>0 Авто (Рекомендовано)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="254"/>
         <source>50 (ultra small)</source>
-        <translation type="unfinished"></translation>
+        <translation>50 (дуже малий)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="255"/>
         <source>72 (smaller)</source>
-        <translation type="unfinished"></translation>
+        <translation>72 (малий)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="256"/>
         <source>100</source>
-        <translation type="unfinished"></translation>
+        <translation>100</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="257"/>
         <source>120 (bigger)</source>
-        <translation type="unfinished"></translation>
+        <translation>120 (більший)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="258"/>
         <source>150 (ultra big)</source>
-        <translation type="unfinished"></translation>
+        <translation>150 (великий)</translation>
     </message>
 </context>
 <context>
@@ -218,37 +218,37 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="52"/>
         <source>Widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Віджети</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="59"/>
         <source>Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Стиль</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="67"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Загальні</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="75"/>
         <source>Vehicle</source>
-        <translation type="unfinished"></translation>
+        <translation>Дрон</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="82"/>
         <source>Screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Відображення</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="89"/>
         <source>Video</source>
-        <translation type="unfinished"></translation>
+        <translation>Відео</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="96"/>
         <source>Dev</source>
-        <translation type="unfinished"></translation>
+        <translation>Розробницьке</translation>
     </message>
 </context>
 <context>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="218"/>
         <source>Video test mode</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Тестувальне відео</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="260"/>
@@ -269,7 +269,7 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="275"/>
         <source>Show GPS</source>
-        <translation type="unfinished"></translation>
+        <translation>Показувати GPS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="304"/>
@@ -564,7 +564,7 @@
     <message>
         <location filename="../qml/ui/elements/ColorPicker.qml" line="100"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Відмінити</translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/ColorPicker.qml" line="126"/>
@@ -577,7 +577,7 @@
     <message>
         <location filename="../qml/ui/configpopup/connect/ConnectPanel.qml" line="30"/>
         <source>CONNECT TO OPENHD GND / AIR UNIT</source>
-        <translation type="unfinished"></translation>
+        <translation>З&apos;єднайтесь з бортовим чи наземним модулем OpenHD</translation>
     </message>
 </context>
 <context>
@@ -618,22 +618,22 @@
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="85"/>
         <source>GND Only</source>
-        <translation type="unfinished"></translation>
+        <translation>Лише GND</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="94"/>
         <source>Okay</source>
-        <translation type="unfinished"></translation>
+        <translation>Добре</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="107"/>
         <source>YES,GND ONLY</source>
-        <translation type="unfinished"></translation>
+        <translation>Так, я впевнений</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="123"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Відмінити</translation>
     </message>
 </context>
 <context>
@@ -641,17 +641,17 @@
     <message>
         <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="21"/>
         <source>QOpenHD</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="69"/>
         <source>OKAY</source>
-        <translation type="unfinished"></translation>
+        <translation>Добре</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="86"/>
         <source>TAKE ME</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейти</translation>
     </message>
 </context>
 <context>
@@ -659,12 +659,12 @@
     <message>
         <location filename="../qml/ui/elements/ErrorMessageBox.qml" line="21"/>
         <source>ERROR</source>
-        <translation type="unfinished"></translation>
+        <translation>Помилка</translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/ErrorMessageBox.qml" line="56"/>
         <source>Okay</source>
-        <translation type="unfinished"></translation>
+        <translation>Добре</translation>
     </message>
 </context>
 <context>
@@ -703,7 +703,7 @@
     <message>
         <location filename="../app/telemetry/models/fcmavlinksystem.cpp" line="585"/>
         <source>%1 flight mode</source>
-        <translation type="unfinished">%1 modo di volo</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -861,42 +861,42 @@
     <message>
         <location filename="../app/osd/headingladder.cpp" line="98"/>
         <source>N</source>
-        <translation>N</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/headingladder.cpp" line="103"/>
         <source>NE</source>
-        <translation>NE</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/headingladder.cpp" line="108"/>
         <source>E</source>
-        <translation>E</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/headingladder.cpp" line="113"/>
         <source>SE</source>
-        <translation>SE</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/headingladder.cpp" line="118"/>
         <source>S</source>
-        <translation>S</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/headingladder.cpp" line="123"/>
         <source>SW</source>
-        <translation>SO</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/headingladder.cpp" line="128"/>
         <source>W</source>
-        <translation>O</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/headingladder.cpp" line="133"/>
         <source>NW</source>
-        <translation>NO</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -930,42 +930,42 @@
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="297"/>
         <source>N</source>
-        <translation type="unfinished">N</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="302"/>
         <source>NE</source>
-        <translation type="unfinished">NE</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="307"/>
         <source>E</source>
-        <translation type="unfinished">E</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="312"/>
         <source>SE</source>
-        <translation type="unfinished">SE</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="317"/>
         <source>S</source>
-        <translation type="unfinished">S</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="322"/>
         <source>SW</source>
-        <translation type="unfinished">SO</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="327"/>
         <source>W</source>
-        <translation type="unfinished">O</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../app/osd/horizonladder.cpp" line="332"/>
         <source>NW</source>
-        <translation type="unfinished">NO</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1312,7 +1312,7 @@
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="93"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Відмінити</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="121"/>
@@ -1429,7 +1429,7 @@
     <message>
         <location filename="../qml/ui/configpopup/dev/QOpenHDServiceDialoque.qml" line="70"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Відмінити</translation>
     </message>
 </context>
 <context>
@@ -1640,7 +1640,7 @@ supports more advanced channel mapping and works via USB !</source>
     <message>
         <location filename="../qml/ui/elements/RestartQOpenHDMessageBox.qml" line="73"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Відмінити</translation>
     </message>
 </context>
 <context>
@@ -1983,7 +1983,7 @@ supports more advanced channel mapping and works via USB !</source>
     <message>
         <location filename="../qml/ui/elements/WorkaroundMessageBox.qml" line="56"/>
         <source>Okay</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Добре</translation>
     </message>
 </context>
 <context>
@@ -1991,7 +1991,7 @@ supports more advanced channel mapping and works via USB !</source>
     <message>
         <location filename="../qml/main.qml" line="43"/>
         <source>QOpenHD EVO</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 </TS>
