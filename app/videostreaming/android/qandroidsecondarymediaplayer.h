@@ -1,9 +1,13 @@
 #ifndef QANDROIDSECONDARYMEDIAPLAYER_H
 #define QANDROIDSECONDARYMEDIAPLAYER_H
 
-#include <QAndroidJniObject>
+#include <memory>
+
 #include <QObject>
 #include <QPointer>
+
+#include "lowlagdecoder.h"
+#include "../gstreamer/gstrtpreceiver.h"
 
 class QSurfaceTexture;
 
@@ -25,14 +29,16 @@ signals:
     void videoOutChanged();
 
 private:
-    void tryStartPlayback();
-    void startDebugPlaybackOnAndroidThread();
-    void releaseMediaPlayer();
+    void setup_start_video_decoder_display();
+    void stop_cleanup_decoder_display();
+    void stopReceiving();
+    void maybeStartReceiving();
 
     QPointer<QSurfaceTexture> m_videoOut;
-    QAndroidJniObject m_mediaPlayer;
-    QAndroidJniObject m_surface;
-    bool m_pendingDebugPlayback = false;
+    std::unique_ptr<LowLagDecoder> m_low_lag_decoder = nullptr;
+    std::unique_ptr<GstRtpReceiver> m_receiver = nullptr;
+    bool m_should_start = false;
+    bool m_receiving = false;
 };
 
 #endif // QANDROIDSECONDARYMEDIAPLAYER_H
