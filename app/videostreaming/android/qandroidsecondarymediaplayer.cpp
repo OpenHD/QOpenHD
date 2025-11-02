@@ -8,8 +8,7 @@
 #include "qsurfacetexture.h"
 
 namespace {
-static constexpr const char *kDebugVideoUrl =
-        "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4";
+static constexpr const char *kSecondaryStreamUrl = "udp://@:5610";
 }
 
 QAndroidSecondaryMediaPlayer::QAndroidSecondaryMediaPlayer(QObject *parent)
@@ -131,7 +130,7 @@ void QAndroidSecondaryMediaPlayer::startDebugPlaybackOnAndroidThread()
         return;
     }
 
-    const QAndroidJniObject url = QAndroidJniObject::fromString(QString::fromUtf8(kDebugVideoUrl));
+    const QAndroidJniObject url = QAndroidJniObject::fromString(QString::fromUtf8(kSecondaryStreamUrl));
     m_mediaPlayer.callMethod<void>("setDataSource",
                                    "(Ljava/lang/String;)V",
                                    url.object());
