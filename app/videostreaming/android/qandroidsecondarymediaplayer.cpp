@@ -8,7 +8,7 @@
 #include "qsurfacetexture.h"
 
 namespace {
-static constexpr const char *kSecondaryStreamUrl = "udp://@:5601";
+static constexpr const char *kSecondaryStreamUrl = "udp://@:5600";
 }
 
 QAndroidSecondaryMediaPlayer::QAndroidSecondaryMediaPlayer(QObject *parent)
