@@ -9,6 +9,7 @@ SurfaceTexture {
     Component.onCompleted: {
         if (typeof _secondaryMediaPlayer !== "undefined" && _secondaryMediaPlayer) {
             _secondaryMediaPlayer.videoOut = secondaryAndroidVideo
+            _secondaryMediaPlayer.playDebugLoop()
         }
     }
 
