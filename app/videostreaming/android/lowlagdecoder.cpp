@@ -63,6 +63,7 @@ void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
         if(decoder.configured){
             AMediaCodec_stop(decoder.codec);
             AMediaCodec_delete(decoder.codec);
+            decoder.codec=nullptr;
             mKeyFrameFinder.reset();
             decoder.configured=false;
             if(mCheckOutputThread->joinable()){
@@ -247,14 +248,20 @@ void LowLagDecoder::checkOutputLoop() {
         const ssize_t index=AMediaCodec_dequeueOutputBuffer(decoder.codec,&info,BUFFER_TIMEOUT_US);
         if (index >= 0) {
             const auto now=steady_clock::now();
-            const int64_t nowNS=(int64_t)duration_cast<nanoseconds>(now.time_since_epoch()).count();
             const int64_t nowUS=(int64_t)duration_cast<microseconds>(now.time_since_epoch()).count();
             //the timestamp for releasing the buffer is in NS, just release as fast as possible (e.g. now)
             //https://android.googlesource.com/platform/frameworks/av/+/master/media/ndk/NdkMediaCodec.cpp
             //-> renderOutputBufferAndRelease which is in https://android.googlesource.com/platform/frameworks/av/+/3fdb405/media/libstagefright/MediaCodec.cpp
             //-> Message kWhatReleaseOutputBuffer -> onReleaseOutputBuffer
             // also https://android.googlesource.com/platform/frameworks/native/+/5c1139f/libs/gui/SurfaceTexture.cpp
-            AMediaCodec_releaseOutputBufferAtTime(decoder.codec,(size_t)index,nowNS);
+            // Android 11+ (codec2) is stricter about buffer ownership tracking and
+            // issuing AMediaCodec_releaseOutputBufferAtTime() with a "render now"
+            // timestamp has been observed to occasionally trigger
+            // "Client returned a buffer it does not own" warnings. Releasing the
+            // buffer with an explicit render flag keeps the codec bookkeeping
+            // consistent across devices.
+            const bool renderFrame = info.size > 0 && decoder.window != nullptr;
+            AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t) index, renderFrame);
             //but the presentationTime is in US
             decodingTime.add(std::chrono::microseconds(nowUS - info.presentationTimeUs));
             nDecodedFrames.add(1);
@@ -273,6 +280,7 @@ void LowLagDecoder::checkOutputLoop() {
                 onDecoderRatioChangedCallback({width, height});
             }
             MLOGD << "AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED " << width << " " << height << " " << AMediaFormat_toString(format);
+            AMediaFormat_delete(format);
         } else if(index==AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED){
             MLOGD<<"AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED";
         } else if(index==AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
