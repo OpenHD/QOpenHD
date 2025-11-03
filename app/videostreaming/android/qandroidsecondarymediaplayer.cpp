@@ -13,7 +13,7 @@ namespace {
 QString buildStreamUrl(const QOpenHDVideoHelper::VideoStreamConfigXX &config)
 {
     const QString ip = QString::fromStdString(config.udp_rtp_input_ip_address).trimmed();
-    const int port = config.udp_rtp_input_port_secondary;
+    const int port = config.udp_rtp_input_port;
 
     if (ip.isEmpty())
         return {};
