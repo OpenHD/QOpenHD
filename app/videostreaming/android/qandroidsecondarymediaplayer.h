@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QPointer>
 
+#include <QString>
+
 class QSurfaceTexture;
 
 class QAndroidSecondaryMediaPlayer : public QObject
@@ -26,13 +28,15 @@ signals:
 
 private:
     void tryStartPlayback();
-    void startDebugPlaybackOnAndroidThread();
+    void startPlaybackOnAndroidThread(const QString &streamUrl,
+                                      const QAndroidJniObject &surfaceTexture);
+    QString resolveStreamUrl() const;
     void releaseMediaPlayer();
 
     QPointer<QSurfaceTexture> m_videoOut;
+    bool m_pendingPlayback = false;
     QAndroidJniObject m_mediaPlayer;
     QAndroidJniObject m_surface;
-    bool m_pendingDebugPlayback = false;
 };
 
 #endif // QANDROIDSECONDARYMEDIAPLAYER_H
