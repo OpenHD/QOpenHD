@@ -143,6 +143,10 @@
  static constexpr int X_CAM_TYPE_WILLY_JAGUAR = 123;
  static constexpr int X_CAM_TYPE_WILLY_REKINDLE = 124;
  
+// Rockchip RV (so far all supported cams run through the same pipline,
+// with no input from OpenHD)
+static constexpr int X_CAM_TYPE_ROCKCHIP_RV = 125;
+
  //
  // ... rest is reserved for future use
  // no camera, only exists to have a default value for secondary camera (which is
@@ -264,6 +268,8 @@
        return "CORETRONIC IMX577";
      case X_CAM_TYPE_QC_OV9282:
        return "CORETRONIC OV9282";
+     case X_CAM_TYPE_ROCKCHIP_RV:
+       return "Generic RV110X Camera";
      default:
        break;
    }
@@ -316,6 +322,9 @@
    bool requires_willy_pipeline() const {
      return camera_type >= 122 && camera_type < 124;
    }
+   bool requires_rockchip_rv_pipeline() const {
+     return camera_type == 125;
+   }
    std::string cam_type_as_verbose_string() const {
      return x_cam_type_to_string(camera_type);
    }
@@ -357,6 +366,13 @@
        std::vector<ResolutionFramerate> ret;
        ret.push_back(ResolutionFramerate{256, 192, 25});
        ret.push_back(ResolutionFramerate{0, 0, 0});
+       return ret;
+     } else if (requires_rockchip_rv_pipeline()) {
+       std::vector<ResolutionFramerate> ret;
+       ret.push_back(ResolutionFramerate{1280, 720, 60});
+       ret.push_back(ResolutionFramerate{1296, 968, 60});
+       ret.push_back(ResolutionFramerate{1920, 1080, 25});
+       ret.push_back(ResolutionFramerate{2592, 1944, 25});
        return ret;
      } else if (camera_type == X_CAM_TYPE_USB_INFIRAY_P2_PRO) {
        return {ResolutionFramerate{256, 192, 25}};
@@ -854,4 +870,3 @@
  }
  
  #endif  // OPENHD_CAMERA_HPP
- 
