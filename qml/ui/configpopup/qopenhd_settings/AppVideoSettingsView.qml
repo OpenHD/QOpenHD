@@ -233,6 +233,27 @@ ScrollView {
                     }
                 }
 
+                SettingBaseElement{
+                    m_short_description: "Disable primary video (Android)"
+                    m_long_description: "Stops rendering the primary stream on Android to debug the secondary feed. Requires restart."
+                    visible: _qopenhd.is_android()
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.dev_disable_primary_video
+                        onCheckedChanged: {
+                            const actually_changed = settings.dev_disable_primary_video !== checked
+                            settings.dev_disable_primary_video = checked
+                            if (actually_changed) {
+                                _restartqopenhdmessagebox.show()
+                            }
+                        }
+                    }
+                }
+
                 Rectangle {
                     width: parent.width
                     height: rowHeight

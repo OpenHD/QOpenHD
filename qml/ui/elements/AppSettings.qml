@@ -35,6 +35,9 @@ Settings {
     // When the app is started, this value is automatically reset to false
     property bool qopenhd_switch_primary_secondary: false
 
+    // Android debugging helper: disable the primary video renderer while keeping the secondary stream available
+    property bool dev_disable_primary_video: false
+
     // Video decode settings, per primary / secondary video
     property int qopenhd_primary_video_rtp_input_port: 5600
     property string qopenhd_primary_video_rtp_input_ip: "127.0.0.1"

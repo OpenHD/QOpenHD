@@ -69,6 +69,8 @@ struct GenericVideoSettings{
     bool dev_rpi_use_external_omx_decode_service=true;
     // platforms other than RPI
     bool dev_always_use_generic_external_decode_service=false;
+    // Android helper to allow disabling primary video rendering to debug the secondary stream
+    bool dev_disable_primary_video=false;
     // On embedded devices, video is commonly rendered on a special surface, independent of QOpenHD
     // r.n only the rpi mmal impl. supports proper video rotation
     int extra_screen_rotation=0;
@@ -85,6 +87,7 @@ struct GenericVideoSettings{
                this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder &&
                this->dev_rpi_use_external_omx_decode_service==o.dev_rpi_use_external_omx_decode_service &&
                this->dev_always_use_generic_external_decode_service==o.dev_always_use_generic_external_decode_service &&
+               this->dev_disable_primary_video==o.dev_disable_primary_video &&
                this->extra_screen_rotation == o.extra_screen_rotation &&
                this->qopenhd_switch_primary_secondary == o.qopenhd_switch_primary_secondary;
      }
@@ -176,6 +179,7 @@ static GenericVideoSettings read_generic_from_settings(){
     //
     _videoStreamConfig.dev_rpi_use_external_omx_decode_service=settings.value("dev_rpi_use_external_omx_decode_service", true).toBool();
     _videoStreamConfig.dev_always_use_generic_external_decode_service=settings.value("dev_always_use_generic_external_decode_service", false).toBool();
+    _videoStreamConfig.dev_disable_primary_video=settings.value("dev_disable_primary_video", false).toBool();
     _videoStreamConfig.qopenhd_switch_primary_secondary=settings.value("qopenhd_switch_primary_secondary", false).toBool();
     _videoStreamConfig.extra_screen_rotation=get_display_rotation();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
