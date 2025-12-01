@@ -16,14 +16,14 @@ TRANSLATIONS = translations/QOpenHD_en.ts \
                translations/QOpenHD_it.ts \
                translations/QOpenHD_ro.ts
 
-# Generate .qm files before building
+# Generate .qm files before building and place them into qml/ (so rcc finds qml/QOpenHD_zh.qm)
 translation_files = $$TRANSLATIONS
 translation_files ~= s/\.ts/\.qm/g
+translation_files ~= s:^translations/:qml/:
 
-# Custom build step to generate translations
 QMAKE_EXTRA_TARGETS += translations
 translations.target = $$translation_files
-translations.commands = lrelease $$TRANSLATIONS
+translations.commands = mkdir -p qml && for ts in $$TRANSLATIONS; do out=qml/`basename $$ts .ts`.qm; echo "lrelease $$ts -> $$out"; lrelease "$$ts" -qm "$$out" || exit 1; done
 translations.depends = $$TRANSLATIONS
 
 # Ensure translations are built before qrc
