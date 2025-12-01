@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <qquickitem.h>
+#include <QString>
 
 #include <QtQml>
 #include <gst/gst.h>
@@ -71,6 +72,7 @@ private:
     bool firstCheck=true;
     //
     int nTimesVideoQmlElementNotSet=0;
+    QString logPrefix()const{return m_isPrimaryStream ? "[PrimaryVideo]" : "[SecondaryVideo]";}
 };
 
 #endif // OpenHDVideoStream_H
