@@ -330,10 +330,12 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
-    // Load translation based on saved locale
+    QApplication app(argc, argv);
+
+    // Load translation based on saved locale (requires an active Q(Core)Application on Qt5)
+    QTranslator translator;
     QString localeStr = settings.value("locale", "en").toString();
     QLocale::setDefault(QLocale(localeStr));
-    QTranslator translator;
     QString qmFile = QString(":/translations/QOpenHD_%1.qm").arg(localeStr);
     if (!translator.load(qmFile)) {
         // Fallback to English
@@ -341,8 +343,6 @@ int main(int argc, char *argv[]) {
         settings.setValue("locale", "en");
         translator.load(":/translations/QOpenHD_en.qm");
     }
-
-    QApplication app(argc, argv);
     app.installTranslator(&translator);
     {  // This includes dpi adjustment
         QScreen* screen=app.primaryScreen();
