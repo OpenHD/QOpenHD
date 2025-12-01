@@ -28,7 +28,7 @@ Item {
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
         text: {
-            var ret="PROGRESS";
+            var ret="Progress";
             if(impl_curr_progress_perc>=0 && impl_curr_progress_perc<=100){
                 ret += ": "+impl_curr_progress_perc+"%";
             }else{

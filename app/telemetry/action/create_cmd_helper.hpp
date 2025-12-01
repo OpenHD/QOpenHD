@@ -21,6 +21,16 @@ static mavlink_command_long_t create_cmd_reboot(int target_sysid,int target_comp
     return cmd;
 }
 
+static mavlink_command_long_t create_cmd_compass_calibration(int target_sysid,int target_compid){
+    mavlink_command_long_t cmd{};
+    cmd.target_system=target_sysid;
+    cmd.target_component=target_compid;
+    cmd.command=MAV_CMD_PREFLIGHT_CALIBRATION;
+    // param2 - magnetometer calibration
+    cmd.param2=1;
+    return cmd;
+}
+
 static mavlink_command_long_t create_cmd_request_message(int target_sysid,int target_compid,int message_id){
     mavlink_command_long_t command{};
     command.command=MAV_CMD_REQUEST_MESSAGE;

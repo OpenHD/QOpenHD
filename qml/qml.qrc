@@ -165,6 +165,7 @@
         <file>resources/cameras/veyeSC132.png</file>
         <file>video/MainVideoGStreamer.qml</file>
         <file>video/SecondaryVideoGStreamer.qml</file>
+        <file>video/SecondaryVideoAndroid.qml</file>
         <file>video/MainVideoQSG.qml</file>
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
         <file>ui/widgets/RCRssiWidget.qml</file>
@@ -283,6 +284,7 @@
         <file>ui/sidebar/Panel4Recording.qml</file>
         <file>ui/sidebar/Panel6Misc.qml</file>
         <file>ui/sidebar/Panel7Status.qml</file>
+        <file>ui/sidebar/Panel8FindAirUnit.qml</file>
         <file>ui/sidebar/SidebarStackButton.qml</file>
         <file>ui/sidebar/RCChannelView.qml</file>
         <file>ui/widgets/map/ADSBcautionMarker.png</file>

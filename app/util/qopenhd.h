@@ -66,6 +66,7 @@ public:
     Q_INVOKABLE void sysctl_openhd(int task);
 
     Q_INVOKABLE bool is_valid_ip(QString ip);
+    Q_INVOKABLE bool ping_ip(QString ip);
     Q_INVOKABLE bool is_platform_rpi();
     Q_INVOKABLE bool is_platform_rock();
     //

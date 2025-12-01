@@ -390,7 +390,7 @@ void MavlinkTelemetry::perform_connection_management()
             m_tcp_connection_custom->start_looping();
         }
         std::stringstream ss;
-        ss<<"MANUAL TCP -";
+        ss<<"MANUAL TCP - ";
         if(m_tcp_connection_custom->threadsafe_is_alive()){
             ss<<"CONNECTED "<<"["<<user_ip<<"]";
         }else{

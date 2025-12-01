@@ -45,7 +45,9 @@ static constexpr int X_PLATFORM_TYPE_NVIDIA_XAVIER = 40;
 // Numbers 46..50 are reserved for QUALCOMM
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QRB5165 = 46;
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QCS405 = 47;
-static constexpr int X_PLATFORM_TYPE_WILLY = 48;
+static constexpr int X_PLATFORM_TYPE_WILLY = 51;
+static constexpr int X_PLATFORM_TYPE_UXV_MOD = 52;
+// Numbers 
 static std::string x_platform_type_to_string(int platform_type) {
     switch (platform_type) {
     case X_PLATFORM_TYPE_UNKNOWN:
@@ -76,6 +78,8 @@ static std::string x_platform_type_to_string(int platform_type) {
         return "SCHWANZUS LONGUS";
     case X_PLATFORM_TYPE_WILLY:
         return "FREE WILLY";
+    case X_PLATFORM_TYPE_UXV_MOD:
+        return "UXV NAV";
     case X_PLATFORM_TYPE_OPENIPC_SIGMASTAR_UNDEFINED:
         return "OPENIPC SIGMASTAR";
     case X_PLATFORM_TYPE_NVIDIA_XAVIER:

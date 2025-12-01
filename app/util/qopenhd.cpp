@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include<fstream>
 #include<string>
+#include <QProcess>
 
 #if defined(__linux__) || defined(__macos__)
 #include "common/openhd-util.hpp"
@@ -329,6 +330,33 @@ bool QOpenHD::is_valid_ip(QString ip)
     QHostAddress addr;
     bool valid=addr.setAddress(ip);
     return valid;
+}
+
+bool QOpenHD::ping_ip(QString ip)
+{
+#if defined(__linux__) || defined(__macos__) || defined(_WIN32)
+    if(!is_valid_ip(ip)){
+        return false;
+    }
+    QProcess ping_process;
+#if defined(_WIN32)
+    QStringList arguments = {"-n", "1", "-w", "1000", ip};
+#else
+    // Use a short timeout to keep the scan responsive
+    QStringList arguments = {"-c", "1", "-W", "1", ip};
+#endif
+    ping_process.start("ping", arguments);
+    // Keep the call short so the UI remains responsive while scanning a range
+    if(!ping_process.waitForFinished(400)){
+        ping_process.kill();
+        ping_process.waitForFinished();
+        return false;
+    }
+    return ping_process.exitStatus() == QProcess::NormalExit && ping_process.exitCode() == 0;
+#else
+    Q_UNUSED(ip);
+    return false;
+#endif
 }
 
 bool QOpenHD::is_platform_rpi()
