@@ -81,14 +81,6 @@ Item{
 
     function takeover_control(){
         focus=true;
-        var p = parent;
-        while (p) {
-            if (typeof p.ensure_content_visible === "function") {
-                p.ensure_content_visible(base_joy_edit_element);
-                break;
-            }
-            p = p.parent;
-        }
     }
 
     Rectangle{
