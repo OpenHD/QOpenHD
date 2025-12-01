@@ -18,27 +18,6 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS LinguistTools)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
-# Translation files
-set(QOPENHD_TS_FILES
-    translations/QOpenHD_en.ts
-    translations/QOpenHD_de.ts
-    translations/QOpenHD_uk.ts
-    translations/QOpenHD_ru.ts
-    translations/QOpenHD_nl.ts
-    translations/QOpenHD_es.ts
-    translations/QOpenHD_fr.ts
-    translations/QOpenHD_zh.ts
-    translations/QOpenHD_it.ts
-    translations/QOpenHD_ro.ts
-)
-
-qt_add_translations(QOpenHDApp
-    TS_FILES ${QOPENHD_TS_FILES}
-    QM_FILES_OUTPUT_VARIABLE QOPENHD_QM_FILES
-    LUPDATE_OPTIONS -no-obsolete
-    LRELEASE_OPTIONS -compress
-)
-
 set(QOPENHD_SOURCE_FILES_LIST
     app/main.cpp
     #
@@ -107,9 +86,29 @@ qt_add_executable(QOpenHDApp
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
     qml/qml.qrc
-    ${QM_COPY_FILES}
     ##
     androidqt6/AndroidManifest.xml
+)
+
+# Translation files
+set(QOPENHD_TS_FILES
+    translations/QOpenHD_en.ts
+    translations/QOpenHD_de.ts
+    translations/QOpenHD_uk.ts
+    translations/QOpenHD_ru.ts
+    translations/QOpenHD_nl.ts
+    translations/QOpenHD_es.ts
+    translations/QOpenHD_fr.ts
+    translations/QOpenHD_zh.ts
+    translations/QOpenHD_it.ts
+    translations/QOpenHD_ro.ts
+)
+
+qt_add_translations(QOpenHDApp
+    TS_FILES ${QOPENHD_TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE QOPENHD_QM_FILES
+    LUPDATE_OPTIONS -no-obsolete
+    LRELEASE_OPTIONS -compress
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
@@ -169,7 +168,9 @@ endforeach()
 add_custom_target(copy_qm_files ALL DEPENDS ${QM_COPY_FILES})
 
 # Ensure generated translation files exist before processing the qml.qrc resource
-add_dependencies(QOpenHDApp_autogen copy_qm_files)
+if(TARGET QOpenHDApp_autogen)
+    add_dependencies(QOpenHDApp_autogen copy_qm_files)
+endif()
 
 #include(GNUInstallDirs)
 #install(TARGETS QOpenHD
