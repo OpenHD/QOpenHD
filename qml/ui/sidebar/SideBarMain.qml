@@ -173,64 +173,146 @@ Item {
         }
     }
 
-    Column{
+    Item{
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         id: stack_manager
         visible: false
-        SidebarStackButton{
-            id: b0
-            override_text: "\uf053"
-            override_tag: "back"
-            override_index: -1
+
+        property int arrowButtonHeight: 24
+        property int stackButtonSize: secondaryUiHeight / 9
+        property real availableHeight: parent ? parent.height : secondaryUiHeight
+        property bool useOverflow: stackButtonsColumn.implicitHeight > (availableHeight - (arrowButtonHeight * 2))
+
+        width: stackButtonSize
+        height: useOverflow ? availableHeight : stackButtonsColumn.implicitHeight
+
+        // Up button for overflowing menus
+        Rectangle {
+            id: scroll_up_button
+            visible: stack_manager.useOverflow
+            width: parent.width
+            height: stack_manager.arrowButtonHeight
+            color: mainDarkColor
+            opacity: stack_flickable.contentY > 0 ? 0.9 : 0.4
+
+            Text {
+                anchors.fill: parent
+                text: "\uf077"
+                font.pixelSize: 16
+                font.family: "Font Awesome 5 Free"
+                color: "white"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                enabled: stack_flickable.contentY > 0
+                onClicked: {
+                    stack_flickable.contentY = Math.max(0, stack_flickable.contentY - stack_flickable.height / 2)
+                }
+            }
         }
-        SidebarStackButton{
-            id: b1
-            override_text: "\uf002"
-            override_tag: "scan"
-            override_index: 0
+
+        Flickable {
+            id: stack_flickable
+            width: stack_manager.width
+            anchors.top: scroll_up_button.visible ? scroll_up_button.bottom : parent.top
+            anchors.bottom: scroll_down_button.visible ? scroll_down_button.top : parent.bottom
+            contentWidth: stackButtonsColumn.width
+            contentHeight: stackButtonsColumn.implicitHeight
+            clip: true
+            interactive: stack_manager.useOverflow
+
+            Column{
+                id: stackButtonsColumn
+                width: stack_manager.width
+                SidebarStackButton{
+                    id: b0
+                    override_text: "\uf053"
+                    override_tag: "back"
+                    override_index: -1
+                }
+                SidebarStackButton{
+                    id: b1
+                    override_text: "\uf002"
+                    override_tag: "scan"
+                    override_index: 0
+                }
+                SidebarStackButton{
+                    id: b2
+                    override_text: "\uf1eb"
+                    override_tag: "link"
+                    override_index: 1
+                }
+                SidebarStackButton{
+                    id: b3
+                    override_text: "\uf03d"
+                    override_tag: "video"
+                    override_index: 2
+                }
+                SidebarStackButton{
+                    id: b4
+                    override_text:  "\uf030"
+                    override_tag: "camera"
+                    override_index: 3
+                }
+                SidebarStackButton{
+                    id: b5
+                    override_text: "\uf0c7"
+                    override_tag: "recording"
+                    override_index: 4
+                }
+                SidebarStackButton{
+                    id: b6
+                    override_text: "\uf11b"
+                    override_tag: "rc"
+                    override_index: 5
+                }
+                SidebarStackButton{
+                    id: b7
+                    override_text: "\uf26c"
+                    override_tag: "misc"
+                    override_index: 6
+                }
+                SidebarStackButton{
+                    id: b8
+                    override_text: "\uf55b"
+                    override_tag: "status"
+                    override_index: 7
+                }
+            }
         }
-        SidebarStackButton{
-            id: b2
-            override_text: "\uf1eb"
-            override_tag: "link"
-            override_index: 1
-        }
-        SidebarStackButton{
-            id: b3
-            override_text: "\uf03d"
-            override_tag: "video"
-            override_index: 2
-        }
-        SidebarStackButton{
-            id: b4
-            override_text:  "\uf030"
-            override_tag: "camera"
-            override_index: 3
-        }
-        SidebarStackButton{
-            id: b5
-            override_text: "\uf0c7"
-            override_tag: "recording"
-            override_index: 4
-        }
-        SidebarStackButton{
-            id: b6
-            override_text: "\uf11b"
-            override_tag: "rc"
-            override_index: 5
-        }
-        SidebarStackButton{
-            id: b7
-            override_text: "\uf26c"
-            override_tag: "misc"
-            override_index: 6
-        }
-        SidebarStackButton{
-            id: b8
-            override_text: "\uf55b"
-            override_tag: "status"
-            override_index: 7
+
+        // Down button for overflowing menus
+        Rectangle {
+            id: scroll_down_button
+            visible: stack_manager.useOverflow
+            anchors.bottom: parent.bottom
+            width: parent.width
+            height: stack_manager.arrowButtonHeight
+            color: mainDarkColor
+            opacity: (stack_flickable.contentY + stack_flickable.height) < stack_flickable.contentHeight ? 0.9 : 0.4
+
+            Text {
+                anchors.fill: parent
+                text: "\uf078"
+                font.pixelSize: 16
+                font.family: "Font Awesome 5 Free"
+                color: "white"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                enabled: (stack_flickable.contentY + stack_flickable.height) < stack_flickable.contentHeight
+                onClicked: {
+                    var maxY = stack_flickable.contentHeight - stack_flickable.height
+                    stack_flickable.contentY = Math.min(maxY, stack_flickable.contentY + stack_flickable.height / 2)
+                }
+            }
         }
     }
 
