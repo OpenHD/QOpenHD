@@ -16,10 +16,12 @@ QString buildStreamUrl(const QOpenHDVideoHelper::VideoStreamConfigXX &config)
     const int port = config.udp_rtp_input_port;
 
     if (ip.isEmpty())
-        return {};
+        return QStringLiteral("udp://0.0.0.0:%1").arg(port);
 
-    if (ip == QLatin1String("127.0.0.1") || ip == QLatin1String("0.0.0.0"))
-        return QStringLiteral("udp://@:%1").arg(port);
+    const QString normalizedIp = ip.toLower();
+    if (normalizedIp == QLatin1String("127.0.0.1") || normalizedIp == QLatin1String("0.0.0.0") ||
+        normalizedIp == QLatin1String("localhost"))
+        return QStringLiteral("udp://0.0.0.0:%1").arg(port);
 
     return QStringLiteral("udp://%1:%2").arg(ip).arg(port);
 }
@@ -160,9 +162,23 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
         }
 
         const QAndroidJniObject url = QAndroidJniObject::fromString(streamUrl);
-        that->m_mediaPlayer.callMethod<void>("setDataSource",
-                                             "(Ljava/lang/String;)V",
-                                             url.object());
+        const QAndroidJniObject uri = QAndroidJniObject::callStaticObjectMethod(
+            "android/net/Uri",
+            "parse",
+            "(Ljava/lang/String;)Landroid/net/Uri;",
+            url.object<jstring>());
+
+        if (uri.isValid()) {
+            that->m_mediaPlayer.callMethod<void>("setDataSource",
+                                                 "(Landroid/content/Context;Landroid/net/Uri;)V",
+                                                 QtAndroid::androidContext().object(),
+                                                 uri.object());
+        } else {
+            that->m_mediaPlayer.callMethod<void>("setDataSource",
+                                                 "(Ljava/lang/String;)V",
+                                                 url.object());
+        }
+
         if (env->ExceptionCheck()) {
             qWarning() << "Secondary Android MediaPlayer failed to set data source" << streamUrl;
             env->ExceptionDescribe();
