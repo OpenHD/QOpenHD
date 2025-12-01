@@ -168,6 +168,9 @@ endforeach()
 
 add_custom_target(copy_qm_files ALL DEPENDS ${QM_COPY_FILES})
 
+# Ensure generated translation files exist before processing the qml.qrc resource
+add_dependencies(QOpenHDApp_autogen copy_qm_files)
+
 #include(GNUInstallDirs)
 #install(TARGETS QOpenHD
 #    BUNDLE DESTINATION .
