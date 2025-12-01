@@ -209,6 +209,30 @@ ScrollView {
                     }
                 }
 
+                SettingBaseElement{
+                    m_short_description: "Secondary video input (Android dev)"
+                    visible: _qopenhd.is_android()
+                    ComboBox {
+                        width: 320
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        model: ListModel {
+                            ListElement { text: "UDP secondary port" }
+                            ListElement { text: "UDP primary port" }
+                            ListElement { text: "HTTP test clip" }
+                        }
+                        Component.onCompleted: {
+                            if(settings.dev_secondary_video_input_mode < 0 || settings.dev_secondary_video_input_mode > 2){
+                                settings.dev_secondary_video_input_mode = 0;
+                            }
+                            currentIndex = settings.dev_secondary_video_input_mode
+                        }
+                        onCurrentIndexChanged: settings.dev_secondary_video_input_mode = currentIndex
+                    }
+                }
+
                 Rectangle {
                     width: parent.width
                     height: rowHeight

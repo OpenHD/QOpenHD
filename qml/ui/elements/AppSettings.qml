@@ -52,6 +52,9 @@ Settings {
     // 1 = raw video
     // 2 = raw vide encode and then decode
     property int dev_test_video_mode:0 // 0 is disabled
+    // Switch input source for secondary video (android only)
+    // 0 = UDP secondary port, 1 = UDP primary port, 2 = HTTP test clip
+    property int dev_secondary_video_input_mode: 0
     // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
     // that ends with qmlglsink )
     property bool dev_enable_custom_pipeline: false
