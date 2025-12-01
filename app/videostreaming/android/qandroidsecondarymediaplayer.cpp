@@ -94,12 +94,18 @@ void QAndroidSecondaryMediaPlayer::tryStartPlayback()
         return;
 
     const QAndroidJniObject surfaceTexture = m_videoOut->surfaceTexture();
-    if (!surfaceTexture.isValid())
+    if (!surfaceTexture.isValid()) {
+        qWarning() << "Secondary Android surface texture is invalid; delaying playback";
         return;
+    }
 
     const QString streamUrl = resolveStreamUrl();
-    if (streamUrl.isEmpty())
+    if (streamUrl.isEmpty()) {
+        qWarning() << "Secondary Android stream URL is empty; cannot start playback";
         return;
+    }
+
+    qInfo() << "Starting secondary Android playback from" << streamUrl;
 
     startPlaybackOnAndroidThread(streamUrl, surfaceTexture);
 }
@@ -147,6 +153,7 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
 
         that->m_mediaPlayer.callMethod<void>("reset");
         if (env->ExceptionCheck()) {
+            qWarning() << "Secondary Android MediaPlayer reset failed";
             env->ExceptionDescribe();
             env->ExceptionClear();
             return;
@@ -157,6 +164,7 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
                                              "(Ljava/lang/String;)V",
                                              url.object());
         if (env->ExceptionCheck()) {
+            qWarning() << "Secondary Android MediaPlayer failed to set data source" << streamUrl;
             env->ExceptionDescribe();
             env->ExceptionClear();
             return;
@@ -177,6 +185,7 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
                                              "(Landroid/view/Surface;)V",
                                              that->m_surface.object());
         if (env->ExceptionCheck()) {
+            qWarning() << "Secondary Android MediaPlayer failed to set surface";
             env->ExceptionDescribe();
             env->ExceptionClear();
             return;
@@ -184,6 +193,7 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
 
         that->m_mediaPlayer.callMethod<void>("setLooping", "(Z)V", true);
         if (env->ExceptionCheck()) {
+            qWarning() << "Secondary Android MediaPlayer failed to enable looping";
             env->ExceptionDescribe();
             env->ExceptionClear();
             return;
@@ -191,6 +201,7 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
 
         that->m_mediaPlayer.callMethod<void>("prepare");
         if (env->ExceptionCheck()) {
+            qWarning() << "Secondary Android MediaPlayer prepare failed";
             env->ExceptionDescribe();
             env->ExceptionClear();
             return;
@@ -198,6 +209,7 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
 
         that->m_mediaPlayer.callMethod<void>("start");
         if (env->ExceptionCheck()) {
+            qWarning() << "Secondary Android MediaPlayer failed to start playback";
             env->ExceptionDescribe();
             env->ExceptionClear();
             return;

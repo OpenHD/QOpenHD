@@ -7,6 +7,7 @@
 
 #include "lowlagdecoder.h"
 #include "../gstreamer/gstrtpreceiver.h"
+#include "../vscommon/QOpenHDVideoHelper.hpp"
 
 class QSurfaceTexture;
 class QAndroidMediaPlayer : public QObject
@@ -24,7 +25,7 @@ public:
     //Q_INVOKABLE void playFile(const QString &file);
     void switch_primary_secondary();
 private:
-    void setup_start_video_decoder_display();
+    void setup_start_video_decoder_display(const QOpenHDVideoHelper::VideoStreamConfig &config);
     void stop_cleanup_decoder_display();
 signals:
     void videoOutChanged();
@@ -32,6 +33,7 @@ signals:
 private:
     QPointer<QSurfaceTexture> m_videoOut;
 private:
+    bool m_primaryVideoEnabled = true;
     std::unique_ptr<LowLagDecoder> m_low_lag_decoder=nullptr;
     std::unique_ptr<GstRtpReceiver> m_receiver=nullptr;
 };

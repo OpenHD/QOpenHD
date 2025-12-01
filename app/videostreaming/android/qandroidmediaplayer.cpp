@@ -2,16 +2,23 @@
 #include "qsurfacetexture.h"
 
 #include <QAndroidJniEnvironment>
+#include <QDebug>
 
 #include <decodingstatistcs.h>
 
 QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     : QObject(parent)
 {
-    setup_start_video_decoder_display();
+    const auto settings = QOpenHDVideoHelper::read_config_from_settings();
+    m_primaryVideoEnabled = !settings.generic.dev_disable_primary_video;
+    if (!m_primaryVideoEnabled) {
+        qInfo() << "Primary Android video disabled in settings; skipping decoder initialization";
+        return;
+    }
+    setup_start_video_decoder_display(settings);
 }
 
-void QAndroidMediaPlayer::setup_start_video_decoder_display()
+void QAndroidMediaPlayer::setup_start_video_decoder_display(const QOpenHDVideoHelper::VideoStreamConfig &config)
 {
     // Everything should be cleaned up
     assert(m_low_lag_decoder==nullptr);
@@ -30,20 +37,23 @@ void QAndroidMediaPlayer::setup_start_video_decoder_display()
         }
     };
     m_low_lag_decoder->registerOnDecoderRatioChangedCallback(ratio_changed_cb);
-    const auto settings=QOpenHDVideoHelper::read_config_from_settings();
-    auto codec=settings.primary_stream_config.video_codec;
-    const int port = settings.generic.qopenhd_switch_primary_secondary ? 5601 : 5600;
+    auto codec=config.primary_stream_config.video_codec;
+    const int port = config.generic.qopenhd_switch_primary_secondary ? 5601 : 5600;
     m_receiver=std::make_unique<GstRtpReceiver>(port,codec);
 }
 
 void QAndroidMediaPlayer::stop_cleanup_decoder_display()
 {
     // first, we stop the rtp receiver
-    m_receiver->stop_receiving();
-    m_receiver=nullptr;
+    if (m_receiver) {
+        m_receiver->stop_receiving();
+        m_receiver=nullptr;
+    }
     // Then we can safely clean up the decoder (and its surface)
-    m_low_lag_decoder->setOutputSurface(nullptr,nullptr);
-    m_low_lag_decoder=nullptr;
+    if (m_low_lag_decoder) {
+        m_low_lag_decoder->setOutputSurface(nullptr,nullptr);
+        m_low_lag_decoder=nullptr;
+    }
 }
 
 QAndroidMediaPlayer::~QAndroidMediaPlayer()
@@ -71,6 +81,12 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
     m_videoOut = videoOut;
     qDebug()<<"QAndroidMediaPlayer::setVideoOut";
 
+    if (!m_primaryVideoEnabled) {
+        qInfo() << "Primary Android video is disabled; not attaching video surface";
+        emit videoOutChanged();
+        return;
+    }
+
     auto setSurfaceTexture = [=]{
         // Create a new Surface object from our SurfaceTexture
         /*QAndroidJniObject surface("android/view/Surface",
@@ -90,6 +106,10 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
                                                m_videoOut->surfaceTexture().object());
             QAndroidJniEnvironment env;
             m_low_lag_decoder->setOutputSurface(env,surface.object());
+        }
+        if (!m_receiver || !m_low_lag_decoder) {
+            qWarning() << "Primary Android video pipeline not initialized; cannot start playback";
+            return;
         }
         auto cb=[this](std::shared_ptr<std::vector<uint8_t>> sample){
             bool is_h265=m_receiver->get_codec()==QOpenHDVideoHelper::VideoCodecH265;
