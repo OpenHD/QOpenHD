@@ -316,13 +316,37 @@ Rectangle{
                         font.bold: true
                         color: "#2d3436"
                     }
-
+                    
                     Text {
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
-                        text: "UDP PORT: 5600"
+                        text: ""
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                         color: "#7f8c8d"
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+                        Text {
+                            Layout.fillWidth: true
+                            wrapMode: Text.WordWrap
+                            text: ""
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                            color: "#7f8c8d"
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: "UDP PORT: 5600"
+                        font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        color: "#576574"
+                    }
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 1
+                        color: "#ecf0f1"
                     }
                 }
             }
