@@ -288,7 +288,7 @@ void GstQmlGlSinkStream::startVideo() {
         stream_config=m_videoStreamConfig.primary_stream_config;
     }
     qDebug() << logPrefix() << "Active stream (udp input -> display) port=" << stream_config.udp_rtp_input_port
-             << "codec=" << QOpenHDVideoHelper::video_codec_to_string(stream_config.video_codec)
+             << "codec=" << QString::fromStdString(QOpenHDVideoHelper::video_codec_to_string(stream_config.video_codec))
              << "softwareDecoder=" << stream_config.enable_software_video_decoder;
     const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig);
     qDebug() << logPrefix() << "GStreamer pipeline (udp -> depay -> decode -> qmlglsink):" << pipeline.c_str();
@@ -334,6 +334,10 @@ void GstQmlGlSinkStream::dev_restart_stream()
 {
     // we just set decoder error to true, such that the timer will stop and then restart the video stream
     has_decoder_error=true;
+}
+
+QString GstQmlGlSinkStream::logPrefix() const {
+    return m_isPrimaryStream ? "[PrimaryVideo]" : "[SecondaryVideo]";
 }
 
 void GstQmlGlSinkStream::timerCallback() {
