@@ -1,9 +1,16 @@
 #!/bin/bash
 
+set -euo pipefail
+
+# Ensure submodules are available for the build
+if [ ! -d "lib/mavlink-headers" ]; then
+    git submodule update --init --recursive
+fi
+
 lupdate ./QOpenHD.pro
 lrelease ./QOpenHD.pro
 cp ./translations/*.qm ./qml/
-# Convenient script to build this project with CMake
+
 rm -rf build
 mkdir build
 cd build
