@@ -16,18 +16,26 @@ TRANSLATIONS = translations/QOpenHD_en.ts \
                translations/QOpenHD_it.ts \
                translations/QOpenHD_ro.ts
 
-# Generate .qm files before building and place them into qml/ (so rcc finds qml/QOpenHD_zh.qm)
-translation_files = $$TRANSLATIONS
-translation_files ~= s/\.ts/\.qm/g
-translation_files ~= s:^translations/:qml/:
+# Generate .qm files into qml/ so rcc finds the compiled translations
+translation_outputs =
+for(tsfile, TRANSLATIONS) {
+    qm_base = $$basename(tsfile)
+    qm_base = $$replace(qm_base, \\.ts$, )
+    qm_file = $$PWD/qml/$${qm_base}.qm
+    ts_abs = $$PWD/$$tsfile
 
-QMAKE_EXTRA_TARGETS += translations
-translations.target = $$translation_files
-translations.commands = mkdir -p qml && for ts in $$TRANSLATIONS; do out=qml/`basename $$ts .ts`.qm; echo "lrelease $$ts -> $$out"; lrelease "$$ts" -qm "$$out" || exit 1; done
-translations.depends = $$TRANSLATIONS
+    qmtarget = qm_$${qm_base}
+    $${qmtarget}.target = $$qm_file
+    $${qmtarget}.commands = mkdir -p $$PWD/qml && lrelease $$ts_abs -qm $$qm_file
+    $${qmtarget}.depends = $$ts_abs
 
-# Ensure translations are built before qrc
-qml/qml_qrc.depends += translations
+    QMAKE_EXTRA_TARGETS += $$qmtarget
+    PRE_TARGETDEPS += $$qm_file
+    QMAKE_CLEAN += $$qm_file
+    translation_outputs += $$qm_file
+}
+
+qml/qml.qrc.depends += $$translation_outputs
 
 include(platforms.pri)
 
@@ -259,7 +267,12 @@ AndroidBuild {
     message("AndroidBuild")
     # Text to speech crashes on android for some weird reason
     #CONFIG += EnableSpeech
-    QT += androidextras
+    androidextras_hdr = $$[QT_INSTALL_HEADERS]/QtAndroidExtras
+    exists($$androidextras_hdr) {
+        QT += androidextras
+    } else {
+        message("androidextras module not available, skipping")
+    }
 
     include(app/videostreaming/gstreamer/gst_video.pri)
     include(app/videostreaming/android/videostreamingandroid.pri)
