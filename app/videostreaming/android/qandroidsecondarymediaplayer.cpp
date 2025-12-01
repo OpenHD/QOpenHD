@@ -133,6 +133,23 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
 
         QAndroidJniEnvironment env;
 
+        that->m_mediaPlayer.callMethod<void>("reset");
+        if (env->ExceptionCheck()) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+            return;
+        }
+
+        const QAndroidJniObject url = QAndroidJniObject::fromString(streamUrl);
+        that->m_mediaPlayer.callMethod<void>("setDataSource",
+                                             "(Ljava/lang/String;)V",
+                                             url.object());
+        if (env->ExceptionCheck()) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+            return;
+        }
+
         that->m_surface = QAndroidJniObject("android/view/Surface",
                                             "(Landroid/graphics/SurfaceTexture;)V",
                                             surfaceTexture.object());
@@ -147,23 +164,6 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QString &s
         that->m_mediaPlayer.callMethod<void>("setSurface",
                                              "(Landroid/view/Surface;)V",
                                              that->m_surface.object());
-        if (env->ExceptionCheck()) {
-            env->ExceptionDescribe();
-            env->ExceptionClear();
-            return;
-        }
-
-        that->m_mediaPlayer.callMethod<void>("reset");
-        if (env->ExceptionCheck()) {
-            env->ExceptionDescribe();
-            env->ExceptionClear();
-            return;
-        }
-
-        const QAndroidJniObject url = QAndroidJniObject::fromString(streamUrl);
-        that->m_mediaPlayer.callMethod<void>("setDataSource",
-                                             "(Ljava/lang/String;)V",
-                                             url.object());
         if (env->ExceptionCheck()) {
             env->ExceptionDescribe();
             env->ExceptionClear();
