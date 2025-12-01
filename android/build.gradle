@@ -63,4 +63,13 @@ android {
     aaptOptions {
         noCompress 'rcc'
     }
+
+    // Customize the generated APK name to include version and build timestamp
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def versionLabel = variant.versionName ?: output.versionName
+            def timestamp = new Date().format('yyyyMMdd_HHmmss')
+            outputFileName = "QOpenHD_${versionLabel}_${timestamp}.apk"
+        }
+    }
 }

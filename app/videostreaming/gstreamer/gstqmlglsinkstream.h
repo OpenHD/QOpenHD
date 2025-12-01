@@ -73,6 +73,7 @@ private:
     bool firstCheck=true;
     //
     int nTimesVideoQmlElementNotSet=0;
+    QString logPrefix()const{return m_isPrimaryStream ? "[PrimaryVideo]" : "[SecondaryVideo]";}
 };
 
 #endif // OpenHDVideoStream_H
