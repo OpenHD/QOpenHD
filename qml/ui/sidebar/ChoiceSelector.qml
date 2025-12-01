@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtQuick.Controls 2.12
 
 Rectangle{
     id: choiceSelector
@@ -47,7 +48,7 @@ Rectangle{
         focus=true;
         m_parent=parent
         const ui_required_height=availableChociesModel.count*73;
-        availableChociesListView.height=ui_required_height;
+        availableChociesListView.height=Math.min(ui_required_height, height);
     }
 
     function set_clickable(clickable){
@@ -188,8 +189,12 @@ Rectangle{
         anchors.top: parent.top
         anchors.left: parent.left
         width: parent.width
-        height: parent.height*2
-        //clip: false
+        height: parent.height
+        clip: true
         spacing: 3
+
+        ScrollBar.vertical: ScrollBar {
+            policy: ScrollBar.AsNeeded
+        }
     }
 }
