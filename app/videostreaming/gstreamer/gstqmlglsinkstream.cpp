@@ -288,7 +288,7 @@ void GstQmlGlSinkStream::startVideo() {
         stream_config=m_videoStreamConfig.primary_stream_config;
     }
     qDebug() << logPrefix() << "Active stream (udp input -> display) port=" << stream_config.udp_rtp_input_port
-             << "codec=" << QOpenHDVideoHelper::videoCodecToString(stream_config.video_codec)
+             << "codec=" << QOpenHDVideoHelper::video_codec_to_string(stream_config.video_codec)
              << "softwareDecoder=" << stream_config.enable_software_video_decoder;
     const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig);
     qDebug() << logPrefix() << "GStreamer pipeline (udp -> depay -> decode -> qmlglsink):" << pipeline.c_str();

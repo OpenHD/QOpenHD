@@ -53,6 +53,7 @@ public:
     bool has_decoder_error=false;
     // This is called when the user clicks the dev restart video
     Q_INVOKABLE void dev_restart_stream();
+    QString logPrefix()const{return m_isPrimaryStream ? "[PrimaryVideo]" : "[SecondaryVideo]";}
 private:
     /**
      * @brief fired by m_timer.
