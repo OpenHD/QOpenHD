@@ -5,6 +5,7 @@
 #include <QQmlComponent>
 #include <QDebug>
 #include <QFontDatabase>
+#include <QTranslator>
 #if defined(__android__)
 #include <QtAndroid>
 #endif
@@ -83,6 +84,7 @@ void attachConsole() {
 #include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
+#include <QTranslator>
 
 #if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 RESOLVEFUNC(SSL_get1_peer_certificate);
@@ -324,20 +326,24 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.scenegraph.general=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.texture=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.renderloop=true");
+    //QLoggingCategory::setFilterRules("qt.scenegraph.time.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
-    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
-    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
-    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
-    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
-        qDebug()<<"Request swap interval of 0";
-        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
-        format.setSwapInterval(0);
-        QSurfaceFormat::setDefaultFormat(format);
+    // Load translation based on saved locale
+    QString localeStr = settings.value("locale", "en").toString();
+    QLocale::setDefault(QLocale(localeStr));
+    QTranslator translator;
+    QString qmFile = QString(":/translations/QOpenHD_%1.qm").arg(localeStr);
+    if (!translator.load(qmFile)) {
+        // Fallback to English
+        QLocale::setDefault(QLocale("en"));
+        settings.setValue("locale", "en");
+        translator.load(":/translations/QOpenHD_en.qm");
     }
 
     QApplication app(argc, argv);
+    app.installTranslator(&translator);
     {  // This includes dpi adjustment
         QScreen* screen=app.primaryScreen();
         if(screen){

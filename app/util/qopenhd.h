@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QQmlApplicationEngine>
 #include <QTranslator>
+#include <QLocale>
+#include <QSettings>
 
 #ifdef ENABLE_SPEECH
 #include <QTextToSpeech>

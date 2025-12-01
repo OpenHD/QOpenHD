@@ -8,6 +8,7 @@ Item {
         model: ListModel {
             id: locales
             ListElement { text: "German"; locale: "de" }
+            ListElement { text: "Ukranian"; locale: "uk" }
             ListElement { text: "Russian"; locale: "ru" }
             ListElement { text: "English"; locale: "en" }
             ListElement { text: "French"; locale: "fr" }
