@@ -105,7 +105,7 @@ LinuxBuild {
 # gst Qt plugins in windows is hard
 WindowsBuild {
     # In future is better to use windows decoding and rendering api
-    include(app/videostreaming/avcodec/avcodec_video.pri)
+    #include(app/videostreaming/avcodec/avcodec_video.pri)
 }
 
 # All Generic files / files that literally have 0!! dependencies other than qt

@@ -113,15 +113,7 @@ Rectangle{
             Text {
                 Layout.fillWidth: true
                 id: info_text
-                text: {
-                    if (m_is_air_or_ground_connected) {
-                        return "You are already connected to your OpenHD GND or AIR unit.\n" +
-                                " Nothing to do here - use the status view for more info."
-                    }
-                    return "Connect QOpenHD (this ground controll aplication) to your ground station.\n" +
-                            "AUTO: Works for all recommended networking setups\n" +
-                            "MANUAL: For developers / advanced networking only. Read the wiki for more Info.";
-                }
+                text: ""
                 wrapMode: Text.WordWrap
                 color: m_is_air_or_ground_connected ? "#c0392b" : "#2c3e50"
                 verticalAlignment: Qt.AlignVCenter
@@ -193,10 +185,10 @@ Rectangle{
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
                         text: connection_mode_dropdown.currentIndex === 0 ?
-                                  "Automatic mode configures the recommended connection for you." :
+                                  "" :
                                   (connection_mode_dropdown.currentIndex === 1 ?
-                                       "UDP listen mode expects telemetry on localhost:5600." :
-                                       "Manual TCP lets you target a specific ground station IP.")
+                                       " " :
+                                       " ")
                         color: "#7f8c8d"
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                     }
@@ -216,7 +208,7 @@ Rectangle{
                     spacing: 10
 
                     Text {
-                        text: "Recommended setup"
+                        text: " "
                         font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
                         font.bold: true
                         color: "#2d3436"
@@ -225,7 +217,7 @@ Rectangle{
                     Text {
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
-                        text: "Pick the networking method that matches how your device is linked to the ground station."
+                        text: ""
                         color: "#7f8c8d"
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                     }
@@ -307,7 +299,7 @@ Rectangle{
                     spacing: 8
 
                     Text {
-                        text: "Manual UDP"
+                        text: " "
                         font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
                         font.bold: true
                         color: "#2d3436"
@@ -336,7 +328,7 @@ Rectangle{
                     spacing: 10
 
                     Text {
-                        text: "Manual TCP"
+                        text: " "
                         font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
                         font.bold: true
                         color: "#2d3436"
@@ -345,7 +337,7 @@ Rectangle{
                     Text {
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
-                        text: "Target a specific ground station IP over Ethernet. Use the scan tool to find responsive devices on your local network."
+                        text: ""
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                         color: "#7f8c8d"
                     }
