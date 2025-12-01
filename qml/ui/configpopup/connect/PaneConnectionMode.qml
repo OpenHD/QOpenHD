@@ -24,6 +24,7 @@ Rectangle{
     property int m_prefered_width: 230
 
     property bool isScanning: false
+    property bool showConnectionModeInfo: false
     property int scanProgress: 0
     property int scanIndex: 1
     property int scanMax: 254
@@ -156,29 +157,37 @@ Rectangle{
                         }
                     }
 
-                    ComboBox {
+                    RowLayout {
                         Layout.fillWidth: true
-                        id: connection_mode_dropdown
-                        model: ListModel {
-                            id: font_text
-                            ListElement { text: "AUTO" }
-                            ListElement { text: "MANUAL UDP" }
-                            ListElement { text: "MANUAL TCP" }
-                        }
-                        onActivated: {
-                            if (currentIndex === 0 || currentIndex === 1 || currentIndex === 2) {
-                                if (settings.qopenhd_mavlink_connection_mode !== currentIndex) {
-                                    _mavlinkTelemetry.change_telemetry_connection_mode(currentIndex)
-                                    settings.qopenhd_mavlink_connection_mode = currentIndex
-                                    if (currentIndex !== 2 && isScanning) {
-                                        scanTimer.stop()
-                                        isScanning = false
-                                        scanProgress = 0
+                        spacing: 6
+                        ComboBox {
+                            Layout.fillWidth: true
+                            id: connection_mode_dropdown
+                            model: ListModel {
+                                id: font_text
+                                ListElement { text: "AUTO" }
+                                ListElement { text: "MANUAL UDP" }
+                                ListElement { text: "MANUAL TCP" }
+                            }
+                            onActivated: {
+                                if (currentIndex === 0 || currentIndex === 1 || currentIndex === 2) {
+                                    if (settings.qopenhd_mavlink_connection_mode !== currentIndex) {
+                                        _mavlinkTelemetry.change_telemetry_connection_mode(currentIndex)
+                                        settings.qopenhd_mavlink_connection_mode = currentIndex
+                                        if (currentIndex !== 2 && isScanning) {
+                                            scanTimer.stop()
+                                            isScanning = false
+                                            scanProgress = 0
+                                        }
                                     }
                                 }
                             }
+                            currentIndex: settings.qopenhd_mavlink_connection_mode
                         }
-                        currentIndex: settings.qopenhd_mavlink_connection_mode
+                        ButtonIconInfo {
+                            Layout.alignment: Qt.AlignVCenter
+                            onClicked: showConnectionModeInfo = !showConnectionModeInfo
+                        }
                     }
 
                     Text {
@@ -225,6 +234,7 @@ Rectangle{
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
+                        visible: showConnectionModeInfo
                         Button {
                             text: "Android Tethering"
                             Layout.preferredWidth: m_prefered_width
@@ -247,6 +257,7 @@ Rectangle{
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
+                        visible: showConnectionModeInfo
                         Button {
                             text: "ETHERNET FORWARD+INTERNET"
                             Layout.preferredWidth: m_prefered_width
@@ -267,6 +278,7 @@ Rectangle{
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
+                        visible: showConnectionModeInfo
                         Button {
                             text: "ETHERNET HOTSPOT"
                             Layout.preferredWidth: m_prefered_width
@@ -308,7 +320,7 @@ Rectangle{
                     Text {
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
-                        text: "Listening on localhost:5600"
+                        text: "UDP PORT: 5600"
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                         color: "#7f8c8d"
                     }
