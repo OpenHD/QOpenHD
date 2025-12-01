@@ -23,6 +23,9 @@ QString buildStreamUrl(const QOpenHDVideoHelper::VideoStreamConfigXX &config)
 
     return QStringLiteral("udp://%1:%2").arg(ip).arg(port);
 }
+
+constexpr auto kSecondaryTestClip =
+    "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4";
 } // namespace
 
 QAndroidSecondaryMediaPlayer::QAndroidSecondaryMediaPlayer(QObject *parent)
@@ -105,8 +108,17 @@ QString QAndroidSecondaryMediaPlayer::resolveStreamUrl() const
 {
     const auto settings = QOpenHDVideoHelper::read_config_from_settings();
     auto streamConfig = settings.secondary_stream_config;
-    if (settings.generic.qopenhd_switch_primary_secondary)
+    switch (settings.generic.dev_secondary_video_input_mode) {
+    case 1:
         streamConfig = settings.primary_stream_config;
+        break;
+    case 2:
+        return QStringLiteral(kSecondaryTestClip);
+    default:
+        if (settings.generic.qopenhd_switch_primary_secondary)
+            streamConfig = settings.primary_stream_config;
+        break;
+    }
 
     if (streamConfig.video_codec == QOpenHDVideoHelper::VideoCodecMJPEG) {
         qWarning() << "Secondary Android MediaPlayer does not support MJPEG codec";

@@ -54,6 +54,8 @@ static VideoTestMode videoTestModeFromInt(int value){
 struct GenericVideoSettings{
     // used for testing and development.
     VideoTestMode dev_test_video_mode = VideoTestMode::DISABLED;
+    // Select alternative secondary video input sources for testing (android only for now)
+    int dev_secondary_video_input_mode = 0;
     //
     bool dev_enable_custom_pipeline=false;
     std::string dev_custom_pipeline="";
@@ -75,6 +77,7 @@ struct GenericVideoSettings{
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const GenericVideoSettings &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode &&
+               this->dev_secondary_video_input_mode == o.dev_secondary_video_input_mode &&
                this->dev_enable_custom_pipeline==o.dev_enable_custom_pipeline &&
                this->dev_custom_pipeline==o.dev_custom_pipeline &&
                this->dev_limit_fps_on_test_file == o.dev_limit_fps_on_test_file &&
@@ -165,6 +168,7 @@ static GenericVideoSettings read_generic_from_settings(){
     QSettings settings;
     GenericVideoSettings _videoStreamConfig;
     _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
+    _videoStreamConfig.dev_secondary_video_input_mode=settings.value("dev_secondary_video_input_mode",0).toInt();
 
     _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
     _videoStreamConfig.dev_limit_fps_on_test_file=settings.value("dev_limit_fps_on_test_file",-1).toInt();
