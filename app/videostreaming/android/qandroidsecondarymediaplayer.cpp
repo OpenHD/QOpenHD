@@ -113,7 +113,7 @@ QString QAndroidSecondaryMediaPlayer::resolveStreamUrl() const
         streamConfig = settings.primary_stream_config;
         break;
     case 2:
-        return QStringLiteral(kSecondaryTestClip);
+        return QString::fromUtf8(kSecondaryTestClip);
     default:
         if (settings.generic.qopenhd_switch_primary_secondary)
             streamConfig = settings.primary_stream_config;
