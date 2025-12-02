@@ -444,7 +444,7 @@ Settings {
     property bool show_sidebar: true
 
     property int qopenhd_mavlink_connection_mode: 0;
-    property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.178.36"
+    property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.1.42"
     property string wind_unit: "km/h"
 
 
