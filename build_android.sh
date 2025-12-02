@@ -11,9 +11,12 @@ sudo apt-get install -y \
     git \
     ccache \
     python3 \
-    openjdk-17-jdk \
+    openjdk-11-jdk \
     unzip \
     wget
+
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH="$JAVA_HOME/bin:${PATH}"
 
 # 2) Install / configure Android NDK r21e
 ANDROID_NDK_VERSION=r21e
