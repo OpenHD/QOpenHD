@@ -57,42 +57,53 @@ LowLagDecoder::LowLagDecoder(JNIEnv* env, bool verboseLogging, std::string logTa
     resetStatistics();
 }
 
+void LowLagDecoder::releaseDecoderResources(bool releaseWindow)
+{
+    std::lock_guard<std::mutex> lock(mMutexInputPipe);
+    releaseDecoderResourcesLocked(releaseWindow);
+}
+
+void LowLagDecoder::releaseDecoderResourcesLocked(bool releaseWindow)
+{
+    inputPipeClosed=true;
+    if(decoder.configured){
+        if (decoder.codec) {
+            AMediaCodec_stop(decoder.codec);
+            AMediaCodec_delete(decoder.codec);
+            decoder.codec=nullptr;
+        }
+        mKeyFrameFinder.reset();
+        decoder.configured=false;
+        if(mCheckOutputThread && mCheckOutputThread->joinable()){
+            mCheckOutputThread->join();
+        }
+        mCheckOutputThread.reset();
+    }
+    if (releaseWindow && decoder.window) {
+        ANativeWindow_release(decoder.window);
+        decoder.window=nullptr;
+    }
+    resetStatistics();
+    if (!releaseWindow && decoder.window) {
+        inputPipeClosed=false;
+    }
+}
+
 void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
     USE_SW_DECODER_INSTEAD=false;
 
-    auto releaseDecoderResources = [this]() {
-        std::lock_guard<std::mutex> lock(mMutexInputPipe);
-        inputPipeClosed=true;
-        if(decoder.configured){
-            if (decoder.codec) {
-                AMediaCodec_stop(decoder.codec);
-                AMediaCodec_delete(decoder.codec);
-                decoder.codec=nullptr;
-            }
-            mKeyFrameFinder.reset();
-            decoder.configured=false;
-            if(mCheckOutputThread && mCheckOutputThread->joinable()){
-                mCheckOutputThread->join();
-            }
-            mCheckOutputThread.reset();
-        }
-        if (decoder.window) {
-            ANativeWindow_release(decoder.window);
-            decoder.window=nullptr;
-        }
-        resetStatistics();
-    };
+    std::lock_guard<std::mutex> lock(mMutexInputPipe);
 
     if(surface==nullptr){
         if(decoder.window== nullptr){
             return;
         }
-        releaseDecoderResources();
+        releaseDecoderResourcesLocked(true);
         return;
     }
 
     if(decoder.window!=nullptr){
-        releaseDecoderResources();
+        releaseDecoderResourcesLocked(true);
     }
 
     decoder.window=ANativeWindow_fromSurface(env,surface);
@@ -111,8 +122,10 @@ void LowLagDecoder::registerOnDecodingInfoChangedCallback(DECODING_INFO_CHANGED_
 void LowLagDecoder::interpretNALU(const NALU& nalu){
     //return;
     // TODO: RN switching between h264 / h265 requires re-setting the surface
-    if(decoder.configured){
-        assert(nalu.IS_H265_PACKET==IS_H265);
+    std::lock_guard<std::mutex> lock(mMutexInputPipe);
+    if(decoder.configured && nalu.IS_H265_PACKET!=IS_H265){
+        MLOGD << "Codec change detected while decoder is configured; restarting decoder";
+        releaseDecoderResourcesLocked(false);
     }
     IS_H265=nalu.IS_H265_PACKET;
     //MLOGD<<"Is H265 "<<nalu.IS_H265_PACKET;
@@ -121,8 +134,6 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
     //nalu.debug();
     //MLOGD<<"DATA:"<<nalu.dataAsString();
     //return;
-    //we need this lock, since the receiving/parsing/feeding does not run on the same thread who sets the input surface
-    std::lock_guard<std::mutex> lock(mMutexInputPipe);
     decodingInfo.nNALU++;
     if(nalu.getSize()<=4){
         //No data in NALU (e.g at the beginning of a stream)
