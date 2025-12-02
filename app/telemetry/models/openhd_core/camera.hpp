@@ -266,6 +266,12 @@ static std::string x_cam_type_to_string(int camera_type) {
       return "CORETRONIC IMX577";
     case X_CAM_TYPE_QC_OV9282:
       return "CORETRONIC OV9282";
+    case X_CAM_TYPE_ORQA_HORNET:
+      return "ORQA_HORNET";
+    case X_CAM_TYPE_ORQA_JAGUAR:
+      return "ORQA_JAGUAR";
+    case X_CAM_TYPE_ORQA_REKINDLE:
+      return "ORQA_REKINDLE";
     default:
       break;
   }
@@ -316,7 +322,7 @@ struct XCamera {
     return camera_type >= 90 && camera_type < 100;
   }
   bool requires_orqa_pipeline() const {
-    return camera_type >= 122 && camera_type < 124;
+    return camera_type >= 122 && camera_type <= 124;
   }
   std::string cam_type_as_verbose_string() const {
     return x_cam_type_to_string(camera_type);
