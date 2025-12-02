@@ -75,9 +75,9 @@ static std::string x_platform_type_to_string(int platform_type) {
     case X_PLATFORM_TYPE_ALWINNER_X20:
         return "X20";
     case X_PLATFORM_TYPE_ROCKCHIP_RV1126:
-        return "SCHWANZUS LONGUS";
-    case X_PLATFORM_TYPE_WILLY:
-        return "FREE WILLY";
+        return "X21";
+    case X_PLATFORM_TYPE_ORQA:
+        return "ORQA";
     case X_PLATFORM_TYPE_UXV_MOD:
         return "UXV NAV";
     case X_PLATFORM_TYPE_OPENIPC_SIGMASTAR_UNDEFINED:
