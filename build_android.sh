@@ -13,7 +13,8 @@ sudo apt-get install -y \
     python3 \
     openjdk-11-jdk \
     unzip \
-    wget
+    wget \
+    curl
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export PATH="$JAVA_HOME/bin:${PATH}"
@@ -41,6 +42,12 @@ export ANDROID_NDK="${ANDROID_NDK_ROOT}"
 export QT_VERSION=5.15.2
 export QT_ROOT="/opt/Qt/${QT_VERSION}"
 export PATH="${QT_ROOT}/android/bin:${PATH}"
+
+# 3b) Ensure Gradle wrapper JAR is present (not stored in repo)
+GRADLE_WRAPPER_JAR="${SOURCE_DIR}/android/gradle/wrapper/gradle-wrapper.jar"
+if [ ! -f "${GRADLE_WRAPPER_JAR}" ]; then
+    curl -fLo "${GRADLE_WRAPPER_JAR}" "https://raw.githubusercontent.com/gradle/gradle/v5.4.1/gradle/wrapper/gradle-wrapper.jar"
+fi
 
 # 4) ccache config (roughly like CI)
 mkdir -p "${HOME}/.ccache"
