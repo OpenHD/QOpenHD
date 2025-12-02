@@ -55,7 +55,7 @@ BaseWidget {
                 vert_speed*=-1;
             }
         }
-        var ret=Number(vert_speed).toLocaleString( Qt.locale(), 'f', 0)
+        var ret=Number(vert_speed).toLocaleString(Qt.locale(), 'f', 1)
         if(settings.vertical_speed_simple_widget_show_unit && vert_speed <99){
             ret+=get_v_speed_unit();
         }
