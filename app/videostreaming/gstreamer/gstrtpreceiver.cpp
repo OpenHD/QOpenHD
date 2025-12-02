@@ -155,7 +155,10 @@ void GstRtpReceiver::debug_sample(std::shared_ptr<std::vector<uint8_t> > sample)
 void GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
 {
     qDebug()<<"GstRtpReceiver::start_receiving begin";
-    assert(m_gst_pipeline==nullptr);
+    if (m_gst_pipeline != nullptr) {
+        qWarning() << "GstRtpReceiver was already running; restarting existing pipeline";
+        stop_receiving();
+    }
     m_cb=cb;
 
     const auto pipeline=construct_gstreamer_pipeline();
