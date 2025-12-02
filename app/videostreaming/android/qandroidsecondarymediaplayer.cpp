@@ -39,12 +39,16 @@ void QAndroidSecondaryMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
         stopPlayback();
     }
 
+    qInfo() << "Secondary Android surface texture updated" << videoOut;
+
     m_videoOut = videoOut;
 
     if (!m_videoOut) {
         stopPlayback();
+        qInfo() << "Secondary Android video output cleared";
     } else {
         connect(m_videoOut.data(), &QSurfaceTexture::surfaceTextureChanged, this, [this] {
+            qInfo() << "Secondary Android surface texture changed";
             stopPlayback();
             m_pendingPlayback = true;
             tryStartPlayback();
@@ -91,8 +95,10 @@ void QAndroidSecondaryMediaPlayer::tryStartPlayback()
     if (!m_pendingPlayback)
         return;
 
-    if (!m_videoOut)
+    if (!m_videoOut) {
+        qDebug() << "Secondary Android playback pending but videoOut is null";
         return;
+    }
 
     if (m_playbackRunning) {
         m_pendingPlayback = false;
