@@ -3,6 +3,7 @@
 #include <QAndroidJniEnvironment>
 #include <QAndroidJniObject>
 #include <QDebug>
+#include <QtAndroid>
 
 #include "qsurfacetexture.h"
 
@@ -148,37 +149,42 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QAndroidJn
     if (!m_activeConfig || !m_lowLagDecoder || !m_receiver)
         return;
 
-    QAndroidJniEnvironment env;
-    QAndroidJniObject surface("android/view/Surface",
-                              "(Landroid/graphics/SurfaceTexture;)V",
-                              surfaceTexture.object());
-    if (env->ExceptionCheck()) {
-        qWarning() << "Secondary Android surface creation failed";
-        env->ExceptionDescribe();
-        env->ExceptionClear();
-        return;
-    }
-
-    if (!surface.isValid()) {
-        qWarning() << "Secondary Android surface is invalid";
-        return;
-    }
-
-    m_lowLagDecoder->setOutputSurface(env, surface.object());
-
     QPointer<QAndroidSecondaryMediaPlayer> that(this);
-    auto *receiver = m_receiver.get();
-    auto *decoder = m_lowLagDecoder.get();
-    m_receiver->start_receiving([that, decoder, receiver](std::shared_ptr<std::vector<uint8_t>> sample) {
-        if (!that || !decoder || !receiver)
+    QtAndroid::runOnAndroidThread([this, that, surfaceTexture] {
+        if (!that || !m_activeConfig || !m_lowLagDecoder || !m_receiver)
             return;
-        const bool is_h265 = receiver->get_codec() == QOpenHDVideoHelper::VideoCodecH265;
-        NALU nalu(sample->data(), sample->size(), is_h265);
-        decoder->interpretNALU(nalu);
-    });
 
-    m_pendingPlayback = false;
-    m_playbackRunning = true;
+        QAndroidJniEnvironment env;
+        QAndroidJniObject surface("android/view/Surface",
+                                  "(Landroid/graphics/SurfaceTexture;)V",
+                                  surfaceTexture.object());
+        if (env->ExceptionCheck()) {
+            qWarning() << "Secondary Android surface creation failed";
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+            return;
+        }
+
+        if (!surface.isValid()) {
+            qWarning() << "Secondary Android surface is invalid";
+            return;
+        }
+
+        m_lowLagDecoder->setOutputSurface(env, surface.object());
+
+        auto *receiver = m_receiver.get();
+        auto *decoder = m_lowLagDecoder.get();
+        m_receiver->start_receiving([that, decoder, receiver](std::shared_ptr<std::vector<uint8_t>> sample) {
+            if (!that || !decoder || !receiver)
+                return;
+            const bool is_h265 = receiver->get_codec() == QOpenHDVideoHelper::VideoCodecH265;
+            NALU nalu(sample->data(), sample->size(), is_h265);
+            decoder->interpretNALU(nalu);
+        });
+
+        m_pendingPlayback = false;
+        m_playbackRunning = true;
+    });
 }
 
 void QAndroidSecondaryMediaPlayer::stopPlayback()
