@@ -45,7 +45,14 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
+            java {
+                srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
+                exclude { details ->
+                    def qtSrc = file(qt5AndroidDir + '/src').absolutePath
+                    details.file.absolutePath.startsWith(qtSrc) &&
+                            details.file.name == 'ExtractStyle.java'
+                }
+            }
             aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
             res.srcDirs = [qt5AndroidDir + '/res', 'res']
             resources.srcDirs = ['resources']
