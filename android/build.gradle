@@ -17,7 +17,16 @@ repositories {
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation fileTree(
+            dir: 'libs',
+            include: ['*.jar', '*.aar'],
+            exclude: { details ->
+                // Drop the prebuilt Qt Android jar to avoid duplicate
+                // org.qtproject.qt5.android.ExtractStyle classes when using the
+                // patched source version bundled with the app.
+                def name = details.file.name.toLowerCase()
+                name.startsWith('qtandroid') || name == 'qt-android.jar'
+            })
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
     //implementation project(":libs:android-tutorial-3")
