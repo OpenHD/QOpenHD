@@ -103,11 +103,6 @@ void QAndroidSecondaryMediaPlayer::tryStartPlayback()
         return;
     }
 
-    const auto streamConfig = resolveStreamConfig();
-    if (!streamConfig) {
-        return;
-    }
-
     const QAndroidJniObject surfaceTexture = m_videoOut->surfaceTexture();
     if (!surfaceTexture.isValid()) {
         qWarning() << "Secondary Android surface texture is invalid; delaying playback";
