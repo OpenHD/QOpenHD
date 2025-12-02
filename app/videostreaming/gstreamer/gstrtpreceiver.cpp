@@ -75,8 +75,9 @@ void ensureGstInitialized()
         GST_PLUGIN_STATIC_REGISTER(applemedia);
 #endif
 #endif
-        GST_PLUGIN_STATIC_REGISTER(qmlgl);
-        GST_PLUGIN_STATIC_REGISTER(qgc);
+        // qmlgl and qgc are provided as dynamic plugins in our Android/iOS
+        // builds, so avoid static registration to prevent unresolved symbols
+        // when the static variants are absent from the link set.
         gstInitSuccess = true;
     });
 }
