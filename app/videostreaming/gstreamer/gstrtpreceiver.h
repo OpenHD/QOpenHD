@@ -31,6 +31,7 @@ private:
     void on_new_sample(std::shared_ptr<std::vector<uint8_t>> sample);
     void debug_sample(std::shared_ptr<std::vector<uint8_t>> sample);
 private:
+    bool m_initialized = false;
     // The gstreamer pipeline
     GstElement * m_gst_pipeline=nullptr;
     NEW_FRAME_CALLBACK m_cb;

@@ -3,6 +3,8 @@
 #include "gst/gstpipeline.h"
 #include "gst/app/gstappsink.h"
 #include "gst_helper.hpp"
+#include <QDebug>
+#include <mutex>
 #include <cstring>
 #include <nalu/NALU.hpp>
 
@@ -35,32 +37,58 @@ G_BEGIN_DECLS
     GST_PLUGIN_STATIC_DECLARE(qgc);
 G_END_DECLS
 
+namespace {
+std::once_flag gstInitOnceFlag;
+bool gstInitSuccess = false;
+
+void ensureGstInitialized()
+{
+    std::call_once(gstInitOnceFlag, [] {
+        GError *error = nullptr;
+        if (!gst_init_check(nullptr, nullptr, &error)) {
+            qWarning() << "gst_init_check failed" << (error ? error->code : 0)
+                       << (error && error->message ? error->message : "");
+            if (error)
+                g_error_free(error);
+            gstInitSuccess = false;
+            return;
+        }
+#if defined(__android__) || defined(__ios__)
+        GST_PLUGIN_STATIC_REGISTER(coreelements);
+        GST_PLUGIN_STATIC_REGISTER(playback);
+        GST_PLUGIN_STATIC_REGISTER(libav);
+        GST_PLUGIN_STATIC_REGISTER(rtp);
+        GST_PLUGIN_STATIC_REGISTER(rtsp);
+        GST_PLUGIN_STATIC_REGISTER(udp);
+        GST_PLUGIN_STATIC_REGISTER(videoparsersbad);
+        GST_PLUGIN_STATIC_REGISTER(x264);
+        GST_PLUGIN_STATIC_REGISTER(rtpmanager);
+        GST_PLUGIN_STATIC_REGISTER(isomp4);
+        GST_PLUGIN_STATIC_REGISTER(matroska);
+        GST_PLUGIN_STATIC_REGISTER(mpegtsdemux);
+        GST_PLUGIN_STATIC_REGISTER(opengl);
+        GST_PLUGIN_STATIC_REGISTER(tcp);
+        GST_PLUGIN_STATIC_REGISTER(app);//XX
+#if defined(__android__)
+        GST_PLUGIN_STATIC_REGISTER(androidmedia);
+#elif defined(__ios__)
+        GST_PLUGIN_STATIC_REGISTER(applemedia);
+#endif
+#endif
+        // qmlgl and qgc are provided as dynamic plugins in our Android/iOS
+        // builds, so avoid static registration to prevent unresolved symbols
+        // when the static variants are absent from the link set.
+        gstInitSuccess = true;
+    });
+}
+} // namespace
+
 GstRtpReceiver::GstRtpReceiver(int udp_port, QOpenHDVideoHelper::VideoCodec video_codec)
 {
     m_port=udp_port;
     m_video_codec=video_codec;
-#if defined(__android__) || defined(__ios__)
-    GST_PLUGIN_STATIC_REGISTER(coreelements);
-    GST_PLUGIN_STATIC_REGISTER(playback);
-    GST_PLUGIN_STATIC_REGISTER(libav);
-    GST_PLUGIN_STATIC_REGISTER(rtp);
-    GST_PLUGIN_STATIC_REGISTER(rtsp);
-    GST_PLUGIN_STATIC_REGISTER(udp);
-    GST_PLUGIN_STATIC_REGISTER(videoparsersbad);
-    GST_PLUGIN_STATIC_REGISTER(x264);
-    GST_PLUGIN_STATIC_REGISTER(rtpmanager);
-    GST_PLUGIN_STATIC_REGISTER(isomp4);
-    GST_PLUGIN_STATIC_REGISTER(matroska);
-    GST_PLUGIN_STATIC_REGISTER(mpegtsdemux);
-    GST_PLUGIN_STATIC_REGISTER(opengl);
-    GST_PLUGIN_STATIC_REGISTER(tcp);
-    GST_PLUGIN_STATIC_REGISTER(app);//XX
-#if defined(__android__)
-    GST_PLUGIN_STATIC_REGISTER(androidmedia);
-#elif defined(__ios__)
-    GST_PLUGIN_STATIC_REGISTER(applemedia);
-#endif
-#endif
+    ensureGstInitialized();
+    m_initialized = gstInitSuccess;
 }
 
 GstRtpReceiver::~GstRtpReceiver()
@@ -155,6 +183,10 @@ void GstRtpReceiver::debug_sample(std::shared_ptr<std::vector<uint8_t> > sample)
 void GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
 {
     qDebug()<<"GstRtpReceiver::start_receiving begin";
+    if (!m_initialized) {
+        qWarning() << "GstRtpReceiver::start_receiving aborted; GStreamer failed to initialize";
+        return;
+    }
     if (m_gst_pipeline != nullptr) {
         qWarning() << "GstRtpReceiver was already running; restarting existing pipeline";
         stop_receiving();
