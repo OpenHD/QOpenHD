@@ -77,28 +77,44 @@ void QOpenHD::setEngine(QQmlApplicationEngine *engine) {
     m_engine = engine;
 }
 
+bool QOpenHD::loadTranslator(const QString &language, QSettings *settings)
+{
+    QLocale::setDefault(QLocale(language));
+
+    QString qmFile = QString(":/translations/QOpenHD_%1.qm").arg(language);
+    if (!m_translator.load(qmFile)) {
+        qDebug() << "Translation load failed for" << language << ", falling back to English";
+        QLocale::setDefault(QLocale("en"));
+        if (settings != nullptr) {
+            settings->setValue("locale", "en");
+        }
+        return m_translator.load(":/translations/QOpenHD_en.qm");
+    }
+
+    if (settings != nullptr) {
+        settings->setValue("locale", language);
+    }
+
+    return true;
+}
+
+bool QOpenHD::installTranslatorForLanguage(const QString &language, QSettings *settings)
+{
+    QCoreApplication::removeTranslator(&m_translator);
+
+    bool success = loadTranslator(language, settings);
+    QCoreApplication::installTranslator(&m_translator);
+
+    return success;
+}
+
 void QOpenHD::switchToLanguage(const QString &language) {
     if(m_engine==nullptr){
         qDebug()<<"Error switch language- engine not set";
         return;
     }
-    QLocale::setDefault(QLocale(language));
-
-    // Save the selected language to settings
     QSettings settings;
-    settings.setValue("locale", language);
-
-    QCoreApplication::removeTranslator(&m_translator);
-
-    QString qmFile = QString(":/translations/QOpenHD_%1.qm").arg(language);
-    bool success = m_translator.load(qmFile);
-    if (!success) {
-        qDebug() << "Translation load failed for" << language << ", falling back to English";
-        QLocale::setDefault(QLocale("en"));
-        settings.setValue("locale", "en");
-        m_translator.load(":/translations/QOpenHD_en.qm");
-    }
-    QCoreApplication::installTranslator(&m_translator);
+    installTranslatorForLanguage(language, &settings);
     // QML should automatically retranslate when translator is installed/removed
     // Calling retranslate() can cause UI issues in QML applications
 }
