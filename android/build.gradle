@@ -17,7 +17,16 @@ repositories {
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation fileTree(
+            dir: 'libs',
+            include: ['*.jar', '*.aar'],
+            exclude: { details ->
+                // Drop the prebuilt Qt Android jar to avoid duplicate
+                // org.qtproject.qt5.android.ExtractStyle classes when using the
+                // patched source version bundled with the app.
+                def name = details.file.name.toLowerCase()
+                name.startsWith('qtandroid') || name == 'qt-android.jar'
+            })
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
     //implementation project(":libs:android-tutorial-3")
@@ -45,7 +54,14 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
+            java {
+                srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
+                exclude { details ->
+                    def qtSrc = file(qt5AndroidDir + '/src').absolutePath
+                    details.file.absolutePath.startsWith(qtSrc) &&
+                            details.file.name == 'ExtractStyle.java'
+                }
+            }
             aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
             res.srcDirs = [qt5AndroidDir + '/res', 'res']
             resources.srcDirs = ['resources']
