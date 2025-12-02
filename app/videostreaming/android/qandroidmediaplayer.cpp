@@ -23,7 +23,7 @@ void QAndroidMediaPlayer::setup_start_video_decoder_display(const QOpenHDVideoHe
     // Everything should be cleaned up
     assert(m_low_lag_decoder==nullptr);
     assert(m_receiver==nullptr);
-    m_low_lag_decoder=std::make_unique<LowLagDecoder>(nullptr);
+    m_low_lag_decoder=std::make_unique<LowLagDecoder>(nullptr, false, "primary");
     auto stats_cb=[](const DecodingInfo di){
         std::stringstream ss;
         ss<<di.avgDecodingTime_ms<<"ms";
@@ -79,8 +79,6 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
     if (m_videoOut)
         m_videoOut->disconnect(this);
     m_videoOut = videoOut;
-    qDebug()<<"QAndroidMediaPlayer::setVideoOut";
-
     if (!m_primaryVideoEnabled) {
         qInfo() << "Primary Android video is disabled; not attaching video surface";
         emit videoOutChanged();
