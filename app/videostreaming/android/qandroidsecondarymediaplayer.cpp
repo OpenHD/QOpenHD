@@ -33,8 +33,10 @@ void QAndroidSecondaryMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
     if (m_videoOut == videoOut)
         return;
 
-    if (m_videoOut)
+    if (m_videoOut) {
         m_videoOut->disconnect(this);
+        stopPlayback();
+    }
 
     m_videoOut = videoOut;
 
@@ -42,6 +44,7 @@ void QAndroidSecondaryMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
         stopPlayback();
     } else {
         connect(m_videoOut.data(), &QSurfaceTexture::surfaceTextureChanged, this, [this] {
+            stopPlayback();
             m_pendingPlayback = true;
             tryStartPlayback();
         });
@@ -89,6 +92,16 @@ void QAndroidSecondaryMediaPlayer::tryStartPlayback()
 
     if (!m_videoOut)
         return;
+
+    if (m_playbackRunning) {
+        m_pendingPlayback = false;
+        return;
+    }
+
+    const auto streamConfig = resolveStreamConfig();
+    if (!streamConfig) {
+        return;
+    }
 
     const auto streamConfig = resolveStreamConfig();
     if (!streamConfig) {
@@ -170,6 +183,7 @@ void QAndroidSecondaryMediaPlayer::startPlaybackOnAndroidThread(const QAndroidJn
     });
 
     m_pendingPlayback = false;
+    m_playbackRunning = true;
 }
 
 void QAndroidSecondaryMediaPlayer::stopPlayback()
@@ -188,4 +202,5 @@ void QAndroidSecondaryMediaPlayer::stopPlayback()
 
     m_activeConfig.reset();
     m_pendingPlayback = false;
+    m_playbackRunning = false;
 }

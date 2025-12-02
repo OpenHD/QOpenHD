@@ -59,36 +59,45 @@ LowLagDecoder::LowLagDecoder(JNIEnv* env, bool verboseLogging, std::string logTa
 
 void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
     USE_SW_DECODER_INSTEAD=false;
-    if(surface==nullptr){
-        //MLOGD<<"Set output surface to null";
-        //assert(decoder.window!=nullptr);
-        if(decoder.window== nullptr){
-            //MLOGD<<"Decoder window is already null";
-            return;
-        }
+
+    auto releaseDecoderResources = [this]() {
         std::lock_guard<std::mutex> lock(mMutexInputPipe);
         inputPipeClosed=true;
         if(decoder.configured){
-            AMediaCodec_stop(decoder.codec);
-            AMediaCodec_delete(decoder.codec);
-            decoder.codec=nullptr;
+            if (decoder.codec) {
+                AMediaCodec_stop(decoder.codec);
+                AMediaCodec_delete(decoder.codec);
+                decoder.codec=nullptr;
+            }
             mKeyFrameFinder.reset();
             decoder.configured=false;
-            if(mCheckOutputThread->joinable()){
+            if(mCheckOutputThread && mCheckOutputThread->joinable()){
                 mCheckOutputThread->join();
-                mCheckOutputThread.reset();
             }
+            mCheckOutputThread.reset();
         }
-        ANativeWindow_release(decoder.window);
-        decoder.window=nullptr;
+        if (decoder.window) {
+            ANativeWindow_release(decoder.window);
+            decoder.window=nullptr;
+        }
         resetStatistics();
-    }else{
-        // Throw warning if the surface is set without clearing it first
-        assert(decoder.window==nullptr);
-        decoder.window=ANativeWindow_fromSurface(env,surface);
-        // open the input pipe - now the decoder will start as soon as enough data is available
-        inputPipeClosed=false;
+    };
+
+    if(surface==nullptr){
+        if(decoder.window== nullptr){
+            return;
+        }
+        releaseDecoderResources();
+        return;
     }
+
+    if(decoder.window!=nullptr){
+        releaseDecoderResources();
+    }
+
+    decoder.window=ANativeWindow_fromSurface(env,surface);
+    // open the input pipe - now the decoder will start as soon as enough data is available
+    inputPipeClosed=false;
 }
 
 void LowLagDecoder::registerOnDecoderRatioChangedCallback(DECODER_RATIO_CHANGED decoderRatioChangedC) {
@@ -166,6 +175,12 @@ void LowLagDecoder::configureStartDecoder(){
         //AMediaCodec_getName(decoder.codec,&name);
         //MLOGD<<"Created decoder "<<std::string(name);
         //AMediaCodec_releaseName(decoder.codec,name);
+    }
+    if (decoder.codec== nullptr) {
+        MLOGD<<"Cannot create decoder";
+        //set csd-0 and csd-1 back to 0, maybe they were just faulty but we have better luck with the next ones
+        mKeyFrameFinder.reset();
+        return;
     }
     AMediaFormat* format=AMediaFormat_new();
     AMediaFormat_setString(format,AMEDIAFORMAT_KEY_MIME,MIME.c_str());

@@ -41,6 +41,7 @@ private:
 
     QPointer<QSurfaceTexture> m_videoOut;
     bool m_pendingPlayback = false;
+    bool m_playbackRunning = false;
     std::optional<QOpenHDVideoHelper::VideoStreamConfigXX> m_activeConfig;
     std::unique_ptr<LowLagDecoder> m_lowLagDecoder;
     std::unique_ptr<GstRtpReceiver> m_receiver;
