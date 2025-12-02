@@ -7,6 +7,7 @@
 #include <android/log.h>
 #include <jni.h>
 #include <iostream>
+#include <string>
 #include <thread>
 #include <atomic>
 
@@ -64,7 +65,7 @@ public:
     //We cannot initialize the Decoder until we have SPS and PPS data -
     //when streaming this data will be available at some point in future
     //Therefore we don't allocate the MediaCodec resources here
-    LowLagDecoder(JNIEnv* env);
+    LowLagDecoder(JNIEnv* env, bool verboseLogging = false, std::string logTag = "decoder");
     // This call acquires or releases the output surface
     // After acquiring the surface, the decoder will be started as soon as enough configuration data was passed to it
     // When releasing the surface, the decoder will be stopped if running and any resources will be freed
@@ -108,7 +109,8 @@ private:
     AvgCalculator decodingTime;
     //Every n ms re-calculate the Decoding info
     static const constexpr auto DECODING_INFO_RECALCULATION_INTERVAL=std::chrono::milliseconds(1000);
-    static constexpr const bool PRINT_DEBUG_INFO=true;
+    const bool m_printDebugInfo;
+    const std::string m_logTag;
     static constexpr auto TIME_BETWEEN_LOGS=std::chrono::seconds(5);
     static constexpr int64_t BUFFER_TIMEOUT_US=35*1000; //40ms (a little bit more than 32 ms (==30 fps))
 private:

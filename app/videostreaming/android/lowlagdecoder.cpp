@@ -6,12 +6,14 @@
 
 #include <android/native_window_jni.h>
 #include <media/NdkMediaFormat.h>
+#include <utility>
 
-#define MLOGD qDebug()
+#define MLOGD if(m_printDebugInfo) qDebug()<<"["<<m_logTag.c_str()<<"]"
 
 using namespace std::chrono;
 
-static void h264_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* format){
+static void h264_configureAMediaFormat(CodecConfigFinder& kff, AMediaFormat* format, bool verboseLogging,
+                                       const std::string &logTag){
     const auto sps=kff.getCSD0();
     const auto pps=kff.getCSD1();
     const auto videoWH= sps.sps_get_width_height();
@@ -19,7 +21,9 @@ static void h264_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* form
     AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_HEIGHT,videoWH[1]);
     AMediaFormat_setBuffer(format,"csd-0",sps.getData(),(size_t)sps.getSize());
     AMediaFormat_setBuffer(format,"csd-1",pps.getData(),(size_t)pps.getSize());
-    MLOGD<<"Video WH:"<<videoWH[0]<<" H:"<<videoWH[1];
+    if (verboseLogging) {
+        qDebug() << "[" << logTag.c_str() << "]" << "Video WH:" << videoWH[0] << " H:" << videoWH[1];
+    }
     //AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_BIT_RATE,5*1024*1024);
     //AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_FRAME_RATE,60);
     //AVCProfileBaseline==1
@@ -27,7 +31,8 @@ static void h264_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* form
     //AMediaFormat_setInt32(decoder.format,AMEDIAFORMAT_KEY_PRIORITY,0);
     //writeAndroidPerformanceParams(format);
 }
-static void h265_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* format){
+static void h265_configureAMediaFormat(CodecConfigFinder& kff, AMediaFormat* format, bool verboseLogging,
+                                       const std::string &logTag){
     std::vector<uint8_t> buff={};
     const auto SPS=kff.getCSD0();
     const auto PPS=kff.getCSD1();
@@ -40,47 +45,59 @@ static void h265_configureAMediaFormat(CodecConfigFinder& kff,AMediaFormat* form
     AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_WIDTH,videoWH[0]);
     AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_HEIGHT,videoWH[1]);
     AMediaFormat_setBuffer(format,"csd-0",buff.data(),buff.size());
-    MLOGD<<"Video WH:"<<videoWH[0]<<" H:"<<videoWH[1];
+    if (verboseLogging) {
+        qDebug() << "[" << logTag.c_str() << "]" << "Video WH:" << videoWH[0] << " H:" << videoWH[1];
+    }
     //writeAndroidPerformanceParams(format);
 }
 
-LowLagDecoder::LowLagDecoder(JNIEnv* env){
+LowLagDecoder::LowLagDecoder(JNIEnv* env, bool verboseLogging, std::string logTag)
+    : m_printDebugInfo(verboseLogging), m_logTag(std::move(logTag)){
     //env->GetJavaVM(&javaVm);
     resetStatistics();
 }
 
 void LowLagDecoder::setOutputSurface(JNIEnv* env,jobject surface){
     USE_SW_DECODER_INSTEAD=false;
-    if(surface==nullptr){
-        //MLOGD<<"Set output surface to null";
-        //assert(decoder.window!=nullptr);
-        if(decoder.window== nullptr){
-            //MLOGD<<"Decoder window is already null";
-            return;
-        }
+
+    auto releaseDecoderResources = [this]() {
         std::lock_guard<std::mutex> lock(mMutexInputPipe);
         inputPipeClosed=true;
         if(decoder.configured){
-            AMediaCodec_stop(decoder.codec);
-            AMediaCodec_delete(decoder.codec);
-            decoder.codec=nullptr;
+            if (decoder.codec) {
+                AMediaCodec_stop(decoder.codec);
+                AMediaCodec_delete(decoder.codec);
+                decoder.codec=nullptr;
+            }
             mKeyFrameFinder.reset();
             decoder.configured=false;
-            if(mCheckOutputThread->joinable()){
+            if(mCheckOutputThread && mCheckOutputThread->joinable()){
                 mCheckOutputThread->join();
-                mCheckOutputThread.reset();
             }
+            mCheckOutputThread.reset();
         }
-        ANativeWindow_release(decoder.window);
-        decoder.window=nullptr;
+        if (decoder.window) {
+            ANativeWindow_release(decoder.window);
+            decoder.window=nullptr;
+        }
         resetStatistics();
-    }else{
-        // Throw warning if the surface is set without clearing it first
-        assert(decoder.window==nullptr);
-        decoder.window=ANativeWindow_fromSurface(env,surface);
-        // open the input pipe - now the decoder will start as soon as enough data is available
-        inputPipeClosed=false;
+    };
+
+    if(surface==nullptr){
+        if(decoder.window== nullptr){
+            return;
+        }
+        releaseDecoderResources();
+        return;
     }
+
+    if(decoder.window!=nullptr){
+        releaseDecoderResources();
+    }
+
+    decoder.window=ANativeWindow_fromSurface(env,surface);
+    // open the input pipe - now the decoder will start as soon as enough data is available
+    inputPipeClosed=false;
 }
 
 void LowLagDecoder::registerOnDecoderRatioChangedCallback(DECODER_RATIO_CHANGED decoderRatioChangedC) {
@@ -159,12 +176,18 @@ void LowLagDecoder::configureStartDecoder(){
         //MLOGD<<"Created decoder "<<std::string(name);
         //AMediaCodec_releaseName(decoder.codec,name);
     }
+    if (decoder.codec== nullptr) {
+        MLOGD<<"Cannot create decoder";
+        //set csd-0 and csd-1 back to 0, maybe they were just faulty but we have better luck with the next ones
+        mKeyFrameFinder.reset();
+        return;
+    }
     AMediaFormat* format=AMediaFormat_new();
     AMediaFormat_setString(format,AMEDIAFORMAT_KEY_MIME,MIME.c_str());
     if(IS_H265){
-        h265_configureAMediaFormat(mKeyFrameFinder,format);
+        h265_configureAMediaFormat(mKeyFrameFinder, format, m_printDebugInfo, m_logTag);
     }else{
-        h264_configureAMediaFormat(mKeyFrameFinder,format);
+        h264_configureAMediaFormat(mKeyFrameFinder, format, m_printDebugInfo, m_logTag);
         //mKeyFrameFinder.h264_configureAMediaFormat(format);
     }
 
@@ -313,24 +336,25 @@ void LowLagDecoder::checkOutputLoop() {
 }
 
 void LowLagDecoder::printAvgLog() {
-    if(PRINT_DEBUG_INFO){
-        auto now=steady_clock::now();
-        if((now-lastLog)>TIME_BETWEEN_LOGS){
-            lastLog=now;
-            std::ostringstream frameLog;
-            frameLog<<std::fixed;
-            float avgDecodingLatencySum=decodingInfo.avgParsingTime_ms+decodingInfo.avgWaitForInputBTime_ms+
-                                        decodingInfo.avgDecodingTime_ms;
-            frameLog<<"......................Decoding Latency Averages......................"<<
-                    "\nParsing:"<<decodingInfo.avgParsingTime_ms
-                    <<" | WaitInputBuffer:"<<decodingInfo.avgWaitForInputBTime_ms
-                    <<" | Decoding:"<<decodingInfo.avgDecodingTime_ms
-                    <<" | Decoding Latency Sum:"<<avgDecodingLatencySum<<
-                    "\nN NALUS:"<<decodingInfo.nNALU
-                    <<" | N NALUES feeded:" <<decodingInfo.nNALUSFeeded<<" | N Decoded Frames:"<<nDecodedFrames.getAbsolute()<<
-                    "\nFPS:"<<decodingInfo.currentFPS;
-            MLOGD<<frameLog.str().c_str();
-        }
+    if(!m_printDebugInfo){
+        return;
+    }
+    auto now=steady_clock::now();
+    if((now-lastLog)>TIME_BETWEEN_LOGS){
+        lastLog=now;
+        std::ostringstream frameLog;
+        frameLog<<std::fixed;
+        float avgDecodingLatencySum=decodingInfo.avgParsingTime_ms+decodingInfo.avgWaitForInputBTime_ms+
+                                    decodingInfo.avgDecodingTime_ms;
+        frameLog<<"......................Decoding Latency Averages......................"<<
+                "\nParsing:"<<decodingInfo.avgParsingTime_ms
+                <<" | WaitInputBuffer:"<<decodingInfo.avgWaitForInputBTime_ms
+                <<" | Decoding:"<<decodingInfo.avgDecodingTime_ms
+                <<" | Decoding Latency Sum:"<<avgDecodingLatencySum<<
+                "\nN NALUS:"<<decodingInfo.nNALU
+                <<" | N NALUES feeded:" <<decodingInfo.nNALUSFeeded<<" | N Decoded Frames:"<<nDecodedFrames.getAbsolute()<<
+                "\nFPS:"<<decodingInfo.currentFPS;
+        MLOGD<<frameLog.str().c_str();
     }
 }
 
