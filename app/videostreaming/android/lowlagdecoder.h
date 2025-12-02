@@ -79,6 +79,8 @@ public:
     // If the input pipe was closed (surface has been removed or is not set yet), only buffer key frames
     void interpretNALU(const NALU& nalu);
 private:
+    void releaseDecoderResources(bool releaseWindow);
+    void releaseDecoderResourcesLocked(bool releaseWindow);
     //Initialize decoder with SPS / PPS data from KeyFrameFinder
     //Set Decoder.configured to true on success
     void configureStartDecoder();
