@@ -178,7 +178,11 @@ void GstRtpReceiver::start_receiving(NEW_FRAME_CALLBACK cb)
     //
     // we pull data out of the gst pipeline as cpu memory buffer(s) using the gstreamer "appsink" element
     m_app_sink_element=gst_bin_get_by_name(GST_BIN(m_gst_pipeline), "out_appsink");
-    assert(m_app_sink_element);
+    if (!m_app_sink_element) {
+        qWarning() << "GstRtpReceiver::start_receiving could not find appsink 'out_appsink' in pipeline; aborting start";
+        stop_receiving();
+        return;
+    }
     m_pull_samples_run= true;
     m_pull_samples_thread=std::make_unique<std::thread>(&GstRtpReceiver::loop_pull_samples, this);
 
