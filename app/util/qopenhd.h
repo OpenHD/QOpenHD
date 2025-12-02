@@ -80,15 +80,19 @@ public:
     Q_INVOKABLE void show_error_message(QString message);
     L_RO_PROP(QString,error_message_text,set_error_message_text,"");
     // Notify that something is going on for a specified amount of time
-public:
+ public:
     Q_INVOKABLE void set_busy_for_milliseconds(int milliseconds,QString reason);
     L_RO_PROP(bool,is_busy,set_is_busy,false);
     L_RO_PROP(QString,busy_reason,set_busy_reason,"");
-public:
+ public:
     L_RO_PROP(QString,toast_text,set_toast_text,"NONE");
     L_RO_PROP(bool,toast_visible,set_toast_visible,false);
-public:
-signals:
+ public:
+    bool installTranslatorForLanguage(const QString &language, QSettings *settings = nullptr);
+ private:
+    bool loadTranslator(const QString &language, QSettings *settings);
+ public:
+ signals:
     void fontFamilyChanged(QString fontFamily);
 private:
      QQmlApplicationEngine *m_engine = nullptr;

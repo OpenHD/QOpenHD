@@ -5,7 +5,6 @@
 #include <QQmlComponent>
 #include <QDebug>
 #include <QFontDatabase>
-#include <QTranslator>
 #if defined(__android__)
 #include <QtAndroid>
 #endif
@@ -84,7 +83,6 @@ void attachConsole() {
 #include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
-#include <QTranslator>
 
 #if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 RESOLVEFUNC(SSL_get1_peer_certificate);
@@ -333,17 +331,8 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Load translation based on saved locale (requires an active Q(Core)Application on Qt5)
-    QTranslator translator;
     QString localeStr = settings.value("locale", "en").toString();
-    QLocale::setDefault(QLocale(localeStr));
-    QString qmFile = QString(":/translations/QOpenHD_%1.qm").arg(localeStr);
-    if (!translator.load(qmFile)) {
-        // Fallback to English
-        QLocale::setDefault(QLocale("en"));
-        settings.setValue("locale", "en");
-        translator.load(":/translations/QOpenHD_en.qm");
-    }
-    app.installTranslator(&translator);
+    QOpenHD::instance().installTranslatorForLanguage(localeStr, &settings);
     {  // This includes dpi adjustment
         QScreen* screen=app.primaryScreen();
         if(screen){
