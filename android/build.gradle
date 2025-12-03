@@ -69,7 +69,8 @@ android {
         variant.outputs.all { output ->
             def versionLabel = variant.versionName ?: output.versionName
             def timestamp = new Date().format('yyyyMMdd_HHmmss')
-            def isBundle = output.outputType.name.toLowerCase().contains('bundle')
+            def outputType = output.outputType?.toString()?.toLowerCase() ?: ''
+            def isBundle = outputType.contains('bundle')
             def extension = isBundle ? 'aab' : 'apk'
             outputFileName = "QOpenHD_${versionLabel}_${timestamp}.${extension}"
         }
