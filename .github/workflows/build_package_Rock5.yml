@@ -58,7 +58,7 @@ jobs:
         run: echo "artifact_name=QOpenHD-${{ env.DT }}" >> $GITHUB_ENV
         
       - name: Upload to Github
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v5'
         with:
           name: "QOpenHD-${{ env.DT }}"
           path: |
