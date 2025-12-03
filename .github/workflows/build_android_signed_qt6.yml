@@ -110,7 +110,7 @@ jobs:
         run: ccache -s
 
       - name: Upload AAB artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.ARTIFACT }}
           path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/bundle/release/*.aab
