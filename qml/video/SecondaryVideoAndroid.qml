@@ -5,6 +5,13 @@ import OpenHD 1.0
 SurfaceTexture {
     id: secondaryAndroidVideo
     anchors.fill: parent
+    // Ensure the surface follows the container sizing logic from the surrounding
+    // SecondaryVideoGStreamer component so Android mirrors the Linux behaviour.
+    width: parent ? parent.width : 0
+    height: parent ? parent.height : 0
+    // We only want the outer widget's mouse areas (for resize / maximize) to
+    // react to clicks, so keep the texture itself passive.
+    enabled: false
 
     Component.onCompleted: {
         if (typeof _secondaryMediaPlayer !== "undefined" && _secondaryMediaPlayer) {
