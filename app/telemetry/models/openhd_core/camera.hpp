@@ -142,6 +142,7 @@ static constexpr int X_CAM_TYPE_QC_OV9282 = 121;
 static constexpr int X_CAM_TYPE_ORQA_HORNET = 122;
 static constexpr int X_CAM_TYPE_ORQA_JAGUAR = 123;
 static constexpr int X_CAM_TYPE_ORQA_REKINDLE = 124;
+static constexpr int X_CAM_TYPE_ROCKCHIP_RV = 125;
 
 //
 // ... rest is reserved for future use
@@ -266,6 +267,8 @@ static std::string x_cam_type_to_string(int camera_type) {
       return "CORETRONIC IMX577";
     case X_CAM_TYPE_QC_OV9282:
       return "CORETRONIC OV9282";
+    case X_CAM_TYPE_ROCKCHIP_RV:
+      return "RV110X Camera";
     case X_CAM_TYPE_ORQA_HORNET:
       return "ORQA_HORNET";
     case X_CAM_TYPE_ORQA_JAGUAR:
@@ -324,6 +327,9 @@ struct XCamera {
   bool requires_orqa_pipeline() const {
     return camera_type >= 122 && camera_type <= 124;
   }
+  bool requires_rockchip_rv_pipeline() const {
+    return camera_type == 125;
+  }
   std::string cam_type_as_verbose_string() const {
     return x_cam_type_to_string(camera_type);
   }
@@ -365,6 +371,13 @@ struct XCamera {
       std::vector<ResolutionFramerate> ret;
       ret.push_back(ResolutionFramerate{256, 192, 25});
       ret.push_back(ResolutionFramerate{0, 0, 0});
+      return ret;
+    } else if (requires_rockchip_rv_pipeline()) {
+      std::vector<ResolutionFramerate> ret;
+      ret.push_back(ResolutionFramerate{1280, 720, 60});
+      ret.push_back(ResolutionFramerate{1296, 968, 60});
+      ret.push_back(ResolutionFramerate{1920, 1080, 25});
+      ret.push_back(ResolutionFramerate{2592, 1944, 25});
       return ret;
     } else if (camera_type == X_CAM_TYPE_USB_INFIRAY_P2_PRO) {
       return {ResolutionFramerate{256, 192, 25}};
