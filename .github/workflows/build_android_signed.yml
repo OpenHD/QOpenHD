@@ -110,7 +110,19 @@ jobs:
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
-          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-34 --gradle --aab --release --sign ${SOURCE_DIR}/android/qopenhd_key.jks qopenhd_key --storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}'
+          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-34 --gradle --aab --release
+
+          AAB_PATH=$(ls -t android/build/outputs/bundle/release/*.aab 2>/dev/null | head -n 1)
+          if [[ -z "${AAB_PATH}" ]]; then
+            echo "Release bundle not found in android/build/outputs/bundle/release" >&2
+            exit 1
+          fi
+
+          echo "Signing Android App Bundle: ${AAB_PATH}"
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore "${SOURCE_DIR}/android/qopenhd_key.jks" \
+            "${AAB_PATH}" qopenhd_key \
+            -storepass "${ANDROID_KEYSTORE_PASSWORD}"
 
           zip -r file.zip .
 
