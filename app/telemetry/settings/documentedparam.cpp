@@ -561,6 +561,9 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
             //same for ground uart out
             append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
                           "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.");
+            append_string(ret,"OHD_UART_TLM",ImprovedStringSetting{fc_uart_conn_values},
+                "OpenHD UART telemetry bridge for air and ground units. Configure the second UART device exactly like the tracker or FC UART ports.");
+         }
         }
         // Channel mapping presets for device(s)
         {
