@@ -561,9 +561,6 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
             //same for ground uart out
             append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
                           "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.");
-            append_string(ret,"OHD_UART_TLM",ImprovedStringSetting{fc_uart_conn_values},
-                "OpenHD UART telemetry bridge for air and ground units. Configure the second UART device exactly like the tracker or FC UART ports.");
-         }
         }
         // Channel mapping presets for device(s)
         {
@@ -610,23 +607,21 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink."
                                "No effect if joy rc is disabled.");
     }
-
-    /*append_int(ret,"AUDIO_ENABLE",
-               ImprovedIntSetting::createEnumEnableDisable(),
-               "enables / disables audio streaming from air to ground. In development. Enabling automatically restarts the air unit !"
-               );*/
-    auto audio_items=std::vector<ImprovedIntSetting::Item>{
-            {"DISABLE",0},
-            {"ENABLE",1},
-            {"TEST",100},
-    };
-    append_int(ret,"AUDIO_ENABLE",ImprovedIntSetting(0,1000000,audio_items),
-               "enables / disables audio streaming from air to ground. In development. Use test mode to validate your ground audio output."
-               );
-
+    {
+        /*append_int(ret,"AUDIO_ENABLE",
+                   ImprovedIntSetting::createEnumEnableDisable(),
+                   "enables / disables audio streaming from air to ground. In development. Enabling automatically restarts the air unit !"
+                   );*/
+        auto audio_items=std::vector<ImprovedIntSetting::Item>{
+         {"DISABLE",0},
+         {"ENABLE",1},
+         {"TEST",100},
+         };
+        append_int(ret,"AUDIO_ENABLE",ImprovedIntSetting(0,1000000,audio_items),
+                "enables / disables audio streaming from air to ground. In development. Use test mode to validate your ground audio output."
+                   );
+    }
     return ret;
-}
-
 }
 
 static std::map<std::string,std::shared_ptr<XParam>> create_param_map(){
