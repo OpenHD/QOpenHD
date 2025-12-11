@@ -626,6 +626,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     }
     return ret;
 
+}
+
 static std::map<std::string,std::shared_ptr<XParam>> create_param_map(){
     //qWarning("Create param map");
     auto param_list=get_parameters_list();
