@@ -53,5 +53,12 @@ exists(/usr/local/share/openhd/platform/rock/) {
     message(This is not a Rock)
 }
 
+exists(/usr/local/share/openhd/platform/nxp/) {
+    message(This is an NXP device)
+    DEFINES += IS_PLATFORM_NXP
+} else {
+    message(This is not an NXP device)
+}
+
 # can be used in c++, also set to be exposed in qml
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
