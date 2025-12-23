@@ -40,7 +40,14 @@ Most camera ISP controls are exposed as extended parameters. Values depend on th
 - TODO: Add a verbosity/diagnostic level parameter or message; no dedicated stats-verbosity field is published in the current tree.
 
 ## CLI helper for quick testing
-The repository ships a lightweight helper that can issue these commands without running QOpenHD. Build it with:
+The repository ships a lightweight helper that can issue these commands without running QOpenHD. Build it with CMake (preferred):
+
+```bash
+cmake -S integration -B build/integration
+cmake --build build/integration
+```
+
+You can still build it directly with `g++` if you prefer:
 
 ```bash
 g++ -std=c++17 -Ilib/mavlink-headers -Ilib/mavlink-headers/mavlink/v2.0 \
