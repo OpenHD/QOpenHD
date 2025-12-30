@@ -61,6 +61,8 @@ void print_usage() {
                  "  set-video [--mode 1280x720@60] [--codec h264|h265] [--bitrate mbit] [--keyframe frames] [--rotation 0|180] [--flip on|off]\n"
                  "  set-camera [--iso value] [--awb mode] [--contrast value] [--sharpness value] [--saturation value]\n"
                  "  set-recording --mode disable|enable|auto\n"
+                 "  set-wifi --target air|ground --mode off|hotspot|client [--hotspot auto|off|on] [--hs-iface name]\n"
+                 "          [--cl-iface name] [--cl-ssid ssid] [--cl-pw password]\n"
                  "Use --air-only to avoid mirroring link changes to the ground station.\n";
 }
 
@@ -287,6 +289,102 @@ int handle_set_recording(const MavlinkSender &sender, int argc, char **argv) {
     return success ? 0 : 1;
 }
 
+Target parse_target(const std::string &target_name) {
+    if (target_name == "air") {
+        return Target{101, MAV_COMP_ID_ONBOARD_COMPUTER};
+    }
+    if (target_name == "ground") {
+        return Target{100, MAV_COMP_ID_ONBOARD_COMPUTER};
+    }
+    throw std::runtime_error("target must be air or ground");
+}
+
+int handle_set_wifi(const MavlinkSender &sender, int argc, char **argv) {
+    std::optional<std::string> target_name;
+    std::optional<std::string> mode;
+    std::optional<std::string> hotspot_mode;
+    std::optional<std::string> hs_iface;
+    std::optional<std::string> cl_iface;
+    std::optional<std::string> cl_ssid;
+    std::optional<std::string> cl_pw;
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg{argv[i]};
+        if (arg == "--target" && i + 1 < argc) {
+            target_name = argv[++i];
+        } else if (arg == "--mode" && i + 1 < argc) {
+            mode = argv[++i];
+        } else if (arg == "--hotspot" && i + 1 < argc) {
+            hotspot_mode = argv[++i];
+        } else if (arg == "--hs-iface" && i + 1 < argc) {
+            hs_iface = argv[++i];
+        } else if (arg == "--cl-iface" && i + 1 < argc) {
+            cl_iface = argv[++i];
+        } else if (arg == "--cl-ssid" && i + 1 < argc) {
+            cl_ssid = argv[++i];
+        } else if (arg == "--cl-pw" && i + 1 < argc) {
+            cl_pw = argv[++i];
+        }
+    }
+
+    if (!target_name) {
+        std::cerr << "set-wifi requires --target air|ground" << std::endl;
+        return 1;
+    }
+
+    Target target{};
+    try {
+        target = parse_target(*target_name);
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+
+    static const std::unordered_map<std::string, int> kMode{
+        {"off", 0}, {"hotspot", 1}, {"client", 2},
+    };
+    static const std::unordered_map<std::string, int> kHotspot{
+        {"auto", 0}, {"off", 1}, {"on", 2},
+    };
+
+    bool success = true;
+    if (mode) {
+        auto it = kMode.find(*mode);
+        if (it == kMode.end()) {
+            std::cerr << "Unknown WiFi mode: " << *mode << std::endl;
+            return 1;
+        }
+        success &= send_param_set(sender, target, "WIFI_MODE", std::to_string(it->second), MAV_PARAM_EXT_TYPE_INT32);
+    }
+    if (hotspot_mode) {
+        auto it = kHotspot.find(*hotspot_mode);
+        if (it == kHotspot.end()) {
+            std::cerr << "Unknown hotspot mode: " << *hotspot_mode << std::endl;
+            return 1;
+        }
+        success &= send_param_set(sender, target, "WIFI_HOTSPOT_E", std::to_string(it->second), MAV_PARAM_EXT_TYPE_INT32);
+    }
+    if (hs_iface) {
+        success &= send_param_set(sender, target, "WIFI_HS_IFACE", *hs_iface, MAV_PARAM_EXT_TYPE_CUSTOM);
+    }
+    if (cl_iface) {
+        success &= send_param_set(sender, target, "WIFI_CL_IFACE", *cl_iface, MAV_PARAM_EXT_TYPE_CUSTOM);
+    }
+    if (cl_ssid) {
+        success &= send_param_set(sender, target, "WIFI_CL_SSID", *cl_ssid, MAV_PARAM_EXT_TYPE_CUSTOM);
+    }
+    if (cl_pw) {
+        success &= send_param_set(sender, target, "WIFI_CL_PW", *cl_pw, MAV_PARAM_EXT_TYPE_CUSTOM);
+    }
+
+    if (!success) {
+        std::cerr << "Failed to send some WiFi parameters" << std::endl;
+        return 1;
+    }
+    std::cout << "WiFi parameters sent" << std::endl;
+    return 0;
+}
+
 }  // namespace
 
 int main(int argc, char **argv) {
@@ -319,8 +417,10 @@ int main(int argc, char **argv) {
     if (command == "set-recording") {
         return handle_set_recording(sender, argc - 1, argv + 1);
     }
+    if (command == "set-wifi") {
+        return handle_set_wifi(sender, argc - 1, argv + 1);
+    }
 
     print_usage();
     return 1;
 }
-
