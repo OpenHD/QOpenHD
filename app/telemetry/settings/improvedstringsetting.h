@@ -21,6 +21,8 @@ public:
     ImprovedStringSetting(const ImprovedStringSetting& other);
     // if key and value are the same
     static ImprovedStringSetting create_from_keys_only(const std::vector<std::string>& keys);
+    // Allow free form values (no predefined list)
+    static ImprovedStringSetting createAnyValue();
 public:
     QStringList enum_keys()const;
 
