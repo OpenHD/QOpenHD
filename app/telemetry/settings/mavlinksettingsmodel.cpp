@@ -506,7 +506,7 @@ bool MavlinkSettingsModel::string_param_has_enum(QString param_id) const
 {
     const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
     if(improved_opt.has_value()){
-        return true;
+        return !improved_opt->enum_keys().isEmpty();
     }
     return false;
 }

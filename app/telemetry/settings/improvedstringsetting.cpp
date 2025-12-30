@@ -17,6 +17,10 @@ ImprovedStringSetting ImprovedStringSetting::create_from_keys_only(const std::ve
     return ImprovedStringSetting{values};
 }
 
+ImprovedStringSetting ImprovedStringSetting::createAnyValue(){
+    return ImprovedStringSetting{{}};
+}
+
 
 QStringList ImprovedStringSetting::enum_keys() const{
     QStringList ret{};

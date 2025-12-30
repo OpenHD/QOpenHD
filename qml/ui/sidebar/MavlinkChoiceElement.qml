@@ -100,6 +100,12 @@ BaseJoyEditElement{
         ListElement {value: 2; verbose:"ALWAYS\nON"}
     }
     ListModel{
+        id: elements_model_wifi_mode
+        ListElement {value: 0; verbose:"WIFI\nOFF"}
+        ListElement {value: 1; verbose:"HOTSPOT"}
+        ListElement {value: 2; verbose:"CLIENT"}
+    }
+    ListModel{
         id: elements_model_camera_rotation_degree
         ListElement {value: 0; verbose:"0°\n(Default)"}
         ListElement {value: 1; verbose:"180°\n"}
@@ -166,6 +172,8 @@ BaseJoyEditElement{
             return elements_model_air_recording;
         }else if(m_param_id=="WIFI_HOTSPOT_E"){
             return elements_model_hotspot
+        }else if(m_param_id=="WIFI_MODE"){
+            return elements_model_wifi_mode
         }else if(m_param_id=="ROTATION_FLIP"){
             return elements_model_camera_rotation_flip
         }else if(m_param_id=="RESOLUTION_FPS"){

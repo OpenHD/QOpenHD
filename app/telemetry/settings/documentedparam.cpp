@@ -513,9 +513,20 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                        "RPI HW UART baud rate, needs to match the UART baud rate set on your FC");
         }
         append_int(ret,"CONFIG_BOOT_AIR",ImprovedIntSetting::createEnumEnableDisable(),"DEV, change boot as air / ground",true);
+        append_int(ret,"WIFI_MODE",ImprovedIntSetting::createEnum({"OFF","HOTSPOT","CLIENT"}),
+                   "Select how the built-in WiFi card is used. OFF disables WiFi entirely, HOTSPOT enables the access point for nearby devices, and CLIENT connects the unit to an existing WiFi network.");
         append_int(ret,"WIFI_HOTSPOT_E",ImprovedIntSetting::createEnum({"AUTO","ALWAYS_OFF","ALWAYS_ON"}),
                    "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
                    "2.4G if your wb link is 5.8G and opposite. In AUTO (default), the wifi hotspot is automatically disarmed when you arm your FC (to avoid interference).");
+        append_documented_read_only(ret,"WIFI_IFACES","Comma separated list of detected WiFi interfaces and their current roles (wb/hotspot/client/idle).");
+        append_string(ret,"WIFI_HS_IFACE",ImprovedStringSetting::createAnyValue(),
+                      "Optional interface override to use for hotspot mode (empty = auto). Changing this reconfigures the hotspot when WiFi mode is set to HOTSPOT.");
+        append_string(ret,"WIFI_CL_IFACE",ImprovedStringSetting::createAnyValue(),
+                      "Optional interface to use for WiFi client mode (empty = auto). Only applied when WiFi mode is set to CLIENT.");
+        append_string(ret,"WIFI_CL_SSID",ImprovedStringSetting::createAnyValue(),
+                      "SSID to join when WiFi mode is set to CLIENT.");
+        append_string(ret,"WIFI_CL_PW",ImprovedStringSetting::createAnyValue(),
+                      "Password to join when WiFi mode is set to CLIENT.");
 
         append_int(ret,"ETH_HOTSPOT_E",ImprovedIntSetting::createEnumEnableDisable(),
                    "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."
