@@ -23,10 +23,11 @@ for(tsfile, TRANSLATIONS) {
     qm_base = $$replace(qm_base, \\.ts$, )
     qm_file = $$PWD/qml/$${qm_base}.qm
     ts_abs = $$PWD/$$tsfile
+    qm_dir = $$PWD/qml
 
     qmtarget = qm_$${qm_base}
     $${qmtarget}.target = $$qm_file
-    $${qmtarget}.commands = mkdir -p $$PWD/qml && lrelease $$ts_abs -qm $$qm_file
+    $${qmtarget}.commands = $$QMAKE_MKDIR $$system_quote($$qm_dir) $$escape_expand(\\n\\t) $$LRELEASE $$system_quote($$ts_abs) -qm $$system_quote($$qm_file)
     $${qmtarget}.depends = $$ts_abs
 
     QMAKE_EXTRA_TARGETS += $$qmtarget
