@@ -31,6 +31,12 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         spacing: 10
+        property real columnSourceWidth: Math.max(150, messageList.width * 0.24)
+        property real columnOriginWidth: Math.max(110, messageList.width * 0.15)
+        property real columnMessageWidth: Math.max(170, messageList.width * 0.24)
+        property real columnLastSeenWidth: Math.max(140, messageList.width * 0.2)
+        property real columnCountWidth: Math.max(80, messageList.width * 0.12)
+        property string decodedMessageDetails: ""
 
         RowLayout {
             spacing: 10
@@ -190,6 +196,31 @@ Rectangle {
                     wrapMode: Text.Wrap
                     text: root.decodedMessageDetails
                 }
+            }
+        }
+    }
+
+    Dialog {
+        id: decodeDialog
+        title: qsTr("Message details")
+        modal: true
+        standardButtons: Dialog.Ok
+        visible: false
+        contentItem: Item {
+            width: 420
+            implicitHeight: decodeText.paintedHeight + 20
+            Text {
+                id: decodeText
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: 10
+                    rightMargin: 10
+                    top: parent.top
+                    topMargin: 10
+                }
+                wrapMode: Text.Wrap
+                text: root.decodedMessageDetails
             }
         }
     }
