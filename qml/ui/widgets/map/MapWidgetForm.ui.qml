@@ -50,6 +50,10 @@ BaseWidget {
             name: "osm"
             description: "OpenStreetMap"
         }
+        ListElement {
+            name: "mapboxgl"
+            description: "Mapbox (API key)"
+        }
     }
 
 
@@ -187,6 +191,41 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.map_orientation
                     onCheckedChanged: settings.map_orientation = checked
+                }
+            }
+            Item {
+                width: 230
+                height: 110
+                Column {
+                    spacing: 4
+                    anchors.fill: parent
+                    Text {
+                        text: qsTr("Map API key (for Mapbox)")
+                        color: "white"
+                        font.bold: true
+                        font.pixelSize: detailPanelFontPixels
+                    }
+                    TextField {
+                        id: popupMapApiKeyField
+                        width: parent.width
+                        text: settings.map_api_key
+                        placeholderText: qsTr("pk.xxxxx")
+                        selectByMouse: true
+                        onEditingFinished: {
+                            settings.map_api_key = text
+                            if (providerDropdown.currentIndex >= 0 && providerDropdown.currentIndex < pluginModel.count
+                                    && pluginModel.get(providerDropdown.currentIndex).name === "mapboxgl") {
+                                configure()
+                            }
+                        }
+                    }
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        text: qsTr("Get a free Mapbox access token at account.mapbox.com -> Tokens, then paste it above.")
+                        color: "lightgray"
+                        font.pixelSize: detailPanelFontPixels - 2
+                    }
                 }
             }
             Item {
@@ -523,6 +562,42 @@ BaseWidget {
                     spacing: 6
                     width: settingsVisible ? 488 : 0
 
+                    Item {
+                        width: parent.width
+                        height: 96
+                        Column {
+                            spacing: 4
+                            anchors.fill: parent
+                            Text {
+                                text: qsTr("Map API key (Mapbox)")
+                                color: "white"
+                                font.bold: true
+                                font.pixelSize: detailPanelFontPixels
+                            }
+                            TextField {
+                                id: sidebarMapApiKeyField
+                                width: parent.width
+                                text: settings.map_api_key
+                                placeholderText: qsTr("pk.xxxxx")
+                                selectByMouse: true
+                                onEditingFinished: {
+                                    settings.map_api_key = text
+                                    if (providerDropdown.currentIndex >= 0 && providerDropdown.currentIndex < pluginModel.count
+                                            && pluginModel.get(providerDropdown.currentIndex).name === "mapboxgl") {
+                                        configure()
+                                    }
+                                }
+                            }
+                            Text {
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                                text: qsTr("How to get a key: 1) Sign up at account.mapbox.com. 2) Open Tokens. 3) Copy your Default public token and paste it above.")
+                                color: "lightgray"
+                                font.pixelSize: detailPanelFontPixels - 2
+                            }
+                        }
+                    }
+
                     ComboBox {
                         id: providerDropdown
                         height: 48
@@ -628,6 +703,34 @@ BaseWidget {
                             onCheckedChanged: settings.map_orientation = checked
                         }
                     }
+                }
+            }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#CC000000"
+            visible: apiKeyMissing
+            z: 3.0
+
+            Column {
+                anchors.centerIn: parent
+                spacing: 8
+                width: parent.width * 0.8
+                Text {
+                    text: qsTr("An API key is required for the selected map provider.")
+                    color: "white"
+                    font.bold: true
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                    width: parent.width
+                }
+                Text {
+                    text: qsTr("Add your Mapbox access token in the map settings, then reload the map.")
+                    color: "lightgray"
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                    width: parent.width
                 }
             }
         }
