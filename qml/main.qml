@@ -45,7 +45,7 @@ ApplicationWindow {
     // but rather done independently by using a pipeline that directly goes to the HW composer (e.g. mmal on pi).
     //color: "transparent" //Consti10 transparent background
     //color : "#2C3E50" // reduce KREBS
-    color: QOPENHD_IS_MOBILE ? "#2C3E50" : (settings.app_background_transparent ? "transparent" : "#2C3E50")
+    color: settings.app_background_transparent ? "transparent" : "#2C3E50"
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
     //visibility: "FullScreen"
