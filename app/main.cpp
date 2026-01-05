@@ -481,7 +481,17 @@ int main(int argc, char *argv[]) {
     //const QUrl url(QStringLiteral("qrc:/qt/qml/main.qml"));
     //const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     const QUrl url(QStringLiteral("qrc:/main.qml"));
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
+                     [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl) {
+            qCritical() << "Failed to load main.qml, exiting to avoid a blank screen";
+            QCoreApplication::exit(-1);
+        }
+    }, Qt::QueuedConnection);
     engine.load(url);
+    if (engine.rootObjects().isEmpty()) {
+        return -1;
+    }
     //engine.loadFromModule("QOpenHD", "qrc:/main.qml");
     //engine.loadFromModule("QOpenHDApp","qrc:/main.qml");
     //engine.load("qml/main.qml");

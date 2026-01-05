@@ -21,12 +21,21 @@ translation_outputs =
 for(tsfile, TRANSLATIONS) {
     qm_base = $$basename(tsfile)
     qm_base = $$replace(qm_base, \\.ts$, )
-    qm_file = $$PWD/qml/$${qm_base}.qm
+    qm_dir = $$PWD/qml
+    qm_file = $$qm_dir/$${qm_base}.qm
     ts_abs = $$PWD/$$tsfile
+    qm_dir_quoted = \"$$qm_dir\"
+    qm_file_quoted = \"$$qm_file\"
+    ts_abs_quoted = \"$$ts_abs\"
 
     qmtarget = qm_$${qm_base}
     $${qmtarget}.target = $$qm_file
-    $${qmtarget}.commands = mkdir -p $$PWD/qml && lrelease $$ts_abs -qm $$qm_file
+    win32 {
+        mkdir_cmd = if not exist $$qm_dir_quoted $(MKDIR) $$qm_dir_quoted
+    } else {
+        mkdir_cmd = $(CHK_DIR_EXISTS) $$qm_dir_quoted || $(MKDIR) $$qm_dir_quoted
+    }
+    $${qmtarget}.commands = ($$mkdir_cmd) && lrelease $$ts_abs_quoted -qm $$qm_file_quoted
     $${qmtarget}.depends = $$ts_abs
 
     QMAKE_EXTRA_TARGETS += $$qmtarget
