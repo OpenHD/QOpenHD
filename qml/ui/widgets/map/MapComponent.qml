@@ -21,8 +21,8 @@ Map {
 
     bearing: settings.map_orientation ? _fcMavlinkSystem.hdg : 360
 
-    property double userLat: 0.0
-    property double userLon: 0.0
+    readonly property var defaultCoordinate: QtPositioning.coordinate(38.897676, -77.03653)
+    property bool hasValidDroneCoordinate: !(_fcMavlinkSystem.lat === 0.0 && _fcMavlinkSystem.lon === 0.0)
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
     property var center_coord
@@ -33,8 +33,8 @@ Map {
 
 
     center {
-        latitude: _fcMavlinkSystem.lat == 0.0 ? userLat : followDrone ? _fcMavlinkSystem.lat : 9000
-        longitude: _fcMavlinkSystem.lon == 0.0 ? userLon : followDrone ? _fcMavlinkSystem.lon : 9000
+        latitude: hasValidDroneCoordinate ? followDrone ? _fcMavlinkSystem.lat : 9000 : defaultCoordinate.latitude
+        longitude: hasValidDroneCoordinate ? followDrone ? _fcMavlinkSystem.lon : 9000 : defaultCoordinate.longitude
     }
 
     onSupportedMapTypesChanged: {
@@ -69,22 +69,18 @@ Map {
         AdsbVehicleManager.newMapLon(center_coord.longitude);
     }
 
-    PositionSource {
-        id: positionSource
-        updateInterval: 5000
-        active: followDrone
-
-        onPositionChanged: {
-            userLat = position.coordinate.latitude
-            userLon = position.coordinate.longitude
+    function coordinateWithFallback(lat, lon) {
+        if (lat === 0.0 && lon === 0.0) {
+            return defaultCoordinate;
         }
+        return QtPositioning.coordinate(lat, lon);
     }
 
     //this function keeps recycling points to preserve memory
     function addDroneTrack() {
         //console.log("Add drone track")
         // only add track while armed
-        if(!_fcMavlinkSystem.armed){
+        if(!_fcMavlinkSystem.armed || !hasValidDroneCoordinate){
             return;
         }
         var new_coordinate=QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
@@ -128,10 +124,7 @@ Map {
     }
     // Visualizes the GPS hdop
     MapCircle {
-        center {
-            latitude: _fcMavlinkSystem.lat
-            longitude: _fcMavlinkSystem.lon
-        }
+        center: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
         radius: _fcMavlinkSystem.gps_hdop
         color: 'red'
         opacity: .3
@@ -141,10 +134,7 @@ Map {
         id: homemarkerSmallMap
         anchorPoint.x: imageSmallMap.width / 2
         anchorPoint.y: imageSmallMap.height
-        coordinate {
-            latitude: _fcMavlinkSystem.home_latitude
-            longitude: _fcMavlinkSystem.home_longitude
-        }
+        coordinate: coordinateWithFallback(_fcMavlinkSystem.home_latitude, _fcMavlinkSystem.home_longitude)
 
         sourceItem: Image {
             id: imageSmallMap
@@ -449,11 +439,11 @@ Map {
     // Arrow indicating the drone position
     MapQuickItem {
         id: dronemarker
-        coordinate: QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+        coordinate: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
 
         onCoordinateChanged: {
             // skip what most likely are not valid coordinates
-            if(coordinate.latitude!=0.0 && coordinate.longitude!=0.0){
+            if(hasValidDroneCoordinate){
                 addDroneTrack();
             }
         }
