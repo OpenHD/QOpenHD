@@ -69,13 +69,23 @@ SideBarBasePanel {
                 Layout.alignment: Qt.AlignHCenter
                 override_text_left: "Chipset GND:"
                 override_color_right: _ohdSystemGround.is_alive ? "#20b383" : "#df4c7c"
-                override_text_right: _ohdSystemGround.is_alive ? _ohdSystemGround.card_type_as_string : "Not connected"
+                override_text_right: {
+                    if (_ohdSystemGround.is_alive) {
+                        return _ohdSystemGround.card_type_as_string || "Unknown";
+                    }
+                    return "Not connected";
+                }
             }
             InfoElement2 {
                 Layout.alignment: Qt.AlignHCenter
                 override_text_left: "Chipset AIR:"
                 override_color_right: _ohdSystemAir.is_alive ? "#20b383" : "#df4c7c"
-                override_text_right: _ohdSystemAir.is_alive ? _ohdSystemAir.card_type_as_string : "Not connected"
+                override_text_right: {
+                    if (_ohdSystemAir.is_alive) {
+                        return _ohdSystemAir.card_type_as_string || "Unknown";
+                    }
+                    return "Not connected";
+                }
             }
             InfoElement2 {
                 Layout.alignment: Qt.AlignHCenter
