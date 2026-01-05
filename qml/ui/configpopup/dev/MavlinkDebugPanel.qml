@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls 1.4 as Controls1
 import QtQuick.Layouts 1.12
 import Qt.labs.settings 1.0
 import OpenHD 1.0
@@ -72,97 +73,64 @@ Rectangle {
             }
         }
 
-        ColumnLayout {
+        Controls1.TableView {
+            id: messageTable
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 4
+            alternatingRowColors: false
+            frameVisible: false
+            headerVisible: true
+            sortIndicatorVisible: false
+            model: _mavlinkMessageStatsModel
+            horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+            verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 8
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnSourceWidth; Layout.maximumWidth: root.columnSourceWidth; height: 32
-                    Text { anchors.centerIn: parent; text: qsTr("Source (sys/comp/msg)"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnOriginWidth; Layout.maximumWidth: root.columnOriginWidth; height: 32
-                    Text { anchors.centerIn: parent; text: qsTr("Origin"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnMessageWidth; Layout.maximumWidth: root.columnMessageWidth; height: 32
-                    Text { anchors.centerIn: parent; text: qsTr("Message"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnLastSeenWidth; Layout.maximumWidth: root.columnLastSeenWidth; height: 32
-                    Text { anchors.centerIn: parent; text: qsTr("Last seen"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnCountWidth; Layout.maximumWidth: root.columnCountWidth; height: 32
-                    Text { anchors.centerIn: parent; text: qsTr("Count"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+            TableViewColumn { role: "source_label"; title: qsTr("Source (sys/comp/msg)"); width: root.columnSourceWidth }
+            TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: root.columnOriginWidth }
+            TableViewColumn { role: "message_name"; title: qsTr("Message"); width: root.columnMessageWidth }
+            TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen"); width: root.columnLastSeenWidth }
+            TableViewColumn { role: "update_count"; title: qsTr("Count"); width: root.columnCountWidth }
+
+            rowDelegate: Rectangle {
+                height: 36
+                color: styleData.selected ? "#d7e8ff" : (styleData.row % 2 === 0 ? "#ffffff" : "#f5f5f5")
+            }
+
+            headerDelegate: Rectangle {
+                implicitHeight: 36
+                color: "#f0f0f0"
+                Text {
+                    anchors.centerIn: parent
+                    text: styleData.value
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
 
-            ListView {
-                id: messageList
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-                spacing: 2
-                model: _mavlinkMessageStatsModel
+            itemDelegate: Item {
+                implicitHeight: 32
+                anchors.fill: parent
 
-                delegate: Rectangle {
-                    width: messageList.width
-                    implicitHeight: 32
-                    color: (index % 2 === 0) ? "#ffffff" : "#f5f5f5"
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 8
+                    anchors.right: parent.right
+                    anchors.rightMargin: styleData.column === 4 ? 8 : 20
+                    horizontalAlignment: styleData.column === 4 ? Text.AlignHCenter : Text.AlignLeft
+                    elide: Text.ElideRight
+                    text: styleData.value
+                }
 
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 6
-                        spacing: 8
-                        Text {
-                            text: model.source_label
-                            Layout.minimumWidth: root.columnSourceWidth
-                            Layout.maximumWidth: root.columnSourceWidth
-                            elide: Text.ElideRight
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        Text {
-                            text: model.origin_category
-                            Layout.minimumWidth: root.columnOriginWidth
-                            Layout.maximumWidth: root.columnOriginWidth
-                            elide: Text.ElideRight
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        Item {
-                            Layout.minimumWidth: root.columnMessageWidth
-                            Layout.maximumWidth: root.columnMessageWidth
-                            height: parent.height
-                            Text {
-                                id: messageText
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: model.message_name
-                                width: parent.width
-                                elide: Text.ElideRight
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onClicked: {
-                                    root.decodedMessageDetails = _mavlinkMessageStatsModel.decodeMessageDetails(model.message_id)
-                                    decodeDialog.open()
-                                }
-                                cursorShape: Qt.PointingHandCursor
-                            }
-                        }
-                        Text {
-                            text: model.last_seen_readable
-                            Layout.minimumWidth: root.columnLastSeenWidth
-                            Layout.maximumWidth: root.columnLastSeenWidth
-                            elide: Text.ElideRight
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        Text {
-                            text: model.update_count
-                            Layout.minimumWidth: root.columnCountWidth
-                            Layout.maximumWidth: root.columnCountWidth
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: styleData.column === 2 ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    enabled: styleData.column === 2
+                    onClicked: {
+                        var rowData = messageTable.model.get(styleData.row)
+                        root.decodedMessageDetails = _mavlinkMessageStatsModel.decodeMessageDetails(rowData.message_id)
+                        decodeDialog.open()
                     }
                 }
             }
@@ -196,66 +164,48 @@ Rectangle {
                 Label { text: root.decodedMessageDetails.fieldCount }
             }
 
-            Rectangle {
-                Layout.fillWidth: true
-                height: 32
-                color: "#f0f0f0"
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 8
-                    spacing: 12
-                    Label {
-                        text: qsTr("Field")
-                        font.bold: true
-                        Layout.preferredWidth: decodeDialog.width * 0.35
-                    }
-                    Label {
-                        text: qsTr("Type")
-                        font.bold: true
-                        Layout.preferredWidth: decodeDialog.width * 0.25
-                    }
-                    Label {
-                        text: qsTr("Array length")
-                        font.bold: true
-                        Layout.alignment: Qt.AlignRight
-                    }
-                }
-            }
-
-            ScrollView {
+            Controls1.TableView {
+                id: fieldTable
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                clip: true
+                frameVisible: false
+                headerVisible: true
+                alternatingRowColors: false
+                model: root.decodedMessageDetails.fields
+                horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+                verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
-                ListView {
-                    id: fieldList
+                TableViewColumn { role: "name"; title: qsTr("Field"); width: decodeDialog.width * 0.4 }
+                TableViewColumn { role: "type"; title: qsTr("Type"); width: decodeDialog.width * 0.32 }
+                TableViewColumn { role: "arrayLength"; title: qsTr("Array length"); width: decodeDialog.width * 0.2 }
+
+                rowDelegate: Rectangle {
+                    height: 32
+                    color: styleData.selected ? "#d7e8ff" : (styleData.row % 2 === 0 ? "#ffffff" : "#f7f7f7")
+                }
+
+                headerDelegate: Rectangle {
+                    implicitHeight: 32
+                    color: "#f0f0f0"
+                    Text {
+                        anchors.centerIn: parent
+                        text: styleData.value
+                        font.bold: true
+                    }
+                }
+
+                itemDelegate: Item {
+                    implicitHeight: 28
                     anchors.fill: parent
-                    spacing: 2
-                    model: root.decodedMessageDetails.fields
-                    delegate: Rectangle {
-                        width: fieldList.width
-                        height: 32
-                        color: (index % 2 === 0) ? "#ffffff" : "#f7f7f7"
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 8
-                            spacing: 12
-                            Label {
-                                text: modelData.name
-                                Layout.preferredWidth: decodeDialog.width * 0.35
-                                elide: Text.ElideRight
-                            }
-                            Label {
-                                text: modelData.type
-                                Layout.preferredWidth: decodeDialog.width * 0.25
-                                elide: Text.ElideRight
-                            }
-                            Label {
-                                text: modelData.arrayLength > 1 ? modelData.arrayLength : ""
-                                Layout.alignment: Qt.AlignRight
-                            }
-                        }
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 8
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        elide: Text.ElideRight
+                        horizontalAlignment: styleData.column === 2 ? Text.AlignRight : Text.AlignLeft
+                        text: styleData.role === "arrayLength" ? (styleData.value > 1 ? styleData.value : "") : styleData.value
                     }
                 }
             }
