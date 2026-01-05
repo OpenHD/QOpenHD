@@ -7,6 +7,8 @@
 
 #include <QAbstractListModel>
 #include <QDateTime>
+#include <QVariantMap>
+#include <QVariantList>
 #include <vector>
 #include <atomic>
 
@@ -53,6 +55,7 @@ public:
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE QString decodeMessage(int messageId) const;
+    Q_INVOKABLE QVariantMap decodeMessageDetails(int messageId) const;
     Q_INVOKABLE void setEnabled(bool enabled);
     Q_INVOKABLE bool enabled() const;
 
