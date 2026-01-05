@@ -9,6 +9,12 @@ Rectangle {
     width: parent.width
     height: parent.height
     color: "#eaeaea"
+    property real columnSourceWidth: Math.max(160, width * 0.2)
+    property real columnOriginWidth: Math.max(120, width * 0.14)
+    property real columnMessageWidth: Math.max(190, width * 0.26)
+    property real columnLastSeenWidth: Math.max(140, width * 0.2)
+    property real columnCountWidth: Math.max(90, width * 0.1)
+    property string decodedMessageDetails: ""
 
     TabBar {
         id: selectItemInStackLayoutBar
@@ -75,19 +81,19 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: columnSourceWidth; Layout.maximumWidth: columnSourceWidth; Layout.fillWidth: true; height: 32
+                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnSourceWidth; Layout.maximumWidth: root.columnSourceWidth; height: 32
                     Text { anchors.centerIn: parent; text: qsTr("Source (sys/comp/msg)"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: columnOriginWidth; Layout.maximumWidth: columnOriginWidth; Layout.fillWidth: true; height: 32
+                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnOriginWidth; Layout.maximumWidth: root.columnOriginWidth; height: 32
                     Text { anchors.centerIn: parent; text: qsTr("Origin"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: columnMessageWidth; Layout.maximumWidth: columnMessageWidth; Layout.fillWidth: true; height: 32
+                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnMessageWidth; Layout.maximumWidth: root.columnMessageWidth; height: 32
                     Text { anchors.centerIn: parent; text: qsTr("Message"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: columnLastSeenWidth; Layout.maximumWidth: columnLastSeenWidth; Layout.fillWidth: true; height: 32
+                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnLastSeenWidth; Layout.maximumWidth: root.columnLastSeenWidth; height: 32
                     Text { anchors.centerIn: parent; text: qsTr("Last seen"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
-                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: columnCountWidth; Layout.maximumWidth: columnCountWidth; Layout.fillWidth: true; height: 32
+                Rectangle { color: "#f0f0f0"; Layout.minimumWidth: root.columnCountWidth; Layout.maximumWidth: root.columnCountWidth; height: 32
                     Text { anchors.centerIn: parent; text: qsTr("Count"); font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
             }
@@ -111,24 +117,21 @@ Rectangle {
                         spacing: 8
                         Text {
                             text: model.source_label
-                            Layout.minimumWidth: columnSourceWidth
-                            Layout.maximumWidth: columnSourceWidth
-                            Layout.fillWidth: true
+                            Layout.minimumWidth: root.columnSourceWidth
+                            Layout.maximumWidth: root.columnSourceWidth
                             elide: Text.ElideRight
                             verticalAlignment: Text.AlignVCenter
                         }
                         Text {
                             text: model.origin_category
-                            Layout.minimumWidth: columnOriginWidth
-                            Layout.maximumWidth: columnOriginWidth
-                            Layout.fillWidth: true
+                            Layout.minimumWidth: root.columnOriginWidth
+                            Layout.maximumWidth: root.columnOriginWidth
                             elide: Text.ElideRight
                             verticalAlignment: Text.AlignVCenter
                         }
                         Item {
-                            Layout.minimumWidth: columnMessageWidth
-                            Layout.maximumWidth: columnMessageWidth
-                            Layout.fillWidth: true
+                            Layout.minimumWidth: root.columnMessageWidth
+                            Layout.maximumWidth: root.columnMessageWidth
                             height: parent.height
                             Text {
                                 id: messageText
@@ -149,21 +152,49 @@ Rectangle {
                         }
                         Text {
                             text: model.last_seen_readable
-                            Layout.minimumWidth: columnLastSeenWidth
-                            Layout.maximumWidth: columnLastSeenWidth
-                            Layout.fillWidth: true
+                            Layout.minimumWidth: root.columnLastSeenWidth
+                            Layout.maximumWidth: root.columnLastSeenWidth
                             elide: Text.ElideRight
                             verticalAlignment: Text.AlignVCenter
                         }
                         Text {
                             text: model.update_count
-                            Layout.minimumWidth: columnCountWidth
-                            Layout.maximumWidth: columnCountWidth
-                            Layout.fillWidth: true
+                            Layout.minimumWidth: root.columnCountWidth
+                            Layout.maximumWidth: root.columnCountWidth
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
                     }
+                }
+            }
+        }
+    }
+
+    Dialog {
+        id: decodeDialog
+        title: qsTr("Message details")
+        modal: true
+        standardButtons: Dialog.Ok
+        visible: false
+        contentItem: Item {
+            width: 420
+            implicitHeight: decodeText.paintedHeight + 40
+            Flickable {
+                anchors.fill: parent
+                contentWidth: decodeText.paintedWidth
+                contentHeight: decodeText.paintedHeight
+                clip: true
+                Text {
+                    id: decodeText
+                    width: parent.width - 20
+                    anchors {
+                        left: parent.left
+                        leftMargin: 10
+                        top: parent.top
+                        topMargin: 10
+                    }
+                    wrapMode: Text.Wrap
+                    text: root.decodedMessageDetails
                 }
             }
         }
