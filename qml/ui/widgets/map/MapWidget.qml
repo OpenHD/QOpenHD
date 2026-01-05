@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Window 2.14
+import QtQml 2.12
 //import QtLocation 15.5
 //import QtPositioning 15.5
 
@@ -20,6 +21,7 @@ MapWidgetForm {
     property bool followDrone: true
 
     property variant map
+    property bool apiKeyMissing: false
 
     Component.onCompleted: {
         // TODO: Figure out how we can get better (terrain) maps
@@ -63,16 +65,36 @@ MapWidgetForm {
     // The map variant (aka street view, terrain view, ...) is set later
     function createMap(parent, provider) {
         console.log("createMap(" + provider + ")");
+        apiKeyMissing = false;
         var plugin
-        plugin = Qt.createQmlObject(`
-                                    import QtLocation 5.15
-                                    Plugin {
-                                    name: "` + provider + `"
-                                    PluginParameter {
-                                    name: "osm.mapping.custom.host";
-                                    value: "https://tile.openstreetmap.org/" }
-                                    }
-                                    `, mapWidget);
+        if (provider === "mapboxgl") {
+            if (!settings.map_api_key || settings.map_api_key.length === 0) {
+                console.log("MapboxGL provider selected without API key");
+                apiKeyMissing = true;
+                if (map) {
+                    map.destroy();
+                    map = null;
+                }
+                return;
+            }
+            plugin = Qt.createQmlObject(`
+                                        import QtLocation 5.15
+                                        Plugin {
+                                        name: "` + provider + `"
+                                        PluginParameter { name: "mapbox.access_token"; value: "` + settings.map_api_key + `" }
+                                        }
+                                        `, mapWidget);
+        } else {
+            plugin = Qt.createQmlObject(`
+                                        import QtLocation 5.15
+                                        Plugin {
+                                        name: "` + provider + `"
+                                        PluginParameter {
+                                        name: "osm.mapping.custom.host";
+                                        value: "https://tile.openstreetmap.org/" }
+                                        }
+                                        `, mapWidget);
+        }
         console.log("Using plugin: " + plugin.name);
 
         if (plugin.supportsMapping()) {
@@ -107,6 +129,16 @@ MapWidgetForm {
             variantDropdown.currentIndex = settings.selected_map_variant
             console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
             map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
+        }
+    }
+
+    Connections {
+        target: settings
+        function onMap_api_keyChanged() {
+            if (settings.selected_map_provider < pluginModel.count
+                    && pluginModel.get(settings.selected_map_provider).name === "mapboxgl") {
+                configure()
+            }
         }
     }
 
@@ -205,4 +237,3 @@ MapWidgetForm {
         widgetDetail.open()
     }
 }
-
