@@ -494,24 +494,50 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "a reboot is recommended, but not neccessary.");
         append_int(ret,"FC_UART_FLWCTL",ImprovedIntSetting::createEnumEnableDisable(),
                    "Leave disabled, for setups with an additional 4th cable for uart flow control");
-
-        {
-            auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
-                                                                         {"9600",9600},
-                                                                         {"19200",19200},
-                                                                         {"38400",38400},
-                                                                         {"57600",57600},
-                                                                         {"115200",115200},
-                                                                         {"230400",230400},
-                                                                         {"460800",460800},
-                                                                         {"500000",500000},
-                                                                         {"576000",576000},
-                                                                         {"921600",921600},
-                                                                         {"1000000",1000000},
-                                                                         };
-            append_int(ret,"FC_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
-                       "RPI HW UART baud rate, needs to match the UART baud rate set on your FC");
-        }
+        auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
+                                                                     {"9600",9600},
+                                                                     {"19200",19200},
+                                                                     {"38400",38400},
+                                                                     {"57600",57600},
+                                                                     {"115200",115200},
+                                                                     {"230400",230400},
+                                                                     {"460800",460800},
+                                                                     {"500000",500000},
+                                                                     {"576000",576000},
+                                                                     {"921600",921600},
+                                                                     {"1000000",1000000},
+                                                                     };
+        append_int(ret,"FC_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
+                   "RPI HW UART baud rate, needs to match the UART baud rate set on your FC");
+        append_int(ret,"OHD_UART_EN",ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable or disable the dedicated OpenHD telemetry UART. Turn this off to stop forwarding MAVLink over the selected port.");
+        append_int(ret,"OHD_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
+                   "Baud rate for the OpenHD telemetry UART on air and ground. Match this with the connected device's expectation.");
+        append_int(ret,"OHD_UART_FLW",ImprovedIntSetting::createEnumEnableDisable(),
+                   "Toggle RTS/CTS flow control for the OpenHD telemetry UART.");
+        append_int(ret,"TRACK_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
+                   "Baud rate for the ground side tracker/output UART.");
+        append_int(ret,"TRACK_UART_FLOW",ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable RTS/CTS flow control on the ground tracker/output UART.");
+        const auto uart_priority_items = std::vector<ImprovedIntSetting::Item>{
+            {"0 (lowest)",0},
+            {"1",1},
+            {"2",2},
+            {"3 (default RC)",3},
+            {"4",4},
+            {"5",5},
+            {"6",6},
+            {"7",7},
+            {"8",8},
+            {"9",9},
+            {"10 (highest)",10},
+        };
+        append_int(ret,"UART_PRI_RC",ImprovedIntSetting(0,10,uart_priority_items),
+                   "Priority bucket for RC/control messages on the OpenHD UART. Higher values are sent first.");
+        append_int(ret,"UART_PRI_OHD",ImprovedIntSetting(0,10,uart_priority_items),
+                   "Priority bucket for OpenHD internal telemetry on the OpenHD UART.");
+        append_int(ret,"UART_PRI_FC",ImprovedIntSetting(0,10,uart_priority_items),
+                   "Priority bucket for FC-originating MAVLink on the OpenHD UART.");
         append_int(ret,"CONFIG_BOOT_AIR",ImprovedIntSetting::createEnumEnableDisable(),"DEV, change boot as air / ground",true);
         append_int(ret,"WIFI_MODE",ImprovedIntSetting::createEnum({"OFF","HOTSPOT","CLIENT"}),
                    "Select how the built-in WiFi card is used. OFF disables WiFi entirely, HOTSPOT enables the access point for nearby devices, and CLIENT connects the unit to an existing WiFi network.");
@@ -548,31 +574,31 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                        "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...");
         }
         //
-        {
-            auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
-                {"DISABLE",""},
-                {"DEFAULT","DEFAULT"},
-                {"/dev/serial0","/dev/serial0"},
-                {"/dev/ttyAMA1","/dev/ttyAMA1"},
-                {"/dev/ttyAMA2","/dev/ttyAMA2"},
-                {"/dev/ttyAMA3","/dev/ttyAMA3"},
-                {"/dev/ttyAMA4","//dev/ttyAMA4"},
-                {"/dev/serial1","/dev/serial1"},
-                {"/dev/ttyS1","/dev/ttyS1"},
-                {"/dev/ttyS2","/dev/ttyS2"},
-                {"/dev/ttyUSB0","/dev/ttyUSB0"},
-                {"/dev/ttyUSB1","/dev/ttyUSB1"},
-                {"/dev/ttyACM0","/dev/ttyACM0"},
-                {"/dev/ttyACM1","/dev/ttyACM1"},
-                {"/dev/ttyS7","/dev/ttyS7"}
-            };
-            append_string(ret,"FC_UART_CONN",ImprovedStringSetting{fc_uart_conn_values},
-                          "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. DEFAULT - primary telemetry serial of this platform (see wiki)."
-                          "Otherwise, any linux serial fd filename (dev/testing).");
-            //same for ground uart out
-            append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
-                          "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.");
-        }
+        auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
+            {"DISABLE",""},
+            {"DEFAULT","DEFAULT"},
+            {"/dev/serial0","/dev/serial0"},
+            {"/dev/ttyAMA1","/dev/ttyAMA1"},
+            {"/dev/ttyAMA2","/dev/ttyAMA2"},
+            {"/dev/ttyAMA3","/dev/ttyAMA3"},
+            {"/dev/ttyAMA4","//dev/ttyAMA4"},
+            {"/dev/serial1","/dev/serial1"},
+            {"/dev/ttyS1","/dev/ttyS1"},
+            {"/dev/ttyS2","/dev/ttyS2"},
+            {"/dev/ttyUSB0","/dev/ttyUSB0"},
+            {"/dev/ttyUSB1","/dev/ttyUSB1"},
+            {"/dev/ttyACM0","/dev/ttyACM0"},
+            {"/dev/ttyACM1","/dev/ttyACM1"},
+            {"/dev/ttyS7","/dev/ttyS7"}
+        };
+        append_string(ret,"FC_UART_CONN",ImprovedStringSetting{fc_uart_conn_values},
+                      "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. DEFAULT - primary telemetry serial of this platform (see wiki)."
+                      "Otherwise, any linux serial fd filename (dev/testing).");
+        append_string(ret,"OHD_UART_TLM",ImprovedStringSetting{fc_uart_conn_values},
+                      "Select the UART used for OpenHD telemetry (both TX and RX). Pair with OHD_UART_EN / OHD_UART_BAUD / OHD_UART_FLW.");
+        //same for ground uart out
+        append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
+                      "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script. Configure baud/flow with TRACK_UART_BAUD and TRACK_UART_FLOW.");
         // Channel mapping presets for device(s)
         {
             /*auto values=std::vector<ImprovedStringSetting::Item>{
