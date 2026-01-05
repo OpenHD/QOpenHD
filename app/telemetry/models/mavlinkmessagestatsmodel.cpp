@@ -3,9 +3,11 @@
 #include <QDebug>
 #include <algorithm>
 #include <optional>
+#include <QStringList>
 
 #include "../tutil/openhd_defines.hpp"
 #include "../tutil/qopenhdmavlinkhelper.hpp"
+#include "../tutil/mavlink_include.h"
 
 namespace {
 struct Key {
@@ -92,8 +94,44 @@ void MavlinkMessageStatsModel::clear()
     endResetModel();
 }
 
+QString MavlinkMessageStatsModel::decodeMessage(int messageId) const
+{
+    const mavlink_message_info_t *info = mavlink_get_message_info_by_id(static_cast<uint32_t>(messageId));
+    if (info != nullptr) {
+        QStringList fields;
+        fields.reserve(static_cast<int>(info->num_fields));
+        for (unsigned int i = 0; i < info->num_fields; ++i) {
+            fields.push_back(QString::fromUtf8(info->fields[i].name));
+        }
+        const QString fieldSummary = fields.isEmpty() ? QStringLiteral("No fields") : fields.join(QStringLiteral(", "));
+        return QStringLiteral("%1 (ID %2)\nFields: %3")
+            .arg(QString::fromUtf8(info->name))
+            .arg(messageId)
+            .arg(fieldSummary);
+    }
+    return message_name_for_id(messageId);
+}
+
+void MavlinkMessageStatsModel::setEnabled(bool enabled)
+{
+    const bool wasEnabled = m_enabled.load(std::memory_order_relaxed);
+    if (wasEnabled == enabled) {
+        return;
+    }
+    m_enabled.store(enabled, std::memory_order_relaxed);
+    emit enabledChanged();
+}
+
+bool MavlinkMessageStatsModel::enabled() const
+{
+    return m_enabled.load(std::memory_order_relaxed);
+}
+
 void MavlinkMessageStatsModel::record_message(const mavlink_message_t &msg)
 {
+    if (!m_enabled.load(std::memory_order_relaxed)) {
+        return;
+    }
     emit signal_record_message(msg.sysid, msg.compid, msg.msgid);
 }
 
