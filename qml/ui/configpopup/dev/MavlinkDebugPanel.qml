@@ -43,35 +43,46 @@ Rectangle {
             }
         }
 
-        TableView {
-            id: tableView
+        ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            clip: true
-            columnSpacing: 6
-            rowSpacing: 2
-            model: _mavlinkMessageStatsModel
+            spacing: 4
 
-            delegate: Rectangle {
-                implicitHeight: 32
-                color: (row % 2 === 0) ? "#ffffff" : "#f5f5f5"
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 6
-                    spacing: 8
-                    Text { text: model.source_label; Layout.preferredWidth: 120; elide: Text.ElideRight }
-                    Text { text: model.origin_category; Layout.preferredWidth: 90; elide: Text.ElideRight }
-                    Text { text: model.message_name; Layout.preferredWidth: 130; elide: Text.ElideRight }
-                    Text { text: model.last_seen_readable; Layout.preferredWidth: 120; elide: Text.ElideRight }
-                    Text { text: model.update_count; Layout.preferredWidth: 70; horizontalAlignment: Text.AlignHCenter }
-                }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+                Text { text: qsTr("Source (sys/comp/msg)"); font.bold: true; Layout.preferredWidth: 120 }
+                Text { text: qsTr("Origin"); font.bold: true; Layout.preferredWidth: 90 }
+                Text { text: qsTr("Message"); font.bold: true; Layout.preferredWidth: 130 }
+                Text { text: qsTr("Last seen"); font.bold: true; Layout.preferredWidth: 120 }
+                Text { text: qsTr("Count"); font.bold: true; Layout.preferredWidth: 70; horizontalAlignment: Text.AlignHCenter }
             }
 
-            TableViewColumn { role: "source_label"; title: qsTr("Source (sys/comp/msg)"); width: 160 }
-            TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: 90 }
-            TableViewColumn { role: "message_name"; title: qsTr("Message"); width: 140 }
-            TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen" ); width: 140 }
-            TableViewColumn { role: "update_count"; title: qsTr("Count"); width: 70 }
+            ListView {
+                id: messageList
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+                spacing: 2
+                model: _mavlinkMessageStatsModel
+
+                delegate: Rectangle {
+                    width: messageList.width
+                    implicitHeight: 32
+                    color: (index % 2 === 0) ? "#ffffff" : "#f5f5f5"
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.margins: 6
+                        spacing: 8
+                        Text { text: model.source_label; Layout.preferredWidth: 120; elide: Text.ElideRight }
+                        Text { text: model.origin_category; Layout.preferredWidth: 90; elide: Text.ElideRight }
+                        Text { text: model.message_name; Layout.preferredWidth: 130; elide: Text.ElideRight }
+                        Text { text: model.last_seen_readable; Layout.preferredWidth: 120; elide: Text.ElideRight }
+                        Text { text: model.update_count; Layout.preferredWidth: 70; horizontalAlignment: Text.AlignHCenter }
+                    }
+                }
+            }
         }
     }
 }
