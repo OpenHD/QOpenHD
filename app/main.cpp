@@ -406,6 +406,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
     engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
+    engine.rootContext()->setContextProperty("_mavlinkMessageStatsModel", &MavlinkMessageStatsModel::instance());
     auto adsbVehicleManager = ADSBVehicleManager::instance();
     engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
     adsbVehicleManager->onStarted();

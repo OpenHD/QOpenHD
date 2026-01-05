@@ -207,6 +207,7 @@
         <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
         <file>ui/configpopup/log/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
+        <file>ui/configpopup/dev/MavlinkDebugPanel.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
