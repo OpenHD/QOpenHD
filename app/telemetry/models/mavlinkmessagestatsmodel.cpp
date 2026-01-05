@@ -1,7 +1,6 @@
 #include "mavlinkmessagestatsmodel.h"
 
 #include <QDebug>
-#include <QtConcurrent>
 #include <algorithm>
 #include <optional>
 
