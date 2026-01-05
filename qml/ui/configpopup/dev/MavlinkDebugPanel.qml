@@ -85,11 +85,11 @@ Rectangle {
             horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
             verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
-            TableViewColumn { role: "source_label"; title: qsTr("Source (sys/comp/msg)"); width: root.columnSourceWidth }
-            TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: root.columnOriginWidth }
-            TableViewColumn { role: "message_name"; title: qsTr("Message"); width: root.columnMessageWidth }
-            TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen"); width: root.columnLastSeenWidth }
-            TableViewColumn { role: "update_count"; title: qsTr("Count"); width: root.columnCountWidth }
+            Controls1.TableViewColumn { role: "source_label"; title: qsTr("Source (sys/comp/msg)"); width: root.columnSourceWidth }
+            Controls1.TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: root.columnOriginWidth }
+            Controls1.TableViewColumn { role: "message_name"; title: qsTr("Message"); width: root.columnMessageWidth }
+            Controls1.TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen"); width: root.columnLastSeenWidth }
+            Controls1.TableViewColumn { role: "update_count"; title: qsTr("Count"); width: root.columnCountWidth }
 
             rowDelegate: Rectangle {
                 height: 36
@@ -175,9 +175,9 @@ Rectangle {
                 horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
                 verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
-                TableViewColumn { role: "name"; title: qsTr("Field"); width: decodeDialog.width * 0.4 }
-                TableViewColumn { role: "type"; title: qsTr("Type"); width: decodeDialog.width * 0.32 }
-                TableViewColumn { role: "arrayLength"; title: qsTr("Array length"); width: decodeDialog.width * 0.2 }
+                Controls1.TableViewColumn { role: "name"; title: qsTr("Field"); width: decodeDialog.width * 0.4 }
+                Controls1.TableViewColumn { role: "type"; title: qsTr("Type"); width: decodeDialog.width * 0.32 }
+                Controls1.TableViewColumn { role: "arrayLength"; title: qsTr("Array length"); width: decodeDialog.width * 0.2 }
 
                 rowDelegate: Rectangle {
                     height: 32
