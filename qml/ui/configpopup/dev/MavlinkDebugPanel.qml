@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import Qt.labs.settings 1.0
 import OpenHD 1.0
+import QtQuick.Controls 1.4 as Controls1
 
 Rectangle {
     id: root
@@ -43,7 +44,7 @@ Rectangle {
             }
         }
 
-        TableView {
+        Controls1.TableView {
             id: tableView
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -67,11 +68,11 @@ Rectangle {
                 }
             }
 
-            TableViewColumn { role: "source_label"; title: qsTr("Source (sys/comp/msg)"); width: 160 }
-            TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: 90 }
-            TableViewColumn { role: "message_name"; title: qsTr("Message"); width: 140 }
-            TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen" ); width: 140 }
-            TableViewColumn { role: "update_count"; title: qsTr("Count"); width: 70 }
+            Controls1.TableViewColumn { role: "source_label"; title: qsTr("Source (sys/comp/msg)"); width: 160 }
+            Controls1.TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: 90 }
+            Controls1.TableViewColumn { role: "message_name"; title: qsTr("Message"); width: 140 }
+            Controls1.TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen" ); width: 140 }
+            Controls1.TableViewColumn { role: "update_count"; title: qsTr("Count"); width: 70 }
         }
     }
 }
