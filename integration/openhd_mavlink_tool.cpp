@@ -61,6 +61,9 @@ void print_usage() {
                  "  set-video [--mode 1280x720@60] [--codec h264|h265] [--bitrate mbit] [--keyframe frames] [--rotation 0|180] [--flip on|off]\n"
                  "  set-camera [--iso value] [--awb mode] [--contrast value] [--sharpness value] [--saturation value]\n"
                  "  set-recording --mode disable|enable|auto\n"
+                 "  set-uart [--target air|ground] [--air-only] [--device path] [--enable on|off] [--baud rate]\n"
+                 "           [--flow on|off] [--prio-rc 0-10] [--prio-ohd 0-10] [--prio-fc 0-10]\n"
+                 "           [--tracker-device path] [--tracker-baud rate] [--tracker-flow on|off]\n"
                  "  set-wifi --target air|ground --mode off|hotspot|client [--hotspot auto|off|on] [--hs-iface name]\n"
                  "          [--cl-iface name] [--cl-ssid ssid] [--cl-pw password]\n"
                  "Use --air-only to avoid mirroring link changes to the ground station.\n";
@@ -299,6 +302,12 @@ Target parse_target(const std::string &target_name) {
     throw std::runtime_error("target must be air or ground");
 }
 
+std::optional<std::string> parse_bool_flag(const std::string &value) {
+    if (value == "on" || value == "enable" || value == "1" || value == "yes" || value == "true") return "1";
+    if (value == "off" || value == "disable" || value == "0" || value == "no" || value == "false") return "0";
+    return std::nullopt;
+}
+
 int handle_set_wifi(const MavlinkSender &sender, int argc, char **argv) {
     std::optional<std::string> target_name;
     std::optional<std::string> mode;
@@ -385,6 +394,98 @@ int handle_set_wifi(const MavlinkSender &sender, int argc, char **argv) {
     return 0;
 }
 
+int handle_set_uart(const MavlinkSender &sender, int argc, char **argv) {
+    std::optional<std::string> target_name;
+    bool mirror_ground = true;
+    std::optional<std::string> device;
+    std::optional<std::string> enable;
+    std::optional<std::string> baud;
+    std::optional<std::string> flow;
+    std::optional<std::string> prio_rc;
+    std::optional<std::string> prio_ohd;
+    std::optional<std::string> prio_fc;
+    std::optional<std::string> tracker_device;
+    std::optional<std::string> tracker_baud;
+    std::optional<std::string> tracker_flow;
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg{argv[i]};
+        if (arg == "--target" && i + 1 < argc) {
+            target_name = argv[++i];
+        } else if (arg == "--air-only") {
+            mirror_ground = false;
+        } else if (arg == "--device" && i + 1 < argc) {
+            device = argv[++i];
+        } else if (arg == "--enable" && i + 1 < argc) {
+            enable = parse_bool_flag(argv[++i]);
+            if (!enable) {
+                std::cerr << "Invalid value for --enable, expected on/off" << std::endl;
+                return 1;
+            }
+        } else if (arg == "--baud" && i + 1 < argc) {
+            baud = argv[++i];
+        } else if (arg == "--flow" && i + 1 < argc) {
+            flow = parse_bool_flag(argv[++i]);
+            if (!flow) {
+                std::cerr << "Invalid value for --flow, expected on/off" << std::endl;
+                return 1;
+            }
+        } else if (arg == "--prio-rc" && i + 1 < argc) {
+            prio_rc = argv[++i];
+        } else if (arg == "--prio-ohd" && i + 1 < argc) {
+            prio_ohd = argv[++i];
+        } else if (arg == "--prio-fc" && i + 1 < argc) {
+            prio_fc = argv[++i];
+        } else if (arg == "--tracker-device" && i + 1 < argc) {
+            tracker_device = argv[++i];
+        } else if (arg == "--tracker-baud" && i + 1 < argc) {
+            tracker_baud = argv[++i];
+        } else if (arg == "--tracker-flow" && i + 1 < argc) {
+            tracker_flow = parse_bool_flag(argv[++i]);
+            if (!tracker_flow) {
+                std::cerr << "Invalid value for --tracker-flow, expected on/off" << std::endl;
+                return 1;
+            }
+        }
+    }
+
+    std::vector<Target> targets;
+    if (target_name) {
+        try {
+            targets.push_back(parse_target(*target_name));
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+            return 1;
+        }
+    } else {
+        targets = default_link_targets(mirror_ground);
+    }
+
+    bool success = true;
+    for (const auto &target : targets) {
+        if (device) success &= send_param_set(sender, target, "OHD_UART_TLM", *device, MAV_PARAM_EXT_TYPE_CUSTOM);
+        if (enable) success &= send_param_set(sender, target, "OHD_UART_EN", *enable, MAV_PARAM_EXT_TYPE_INT32);
+        if (baud) success &= send_param_set(sender, target, "OHD_UART_BAUD", *baud, MAV_PARAM_EXT_TYPE_INT32);
+        if (flow) success &= send_param_set(sender, target, "OHD_UART_FLW", *flow, MAV_PARAM_EXT_TYPE_INT32);
+        if (prio_rc) success &= send_param_set(sender, target, "UART_PRI_RC", *prio_rc, MAV_PARAM_EXT_TYPE_INT32);
+        if (prio_ohd) success &= send_param_set(sender, target, "UART_PRI_OHD", *prio_ohd, MAV_PARAM_EXT_TYPE_INT32);
+        if (prio_fc) success &= send_param_set(sender, target, "UART_PRI_FC", *prio_fc, MAV_PARAM_EXT_TYPE_INT32);
+
+        if (target.system_id == 100) {  // ground tracker settings
+            if (tracker_device) success &= send_param_set(sender, target, "TRACKER_UART_OUT", *tracker_device, MAV_PARAM_EXT_TYPE_CUSTOM);
+            if (tracker_baud) success &= send_param_set(sender, target, "TRACK_UART_BAUD", *tracker_baud, MAV_PARAM_EXT_TYPE_INT32);
+            if (tracker_flow) success &= send_param_set(sender, target, "TRACK_UART_FLOW", *tracker_flow, MAV_PARAM_EXT_TYPE_INT32);
+        }
+    }
+
+    if (!success) {
+        std::cerr << "Failed to send some UART parameters" << std::endl;
+        return 1;
+    }
+    std::cout << "UART parameters sent" << std::endl;
+    return 0;
+}
+
 }  // namespace
 
 int main(int argc, char **argv) {
@@ -419,6 +520,9 @@ int main(int argc, char **argv) {
     }
     if (command == "set-wifi") {
         return handle_set_wifi(sender, argc - 1, argv + 1);
+    }
+    if (command == "set-uart") {
+        return handle_set_uart(sender, argc - 1, argv + 1);
     }
 
     print_usage();
