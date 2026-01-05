@@ -141,6 +141,50 @@ QString MavlinkMessageStatsModel::decodeMessage(int messageId) const
     return QStringLiteral("Unknown message ID %1").arg(messageId);
 }
 
+QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int messageId) const
+{
+    QVariantMap result;
+    result.insert(QStringLiteral("messageId"), messageId);
+    result.insert(QStringLiteral("messageName"), QStringLiteral("Unknown message"));
+    result.insert(QStringLiteral("fieldCount"), 0);
+    QVariantList fields;
+
+    const mavlink_message_info_t *info = mavlink_get_message_info_by_id(static_cast<uint32_t>(messageId));
+    if (info != nullptr) {
+        auto type_to_string = [](uint8_t type) -> QString {
+            switch (type) {
+            case MAVLINK_TYPE_CHAR: return QStringLiteral("char");
+            case MAVLINK_TYPE_UINT8_T: return QStringLiteral("uint8");
+            case MAVLINK_TYPE_INT8_T: return QStringLiteral("int8");
+            case MAVLINK_TYPE_UINT16_T: return QStringLiteral("uint16");
+            case MAVLINK_TYPE_INT16_T: return QStringLiteral("int16");
+            case MAVLINK_TYPE_UINT32_T: return QStringLiteral("uint32");
+            case MAVLINK_TYPE_INT32_T: return QStringLiteral("int32");
+            case MAVLINK_TYPE_UINT64_T: return QStringLiteral("uint64");
+            case MAVLINK_TYPE_INT64_T: return QStringLiteral("int64");
+            case MAVLINK_TYPE_FLOAT: return QStringLiteral("float");
+            case MAVLINK_TYPE_DOUBLE: return QStringLiteral("double");
+            default: return QStringLiteral("unknown");
+            }
+        };
+
+        result.insert(QStringLiteral("messageName"), QString::fromUtf8(info->name));
+        result.insert(QStringLiteral("fieldCount"), static_cast<int>(info->num_fields));
+
+        for (unsigned int i = 0; i < info->num_fields; ++i) {
+            const auto &field = info->fields[i];
+            QVariantMap fieldMap;
+            fieldMap.insert(QStringLiteral("name"), QString::fromUtf8(field.name));
+            fieldMap.insert(QStringLiteral("type"), type_to_string(field.type));
+            fieldMap.insert(QStringLiteral("arrayLength"), static_cast<int>(field.array_length));
+            fields.push_back(fieldMap);
+        }
+    }
+
+    result.insert(QStringLiteral("fields"), fields);
+    return result;
+}
+
 void MavlinkMessageStatsModel::setEnabled(bool enabled)
 {
     const bool wasEnabled = m_enabled.load(std::memory_order_relaxed);

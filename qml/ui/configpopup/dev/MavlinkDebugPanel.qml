@@ -14,7 +14,7 @@ Rectangle {
     property real columnMessageWidth: Math.max(190, width * 0.26)
     property real columnLastSeenWidth: Math.max(140, width * 0.2)
     property real columnCountWidth: Math.max(90, width * 0.1)
-    property string decodedMessageDetails: ""
+    property var decodedMessageDetails: ({messageName: "", messageId: 0, fieldCount: 0, fields: []})
 
     TabBar {
         id: selectItemInStackLayoutBar
@@ -36,7 +36,6 @@ Rectangle {
         property real columnMessageWidth: Math.max(170, messageList.width * 0.24)
         property real columnLastSeenWidth: Math.max(140, messageList.width * 0.2)
         property real columnCountWidth: Math.max(80, messageList.width * 0.12)
-        property string decodedMessageDetails: ""
 
         RowLayout {
             spacing: 10
@@ -144,7 +143,7 @@ Rectangle {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 onClicked: {
-                                    root.decodedMessageDetails = _mavlinkMessageStatsModel.decodeMessage(model.message_id)
+                                    root.decodedMessageDetails = _mavlinkMessageStatsModel.decodeMessageDetails(model.message_id)
                                     decodeDialog.open()
                                 }
                                 cursorShape: Qt.PointingHandCursor
@@ -175,52 +174,90 @@ Rectangle {
         title: qsTr("Message details")
         modal: true
         standardButtons: Dialog.Ok
-        visible: false
-        contentItem: Item {
-            width: 420
-            implicitHeight: decodeText.paintedHeight + 40
-            Flickable {
-                anchors.fill: parent
-                contentWidth: decodeText.paintedWidth
-                contentHeight: decodeText.paintedHeight
-                clip: true
-                Text {
-                    id: decodeText
-                    width: parent.width - 20
-                    anchors {
-                        left: parent.left
-                        leftMargin: 10
-                        top: parent.top
-                        topMargin: 10
+        x: (root.width - width) / 2
+        y: (root.height - height) / 2
+        width: root.width * 0.5
+        height: root.height * 0.5
+        contentItem: ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 16
+            spacing: 12
+
+            GridLayout {
+                columns: 2
+                columnSpacing: 8
+                rowSpacing: 6
+                Layout.fillWidth: true
+                Label { text: qsTr("Name"); font.bold: true }
+                Label { text: root.decodedMessageDetails.messageName }
+                Label { text: qsTr("ID"); font.bold: true }
+                Label { text: root.decodedMessageDetails.messageId }
+                Label { text: qsTr("Field count"); font.bold: true }
+                Label { text: root.decodedMessageDetails.fieldCount }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 32
+                color: "#f0f0f0"
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    spacing: 12
+                    Label {
+                        text: qsTr("Field")
+                        font.bold: true
+                        Layout.preferredWidth: decodeDialog.width * 0.35
                     }
-                    wrapMode: Text.Wrap
-                    text: root.decodedMessageDetails
+                    Label {
+                        text: qsTr("Type")
+                        font.bold: true
+                        Layout.preferredWidth: decodeDialog.width * 0.25
+                    }
+                    Label {
+                        text: qsTr("Array length")
+                        font.bold: true
+                        Layout.alignment: Qt.AlignRight
+                    }
                 }
             }
-        }
-    }
 
-    Dialog {
-        id: decodeDialog
-        title: qsTr("Message details")
-        modal: true
-        standardButtons: Dialog.Ok
-        visible: false
-        contentItem: Item {
-            width: 420
-            implicitHeight: decodeText.paintedHeight + 20
-            Text {
-                id: decodeText
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    leftMargin: 10
-                    rightMargin: 10
-                    top: parent.top
-                    topMargin: 10
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+
+                ListView {
+                    id: fieldList
+                    anchors.fill: parent
+                    spacing: 2
+                    model: root.decodedMessageDetails.fields
+                    delegate: Rectangle {
+                        width: fieldList.width
+                        height: 32
+                        color: (index % 2 === 0) ? "#ffffff" : "#f7f7f7"
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            spacing: 12
+                            Label {
+                                text: modelData.name
+                                Layout.preferredWidth: decodeDialog.width * 0.35
+                                elide: Text.ElideRight
+                            }
+                            Label {
+                                text: modelData.type
+                                Layout.preferredWidth: decodeDialog.width * 0.25
+                                elide: Text.ElideRight
+                            }
+                            Label {
+                                text: modelData.arrayLength > 1 ? modelData.arrayLength : ""
+                                Layout.alignment: Qt.AlignRight
+                            }
+                        }
+                    }
                 }
-                wrapMode: Text.Wrap
-                text: root.decodedMessageDetails
             }
         }
     }
