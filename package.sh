@@ -13,16 +13,19 @@ BUILD_TYPE=$5
 
 TMPDIR=/tmp/qopenhd/
 
-rm -rf /tmp/qopenhd/*
+rm -rf $TMPDIR/*
 
-mkdir -p /tmp/qopenhd/usr/local/bin || exit 1
-mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
+mkdir -p "$TMPDIR/usr/local/bin" || exit 1
+mkdir -p "$TMPDIR/etc/systemd/system" || exit 1
 
 VER2=$(git rev-parse --short HEAD)
 
 if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] && [[ "${PACKAGE_ARCH}" = "armhf" ]] ; then
     QT_VERSION=Qt5.15.4
     echo "debug"
+    lupdate ./QOpenHD.pro
+    lrelease ./QOpenHD.pro
+    cp ./translations/*.qm ./qml/
     /opt/Qt5.15.4/bin/qmake
     echo "build with qmake done"
     make -j$(nproc)|| exit 1
@@ -34,12 +37,18 @@ elif [[ "${DISTRO}" == "jammy" ]] && [[ "${BUILD_TYPE}" = "debug" ]] ; then
     sudo ldconfig
     export PATH="$PATH:/opt/Qt5.15.7/bin/"
     sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake  
+    lupdate ./QOpenHD.pro
+    lrelease ./QOpenHD.pro
+    cp ./translations/*.qm ./qml/
     qmake
     echo "build with qmake done"
     make -j2 || exit 1
     echo "build with make done"
 else
     echo "\ndebug\ndebug\ndebug\n"
+    lupdate ./QOpenHD.pro
+    lrelease ./QOpenHD.pro
+    cp ./translations/*.qm ./qml/
     qmake
     echo "build with qmake done"
     make -j$(nproc)|| exit 1
@@ -56,17 +65,17 @@ fi
 ls -a release/
 echo "here we should have built the file correctly"
 
-cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
-cp systemd/h264_decode.service /tmp/qopenhd/etc/systemd/system/ || exit 1
-cp systemd/h265_decode.service /tmp/qopenhd/etc/systemd/system/ || exit 1
+cp release/QOpenHD $TMPDIR/usr/local/bin/ || exit 1
+cp systemd/h264_decode.service $TMPDIR/etc/systemd/system/ || exit 1
+cp systemd/h265_decode.service $TMPDIR/etc/systemd/system/ || exit 1
 
 # copying services
 if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
 PACKAGE_NAME=qopenhd
-cp systemd/rpi_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
+cp systemd/rpi_qopenhd.service $TMPDIR/etc/systemd/system/qopenhd.service || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
-mkdir -p /tmp/qopenhd/etc/systemd/system/
-cp systemd/rock3_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
+mkdir -p $TMPDIR/etc/systemd/system/
+cp systemd/rock3_qopenhd.service $TMPDIR/etc/systemd/system/qopenhd.service
 PACKAGE_NAME=qopenhd_rk3566
 else
 PACKAGE_NAME=qopenhd
@@ -75,11 +84,11 @@ fi
 
 # The qt_eglfs_kms_config.json file makes sure that qopenhd runs at the res
 # specified in the config.txt if the user did so
-mkdir -p /tmp/qopenhd/usr/local/share/qopenhd/
+mkdir -p $TMPDIR/usr/local/share/qopenhd/
 if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
-cp rpi_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
+cp rpi_qt_eglfs_kms_config.json $TMPDIR/usr/local/share/qopenhd/ || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
-cp rock_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
+cp rock_qt_eglfs_kms_config.json $TMPDIR/usr/local/share/qopenhd/ || exit 1
 fi
 
 VERSION="2.6.4-$(date -d '+1 hour' +'%m-%d-%Y--%H-%M-%S')-${VER2}"
@@ -102,16 +111,16 @@ elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
     ${PLATFORM_PACKAGES} || exit 1
     
     #Rock5Package
-    rm /tmp/qopenhd/etc/systemd/system/qopenhd.service
-    cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
+    rm $TMPDIR/etc/systemd/system/qopenhd.service
+    cp systemd/rock5_qopenhd.service $TMPDIR/etc/systemd/system/qopenhd.service
 
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588 -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_rk3588_VERSION_ARCH.deb \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
     #Rock5aPackage
-    rm /tmp/qopenhd/etc/systemd/system/qopenhd.service
-    cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service
+    rm $TMPDIR/etc/systemd/system/qopenhd.service
+    cp systemd/rock5_qopenhd.service $TMPDIR/etc/systemd/system/qopenhd.service
 
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n qopenhd_rk3588a -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_rk3588a_VERSION_ARCH.deb \
