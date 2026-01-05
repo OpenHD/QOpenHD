@@ -185,6 +185,25 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int messageId) const
     return result;
 }
 
+QVariantMap MavlinkMessageStatsModel::get(int row) const
+{
+    QVariantMap result;
+    if (row < 0 || row >= rowCount()) {
+        return result;
+    }
+    const auto &entry = m_data.at(static_cast<size_t>(row));
+    result.insert(QStringLiteral("source_label"), source_label_for(entry));
+    result.insert(QStringLiteral("origin_category"), entry.origin_category);
+    result.insert(QStringLiteral("system_id"), entry.system_id);
+    result.insert(QStringLiteral("component_id"), entry.component_id);
+    result.insert(QStringLiteral("message_id"), entry.message_id);
+    result.insert(QStringLiteral("message_name"), entry.message_name);
+    result.insert(QStringLiteral("last_seen_ms"), entry.last_seen_ms);
+    result.insert(QStringLiteral("last_seen_readable"), last_seen_readable(entry.last_seen_ms));
+    result.insert(QStringLiteral("update_count"), entry.update_count);
+    return result;
+}
+
 void MavlinkMessageStatsModel::setEnabled(bool enabled)
 {
     const bool wasEnabled = m_enabled.load(std::memory_order_relaxed);

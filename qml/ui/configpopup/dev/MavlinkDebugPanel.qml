@@ -10,7 +10,9 @@ Rectangle {
     width: parent.width
     height: parent.height
     color: "#eaeaea"
-    property real columnSourceWidth: Math.max(160, width * 0.2)
+    property real columnSysWidth: 40
+    property real columnCompWidth: 40
+    property real columnMsgWidth: 40
     property real columnOriginWidth: Math.max(120, width * 0.14)
     property real columnMessageWidth: Math.max(120, width * 0.14)
     property real columnLastSeenWidth: Math.max(140, width * 0.2)
@@ -32,11 +34,13 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         spacing: 10
-        property real columnSourceWidth: Math.max(150, messageList.width * 0.2)
-        property real columnOriginWidth: Math.max(110, messageList.width * 0.16)
-        property real columnMessageWidth: Math.max(110, messageList.width * 0.16)
-        property real columnLastSeenWidth: Math.max(140, messageList.width * 0.1)
-        property real columnCountWidth: Math.max(80, messageList.width * 0.1)
+        property real columnSysWidth: Math.max(root.columnSysWidth, messageTable.width * 0.06)
+        property real columnCompWidth: Math.max(root.columnCompWidth, messageTable.width * 0.06)
+        property real columnMsgWidth: Math.max(root.columnMsgWidth, messageTable.width * 0.06)
+        property real columnOriginWidth: Math.max(root.columnOriginWidth, messageTable.width * 0.14)
+        property real columnMessageWidth: Math.max(root.columnMessageWidth, messageTable.width * 0.18)
+        property real columnLastSeenWidth: Math.max(root.columnLastSeenWidth, messageTable.width * 0.12)
+        property real columnCountWidth: Math.max(root.columnCountWidth, messageTable.width * 0.1)
 
         RowLayout {
             spacing: 10
@@ -85,11 +89,13 @@ Rectangle {
             horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
             verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
-            Controls1.TableViewColumn { role: "source_label"; title: qsTr("Source (sys/comp/msg)"); width: root.columnSourceWidth }
-            Controls1.TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: root.columnOriginWidth }
-            Controls1.TableViewColumn { role: "message_name"; title: qsTr("Message"); width: root.columnMessageWidth }
-            Controls1.TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen"); width: root.columnLastSeenWidth }
-            Controls1.TableViewColumn { role: "update_count"; title: qsTr("Count"); width: root.columnCountWidth }
+            Controls1.TableViewColumn { role: "system_id"; title: qsTr("Sys"); width: columnSysWidth }
+            Controls1.TableViewColumn { role: "component_id"; title: qsTr("Cmp"); width: columnCompWidth }
+            Controls1.TableViewColumn { role: "message_id"; title: qsTr("Msg"); width: columnMsgWidth }
+            Controls1.TableViewColumn { role: "origin_category"; title: qsTr("Origin"); width: columnOriginWidth }
+            Controls1.TableViewColumn { role: "message_name"; title: qsTr("Message"); width: columnMessageWidth }
+            Controls1.TableViewColumn { role: "last_seen_readable"; title: qsTr("Last seen"); width: columnLastSeenWidth }
+            Controls1.TableViewColumn { role: "update_count"; title: qsTr("Count"); width: columnCountWidth }
 
             rowDelegate: Rectangle {
                 height: 36
@@ -117,16 +123,17 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.leftMargin: 8
                     anchors.right: parent.right
-                    anchors.rightMargin: styleData.column === 4 ? 8 : 20
-                    horizontalAlignment: styleData.column === 4 ? Text.AlignHCenter : Text.AlignLeft
+                    anchors.rightMargin: styleData.column >= 3 ? 8 : 12
+                    horizontalAlignment: styleData.column <= 2 ? Text.AlignHCenter : (styleData.column === 6 ? Text.AlignHCenter : Text.AlignLeft)
                     elide: Text.ElideRight
-                    text: styleData.value
+                    font.family: styleData.column <= 2 ? "monospace" : font.family
+                    text: styleData.column <= 2 ? ("000" + styleData.value).slice(-3) : styleData.value
                 }
 
                 MouseArea {
                     anchors.fill: parent
-                    cursorShape: styleData.column === 2 ? Qt.PointingHandCursor : Qt.ArrowCursor
-                    enabled: styleData.column === 2
+                    cursorShape: styleData.column === 4 ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    enabled: styleData.column === 4
                     onClicked: {
                         var rowData = messageTable.model.get(styleData.row)
                         root.decodedMessageDetails = _mavlinkMessageStatsModel.decodeMessageDetails(rowData.message_id)
