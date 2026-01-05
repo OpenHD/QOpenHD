@@ -11,7 +11,7 @@ Rectangle {
     color: "#eaeaea"
     property real columnSourceWidth: Math.max(160, width * 0.2)
     property real columnOriginWidth: Math.max(120, width * 0.14)
-    property real columnMessageWidth: Math.max(190, width * 0.26)
+    property real columnMessageWidth: Math.max(120, width * 0.14)
     property real columnLastSeenWidth: Math.max(140, width * 0.2)
     property real columnCountWidth: Math.max(90, width * 0.1)
     property var decodedMessageDetails: ({messageName: "", messageId: 0, fieldCount: 0, fields: []})
@@ -31,11 +31,11 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         spacing: 10
-        property real columnSourceWidth: Math.max(150, messageList.width * 0.24)
-        property real columnOriginWidth: Math.max(110, messageList.width * 0.15)
-        property real columnMessageWidth: Math.max(170, messageList.width * 0.24)
-        property real columnLastSeenWidth: Math.max(140, messageList.width * 0.2)
-        property real columnCountWidth: Math.max(80, messageList.width * 0.12)
+        property real columnSourceWidth: Math.max(150, messageList.width * 0.2)
+        property real columnOriginWidth: Math.max(110, messageList.width * 0.16)
+        property real columnMessageWidth: Math.max(110, messageList.width * 0.16)
+        property real columnLastSeenWidth: Math.max(140, messageList.width * 0.1)
+        property real columnCountWidth: Math.max(80, messageList.width * 0.1)
 
         RowLayout {
             spacing: 10
@@ -176,8 +176,8 @@ Rectangle {
         standardButtons: Dialog.Ok
         x: (root.width - width) / 2
         y: (root.height - height) / 2
-        width: root.width * 0.5
-        height: root.height * 0.5
+        width: root.width * 0.9
+        height: root.height * 0.9
         contentItem: ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
