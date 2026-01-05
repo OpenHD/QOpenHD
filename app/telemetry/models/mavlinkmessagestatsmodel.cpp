@@ -3,9 +3,11 @@
 #include <QDebug>
 #include <algorithm>
 #include <optional>
+#include <QStringList>
 
 #include "../tutil/openhd_defines.hpp"
 #include "../tutil/qopenhdmavlinkhelper.hpp"
+#include "../tutil/mavlink_include.h"
 
 namespace {
 struct Key {
@@ -92,8 +94,73 @@ void MavlinkMessageStatsModel::clear()
     endResetModel();
 }
 
+QString MavlinkMessageStatsModel::decodeMessage(int messageId) const
+{
+    const mavlink_message_info_t *info = mavlink_get_message_info_by_id(static_cast<uint32_t>(messageId));
+    if (info != nullptr) {
+        auto type_to_string = [](uint8_t type) -> QString {
+            switch (type) {
+            case MAVLINK_TYPE_CHAR: return QStringLiteral("char");
+            case MAVLINK_TYPE_UINT8_T: return QStringLiteral("uint8");
+            case MAVLINK_TYPE_INT8_T: return QStringLiteral("int8");
+            case MAVLINK_TYPE_UINT16_T: return QStringLiteral("uint16");
+            case MAVLINK_TYPE_INT16_T: return QStringLiteral("int16");
+            case MAVLINK_TYPE_UINT32_T: return QStringLiteral("uint32");
+            case MAVLINK_TYPE_INT32_T: return QStringLiteral("int32");
+            case MAVLINK_TYPE_UINT64_T: return QStringLiteral("uint64");
+            case MAVLINK_TYPE_INT64_T: return QStringLiteral("int64");
+            case MAVLINK_TYPE_FLOAT: return QStringLiteral("float");
+            case MAVLINK_TYPE_DOUBLE: return QStringLiteral("double");
+            default: return QStringLiteral("unknown");
+            }
+        };
+
+        QStringList fields;
+        fields.reserve(static_cast<int>(info->num_fields));
+        for (unsigned int i = 0; i < info->num_fields; ++i) {
+            const auto &field = info->fields[i];
+            const auto type_str = type_to_string(field.type);
+            if (field.array_length > 1) {
+                fields.push_back(QStringLiteral("%1: %2[%3]")
+                                     .arg(QString::fromUtf8(field.name))
+                                     .arg(type_str)
+                                     .arg(field.array_length));
+            } else {
+                fields.push_back(QStringLiteral("%1: %2")
+                                     .arg(QString::fromUtf8(field.name))
+                                     .arg(type_str));
+            }
+        }
+        const QString fieldSummary = fields.isEmpty() ? QStringLiteral("No fields") : fields.join(QStringLiteral("\n"));
+        return QStringLiteral("%1 (ID %2)\nField count: %3\n\n%4")
+            .arg(QString::fromUtf8(info->name))
+            .arg(messageId)
+            .arg(info->num_fields)
+            .arg(fieldSummary);
+    }
+    return QStringLiteral("Unknown message ID %1").arg(messageId);
+}
+
+void MavlinkMessageStatsModel::setEnabled(bool enabled)
+{
+    const bool wasEnabled = m_enabled.load(std::memory_order_relaxed);
+    if (wasEnabled == enabled) {
+        return;
+    }
+    m_enabled.store(enabled, std::memory_order_relaxed);
+    emit enabledChanged();
+}
+
+bool MavlinkMessageStatsModel::enabled() const
+{
+    return m_enabled.load(std::memory_order_relaxed);
+}
+
 void MavlinkMessageStatsModel::record_message(const mavlink_message_t &msg)
 {
+    if (!m_enabled.load(std::memory_order_relaxed)) {
+        return;
+    }
     emit signal_record_message(msg.sysid, msg.compid, msg.msgid);
 }
 

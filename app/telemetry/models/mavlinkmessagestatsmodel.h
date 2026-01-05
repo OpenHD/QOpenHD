@@ -8,6 +8,7 @@
 #include <QAbstractListModel>
 #include <QDateTime>
 #include <vector>
+#include <atomic>
 
 #include "../tutil/mavlink_include.h"
 
@@ -19,6 +20,7 @@
 class MavlinkMessageStatsModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 public:
     enum MessageRoles {
         SourceLabelRole = Qt::UserRole + 1,
@@ -50,12 +52,16 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void clear();
+    Q_INVOKABLE QString decodeMessage(int messageId) const;
+    Q_INVOKABLE void setEnabled(bool enabled);
+    Q_INVOKABLE bool enabled() const;
 
     // Thread-safe entry point used by the telemetry pipeline to record a new message.
     void record_message(const mavlink_message_t& msg);
 
 signals:
     void signal_record_message(int sysid, int compid, int msgid);
+    void enabledChanged();
 
 private slots:
     void handle_record_message(int sysid, int compid, int msgid);
@@ -69,6 +75,7 @@ private:
     void sort_entries();
     void update_or_insert_entry(const Entry& entry_template);
 
+    std::atomic_bool m_enabled{true};
     std::vector<Entry> m_data;
 };
 
