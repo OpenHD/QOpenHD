@@ -162,6 +162,12 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
     QVariantList fields;
     const auto payload_len = entry.has_payload ? static_cast<int>(entry.last_payload_len) : 0;
     const auto *payload = entry.has_payload ? entry.last_payload.data() : nullptr;
+    std::array<uint8_t, MAVLINK_MAX_PAYLOAD_LEN> padded_payload{};
+    if (payload != nullptr && payload_len > 0) {
+        const auto bytes_to_copy = std::min<int>(payload_len, MAVLINK_MAX_PAYLOAD_LEN);
+        std::copy_n(payload, bytes_to_copy, padded_payload.begin());
+    }
+    const auto *safe_payload = padded_payload.data();
 
     const mavlink_message_info_t *info = mavlink_get_message_info_by_id(static_cast<uint32_t>(messageId));
     if (info != nullptr) {
@@ -248,22 +254,15 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
             fieldMap.insert(QStringLiteral("type"), type_to_string(field.type));
             fieldMap.insert(QStringLiteral("arrayLength"), static_cast<int>(array_len));
 
-            if (payload == nullptr || size == 0) {
+            if (size == 0) {
                 fieldMap.insert(QStringLiteral("value"), QStringLiteral("n/a"));
                 fields.push_back(fieldMap);
                 continue;
             }
 
             const int field_offset = static_cast<int>(field.wire_offset);
-            const int total_needed = field_offset + (size * static_cast<int>(array_len));
-            if (total_needed > payload_len) {
-                fieldMap.insert(QStringLiteral("value"), QStringLiteral("truncated"));
-                fields.push_back(fieldMap);
-                continue;
-            }
-
             QStringList values;
-            const uint8_t *curr_ptr = payload + field_offset;
+            const uint8_t *curr_ptr = safe_payload + field_offset;
 
             if (field.type == MAVLINK_TYPE_CHAR && array_len > 1) {
                 QByteArray raw(reinterpret_cast<const char *>(curr_ptr), static_cast<int>(array_len));
