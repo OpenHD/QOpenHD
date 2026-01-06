@@ -14,7 +14,7 @@ Rectangle {
     property real columnCompWidth: 40
     property real columnMsgWidth: 40
     property real columnOriginWidth: 60
-    property real columnMessageWidth: 80
+    property real columnMessageWidth: 250
     property real columnLastSeenWidth: 80
     property real columnCountWidth: 50
     property var decodedMessageDetails: ({messageName: "", messageId: 0, fieldCount: 0, fields: []})
@@ -38,7 +38,7 @@ Rectangle {
         property real columnCompWidth: 40
         property real columnMsgWidth: 40
         property real columnOriginWidth: 60
-        property real columnMessageWidth: 80
+        property real columnMessageWidth: 250
         property real columnLastSeenWidth: 80
         property real columnCountWidth: 50
 
@@ -181,7 +181,7 @@ Rectangle {
                 horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
                 verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
-                Controls1.TableViewColumn { role: "name"; title: qsTr("Field"); width: 100}
+                Controls1.TableViewColumn { role: "name"; title: qsTr("Field"); width: 180}
                 Controls1.TableViewColumn { role: "type"; title: qsTr("Type"); width: 80}
                 Controls1.TableViewColumn { role: "arrayLength"; title: qsTr("Array length"); width: 80}
                 Controls1.TableViewColumn { role: "value"; title: qsTr("Value"); width: 220}
