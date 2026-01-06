@@ -13,10 +13,10 @@ Rectangle {
     property real columnSysWidth: 40
     property real columnCompWidth: 40
     property real columnMsgWidth: 40
-    property real columnOriginWidth: Math.max(120, width * 0.14)
-    property real columnMessageWidth: Math.max(120, width * 0.14)
-    property real columnLastSeenWidth: Math.max(140, width * 0.2)
-    property real columnCountWidth: Math.max(90, width * 0.1)
+    property real columnOriginWidth: 60
+    property real columnMessageWidth: 80
+    property real columnLastSeenWidth: 80
+    property real columnCountWidth: 50
     property var decodedMessageDetails: ({messageName: "", messageId: 0, fieldCount: 0, fields: []})
 
     TabBar {
@@ -34,13 +34,13 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         spacing: 10
-        property real columnSysWidth: Math.max(root.columnSysWidth, messageTable.width * 0.06)
-        property real columnCompWidth: Math.max(root.columnCompWidth, messageTable.width * 0.06)
-        property real columnMsgWidth: Math.max(root.columnMsgWidth, messageTable.width * 0.06)
-        property real columnOriginWidth: Math.max(root.columnOriginWidth, messageTable.width * 0.14)
-        property real columnMessageWidth: Math.max(root.columnMessageWidth, messageTable.width * 0.18)
-        property real columnLastSeenWidth: Math.max(root.columnLastSeenWidth, messageTable.width * 0.12)
-        property real columnCountWidth: Math.max(root.columnCountWidth, messageTable.width * 0.1)
+        property real columnSysWidth: 40
+        property real columnCompWidth: 40
+        property real columnMsgWidth: 40
+        property real columnOriginWidth: 60
+        property real columnMessageWidth: 80
+        property real columnLastSeenWidth: 80
+        property real columnCountWidth: 50
 
         RowLayout {
             spacing: 10
@@ -156,6 +156,7 @@ Rectangle {
         contentItem: ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
+            anchors.topMargin:50
             spacing: 12
 
             GridLayout {
@@ -182,9 +183,9 @@ Rectangle {
                 horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
                 verticalScrollBarPolicy: Qt.ScrollBarAsNeeded
 
-                Controls1.TableViewColumn { role: "name"; title: qsTr("Field"); width: decodeDialog.width * 0.4 }
-                Controls1.TableViewColumn { role: "type"; title: qsTr("Type"); width: decodeDialog.width * 0.32 }
-                Controls1.TableViewColumn { role: "arrayLength"; title: qsTr("Array length"); width: decodeDialog.width * 0.2 }
+                Controls1.TableViewColumn { role: "name"; title: qsTr("Field"); width: 100}
+                Controls1.TableViewColumn { role: "type"; title: qsTr("Type"); width: 80}
+                Controls1.TableViewColumn { role: "arrayLength"; title: qsTr("Array length"); width: 80}
 
                 rowDelegate: Rectangle {
                     height: 32
