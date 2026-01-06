@@ -6,11 +6,13 @@
 #define MAVLINKMESSAGESTATSMODEL_H
 
 #include <QAbstractListModel>
+#include <QByteArray>
 #include <QDateTime>
-#include <QVariantMap>
 #include <QVariantList>
-#include <vector>
+#include <QVariantMap>
 #include <atomic>
+#include <array>
+#include <vector>
 
 #include "../tutil/mavlink_include.h"
 
@@ -45,6 +47,9 @@ public:
         QString origin_category;
         qint64 last_seen_ms;
         int update_count{0};
+        std::array<uint8_t, MAVLINK_MAX_PAYLOAD_LEN> last_payload{};
+        uint8_t last_payload_len{0};
+        bool has_payload{false};
     };
 
     static MavlinkMessageStatsModel& instance();
@@ -55,7 +60,7 @@ public:
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE QString decodeMessage(int messageId) const;
-    Q_INVOKABLE QVariantMap decodeMessageDetails(int messageId) const;
+    Q_INVOKABLE QVariantMap decodeMessageDetails(int row) const;
     Q_INVOKABLE QVariantMap get(int row) const;
     Q_INVOKABLE void setEnabled(bool enabled);
     Q_INVOKABLE bool enabled() const;
@@ -64,11 +69,11 @@ public:
     void record_message(const mavlink_message_t& msg);
 
 signals:
-    void signal_record_message(int sysid, int compid, int msgid);
+    void signal_record_message(int sysid, int compid, int msgid, QByteArray payload);
     void enabledChanged();
 
 private slots:
-    void handle_record_message(int sysid, int compid, int msgid);
+    void handle_record_message(int sysid, int compid, int msgid, const QByteArray &payload);
 
 private:
     explicit MavlinkMessageStatsModel(QObject *parent = nullptr);

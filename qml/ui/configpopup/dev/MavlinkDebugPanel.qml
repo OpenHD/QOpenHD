@@ -119,12 +119,10 @@ Rectangle {
                 anchors.fill: parent
 
                 Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: 8
-                    anchors.right: parent.right
-                    anchors.rightMargin: styleData.column >= 3 ? 8 : 12
-                    horizontalAlignment: styleData.column <= 2 ? Text.AlignHCenter : (styleData.column === 6 ? Text.AlignHCenter : Text.AlignLeft)
+                    anchors.fill: parent
+                    anchors.margins: 6
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
                     font.family: styleData.column <= 2 ? "monospace" : font.family
                     text: styleData.column <= 2 ? ("000" + styleData.value).slice(-3) : styleData.value
@@ -136,7 +134,7 @@ Rectangle {
                     enabled: styleData.column === 4
                     onClicked: {
                         var rowData = messageTable.model.get(styleData.row)
-                        root.decodedMessageDetails = _mavlinkMessageStatsModel.decodeMessageDetails(rowData.message_id)
+                        root.decodedMessageDetails = _mavlinkMessageStatsModel.decodeMessageDetails(styleData.row)
                         decodeDialog.open()
                     }
                 }
@@ -186,6 +184,7 @@ Rectangle {
                 Controls1.TableViewColumn { role: "name"; title: qsTr("Field"); width: 100}
                 Controls1.TableViewColumn { role: "type"; title: qsTr("Type"); width: 80}
                 Controls1.TableViewColumn { role: "arrayLength"; title: qsTr("Array length"); width: 80}
+                Controls1.TableViewColumn { role: "value"; title: qsTr("Value"); width: 220}
 
                 rowDelegate: Rectangle {
                     height: 32
@@ -206,13 +205,11 @@ Rectangle {
                     implicitHeight: 28
                     anchors.fill: parent
                     Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.leftMargin: 8
-                        anchors.right: parent.right
-                        anchors.rightMargin: 8
+                        anchors.fill: parent
+                        anchors.margins: 6
                         elide: Text.ElideRight
-                        horizontalAlignment: styleData.column === 2 ? Text.AlignRight : Text.AlignLeft
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                         text: styleData.role === "arrayLength" ? (styleData.value > 1 ? styleData.value : "") : styleData.value
                     }
                 }
