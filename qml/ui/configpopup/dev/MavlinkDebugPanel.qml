@@ -14,7 +14,7 @@ Rectangle {
     property real columnCompWidth: 40
     property real columnMsgWidth: 40
     property real columnOriginWidth: 60
-    property real columnMessageWidth: 250
+    property real columnMessageWidth: 260
     property real columnLastSeenWidth: 80
     property real columnCountWidth: 50
     property var decodedMessageDetails: ({messageName: "", messageId: 0, fieldCount: 0, fields: []})
@@ -38,7 +38,7 @@ Rectangle {
         property real columnCompWidth: 40
         property real columnMsgWidth: 40
         property real columnOriginWidth: 60
-        property real columnMessageWidth: 250
+        property real columnMessageWidth: 260
         property real columnLastSeenWidth: 80
         property real columnCountWidth: 50
 
