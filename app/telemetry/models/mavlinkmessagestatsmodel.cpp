@@ -2,7 +2,8 @@
 
 #include <QDebug>
 #include <algorithm>
-#include <optional>
+#include <QtEndian>
+#include <cstring>
 #include <QStringList>
 
 #include "../tutil/openhd_defines.hpp"
@@ -141,11 +142,21 @@ QString MavlinkMessageStatsModel::decodeMessage(int messageId) const
     return QStringLiteral("Unknown message ID %1").arg(messageId);
 }
 
-QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int messageId) const
+QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
 {
     QVariantMap result;
+    if (row < 0 || row >= rowCount()) {
+        result.insert(QStringLiteral("messageId"), -1);
+        result.insert(QStringLiteral("messageName"), QStringLiteral("Unknown message"));
+        result.insert(QStringLiteral("fieldCount"), 0);
+        result.insert(QStringLiteral("fields"), QVariantList{});
+        return result;
+    }
+
+    const auto &entry = m_data.at(static_cast<size_t>(row));
+    const int messageId = entry.message_id;
     result.insert(QStringLiteral("messageId"), messageId);
-    result.insert(QStringLiteral("messageName"), QStringLiteral("Unknown message"));
+    result.insert(QStringLiteral("messageName"), entry.message_name);
     result.insert(QStringLiteral("fieldCount"), 0);
     QVariantList fields;
 
@@ -171,13 +182,101 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int messageId) const
         result.insert(QStringLiteral("messageName"), QString::fromUtf8(info->name));
         result.insert(QStringLiteral("fieldCount"), static_cast<int>(info->num_fields));
 
+        const auto payload_len = entry.has_payload ? static_cast<int>(entry.last_payload_len) : 0;
+        const auto *payload = entry.has_payload ? entry.last_payload.data() : nullptr;
+        int offset = 0;
+
+        auto type_size = [](uint8_t type) -> int {
+            switch (type) {
+            case MAVLINK_TYPE_CHAR: return sizeof(char);
+            case MAVLINK_TYPE_UINT8_T: return sizeof(uint8_t);
+            case MAVLINK_TYPE_INT8_T: return sizeof(int8_t);
+            case MAVLINK_TYPE_UINT16_T: return sizeof(uint16_t);
+            case MAVLINK_TYPE_INT16_T: return sizeof(int16_t);
+            case MAVLINK_TYPE_UINT32_T: return sizeof(uint32_t);
+            case MAVLINK_TYPE_INT32_T: return sizeof(int32_t);
+            case MAVLINK_TYPE_UINT64_T: return sizeof(uint64_t);
+            case MAVLINK_TYPE_INT64_T: return sizeof(int64_t);
+            case MAVLINK_TYPE_FLOAT: return sizeof(float);
+            case MAVLINK_TYPE_DOUBLE: return sizeof(double);
+            default: return 0;
+            }
+        };
+
+        auto read_scalar = [](const uint8_t *ptr, uint8_t type) -> QVariant {
+            switch (type) {
+            case MAVLINK_TYPE_CHAR:
+                return QVariant::fromValue(static_cast<char>(*ptr));
+            case MAVLINK_TYPE_UINT8_T:
+                return QVariant::fromValue(*ptr);
+            case MAVLINK_TYPE_INT8_T:
+                return QVariant::fromValue(static_cast<int8_t>(*ptr));
+            case MAVLINK_TYPE_UINT16_T:
+                return QVariant::fromValue(qFromLittleEndian<uint16_t>(ptr));
+            case MAVLINK_TYPE_INT16_T:
+                return QVariant::fromValue(static_cast<int16_t>(qFromLittleEndian<uint16_t>(ptr)));
+            case MAVLINK_TYPE_UINT32_T:
+                return QVariant::fromValue(qFromLittleEndian<uint32_t>(ptr));
+            case MAVLINK_TYPE_INT32_T:
+                return QVariant::fromValue(static_cast<int32_t>(qFromLittleEndian<uint32_t>(ptr)));
+            case MAVLINK_TYPE_UINT64_T:
+                return QVariant::fromValue(qFromLittleEndian<uint64_t>(ptr));
+            case MAVLINK_TYPE_INT64_T:
+                return QVariant::fromValue(static_cast<int64_t>(qFromLittleEndian<uint64_t>(ptr)));
+            case MAVLINK_TYPE_FLOAT: {
+                uint32_t raw = qFromLittleEndian<uint32_t>(ptr);
+                float value;
+                std::memcpy(&value, &raw, sizeof(float));
+                return QVariant::fromValue(value);
+            }
+            case MAVLINK_TYPE_DOUBLE: {
+                uint64_t raw = qFromLittleEndian<uint64_t>(ptr);
+                double value;
+                std::memcpy(&value, &raw, sizeof(double));
+                return QVariant::fromValue(value);
+            }
+            default:
+                return {};
+            }
+        };
+
         for (unsigned int i = 0; i < info->num_fields; ++i) {
             const auto &field = info->fields[i];
+            const int size = type_size(field.type);
             QVariantMap fieldMap;
             fieldMap.insert(QStringLiteral("name"), QString::fromUtf8(field.name));
             fieldMap.insert(QStringLiteral("type"), type_to_string(field.type));
             fieldMap.insert(QStringLiteral("arrayLength"), static_cast<int>(field.array_length));
+
+            if (payload == nullptr || size == 0) {
+                fieldMap.insert(QStringLiteral("value"), QStringLiteral("n/a"));
+                fields.push_back(fieldMap);
+                continue;
+            }
+
+            const int total_needed = offset + (size * field.array_length);
+            if (total_needed > payload_len) {
+                fieldMap.insert(QStringLiteral("value"), QStringLiteral("truncated"));
+                fields.push_back(fieldMap);
+                offset = total_needed;
+                continue;
+            }
+
+            QStringList values;
+            const uint8_t *curr_ptr = payload + offset;
+            for (unsigned int j = 0; j < field.array_length; ++j) {
+                auto value = read_scalar(curr_ptr, field.type);
+                values.push_back(value.toString());
+                curr_ptr += size;
+            }
+
+            if (field.array_length > 1) {
+                fieldMap.insert(QStringLiteral("value"), QStringLiteral("[%1]").arg(values.join(QStringLiteral(", "))));
+            } else {
+                fieldMap.insert(QStringLiteral("value"), values.value(0));
+            }
             fields.push_back(fieldMap);
+            offset += size * field.array_length;
         }
     }
 
@@ -224,10 +323,11 @@ void MavlinkMessageStatsModel::record_message(const mavlink_message_t &msg)
     if (!m_enabled.load(std::memory_order_relaxed)) {
         return;
     }
-    emit signal_record_message(msg.sysid, msg.compid, msg.msgid);
+    QByteArray payload(reinterpret_cast<const char*>(msg.payload64), msg.len);
+    emit signal_record_message(msg.sysid, msg.compid, msg.msgid, payload);
 }
 
-void MavlinkMessageStatsModel::handle_record_message(int sysid, int compid, int msgid)
+void MavlinkMessageStatsModel::handle_record_message(int sysid, int compid, int msgid, const QByteArray &payload)
 {
     Entry entry;
     entry.system_id = sysid;
@@ -236,6 +336,11 @@ void MavlinkMessageStatsModel::handle_record_message(int sysid, int compid, int 
     entry.origin_category = origin_category_for_sysid(sysid);
     entry.message_name = message_name_for_id(msgid);
     entry.last_seen_ms = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    entry.last_payload_len = static_cast<uint8_t>(std::min<int>(payload.size(), MAVLINK_MAX_PAYLOAD_LEN));
+    if (entry.last_payload_len > 0) {
+        std::copy_n(reinterpret_cast<const uint8_t*>(payload.constData()), entry.last_payload_len, entry.last_payload.begin());
+        entry.has_payload = true;
+    }
     update_or_insert_entry(entry);
 }
 
@@ -302,6 +407,11 @@ void MavlinkMessageStatsModel::update_or_insert_entry(const Entry &entry_templat
         const int row = static_cast<int>(std::distance(m_data.begin(), it));
         it->last_seen_ms = entry_template.last_seen_ms;
         it->update_count += 1;
+        if (entry_template.has_payload) {
+            it->last_payload_len = entry_template.last_payload_len;
+            it->has_payload = entry_template.has_payload;
+            std::copy_n(entry_template.last_payload.begin(), entry_template.last_payload_len, it->last_payload.begin());
+        }
         emit dataChanged(index(row, 0), index(row, 0));
         sort_entries();
         return;
