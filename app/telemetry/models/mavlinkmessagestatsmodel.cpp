@@ -121,11 +121,12 @@ QString MavlinkMessageStatsModel::decodeMessage(int messageId) const
         for (unsigned int i = 0; i < info->num_fields; ++i) {
             const auto &field = info->fields[i];
             const auto type_str = type_to_string(field.type);
-            if (field.array_length > 1) {
+            const auto array_len = field.array_length == 0 ? 1u : field.array_length;
+            if (array_len > 1) {
                 fields.push_back(QStringLiteral("%1: %2[%3]")
                                      .arg(QString::fromUtf8(field.name))
                                      .arg(type_str)
-                                     .arg(field.array_length));
+                                     .arg(array_len));
             } else {
                 fields.push_back(QStringLiteral("%1: %2")
                                      .arg(QString::fromUtf8(field.name))
@@ -159,6 +160,8 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
     result.insert(QStringLiteral("messageName"), entry.message_name);
     result.insert(QStringLiteral("fieldCount"), 0);
     QVariantList fields;
+    const auto payload_len = entry.has_payload ? static_cast<int>(entry.last_payload_len) : 0;
+    const auto *payload = entry.has_payload ? entry.last_payload.data() : nullptr;
 
     const mavlink_message_info_t *info = mavlink_get_message_info_by_id(static_cast<uint32_t>(messageId));
     if (info != nullptr) {
@@ -182,10 +185,6 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
         result.insert(QStringLiteral("messageName"), QString::fromUtf8(info->name));
         result.insert(QStringLiteral("fieldCount"), static_cast<int>(info->num_fields));
 
-        const auto payload_len = entry.has_payload ? static_cast<int>(entry.last_payload_len) : 0;
-        const auto *payload = entry.has_payload ? entry.last_payload.data() : nullptr;
-        int offset = 0;
-
         auto type_size = [](uint8_t type) -> int {
             switch (type) {
             case MAVLINK_TYPE_CHAR: return sizeof(char);
@@ -203,50 +202,51 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
             }
         };
 
-        auto read_scalar = [](const uint8_t *ptr, uint8_t type) -> QVariant {
+        auto read_scalar_string = [](const uint8_t *ptr, uint8_t type) -> QString {
             switch (type) {
             case MAVLINK_TYPE_CHAR:
-                return QVariant::fromValue(static_cast<char>(*ptr));
+                return QString(QChar(static_cast<unsigned char>(*ptr)));
             case MAVLINK_TYPE_UINT8_T:
-                return QVariant::fromValue(*ptr);
+                return QString::number(static_cast<unsigned int>(*ptr));
             case MAVLINK_TYPE_INT8_T:
-                return QVariant::fromValue(static_cast<int8_t>(*ptr));
+                return QString::number(static_cast<int>(static_cast<int8_t>(*ptr)));
             case MAVLINK_TYPE_UINT16_T:
-                return QVariant::fromValue(qFromLittleEndian<uint16_t>(ptr));
+                return QString::number(qFromLittleEndian<uint16_t>(ptr));
             case MAVLINK_TYPE_INT16_T:
-                return QVariant::fromValue(static_cast<int16_t>(qFromLittleEndian<uint16_t>(ptr)));
+                return QString::number(static_cast<int16_t>(qFromLittleEndian<uint16_t>(ptr)));
             case MAVLINK_TYPE_UINT32_T:
-                return QVariant::fromValue(qFromLittleEndian<uint32_t>(ptr));
+                return QString::number(qFromLittleEndian<uint32_t>(ptr));
             case MAVLINK_TYPE_INT32_T:
-                return QVariant::fromValue(static_cast<int32_t>(qFromLittleEndian<uint32_t>(ptr)));
+                return QString::number(static_cast<int32_t>(qFromLittleEndian<uint32_t>(ptr)));
             case MAVLINK_TYPE_UINT64_T:
-                return QVariant::fromValue(qFromLittleEndian<uint64_t>(ptr));
+                return QString::number(qFromLittleEndian<uint64_t>(ptr));
             case MAVLINK_TYPE_INT64_T:
-                return QVariant::fromValue(static_cast<int64_t>(qFromLittleEndian<uint64_t>(ptr)));
+                return QString::number(static_cast<int64_t>(qFromLittleEndian<uint64_t>(ptr)));
             case MAVLINK_TYPE_FLOAT: {
                 uint32_t raw = qFromLittleEndian<uint32_t>(ptr);
                 float value;
                 std::memcpy(&value, &raw, sizeof(float));
-                return QVariant::fromValue(value);
+                return QString::number(value);
             }
             case MAVLINK_TYPE_DOUBLE: {
                 uint64_t raw = qFromLittleEndian<uint64_t>(ptr);
                 double value;
                 std::memcpy(&value, &raw, sizeof(double));
-                return QVariant::fromValue(value);
+                return QString::number(value);
             }
             default:
-                return {};
+                return QStringLiteral("n/a");
             }
         };
 
         for (unsigned int i = 0; i < info->num_fields; ++i) {
             const auto &field = info->fields[i];
             const int size = type_size(field.type);
+            const auto array_len = field.array_length == 0 ? 1u : field.array_length;
             QVariantMap fieldMap;
             fieldMap.insert(QStringLiteral("name"), QString::fromUtf8(field.name));
             fieldMap.insert(QStringLiteral("type"), type_to_string(field.type));
-            fieldMap.insert(QStringLiteral("arrayLength"), static_cast<int>(field.array_length));
+            fieldMap.insert(QStringLiteral("arrayLength"), static_cast<int>(array_len));
 
             if (payload == nullptr || size == 0) {
                 fieldMap.insert(QStringLiteral("value"), QStringLiteral("n/a"));
@@ -254,29 +254,48 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
                 continue;
             }
 
-            const int total_needed = offset + (size * field.array_length);
+            const int field_offset = static_cast<int>(field.wire_offset);
+            const int total_needed = field_offset + (size * static_cast<int>(array_len));
             if (total_needed > payload_len) {
                 fieldMap.insert(QStringLiteral("value"), QStringLiteral("truncated"));
                 fields.push_back(fieldMap);
-                offset = total_needed;
                 continue;
             }
 
             QStringList values;
-            const uint8_t *curr_ptr = payload + offset;
-            for (unsigned int j = 0; j < field.array_length; ++j) {
-                auto value = read_scalar(curr_ptr, field.type);
-                values.push_back(value.toString());
-                curr_ptr += size;
-            }
+            const uint8_t *curr_ptr = payload + field_offset;
 
-            if (field.array_length > 1) {
-                fieldMap.insert(QStringLiteral("value"), QStringLiteral("[%1]").arg(values.join(QStringLiteral(", "))));
+            if (field.type == MAVLINK_TYPE_CHAR && array_len > 1) {
+                QByteArray raw(reinterpret_cast<const char *>(curr_ptr), static_cast<int>(array_len));
+                const int null_index = raw.indexOf('\0');
+                if (null_index >= 0) {
+                    raw.truncate(null_index);
+                }
+                const bool printable = std::all_of(raw.cbegin(), raw.cend(), [](char c) {
+                    const unsigned char uc = static_cast<unsigned char>(c);
+                    return uc == '\n' || uc == '\r' || uc == '\t' || (uc >= 0x20 && uc <= 0x7E);
+                });
+                if (printable) {
+                    fieldMap.insert(QStringLiteral("value"), QString::fromLatin1(raw));
+                } else {
+                    values.reserve(static_cast<int>(array_len));
+                    for (unsigned int j = 0; j < array_len; ++j) {
+                        values.push_back(QString::number(static_cast<unsigned int>(static_cast<unsigned char>(*(curr_ptr + (j * size))))));
+                    }
+                    fieldMap.insert(QStringLiteral("value"), QStringLiteral("[%1]").arg(values.join(QStringLiteral(", "))));
+                }
             } else {
-                fieldMap.insert(QStringLiteral("value"), values.value(0));
+                values.reserve(static_cast<int>(array_len));
+                for (unsigned int j = 0; j < array_len; ++j) {
+                    values.push_back(read_scalar_string(curr_ptr + (j * size), field.type));
+                }
+                if (array_len > 1) {
+                    fieldMap.insert(QStringLiteral("value"), QStringLiteral("[%1]").arg(values.join(QStringLiteral(", "))));
+                } else {
+                    fieldMap.insert(QStringLiteral("value"), values.value(0));
+                }
             }
             fields.push_back(fieldMap);
-            offset += size * field.array_length;
         }
     }
 
@@ -359,23 +378,11 @@ QString MavlinkMessageStatsModel::origin_category_for_sysid(int sysid) const
 
 QString MavlinkMessageStatsModel::message_name_for_id(int msgid) const
 {
-    // This debug view keeps it lightweight: only a few common ids get names, others show the raw id.
-    switch (msgid) {
-    case MAVLINK_MSG_ID_HEARTBEAT:
-        return QStringLiteral("HEARTBEAT");
-    case MAVLINK_MSG_ID_SYS_STATUS:
-        return QStringLiteral("SYS_STATUS");
-    case MAVLINK_MSG_ID_PARAM_VALUE:
-        return QStringLiteral("PARAM_VALUE");
-    case MAVLINK_MSG_ID_ATTITUDE:
-        return QStringLiteral("ATTITUDE");
-    case MAVLINK_MSG_ID_GPS_RAW_INT:
-        return QStringLiteral("GPS_RAW_INT");
-    case MAVLINK_MSG_ID_TIMESYNC:
-        return QStringLiteral("TIMESYNC");
-    default:
-        return QStringLiteral("ID %1").arg(msgid);
+    const mavlink_message_info_t *info = mavlink_get_message_info_by_id(static_cast<uint32_t>(msgid));
+    if (info != nullptr && info->name != nullptr) {
+        return QString::fromUtf8(info->name);
     }
+    return QStringLiteral("ID %1").arg(msgid);
 }
 
 QString MavlinkMessageStatsModel::last_seen_readable(qint64 last_seen_ms) const
