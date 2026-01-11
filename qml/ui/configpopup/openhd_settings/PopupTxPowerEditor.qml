@@ -26,6 +26,8 @@ PopupBigGeneric{
     property int m_margin: 10
 
     property bool m_is_air: false
+    // -1 for all cards (legacy / global)
+    property int m_user_selected_card_index: -1
 
     property int m_user_selected_card_manufacturer: -1;
     property int left_text_minimum_width: 100
@@ -38,14 +40,42 @@ PopupBigGeneric{
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
             _qopenhd.show_toast("WARNING: Changing TX power while armed is not recommended !");
         }
+        if(m_is_air){
+             m_user_selected_card_index = 0; // Air always has one card (index 0)
+        }else{
+             m_user_selected_card_index = -1; // Default to all cards for ground
+        }
+        open_internal_update_ui();
+        visible=true;
+        enabled=true;
+    }
+
+    // Call every time the user changes the card selection
+    function open_internal_update_ui(){
         var card_chipset_type=get_chipset_type();
         if(!(card_chipset_type==0 || card_chipset_type==1 || card_chipset_type==3)){
-            _messageBoxInstance.set_text_and_show("Changing tx power is only possible on openhd supported cards.");
-            return;
+            //_messageBoxInstance.set_text_and_show("Changing tx power is only possible on openhd supported cards.");
+            //return;
         }
         comboBoxCardSelectManufacturer.model= get_model_manufacturer_for_chip_type()
 
-        const card_sub_type=m_is_air ? _wifi_card_air.card_sub_type : _wifi_card_gnd0.card_sub_type
+        var card_sub_type=0;
+        if(m_is_air){
+            card_sub_type=_wifi_card_air.card_sub_type
+        }else{
+            if(m_user_selected_card_index==-1){
+                 card_sub_type=_wifi_card_gnd0.card_sub_type
+            }else if(m_user_selected_card_index==0){
+                 card_sub_type=_wifi_card_gnd0.card_sub_type
+            }else if(m_user_selected_card_index==1){
+                 card_sub_type=_wifi_card_gnd1.card_sub_type
+            }else if(m_user_selected_card_index==2){
+                 card_sub_type=_wifi_card_gnd2.card_sub_type
+            }else if(m_user_selected_card_index==3){
+                 card_sub_type=_wifi_card_gnd3.card_sub_type
+            }
+        }
+
         if(card_sub_type==_wifi_card_air.mWIFI_CARD_SUB_TYPE_RTL8812AU_ASUS){
             // rtl8812 ASUS
             m_user_selected_card_manufacturer=1;
@@ -67,8 +97,6 @@ PopupBigGeneric{
             comboBoxCardSelectManufacturer.currentIndex=0;
         }
         update_ui_txpower_for_chip_type_manufacturer();
-        visible=true;
-        enabled=true;
     }
 
     function close(){
@@ -80,6 +108,11 @@ PopupBigGeneric{
         if(m_is_air){
             return _wifi_card_air.card_type;
         }
+        if(m_user_selected_card_index==-1) return _wifi_card_gnd0.card_type; // Legacy / All
+        if(m_user_selected_card_index==0) return _wifi_card_gnd0.card_type;
+        if(m_user_selected_card_index==1) return _wifi_card_gnd1.card_type;
+        if(m_user_selected_card_index==2) return _wifi_card_gnd2.card_type;
+        if(m_user_selected_card_index==3) return _wifi_card_gnd3.card_type;
         return _wifi_card_gnd0.card_type;
     }
 
@@ -313,7 +346,17 @@ PopupBigGeneric{
     // state 0: current state 1: disarmed state 2: armed
     //
     function get_current_tx_power_int(state){
-        var card = m_is_air ? _wifi_card_air : _wifi_card_gnd0;
+        var card = null;
+        if(m_is_air){
+            card = _wifi_card_air;
+        }else{
+            if(m_user_selected_card_index==-1) card = _wifi_card_gnd0;
+            else if(m_user_selected_card_index==0) card = _wifi_card_gnd0;
+            else if(m_user_selected_card_index==1) card = _wifi_card_gnd1;
+            else if(m_user_selected_card_index==2) card = _wifi_card_gnd2;
+            else if(m_user_selected_card_index==3) card = _wifi_card_gnd3;
+            else card = _wifi_card_gnd0;
+        }
         if(state==0){
             return card.tx_power;
         }else if(state==1){
@@ -322,8 +365,18 @@ PopupBigGeneric{
         return card.tx_power_armed;
     }
     function get_tx_power_unit(){
-        if(m_is_air) return _wifi_card_air.tx_power_unit;
-        return _wifi_card_gnd0.tx_power_unit;
+        var card = null;
+        if(m_is_air){
+            card = _wifi_card_air;
+        }else{
+            if(m_user_selected_card_index==-1) card = _wifi_card_gnd0;
+            else if(m_user_selected_card_index==0) card = _wifi_card_gnd0;
+            else if(m_user_selected_card_index==1) card = _wifi_card_gnd1;
+            else if(m_user_selected_card_index==2) card = _wifi_card_gnd2;
+            else if(m_user_selected_card_index==3) card = _wifi_card_gnd3;
+            else card = _wifi_card_gnd0;
+        }
+        return card.tx_power_unit;
     }
 
     ColumnLayout{
@@ -347,6 +400,30 @@ PopupBigGeneric{
                 id:mainColumn
                 anchors.centerIn: parent
 
+                RowLayout {
+                    Layout.fillWidth: true
+                    visible: !m_is_air
+                    ComboBox {
+                        Layout.minimumWidth: 180
+                        Layout.preferredWidth: 480
+                        model: ListModel {
+                            ListElement { text: "All Cards (Global)"; value: -1 }
+                            ListElement { text: "Card 0"; value: 0 }
+                            ListElement { text: "Card 1"; value: 1 }
+                            ListElement { text: "Card 2"; value: 2 }
+                            ListElement { text: "Card 3"; value: 3 }
+                        }
+                        textRole: "text"
+                        onActivated: {
+                            var idx = model.get(currentIndex).value;
+                            m_user_selected_card_index = idx;
+                            console.log("Card selection changed to: " + idx);
+                            open_internal_update_ui();
+                        }
+                        currentIndex: 0 // Default to "All Cards"
+                        font.pixelSize: 14
+                    }
+                }
                 RowLayout {
                     Layout.fillWidth: true
                     ComboBox {
@@ -380,7 +457,7 @@ PopupBigGeneric{
                                 return;
                             }
                             var is_tx_power_index_unit = get_chipset_type() == 0;
-                            var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air, is_tx_power_index_unit, false, tx_power_index_or_mw)
+                            var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air, is_tx_power_index_unit, false, tx_power_index_or_mw, m_user_selected_card_index)
                             if (success == true) {
                                 _qopenhd.show_toast("SUCCESS");
                             } else {
@@ -416,7 +493,7 @@ PopupBigGeneric{
                                 return;
                             }
                             var is_tx_power_index_unit = get_chipset_type() == 0;
-                            var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air, is_tx_power_index_unit, true, tx_power_index_or_mw)
+                            var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air, is_tx_power_index_unit, true, tx_power_index_or_mw, m_user_selected_card_index)
                             if (success == true) {
                                 _qopenhd.show_toast("SUCCESS");
                             } else {
