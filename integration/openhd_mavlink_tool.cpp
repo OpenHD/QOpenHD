@@ -58,6 +58,7 @@ void print_usage() {
                  "Commands:\n"
                  "  scan --bands <mask> [--widths <mask>] [--search]\n"
                  "  set-link [--frequency MHz] [--bandwidth MHz] [--mcs index] [--tx-power mw] [--tx-power-armed mw]\n"
+                 "           [--card index] [--redundant-tx on|off]\n"
                  "  set-video [--mode 1280x720@60] [--codec h264|h265] [--bitrate mbit] [--keyframe frames] [--rotation 0|180] [--flip on|off]\n"
                  "  set-camera [--iso value] [--awb mode] [--contrast value] [--sharpness value] [--saturation value]\n"
                  "  set-recording --mode disable|enable|auto\n"
@@ -163,6 +164,8 @@ int handle_set_link(const MavlinkSender &sender, int argc, char **argv) {
     std::optional<std::string> mcs;
     std::optional<std::string> tx_power;
     std::optional<std::string> tx_power_armed;
+    std::optional<std::string> redundant_tx;
+    int card_index = -1;
     bool mirror_ground = true;
 
     for (int i = 1; i < argc; ++i) {
@@ -177,6 +180,14 @@ int handle_set_link(const MavlinkSender &sender, int argc, char **argv) {
             tx_power = argv[++i];
         } else if (arg == "--tx-power-armed" && i + 1 < argc) {
             tx_power_armed = argv[++i];
+        } else if (arg == "--card" && i + 1 < argc) {
+            card_index = std::stoi(argv[++i]);
+        } else if (arg == "--redundant-tx" && i + 1 < argc) {
+            redundant_tx = parse_bool_flag(argv[++i]);
+            if (!redundant_tx) {
+                std::cerr << "Invalid value for --redundant-tx, expected on/off" << std::endl;
+                return 1;
+            }
         } else if (arg == "--air-only") {
             mirror_ground = false;
         }
@@ -188,9 +199,20 @@ int handle_set_link(const MavlinkSender &sender, int argc, char **argv) {
         if (frequency) success &= send_param_set(sender, target, "WB_FREQUENCY", *frequency, MAV_PARAM_EXT_TYPE_REAL32);
         if (bandwidth) success &= send_param_set(sender, target, "WB_CHANNEL_W", *bandwidth, MAV_PARAM_EXT_TYPE_REAL32);
         if (mcs) success &= send_param_set(sender, target, "WB_MCS_INDEX", *mcs, MAV_PARAM_EXT_TYPE_INT32);
-        if (tx_power) success &= send_param_set(sender, target, "TX_POWER_MW", *tx_power, MAV_PARAM_EXT_TYPE_INT32);
-        if (tx_power_armed)
-            success &= send_param_set(sender, target, "TX_POWER_MW_ARM", *tx_power_armed, MAV_PARAM_EXT_TYPE_INT32);
+
+        if (tx_power) {
+            std::string param = "TX_POWER_MW";
+            if(card_index >= 0) param += "_" + std::to_string(card_index);
+            success &= send_param_set(sender, target, param, *tx_power, MAV_PARAM_EXT_TYPE_INT32);
+        }
+        if (tx_power_armed) {
+            std::string param = "TX_POWER_MW_ARM";
+            if(card_index >= 0) param = "TX_POWER_MWA_" + std::to_string(card_index);
+            success &= send_param_set(sender, target, param, *tx_power_armed, MAV_PARAM_EXT_TYPE_INT32);
+        }
+        if (redundant_tx) {
+             success &= send_param_set(sender, target, "WB_RED_TX", *redundant_tx, MAV_PARAM_EXT_TYPE_INT32);
+        }
     }
     std::cout << (success ? "Link params sent" : "Failed to send some link params") << std::endl;
     return success ? 0 : 1;
