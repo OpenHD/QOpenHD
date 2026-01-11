@@ -120,6 +120,24 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_onboard_computer_status(parsedMsg);
             consumed=true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_CORE_STATUS:{
+            mavlink_openhd_core_status_t parsedMsg;
+            mavlink_msg_openhd_core_status_decode(&msg,&parsedMsg);
+            process_openhd_core_status(parsedMsg);
+            consumed=true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_POWER_STATUS:{
+            mavlink_openhd_power_status_t parsedMsg;
+            mavlink_msg_openhd_power_status_decode(&msg,&parsedMsg);
+            process_openhd_power_status(parsedMsg);
+            consumed=true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_MICROHARD_STATUS:{
+            mavlink_openhd_microhard_status_t parsedMsg;
+            mavlink_msg_openhd_microhard_status_decode(&msg,&parsedMsg);
+            process_openhd_microhard_status(parsedMsg);
+            consumed=true;
+        }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD:{
             mavlink_openhd_stats_monitor_mode_wifi_card_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_card_decode(&msg,&parsedMsg);
@@ -317,6 +335,52 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     }
     const auto platform_as_str=x_platform_type_to_string(ohd_platform);
     set_ohd_platform_type_as_string(platform_as_str.c_str());
+}
+
+void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &msg)
+{
+    set_curr_soc_temp_degree(msg.cpu_temp);
+    set_curr_txc_temp_degree_1(msg.wifi0_temp);
+    set_curr_txc_temp_degree_2(msg.wifi1_temp);
+    set_curr_cpu_freq_mhz(msg.cpu_clock);
+    set_curr_isp_freq_mhz(msg.isp_clock);
+    set_curr_h264_freq_mhz(msg.h264_clock);
+    set_curr_core_freq_mhz(msg.core_clock);
+    set_curr_v3d_freq_mhz(msg.v3d_clock);
+    set_curr_space_left_mb(msg.storage_left_mb);
+    set_rpi_undervolt_error(msg.undervolt_status==1);
+    const uint8_t ohd_platform=msg.platform_type;
+    set_ohd_platform(ohd_platform);
+    if(m_is_air && QOpenHD::instance().is_platform_rpi() && ohd_platform==30){
+        // Air is x20, and qopenhd is running on rpi
+        if(!m_x20_rpi_upgrade_warning_logged){
+            QOpenHD::instance().show_toast("X20 -> RPI has high latency.\nPlease upgrade your ground station to next gen.");
+            m_x20_rpi_upgrade_warning_logged=true;
+        }
+    }
+    const auto platform_as_str=x_platform_type_to_string(ohd_platform);
+    set_ohd_platform_type_as_string(platform_as_str.c_str());
+    set_air_reported_fc_sys_id(msg.fc_sys_id);
+    // operating_mode unused for now in QOpenHD?
+}
+
+void AOHDSystem::process_openhd_power_status(const mavlink_openhd_power_status_t &msg)
+{
+    set_ina219_voltage_millivolt(msg.voltage_mv);
+    set_ina219_current_milliamps(msg.current_ma);
+    set_battery_percent(msg.battery_percent);
+    // charging_status unused for now in QOpenHD?
+}
+
+void AOHDSystem::process_openhd_microhard_status(const mavlink_openhd_microhard_status_t &msg)
+{
+    set_microhard_enabled(msg.enabled);
+    set_microhard_rssi(msg.rssi);
+    set_microhard_tx_pwr(msg.tx_power);
+    set_microhard_bw(msg.bandwidth);
+    set_microhard_freq(msg.frequency);
+    set_microhard_noise(msg.noise);
+    set_microhard_snr(msg.snr);
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
