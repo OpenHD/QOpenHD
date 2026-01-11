@@ -114,10 +114,22 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             set_openhd_version(ohd_version_as_string(parsedMsg.major,parsedMsg.minor,parsedMsg.patch,parsedMsg.release_type).c_str());
             consumed=true;
         }break;
-        case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
-            mavlink_onboard_computer_status_t parsedMsg;
-            mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
-            process_onboard_computer_status(parsedMsg);
+        case MAVLINK_MSG_ID_OPENHD_CORE_STATUS:{
+            mavlink_openhd_core_status_t parsedMsg;
+            mavlink_msg_openhd_core_status_decode(&msg,&parsedMsg);
+            process_openhd_core_status(parsedMsg);
+            consumed=true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_POWER_STATUS:{
+            mavlink_openhd_power_status_t parsedMsg;
+            mavlink_msg_openhd_power_status_decode(&msg,&parsedMsg);
+            process_openhd_power_status(parsedMsg);
+            consumed=true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_MICROHARD_STATUS:{
+            mavlink_openhd_microhard_status_t parsedMsg;
+            mavlink_msg_openhd_microhard_status_decode(&msg,&parsedMsg);
+            process_openhd_microhard_status(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD:{
@@ -279,34 +291,19 @@ QString AOHDSystem::get_rate_for_mcs_bw(int mcs, int bw)
     return "TODO";
 }
 
-void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_status_t &msg)
+void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &msg)
 {
-    set_curr_cpuload_perc(msg.cpu_cores[0]);
-    set_curr_soc_temp_degree(msg.temperature_core[0]);
-    set_curr_txc_temp_degree_1(msg.temperature_core[1]);
-    set_curr_txc_temp_degree_2(msg.temperature_core[2]);
-    // temporary, we repurpose this value
-    set_curr_cpu_freq_mhz(msg.storage_type[0]);
-    set_curr_isp_freq_mhz(msg.storage_type[1]);
-    set_curr_h264_freq_mhz(msg.storage_type[2]);
-    set_curr_core_freq_mhz(msg.storage_type[3]);
-    set_curr_v3d_freq_mhz(msg.storage_usage[0]);
-    set_curr_space_left_mb(msg.storage_usage[1]);
-    set_rpi_undervolt_error(msg.link_tx_rate[0]==1);
-    set_microhard_enabled(msg.link_rx_rate[0]);
-    set_microhard_rssi(msg.link_rx_rate[1]);
-    set_microhard_tx_pwr(msg.link_rx_rate[2]);
-    set_microhard_bw(msg.link_rx_rate[3]);
-    set_microhard_freq(msg.link_rx_rate[4]);
-    set_microhard_noise(msg.link_rx_rate[5]);
-    set_microhard_snr(msg.link_rx_rate[6]);
-    set_ina219_voltage_millivolt(msg.storage_usage[2]);
-    set_ina219_current_milliamps(msg.storage_usage[3]);
-    set_ram_usage_perc(msg.ram_usage);
-    set_ram_total(msg.ram_total);
-    int16_t air_reported_sys_id=msg.fan_speed[0];
-    set_air_reported_fc_sys_id(air_reported_sys_id);
-    const uint8_t ohd_platform=msg.link_type[0];
+    set_curr_soc_temp_degree(msg.cpu_temp);
+    set_curr_txc_temp_degree_1(msg.wifi0_temp);
+    set_curr_txc_temp_degree_2(msg.wifi1_temp);
+    set_curr_cpu_freq_mhz(msg.cpu_clock);
+    set_curr_isp_freq_mhz(msg.isp_clock);
+    set_curr_h264_freq_mhz(msg.h264_clock);
+    set_curr_core_freq_mhz(msg.core_clock);
+    set_curr_v3d_freq_mhz(msg.v3d_clock);
+    set_curr_space_left_mb(msg.storage_left_mb);
+    set_rpi_undervolt_error(msg.undervolt_status==1);
+    const uint8_t ohd_platform=msg.platform_type;
     set_ohd_platform(ohd_platform);
     if(m_is_air && QOpenHD::instance().is_platform_rpi() && ohd_platform==30){
         // Air is x20, and qopenhd is running on rpi
@@ -317,6 +314,27 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     }
     const auto platform_as_str=x_platform_type_to_string(ohd_platform);
     set_ohd_platform_type_as_string(platform_as_str.c_str());
+    set_air_reported_fc_sys_id(msg.fc_sys_id);
+    // operating_mode unused for now in QOpenHD?
+}
+
+void AOHDSystem::process_openhd_power_status(const mavlink_openhd_power_status_t &msg)
+{
+    set_ina219_voltage_millivolt(msg.voltage_mv);
+    set_ina219_current_milliamps(msg.current_ma);
+    set_battery_percent(msg.battery_percent);
+    // charging_status unused for now in QOpenHD?
+}
+
+void AOHDSystem::process_openhd_microhard_status(const mavlink_openhd_microhard_status_t &msg)
+{
+    set_microhard_enabled(msg.enabled);
+    set_microhard_rssi(msg.rssi);
+    set_microhard_tx_pwr(msg.tx_power);
+    set_microhard_bw(msg.bandwidth);
+    set_microhard_freq(msg.frequency);
+    set_microhard_noise(msg.noise);
+    set_microhard_snr(msg.snr);
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
