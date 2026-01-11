@@ -393,6 +393,15 @@ bool QOpenHD::is_platform_rock()
 #endif
 }
 
+bool QOpenHD::is_platform_nxp()
+{
+#ifdef IS_PLATFORM_NXP
+    return true;
+#else
+    return false;
+#endif
+}
+
 void QOpenHD::keep_screen_on(bool on)
 {
 #if defined(__android__)

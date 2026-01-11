@@ -116,6 +116,19 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
+                    m_short_description: "Use low latency RTP parser"
+                    visible: _qopenhd.is_platform_nxp()
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.dev_use_low_latency_parser_when_possible
+                        onCheckedChanged: settings.dev_use_low_latency_parser_when_possible = checked
+                    }
+                }
+                SettingBaseElement{
                     m_short_description: "Use Software Decode"
                     Switch {
                         width: 32

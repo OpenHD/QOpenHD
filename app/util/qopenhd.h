@@ -69,6 +69,7 @@ public:
     Q_INVOKABLE bool ping_ip(QString ip);
     Q_INVOKABLE bool is_platform_rpi();
     Q_INVOKABLE bool is_platform_rock();
+    Q_INVOKABLE bool is_platform_nxp();
     //
     // Tries to mimic android toast as much as possible
     //

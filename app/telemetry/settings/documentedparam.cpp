@@ -574,31 +574,33 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                        "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...");
         }
         //
-        auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
-            {"DISABLE",""},
-            {"DEFAULT","DEFAULT"},
-            {"/dev/serial0","/dev/serial0"},
-            {"/dev/ttyAMA1","/dev/ttyAMA1"},
-            {"/dev/ttyAMA2","/dev/ttyAMA2"},
-            {"/dev/ttyAMA3","/dev/ttyAMA3"},
-            {"/dev/ttyAMA4","//dev/ttyAMA4"},
-            {"/dev/serial1","/dev/serial1"},
-            {"/dev/ttyS1","/dev/ttyS1"},
-            {"/dev/ttyS2","/dev/ttyS2"},
-            {"/dev/ttyUSB0","/dev/ttyUSB0"},
-            {"/dev/ttyUSB1","/dev/ttyUSB1"},
-            {"/dev/ttyACM0","/dev/ttyACM0"},
-            {"/dev/ttyACM1","/dev/ttyACM1"},
-            {"/dev/ttyS7","/dev/ttyS7"}
-        };
-        append_string(ret,"FC_UART_CONN",ImprovedStringSetting{fc_uart_conn_values},
-                      "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. DEFAULT - primary telemetry serial of this platform (see wiki)."
-                      "Otherwise, any linux serial fd filename (dev/testing).");
-        append_string(ret,"OHD_UART_TLM",ImprovedStringSetting{fc_uart_conn_values},
-                      "Select the UART used for OpenHD telemetry (both TX and RX). Pair with OHD_UART_EN / OHD_UART_BAUD / OHD_UART_FLW.");
-        //same for ground uart out
-        append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
-                      "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script. Configure baud/flow with TRACK_UART_BAUD and TRACK_UART_FLOW.");
+        {
+            auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
+                {"DISABLE",""},
+                {"DEFAULT","DEFAULT"},
+                {"/dev/serial0","/dev/serial0"},
+                {"/dev/ttyAMA1","/dev/ttyAMA1"},
+                {"/dev/ttyAMA2","/dev/ttyAMA2"},
+                {"/dev/ttyAMA3","/dev/ttyAMA3"},
+                {"/dev/ttyAMA4","//dev/ttyAMA4"},
+                {"/dev/serial1","/dev/serial1"},
+                {"/dev/ttyS1","/dev/ttyS1"},
+                {"/dev/ttyS2","/dev/ttyS2"},
+                {"/dev/ttyUSB0","/dev/ttyUSB0"},
+                {"/dev/ttyUSB1","/dev/ttyUSB1"},
+                {"/dev/ttyACM0","/dev/ttyACM0"},
+                {"/dev/ttyACM1","/dev/ttyACM1"},
+                {"/dev/ttyS7","/dev/ttyS7"}
+            };
+            append_string(ret,"FC_UART_CONN",ImprovedStringSetting{fc_uart_conn_values},
+                          "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. DEFAULT - primary telemetry serial of this platform (see wiki)."
+                          "Otherwise, any linux serial fd filename (dev/testing).");
+            //same for ground uart out
+            append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
+                          "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.");
+            append_string(ret,"OHD_UART_TLM",ImprovedStringSetting{fc_uart_conn_values},
+                          "OpenHD UART telemetry bridge for air and ground units. Configure the second UART device exactly like the tracker or FC UART ports.");
+        }
         // Channel mapping presets for device(s)
         {
             /*auto values=std::vector<ImprovedStringSetting::Item>{
