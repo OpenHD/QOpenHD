@@ -241,25 +241,43 @@ void WBLinkSettingsHelper::set_param_air_only_mcs_async(int mcs)
     change_param_air_async(OHD_COMP_ID_LINK_PARAM,openhd::WB_MCS_INDEX,static_cast<int32_t>(mcs),"MCS (RATE)");
 }
 
-bool WBLinkSettingsHelper::set_param_tx_power(bool ground,bool is_tx_power_index, bool is_for_armed_state, int value)
+bool WBLinkSettingsHelper::set_param_tx_power(bool ground,bool is_tx_power_index, bool is_for_armed_state, int value, int card_index)
 {
-    qDebug()<<"set_param_tx_power "<<(is_tx_power_index ? "IDX" : "MW")<<" "<<(is_for_armed_state ? "ARMED" : "DISARMED")<<" "<<value;
+    qDebug()<<"set_param_tx_power "<<(is_tx_power_index ? "IDX" : "MW")<<" "<<(is_for_armed_state ? "ARMED" : "DISARMED")<<" "<<value<<" card_idx:"<<card_index;
     auto& system=ground ? AOHDSystem::instanceGround() : AOHDSystem::instanceAir();
     if(!system.is_alive()){
         return false;
     }
     std::string param_id="";
-    if(is_tx_power_index){
-        if(is_for_armed_state){
-            param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_ARMED;
+    if(card_index<0){
+        // Global / Legacy
+        if(is_tx_power_index){
+            if(is_for_armed_state){
+                param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_ARMED;
+            }else{
+                param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_OVERRIDE;
+            }
         }else{
-            param_id=openhd::WB_RTL8812AU_TX_PWR_IDX_OVERRIDE;
+            if(is_for_armed_state){
+                param_id=openhd::WB_TX_POWER_MILLI_WATT_ARMED;
+            }else{
+                param_id=openhd::WB_TX_POWER_MILLI_WATT;
+            }
         }
     }else{
-        if(is_for_armed_state){
-            param_id=openhd::WB_TX_POWER_MILLI_WATT_ARMED;
+        // Per card
+        if(is_tx_power_index){
+            if(is_for_armed_state){
+                param_id="TX_POWER_IA_"+std::to_string(card_index);
+            }else{
+                param_id="TX_POWER_I_"+std::to_string(card_index);
+            }
         }else{
-            param_id=openhd::WB_TX_POWER_MILLI_WATT;
+            if(is_for_armed_state){
+                param_id="TX_POWER_MWA_"+std::to_string(card_index);
+            }else{
+                param_id="TX_POWER_MW_"+std::to_string(card_index);
+            }
         }
     }
     const auto command=XParam::create_cmd_set_int(ground ? OHD_SYS_ID_GROUND : OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,param_id,value);
