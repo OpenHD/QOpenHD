@@ -148,7 +148,6 @@ private:
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
      // but the stats total are to be interpreted slightly different for air and ground.
-     void process_onboard_computer_status(const mavlink_onboard_computer_status_t& msg);
      void process_openhd_core_status(const mavlink_openhd_core_status_t& msg);
      void process_openhd_power_status(const mavlink_openhd_power_status_t& msg);
      void process_openhd_microhard_status(const mavlink_openhd_microhard_status_t& msg);

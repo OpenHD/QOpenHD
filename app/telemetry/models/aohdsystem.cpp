@@ -114,12 +114,6 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             set_openhd_version(ohd_version_as_string(parsedMsg.major,parsedMsg.minor,parsedMsg.patch,parsedMsg.release_type).c_str());
             consumed=true;
         }break;
-        case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
-            mavlink_onboard_computer_status_t parsedMsg;
-            mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
-            process_onboard_computer_status(parsedMsg);
-            consumed=true;
-        }break;
         case MAVLINK_MSG_ID_OPENHD_CORE_STATUS:{
             mavlink_openhd_core_status_t parsedMsg;
             mavlink_msg_openhd_core_status_decode(&msg,&parsedMsg);
@@ -295,46 +289,6 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
 QString AOHDSystem::get_rate_for_mcs_bw(int mcs, int bw)
 {
     return "TODO";
-}
-
-void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_status_t &msg)
-{
-    set_curr_cpuload_perc(msg.cpu_cores[0]);
-    set_curr_soc_temp_degree(msg.temperature_core[0]);
-    set_curr_txc_temp_degree_1(msg.temperature_core[1]);
-    set_curr_txc_temp_degree_2(msg.temperature_core[2]);
-    // temporary, we repurpose this value
-    set_curr_cpu_freq_mhz(msg.storage_type[0]);
-    set_curr_isp_freq_mhz(msg.storage_type[1]);
-    set_curr_h264_freq_mhz(msg.storage_type[2]);
-    set_curr_core_freq_mhz(msg.storage_type[3]);
-    set_curr_v3d_freq_mhz(msg.storage_usage[0]);
-    set_curr_space_left_mb(msg.storage_usage[1]);
-    set_rpi_undervolt_error(msg.link_tx_rate[0]==1);
-    set_microhard_enabled(msg.link_rx_rate[0]);
-    set_microhard_rssi(msg.link_rx_rate[1]);
-    set_microhard_tx_pwr(msg.link_rx_rate[2]);
-    set_microhard_bw(msg.link_rx_rate[3]);
-    set_microhard_freq(msg.link_rx_rate[4]);
-    set_microhard_noise(msg.link_rx_rate[5]);
-    set_microhard_snr(msg.link_rx_rate[6]);
-    set_ina219_voltage_millivolt(msg.storage_usage[2]);
-    set_ina219_current_milliamps(msg.storage_usage[3]);
-    set_ram_usage_perc(msg.ram_usage);
-    set_ram_total(msg.ram_total);
-    int16_t air_reported_sys_id=msg.fan_speed[0];
-    set_air_reported_fc_sys_id(air_reported_sys_id);
-    const uint8_t ohd_platform=msg.link_type[0];
-    set_ohd_platform(ohd_platform);
-    if(m_is_air && QOpenHD::instance().is_platform_rpi() && ohd_platform==30){
-        // Air is x20, and qopenhd is running on rpi
-        if(!m_x20_rpi_upgrade_warning_logged){
-            QOpenHD::instance().show_toast("X20 -> RPI has high latency.\nPlease upgrade your ground station to next gen.");
-            m_x20_rpi_upgrade_warning_logged=true;
-        }
-    }
-    const auto platform_as_str=x_platform_type_to_string(ohd_platform);
-    set_ohd_platform_type_as_string(platform_as_str.c_str());
 }
 
 void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &msg)
