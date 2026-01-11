@@ -494,28 +494,65 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "a reboot is recommended, but not neccessary.");
         append_int(ret,"FC_UART_FLWCTL",ImprovedIntSetting::createEnumEnableDisable(),
                    "Leave disabled, for setups with an additional 4th cable for uart flow control");
-
-        {
-            auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
-                                                                         {"9600",9600},
-                                                                         {"19200",19200},
-                                                                         {"38400",38400},
-                                                                         {"57600",57600},
-                                                                         {"115200",115200},
-                                                                         {"230400",230400},
-                                                                         {"460800",460800},
-                                                                         {"500000",500000},
-                                                                         {"576000",576000},
-                                                                         {"921600",921600},
-                                                                         {"1000000",1000000},
-                                                                         };
-            append_int(ret,"FC_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
-                       "RPI HW UART baud rate, needs to match the UART baud rate set on your FC");
-        }
+        auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
+                                                                     {"9600",9600},
+                                                                     {"19200",19200},
+                                                                     {"38400",38400},
+                                                                     {"57600",57600},
+                                                                     {"115200",115200},
+                                                                     {"230400",230400},
+                                                                     {"460800",460800},
+                                                                     {"500000",500000},
+                                                                     {"576000",576000},
+                                                                     {"921600",921600},
+                                                                     {"1000000",1000000},
+                                                                     };
+        append_int(ret,"FC_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
+                   "RPI HW UART baud rate, needs to match the UART baud rate set on your FC");
+        append_int(ret,"OHD_UART_EN",ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable or disable the dedicated OpenHD telemetry UART. Turn this off to stop forwarding MAVLink over the selected port.");
+        append_int(ret,"OHD_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
+                   "Baud rate for the OpenHD telemetry UART on air and ground. Match this with the connected device's expectation.");
+        append_int(ret,"OHD_UART_FLW",ImprovedIntSetting::createEnumEnableDisable(),
+                   "Toggle RTS/CTS flow control for the OpenHD telemetry UART.");
+        append_int(ret,"TRACK_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
+                   "Baud rate for the ground side tracker/output UART.");
+        append_int(ret,"TRACK_UART_FLOW",ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable RTS/CTS flow control on the ground tracker/output UART.");
+        const auto uart_priority_items = std::vector<ImprovedIntSetting::Item>{
+            {"0 (lowest)",0},
+            {"1",1},
+            {"2",2},
+            {"3 (default RC)",3},
+            {"4",4},
+            {"5",5},
+            {"6",6},
+            {"7",7},
+            {"8",8},
+            {"9",9},
+            {"10 (highest)",10},
+        };
+        append_int(ret,"UART_PRI_RC",ImprovedIntSetting(0,10,uart_priority_items),
+                   "Priority bucket for RC/control messages on the OpenHD UART. Higher values are sent first.");
+        append_int(ret,"UART_PRI_OHD",ImprovedIntSetting(0,10,uart_priority_items),
+                   "Priority bucket for OpenHD internal telemetry on the OpenHD UART.");
+        append_int(ret,"UART_PRI_FC",ImprovedIntSetting(0,10,uart_priority_items),
+                   "Priority bucket for FC-originating MAVLink on the OpenHD UART.");
         append_int(ret,"CONFIG_BOOT_AIR",ImprovedIntSetting::createEnumEnableDisable(),"DEV, change boot as air / ground",true);
+        append_int(ret,"WIFI_MODE",ImprovedIntSetting::createEnum({"OFF","HOTSPOT","CLIENT"}),
+                   "Select how the built-in WiFi card is used. OFF disables WiFi entirely, HOTSPOT enables the access point for nearby devices, and CLIENT connects the unit to an existing WiFi network.");
         append_int(ret,"WIFI_HOTSPOT_E",ImprovedIntSetting::createEnum({"AUTO","ALWAYS_OFF","ALWAYS_ON"}),
                    "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
                    "2.4G if your wb link is 5.8G and opposite. In AUTO (default), the wifi hotspot is automatically disarmed when you arm your FC (to avoid interference).");
+        append_documented_read_only(ret,"WIFI_IFACES","Comma separated list of detected WiFi interfaces and their current roles (wb/hotspot/client/idle).");
+        append_string(ret,"WIFI_HS_IFACE",ImprovedStringSetting::createAnyValue(),
+                      "Optional interface override to use for hotspot mode (empty = auto). Changing this reconfigures the hotspot when WiFi mode is set to HOTSPOT.");
+        append_string(ret,"WIFI_CL_IFACE",ImprovedStringSetting::createAnyValue(),
+                      "Optional interface to use for WiFi client mode (empty = auto). Only applied when WiFi mode is set to CLIENT.");
+        append_string(ret,"WIFI_CL_SSID",ImprovedStringSetting::createAnyValue(),
+                      "SSID to join when WiFi mode is set to CLIENT.");
+        append_string(ret,"WIFI_CL_PW",ImprovedStringSetting::createAnyValue(),
+                      "Password to join when WiFi mode is set to CLIENT.");
 
         append_int(ret,"ETH_HOTSPOT_E",ImprovedIntSetting::createEnumEnableDisable(),
                    "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."

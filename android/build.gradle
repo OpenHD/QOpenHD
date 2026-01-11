@@ -64,12 +64,15 @@ android {
         noCompress 'rcc'
     }
 
-    // Customize the generated APK name to include version and build timestamp
+    // Customize the generated package name to include version and build timestamp
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
             def versionLabel = variant.versionName ?: output.versionName
             def timestamp = new Date().format('yyyyMMdd_HHmmss')
-            outputFileName = "QOpenHD_${versionLabel}_${timestamp}.apk"
+            def outputType = output.outputType?.toString()?.toLowerCase() ?: ''
+            def isBundle = outputType.contains('bundle')
+            def extension = isBundle ? 'aab' : 'apk'
+            outputFileName = "QOpenHD_${versionLabel}_${timestamp}.${extension}"
         }
     }
 }

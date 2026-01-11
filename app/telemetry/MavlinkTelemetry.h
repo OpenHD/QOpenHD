@@ -13,6 +13,7 @@
 
 #include "connection/udp_connection.h"
 #include "connection/tcp_connection.h"
+#include "models/mavlinkmessagestatsmodel.h"
 
 /**
  *

@@ -246,6 +246,12 @@ Rectangle {
                     m_description_text: "DEV"
                     m_selection_index: 7
                 }
+                ConfigPopupSidebarButton{
+                    id: mavlinkDebug
+                    m_icon_text: "\uf188"
+                    m_description_text: "MAV Debug"
+                    m_selection_index: 8
+                }
             }
         }
     }
@@ -300,6 +306,9 @@ Rectangle {
             id: appDeveloperStatsPanel
         }
 
+        MavlinkDebugPanel {
+            id: mavlinkDebugPanel
+        }
+
     }
 }
-

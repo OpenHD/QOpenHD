@@ -72,6 +72,10 @@ static std::string x_platform_type_to_string(int platform_type) {
     // ROCK END
     case X_PLATFORM_TYPE_LUCKFOX_LYRA:
         return "Luckfox Lyra";
+    case X_PLATFORM_TYPE_ROCKCHIP_RV1106:
+        return "Luckfox RV1106";
+    case X_PLATFORM_TYPE_ROCKCHIP_RV1103:
+        return "Luckfox RV1103";
     case X_PLATFORM_TYPE_ALWINNER_X20:
         return "X20";
     case X_PLATFORM_TYPE_ROCKCHIP_RV1126:

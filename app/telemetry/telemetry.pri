@@ -27,6 +27,7 @@ SOURCES += \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
     app/telemetry/models/fcmavlinksystem.cpp \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
+    app/telemetry/models/mavlinkmessagestatsmodel.cpp \
 
 
 HEADERS += \
@@ -63,6 +64,7 @@ HEADERS += \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \
     app/telemetry/models/fcmavlinkmissionitemsmodel.h \
+    app/telemetry/models/mavlinkmessagestatsmodel.h \
     app/telemetry/models/openhd_core/camera.hpp \
 
 WindowsBuild{
