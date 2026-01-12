@@ -79,6 +79,9 @@ public:
     L_RO_PROP(qint64,count_blocks_lost,set_count_blocks_lost,-1)
     L_RO_PROP(qint64,count_blocks_recovered,set_count_blocks_recovered,-1)
     L_RO_PROP(qint64,count_fragments_recovered,set_count_fragments_recovered,-1)
+    L_RO_PROP(int,curr_missing_packets_per_second,set_curr_missing_packets_per_second,-1)
+    L_RO_PROP(int,curr_retransmission_requests_per_second,set_curr_retransmission_requests_per_second,-1)
+    L_RO_PROP(int,curr_retransmission_packets_per_second,set_curr_retransmission_packets_per_second,-1)
     L_RO_PROP(QString,curr_fec_decode_time_avg_min_max,set_curr_fec_decode_time_avg_min_max,"avg na, min na, max na")
 public:
     Q_INVOKABLE QString camera_type_to_string(int camera_type);

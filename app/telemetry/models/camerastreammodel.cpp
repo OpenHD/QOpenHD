@@ -216,6 +216,9 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlin
     set_count_blocks_recovered(msg.count_blocks_recovered);
     set_count_fragments_recovered(msg.count_fragments_recovered);
     set_count_blocks_total(msg.count_blocks_total);
+    set_curr_missing_packets_per_second(msg.dummy2);
+    set_curr_retransmission_requests_per_second(msg.dummy1);
+    set_curr_retransmission_packets_per_second(msg.dummy0);
     //set_gnd_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_incoming_bitrate,msg.cur_).c_str());
 }
 

@@ -24,6 +24,9 @@ ScrollView {
     }
 
     function disable_or_enable_all(enable_elements){
+        settings.show_txc_temp_air= enable_elements;
+        settings.show_txc_temp_gnd= enable_elements;
+        settings.show_retransmission_stats= enable_elements;
         settings.show_downlink_rssi= enable_elements;
         settings.downlink_show_dbm_and_packets_per_card= enable_elements;
         settings.downlink_dbm_per_card_show_multiple_antennas=enable_elements;
@@ -199,6 +202,21 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_txc_temp_gnd
                         onCheckedChanged: settings.show_txc_temp_gnd = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: "Show Retransmission Stats"
+                    m_long_description: "Shows packet loss and retransmission activity for video."
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_retransmission_stats
+                        onCheckedChanged: settings.show_retransmission_stats = checked
                     }
                 }
 

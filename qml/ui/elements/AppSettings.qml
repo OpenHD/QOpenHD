@@ -124,6 +124,7 @@ Settings {
     property bool show_widgets: true
     property bool show_txc_temp_air: true
     property bool show_txc_temp_gnd: true
+    property bool show_retransmission_stats: true
     property bool show_downlink_rssi: true
     //Const10
     property bool downlink_show_dbm_and_packets_per_card: true

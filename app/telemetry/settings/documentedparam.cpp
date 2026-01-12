@@ -83,6 +83,46 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                ImprovedIntSetting::createEnumEnableDisable(),
                "DEV ONLY - DO NOT TOUCH (LEAVE DISABLED). Sets a wifi param that needs to be investigated."
                );
+    append_int(ret,openhd::WB_ENABLE_RETRANSMISSION,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable ARQ retransmission for video. Requires restart to take effect.",
+               true
+               );
+    append_int(ret,openhd::WB_ENABLE_RETRANSMISSION_VIDEO,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable ARQ retransmission for video packets. Requires restart to take effect.",
+               true
+               );
+    append_int(ret,openhd::WB_ENABLE_RETRANSMISSION_TELEMETRY,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable ARQ retransmission for telemetry packets. Requires restart to take effect.",
+               true
+               );
+    append_int(ret,openhd::WB_ENABLE_RETRANSMISSION_RC,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable ARQ retransmission for RC packets. Requires restart to take effect.",
+               true
+               );
+    append_int(ret,openhd::WB_RETRANSMISSION_HISTORY_VIDEO_MS,
+               ImprovedIntSetting::createRangeOnly(1,100),
+               "Max retransmission history window for video in milliseconds. Larger values allow longer recovery but use more memory.",
+               false
+               );
+    append_int(ret,openhd::WB_RETRANSMISSION_HISTORY_TELEMETRY_MS,
+               ImprovedIntSetting::createRangeOnly(1,100),
+               "Max retransmission history window for telemetry in milliseconds. Larger values allow longer recovery but use more memory.",
+               false
+               );
+    append_int(ret,openhd::WB_RETRANSMISSION_HISTORY_RC_MS,
+               ImprovedIntSetting::createRangeOnly(1,100),
+               "Max retransmission history window for RC in milliseconds. Larger values allow longer recovery but use more memory.",
+               false
+               );
+    append_int(ret,openhd::WB_RETRANSMISSION_REQUEST_RETRIES,
+               ImprovedIntSetting::createRangeOnly(1,10),
+               "How often each retransmission request is sent. Higher values increase reliability but add overhead.",
+               false
+               );
     {
 // ---------- TX POWER - only as placeholders, wizzard is recommended !
         // Measurements of @Marcel Essers:

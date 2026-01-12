@@ -28,7 +28,7 @@ Item {
 
     //signal settingsButtonClicked
     property int m_highlight_index : 0
-    property int m_MAX_ITEM_INDEX: 15
+    property int m_MAX_ITEM_INDEX: 16
     property bool m_keyboard_navigation_active: false
     onM_keyboard_navigation_activeChanged: {
         if(m_keyboard_navigation_active){
@@ -166,6 +166,7 @@ Item {
         if(index==12)return missionWidget;
         if(index==13)return gps;
         if(index==14)return home_distance;
+        if(index==15)return retransmissionStarsWidget;
         //if(index==13)return uplink;
         console.log("Invalid index");
         return ret;
@@ -299,6 +300,9 @@ Item {
         }
         WBLinkRateControlWidget{
             id: wBLinkRateControlWidget
+        }
+        RetransmissionStarsWidget{
+            id: retransmissionStarsWidget
         }
         // exp
         QRenderStatsWidget {
