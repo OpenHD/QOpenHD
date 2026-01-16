@@ -28,6 +28,9 @@ class WiFiCard : public QObject
     // A card might have more than one antenna
     L_RO_PROP(int,curr_rx_rssi_dbm_antenna1,set_curr_rx_rssi_dbm_antenna1,-128)
     L_RO_PROP(int,curr_rx_rssi_dbm_antenna2,set_curr_rx_rssi_dbm_antenna2,-128)
+    L_RO_PROP(int,rx_snr_antenna1,set_rx_snr_antenna1,-128)
+    L_RO_PROP(int,rx_snr_antenna2,set_rx_snr_antenna2,-128)
+    L_RO_PROP(int,card_temperature,set_card_temperature,-128)
     //
     L_RO_PROP(int,card_type,set_card_type,-1) // -1 = no info available yet, otherwise, openhd card type (0..?)
     L_RO_PROP(QString,card_type_as_string,set_card_type_as_string,"N/A")

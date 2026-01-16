@@ -176,6 +176,9 @@ Item {
         ListElement {value: 0; verbose:"MCS0\n(LONG RANGE)"}
         ListElement {value: 1; verbose:"MCS1\n(RANGE)"}
         ListElement {value: 2; verbose:"MCS2\n(QUALITY)"}
+        ListElement {value: 8; verbose:"MCS8\n(2SS PARTIAL 0)"}
+        ListElement {value: 9; verbose:"MCS9\n(2SS PARTIAL 1)"}
+        ListElement {value: 10; verbose:"MCS10\n(2SS PARTIAL 2)"}
     }
 
 

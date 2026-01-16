@@ -94,6 +94,9 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     set_curr_rx_rssi_dbm(msg.rx_rssi);
     set_curr_rx_rssi_dbm_antenna1(msg.rx_rssi_1);
     set_curr_rx_rssi_dbm_antenna2(msg.rx_rssi_2);
+    set_rx_snr_antenna1(msg.rx_snr_antenna1);
+    set_rx_snr_antenna2(msg.rx_snr_antenna2);
+    set_card_temperature(msg.card_temperature);
 
     set_n_received_packets(msg.count_p_received);
     set_packet_loss_perc(msg.curr_rx_packet_loss_perc);

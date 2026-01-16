@@ -23,7 +23,7 @@ BaseWidget {
     bw_verbose_name: "WB LIVE RATE CONTROL"
 
     defaultAlignment: 0
-    defaultXOffset: 250
+    defaultXOffset: 350
     defaultYOffset: 2
     defaultHCenter: false
     defaultVCenter: false
@@ -58,6 +58,9 @@ BaseWidget {
         ListElement {title: "MCS2 (DEFAULT)"; value: 2}
         ListElement {title: "MCS3 (EXPERIMENTAL)"; value: 3}
         ListElement {title: "MCS4 (EXPERIMENTAL)"; value: 4}
+        ListElement {title: "MCS8 (2SS PARTIAL 0)"; value: 8}
+        ListElement {title: "MCS9 (2SS PARTIAL 1)"; value: 9}
+        ListElement {title: "MCS10 (2SS PARTIAL 2)"; value: 10}
     }
     ListModel{
         id: stability_model

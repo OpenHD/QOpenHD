@@ -34,7 +34,7 @@ static std::vector<int> get_dbm_40mhz(){
 
 static int get_required_dbm_for_rate(int channel_width,int mcs_index){
     const auto values=channel_width==20 ? get_dbm_20mhz() : get_dbm_40mhz();
-    if(mcs_index>=0 && mcs_index<=values.size()){
+    if(mcs_index>=0 && mcs_index<static_cast<int>(values.size())){
         return values[mcs_index];
     }
     return 0;

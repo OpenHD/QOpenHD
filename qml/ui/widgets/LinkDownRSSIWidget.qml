@@ -22,8 +22,8 @@ BaseWidget {
     bw_verbose_name: "DOWNLINK/GND RSSI"
 
     defaultAlignment: 0
-    defaultXOffset: 80
-    defaultYOffset: 0
+    defaultXOffset: 20
+    defaultYOffset: 60
     defaultHCenter: false
     defaultVCenter: false
 

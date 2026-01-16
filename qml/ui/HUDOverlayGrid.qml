@@ -234,39 +234,39 @@ Item {
                         }*/
                     }
 
-    Image {
-        id: settingsButton
-        width: 48
-        height: 48
-        fillMode: Image.PreserveAspectFit
-        z: 2.2
+    // Image {
+    //     id: settingsButton
+    //     width: 48
+    //     height: 48
+    //     fillMode: Image.PreserveAspectFit
+    //     z: 2.2
 
-        source: "../resources/ic128.png"
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        // If the sidebar is activated, do not show the (button/image) that opens the advanced menu
-        // since on devices with a funky ratio (e.g. extra wide, like most modern android phones)
-        // the back button of the sidebar and this button conflict
-        visible: !sidebar.m_extra_is_visible
+    //     source: "../resources/ic128.png"
+    //     anchors.left: parent.left
+    //     anchors.leftMargin: 8
+    //     anchors.top: parent.top
+    //     anchors.topMargin: 0
+    //     // If the sidebar is activated, do not show the (button/image) that opens the advanced menu
+    //     // since on devices with a funky ratio (e.g. extra wide, like most modern android phones)
+    //     // the back button of the sidebar and this button conflict
+    //     visible: !sidebar.m_extra_is_visible
 
-        MouseArea {
-            id: settingsButtonMouseArea
-            anchors.fill: parent
-            onClicked: {
-                open_config_popup()
-            }
-        }
-        Rectangle{
-            id: settingsButtonHighlight
-            border.width: 5
-            border.color: "green"
-            anchors.fill: parent
-            visible: false
-            color: "transparent"
-        }
-    }
+    //     MouseArea {
+    //         id: settingsButtonMouseArea
+    //         anchors.fill: parent
+    //         onClicked: {
+    //             open_config_popup()
+    //         }
+    //     }
+    //     Rectangle{
+    //         id: settingsButtonHighlight
+    //         border.width: 5
+    //         border.color: "green"
+    //         anchors.fill: parent
+    //         visible: false
+    //         color: "transparent"
+    //     }
+    // }
 
     // Dirty, in between a HUD element and not a HUD element
     // placed here because of the focus issue
@@ -291,6 +291,9 @@ Item {
         // --------------------------------------------------------------------------
         LinkDownRSSIWidget {
             id: downlink
+        }
+        LinkOverviewWidget {
+            id: linkOverviewWidget
         }
         AirTemperatureTXC {
             id:airTempTxc

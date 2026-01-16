@@ -28,6 +28,7 @@ ScrollView {
         settings.show_txc_temp_gnd= enable_elements;
         settings.show_retransmission_stats= enable_elements;
         settings.show_downlink_rssi= enable_elements;
+        settings.show_link_overview_widget= enable_elements;
         settings.downlink_show_dbm_and_packets_per_card= enable_elements;
         settings.downlink_dbm_per_card_show_multiple_antennas=enable_elements;
         settings.downlink_show_current_bitrate= enable_elements;
@@ -232,6 +233,20 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_downlink_rssi
                         onCheckedChanged: settings.show_downlink_rssi = checked
+                    }
+                }
+                SettingBaseElement{
+                    m_short_description: "Show Link Overview"
+                    m_long_description: "Compact overview for RSSI, TXC temp, SNR, and link status."
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_link_overview_widget
+                        onCheckedChanged: settings.show_link_overview_widget = checked
                     }
                 }
 

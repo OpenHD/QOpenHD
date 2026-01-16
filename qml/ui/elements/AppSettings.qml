@@ -126,6 +126,7 @@ Settings {
     property bool show_txc_temp_gnd: true
     property bool show_retransmission_stats: true
     property bool show_downlink_rssi: true
+    property bool show_link_overview_widget: false
     //Const10
     property bool downlink_show_dbm_and_packets_per_card: true
     property bool downlink_dbm_per_card_show_multiple_antennas:false
