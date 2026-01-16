@@ -130,6 +130,14 @@ BaseWidget {
         return settings.color_text;
     }
 
+    function get_snr_blocks_text() {
+        var blocks = "";
+        for (var i = 0; i < 10; i++) {
+            blocks += m_snr_value >= (i + 1) * 10 ? "▰" : "▱";
+        }
+        return blocks;
+    }
+
     widgetDetailComponent: ScrollView {
         contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -279,14 +287,14 @@ BaseWidget {
             anchors.right: wifiArea.left
             anchors.rightMargin: 6
             anchors.top: parent.top
-            anchors.topMargin: 6
+            anchors.topMargin: 10
             height: 24
             spacing: 6
 
             Text {
                 text: get_dbm_text() + " dBm " + get_txc_text()
                 color: settings.color_text
-                font.pixelSize: 18
+                font.pixelSize: 16
                 font.family: settings.font_text
                 verticalAlignment: Text.AlignVCenter
                 style: Text.Outline
@@ -301,24 +309,17 @@ BaseWidget {
             anchors.right: parent.right
             anchors.rightMargin: 12
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8
+            anchors.bottomMargin: 20    
             spacing: 4
             height: 14
 
-            Row {
+            Text {
                 id: snrBlocks
-                spacing: 2
-                Repeater {
-                    model: 10
-                    Rectangle {
-                        width: 14
-                        height: 7
-                        radius: 1
-                        border.width: 1
-                        border.color: settings.color_shape
-                        color: m_snr_value >= (index + 1) * 10 ? settings.color_shape : "#00000000"
-                    }
-                }
+                text: get_snr_blocks_text()
+                color: settings.color_shape
+                font.pixelSize: 32
+                font.italic: true
+                verticalAlignment: Text.AlignVCenter
             }
         }
     }
