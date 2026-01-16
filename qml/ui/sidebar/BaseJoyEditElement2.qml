@@ -63,7 +63,7 @@ Item{
         height: parent.height
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
-        font.pixelSize: 18
+        font.pixelSize: 16
         anchors.top: parent.top
         color: "white"
     }
@@ -75,7 +75,7 @@ Item{
         text: m_displayed_value
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
-        font.pixelSize: 15
+        font.pixelSize: 13
         color: override_show_red_text? "red" :  "white"
         anchors.right: parent.right
     }

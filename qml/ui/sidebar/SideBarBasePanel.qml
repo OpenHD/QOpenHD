@@ -31,11 +31,11 @@ Item {
         width: secondaryUiWidth
         height: secondaryUiHeight/8
         color: highlightColor
-        opacity: 1.0
+        opacity: 0.95
         Text {
             anchors.centerIn: parent
             text: override_title
-            font.pixelSize: 21
+            font.pixelSize: 18
             font.family: "AvantGarde-Medium"
             color: "#ffffff"
             smooth: true

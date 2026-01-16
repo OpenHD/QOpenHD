@@ -24,10 +24,10 @@ Item {
 
     property int secondaryUiWidth: 320
     property int secondaryUiHeight: 390
-    property string secondaryUiColor: "#000"
-    property real secondaryUiOpacity: 0.75
-    property string mainDarkColor: "#302f30"
-    property string highlightColor: "#555"
+    property string secondaryUiColor: "#0a141e"
+    property real secondaryUiOpacity: 0.86
+    property string mainDarkColor: "#121b25"
+    property string highlightColor: "#1f2d3b"
 
     // Set to true if the sidebar is active (and some HUD elements shall be disabled)
     property bool m_is_active : false

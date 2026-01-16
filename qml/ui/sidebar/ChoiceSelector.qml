@@ -136,8 +136,8 @@ Rectangle{
             Rectangle{
                 anchors.fill: parent
                 //color: index==m_initial_index ? "yellow" : "orange"
-                color: "#333c4c"
-                opacity: index==m_initial_index ? 1.0 : 0.7
+                color: "#2a3a4e"
+                opacity: index==m_initial_index ? 0.95 : 0.7
             }
             Text {
                 text: verbose
@@ -151,14 +151,14 @@ Rectangle{
             Rectangle{
                 anchors.fill: parent
                 color: "transparent"
-                border.color: "white"
+                border.color: "#e7f4ff"
                 border.width: index==m_initial_index ? 2 : 0;
             }
             // Outline current selection by user
             Rectangle{
                 anchors.fill: parent
                 color: "transparent"
-                border.color: "white"
+                border.color: "#e7f4ff"
                 border.width: (index==m_current_user_selected_index) ? 3 : 0
             }
             MouseArea{

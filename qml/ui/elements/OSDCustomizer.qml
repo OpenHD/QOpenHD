@@ -14,7 +14,7 @@ Rectangle {
     width: 250
     height: 350
 
-    color: "#ffeaeaea"
+    color: "#cc000000"
 
     property bool stateVisible: visible
 
@@ -56,6 +56,7 @@ Rectangle {
                     text: qsTr("Shape Color")
                     font.weight: Font.Bold
                     font.pixelSize: 13
+                    color: settings.color_text
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -96,6 +97,7 @@ Rectangle {
                     text: qsTr("Glow Color")
                     font.weight: Font.Bold
                     font.pixelSize: 13
+                    color: settings.color_text
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -135,6 +137,7 @@ Rectangle {
                     text: qsTr("Text Color")
                     font.weight: Font.Bold
                     font.pixelSize: 13
+                    color: settings.color_text
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -175,7 +178,7 @@ Rectangle {
                     id: fontBoxDescription
                     text: "Font"
                     height: 20
-                    color: "black"
+                    color: settings.color_text
                     font.bold: true
                     font.pixelSize: 14
                 }

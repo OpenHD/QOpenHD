@@ -58,10 +58,10 @@ Rectangle {
         height: widgetDetailHeight
 
         background: Rectangle {
-            color: "grey"
-            border.width: 1
-            border.color: "white"
-            radius: 12
+            color: "#000"
+            opacity: 0.8
+            border.width: 0
+            radius: 0
         }
 
         closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
@@ -85,6 +85,8 @@ Rectangle {
         // This centers the popup on the screen rather than positioning it
         // relative to the parent item. Otherwise, it might pop up partially or completely hidden.
         parent: Overlay.overlay
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
         /*x: {
             var gridStepsX = 4;
             var gridLengthX = parent.width-width;
@@ -119,10 +121,10 @@ Rectangle {
         height: widgetActionHeight
 
         background: Rectangle {
-            color: "#ea000000"
-            border.width: 1
-            border.color: "white"
-            radius: 12
+            color: "#000"
+            opacity: 0.8
+            border.width: 0
+            radius: 0
         }
 
         closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
@@ -130,18 +132,8 @@ Rectangle {
         // This centers the popup on the screen rather than positioning it
         // relative to the parent item. Otherwise, it might pop up partially or completely hidden.
         parent: Overlay.overlay
-        x: {
-            var gridStepsX = 4;
-            var gridLengthX = parent.width-width;
-            var gridStepX = Math.round(gridLengthX/gridStepsX);
-            return Math.round((widgetBase.x-(width/2))/gridStepX)*gridStepX;
-        }
-        y: {
-            var gridStepsY = 2;
-            var gridLengthY = parent.height-height
-            var gridStepY = Math.round(gridLengthY/gridStepsY);
-            return Math.round((widgetBase.y-height/2)/gridStepY)*gridStepY;
-        }
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
 
         // The content it holds should be overridden by impl.
         contentItem: widgetActionComponent

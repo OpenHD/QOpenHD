@@ -43,27 +43,41 @@ SideBarBasePanel {
             }
         }
         Rectangle {
-            color: "#171d25"
+            color: "#333c4c"
+            opacity: 0.3
             height: recording_mode.height
             width: recording_mode.width
             Text {
-                anchors.centerIn: parent
-                anchors.leftMargin: 40
-                text: {
-                    var tmp = "  Status";
-                    if (!_ohdSystemAir.is_alive) {
-                        return tmp + "                   disabled ";
-                    }
-                    return tmp + _cameraStreamModelPrimary.camera_recording_mode_to_string(_cameraStreamModelPrimary.air_recording_active)
-                }
+                width: parent.width / 2
+                height: parent.height
+                text: qsTr("Status")
+                verticalAlignment: Qt.AlignVCenter
+                horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 18
                 color: "white"
                 smooth: true
             }
+            Text {
+                width: parent.width / 2
+                height: parent.height
+                anchors.right: parent.right
+                text: {
+                    if (!_ohdSystemAir.is_alive) {
+                        return qsTr("disabled");
+                    }
+                    return _cameraStreamModelPrimary.camera_recording_mode_to_string(
+                        _cameraStreamModelPrimary.air_recording_active
+                    );
+                }
+                verticalAlignment: Qt.AlignVCenter
+                horizontalAlignment: Qt.AlignHCenter
+                font.pixelSize: 15
+                color: "white"
+                smooth: true
+            }
         }
-        Rectangle {
-            color: secondaryUiColor
-            height: recording_mode.height+120
+        Item {
+            height: recording_mode.height + 120
             width: recording_mode.width
         }
     }

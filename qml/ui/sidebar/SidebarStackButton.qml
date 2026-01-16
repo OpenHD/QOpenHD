@@ -35,17 +35,17 @@ Item {
         width: parent.width
         height: parent.height
         color: (mouseArea.containsMouse || m_stack_index==override_index) ? highlightColor : mainDarkColor
-        border.color: "white"
-        border.width: sidebar_stack_button.focus ? 3 : 0;
+        border.color: sidebar_stack_button.focus ? "#e7f4ff" : "#00000000"
+        border.width: sidebar_stack_button.focus ? 2 : 0
     }
     // Icon
     Text {
         anchors.fill: parent
         text: override_text
-        font.pixelSize: secondaryUiHeight / 16
+        font.pixelSize: secondaryUiHeight / 18
         opacity: 1.0
         font.family: "Font Awesome 5 Free"
-        color: "white"
+        color: (mouseArea.containsMouse || m_stack_index==override_index) ? "#ffffff" : "#e0edf8"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }
