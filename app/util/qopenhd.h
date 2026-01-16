@@ -74,7 +74,7 @@ public:
     // Tries to mimic android toast as much as possible
     //
     Q_INVOKABLE void show_toast(QString message,bool long_toast=false);
-    L_RO_PROP(QString,version_string,set_version_string,"2.7.0-evo");
+    L_RO_PROP(QString,version_string,set_version_string,"2.7.1-evo");
     //
     // Shows a message popup to the user that needs to be clicked away - use sparingly
     //
