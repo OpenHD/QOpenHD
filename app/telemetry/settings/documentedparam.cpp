@@ -278,6 +278,9 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     append_documented_read_only(ret,"WB_N_RX_CARDS","TODO");
     append_only_documented(ret,"FC_BATT_N_CELLS","Stored locally on your air unit. If set to a nonzero value, overwrites the batt n cells of any connected GS (QOpenHD)"
                                                  "such that you don't have to change the value when swapping around planes.");
+    append_int(ret,"FC_SYS_ID",
+               ImprovedIntSetting::createRangeOnly(1,254),
+               "MAVLink system ID of the flight controller. Avoid using 100 or 101 (reserved for OpenHD air/ground), and keep it within 1-254.");
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
     // video / camera parameters
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
