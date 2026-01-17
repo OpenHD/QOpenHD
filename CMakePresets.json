@@ -21,6 +21,13 @@
           "remoteSourceRootDir": "$env{HOME}/.vs/$ms{projectDirName}"
         }
       }
+    },
+    {
+      "name": "linux-debug-v4l2-gl",
+      "inherits": "linux-debug",
+      "cacheVariables": {
+        "ENABLE_V4L2_GL_PLAYER": "ON"
+      }
     }
   ]
 }

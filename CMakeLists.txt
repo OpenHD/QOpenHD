@@ -9,6 +9,49 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(X_QT_VERSION 6.4)
 
+include(CMakeDependentOption)
+
+# v4l2 not available on windows. But also not enabled by default on linux
+cmake_dependent_option(ENABLE_V4L2_GL_PLAYER
+    "Enable built-in V4L2 decoding and GL presenting (Linux only)"
+    OFF
+    "NOT WIN32"
+    OFF)
+
+if(ENABLE_V4L2_GL_PLAYER AND WIN32)
+    message(FATAL_ERROR "V4L2 is a Linux kernel API and cannot be used on Windows")
+endif()
+
+if(ENABLE_V4L2_GL_PLAYER)
+    add_definitions(-DENABLE_V4L2_GL_PLAYER)
+endif()
+
+# v4l2-qt player use uvgRTP for RTP RX
+cmake_dependent_option(ENABLE_UVGRTP
+    "Enable uvgRTP library for rtp receiving"
+    ON
+    "ENABLE_V4L2_GL_PLAYER"
+    OFF)
+
+if(ENABLE_UVGRTP)
+    include(FetchContent)
+
+    set(UVGRTP_DISABLE_TESTS 1 CACHE BOOL "" FORCE)
+    set(UVGRTP_DISABLE_EXAMPLES 1 CACHE BOOL "" FORCE)
+    set(UVGRTP_DISABLE_EXAMPLES 1 CACHE BOOL "" FORCE)
+    set(UVGRTP_DISABLE_CRYPTO 1 CACHE BOOL "" FORCE)
+
+    if(CMAKE_BUILD_TYPE MATCHES "^(Release|RelWithDebInfo|MinSizeRel)$")
+        set(UVGRTP_DISABLE_PRINTS 1 CACHE BOOL "" FORCE)
+    endif()
+
+    FetchContent_Declare(
+        uvgRTP
+        GIT_REPOSITORY https://github.com/ultravideo/uvgRTP.git
+        GIT_TAG v3.1.6
+    )
+    FetchContent_MakeAvailable(uvgRTP)
+endif()
 
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
