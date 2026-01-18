@@ -17,6 +17,10 @@ if(ENABLE_FORCE_EGLFS)
     add_definitions(-DFORCE_EGLFS)
 endif()
 
+if(ENABLE_FORCE_EGLFS AND WIN32)
+    message(FATAL_ERROR "Forced eglfs not available on Windows")
+endif()
+
 # v4l2 not available on windows. But also not enabled by default on linux
 cmake_dependent_option(ENABLE_V4L2_GL_PLAYER
     "Enable built-in V4L2 decoding and GL presenting (Linux only)"
@@ -30,6 +34,14 @@ endif()
 
 if(ENABLE_V4L2_GL_PLAYER)
     add_definitions(-DENABLE_V4L2_GL_PLAYER)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LIBPLACEBO REQUIRED libplacebo)
+
+    if(LIBPLACEBO_FOUND)
+        message(STATUS "Found libplacebo: ${LIBPLACEBO_VERSION}")
+    else()
+        message(FATAL_ERROR "libplacebo not found")
+    endif()
 endif()
 
 # v4l2-qt player use uvgRTP for RTP RX
@@ -135,11 +147,19 @@ set(QOPENHD_SOURCE_FILES_LIST
     #app/videostreaming/vscommon/rtp/ParseRTP.cpp
     app/videostreaming/vscommon/decodingstatistcs.cpp
     app/videostreaming/vscommon/audio_playback.cpp
-    app/videostreaming/vscommon/rtp/ParseRTP.cpp
-    app/videostreaming/vscommon/rtp/rtpreceiver.cpp
-    app/videostreaming/vscommon/udp/UDPReceiver.cpp
-    app/videostreaming/vscommon/decodingstatistcs.cpp
 )
+
+if(ENABLE_V4L2_GL_PLAYER)
+
+else()
+list(APPEND QOPENHD_SOURCE_FILES_LIST
+
+
+        app/videostreaming/vscommon/rtp/ParseRTP.cpp
+        app/videostreaming/vscommon/rtp/rtpreceiver.cpp
+        app/videostreaming/vscommon/udp/UDPReceiver.cpp
+    )
+endif()
 
 qt_add_executable(QOpenHDApp
     MANUAL_FINALIZATION
@@ -198,6 +218,11 @@ target_include_directories(QOpenHDApp PUBLIC app/videostreaming/vscommon)
 target_include_directories(QOpenHDApp PUBLIC lib)
 target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 
+if(ENABLE_V4L2_GL_PLAYER AND LIBPLACEBO_FOUND)
+    target_include_directories(QOpenHDApp PUBLIC ${LIBPLACEBO_INCLUDE_DIRS})
+    target_link_directories(QOpenHDApp PRIVATE ${LIBPLACEBO_LIBRARY_DIRS})
+endif()
+
 
 target_link_libraries(QOpenHDApp
     PRIVATE
@@ -210,6 +235,11 @@ target_link_libraries(QOpenHDApp
         Qt6::Qml
         Qt6::QuickControls2
 )
+
+if(ENABLE_V4L2_GL_PLAYER AND LIBPLACEBO_FOUND)
+    target_link_libraries(QOpenHDApp PRIVATE ${LIBPLACEBO_LIBRARIES})
+    target_compile_options(QOpenHDApp PRIVATE ${LIBPLACEBO_CFLAGS_OTHER})
+endif()
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
              ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
