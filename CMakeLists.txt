@@ -2,12 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(QOpenHDProject VERSION 0.1 LANGUAGES C CXX)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(X_QT_VERSION 6.4)
 
 include(CMakeDependentOption)
 
@@ -46,30 +42,39 @@ cmake_dependent_option(ENABLE_UVGRTP
 if(ENABLE_UVGRTP)
     include(FetchContent)
 
-    set(UVGRTP_DISABLE_TESTS 1 CACHE BOOL "" FORCE)
-    set(UVGRTP_DISABLE_EXAMPLES 1 CACHE BOOL "" FORCE)
-    set(UVGRTP_DISABLE_EXAMPLES 1 CACHE BOOL "" FORCE)
-    set(UVGRTP_DISABLE_CRYPTO 1 CACHE BOOL "" FORCE)
-
-    if(CMAKE_BUILD_TYPE MATCHES "^(Release|RelWithDebInfo|MinSizeRel)$")
-        set(UVGRTP_DISABLE_PRINTS 1 CACHE BOOL "" FORCE)
-    endif()
-
     FetchContent_Declare(
         uvgRTP
         GIT_REPOSITORY https://github.com/ultravideo/uvgRTP.git
         GIT_TAG v3.1.6
     )
+    set(UVGRTP_DISABLE_TESTS ON CACHE INTERNAL "")
+    set(UVGRTP_DISABLE_EXAMPLES ON CACHE INTERNAL "")
+    set(UVGRTP_DISABLE_CRYPTO ON CACHE INTERNAL "")
+    set(UVGRTP_DISABLE_INSTALL ON CACHE INTERNAL "")
+
+    if(CMAKE_BUILD_TYPE MATCHES "^(Release|RelWithDebInfo|MinSizeRel)$")
+        set(UVGRTP_DISABLE_PRINTS 1 CACHE INTERNAL "")
+    endif()
+
     FetchContent_MakeAvailable(uvgRTP)
 endif()
 
-find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
-find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
-find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
-find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
-find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS LinguistTools)
-find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Charts)
-find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core5Compat)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(X_QT_VERSION 6.4)
+
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS
+    Core
+    Quick
+    Gui
+    Widgets
+    LinguistTools
+    Charts
+    Core5Compat
+    Qml
+    QuickControls2
+)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
@@ -180,24 +185,17 @@ target_include_directories(QOpenHDApp PUBLIC app/videostreaming/vscommon)
 target_include_directories(QOpenHDApp PUBLIC lib)
 target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 
-#qt_add_qml_module(QOpenHDApp
-#    URI hello
-#    VERSION 1.0
-#    QML_FILES
-#        qml/main.qml
-#        qml/ui/AnyParamBusyIndicator.qml
-#        qml/ui/HUDOverlayGrid.qml
-#        qml/ui/elements/
-#        qml/ui/sidebar/
-#        qml/ui/widgets/
-#)
-#qt6_add_resources(qml_QRC
-#    PREFIX "/"
-#    qml/qml.qrc)
-
 
 target_link_libraries(QOpenHDApp
-    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Charts Qt6::Core5Compat
+    PRIVATE
+        Qt6::Core
+        Qt6::Quick
+        Qt6::Gui
+        Qt6::Widgets
+        Qt6::Charts
+        Qt6::Core5Compat
+        Qt6::Qml
+        Qt6::QuickControls2
 )
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -208,7 +206,20 @@ include(lib/h264/h264.cmake)
 #include(app/videostreaming/android/videostreamingandroid.cmake)
 #include(app/videostreaming/gstreamer/gst_video.cmake)
 
-qt_finalize_executable(QOpenHDApp)
+# Manual finalization instead of qt_finalize_executable() to avoid
+# QML plugin import warnings. The project uses dynamic QML loading via qrc.
+if(ANDROID)
+    _qt_internal_android_generate_deployment_settings(QOpenHDApp)
+    _qt_internal_android_create_deployment_target(QOpenHDApp)
+endif()
+
+if(WIN32)
+    set_target_properties(QOpenHDApp PROPERTIES WIN32_EXECUTABLE TRUE)
+endif()
+
+if(APPLE AND NOT IOS)
+    set_target_properties(QOpenHDApp PROPERTIES MACOSX_BUNDLE TRUE)
+endif()
 
 # Copy generated .qm files to qml directory for qml.qrc
 foreach(QM_FILE ${QOPENHD_QM_FILES})
