@@ -254,6 +254,11 @@ static void android_check_permissions(){
 
 int main(int argc, char *argv[]) {
 
+#ifdef FORCE_EGLFS
+    QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    qputenv("QT_QPA_PLATFORM", "eglfs");
+#endif
+
 #if defined(__windows__)
     QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     attachConsole();
@@ -271,7 +276,7 @@ int main(int argc, char *argv[]) {
         }
         // a is deleted again
     }
-    
+
     QSettings settings;
     qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     // RPI and ROCK - disable font dpi. The user has to scale manually when using displays

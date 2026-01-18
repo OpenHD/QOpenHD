@@ -11,6 +11,16 @@ set(X_QT_VERSION 6.4)
 
 include(CMakeDependentOption)
 
+cmake_dependent_option(ENABLE_FORCE_EGLFS
+    "Force use of EGLFS"
+    OFF
+    "NOT WIN32"
+    OFF)
+
+if(ENABLE_FORCE_EGLFS)
+    add_definitions(-DFORCE_EGLFS)
+endif()
+
 # v4l2 not available on windows. But also not enabled by default on linux
 cmake_dependent_option(ENABLE_V4L2_GL_PLAYER
     "Enable built-in V4L2 decoding and GL presenting (Linux only)"
@@ -58,6 +68,8 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS LinguistTools)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Charts)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core5Compat)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
@@ -100,6 +112,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp
     app/telemetry/models/fcmavlinksystem.cpp
     app/telemetry/models/markermodel.cpp
+    app/telemetry/models/mavlinkmessagestatsmodel.cpp
     app/telemetry/models/rcchannelsmodel.cpp
     app/telemetry/models/wificard.cpp
     app/telemetry/settings/documentedparam.cpp
@@ -184,7 +197,7 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 
 
 target_link_libraries(QOpenHDApp
-    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets
+    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Charts Qt6::Core5Compat
 )
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
