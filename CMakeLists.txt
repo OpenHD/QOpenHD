@@ -74,6 +74,7 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS
     Core5Compat
     Qml
     QuickControls2
+    ShaderTools
 )
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
@@ -149,6 +150,18 @@ qt_add_executable(QOpenHDApp
     qml/qml.qrc
     ##
     androidqt6/AndroidManifest.xml
+)
+
+# Compile shaders for Qt6
+qt_add_shaders(QOpenHDApp "colorwheel_shaders"
+    BATCHABLE
+    PRECOMPILE
+    OPTIMIZED
+    PREFIX
+        "/shaders"
+    FILES
+        qml/ui/elements/colorwheel/colorwheel.vert
+        qml/ui/elements/colorwheel/colorwheel.frag
 )
 
 # Translation files

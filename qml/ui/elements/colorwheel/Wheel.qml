@@ -4,14 +4,50 @@
  * License: GPL v3
  *
  */
- 
-import QtQuick 2.0
+
+import QtQuick 2.8
 
 Item {
     id: root
 
     property real hue : 1
     property real saturation : 1
+
+    // Inline GLSL shaders for Qt5
+    readonly property string qt5VertexShader: "
+        uniform highp mat4 qt_Matrix;
+        attribute highp vec4 qt_Vertex;
+        attribute highp vec2 qt_MultiTexCoord0;
+        varying highp vec2 coord;
+        void main() {
+            coord = qt_MultiTexCoord0 - vec2(0.5, 0.5);
+            gl_Position = qt_Matrix * qt_Vertex;
+        }"
+    readonly property string qt5FragmentShader: "
+        varying highp vec2 coord;
+        mediump vec3 hsv2rgb(in mediump vec3 c) {
+            mediump vec4 k = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+            mediump vec3 p = abs(fract(c.xxx + k.xyz) * 6.0 - k.www);
+            return c.z * mix(k.xxx, clamp(p - k.xxx, 0.0, 1.0), c.y);
+        }
+        void main() {
+            const mediump float PI = 3.14159265358979323846264;
+            mediump float s = sqrt(coord.x * coord.x + coord.y * coord.y);
+            if( s > 0.5 ){
+                gl_FragColor = vec4(0, 0, 0, 0);
+                return;
+            }
+            mediump float h = - atan( coord.y / coord.x );
+            s *= 2.0;
+            if( coord.x >= 0.0 ){
+                h += PI;
+            }
+            h = h / (2.0 * PI);
+            mediump vec3 hsl = vec3(h, s, 1.0);
+            mediump vec3 rgb = hsv2rgb(hsl);
+            gl_FragColor.rgb = rgb;
+            gl_FragColor.a = 1.0;
+        }"
 
     signal accepted()
     signal updateHS(var hueSignal, var saturationSignal)
@@ -39,40 +75,14 @@ Item {
         ShaderEffect {
             id: shader
             anchors.fill: parent
-            vertexShader: "
-                uniform highp mat4 qt_Matrix;
-                attribute highp vec4 qt_Vertex;
-                attribute highp vec2 qt_MultiTexCoord0;
-                varying highp vec2 coord;
-                void main() {
-                    coord = qt_MultiTexCoord0 - vec2(0.5, 0.5);
-                    gl_Position = qt_Matrix * qt_Vertex;
-            }"
-            fragmentShader: "
-                varying highp vec2 coord;
-                mediump vec3 hsv2rgb(in mediump vec3 c) {
-                    mediump vec4 k = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-                    mediump vec3 p = abs(fract(c.xxx + k.xyz) * 6.0 - k.www);
-                    return c.z * mix(k.xxx, clamp(p - k.xxx, 0.0, 1.0), c.y);
-                }
-                void main() {
-                    const mediump float PI = 3.14159265358979323846264;
-                    mediump float s = sqrt(coord.x * coord.x + coord.y * coord.y);
-                    if( s > 0.5 ){
-                        gl_FragColor = vec4(0, 0, 0, 0);
-                        return;
-                    }
-                    mediump float h = - atan( coord.y / coord.x );
-                    s *= 2.0;
-                    if( coord.x >= 0.0 ){
-                        h += PI;
-                    }
-                    h = h / (2.0 * PI);
-                    mediump vec3 hsl = vec3(h, s, 1.0);
-                    mediump vec3 rgb = hsv2rgb(hsl);
-                    gl_FragColor.rgb = rgb;
-                    gl_FragColor.a = 1.0;
-            }"
+            // Qt6 uses RhiShader and requires precompiled .qsb files
+            // Qt5 uses GLSL and accepts inline shader strings
+            vertexShader: GraphicsInfo.shaderType === GraphicsInfo.RhiShader
+                          ? "qrc:/shaders/qml/ui/elements/colorwheel/colorwheel.vert.qsb"
+                          : root.qt5VertexShader
+            fragmentShader: GraphicsInfo.shaderType === GraphicsInfo.RhiShader
+                            ? "qrc:/shaders/qml/ui/elements/colorwheel/colorwheel.frag.qsb"
+                            : root.qt5FragmentShader
         }
 
         Item {
