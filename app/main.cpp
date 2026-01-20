@@ -51,6 +51,10 @@
 #endif
 #include "videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 #include "videostreaming/vscommon/audio_playback.h"
+#ifdef ENABLE_V4L2_GL_PLAYER
+#include "videostreaming/libplacebo/placebo_video_item.h"
+#include "videostreaming/v4l2/v4l2_pipeline.h"
+#endif
 // Video end
 
 #include "util/qrenderstats.h"
@@ -461,6 +465,19 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_secondaryMediaPlayer", &secondaryPlayer);
 #else
      engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(false));
+#endif
+#ifdef ENABLE_V4L2_GL_PLAYER
+    engine.rootContext()->setContextProperty("ENABLE_V4L2_GL_PLAYER", QVariant(true));
+    qmlRegisterType<PlaceboVideoItem>("OpenHD", 1, 0, "PlaceboVideoItem");
+    // V4L2Pipeline will be initialized lazily when video player starts
+#else
+    engine.rootContext()->setContextProperty("ENABLE_V4L2_GL_PLAYER", QVariant(false));
+#endif
+    // Qt version detection for QML
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    engine.rootContext()->setContextProperty("QOPENHD_IS_QT6", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_IS_QT6", QVariant(false));
 #endif
     platform_start_audio_streaming_if_enabled();
 // Platform - dependend video end  -----------------------------------------------------------------

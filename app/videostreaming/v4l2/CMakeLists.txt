@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+# CMake configuration for V4L2 video decoding pipeline
+
+set(V4L2_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/v4l2_decoder.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/uvgrtp_receiver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/v4l2_pipeline.cpp
+)
+
+set(V4L2_HEADERS
+    ${CMAKE_CURRENT_LIST_DIR}/v4l2_decoder.h
+    ${CMAKE_CURRENT_LIST_DIR}/uvgrtp_receiver.h
+    ${CMAKE_CURRENT_LIST_DIR}/v4l2_pipeline.h
+)

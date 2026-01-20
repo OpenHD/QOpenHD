@@ -38,6 +38,7 @@
             "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "ENABLE_V4L2_GL_PLAYER": "ON",
+                "ENABLE_FORCE_EGLFS": "ON",
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         }

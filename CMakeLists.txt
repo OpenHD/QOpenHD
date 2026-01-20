@@ -150,7 +150,13 @@ set(QOPENHD_SOURCE_FILES_LIST
 )
 
 if(ENABLE_V4L2_GL_PLAYER)
-
+    # Include libplacebo and V4L2 pipeline sources
+    include(app/videostreaming/libplacebo/CMakeLists.txt)
+    include(app/videostreaming/v4l2/CMakeLists.txt)
+    list(APPEND QOPENHD_SOURCE_FILES_LIST
+        ${LIBPLACEBO_SOURCES}
+        ${V4L2_SOURCES}
+    )
 else()
 list(APPEND QOPENHD_SOURCE_FILES_LIST
 
@@ -218,8 +224,10 @@ target_include_directories(QOpenHDApp PUBLIC app/videostreaming/vscommon)
 target_include_directories(QOpenHDApp PUBLIC lib)
 target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 
-if(ENABLE_V4L2_GL_PLAYER AND LIBPLACEBO_FOUND)
+if(ENABLE_V4L2_GL_PLAYER)
     target_include_directories(QOpenHDApp PUBLIC ${LIBPLACEBO_INCLUDE_DIRS})
+    target_include_directories(QOpenHDApp PUBLIC app/videostreaming/libplacebo)
+    target_include_directories(QOpenHDApp PUBLIC app/videostreaming/v4l2)
     target_link_directories(QOpenHDApp PRIVATE ${LIBPLACEBO_LIBRARY_DIRS})
 endif()
 
@@ -236,9 +244,14 @@ target_link_libraries(QOpenHDApp
         Qt6::QuickControls2
 )
 
-if(ENABLE_V4L2_GL_PLAYER AND LIBPLACEBO_FOUND)
-    target_link_libraries(QOpenHDApp PRIVATE ${LIBPLACEBO_LIBRARIES})
+if(ENABLE_V4L2_GL_PLAYER)
+    target_link_libraries(QOpenHDApp PRIVATE ${LIBPLACEBO_LIBRARIES} EGL GLESv2)
     target_compile_options(QOpenHDApp PRIVATE ${LIBPLACEBO_CFLAGS_OTHER})
+endif()
+
+if(ENABLE_UVGRTP)
+    target_link_libraries(QOpenHDApp PRIVATE uvgrtp)
+    target_compile_definitions(QOpenHDApp PRIVATE ENABLE_UVGRTP)
 endif()
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

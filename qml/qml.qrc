@@ -172,6 +172,7 @@
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
         <file>ui/widgets/RCRssiWidget.qml</file>
         <file>video/ExpMainVideoAndroid.qml</file>
+        <file>video/LibPlaceboVideo.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
@@ -210,6 +211,7 @@
         <file>ui/configpopup/log/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/dev/MavlinkDebugPanel.qml</file>
+        <file>ui/configpopup/dev/MavlinkDebugPanel6.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>

@@ -76,7 +76,9 @@ ApplicationWindow {
             anchors.fill: parent
             z: 1.0
             source: {
+                // V4L2 + libplacebo path (hardware decode with libplacebo rendering)
                 if(ENABLE_V4L2_GL_PLAYER) {
+                    return "../video/LibPlaceboVideo.qml";
                 }
 
                 if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID) {

@@ -306,8 +306,9 @@ Rectangle {
             id: appDeveloperStatsPanel
         }
 
-        MavlinkDebugPanel {
-            id: mavlinkDebugPanel
+        Loader {
+            id: mavlinkDebugPanelLoader
+            source: QOPENHD_IS_QT6 ? "dev/MavlinkDebugPanel6.qml" : "dev/MavlinkDebugPanel.qml"
         }
 
     }
