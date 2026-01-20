@@ -6,6 +6,10 @@
 
 #ifdef ENABLE_V4L2_GL_PLAYER
 
+#include "dma_heap.h"
+#include "dma_buffers_manager.h"
+#include "../libplacebo/placebo_frame_queue.h"
+
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -13,27 +17,28 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
-#include <queue>
 #include <condition_variable>
+#include <queue>
 
-#include "../libplacebo/placebo_frame_queue.h"
 
 /**
  * @brief V4L2 Memory-to-Memory (M2M) hardware video decoder.
  *
- * This class provides a skeleton for V4L2 M2M video decoding, outputting
- * decoded frames as DMA-BUF file descriptors suitable for zero-copy rendering.
+ * This class implements V4L2 M2M video decoding using DMA-BUF buffers
+ * for zero-copy operation. Decoded frames are output as PlaceboFrame
+ * structures suitable for rendering with libplacebo.
  *
- * Supported codecs (platform dependent):
- * - H.264 (AVC)
- * - H.265 (HEVC)
+ * Buffer model:
+ * - INPUT (OUTPUT_MPLANE): H.264 NAL units → decoder
+ * - CAPTURE (CAPTURE_MPLANE): Decoded YUV frames ← decoder
+ * - All buffers use V4L2_MEMORY_DMABUF with externally allocated DMA-BUF
  *
  * Thread model:
- * - feed_nal_unit() can be called from any thread
- * - Internal decode thread handles V4L2 buffer management
- * - on_frame_decoded callback is invoked from decode thread
+ * - feed_nal_unit() is called from RTP receiver thread
+ * - Internal decode loop handles V4L2 buffer management
+ * - Frame callback is invoked from decode thread
  *
- * TODO: Implement V4L2 M2M API calls
+ * Based on RtpDrmPlayer reference implementation.
  */
 class V4L2Decoder
 {
@@ -46,7 +51,7 @@ public:
     V4L2Decoder& operator=(const V4L2Decoder&) = delete;
 
     /**
-     * @brief Video codec type
+     * @brief Supported codecs.
      */
     enum class Codec {
         H264,
@@ -54,164 +59,184 @@ public:
     };
 
     /**
-     * @brief Decoder capabilities / output format information
-     * Populated after successful initialization with first frame decoded.
+     * @brief Decoder capabilities (reported after first frame).
      */
     struct Capabilities {
         uint32_t width = 0;
         uint32_t height = 0;
-        uint32_t output_fourcc = 0;     // DRM format (e.g., DRM_FORMAT_NV12)
+        uint32_t pixel_format = 0;      // V4L2_PIX_FMT_*
         uint32_t plane_count = 0;
-        uint32_t min_buffers = 0;       // Minimum capture buffers required
-        bool supports_dmabuf = false;
 
-        bool is_valid() const { return width > 0 && height > 0 && output_fourcc != 0; }
+        // V4L2 colorspace metadata
+        uint32_t colorspace = 0;        // V4L2_COLORSPACE_*
+        uint32_t ycbcr_enc = 0;         // V4L2_YCBCR_ENC_*
+        uint32_t quantization = 0;      // V4L2_QUANTIZATION_*
+        uint32_t xfer_func = 0;         // V4L2_XFER_FUNC_*
     };
 
     /**
-     * @brief Callback for decoded frames
+     * @brief Decoder statistics.
+     */
+    struct Stats {
+        uint64_t frames_decoded = 0;
+        uint64_t frames_dropped = 0;
+        uint64_t nals_received = 0;
+        uint64_t decode_errors = 0;
+    };
+
+    /**
+     * @brief Callback for decoded frames.
      * Called from decode thread when a frame is ready.
-     * @param frame The decoded frame (caller should NOT close fds - queue will handle it)
      */
     using FrameCallback = std::function<void(PlaceboFrame frame)>;
 
     /**
-     * @brief Callback for format/capabilities change
-     * Called when decoder determines output format (after first frame).
+     * @brief Callback for capabilities change (resolution change, first frame).
      */
     using CapabilitiesCallback = std::function<void(const Capabilities& caps)>;
 
     /**
-     * @brief Set frame decoded callback
-     */
-    void set_frame_callback(FrameCallback callback);
-
-    /**
-     * @brief Set capabilities change callback
-     */
-    void set_capabilities_callback(CapabilitiesCallback callback);
-
-    /**
-     * @brief Initialize decoder
-     * @param device V4L2 device path (e.g., "/dev/video0")
-     * @param codec Video codec to decode
+     * @brief Initialize decoder with V4L2 device path and codec.
+     * @param device_path Path to V4L2 M2M device (e.g., /dev/video10)
+     * @param codec Codec to decode
      * @return true on success
      */
-    bool init(const std::string& device, Codec codec);
+    bool init(const std::string& device_path, Codec codec);
 
     /**
-     * @brief Start decoding
+     * @brief Start decoding.
      * @return true on success
      */
     bool start();
 
     /**
-     * @brief Stop decoding
+     * @brief Stop decoding.
      */
     void stop();
 
     /**
-     * @brief Check if decoder is running
-     */
-    bool is_running() const { return m_running.load(); }
-
-    /**
-     * @brief Feed a NAL unit to decoder
-     * Can be called from any thread. Data is copied internally.
-     * @param data NAL unit data (including start code if present)
+     * @brief Feed a NAL unit to the decoder.
+     * Can be called from any thread.
+     * @param data NAL unit data (with start code)
      * @param size Size in bytes
      * @param timestamp_us Presentation timestamp in microseconds
      */
     void feed_nal_unit(const uint8_t* data, size_t size, int64_t timestamp_us);
 
     /**
-     * @brief Get current capabilities
-     * Only valid after capabilities callback has been invoked.
+     * @brief Recycle a buffer back to the decoder.
+     * Called when renderer is done with a frame.
+     * @param buffer_index The buffer index from PlaceboFrame
      */
-    const Capabilities& get_capabilities() const { return m_capabilities; }
+    void recycle_buffer(uint32_t buffer_index);
 
     /**
-     * @brief Get decoder statistics
+     * @brief Set frame callback.
      */
-    struct Stats {
-        uint64_t nal_units_received = 0;
-        uint64_t frames_decoded = 0;
-        uint64_t decode_errors = 0;
-    };
+    void set_frame_callback(FrameCallback callback);
+
+    /**
+     * @brief Set capabilities callback.
+     */
+    void set_capabilities_callback(CapabilitiesCallback callback);
+
+    /**
+     * @brief Get current capabilities.
+     */
+    const Capabilities& get_capabilities() const { return capabilities_; }
+
+    /**
+     * @brief Get statistics.
+     */
     Stats get_stats() const;
 
     /**
-     * @brief Reset statistics
+     * @brief Reset statistics.
      */
     void reset_stats();
 
     /**
-     * @brief Get last error message
+     * @brief Get last error message.
      */
-    std::string get_last_error() const;
+    std::string get_last_error() const { return last_error_; }
 
     /**
-     * @brief Return a buffer to the decoder for reuse
-     * Called when rendering is done with a frame.
-     * @param buffer_index The buffer index from PlaceboFrame::buffer_index
+     * @brief Check if decoder is running.
      */
-    void recycle_buffer(uint32_t buffer_index);
+    bool is_running() const { return running_.load(); }
 
 private:
-    // V4L2 device
-    int m_fd = -1;
-    std::string m_device_path;
-    Codec m_codec = Codec::H264;
+    // Configuration
+    std::string device_path_;
+    Codec codec_ = Codec::H264;
 
-    // Capabilities
-    Capabilities m_capabilities;
-    bool m_capabilities_valid = false;
+    // V4L2 device
+    int fd_ = -1;
+
+    // DMA-BUF allocator and buffer managers
+    std::shared_ptr<DmaHeap> dma_heap_;
+    std::unique_ptr<DmaBuffersManager> input_buffers_;
+    std::unique_ptr<DmaBuffersManager> output_buffers_;
+
+    // Capabilities (filled after SOURCE_CHANGE event)
+    Capabilities capabilities_;
+
+    // Plane info for output buffers
+    uint32_t output_plane_sizes_[4] = {0};
+    uint32_t output_plane_strides_[4] = {0};
 
     // Callbacks
-    FrameCallback m_frame_callback;
-    CapabilitiesCallback m_caps_callback;
+    FrameCallback frame_callback_;
+    CapabilitiesCallback capabilities_callback_;
 
-    // State
-    std::atomic<bool> m_running{false};
-    std::atomic<bool> m_stop_requested{false};
+    // Error handling
+    std::string last_error_;
 
-    // Input buffer queue (NAL units waiting to be sent to decoder)
+    // Decode thread
+    std::thread decode_thread_;
+    std::atomic<bool> running_{false};
+    std::atomic<bool> stop_requested_{false};
+
+    // NAL unit queue (from RTP thread to decode thread)
     struct NalUnit {
         std::vector<uint8_t> data;
         int64_t timestamp_us;
     };
-    std::queue<NalUnit> m_input_queue;
-    std::mutex m_input_mutex;
-    std::condition_variable m_input_cv;
+    std::queue<NalUnit> nal_queue_;
+    std::mutex nal_mutex_;
+    std::condition_variable nal_cv_;
 
-    // Decode thread
-    std::unique_ptr<std::thread> m_decode_thread;
+    // Buffer recycling queue
+    std::queue<uint32_t> recycle_queue_;
+    std::mutex recycle_mutex_;
 
     // Statistics
-    std::atomic<uint64_t> m_nal_units_received{0};
-    std::atomic<uint64_t> m_frames_decoded{0};
-    std::atomic<uint64_t> m_decode_errors{0};
+    std::atomic<uint64_t> frames_decoded_{0};
+    std::atomic<uint64_t> frames_dropped_{0};
+    std::atomic<uint64_t> nals_received_{0};
+    std::atomic<uint64_t> decode_errors_{0};
 
-    // Error
-    mutable std::mutex m_error_mutex;
-    std::string m_last_error;
+    // Frame sequence counter
+    uint64_t frame_sequence_ = 0;
 
     // Internal methods
-    void decode_thread_func();
-    bool open_device();
-    void close_device();
-    bool setup_output_format();   // Set input format (compressed)
-    bool setup_capture_format();  // Set output format (raw)
-    bool allocate_buffers();
-    void free_buffers();
-    bool stream_on();
-    void stream_off();
-    bool queue_input_buffer(const NalUnit& nal);
-    bool dequeue_output_frame(PlaceboFrame& frame);
-    void set_error(const std::string& error);
+    bool openDevice();
+    void closeDevice();
+    bool setupInputFormat();
+    bool setupInputBuffers();
+    bool handleSourceChange();
+    bool setupCaptureFormat();
+    bool setupCaptureBuffers();
+    bool startStreaming();
+    bool stopStreaming();
 
-    // V4L2 buffer management
-    // TODO: Add buffer structures when implementing
+    void decodeLoop();
+    bool processNal(const NalUnit& nal);
+    bool queueInputBuffer(const uint8_t* data, size_t size, int64_t timestamp_us);
+    bool processOutputBuffer(uint32_t index);
+    bool requeueOutputBuffer(uint32_t index);
+
+    void setError(const std::string& error);
 };
 
 #endif // ENABLE_V4L2_GL_PLAYER

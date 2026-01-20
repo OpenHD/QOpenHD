@@ -264,14 +264,18 @@ void V4L2Pipeline::on_decoder_capabilities(const V4L2Decoder::Capabilities& caps
 {
     qInfo() << "V4L2Pipeline: decoder capabilities:"
             << caps.width << "x" << caps.height
-            << "fourcc:" << Qt::hex << caps.output_fourcc
+            << "pixel_format:" << Qt::hex << caps.pixel_format
             << "planes:" << caps.plane_count;
 
     // Update frame format for renderer
     m_frame_format.width = caps.width;
     m_frame_format.height = caps.height;
-    m_frame_format.drm_fourcc = caps.output_fourcc;
+    m_frame_format.pixel_format = caps.pixel_format;
     m_frame_format.plane_count = caps.plane_count;
+    m_frame_format.colorspace = caps.colorspace;
+    m_frame_format.ycbcr_enc = caps.ycbcr_enc;
+    m_frame_format.quantization = caps.quantization;
+    m_frame_format.xfer_func = caps.xfer_func;
 
     m_format_ready = true;
 }

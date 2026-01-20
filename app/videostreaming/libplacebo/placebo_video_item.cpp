@@ -66,8 +66,19 @@ PlaceboVideoItem::PlaceboVideoItem(QQuickItem *parent)
     // Connect to window changes
     connect(this, &QQuickItem::windowChanged, this, &PlaceboVideoItem::handleWindowChanged);
 
+    // Initialize and start the pipeline
+    auto& pipeline = V4L2Pipeline::instance();
+    if (!pipeline.is_running()) {
+        qInfo() << "PlaceboVideoItem: initializing V4L2Pipeline";
+        if (!pipeline.init_from_settings()) {
+            qWarning() << "PlaceboVideoItem: failed to init V4L2Pipeline";
+        } else if (!pipeline.start()) {
+            qWarning() << "PlaceboVideoItem: failed to start V4L2Pipeline";
+        }
+    }
+
     // Get frame queue from pipeline
-    m_frame_queue = &V4L2Pipeline::instance().get_frame_queue();
+    m_frame_queue = &pipeline.get_frame_queue();
 
     // Create and start waiter thread
     m_waiter_thread = std::make_unique<FrameWaiterThread>(m_frame_queue, this);
@@ -95,6 +106,9 @@ PlaceboVideoItem::~PlaceboVideoItem()
         m_frame_queue->return_buffer(m_current_frame);
         m_has_current_frame = false;
     }
+
+    // Stop the pipeline (will be restarted if a new PlaceboVideoItem is created)
+    V4L2Pipeline::instance().stop();
 }
 
 void PlaceboVideoItem::handleWindowChanged(QQuickWindow *win)

@@ -11,6 +11,7 @@
 #include <condition_variable>
 #include <deque>
 #include <atomic>
+#include <vector>
 
 /**
  * @brief Represents a decoded video frame with DMA-BUF file descriptors.
@@ -31,8 +32,16 @@ struct PlaceboFrame {
     uint32_t width = 0;
     uint32_t height = 0;
 
-    // DRM format fourcc (e.g., DRM_FORMAT_NV12)
-    uint32_t drm_fourcc = 0;
+    // V4L2 pixel format fourcc (e.g., V4L2_PIX_FMT_NV12)
+    // This is passed directly from decoder to renderer for format detection.
+    uint32_t pixel_format = 0;
+
+    // V4L2 colorspace metadata - passed directly from decoder
+    // Renderer maps these to libplacebo color settings.
+    uint32_t colorspace = 0;      // V4L2_COLORSPACE_*
+    uint32_t ycbcr_enc = 0;       // V4L2_YCBCR_ENC_*
+    uint32_t quantization = 0;    // V4L2_QUANTIZATION_*
+    uint32_t xfer_func = 0;       // V4L2_XFER_FUNC_*
 
     // Number of planes (1-4 depending on format)
     uint32_t plane_count = 0;
@@ -60,7 +69,7 @@ struct PlaceboFrame {
      */
     bool is_valid() const {
         return buffer_index != UINT32_MAX &&
-               width > 0 && height > 0 && drm_fourcc != 0 &&
+               width > 0 && height > 0 && pixel_format != 0 &&
                plane_count > 0 && planes[0].fd >= 0;
     }
 };

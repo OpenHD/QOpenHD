@@ -11,26 +11,27 @@
 #include <memory>
 #include <string>
 #include <atomic>
-#include <thread>
 #include <mutex>
+#include <vector>
+#include <chrono>
 
 #include <uvgrtp/lib.hh>
 #include <uvgrtp/frame.hh>
 
+
 /**
- * @brief RTP receiver using uvgRTP library for H.264/H.265 video streams.
+ * @brief RTP receiver using uvgRTP library with automatic defragmentation.
  *
- * This class receives RTP packets over UDP and reassembles them into
- * complete NAL units, which are then passed to the decoder via callback.
- *
- * uvgRTP handles:
- * - RTP packet reception and parsing
- * - H.264/H.265 fragmentation unit (FU-A) reassembly
- * - Packet reordering within reasonable bounds
+ * uvgRTP with RCE_FRAGMENT_GENERIC flag automatically handles:
+ * - H.264/H.265 fragmentation unit reassembly
+ * - RTP packet reordering
+ * - Complete NAL unit delivery
  *
  * Thread model:
  * - Reception runs in uvgRTP's internal thread
- * - NAL callback is invoked from uvgRTP thread
+ * - NAL callback is invoked from uvgRTP thread with complete NAL units
+ *
+ * Based on RtpDrmPlayer reference implementation.
  */
 class UvgRtpReceiver
 {
@@ -43,7 +44,7 @@ public:
     UvgRtpReceiver& operator=(const UvgRtpReceiver&) = delete;
 
     /**
-     * @brief Video codec type
+     * @brief Supported codecs.
      */
     enum class Codec {
         H264,
@@ -51,97 +52,99 @@ public:
     };
 
     /**
-     * @brief Callback for received NAL units
-     * Called from uvgRTP thread when a complete NAL unit is received.
-     * @param data NAL unit data (without start code)
-     * @param size Size in bytes
-     * @param timestamp_us RTP timestamp converted to microseconds
+     * @brief Callback for received NAL units.
+     * Called from uvgRTP thread when a complete NAL is received.
+     * Parameters: data pointer, size, timestamp in microseconds
      */
     using NalCallback = std::function<void(const uint8_t* data, size_t size, int64_t timestamp_us)>;
 
     /**
-     * @brief Set NAL unit received callback
+     * @brief Reception statistics.
      */
-    void set_nal_callback(NalCallback callback);
+    struct Stats {
+        uint64_t packets_received = 0;
+        uint64_t bytes_received = 0;
+        uint64_t nals_delivered = 0;
+        uint64_t packets_lost = 0;
+    };
 
     /**
-     * @brief Initialize receiver
-     * @param local_addr Local IP address to bind to (e.g., "0.0.0.0")
+     * @brief Initialize the receiver.
+     * @param local_addr Local IP address to bind (e.g., "0.0.0.0")
      * @param local_port Local UDP port for RTP reception
-     * @param codec Expected video codec
+     * @param codec Codec type (H264 or H265)
      * @return true on success
      */
     bool init(const std::string& local_addr, uint16_t local_port, Codec codec);
 
     /**
-     * @brief Start receiving
+     * @brief Set callback for received NAL units.
+     */
+    void set_nal_callback(NalCallback callback);
+
+    /**
+     * @brief Start receiving.
      * @return true on success
      */
     bool start();
 
     /**
-     * @brief Stop receiving
+     * @brief Stop receiving.
      */
     void stop();
 
     /**
-     * @brief Check if receiver is running
+     * @brief Check if receiver is running.
      */
-    bool is_running() const { return m_running.load(); }
+    bool is_running() const { return running_.load(); }
 
     /**
-     * @brief Get reception statistics
+     * @brief Get current statistics.
      */
-    struct Stats {
-        uint64_t rtp_packets_received = 0;
-        uint64_t nal_units_received = 0;
-        uint64_t bytes_received = 0;
-        uint64_t packets_lost = 0;
-    };
     Stats get_stats() const;
 
     /**
-     * @brief Reset statistics
+     * @brief Reset statistics counters.
      */
     void reset_stats();
 
     /**
-     * @brief Get last error message
+     * @brief Get last error message.
      */
-    std::string get_last_error() const;
+    std::string get_last_error() const { return last_error_; }
 
 private:
+    // uvgRTP frame receive hook (static for C callback interface)
+    static void frameReceiveHook(void* arg, uvgrtp::frame::rtp_frame* frame);
+    void processFrame(uvgrtp::frame::rtp_frame* frame);
+
     // uvgRTP objects
-    std::unique_ptr<uvgrtp::context> m_ctx;
-    uvgrtp::session* m_session = nullptr;
-    uvgrtp::media_stream* m_stream = nullptr;
+    std::unique_ptr<uvgrtp::context> ctx_;
+    std::unique_ptr<uvgrtp::session> session_;
+    uvgrtp::media_stream* stream_ = nullptr;
 
     // Configuration
-    std::string m_local_addr;
-    uint16_t m_local_port = 0;
-    Codec m_codec = Codec::H264;
-
-    // Callback
-    NalCallback m_nal_callback;
+    std::string local_addr_;
+    uint16_t local_port_ = 0;
+    Codec codec_ = Codec::H264;
 
     // State
-    std::atomic<bool> m_running{false};
+    std::atomic<bool> running_{false};
+    std::atomic<bool> initialized_{false};
+    std::string last_error_;
+
+    // Callback for complete NAL units
+    NalCallback nal_callback_;
+    std::mutex callback_mutex_;
 
     // Statistics
-    std::atomic<uint64_t> m_rtp_packets{0};
-    std::atomic<uint64_t> m_nal_units{0};
-    std::atomic<uint64_t> m_bytes{0};
-    std::atomic<uint64_t> m_lost{0};
+    mutable std::mutex stats_mutex_;
+    Stats stats_;
 
-    // Error
-    mutable std::mutex m_error_mutex;
-    std::string m_last_error;
-
-    void set_error(const std::string& error);
-
-    // uvgRTP frame receive callback (static for C callback interface)
-    static void rtp_receive_hook(void* arg, uvgrtp::frame::rtp_frame* frame);
-    void handle_rtp_frame(uvgrtp::frame::rtp_frame* frame);
+    // RTP timestamp tracking for converting to microseconds
+    uint32_t first_rtp_ts_ = 0;
+    bool first_rtp_ts_set_ = false;
+    std::chrono::steady_clock::time_point first_recv_time_;
 };
 
 #endif // ENABLE_V4L2_GL_PLAYER && ENABLE_UVGRTP

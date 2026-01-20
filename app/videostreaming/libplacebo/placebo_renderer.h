@@ -50,8 +50,14 @@ public:
     struct FrameFormat {
         uint32_t width = 0;
         uint32_t height = 0;
-        uint32_t drm_fourcc = 0;        // DRM_FORMAT_* constant
+        uint32_t pixel_format = 0;      // V4L2_PIX_FMT_* constant
         uint32_t plane_count = 0;
+
+        // V4L2 colorspace metadata
+        uint32_t colorspace = 0;        // V4L2_COLORSPACE_*
+        uint32_t ycbcr_enc = 0;         // V4L2_YCBCR_ENC_*
+        uint32_t quantization = 0;      // V4L2_QUANTIZATION_*
+        uint32_t xfer_func = 0;         // V4L2_XFER_FUNC_*
 
         // Per-plane information
         struct PlaneInfo {
@@ -62,7 +68,7 @@ public:
 
         uint64_t drm_modifier = 0;      // DRM format modifier (linear, tiled, etc.)
 
-        bool is_valid() const { return width > 0 && height > 0 && drm_fourcc != 0; }
+        bool is_valid() const { return width > 0 && height > 0 && pixel_format != 0; }
     };
 
     /**
@@ -159,18 +165,19 @@ private:
     bool create_textures_from_dmabuf(const PlaceboFrame& frame);
     void destroy_current_textures();
     bool ensure_target_tex(int width, int height);
-    pl_fmt find_format_for_drm_fourcc(uint32_t drm_fourcc, int plane_index);
-    int get_gl_internal_format(uint32_t drm_fourcc, int plane_index);
+    pl_fmt find_format_for_pixel_format(uint32_t pixel_format, int plane_index);
+    int get_gl_internal_format(uint32_t pixel_format, int plane_index);
     void setup_render_params(pl_render_params* params);
 
-    // Convert DRM fourcc to libplacebo format info
-    struct DrmFormatInfo {
+    // V4L2 pixel format info
+    struct PixelFormatInfo {
         int num_planes;
         bool has_chroma;
         int chroma_w;  // chroma subsampling width (1 = no subsampling, 2 = half)
         int chroma_h;  // chroma subsampling height
+        uint32_t drm_fourcc;  // Corresponding DRM format
     };
-    DrmFormatInfo get_drm_format_info(uint32_t drm_fourcc);
+    PixelFormatInfo get_pixel_format_info(uint32_t pixel_format);
 };
 
 #endif // ENABLE_V4L2_GL_PLAYER

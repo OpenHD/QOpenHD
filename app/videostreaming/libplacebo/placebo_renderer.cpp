@@ -11,6 +11,9 @@
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
 
+// V4L2 pixel format definitions
+#include <linux/videodev2.h>
+
 // DRM fourcc definitions (from drm_fourcc.h)
 #ifndef DRM_FORMAT_NV12
 #define DRM_FORMAT_NV12 0x3231564E
@@ -119,21 +122,124 @@ static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC glEGLImageTargetTexture2DOES = nullpt
 
 
 // Helper to get per-plane DRM format for EGL import
-static uint32_t get_plane_drm_format(uint32_t frame_fourcc, int plane_index)
+static uint32_t get_plane_drm_format(uint32_t v4l2_fmt, int plane_index)
 {
-    switch (frame_fourcc) {
-    case DRM_FORMAT_NV12:
+    switch (v4l2_fmt) {
+    case V4L2_PIX_FMT_NV12:
         return (plane_index == 0) ? DRM_FORMAT_R8 : DRM_FORMAT_GR88;
-    case DRM_FORMAT_NV21:
+    case V4L2_PIX_FMT_NV21:
         return (plane_index == 0) ? DRM_FORMAT_R8 : DRM_FORMAT_RG88;
-    case DRM_FORMAT_YUV420:
-    case DRM_FORMAT_YVU420:
+    case V4L2_PIX_FMT_YUV420:
+    case V4L2_PIX_FMT_YVU420:
         return DRM_FORMAT_R8;
-    case DRM_FORMAT_P010:
-        return (plane_index == 0) ? DRM_FORMAT_R16 : DRM_FORMAT_GR1616;
     default:
-        return frame_fourcc;
+        // For unknown formats, try R8 for first plane
+        return (plane_index == 0) ? DRM_FORMAT_R8 : DRM_FORMAT_GR88;
     }
+}
+
+// V4L2_XFER_FUNC_ARIB_STD_B67 may not be defined on older kernels (added in 4.12)
+#ifndef V4L2_XFER_FUNC_ARIB_STD_B67
+#define V4L2_XFER_FUNC_ARIB_STD_B67 8
+#endif
+
+// Map V4L2 colorspace/transfer function to libplacebo color space
+static pl_color_space get_pl_color_space(uint32_t v4l2_colorspace, uint32_t v4l2_xfer_func)
+{
+    pl_color_space cs = pl_color_space_unknown;
+
+    // Map colorspace to primaries
+    switch (v4l2_colorspace) {
+    case V4L2_COLORSPACE_SMPTE170M:
+    case V4L2_COLORSPACE_470_SYSTEM_M:
+        cs.primaries = PL_COLOR_PRIM_BT_601_525;
+        break;
+    case V4L2_COLORSPACE_470_SYSTEM_BG:
+        cs.primaries = PL_COLOR_PRIM_BT_601_625;
+        break;
+    case V4L2_COLORSPACE_REC709:
+    case V4L2_COLORSPACE_SRGB:
+    case V4L2_COLORSPACE_DEFAULT:
+        cs.primaries = PL_COLOR_PRIM_BT_709;
+        break;
+    case V4L2_COLORSPACE_BT2020:
+        cs.primaries = PL_COLOR_PRIM_BT_2020;
+        break;
+    default:
+        cs.primaries = PL_COLOR_PRIM_BT_709;
+        break;
+    }
+
+    // Map transfer function
+    switch (v4l2_xfer_func) {
+    case V4L2_XFER_FUNC_709:
+    case V4L2_XFER_FUNC_DEFAULT:
+        cs.transfer = PL_COLOR_TRC_BT_1886;
+        break;
+    case V4L2_XFER_FUNC_SRGB:
+        cs.transfer = PL_COLOR_TRC_SRGB;
+        break;
+    case V4L2_XFER_FUNC_SMPTE2084:
+        cs.transfer = PL_COLOR_TRC_PQ;
+        break;
+    case V4L2_XFER_FUNC_ARIB_STD_B67:
+        cs.transfer = PL_COLOR_TRC_HLG;
+        break;
+    default:
+        cs.transfer = PL_COLOR_TRC_BT_1886;
+        break;
+    }
+
+    return cs;
+}
+
+// Map V4L2 ycbcr_enc/quantization to libplacebo color representation
+static pl_color_repr get_pl_color_repr(uint32_t v4l2_ycbcr_enc, uint32_t v4l2_quantization)
+{
+    pl_color_repr repr = pl_color_repr_sdtv;
+
+    // Map YCbCr encoding
+    switch (v4l2_ycbcr_enc) {
+    case V4L2_YCBCR_ENC_601:
+    case V4L2_YCBCR_ENC_XV601:
+        repr.sys = PL_COLOR_SYSTEM_BT_601;
+        break;
+    case V4L2_YCBCR_ENC_709:
+    case V4L2_YCBCR_ENC_XV709:
+    case V4L2_YCBCR_ENC_DEFAULT:
+        repr.sys = PL_COLOR_SYSTEM_BT_709;
+        break;
+    case V4L2_YCBCR_ENC_BT2020:
+        repr.sys = PL_COLOR_SYSTEM_BT_2020_NC;
+        break;
+    case V4L2_YCBCR_ENC_BT2020_CONST_LUM:
+        repr.sys = PL_COLOR_SYSTEM_BT_2020_C;
+        break;
+    default:
+        repr.sys = PL_COLOR_SYSTEM_BT_709;
+        break;
+    }
+
+    // Map quantization (limited vs full range)
+    switch (v4l2_quantization) {
+    case V4L2_QUANTIZATION_FULL_RANGE:
+        repr.levels = PL_COLOR_LEVELS_FULL;
+        break;
+    case V4L2_QUANTIZATION_LIM_RANGE:
+    case V4L2_QUANTIZATION_DEFAULT:
+    default:
+        repr.levels = PL_COLOR_LEVELS_LIMITED;
+        break;
+    }
+
+    repr.alpha = PL_ALPHA_UNKNOWN;
+
+    // Set bit depth for 8-bit content
+    repr.bits.sample_depth = 8;
+    repr.bits.color_depth = 8;
+    repr.bits.bit_shift = 0;
+
+    return repr;
 }
 
 static void placebo_log_cb(void *user, pl_log_level level, const char *msg)
@@ -245,12 +351,14 @@ void PlaceboRenderer::set_frame_format(const FrameFormat& format)
 {
     if (format.width != m_frame_format.width ||
         format.height != m_frame_format.height ||
-        format.drm_fourcc != m_frame_format.drm_fourcc ||
+        format.pixel_format != m_frame_format.pixel_format ||
         format.plane_count != m_frame_format.plane_count) {
 
+        char fourcc[5] = {0};
+        memcpy(fourcc, &format.pixel_format, 4);
         qInfo() << "PlaceboRenderer: frame format changed to"
                 << format.width << "x" << format.height
-                << "fourcc:" << Qt::hex << format.drm_fourcc
+                << "format:" << fourcc
                 << "planes:" << format.plane_count;
 
         m_frame_format = format;
@@ -300,7 +408,7 @@ bool PlaceboRenderer::render_last_frame(int target_width, int target_height, int
     pl_frame src_frame = {0};
     src_frame.num_planes = m_current_tex_count;
 
-    DrmFormatInfo fmt_info = get_drm_format_info(m_frame_format.drm_fourcc);
+    PixelFormatInfo fmt_info = get_pixel_format_info(m_frame_format.pixel_format);
 
     for (int i = 0; i < m_current_tex_count; i++) {
         src_frame.planes[i].texture = m_current_tex[i];
@@ -311,17 +419,9 @@ bool PlaceboRenderer::render_last_frame(int target_width, int target_height, int
         src_frame.planes[i].component_mapping[3] = 0;
     }
 
-    // Set color space (assume BT.709 for HD, BT.601 for SD)
-    src_frame.repr = pl_color_repr_hdtv;
-    src_frame.color = pl_color_space_bt709;
-
-    if (m_frame_format.height < 720) {
-        // For SD content, use BT.601 by constructing it manually
-        src_frame.repr = pl_color_repr_sdtv;
-        // pl_color_space_bt709 is close enough for SD, or construct:
-        // src_frame.color.primaries = PL_COLOR_PRIM_BT_601_625;
-        // src_frame.color.transfer = PL_COLOR_TRC_BT_1886;
-    }
+    // Set color representation and space from V4L2 metadata
+    src_frame.repr = get_pl_color_repr(m_frame_format.ycbcr_enc, m_frame_format.quantization);
+    src_frame.color = get_pl_color_space(m_frame_format.colorspace, m_frame_format.xfer_func);
 
     // Handle rotation
     src_frame.rotation = PL_ROTATION_0;
@@ -423,7 +523,7 @@ std::string PlaceboRenderer::debug_info() const
 
     if (m_frame_format.is_valid()) {
         ss << "  Frame format: " << m_frame_format.width << "x" << m_frame_format.height;
-        ss << " fourcc=0x" << std::hex << m_frame_format.drm_fourcc;
+        ss << " fourcc=0x" << std::hex << m_frame_format.pixel_format;
         ss << " planes=" << std::dec << m_frame_format.plane_count << "\n";
     }
 
@@ -444,7 +544,7 @@ bool PlaceboRenderer::create_textures_from_dmabuf(const PlaceboFrame& frame)
         return false;
     }
 
-    DrmFormatInfo fmt_info = get_drm_format_info(frame.drm_fourcc);
+    PixelFormatInfo fmt_info = get_pixel_format_info(frame.pixel_format);
 
     // For NV12/NV21: plane 0 = Y (full res), plane 1 = UV (half res)
     // For YUV420P: plane 0 = Y, plane 1 = U, plane 2 = V
@@ -466,7 +566,7 @@ bool PlaceboRenderer::create_textures_from_dmabuf(const PlaceboFrame& frame)
         EGLint attribs[] = {
             EGL_WIDTH, (EGLint)plane_width,
             EGL_HEIGHT, (EGLint)plane_height,
-            EGL_LINUX_DRM_FOURCC_EXT, (EGLint)get_plane_drm_format(frame.drm_fourcc, i),
+            EGL_LINUX_DRM_FOURCC_EXT, (EGLint)get_plane_drm_format(frame.pixel_format, i),
             EGL_DMA_BUF_PLANE0_FD_EXT, frame.planes[i].fd,
             EGL_DMA_BUF_PLANE0_OFFSET_EXT, (EGLint)frame.planes[i].offset,
             EGL_DMA_BUF_PLANE0_PITCH_EXT, (EGLint)frame.planes[i].pitch,
@@ -503,7 +603,7 @@ bool PlaceboRenderer::create_textures_from_dmabuf(const PlaceboFrame& frame)
         m_eglDestroyImageKHR(egl_display, egl_image);
 
         // Get the appropriate internal format for libplacebo
-        int iformat = get_gl_internal_format(frame.drm_fourcc, i);
+        int iformat = get_gl_internal_format(frame.pixel_format, i);
 
         // Wrap GL texture with libplacebo
         // Field order: texture, framebuffer, width, height, depth, target, iformat
@@ -582,13 +682,13 @@ bool PlaceboRenderer::ensure_target_tex(int width, int height)
     return true;
 }
 
-pl_fmt PlaceboRenderer::find_format_for_drm_fourcc(uint32_t drm_fourcc, int plane_index)
+pl_fmt PlaceboRenderer::find_format_for_pixel_format(uint32_t pixel_format, int plane_index)
 {
-    // Based on the DRM fourcc and plane index, find the appropriate libplacebo format
+    // Based on the V4L2 pixel format and plane index, find the appropriate libplacebo format
 
-    switch (drm_fourcc) {
-    case DRM_FORMAT_NV12:
-    case DRM_FORMAT_NV21:
+    switch (pixel_format) {
+    case V4L2_PIX_FMT_NV12:
+    case V4L2_PIX_FMT_NV21:
         if (plane_index == 0) {
             // Y plane: 8-bit single channel
             return pl_find_fmt(m_pl_gpu, PL_FMT_UNORM, 1, 8, 8, PL_FMT_CAP_SAMPLEABLE);
@@ -597,74 +697,51 @@ pl_fmt PlaceboRenderer::find_format_for_drm_fourcc(uint32_t drm_fourcc, int plan
             return pl_find_fmt(m_pl_gpu, PL_FMT_UNORM, 2, 8, 8, PL_FMT_CAP_SAMPLEABLE);
         }
 
-    case DRM_FORMAT_YUV420:
-    case DRM_FORMAT_YVU420:
+    case V4L2_PIX_FMT_YUV420:
+    case V4L2_PIX_FMT_YVU420:
         // All planes are single channel 8-bit
         return pl_find_fmt(m_pl_gpu, PL_FMT_UNORM, 1, 8, 8, PL_FMT_CAP_SAMPLEABLE);
 
-    case DRM_FORMAT_P010:
-        if (plane_index == 0) {
-            // Y plane: 16-bit (10-bit packed) single channel
-            return pl_find_fmt(m_pl_gpu, PL_FMT_UNORM, 1, 16, 16, PL_FMT_CAP_SAMPLEABLE);
-        } else {
-            // UV plane: 16-bit two channels
-            return pl_find_fmt(m_pl_gpu, PL_FMT_UNORM, 2, 16, 16, PL_FMT_CAP_SAMPLEABLE);
-        }
-
-    case DRM_FORMAT_ARGB8888:
-    case DRM_FORMAT_XRGB8888:
-        return pl_find_fmt(m_pl_gpu, PL_FMT_UNORM, 4, 8, 8, PL_FMT_CAP_SAMPLEABLE);
-
     default:
-        qWarning() << "PlaceboRenderer: unknown DRM fourcc:" << Qt::hex << drm_fourcc;
+        qWarning() << "PlaceboRenderer: unknown pixel format:" << Qt::hex << pixel_format;
         return nullptr;
     }
 }
 
-int PlaceboRenderer::get_gl_internal_format(uint32_t drm_fourcc, int plane_index)
+int PlaceboRenderer::get_gl_internal_format(uint32_t pixel_format, int plane_index)
 {
-    // Return GL internal format for the given DRM fourcc and plane
-    switch (drm_fourcc) {
-    case DRM_FORMAT_NV12:
-    case DRM_FORMAT_NV21:
+    // Return GL internal format for the given V4L2 pixel format and plane
+    switch (pixel_format) {
+    case V4L2_PIX_FMT_NV12:
+    case V4L2_PIX_FMT_NV21:
         return (plane_index == 0) ? GL_R8 : GL_RG8;
 
-    case DRM_FORMAT_YUV420:
-    case DRM_FORMAT_YVU420:
+    case V4L2_PIX_FMT_YUV420:
+    case V4L2_PIX_FMT_YVU420:
         return GL_R8;
 
-    case DRM_FORMAT_P010:
-        return (plane_index == 0) ? GL_R16 : GL_RG16;
-
-    case DRM_FORMAT_ARGB8888:
-    case DRM_FORMAT_XRGB8888:
-        return GL_RGBA8;
-
     default:
-        return GL_RGBA8;
+        return GL_R8;
     }
 }
 
-PlaceboRenderer::DrmFormatInfo PlaceboRenderer::get_drm_format_info(uint32_t drm_fourcc)
+PlaceboRenderer::PixelFormatInfo PlaceboRenderer::get_pixel_format_info(uint32_t pixel_format)
 {
-    switch (drm_fourcc) {
-    case DRM_FORMAT_NV12:
-    case DRM_FORMAT_NV21:
-        return {2, true, 2, 2};  // 2 planes, 4:2:0 subsampling
+    switch (pixel_format) {
+    case V4L2_PIX_FMT_NV12:
+        return {2, true, 2, 2, DRM_FORMAT_NV12};  // 2 planes, 4:2:0 subsampling
 
-    case DRM_FORMAT_YUV420:
-    case DRM_FORMAT_YVU420:
-        return {3, true, 2, 2};  // 3 planes, 4:2:0 subsampling
+    case V4L2_PIX_FMT_NV21:
+        return {2, true, 2, 2, DRM_FORMAT_NV21};  // 2 planes, 4:2:0 subsampling
 
-    case DRM_FORMAT_P010:
-        return {2, true, 2, 2};  // 2 planes, 4:2:0 subsampling, 10-bit
+    case V4L2_PIX_FMT_YUV420:
+        return {3, true, 2, 2, DRM_FORMAT_YUV420};  // 3 planes, 4:2:0 subsampling
 
-    case DRM_FORMAT_ARGB8888:
-    case DRM_FORMAT_XRGB8888:
-        return {1, false, 1, 1}; // 1 plane, no subsampling
+    case V4L2_PIX_FMT_YVU420:
+        return {3, true, 2, 2, DRM_FORMAT_YVU420};  // 3 planes, 4:2:0 subsampling
 
     default:
-        return {1, false, 1, 1}; // Default: assume single plane
+        return {1, false, 1, 1, 0}; // Default: assume single plane
     }
 }
 
