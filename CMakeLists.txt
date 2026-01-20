@@ -5,6 +5,14 @@ project(QOpenHDProject VERSION 0.1 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CXX_FLAGS_DEBUG
+    "${CMAKE_CXX_FLAGS_DEBUG} -g3 -fno-omit-frame-pointer -fstack-protector-strong"
+)
+set(CMAKE_C_FLAGS_DEBUG
+    "${CMAKE_C_FLAGS_DEBUG} -g3 -fno-omit-frame-pointer -fstack-protector-strong"
+)
+
+
 include(CMakeDependentOption)
 
 cmake_dependent_option(ENABLE_FORCE_EGLFS

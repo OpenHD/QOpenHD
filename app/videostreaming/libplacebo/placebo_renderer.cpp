@@ -541,9 +541,11 @@ void PlaceboRenderer::clear_to_black()
 {
     if (!m_initialized) return;
 
-    // Clear default framebuffer
-    float clear_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-    pl_tex_clear(m_pl_gpu, NULL, clear_color);
+    // Clear default framebuffer using native GL
+    // libplacebo's pl_tex_clear with NULL doesn't work on OpenGL backend
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void PlaceboRenderer::cleanup()
