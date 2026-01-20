@@ -54,6 +54,7 @@
 #ifdef ENABLE_V4L2_GL_PLAYER
 #include "videostreaming/libplacebo/placebo_video_item.h"
 #include "videostreaming/v4l2/v4l2_pipeline.h"
+#include "videostreaming/v4l2/v4l2_decoder_detector.h"
 #endif
 // Video end
 
@@ -261,6 +262,19 @@ int main(int argc, char *argv[]) {
 #ifdef FORCE_EGLFS
     QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     qputenv("QT_QPA_PLATFORM", "eglfs");
+#endif
+
+#ifdef ENABLE_V4L2_GL_PLAYER
+    // Detect available V4L2 decoders
+    auto decoders = V4L2DecoderDetector::detect_decoders();
+    qDebug() << "V4L2 Decoders found:" << decoders.size();
+    for (const auto& dec : decoders) {
+        qDebug() << "  Device:" << QString::fromStdString(dec.device_path)
+                 << "Codec:" << (dec.codec == V4L2Decoder::Codec::H264 ? "H264" : "H265")
+                 << "Type:" << (dec.type == V4L2DecoderDetector::DecoderType::Stateful ? "Stateful" : "Stateless")
+                 << "Media:" << QString::fromStdString(dec.media_device_path)
+                 << "Driver:" << QString::fromStdString(dec.driver_name);
+    }
 #endif
 
 #if defined(__windows__)
