@@ -6,10 +6,16 @@
 #include "placebo_renderer.h"
 
 #include <QDebug>
+#include <QOpenGLContext>
+#include <QSurface>
 #include <cstring>
 #include <sstream>
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
+
+#include <libplacebo/opengl.h>
+#include <libplacebo/renderer.h>
+
 
 // V4L2 pixel format definitions
 #include <linux/videodev2.h>
@@ -116,9 +122,24 @@
 #define GL_RG16 0x822C
 #endif
 
-// GL OES EGL image extension
-typedef void (*PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)(GLenum target, void* image);
-static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC glEGLImageTargetTexture2DOES = nullptr;
+// GL OES EGL image extension - use function pointer to avoid conflicts with system headers
+typedef void (*PFN_glEGLImageTargetTexture2DOES)(GLenum target, void* image);
+static PFN_glEGLImageTargetTexture2DOES s_glEGLImageTargetTexture2DOES = nullptr;
+
+// Wrapper for Qt's getProcAddress to match libplacebo's GLADloadfunc signature:
+// typedef void (*GLADapiproc)(void);
+// typedef GLADapiproc (*GLADloadfunc)(const char *name);
+// This allows GLAD to properly resolve both GL and GLES function pointers.
+static void (*qt_gl_get_proc_address(const char* name))()
+{
+    QOpenGLContext* ctx = QOpenGLContext::currentContext();
+    if (!ctx) {
+        qWarning() << "qt_gl_get_proc_address: no current OpenGL context";
+        return nullptr;
+    }
+    // QFunctionPointer is compatible with function pointer type
+    return reinterpret_cast<void(*)()>(ctx->getProcAddress(name));
+}
 
 
 // Helper to get per-plane DRM format for EGL import
@@ -276,11 +297,18 @@ PlaceboRenderer::~PlaceboRenderer()
     qDebug() << "PlaceboRenderer: destructor";
 }
 
-bool PlaceboRenderer::init_gl()
+bool PlaceboRenderer::init_gl(QOpenGLContext* context, QSurface* surface)
 {
     if (m_initialized) {
         qWarning() << "PlaceboRenderer: already initialized";
         return true;
+    }
+
+    Q_ASSERT(context && "QOpenGLContext is required");
+    Q_ASSERT(surface && "QSurface is required");
+    if (!context || !surface) {
+        qCritical() << "PlaceboRenderer: null context or surface provided";
+        return false;
     }
 
     qDebug() << "PlaceboRenderer: initializing with OpenGL ES";
@@ -288,10 +316,10 @@ bool PlaceboRenderer::init_gl()
     // Load EGL extension functions
     m_eglCreateImageKHR = (PFNEGLCREATEIMAGEKHRPROC)eglGetProcAddress("eglCreateImageKHR");
     m_eglDestroyImageKHR = (PFNEGLDESTROYIMAGEKHRPROC)eglGetProcAddress("eglDestroyImageKHR");
-    glEGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)
+    s_glEGLImageTargetTexture2DOES = (PFN_glEGLImageTargetTexture2DOES)
         eglGetProcAddress("glEGLImageTargetTexture2DOES");
 
-    if (!m_eglCreateImageKHR || !m_eglDestroyImageKHR || !glEGLImageTargetTexture2DOES) {
+    if (!m_eglCreateImageKHR || !m_eglDestroyImageKHR || !s_glEGLImageTargetTexture2DOES) {
         qWarning() << "PlaceboRenderer: EGL DMA-BUF extensions not available";
         // Continue anyway - might work with other import methods
     }
@@ -308,13 +336,51 @@ bool PlaceboRenderer::init_gl()
         return false;
     }
 
+    // Verify context is current
+    Q_ASSERT(context->isValid() && "OpenGL context must be valid");
+    Q_ASSERT(QOpenGLContext::currentContext() == context && "Provided context must be current");
+    if (QOpenGLContext::currentContext() != context) {
+        qCritical() << "PlaceboRenderer: provided context is not current on this thread";
+        pl_log_destroy(&m_pl_log);
+        return false;
+    }
+
+    // After beginExternalCommands(), the EGL context should be current on this thread
+    // Use direct EGL calls - they work when context is properly made current
+    EGLDisplay egl_display = eglGetCurrentDisplay();
+    EGLContext egl_context = eglGetCurrentContext();
+
+    Q_ASSERT(egl_display != EGL_NO_DISPLAY && "EGL display must be valid");
+    Q_ASSERT(egl_context != EGL_NO_CONTEXT && "EGL context must be valid");
+
+    if (egl_display == EGL_NO_DISPLAY || egl_context == EGL_NO_CONTEXT) {
+        qCritical() << "PlaceboRenderer: invalid EGL display/context"
+                    << "display:" << egl_display << "context:" << egl_context;
+        pl_log_destroy(&m_pl_log);
+        return false;
+    }
+
+    qDebug() << "PlaceboRenderer: EGL display:" << egl_display << "context:" << egl_context;
+
     // Create OpenGL context wrapper
-    // Field order must match struct definition: debug, allow_software, ..., egl_display, egl_context
+    // NOTE: We do NOT set make_current/release_current callbacks because:
+    // 1. Qt6 RHI manages the OpenGL context - external makeCurrent/doneCurrent calls
+    //    would conflict with RHI's internal state management
+    // 2. All libplacebo calls happen within beginExternalCommands()/endExternalCommands()
+    //    where the context is already current
+    // 3. Without callbacks, pl_gpu is NOT thread-safe, but we only use it from render thread
+    //
+    // We DO set get_proc_addr to allow GLAD to properly resolve GL/GLES function pointers.
+    // This is critical because Qt uses OpenGL ES (AA_UseOpenGLES), and libplacebo's
+    // pl_opengl_create detects this and reloads as GLES, which requires get_proc_addr
+    // to resolve GLES functions.
     struct pl_opengl_params opengl_params = {0};
+    opengl_params.get_proc_addr = qt_gl_get_proc_address;
     opengl_params.debug = false;
     opengl_params.allow_software = false;
-    opengl_params.egl_display = eglGetCurrentDisplay();
-    opengl_params.egl_context = eglGetCurrentContext();
+    opengl_params.egl_display = egl_display;  // Required for DMA-BUF import
+    opengl_params.egl_context = egl_context;  // Required for DMA-BUF import
+
     m_pl_opengl = pl_opengl_create(m_pl_log, &opengl_params);
 
     if (!m_pl_opengl) {
@@ -592,7 +658,7 @@ bool PlaceboRenderer::create_textures_from_dmabuf(const PlaceboFrame& frame)
         GLuint gl_tex = 0;
         glGenTextures(1, &gl_tex);
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, gl_tex);
-        glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image);
+        s_glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

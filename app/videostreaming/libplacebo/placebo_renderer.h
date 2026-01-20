@@ -22,6 +22,10 @@
 
 #include "placebo_frame_queue.h"
 
+// Forward declarations for Qt types (avoid pulling in heavy Qt headers)
+class QOpenGLContext;
+class QSurface;
+
 /**
  * @brief PlaceboRenderer - renders video frames using libplacebo with OpenGL ES backend.
  *
@@ -74,9 +78,11 @@ public:
     /**
      * @brief Initialize libplacebo with OpenGL ES context
      * Must be called from Qt render thread after GL context is current.
+     * @param context Qt OpenGL context (required for make_current/release_current callbacks)
+     * @param surface Qt surface associated with the context
      * @return true on success
      */
-    bool init_gl();
+    bool init_gl(QOpenGLContext* context, QSurface* surface);
 
     /**
      * @brief Check if renderer is initialized

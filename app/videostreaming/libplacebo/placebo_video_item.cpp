@@ -9,6 +9,8 @@
 
 #include <QDebug>
 #include <QtQuick/qquickwindow.h>
+#include <QSGRendererInterface>
+#include <QOpenGLContext>
 #include <QSettings>
 
 
@@ -127,6 +129,20 @@ void PlaceboVideoItem::sync()
     if (!m_renderer) {
         qDebug() << "PlaceboVideoItem::sync - creating renderer";
 
+        // Verify Qt is using OpenGL backend (not Vulkan/Metal/D3D)
+        QSGRendererInterface *rif = window()->rendererInterface();
+        Q_ASSERT(rif && "Renderer interface must be available");
+        QSGRendererInterface::GraphicsApi api = rif->graphicsApi();
+        Q_ASSERT((api == QSGRendererInterface::OpenGL ||
+                  api == QSGRendererInterface::OpenGLRhi) &&
+                 "PlaceboVideoItem requires OpenGL backend");
+        if (api != QSGRendererInterface::OpenGL &&
+            api != QSGRendererInterface::OpenGLRhi) {
+            qCritical() << "PlaceboVideoItem: Qt is not using OpenGL backend, api =" << api;
+            return;
+        }
+        qDebug() << "PlaceboVideoItem: Qt Graphics API:" << api;
+
         m_renderer = std::make_unique<PlaceboRenderer>();
 
         // Connect render signals
@@ -147,11 +163,31 @@ void PlaceboVideoItem::onBeforeRendering()
 
     // Initialize renderer if not done yet
     if (!m_initialized) {
-        if (m_renderer->init_gl()) {
+        QQuickWindow *win = window();
+        if (!win) return;
+
+        // CRITICAL: beginExternalCommands() makes the OpenGL context current
+        // This is required for Qt6 RHI - without it, eglGetCurrentContext() returns EGL_NO_CONTEXT
+        win->beginExternalCommands();
+
+        // Get the OpenGL context and surface for libplacebo callbacks
+        QOpenGLContext* ctx = QOpenGLContext::currentContext();
+        QSurface* surface = ctx ? ctx->surface() : nullptr;
+
+        bool success = false;
+        if (ctx && surface) {
+            success = m_renderer->init_gl(ctx, surface);
+        } else {
+            qCritical() << "PlaceboVideoItem: no OpenGL context or surface available";
+        }
+
+        win->endExternalCommands();
+
+        if (success) {
             m_initialized = true;
             qInfo() << "PlaceboVideoItem: renderer initialized";
         } else {
-            qWarning() << "PlaceboVideoItem: failed to initialize renderer";
+            qCritical() << "PlaceboVideoItem: failed to initialize renderer";
             return;
         }
     }
