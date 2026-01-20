@@ -4,8 +4,6 @@
 #ifndef UVGRTP_RECEIVER_H
 #define UVGRTP_RECEIVER_H
 
-#if defined(ENABLE_V4L2_GL_PLAYER) && defined(ENABLE_UVGRTP)
-
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -146,7 +144,5 @@ private:
     bool first_rtp_ts_set_ = false;
     std::chrono::steady_clock::time_point first_recv_time_;
 };
-
-#endif // ENABLE_V4L2_GL_PLAYER && ENABLE_UVGRTP
 
 #endif // UVGRTP_RECEIVER_H

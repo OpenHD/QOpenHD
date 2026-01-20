@@ -15,6 +15,7 @@
 
 #include "placebo_renderer.h"
 #include "placebo_frame_queue.h"
+#include "../v4l2/v4l2_pipeline.h"
 
 class V4L2Pipeline;
 
@@ -128,6 +129,7 @@ private:
 
 private:
     std::unique_ptr<PlaceboRenderer> m_renderer;
+    std::unique_ptr<V4L2Pipeline> m_pipeline;
     PlaceboFrameQueue* m_frame_queue = nullptr;  // Owned by V4L2Pipeline
 
     std::unique_ptr<FrameWaiterThread> m_waiter_thread;

@@ -19,10 +19,17 @@
 #include <linux/dma-buf.h>
 
 
+// Debug logging - define QOPENHD_V4L2_DEBUG to enable verbose traces
+#ifdef QOPENHD_V4L2_DEBUG
+#define V4L2_DEBUG(msg) qDebug() << "V4L2Decoder:" << msg
+#else
+#define V4L2_DEBUG(msg) do {} while(0)
+#endif
+
 // Configuration constants
-static constexpr uint32_t INPUT_BUFFER_COUNT = 4;
-static constexpr uint32_t OUTPUT_BUFFER_COUNT = 6;
-static constexpr uint32_t DEFAULT_INPUT_BUFFER_SIZE = 512 * 1024;  // 512KB
+static constexpr uint32_t INPUT_BUFFER_COUNT = 6;
+static constexpr uint32_t OUTPUT_BUFFER_COUNT = 4;
+static constexpr uint32_t DEFAULT_INPUT_BUFFER_SIZE = 2 * 1024 * 1024;  // 2MB for H.264/H.265
 
 
 V4L2Decoder::V4L2Decoder()
@@ -77,14 +84,27 @@ bool V4L2Decoder::init(const std::string& device_path, Codec codec)
         return false;
     }
 
-    // Setup input format
+    // Setup input format (OUTPUT queue - compressed data)
     if (!setupInputFormat()) {
+        closeDevice();
+        return false;
+    }
+
+    // Setup capture format (CAPTURE queue - decoded frames)
+    // This must be done BEFORE allocating buffers
+    if (!setupCaptureFormat()) {
         closeDevice();
         return false;
     }
 
     // Setup input buffers
     if (!setupInputBuffers()) {
+        closeDevice();
+        return false;
+    }
+
+    // Setup capture buffers - do this upfront, not waiting for SOURCE_CHANGE
+    if (!setupCaptureBuffers()) {
         closeDevice();
         return false;
     }
@@ -241,7 +261,35 @@ bool V4L2Decoder::openDevice()
         qWarning() << "V4L2Decoder: failed to subscribe to EOS event";
     }
 
+    // Check DMA-buf support (critical for this implementation)
+    if (!checkDmaBufSupport()) {
+        setError("V4L2 driver does not support DMA-buf");
+        closeDevice();
+        return false;
+    }
+
     return true;
+}
+
+bool V4L2Decoder::checkDmaBufSupport()
+{
+    // Try to request buffers in DMA-buf mode for testing
+    struct v4l2_requestbuffers req = {};
+    req.count = 1;
+    req.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+    req.memory = V4L2_MEMORY_DMABUF;
+
+    bool supported = (ioctl(fd_, VIDIOC_REQBUFS, &req) == 0);
+
+    qInfo() << "V4L2Decoder: DMA-buf support check:" << (supported ? "OK" : "FAIL");
+
+    // Reset buffers after testing
+    if (supported) {
+        req.count = 0;
+        ioctl(fd_, VIDIOC_REQBUFS, &req);
+    }
+
+    return supported;
 }
 
 void V4L2Decoder::closeDevice()
@@ -261,7 +309,7 @@ bool V4L2Decoder::setupInputFormat()
     fmt_out.fmt.pix_mp.height = 1080;
     fmt_out.fmt.pix_mp.pixelformat = (codec_ == Codec::H264) ? V4L2_PIX_FMT_H264 : V4L2_PIX_FMT_HEVC;
     fmt_out.fmt.pix_mp.num_planes = 1;
-    fmt_out.fmt.pix_mp.plane_fmt[0].sizeimage = DEFAULT_INPUT_BUFFER_SIZE;
+    fmt_out.fmt.pix_mp.plane_fmt[0].sizeimage = 2 * 1024 * 1024;  // 2MB for H.264/H.265
 
     if (ioctl(fd_, VIDIOC_S_FMT, &fmt_out) < 0) {
         setError(std::string("Failed to set OUTPUT format: ") + strerror(errno));
@@ -314,11 +362,65 @@ bool V4L2Decoder::handleSourceChange()
     fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
     if (ioctl(fd_, VIDIOC_G_FMT, &fmt_cap) < 0) {
+        qWarning() << "V4L2Decoder: failed to get CAPTURE format after SOURCE_CHANGE";
+        return true;  // Non-critical, continue with existing capabilities
+    }
+
+    // Check if resolution actually changed
+    if (fmt_cap.fmt.pix_mp.width != capabilities_.width ||
+        fmt_cap.fmt.pix_mp.height != capabilities_.height) {
+        qInfo() << "V4L2Decoder: resolution changed from"
+                << capabilities_.width << "x" << capabilities_.height
+                << "to" << fmt_cap.fmt.pix_mp.width << "x" << fmt_cap.fmt.pix_mp.height;
+
+        // Update capabilities
+        capabilities_.width = fmt_cap.fmt.pix_mp.width;
+        capabilities_.height = fmt_cap.fmt.pix_mp.height;
+        capabilities_.pixel_format = fmt_cap.fmt.pix_mp.pixelformat;
+        capabilities_.plane_count = fmt_cap.fmt.pix_mp.num_planes;
+        capabilities_.colorspace = fmt_cap.fmt.pix_mp.colorspace;
+        capabilities_.ycbcr_enc = fmt_cap.fmt.pix_mp.ycbcr_enc;
+        capabilities_.quantization = fmt_cap.fmt.pix_mp.quantization;
+        capabilities_.xfer_func = fmt_cap.fmt.pix_mp.xfer_func;
+
+        // Store plane info
+        for (uint32_t i = 0; i < capabilities_.plane_count && i < 4; ++i) {
+            output_plane_sizes_[i] = fmt_cap.fmt.pix_mp.plane_fmt[i].sizeimage;
+            output_plane_strides_[i] = fmt_cap.fmt.pix_mp.plane_fmt[i].bytesperline;
+        }
+
+        // Notify about capabilities change
+        if (capabilities_callback_) {
+            capabilities_callback_(capabilities_);
+        }
+    }
+
+    return true;
+}
+
+bool V4L2Decoder::setupCaptureFormat()
+{
+    // Set CAPTURE format - decoded frames (YUV)
+    // Let the decoder choose its preferred output format, then query it back
+    struct v4l2_format fmt_cap = {};
+    fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+    fmt_cap.fmt.pix_mp.width = 1920;
+    fmt_cap.fmt.pix_mp.height = 1080;
+    fmt_cap.fmt.pix_mp.num_planes = 1;
+
+    // First try to set format (without specifying pixelformat - let driver choose)
+    if (ioctl(fd_, VIDIOC_S_FMT, &fmt_cap) < 0) {
+        qWarning() << "V4L2Decoder: S_FMT for CAPTURE failed, querying default";
+    }
+
+    // Always query back the actual format the decoder will use
+    fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+    if (ioctl(fd_, VIDIOC_G_FMT, &fmt_cap) < 0) {
         setError(std::string("Failed to get CAPTURE format: ") + strerror(errno));
         return false;
     }
 
-    // Update capabilities
+    // Store capabilities from format
     capabilities_.width = fmt_cap.fmt.pix_mp.width;
     capabilities_.height = fmt_cap.fmt.pix_mp.height;
     capabilities_.pixel_format = fmt_cap.fmt.pix_mp.pixelformat;
@@ -334,49 +436,28 @@ bool V4L2Decoder::handleSourceChange()
         output_plane_strides_[i] = fmt_cap.fmt.pix_mp.plane_fmt[i].bytesperline;
     }
 
+    // Set minimum capture buffers for low latency
+    struct v4l2_control ctrl = {};
+    ctrl.id = V4L2_CID_MIN_BUFFERS_FOR_CAPTURE;
+    ctrl.value = 1;
+    if (ioctl(fd_, VIDIOC_S_CTRL, &ctrl) < 0) {
+        qDebug() << "V4L2Decoder: V4L2_CID_MIN_BUFFERS_FOR_CAPTURE not supported (non-critical)";
+    } else {
+        qInfo() << "V4L2Decoder: MIN_BUFFERS_FOR_CAPTURE set to 1 for low latency";
+    }
+
     char fourcc[5] = {0};
     memcpy(fourcc, &capabilities_.pixel_format, 4);
-    qInfo() << "V4L2Decoder: CAPTURE format:" << fourcc
+    qInfo() << "V4L2Decoder: CAPTURE format set:" << fourcc
             << capabilities_.width << "x" << capabilities_.height
-            << "planes:" << capabilities_.plane_count
-            << "colorspace:" << capabilities_.colorspace;
-
-    // Setup CAPTURE buffers
-    if (!setupCaptureBuffers()) {
-        return false;
-    }
-
-    // Notify about capabilities
-    if (capabilities_callback_) {
-        capabilities_callback_(capabilities_);
-    }
-
-    return true;
-}
-
-bool V4L2Decoder::setupCaptureFormat()
-{
-    // Try to set preferred output format (NV12)
-    struct v4l2_format fmt_cap = {};
-    fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-
-    if (ioctl(fd_, VIDIOC_G_FMT, &fmt_cap) < 0) {
-        qWarning() << "V4L2Decoder: failed to get CAPTURE format";
-    }
-
-    // Try NV12 first
-    fmt_cap.fmt.pix_mp.pixelformat = V4L2_PIX_FMT_NV12;
-    if (ioctl(fd_, VIDIOC_S_FMT, &fmt_cap) < 0) {
-        // NV12 not supported, use whatever decoder provides
-        qInfo() << "V4L2Decoder: NV12 not supported, using decoder default";
-    }
+            << "planes:" << capabilities_.plane_count;
 
     return true;
 }
 
 bool V4L2Decoder::setupCaptureBuffers()
 {
-    // Get CAPTURE format
+    // Get CAPTURE format (already set in setupCaptureFormat)
     struct v4l2_format fmt_cap = {};
     fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     if (ioctl(fd_, VIDIOC_G_FMT, &fmt_cap) < 0) {
@@ -396,12 +477,6 @@ bool V4L2Decoder::setupCaptureBuffers()
     }
 
     qInfo() << "V4L2Decoder: output buffer size:" << output_buffer_size;
-
-    // Release existing buffers if any
-    if (output_buffers_) {
-        output_buffers_->releaseOnDevice(fd_);
-        output_buffers_->deallocate();
-    }
 
     // Allocate OUTPUT buffers
     if (!output_buffers_->allocate(output_buffer_size)) {
@@ -428,7 +503,7 @@ bool V4L2Decoder::setupCaptureBuffers()
         return false;
     }
 
-    // Queue all CAPTURE buffers
+    // Queue all CAPTURE buffers - this is critical, must be done BEFORE streaming starts
     for (uint32_t i = 0; i < output_buffers_->count(); ++i) {
         if (!requeueOutputBuffer(i)) {
             setError(std::string("Failed to queue output buffer ") + std::to_string(i));
@@ -436,7 +511,7 @@ bool V4L2Decoder::setupCaptureBuffers()
         }
     }
 
-    qInfo() << "V4L2Decoder: output buffers configured -"
+    qInfo() << "V4L2Decoder: output buffers configured and queued -"
             << OUTPUT_BUFFER_COUNT << "buffers";
 
     return true;
@@ -486,7 +561,6 @@ void V4L2Decoder::decodeLoop()
     qInfo() << "V4L2Decoder: decode loop started";
 
     bool streaming_started = false;
-    bool capture_started = false;
 
     while (!stop_requested_) {
         // Get NAL unit from queue
@@ -513,16 +587,30 @@ void V4L2Decoder::decodeLoop()
             }
         }
 
-        // Start streaming on first NAL
+        // Start streaming on first NAL - both OUTPUT and CAPTURE together
         if (!streaming_started) {
+            // Start OUTPUT streaming first
             int type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
             if (ioctl(fd_, VIDIOC_STREAMON, &type) < 0) {
                 setError(std::string("STREAMON OUTPUT failed: ") + strerror(errno));
                 decode_errors_++;
                 continue;
             }
-            streaming_started = true;
             qInfo() << "V4L2Decoder: OUTPUT streaming started";
+
+            // Start CAPTURE streaming immediately (buffers already queued in init)
+            type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+            if (ioctl(fd_, VIDIOC_STREAMON, &type) < 0) {
+                setError(std::string("STREAMON CAPTURE failed: ") + strerror(errno));
+                // Rollback OUTPUT streaming
+                type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+                ioctl(fd_, VIDIOC_STREAMOFF, &type);
+                decode_errors_++;
+                continue;
+            }
+            qInfo() << "V4L2Decoder: CAPTURE streaming started";
+
+            streaming_started = true;
         }
 
         // Process the NAL
@@ -531,34 +619,28 @@ void V4L2Decoder::decodeLoop()
             continue;
         }
 
-        // Poll for events and decoded frames
+        // Poll for events and decoded frames (non-blocking like reference implementation)
         struct pollfd pfd = {};
         pfd.fd = fd_;
         pfd.events = POLLIN | POLLPRI | POLLERR;
 
-        while (poll(&pfd, 1, 0) > 0) {
-            // Handle events (SOURCE_CHANGE)
+        bool frames_processed;
+        do {
+            frames_processed = false;
+            int poll_ret = poll(&pfd, 1, 0);  // 0ms timeout for non-blocking
+            if (poll_ret <= 0) {
+                break;  // Timeout or error
+            }
+
+            // Handle events (SOURCE_CHANGE for dynamic resolution)
             if (pfd.revents & POLLPRI) {
                 struct v4l2_event ev = {};
                 while (ioctl(fd_, VIDIOC_DQEVENT, &ev) == 0) {
                     if (ev.type == V4L2_EVENT_SOURCE_CHANGE) {
-                        qInfo() << "V4L2Decoder: SOURCE_CHANGE event";
+                        qInfo() << "V4L2Decoder: SOURCE_CHANGE event (resolution change)";
                         if (ev.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION) {
-                            if (!handleSourceChange()) {
-                                qCritical() << "V4L2Decoder: failed to handle SOURCE_CHANGE";
-                                continue;
-                            }
-
-                            // Start CAPTURE streaming
-                            if (!capture_started) {
-                                int type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-                                if (ioctl(fd_, VIDIOC_STREAMON, &type) < 0) {
-                                    setError(std::string("STREAMON CAPTURE failed: ") + strerror(errno));
-                                } else {
-                                    capture_started = true;
-                                    qInfo() << "V4L2Decoder: CAPTURE streaming started";
-                                }
-                            }
+                            // Handle dynamic resolution change if needed
+                            handleSourceChange();
                         }
                     } else if (ev.type == V4L2_EVENT_EOS) {
                         qInfo() << "V4L2Decoder: EOS event";
@@ -572,24 +654,26 @@ void V4L2Decoder::decodeLoop()
                 break;
             }
 
-            // Dequeue decoded frame
-            if ((pfd.revents & POLLIN) && capture_started) {
+            // Dequeue decoded frames from CAPTURE queue
+            if (pfd.revents & POLLIN) {
                 struct v4l2_buffer out_buf = {};
                 struct v4l2_plane out_planes[4] = {};
 
                 out_buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
                 out_buf.memory = V4L2_MEMORY_DMABUF;
                 out_buf.m.planes = out_planes;
-                out_buf.length = capabilities_.plane_count;
+                out_buf.length = capabilities_.plane_count > 0 ? capabilities_.plane_count : 1;
 
+                // Dequeue available CAPTURE buffer
                 if (ioctl(fd_, VIDIOC_DQBUF, &out_buf) == 0) {
+                    V4L2_DEBUG("DQBUF CAPTURE index:" << out_buf.index);
                     processOutputBuffer(out_buf.index);
+                    frames_processed = true;
                 }
             }
 
-            // Refresh poll
             pfd.revents = 0;
-        }
+        } while (frames_processed);
     }
 
     qInfo() << "V4L2Decoder: decode loop exited";
@@ -606,6 +690,7 @@ bool V4L2Decoder::processNal(const NalUnit& nal)
     dq_buf_in.length = 1;
 
     while (ioctl(fd_, VIDIOC_DQBUF, &dq_buf_in) == 0) {
+        V4L2_DEBUG("DQBUF OUTPUT index:" << dq_buf_in.index);
         input_buffers_->markFree(dq_buf_in.index);
     }
 
@@ -620,6 +705,7 @@ bool V4L2Decoder::processNal(const NalUnit& nal)
 
         if (poll(&pfd, 1, 50) > 0 && (pfd.revents & POLLOUT)) {
             if (ioctl(fd_, VIDIOC_DQBUF, &dq_buf_in) == 0) {
+                V4L2_DEBUG("DQBUF OUTPUT (after wait) index:" << dq_buf_in.index);
                 input_buffers_->markFree(dq_buf_in.index);
                 buffer_idx = dq_buf_in.index;
             }
@@ -632,13 +718,14 @@ bool V4L2Decoder::processNal(const NalUnit& nal)
         return false;
     }
 
-    return queueInputBuffer(nal.data.data(), nal.data.size(), nal.timestamp_us);
+    // Pass buffer_idx explicitly to avoid double getFreeBufferIndex() call
+    return queueInputBuffer(buffer_idx, nal.data.data(), nal.data.size(), nal.timestamp_us);
 }
 
-bool V4L2Decoder::queueInputBuffer(const uint8_t* data, size_t size, int64_t timestamp_us)
+bool V4L2Decoder::queueInputBuffer(int buffer_idx, const uint8_t* data, size_t size, int64_t timestamp_us)
 {
-    int buffer_idx = input_buffers_->getFreeBufferIndex();
-    if (buffer_idx < 0) {
+    if (buffer_idx < 0 || static_cast<size_t>(buffer_idx) >= input_buffers_->count()) {
+        qCritical() << "V4L2Decoder: invalid buffer index" << buffer_idx;
         return false;
     }
 
@@ -649,6 +736,9 @@ bool V4L2Decoder::queueInputBuffer(const uint8_t* data, size_t size, int64_t tim
         qCritical() << "V4L2Decoder: invalid input buffer" << buffer_idx;
         return false;
     }
+
+    // Mark in-use BEFORE QBUF to prevent race condition
+    input_buffers_->markInUse(buffer_idx);
 
     // DMA-BUF sync start (for CPU write)
     DmaHeap::syncStart(buf_info.fd, true);
@@ -676,12 +766,15 @@ bool V4L2Decoder::queueInputBuffer(const uint8_t* data, size_t size, int64_t tim
     plane.bytesused = copy_size;
     plane.length = buf_info.size;
 
+    V4L2_DEBUG("QBUF OUTPUT index:" << buffer_idx << "size:" << copy_size);
+
     if (ioctl(fd_, VIDIOC_QBUF, &buf) < 0) {
         qCritical() << "V4L2Decoder: QBUF OUTPUT failed:" << strerror(errno);
+        // Rollback: mark buffer as free since QBUF failed
+        input_buffers_->markFree(buffer_idx);
         return false;
     }
 
-    input_buffers_->markInUse(buffer_idx);
     return true;
 }
 

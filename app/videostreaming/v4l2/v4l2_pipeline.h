@@ -10,10 +10,9 @@
 #include <string>
 #include <atomic>
 
-#if defined(ENABLE_UVGRTP)
 #include "uvgrtp_receiver.h"
-#endif
 #include "v4l2_decoder.h"
+#include "v4l2_decoder_detector.h"
 #include "../libplacebo/placebo_frame_queue.h"
 #include "../libplacebo/placebo_renderer.h"
 
@@ -31,21 +30,10 @@
  * - uvgRTP thread: receives RTP packets, reassembles NALs
  * - V4L2 decoder thread: decodes NALs, produces DMA-BUF frames
  * - Qt render thread: renders frames via PlaceboRenderer
- *
- * Singleton pattern for easy access from QML components.
  */
 class V4L2Pipeline
 {
 public:
-    /**
-     * @brief Get singleton instance
-     */
-    static V4L2Pipeline& instance();
-
-    // Delete copy/move
-    V4L2Pipeline(const V4L2Pipeline&) = delete;
-    V4L2Pipeline& operator=(const V4L2Pipeline&) = delete;
-
     /**
      * @brief Pipeline configuration
      */
@@ -53,26 +41,19 @@ public:
         // RTP reception
         std::string rtp_listen_addr = "0.0.0.0";
         uint16_t rtp_listen_port = 5600;
-
-        // Codec
-        enum class Codec { H264, H265 } codec = Codec::H264;
-
-        // V4L2 device
-        std::string v4l2_device = "/dev/video0";
     };
 
     /**
-     * @brief Initialize the pipeline with given configuration
-     * @param config Pipeline configuration
-     * @return true on success
+     * @brief Construct pipeline with configuration and decoder info
+     * @param config RTP configuration
+     * @param decoder_info Detected V4L2 decoder to use
      */
-    bool init(const Config& config);
+    V4L2Pipeline(const Config& config, const V4L2DecoderDetector::DecoderInfo& decoder_info);
+    ~V4L2Pipeline();
 
-    /**
-     * @brief Initialize with default configuration (reads from QSettings)
-     * @return true on success
-     */
-    bool init_from_settings();
+    // Delete copy/move
+    V4L2Pipeline(const V4L2Pipeline&) = delete;
+    V4L2Pipeline& operator=(const V4L2Pipeline&) = delete;
 
     /**
      * @brief Start the pipeline
@@ -105,9 +86,7 @@ public:
      * @brief Get pipeline statistics
      */
     struct Stats {
-#if defined(ENABLE_UVGRTP)
         UvgRtpReceiver::Stats rtp;
-#endif
         V4L2Decoder::Stats decoder;
         PlaceboFrameQueue::Stats queue;
     };
@@ -124,13 +103,8 @@ public:
     std::string get_last_error() const;
 
 private:
-    V4L2Pipeline();
-    ~V4L2Pipeline();
-
     // Components
-#if defined(ENABLE_UVGRTP)
     std::unique_ptr<UvgRtpReceiver> m_rtp_receiver;
-#endif
     std::unique_ptr<V4L2Decoder> m_decoder;
     PlaceboFrameQueue m_frame_queue;
 

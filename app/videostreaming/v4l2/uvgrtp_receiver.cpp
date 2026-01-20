@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2024 OpenHD
 
-#if defined(ENABLE_V4L2_GL_PLAYER) && defined(ENABLE_UVGRTP)
-
 #include "uvgrtp_receiver.h"
 
 #include <QDebug>
@@ -208,5 +206,3 @@ void UvgRtpReceiver::processFrame(uvgrtp::frame::rtp_frame* frame)
     // Free frame
     uvgrtp::frame::dealloc_frame(frame);
 }
-
-#endif // ENABLE_V4L2_GL_PLAYER && ENABLE_UVGRTP

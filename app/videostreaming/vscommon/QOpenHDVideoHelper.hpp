@@ -13,7 +13,7 @@
 namespace QOpenHDVideoHelper{
 
 // Must be in sync with OpenHD
-static constexpr auto kDefault_udp_rtp_input_ip_address="127.0.0.1";
+static constexpr auto kDefault_udp_rtp_input_ip_address="0.0.0.0";
 static constexpr auto kDefault_udp_rtp_input_port_primary=5600;
 static constexpr auto kDefault_udp_rtp_input_port_secondary=5601;
 

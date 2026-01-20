@@ -135,6 +135,7 @@ DmaBufInfo& DmaBuffersManager::getInfo(size_t index)
 
 int DmaBuffersManager::getFreeBufferIndex()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     for (size_t i = 0; i < count_; ++i) {
         size_t idx = (current_buffer_ + i) % count_;
         if (!in_use_[idx]) {
@@ -146,6 +147,7 @@ int DmaBuffersManager::getFreeBufferIndex()
 
 void DmaBuffersManager::markInUse(size_t index)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (index < count_) {
         in_use_[index] = true;
         // Advance round-robin pointer when current buffer is used
@@ -157,6 +159,7 @@ void DmaBuffersManager::markInUse(size_t index)
 
 void DmaBuffersManager::markFree(size_t index)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (index < count_) {
         in_use_[index] = false;
     }
@@ -164,6 +167,7 @@ void DmaBuffersManager::markFree(size_t index)
 
 void DmaBuffersManager::resetUsage()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     in_use_.assign(count_, false);
     current_buffer_ = 0;
 }

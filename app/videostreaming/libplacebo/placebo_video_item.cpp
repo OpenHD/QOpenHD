@@ -5,6 +5,7 @@
 
 #include "placebo_video_item.h"
 #include "v4l2_pipeline.h"
+#include "../v4l2/v4l2_decoder_detector.h"
 #include "../vscommon/QOpenHDVideoHelper.hpp"
 
 #include <QDebug>
@@ -68,19 +69,61 @@ PlaceboVideoItem::PlaceboVideoItem(QQuickItem *parent)
     // Connect to window changes
     connect(this, &QQuickItem::windowChanged, this, &PlaceboVideoItem::handleWindowChanged);
 
-    // Initialize and start the pipeline
-    auto& pipeline = V4L2Pipeline::instance();
-    if (!pipeline.is_running()) {
-        qInfo() << "PlaceboVideoItem: initializing V4L2Pipeline";
-        if (!pipeline.init_from_settings()) {
-            qWarning() << "PlaceboVideoItem: failed to init V4L2Pipeline";
-        } else if (!pipeline.start()) {
-            qWarning() << "PlaceboVideoItem: failed to start V4L2Pipeline";
+    // Read video configuration from settings
+    const auto settings = QOpenHDVideoHelper::read_config_from_settings();
+    const auto& stream_config = settings.primary_stream_config;
+
+    qInfo() << "PlaceboVideoItem: stream config -"
+            << "codec:" << stream_config.video_codec
+            << "rtp:" << stream_config.udp_rtp_input_ip_address.c_str()
+            << ":" << stream_config.udp_rtp_input_port;
+
+    // Convert VideoCodec to V4L2Decoder::Codec
+    V4L2Decoder::Codec required_codec;
+    if (stream_config.video_codec == QOpenHDVideoHelper::VideoCodecH265) {
+        required_codec = V4L2Decoder::Codec::H265;
+    } else {
+        required_codec = V4L2Decoder::Codec::H264;
+    }
+
+    // Detect available V4L2 decoders
+    auto decoders = V4L2DecoderDetector::detect_decoders();
+    qInfo() << "PlaceboVideoItem: found" << decoders.size() << "V4L2 decoders";
+
+    // Find first decoder matching required codec
+    V4L2DecoderDetector::DecoderInfo* selected_decoder = nullptr;
+    for (auto& dec : decoders) {
+        qInfo() << "  Decoder:" << dec.device_path.c_str()
+                << "codec:" << (dec.codec == V4L2Decoder::Codec::H264 ? "H264" : "H265")
+                << "type:" << (dec.type == V4L2DecoderDetector::DecoderType::Stateless ? "Stateless" : "Stateful")
+                << "driver:" << dec.driver_name.c_str();
+
+        if (dec.codec == required_codec && !selected_decoder) {
+            selected_decoder = &dec;
         }
     }
 
+    if (!selected_decoder) {
+        qFatal("PlaceboVideoItem: No V4L2 decoder found for codec %s",
+               required_codec == V4L2Decoder::Codec::H264 ? "H264" : "H265");
+    }
+
+    qInfo() << "PlaceboVideoItem: selected decoder" << selected_decoder->device_path.c_str();
+
+    // Create pipeline configuration
+    V4L2Pipeline::Config pipeline_config;
+    pipeline_config.rtp_listen_addr = stream_config.udp_rtp_input_ip_address;
+    pipeline_config.rtp_listen_port = static_cast<uint16_t>(stream_config.udp_rtp_input_port);
+
+    // Create and start the pipeline
+    m_pipeline = std::make_unique<V4L2Pipeline>(pipeline_config, *selected_decoder);
+
+    if (!m_pipeline->start()) {
+        qFatal("PlaceboVideoItem: failed to start V4L2Pipeline");
+    }
+
     // Get frame queue from pipeline
-    m_frame_queue = &pipeline.get_frame_queue();
+    m_frame_queue = &m_pipeline->get_frame_queue();
 
     // Create and start waiter thread
     m_waiter_thread = std::make_unique<FrameWaiterThread>(m_frame_queue, this);
@@ -97,7 +140,7 @@ PlaceboVideoItem::~PlaceboVideoItem()
 {
     qDebug() << "PlaceboVideoItem: destructor";
 
-    // Stop waiter thread
+    // Stop waiter thread first
     if (m_waiter_thread) {
         m_waiter_thread->stop();
         m_waiter_thread.reset();
@@ -109,8 +152,11 @@ PlaceboVideoItem::~PlaceboVideoItem()
         m_has_current_frame = false;
     }
 
-    // Stop the pipeline (will be restarted if a new PlaceboVideoItem is created)
-    V4L2Pipeline::instance().stop();
+    // Stop and destroy the pipeline
+    if (m_pipeline) {
+        m_pipeline->stop();
+        m_pipeline.reset();
+    }
 }
 
 void PlaceboVideoItem::handleWindowChanged(QQuickWindow *win)

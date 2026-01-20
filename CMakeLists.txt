@@ -259,7 +259,6 @@ endif()
 
 if(ENABLE_UVGRTP)
     target_link_libraries(QOpenHDApp PRIVATE uvgrtp)
-    target_compile_definitions(QOpenHDApp PRIVATE ENABLE_UVGRTP)
 endif()
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

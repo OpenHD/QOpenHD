@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 #include <linux/videodev2.h>
@@ -117,6 +118,7 @@ private:
     const v4l2_buf_type type_;
     std::vector<bool> in_use_;
     size_t current_buffer_ = 0;
+    mutable std::mutex mutex_;  // Protects in_use_ and current_buffer_
 };
 
 #endif // ENABLE_V4L2_GL_PLAYER

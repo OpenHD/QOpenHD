@@ -65,7 +65,7 @@ public:
         uint32_t width = 0;
         uint32_t height = 0;
         uint32_t pixel_format = 0;      // V4L2_PIX_FMT_*
-        uint32_t plane_count = 0;
+        uint32_t plane_count = 1;       // Default to 1, updated after SOURCE_CHANGE
 
         // V4L2 colorspace metadata
         uint32_t colorspace = 0;        // V4L2_COLORSPACE_*
@@ -222,6 +222,7 @@ private:
     // Internal methods
     bool openDevice();
     void closeDevice();
+    bool checkDmaBufSupport();
     bool setupInputFormat();
     bool setupInputBuffers();
     bool handleSourceChange();
@@ -232,7 +233,7 @@ private:
 
     void decodeLoop();
     bool processNal(const NalUnit& nal);
-    bool queueInputBuffer(const uint8_t* data, size_t size, int64_t timestamp_us);
+    bool queueInputBuffer(int buffer_idx, const uint8_t* data, size_t size, int64_t timestamp_us);
     bool processOutputBuffer(uint32_t index);
     bool requeueOutputBuffer(uint32_t index);
 

@@ -483,7 +483,6 @@ int main(int argc, char *argv[]) {
 #ifdef ENABLE_V4L2_GL_PLAYER
     engine.rootContext()->setContextProperty("ENABLE_V4L2_GL_PLAYER", QVariant(true));
     qmlRegisterType<PlaceboVideoItem>("OpenHD", 1, 0, "PlaceboVideoItem");
-    // V4L2Pipeline will be initialized lazily when video player starts
 #else
     engine.rootContext()->setContextProperty("ENABLE_V4L2_GL_PLAYER", QVariant(false));
 #endif
