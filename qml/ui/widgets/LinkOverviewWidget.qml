@@ -9,7 +9,7 @@ BaseWidget {
     width: 320
     height: 60
 
-    visible: true
+    visible:true
     //visible: settings.show_link_overview_widget && settings.show_widgets
 
     widgetIdentifier: "link_overview_widget"
@@ -184,6 +184,7 @@ BaseWidget {
         anchors.fill: parent
         opacity: bw_current_opacity
         scale: bw_current_scale
+        clip: true
 
         Canvas {
     id: cutRect
@@ -319,6 +320,7 @@ BaseWidget {
                 color: settings.color_shape
                 font.pixelSize: 32
                 font.italic: true
+                font.family: settings.font_text
                 verticalAlignment: Text.AlignVCenter
             }
         }
