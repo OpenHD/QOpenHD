@@ -23,6 +23,8 @@
 #include "../settings/mavlinksettingsmodel.h"
 
 #include "openhd_core/platform.hpp"
+#include <algorithm>
+#include <limits>
 
 // From https://netbeez.net/blog/what-is-mcs-index/
 static std::vector<int> get_dbm_20mhz(){
@@ -202,6 +204,12 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             mavlink_msg_openhd_onboard_computer_status_extension_decode(&msg,&parsedMsg);
             consumed=true;
         }break;
+        case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
+            mavlink_onboard_computer_status_t parsedMsg;
+            mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
+            process_onboard_computer_status(parsedMsg);
+            consumed=true;
+        }break;
         case MAVLINK_MSG_ID_HEARTBEAT:{
             mavlink_heartbeat_t parsedMsg;
             mavlink_msg_heartbeat_decode(&msg,&parsedMsg);
@@ -270,7 +278,10 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             consumed=true;
         }break;
         default:{
-            qDebug()<<"Unknown openhd message type";
+            qDebug()<<"Unknown openhd message type"
+                   <<"msgid"<<msg.msgid
+                   <<"sysid"<<msg.sysid
+                   <<"compid"<<msg.compid;
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
@@ -289,6 +300,206 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
 QString AOHDSystem::get_rate_for_mcs_bw(int mcs, int bw)
 {
     return "TODO";
+}
+
+static int avg_percent_or_unset(const std::array<uint8_t, 8> &values){
+    int sum=0;
+    int count=0;
+    for(uint8_t value : values){
+        if(value==std::numeric_limits<uint8_t>::max()){
+            continue;
+        }
+        sum+=value;
+        count++;
+    }
+    return count==0 ? -1 : sum / count;
+}
+
+static int avg_percent_or_unset_4(const std::array<uint8_t, 4> &values){
+    int sum=0;
+    int count=0;
+    for(uint8_t value : values){
+        if(value==std::numeric_limits<uint8_t>::max()){
+            continue;
+        }
+        sum+=value;
+        count++;
+    }
+    return count==0 ? -1 : sum / count;
+}
+
+void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_status_t &msg)
+{
+    set_onboard_time_usec(msg.time_usec);
+    set_onboard_uptime_ms(static_cast<int>(msg.uptime));
+    set_onboard_ram_usage_mib(msg.ram_usage == std::numeric_limits<uint32_t>::max()
+                                  ? -1
+                                  : static_cast<int>(msg.ram_usage));
+    set_onboard_ram_total_mib(msg.ram_total == std::numeric_limits<uint32_t>::max()
+                                  ? -1
+                                  : static_cast<int>(msg.ram_total));
+    set_onboard_temperature_board(msg.temperature_board == std::numeric_limits<int8_t>::max()
+                                      ? -1
+                                      : static_cast<int>(msg.temperature_board));
+    set_onboard_type(static_cast<int>(msg.type));
+
+    std::copy_n(msg.storage_type, m_onboard_storage_type.size(), m_onboard_storage_type.begin());
+    std::copy_n(msg.storage_usage, m_onboard_storage_usage.size(), m_onboard_storage_usage.begin());
+    std::copy_n(msg.storage_total, m_onboard_storage_total.size(), m_onboard_storage_total.begin());
+    std::copy_n(msg.link_type, m_onboard_link_type.size(), m_onboard_link_type.begin());
+    std::copy_n(msg.link_tx_rate, m_onboard_link_tx_rate.size(), m_onboard_link_tx_rate.begin());
+    std::copy_n(msg.link_rx_rate, m_onboard_link_rx_rate.size(), m_onboard_link_rx_rate.begin());
+    std::copy_n(msg.link_tx_max, m_onboard_link_tx_max.size(), m_onboard_link_tx_max.begin());
+    std::copy_n(msg.link_rx_max, m_onboard_link_rx_max.size(), m_onboard_link_rx_max.begin());
+    std::copy_n(msg.fan_speed, m_onboard_fan_speed.size(), m_onboard_fan_speed.begin());
+    std::copy_n(msg.cpu_cores, m_onboard_cpu_cores.size(), m_onboard_cpu_cores.begin());
+    std::copy_n(msg.cpu_combined, m_onboard_cpu_combined.size(), m_onboard_cpu_combined.begin());
+    std::copy_n(msg.gpu_cores, m_onboard_gpu_cores.size(), m_onboard_gpu_cores.begin());
+    std::copy_n(msg.gpu_combined, m_onboard_gpu_combined.size(), m_onboard_gpu_combined.begin());
+    std::copy_n(msg.temperature_core, m_onboard_temperature_core.size(), m_onboard_temperature_core.begin());
+
+    set_onboard_cpu_usage_avg(avg_percent_or_unset(m_onboard_cpu_cores));
+    set_onboard_gpu_usage_avg(avg_percent_or_unset_4(m_onboard_gpu_cores));
+}
+
+QVariantList AOHDSystem::get_onboard_cpu_cores() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_cpu_cores.size()));
+    for(uint8_t value : m_onboard_cpu_cores){
+        list.push_back(static_cast<int>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_cpu_combined() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_cpu_combined.size()));
+    for(uint8_t value : m_onboard_cpu_combined){
+        list.push_back(static_cast<int>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_gpu_cores() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_gpu_cores.size()));
+    for(uint8_t value : m_onboard_gpu_cores){
+        list.push_back(static_cast<int>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_gpu_combined() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_gpu_combined.size()));
+    for(uint8_t value : m_onboard_gpu_combined){
+        list.push_back(static_cast<int>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_temperature_cores() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_temperature_core.size()));
+    for(int8_t value : m_onboard_temperature_core){
+        list.push_back(static_cast<int>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_fan_speeds() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_fan_speed.size()));
+    for(int16_t value : m_onboard_fan_speed){
+        list.push_back(static_cast<int>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_storage_type() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_storage_type.size()));
+    for(uint32_t value : m_onboard_storage_type){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_storage_usage() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_storage_usage.size()));
+    for(uint32_t value : m_onboard_storage_usage){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_storage_total() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_storage_total.size()));
+    for(uint32_t value : m_onboard_storage_total){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_link_type() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_link_type.size()));
+    for(uint32_t value : m_onboard_link_type){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_link_tx_rate() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_link_tx_rate.size()));
+    for(uint32_t value : m_onboard_link_tx_rate){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_link_rx_rate() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_link_rx_rate.size()));
+    for(uint32_t value : m_onboard_link_rx_rate){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_link_tx_max() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_link_tx_max.size()));
+    for(uint32_t value : m_onboard_link_tx_max){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
+}
+
+QVariantList AOHDSystem::get_onboard_link_rx_max() const
+{
+    QVariantList list;
+    list.reserve(static_cast<int>(m_onboard_link_rx_max.size()));
+    for(uint32_t value : m_onboard_link_rx_max){
+        list.push_back(static_cast<qulonglong>(value));
+    }
+    return list;
 }
 
 void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &msg)
