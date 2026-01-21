@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <array>
 #include <QQmlContext>
+#include <QVariantList>
 #include <atomic>
 
 #include "../tutil/mavlink_include.h"
@@ -138,8 +139,31 @@ public: // public for QT
     L_RO_PROP(bool,dirty_air_has_secondary_cam,set_dirty_air_has_secondary_cam,false)
     // x20 only right now
     L_RO_PROP(int,thermal_protection_level,set_thermal_protection_level,-1)
+    // MAVLink ONBOARD_COMPUTER_STATUS (common)
+    L_RO_PROP(quint64,onboard_time_usec,set_onboard_time_usec,0)
+    L_RO_PROP(int,onboard_uptime_ms,set_onboard_uptime_ms,-1)
+    L_RO_PROP(int,onboard_ram_usage_mib,set_onboard_ram_usage_mib,-1)
+    L_RO_PROP(int,onboard_ram_total_mib,set_onboard_ram_total_mib,-1)
+    L_RO_PROP(int,onboard_temperature_board,set_onboard_temperature_board,-1)
+    L_RO_PROP(int,onboard_type,set_onboard_type,-1)
+    L_RO_PROP(int,onboard_cpu_usage_avg,set_onboard_cpu_usage_avg,-1)
+    L_RO_PROP(int,onboard_gpu_usage_avg,set_onboard_gpu_usage_avg,-1)
 public:
     Q_INVOKABLE QString get_rate_for_mcs_bw(int mcs,int bw);
+    Q_INVOKABLE QVariantList get_onboard_cpu_cores() const;
+    Q_INVOKABLE QVariantList get_onboard_cpu_combined() const;
+    Q_INVOKABLE QVariantList get_onboard_gpu_cores() const;
+    Q_INVOKABLE QVariantList get_onboard_gpu_combined() const;
+    Q_INVOKABLE QVariantList get_onboard_temperature_cores() const;
+    Q_INVOKABLE QVariantList get_onboard_fan_speeds() const;
+    Q_INVOKABLE QVariantList get_onboard_storage_type() const;
+    Q_INVOKABLE QVariantList get_onboard_storage_usage() const;
+    Q_INVOKABLE QVariantList get_onboard_storage_total() const;
+    Q_INVOKABLE QVariantList get_onboard_link_type() const;
+    Q_INVOKABLE QVariantList get_onboard_link_tx_rate() const;
+    Q_INVOKABLE QVariantList get_onboard_link_rx_rate() const;
+    Q_INVOKABLE QVariantList get_onboard_link_tx_max() const;
+    Q_INVOKABLE QVariantList get_onboard_link_rx_max() const;
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
@@ -160,6 +184,7 @@ private:
      void process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t& msg);
      void process_sys_status1(const mavlink_openhd_sys_status1_t& msg);
      void process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t& msg);
+     void process_onboard_computer_status(const mavlink_onboard_computer_status_t& msg);
      // When apropriate, auto-fecth params until success
      void autofech_params_if_apropriate();
 private:
@@ -184,6 +209,20 @@ private:
     void update_alive_status_with_hud_message(bool alive);
 private:
     bool m_x20_rpi_upgrade_warning_logged=false;
+    std::array<uint32_t, 4> m_onboard_storage_type{};
+    std::array<uint32_t, 4> m_onboard_storage_usage{};
+    std::array<uint32_t, 4> m_onboard_storage_total{};
+    std::array<uint32_t, 6> m_onboard_link_type{};
+    std::array<uint32_t, 6> m_onboard_link_tx_rate{};
+    std::array<uint32_t, 6> m_onboard_link_rx_rate{};
+    std::array<uint32_t, 6> m_onboard_link_tx_max{};
+    std::array<uint32_t, 6> m_onboard_link_rx_max{};
+    std::array<int16_t, 4> m_onboard_fan_speed{};
+    std::array<uint8_t, 8> m_onboard_cpu_cores{};
+    std::array<uint8_t, 10> m_onboard_cpu_combined{};
+    std::array<uint8_t, 4> m_onboard_gpu_cores{};
+    std::array<uint8_t, 10> m_onboard_gpu_combined{};
+    std::array<int8_t, 8> m_onboard_temperature_core{};
 };
 
 

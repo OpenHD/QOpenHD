@@ -28,6 +28,8 @@ BaseWidget {
     property int m_best_snr_db: get_best_snr_db()
     property int m_snr_value: snr_db_to_percent(m_best_snr_db)
     property real m_txc_temp: _ohdSystemGround.curr_txc_temp_degree_1
+    property string linkFont: "Quicksand"
+    property string linkMonoFont: "ShareTechMono"
 
     function get_dbm_text() {
         var dbm = _ohdSystemGround.current_rx_rssi;
@@ -157,6 +159,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
+                    font.family: linkFont
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
@@ -170,6 +173,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
+                    font.family: linkFont
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
@@ -273,7 +277,7 @@ BaseWidget {
                     text: get_channel_width_index()
                     color: settings.color_text
                     font.pixelSize: 12
-                    font.family: settings.font_text
+                    font.family: linkFont
                     horizontalAlignment: Text.AlignHCenter
                     style: Text.Outline
                     styleColor: settings.color_glow
@@ -296,7 +300,7 @@ BaseWidget {
                 text: get_dbm_text() + " dBm " + get_txc_text()
                 color: settings.color_text
                 font.pixelSize: 16
-                font.family: settings.font_text
+                font.family: linkFont
                 verticalAlignment: Text.AlignVCenter
                 style: Text.Outline
                 styleColor: settings.color_glow
@@ -320,7 +324,7 @@ BaseWidget {
                 color: settings.color_shape
                 font.pixelSize: 32
                 font.italic: true
-                font.family: settings.font_text
+                font.family: linkMonoFont
                 verticalAlignment: Text.AlignVCenter
             }
         }
