@@ -28,6 +28,9 @@ public:
     // Factory method to open a V4L2 device
     static std::unique_ptr<V4L2Device> Open(const std::string& devicePath);
 
+    // Get file descriptor
+    int GetFd() const { return fd_; }
+
 };
 
 #endif //QOPENHDPROJECT_V4L2DEVICE_H

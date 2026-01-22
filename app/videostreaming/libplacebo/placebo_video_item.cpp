@@ -79,11 +79,11 @@ PlaceboVideoItem::PlaceboVideoItem(QQuickItem *parent)
             << ":" << stream_config.udp_rtp_input_port;
 
     // Convert VideoCodec to V4L2Decoder::Codec
-    V4L2Decoder::Codec required_codec;
+    V4L2H264StatefulDecoder::Codec required_codec;
     if (stream_config.video_codec == QOpenHDVideoHelper::VideoCodecH265) {
-        required_codec = V4L2Decoder::Codec::H265;
+        required_codec = V4L2H264StatefulDecoder::Codec::H265;
     } else {
-        required_codec = V4L2Decoder::Codec::H264;
+        required_codec = V4L2H264StatefulDecoder::Codec::H264;
     }
 
     // Detect available V4L2 decoders
@@ -94,7 +94,7 @@ PlaceboVideoItem::PlaceboVideoItem(QQuickItem *parent)
     V4L2DecoderDetector::DecoderInfo* selected_decoder = nullptr;
     for (auto& dec : decoders) {
         qInfo() << "  Decoder:" << dec.device_path.c_str()
-                << "codec:" << (dec.codec == V4L2Decoder::Codec::H264 ? "H264" : "H265")
+                << "codec:" << (dec.codec == V4L2H264StatefulDecoder::Codec::H264 ? "H264" : "H265")
                 << "type:" << (dec.type == V4L2DecoderDetector::DecoderType::Stateless ? "Stateless" : "Stateful")
                 << "driver:" << dec.driver_name.c_str();
 
@@ -105,7 +105,7 @@ PlaceboVideoItem::PlaceboVideoItem(QQuickItem *parent)
 
     if (!selected_decoder) {
         qFatal("PlaceboVideoItem: No V4L2 decoder found for codec %s",
-               required_codec == V4L2Decoder::Codec::H264 ? "H264" : "H265");
+               required_codec == V4L2H264StatefulDecoder::Codec::H264 ? "H264" : "H265");
     }
 
     qInfo() << "PlaceboVideoItem: selected decoder" << selected_decoder->device_path.c_str();

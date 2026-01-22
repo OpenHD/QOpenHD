@@ -6,6 +6,7 @@
 
 #ifdef ENABLE_V4L2_GL_PLAYER
 
+#include "V4L2Device.h"
 #include "dma_heap.h"
 #include "dma_buffers_manager.h"
 #include "../libplacebo/placebo_frame_queue.h"
@@ -40,15 +41,16 @@
  *
  * Based on RtpDrmPlayer reference implementation.
  */
-class V4L2Decoder
+class V4L2H264StatefulDecoder
 {
 public:
-    V4L2Decoder();
-    ~V4L2Decoder();
+    ~V4L2H264StatefulDecoder();
 
-    // Non-copyable
-    V4L2Decoder(const V4L2Decoder&) = delete;
-    V4L2Decoder& operator=(const V4L2Decoder&) = delete;
+    // Delete all copy and move operations for strict lifetime control
+    V4L2H264StatefulDecoder(const V4L2H264StatefulDecoder&) = delete;
+    V4L2H264StatefulDecoder& operator=(const V4L2H264StatefulDecoder&) = delete;
+    V4L2H264StatefulDecoder(V4L2H264StatefulDecoder&&) = delete;
+    V4L2H264StatefulDecoder& operator=(V4L2H264StatefulDecoder&&) = delete;
 
     /**
      * @brief Supported codecs.
@@ -96,12 +98,12 @@ public:
     using CapabilitiesCallback = std::function<void(const Capabilities& caps)>;
 
     /**
-     * @brief Initialize decoder with V4L2 device path and codec.
-     * @param device_path Path to V4L2 M2M device (e.g., /dev/video10)
+     * @brief Factory method to create decoder with V4L2 device and codec.
+     * @param device V4L2 device (must be valid and open)
      * @param codec Codec to decode
-     * @return true on success
+     * @return unique_ptr to decoder on success, nullptr on failure
      */
-    bool init(const std::string& device_path, Codec codec);
+    static std::unique_ptr<V4L2H264StatefulDecoder> Create(std::unique_ptr<V4L2Device> device, Codec codec);
 
     /**
      * @brief Start decoding.
@@ -166,12 +168,14 @@ public:
     bool is_running() const { return running_.load(); }
 
 private:
+    // Private constructor - only factory method can create instances
+    V4L2H264StatefulDecoder(std::unique_ptr<V4L2Device> device, Codec codec);
+
     // Configuration
-    std::string device_path_;
     Codec codec_ = Codec::H264;
 
     // V4L2 device
-    int fd_ = -1;
+    std::unique_ptr<V4L2Device> device_;
 
     // DMA-BUF allocator and buffer managers
     std::shared_ptr<DmaHeap> dma_heap_;
@@ -220,8 +224,6 @@ private:
     uint64_t frame_sequence_ = 0;
 
     // Internal methods
-    bool openDevice();
-    void closeDevice();
     bool checkDmaBufSupport();
     bool setupInputFormat();
     bool setupInputBuffers();

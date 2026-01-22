@@ -155,6 +155,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     #app/videostreaming/vscommon/rtp/ParseRTP.cpp
     app/videostreaming/vscommon/decodingstatistcs.cpp
     app/videostreaming/vscommon/audio_playback.cpp
+        app/videostreaming/vscommon/VideoCodec.h
 )
 
 if(ENABLE_V4L2_GL_PLAYER)

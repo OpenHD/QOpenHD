@@ -11,7 +11,7 @@
 #include <atomic>
 
 #include "uvgrtp_receiver.h"
-#include "v4l2_decoder.h"
+#include "V4L2H264StatefulDecoder.h"
 #include "v4l2_decoder_detector.h"
 #include "../libplacebo/placebo_frame_queue.h"
 #include "../libplacebo/placebo_renderer.h"
@@ -80,14 +80,14 @@ public:
      * @brief Get current decoder capabilities
      * Only valid after decoder has processed first frame.
      */
-    const V4L2Decoder::Capabilities& get_decoder_capabilities() const;
+    const V4L2H264StatefulDecoder::Capabilities& get_decoder_capabilities() const;
 
     /**
      * @brief Get pipeline statistics
      */
     struct Stats {
         UvgRtpReceiver::Stats rtp;
-        V4L2Decoder::Stats decoder;
+        V4L2H264StatefulDecoder::Stats decoder;
         PlaceboFrameQueue::Stats queue;
     };
     Stats get_stats() const;
@@ -105,7 +105,7 @@ public:
 private:
     // Components
     std::unique_ptr<UvgRtpReceiver> m_rtp_receiver;
-    std::unique_ptr<V4L2Decoder> m_decoder;
+    std::unique_ptr<V4L2H264StatefulDecoder> m_decoder;
     PlaceboFrameQueue m_frame_queue;
 
     // Configuration
@@ -116,7 +116,7 @@ private:
     // Callbacks
     void on_nal_received(const uint8_t* data, size_t size, int64_t timestamp_us);
     void on_frame_decoded(PlaceboFrame frame);
-    void on_decoder_capabilities(const V4L2Decoder::Capabilities& caps);
+    void on_decoder_capabilities(const V4L2H264StatefulDecoder::Capabilities& caps);
 
     // Renderer format notification (to be picked up by PlaceboVideoItem)
     PlaceboRenderer::FrameFormat m_frame_format;

@@ -16,7 +16,7 @@ V4L2Pipeline::V4L2Pipeline(const Config& config, const V4L2DecoderDetector::Deco
 
     qInfo() << "V4L2Pipeline: initializing...";
     qInfo() << "  RTP:" << config.rtp_listen_addr.c_str() << ":" << config.rtp_listen_port;
-    qInfo() << "  Codec:" << (decoder_info.codec == V4L2Decoder::Codec::H264 ? "H264" : "H265");
+    qInfo() << "  Codec:" << (decoder_info.codec == V4L2H264StatefulDecoder::Codec::H264 ? "H264" : "H265");
     qInfo() << "  V4L2 device:" << decoder_info.device_path.c_str();
     qInfo() << "  Driver:" << decoder_info.driver_name.c_str();
     qInfo() << "  Type:" << (decoder_info.type == V4L2DecoderDetector::DecoderType::Stateless ? "Stateless" : "Stateful");
@@ -26,10 +26,10 @@ V4L2Pipeline::V4L2Pipeline(const Config& config, const V4L2DecoderDetector::Deco
 
     // Create components
     m_rtp_receiver = std::make_unique<UvgRtpReceiver>();
-    m_decoder = std::make_unique<V4L2Decoder>();
+    m_decoder = std::make_unique<V4L2H264StatefulDecoder>();
 
     // Initialize RTP receiver
-    UvgRtpReceiver::Codec rtp_codec = (decoder_info.codec == V4L2Decoder::Codec::H264)
+    UvgRtpReceiver::Codec rtp_codec = (decoder_info.codec == V4L2H264StatefulDecoder::Codec::H264)
         ? UvgRtpReceiver::Codec::H264
         : UvgRtpReceiver::Codec::H265;
 
@@ -53,7 +53,7 @@ V4L2Pipeline::V4L2Pipeline(const Config& config, const V4L2DecoderDetector::Deco
         on_frame_decoded(std::move(frame));
     });
 
-    m_decoder->set_capabilities_callback([this](const V4L2Decoder::Capabilities& caps) {
+    m_decoder->set_capabilities_callback([this](const V4L2H264StatefulDecoder::Capabilities& caps) {
         on_decoder_capabilities(caps);
     });
 
@@ -127,9 +127,9 @@ void V4L2Pipeline::stop()
     qInfo() << "V4L2Pipeline: stopped";
 }
 
-const V4L2Decoder::Capabilities& V4L2Pipeline::get_decoder_capabilities() const
+const V4L2H264StatefulDecoder::Capabilities& V4L2Pipeline::get_decoder_capabilities() const
 {
-    static V4L2Decoder::Capabilities empty_caps;
+    static V4L2H264StatefulDecoder::Capabilities empty_caps;
     if (!m_decoder) return empty_caps;
     return m_decoder->get_capabilities();
 }
@@ -202,7 +202,7 @@ void V4L2Pipeline::on_frame_decoded(PlaceboFrame frame)
     // Note: if not running, V4L2 will handle buffer cleanup when stopping
 }
 
-void V4L2Pipeline::on_decoder_capabilities(const V4L2Decoder::Capabilities& caps)
+void V4L2Pipeline::on_decoder_capabilities(const V4L2H264StatefulDecoder::Capabilities& caps)
 {
     qInfo() << "V4L2Pipeline: decoder capabilities:"
             << caps.width << "x" << caps.height

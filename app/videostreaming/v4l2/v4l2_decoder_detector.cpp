@@ -134,7 +134,7 @@ bool V4L2DecoderDetector::probe_device(const std::string& device_path,
     // Create decoder info entries for each supported codec
     if (supports_h264) {
         DecoderInfo info;
-        info.codec = V4L2Decoder::Codec::H264;
+        info.codec = V4L2H264StatefulDecoder::Codec::H264;
         info.type = stateless ? DecoderType::Stateless : DecoderType::Stateful;
         info.device_path = device_path;
         info.media_device_path = media_device;
@@ -145,7 +145,7 @@ bool V4L2DecoderDetector::probe_device(const std::string& device_path,
 
     if (supports_h265) {
         DecoderInfo info;
-        info.codec = V4L2Decoder::Codec::H265;
+        info.codec = V4L2H264StatefulDecoder::Codec::H265;
         info.type = stateless ? DecoderType::Stateless : DecoderType::Stateful;
         info.device_path = device_path;
         info.media_device_path = media_device;

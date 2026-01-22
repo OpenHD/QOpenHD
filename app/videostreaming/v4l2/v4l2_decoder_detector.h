@@ -6,7 +6,7 @@
 
 #ifdef ENABLE_V4L2_GL_PLAYER
 
-#include "v4l2_decoder.h"
+#include "V4L2H264StatefulDecoder.h"
 
 #include <cstdint>
 #include <string>
@@ -41,7 +41,7 @@ public:
      * @brief Information about a detected decoder.
      */
     struct DecoderInfo {
-        V4L2Decoder::Codec codec;           ///< Supported codec (H264 or H265)
+        V4L2H264StatefulDecoder::Codec codec;           ///< Supported codec (H264 or H265)
         DecoderType type;                   ///< Stateful or stateless
         std::string device_path;            ///< Path to V4L2 device (e.g., /dev/video0)
         std::string media_device_path;      ///< Path to media device (only for stateless)
