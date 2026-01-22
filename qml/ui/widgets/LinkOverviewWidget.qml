@@ -13,7 +13,7 @@ BaseWidget {
     //visible: settings.show_link_overview_widget && settings.show_widgets
 
     widgetIdentifier: "link_overview_widget"
-    bw_verbose_name: "LINK OVERVIEW"
+    bw_verbose_name: qsTr("LINK OVERVIEW")
 
     defaultAlignment: 0
     defaultXOffset: 0
@@ -30,6 +30,10 @@ BaseWidget {
     property real m_txc_temp: _ohdSystemGround.curr_txc_temp_degree_1
     property string linkFont: "Quicksand"
     property string linkMonoFont: "ShareTechMono"
+    property int snrBlockCount: 8
+    property real snrBlockWidth: 12
+    property real snrBlockHeight: 8
+    property real snrBlockSkew: 4
 
     function get_dbm_text() {
         var dbm = _ohdSystemGround.current_rx_rssi;
@@ -153,9 +157,10 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: "SNR A1/A2 (Card " + (get_best_card_index() + 1) + "): " +
-                          snr_text(get_best_card().rx_snr_antenna1) + " / " +
-                          snr_text(get_best_card().rx_snr_antenna2)
+                    text: qsTr("SNR A1/A2 (Card %1): %2 / %3")
+                        .arg(get_best_card_index() + 1)
+                        .arg(snr_text(get_best_card().rx_snr_antenna1))
+                        .arg(snr_text(get_best_card().rx_snr_antenna2))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -169,7 +174,7 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: "SNR best: " + snr_text(m_best_snr_db)
+                    text: qsTr("SNR best: %1").arg(snr_text(m_best_snr_db))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -314,18 +319,54 @@ BaseWidget {
             anchors.right: parent.right
             anchors.rightMargin: 12
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 20    
-            spacing: 4
+            anchors.bottomMargin: 12
+            spacing: 2
             height: 14
 
-            Text {
+            Row {
                 id: snrBlocks
-                text: get_snr_blocks_text()
-                color: settings.color_shape
-                font.pixelSize: 32
-                font.italic: true
-                font.family: linkMonoFont
-                verticalAlignment: Text.AlignVCenter
+                spacing: snrRow.spacing
+                anchors.verticalCenter: parent.verticalCenter
+
+                Repeater {
+                    model: snrBlockCount
+                    delegate: Canvas {
+                        width: snrBlockWidth + snrBlockSkew
+                        height: snrBlockHeight
+                        property bool isActive: m_snr_value >= (index + 1) * 10
+                        property color shapeColor: settings.color_shape
+
+                        onIsActiveChanged: requestPaint()
+                        onShapeColorChanged: requestPaint()
+                        onWidthChanged: requestPaint()
+                        onHeightChanged: requestPaint()
+
+                        onPaint: {
+                            const ctx = getContext("2d");
+                            ctx.clearRect(0, 0, width, height);
+
+                            const w = snrBlockWidth;
+                            const h = snrBlockHeight;
+                            const s = snrBlockSkew;
+
+                            ctx.beginPath();
+                            ctx.moveTo(0, h);
+                            ctx.lineTo(s, 0);
+                            ctx.lineTo(w + s, 0);
+                            ctx.lineTo(w, h);
+                            ctx.closePath();
+
+                            if (isActive) {
+                                ctx.fillStyle = shapeColor;
+                                ctx.fill();
+                            } else {
+                                ctx.strokeStyle = shapeColor;
+                                ctx.lineWidth = 1;
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
             }
         }
     }

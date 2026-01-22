@@ -49,7 +49,7 @@ Column{
     }
 
     Text{
-        text: "Channel "+override_channel_index
+        text: qsTr("Channel %1").arg(override_channel_index)
         font.pixelSize: 14
         font.family: "AvantGarde-Medium"
         color: "#ffffff"

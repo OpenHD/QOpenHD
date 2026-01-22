@@ -16,14 +16,14 @@ import "../../elements"
 
 PopupBigGeneric{
 
-    m_title: "STBC / LDPC (ADVANCED)"
+    m_title: qsTr("STBC / LDPC (ADVANCED)")
     onCloseButtonClicked: {
         close();
     }
 
     function open(){
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
-            _qopenhd.show_toast("PLEASE DISARM FIRST");
+            _qopenhd.show_toast(qsTr("PLEASE DISARM FIRST"));
             return;
         }
         visible=true;
@@ -37,15 +37,15 @@ PopupBigGeneric{
 
     ListModel{
         id: model_n_antennas_air
-        ListElement {title: "AIR: PLEASE SELECT N RF PATH / ANTENNAS"; value: 0}
-        ListElement {title: "AIR: 1 RF PATH / ANTENNAS"; value: 1}
-        ListElement {title: "AIR: 2 RF PATHS / ANTENNAS"; value: 2}
+        ListElement {title: qsTr("AIR: PLEASE SELECT N RF PATH / ANTENNAS"); value: 0}
+        ListElement {title: qsTr("AIR: 1 RF PATH / ANTENNAS"); value: 1}
+        ListElement {title: qsTr("AIR: 2 RF PATHS / ANTENNAS"); value: 2}
     }
     ListModel{
         id: model_n_antennas_gnd
-        ListElement {title: "GND: PLEASE SELECT N RF PATH / ANTENNAS"; value: 0}
-        ListElement {title: "GND: 1 RF PATH / ANTENNAS"; value: 1}
-        ListElement {title: "GND: 2 RF PATHS / ANTENNAS"; value: 2}
+        ListElement {title: qsTr("GND: PLEASE SELECT N RF PATH / ANTENNAS"); value: 0}
+        ListElement {title: qsTr("GND: 1 RF PATH / ANTENNAS"); value: 1}
+        ListElement {title: qsTr("GND: 2 RF PATHS / ANTENNAS"); value: 2}
     }
 
     ColumnLayout{
@@ -86,15 +86,15 @@ PopupBigGeneric{
         }
         Button{
             id: button_enable
-            text: "ENABLE"
+            text: qsTr("ENABLE")
             enabled: comboBoxNAntennasAir.currentIndex==2 && comboBoxNAntennasGnd.currentIndex==2;
             font.pixelSize: 14
             onClicked: {
                 if(_wbLinkSettingsHelper.set_param_stbc_ldpc_enable_air_ground()){
-                    _qopenhd.show_toast("Success (STBC & LDPC set to ON on both AIR and GND)");
+                    _qopenhd.show_toast(qsTr("Success (STBC & LDPC set to ON on both AIR and GND)"));
                     close();
                 }else{
-                    _qopenhd.show_toast("Something went wrong, please try again");
+                    _qopenhd.show_toast(qsTr("Something went wrong, please try again"));
                 }
             }
         }
@@ -102,7 +102,7 @@ PopupBigGeneric{
             Layout.fillWidth: true
             Layout.preferredHeight: 40
             visible: !button_enable.enabled
-            text: "CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS";
+            text: qsTr("CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS");
             font.pixelSize: 14
             verticalAlignment: Qt.AlignVCenter
             horizontalAlignment: Qt.AlignLeft
@@ -110,7 +110,7 @@ PopupBigGeneric{
         }
         Text{
             id: stbc_warning_text
-            text: "WARNING:\n YOU NEED TO REFLASH YOUR AIR / GROUND UNIT\nIF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW";
+            text: qsTr("WARNING:\n YOU NEED TO REFLASH YOUR AIR / GROUND UNIT\nIF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW");
             color: "red"
             Layout.fillWidth: true
             height: 200

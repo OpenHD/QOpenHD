@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_air_battery && settings.show_widgets
 
     widgetIdentifier: "air_battery_widget"
-    bw_verbose_name: "AIR BATTERY (FC)"
+    bw_verbose_name: qsTr("AIR BATTERY (FC)")
 
     defaultAlignment: 3
     defaultXOffset: 0
@@ -250,7 +250,7 @@ BaseWidget {
             y: 0
             rotation: -90
             color: settings.color_text
-            text: "air"
+            text: qsTr("air")
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 2

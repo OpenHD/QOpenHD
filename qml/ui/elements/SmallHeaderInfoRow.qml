@@ -4,8 +4,8 @@ Item {
     width: parent.width
     height: 32
 
-    property string m_text: "FILL ME"
-    property string m_info_text: "FILL ME"
+    property string m_text: qsTr("FILL ME")
+    property string m_info_text: qsTr("FILL ME")
 
     Text{
         anchors.fill: parent

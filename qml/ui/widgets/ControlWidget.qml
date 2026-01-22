@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_control && settings.show_widgets
 
     widgetIdentifier: "control_widget"
-    bw_verbose_name: "CONTROL INPUTS"
+    bw_verbose_name: qsTr("CONTROL INPUTS")
 
     defaultAlignment: 1
     defaultXOffset: 20

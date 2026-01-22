@@ -96,7 +96,7 @@ SideBarBasePanel {
             Button {
                 Layout.alignment: Qt.AlignHCenter
                 id: button
-                text: "Advanced Menu"
+                text: qsTr("Advanced Menu")
                 onClicked: {
                     settings_panel.visible = true
                 }

@@ -10,7 +10,7 @@ Item{
         id: left
         width: 80
         height: 20
-        text: qsTr(m_left_text)
+        text: m_left_text
         font.pixelSize: 14
         color: "#ff05ff00"
         horizontalAlignment: Qt.AlignLeft
@@ -20,7 +20,7 @@ Item{
         width: parent.width-left.width
         height: 20
         anchors.left: left.right
-        text: qsTr(m_right_text)
+        text: m_right_text
         font.pixelSize: 14
         color: "#ff05ff00"
         horizontalAlignment: Qt.AlignLeft

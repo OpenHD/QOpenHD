@@ -17,7 +17,7 @@ BaseWidget {
     defaultYOffset: 50
 
     widgetIdentifier: "heading_widget"
-    bw_verbose_name: "HEADING"
+    bw_verbose_name: qsTr("HEADING")
 
     defaultHCenter: true
     defaultVCenter: false

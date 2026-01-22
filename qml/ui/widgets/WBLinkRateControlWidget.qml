@@ -20,7 +20,7 @@ BaseWidget {
     visible: settings.wb_link_rate_control_widget_show && settings.show_widgets
 
     widgetIdentifier: "wb_link_rate_control_widget"
-    bw_verbose_name: "WB LIVE RATE CONTROL"
+    bw_verbose_name: qsTr("WB LIVE RATE CONTROL")
 
     defaultAlignment: 0
     defaultXOffset: 350
@@ -53,20 +53,20 @@ BaseWidget {
 
     ListModel{
         id: mcs_model
-        ListElement {title: "MCS0 (LONG RANGE)"; value: 0}
-        ListElement {title: "MCS1 (RANGE)"; value: 1}
-        ListElement {title: "MCS2 (DEFAULT)"; value: 2}
-        ListElement {title: "MCS3 (EXPERIMENTAL)"; value: 3}
-        ListElement {title: "MCS4 (EXPERIMENTAL)"; value: 4}
-        ListElement {title: "MCS8 (2SS PARTIAL 0)"; value: 8}
-        ListElement {title: "MCS9 (2SS PARTIAL 1)"; value: 9}
-        ListElement {title: "MCS10 (2SS PARTIAL 2)"; value: 10}
+        ListElement {title: qsTr("MCS0 (LONG RANGE)"); value: 0}
+        ListElement {title: qsTr("MCS1 (RANGE)"); value: 1}
+        ListElement {title: qsTr("MCS2 (DEFAULT)"); value: 2}
+        ListElement {title: qsTr("MCS3 (EXPERIMENTAL)"); value: 3}
+        ListElement {title: qsTr("MCS4 (EXPERIMENTAL)"); value: 4}
+        ListElement {title: qsTr("MCS8 (2SS PARTIAL 0)"); value: 8}
+        ListElement {title: qsTr("MCS9 (2SS PARTIAL 1)"); value: 9}
+        ListElement {title: qsTr("MCS10 (2SS PARTIAL 2)"); value: 10}
     }
     ListModel{
         id: stability_model
-        ListElement {title: "30%:2 POLLUTED"; value_fec: 30; value_keyframe: 2}
-        ListElement {title: "30%:3 CITY"; value_fec: 30; value_keyframe: 3}
-        ListElement {title: "20%:5 DEFAULT"; value_fec: 20; value_keyframe: 5}
+        ListElement {title: qsTr("30%:2 POLLUTED"); value_fec: 30; value_keyframe: 2}
+        ListElement {title: qsTr("30%:3 CITY"); value_fec: 30; value_keyframe: 3}
+        ListElement {title: qsTr("20%:5 DEFAULT"); value_fec: 20; value_keyframe: 5}
         //ListElement {title: "10%:5 DESERT"; value_fec: 10; value_keyframe: 5}
     }
 
@@ -79,14 +79,14 @@ BaseWidget {
         if(curr_channel_mhz>10){
             ret+=curr_channel_mhz;
         }else{
-            ret+="Chan N/A";
+            ret+=qsTr("Chan N/A");
         }
         if(_ohdSystemGround.curr_channel_width_mhz==40){
-            ret+= " 40Mhz";
+            ret+= " " + qsTr("40 MHz");
         }else if(_ohdSystemGround.curr_channel_width_mhz==20){
-            ret+=" 20Mhz";
+            ret+= " " + qsTr("20 MHz");
         }else{
-            ret +=" N/A";
+            ret += " " + qsTr("N/A");
         }
         //ret+=" Mhz";
         return ret;
@@ -96,29 +96,28 @@ BaseWidget {
     function bitrate_kbits_readable(kbits){
         var mbits=kbits/1000.0;
         if(mbits<10){
-            return Number(mbits).toLocaleString(Qt.locale(), 'f', 1)+"MBit/s"
+            return qsTr("%1 MBit/s").arg(Number(mbits).toLocaleString(Qt.locale(), 'f', 1))
         }
-        return Number(mbits).toLocaleString(Qt.locale(), 'f', 0)+"MBit/s"
+        return qsTr("%1 MBit/s").arg(Number(mbits).toLocaleString(Qt.locale(), 'f', 0))
     }
 
     function get_text_bitrate_mcs(){
         if(m_curr_bitrate_kbits==-1 || m_curr_mcs_index==-1){
-            return "RATE N/A";
+            return qsTr("RATE N/A");
         }
-        return bitrate_kbits_readable(m_curr_bitrate_kbits)+" ["+m_curr_mcs_index+"]"
+        return qsTr("%1 [%2]").arg(bitrate_kbits_readable(m_curr_bitrate_kbits)).arg(m_curr_mcs_index)
     }
 
     function get_text_detailed_bitrate(){
         if(m_curr_bitrate_kbits<=0){
-            return "RATE N/A";
+            return qsTr("RATE N/A");
         }
         var ret=bitrate_kbits_readable(m_curr_bitrate_kbits);
         //if(m_curr_fine_adjustments>0){
         //    var fine_readable="-"+m_curr_fine_adjustments;
         //    ret+=fine_readable;
         //}
-        ret += (" ["+m_curr_mcs_index+"]");
-        return ret;
+        return qsTr("%1 [%2]").arg(ret).arg(m_curr_mcs_index);
     }
 
     function get_text_bitrate(){
@@ -131,19 +130,9 @@ BaseWidget {
 
 
     function get_text_fec_keyframe(){
-        var ret=""
-        if(m_curr_fec_perc==-1){
-            ret+="N/A"
-        }else{
-            ret+=m_curr_fec_perc+"%"
-        }
-        ret+="-"
-        if(m_curr_keyframe_i==-1){
-            ret+="N/A"
-        }else{
-            ret+= m_curr_keyframe_i;
-        }
-        return ret;
+        var fec = m_curr_fec_perc==-1 ? qsTr("N/A") : qsTr("%1%").arg(m_curr_fec_perc)
+        var keyframe = m_curr_keyframe_i==-1 ? qsTr("N/A") : m_curr_keyframe_i
+        return qsTr("%1-%2").arg(fec).arg(keyframe);
     }
 
     function set_keyframe_interval(interval){
@@ -158,7 +147,7 @@ BaseWidget {
 
     function set_channel_width_async(channel_width_mhz){
         if(!_ohdSystemAir.is_alive){
-            _hudLogMessagesModel.add_message_warning("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive");
+            _hudLogMessagesModel.add_message_warning(qsTr("Cannot change BW: %1 MHz, AIR not alive").arg(channel_width_mhz));
             return;
         }
         _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
@@ -182,30 +171,21 @@ BaseWidget {
         for(var i = 0; i < mcs_model.count; ++i) {
             if (mcs_model.get(i).value==mcs) return mcs_model.get(i).title
         }
-        return "MCS "+m_curr_mcs_index;
+        return qsTr("MCS %1").arg(m_curr_mcs_index);
     }
 
     function get_fec_keyframe_combobox_text(fec,keyframe){
         for(var i = 0; i < stability_model.count; ++i) {
             if (stability_model.get(i).value_fec==fec && stability_model.get(i).value_keyframe==keyframe) return stability_model.get(i).title
         }
-        return "FEC:"+fec+"% : KEY:"+keyframe+" ?";
+        return qsTr("FEC: %1% : KEY: %2 ?").arg(fec).arg(keyframe);
     }
 
-    property string m_DESCRIPTION_CHANNEL_WIDTH: "
-A higher bandwidth / 40Mhz channel width increases the bitrate significantly, but also increases interference and reduces the maximum range."+
-"It is recommended to use a 40Mhz channel width if possible,"+
-"and controll the MCS index for fine adjustments."
+    property string m_DESCRIPTION_CHANNEL_WIDTH: qsTr("A higher bandwidth / 40 MHz channel width increases the bitrate significantly, but also increases interference and reduces the maximum range. It is recommended to use a 40 MHz channel width if possible, and control the MCS index for fine adjustments.")
 
-    property string m_DESCRIPTION_MCS: "
-The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data."+
-"This means that with a lower MCS index, you have a much greater range (but less bitrate).If you want to, you can change this value using the RC channel switcher -"+
-"this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)"
+    property string m_DESCRIPTION_MCS: qsTr("The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data. This means that with a lower MCS index, you have a much greater range (but less bitrate). If you want to, you can change this value using the RC channel switcher - this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)")
 
-    property string m_DESCRIPTION_STABILITY: "
-Make the video more stable (less microfreezes) on the cost of less image quality."+
-"Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability"+
-"and works in most cases. Use CITY/POLLUTED on polluted channels,but it is always better to find a free channel."
+    property string m_DESCRIPTION_STABILITY: qsTr("Make the video more stable (less microfreezes) at the cost of less image quality. Internally, this changes the encode keyframe interval and/or FEC overhead in percent. DEFAULT is a good trade-off regarding image quality and stability and works in most cases. Use CITY/POLLUTED on polluted channels, but it is always better to find a free channel.")
 
     widgetDetailComponent: ScrollView {
 
@@ -331,7 +311,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
         Column {
         width: m_widget_action_w-32
         SmallHeaderInfoRow{
-            m_text: "Range vs Bitrate"
+            m_text: qsTr("Range vs Bitrate")
             m_info_text: m_DESCRIPTION_CHANNEL_WIDTH
         }
         Row{
@@ -339,7 +319,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
             height: m_row_height
             spacing: 20
             Button{
-                text: "20Mhz"
+                text: qsTr("20 MHz")
                 onClicked: {
                     set_channel_width_async(20)
                 }
@@ -347,7 +327,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 //enabled: _ohdSystemAir.is_alive;
             }
             Button{
-                text: "40Mhz"
+                text: qsTr("40 MHz")
                 onClicked: {
                     set_channel_width_async(40)
                 }
@@ -356,7 +336,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
             }
         }
         SmallHeaderInfoRow{
-            m_text: "Range vs Bitrate"
+            m_text: qsTr("Range vs Bitrate")
             m_info_text: m_DESCRIPTION_MCS
         }
         Row{
@@ -371,9 +351,12 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 textRole: "title"
                 currentIndex: -1
                 displayText: {
-                    if(!_ohdSystemAir.is_alive)return "AIR NOT ALIVE";
+                    if(!_ohdSystemAir.is_alive)return qsTr("AIR NOT ALIVE");
                     return get_mcs_combobox_text(m_curr_mcs_index);
                     //return "MCS "+m_curr_mcs_index+" / "+get_rate_for_mcs(m_curr_mcs_index,m_curr_channel_width==40)+" MBit/s"
+                }
+                delegate: ItemDelegate {
+                    text: model.title
                 }
                 onActivated: {
                     console.log("onActivated:"+currentIndex);
@@ -392,7 +375,7 @@ Make the video more stable (less microfreezes) on the cost of less image quality
             }
         }
         SmallHeaderInfoRow{
-            m_text: "Resiliency vs Bitrate"
+            m_text: qsTr("Resiliency vs Bitrate")
             m_info_text:m_DESCRIPTION_STABILITY
         }
         Row{
@@ -406,8 +389,11 @@ Make the video more stable (less microfreezes) on the cost of less image quality
                 textRole: "title"
                 currentIndex: -1
                 displayText: {
-                    if(!_ohdSystemAir.is_alive)return "AIR NOT ALIVE";
+                    if(!_ohdSystemAir.is_alive)return qsTr("AIR NOT ALIVE");
                     return get_fec_keyframe_combobox_text(m_curr_fec_perc,m_curr_keyframe_i)
+                }
+                delegate: ItemDelegate {
+                    text: model.title
                 }
                 onActivated: {
                     console.log("onActivated:"+currentIndex);

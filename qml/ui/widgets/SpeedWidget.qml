@@ -19,7 +19,7 @@ BaseWidget {
     defaultVCenter: true
 
     widgetIdentifier: "speed_widget"
-    bw_verbose_name: "SPEED"
+    bw_verbose_name: qsTr("SPEED")
 
     defaultHCenter: false
 
@@ -364,4 +364,3 @@ BaseWidget {
         }
     }
 }
-

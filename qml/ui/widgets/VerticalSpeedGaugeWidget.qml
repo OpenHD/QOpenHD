@@ -19,7 +19,7 @@ BaseWidget {
     visible: settings.show_vertical_speed_gauge_widget && settings.show_widgets
 
     widgetIdentifier: "vertical_speed_gauge_widget"
-    bw_verbose_name: "VERTICAL SPEED (CLIMB)"
+    bw_verbose_name: qsTr("VERTICAL SPEED (CLIMB)")
 
     function get_vertical_speed_m_s_or_ft_s(){
         if(settings.enable_imperial){

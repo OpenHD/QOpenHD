@@ -13,7 +13,7 @@ Item {
     Layout.fillWidth: true
     Layout.preferredHeight: 32
 
-    property string m_text: "FILL ME"
+    property string m_text: qsTr("FILL ME")
 
     // should be overridden by implementation
     signal closeButtonClicked();
@@ -31,7 +31,7 @@ Item {
     }
 
     Text{
-        text: qsTr(m_text)
+        text: m_text
         font.weight: Font.Bold
         font.pixelSize: 13
         anchors.leftMargin: 8
@@ -44,7 +44,7 @@ Item {
         anchors.top: parent.top
         anchors.right: parent.right
         id:closeButton
-        text: "X"
+        text: qsTr("X")
         height:42
         width:42
         background: Rectangle {

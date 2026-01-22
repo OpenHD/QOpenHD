@@ -18,7 +18,7 @@ BaseWidget {
     property bool m_is_for_primary_camera: true
 
     widgetIdentifier: m_is_for_primary_camera ? "bitrate_widget" : "bitrate_widget2"
-    bw_verbose_name: m_is_for_primary_camera ? "VIDEO BITRATE CAM1" : "VIDEO BITRATE CAM2"
+    bw_verbose_name: m_is_for_primary_camera ? qsTr("VIDEO BITRATE CAM1") : qsTr("VIDEO BITRATE CAM2")
 
     defaultAlignment: 1
     defaultXOffset: 224
@@ -71,55 +71,55 @@ BaseWidget {
         var camera_idx=m_is_for_primary_camera ? 0 : 1;
         console.log("try_set_recording_mode "+camera_idx+" "+mode)
         var camModel=_airCameraSettingsModel;
-        var camString="CAM1"
+        var camString=qsTr("CAM1")
         if(camera_idx===1){
             camModel=_airCameraSettingsModel2;
-            camString="CAM2"
+            camString=qsTr("CAM2")
         }
         if(!_ohdSystemAir.is_alive){
-            _hudLogMessagesModel.signalAddLogMessage(6,"Air unit not alive, cannot set recording for "+camString)
+            _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Air unit not alive, cannot set recording for %1").arg(camString))
             return;
         }
         if(mode===0){ //mode off
             var result=camModel.try_update_parameter_int("AIR_RECORDING_E",0)===""
             if(result){
-                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" disabled")
+                _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Recording %1 disabled").arg(camString))
                 m_camera_recording_mode=0;
             }else{
-                 _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
+                 _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Update %1 failed").arg(camString))
             }
         }
         if(mode===1){ //mode on
             var result=camModel.try_update_parameter_int("AIR_RECORDING_E",1)===""
             if(result){
-                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" enabled")
+                _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Recording %1 enabled").arg(camString))
                 m_camera_recording_mode=1;
             }else{
-                _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
+                _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Update %1 failed").arg(camString))
             }
         }
         if(mode==2){ //mode auto
             var result=camModel.try_update_parameter_int("AIR_RECORDING_E",2)===""
             if(result){
-                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" auto enabled")
+                _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Recording %1 auto enabled").arg(camString))
                 m_camera_recording_mode=2;
             }else{
-                 _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
+                 _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Update %1 failed").arg(camString))
             }
         }
     }
 
     ListModel{
         id: resolutions_model
-        ListElement {title: "480p@30fps  (4:3)"; value: "640x480@30"}
-        ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
-        ListElement {title: "480p@60fps  (16:9)"; value: "848x480@60"}
-        ListElement {title: "720p@49fps  (16:9)"; value: "1280x720@49"}
-        ListElement {title: "720p@60fps  (4:3)"; value: "960x720@60"}
-        ListElement {title: "720p@60fps  (16:9)"; value: "1280x720@60"}
-        ListElement {title: "1080p@30fps (16:9)"; value: "1920x1080@30"}
-        ListElement {title: "1080p@30fps (4:3)"; value: "1440x1080@30"}
-        ListElement {title: "1080p@49fps (4:3)"; value: "1440x1080@49"}
+        ListElement {title: qsTr("480p@30fps  (4:3)"); value: "640x480@30"}
+        ListElement {title: qsTr("480p@60fps  (4:3)"); value: "640x480@60"}
+        ListElement {title: qsTr("480p@60fps  (16:9)"); value: "848x480@60"}
+        ListElement {title: qsTr("720p@49fps  (16:9)"); value: "1280x720@49"}
+        ListElement {title: qsTr("720p@60fps  (4:3)"); value: "960x720@60"}
+        ListElement {title: qsTr("720p@60fps  (16:9)"); value: "1280x720@60"}
+        ListElement {title: qsTr("1080p@30fps (16:9)"); value: "1920x1080@30"}
+        ListElement {title: qsTr("1080p@30fps (4:3)"); value: "1440x1080@30"}
+        ListElement {title: qsTr("1080p@49fps (4:3)"); value: "1440x1080@49"}
     }
 
 
@@ -171,28 +171,28 @@ BaseWidget {
             SimpleLeftRightText{
                 m_left_text: qsTr("Status:")
                 m_right_text:  {
-                    if(!_ohdSystemAir.is_alive)return "no air";
+                    if(!_ohdSystemAir.is_alive)return qsTr("no air");
                     return _cameraStreamModelPrimary.camera_status_to_string(m_camera_stream_model.camera_status);
                 }
             }
             SimpleLeftRightText{
                 m_left_text: qsTr("Type:")
                 m_right_text: {
-                    if(!_ohdSystemAir.is_alive)return "n/a";
+                    if(!_ohdSystemAir.is_alive)return qsTr("N/A");
                     return _cameraStreamModelPrimary.camera_type_to_string(m_camera_stream_model.camera_type);
                 }
             }
             SimpleLeftRightText{
                 m_left_text: qsTr("Codec:")
                 m_right_text: {
-                    if(!_ohdSystemAir.is_alive)return "n/a";
+                    if(!_ohdSystemAir.is_alive)return qsTr("N/A");
                     return _cameraStreamModelPrimary.camera_codec_to_string(m_camera_stream_model.encoding_codec);
                 }
             }
             SimpleLeftRightText{
                 m_left_text: qsTr("Resolution:")
                 m_right_text: {
-                    if(!_ohdSystemAir.is_alive)return "RES@FPS N/A";
+                    if(!_ohdSystemAir.is_alive)return qsTr("RES@FPS N/A");
                     return m_curr_video_format;
                 }
             }
@@ -248,15 +248,15 @@ BaseWidget {
                     height: parent.height
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
-                    text: "AIR RECORDING"
+                    text: qsTr("AIR RECORDING")
                     color: "white"
                 }
             }
             SimpleLeftRightText{
                 m_left_text:  qsTr("FREE SPACE:")
                 m_right_text: {
-                    if(!_ohdSystemAir.is_alive)return "N/A";
-                    return _ohdSystemAir.curr_space_left_mb+" MB"
+                    if(!_ohdSystemAir.is_alive)return qsTr("N/A");
+                    return qsTr("%1 MB").arg(_ohdSystemAir.curr_space_left_mb)
                 }
                 m_right_text_color: {
                     if(!_ohdSystemAir.is_alive)return "white"
@@ -266,7 +266,7 @@ BaseWidget {
             SimpleLeftRightText{
                 m_left_text: qsTr("AIR RECORD:");
                 m_right_text: {
-                    if(!_ohdSystemAir.is_alive)return "N/A";
+                    if(!_ohdSystemAir.is_alive)return qsTr("N/A");
                     return _cameraStreamModelPrimary.camera_recording_mode_to_string(m_camera_stream_model.air_recording_active);
                 }
             }
@@ -281,21 +281,21 @@ BaseWidget {
                     rows: 1
                     columns: 3
                     Button{
-                        text: "OFF"
+                        text: qsTr("OFF")
                         onClicked: {
                             try_set_recording_mode(0)
                         }
                         highlighted: m_camera_recording_mode==0
                     }
                     Button{
-                        text: "ON"
+                        text: qsTr("ON")
                         onClicked: {
                             try_set_recording_mode(1)
                         }
                         highlighted: m_camera_recording_mode==1
                     }
                     Button{
-                        text: "AUTO"
+                        text: qsTr("AUTO")
                         onClicked: {
                             try_set_recording_mode(2)
                         }
@@ -308,7 +308,7 @@ BaseWidget {
                 height: 32
                 visible: m_show_button_quick_switch
                 Button{
-                    text: "Switch primary & secondary"
+                    text: qsTr("Switch primary & secondary")
                     onClicked: settings.qopenhd_switch_primary_secondary = !settings.qopenhd_switch_primary_secondary
                     highlighted: settings.qopenhd_switch_primary_secondary == true
                 }

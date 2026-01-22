@@ -48,7 +48,7 @@ Card {
     Text{
         width: parent.width
         height: parent.height
-        text: "QOpenHD"
+        text: qsTr("QOpenHD")
         font.pixelSize: 20
         anchors.centerIn: parent
         verticalAlignment: Qt.AlignVCenter

@@ -380,7 +380,7 @@ BaseWidget {
             y: 0
             width: 24
             height: 48
-            text: "QRS"
+            text: qsTr("QRS")
             anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"

@@ -19,7 +19,7 @@ BaseWidget {
     visible: _ohdSystemGround.curr_txc_temp_degree_1 > 5 && settings.show_widgets && settings.show_txc_temp_gnd
 
     widgetIdentifier: "Ground Transceiver Temperature"
-    bw_verbose_name: "GND_RCX_TEMP"
+    bw_verbose_name: qsTr("GND_RCX_TEMP")
     property real gndTemp1: _ohdSystemGround.curr_txc_temp_degree_1 
     property real gndTemp2: _ohdSystemGround.curr_txc_temp_degree_2
 
@@ -158,7 +158,7 @@ BaseWidget {
 
                 Text {
                     id: gndTemp1_text
-                    text: gndTemp1.toFixed(1) + "°C"
+                    text: qsTr("%1\u00B0C").arg(gndTemp1.toFixed(1))
                     font.pixelSize: tempGauge.normalizedSize * 0.3
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: gaugeCanvas.bottom
@@ -167,7 +167,7 @@ BaseWidget {
                 }
                 Text {
                     id: gndTemp2_text
-                    text: "[2]" + gndTemp2.toFixed(1) + "°C"
+                    text: qsTr("[%1] %2\u00B0C").arg(2).arg(gndTemp2.toFixed(1))
                     visible: gndTemp2!=0
                     font.pixelSize: tempGauge.normalizedSize * 0.2
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -181,4 +181,3 @@ BaseWidget {
         }
     }
 }
-

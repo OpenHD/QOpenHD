@@ -22,7 +22,7 @@ SOCStatusWidgetGeneric {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetIdentifier: "ground_status_widget"
-    bw_verbose_name: "CPU LOAD GND"
+    bw_verbose_name: qsTr("CPU LOAD GND")
 
     m_is_air: false
 }

@@ -48,19 +48,21 @@ Column {
     }
     function gnd_uplink_state_text(){
         var curr_gnd_uplink_state=gnd_uplink_state();
-        if(curr_gnd_uplink_state==0)return "N/A";
-        if(curr_gnd_uplink_state==1) return "OK";
-        return "ERROR";
+        if(curr_gnd_uplink_state==0)return qsTr("N/A");
+        if(curr_gnd_uplink_state==1) return qsTr("OK");
+        return qsTr("ERROR");
     }
 
     function get_text_qopenhd_openhd_ground_version_mismatch(){
-        var ret="Your version of QOpenHD ["+m_qopenhd_version+"] is incompatible with your ground station OpenHD version: ["+m_version+"]"+
-                "\nPlease update QOpenHD / your Ground station.";
+        var ret=qsTr("Your version of QOpenHD [%1] is incompatible with your ground station OpenHD version: [%2]\nPlease update QOpenHD / your Ground station.")
+                .arg(m_qopenhd_version)
+                .arg(m_version);
         return ret;
     }
     function get_text_openhd_air_ground_version_mismatch(){
-        var ret="Your version of OpenHD AIR ["+_ohdSystemAir.openhd_version+"] is incompatible with OpenHD GROUND: ["+_ohdSystemGround.openhd_version+"]"+
-                "\nPlease update your AIR / GROUND unit.";
+        var ret=qsTr("Your version of OpenHD AIR [%1] is incompatible with OpenHD GROUND: [%2]\nPlease update your AIR / GROUND unit.")
+                .arg(_ohdSystemAir.openhd_version)
+                .arg(_ohdSystemGround.openhd_version);
         return ret;
     }
 
@@ -113,29 +115,29 @@ Column {
 
             if (m_is_ground) {
                 if (!_ohdSystemGround.is_alive) {
-                    return "N/A"
+                    return qsTr("N/A")
                 }
                 var alive_count = get_gnd_active_cards()
                 if (alive_count === 0) {
-                    return "waiting"
+                    return qsTr("waiting")
                 }
                 if (alive_count === 1) {
                     return _wifi_card_gnd0.card_type_as_string
                 }
                 var pingStrGnd = pingToMsString(m_model.last_ping_result_openhd)
                 if (pingStrGnd !== "") {
-                    return alive_count + "x array " + pingStrGnd + " ms"
+                    return qsTr("%1x array %2 ms").arg(alive_count).arg(pingStrGnd)
                 } else {
-                    return alive_count + "x array"
+                    return qsTr("%1x array").arg(alive_count)
                 }
             } else {
                 if (!_wifi_card_air.alive) {
-                    return "n/a"
+                    return qsTr("N/A")
                 }
                 var pingStrAir = pingToMsString(m_model.last_ping_result_openhd)
                 var cardTypeStr = _wifi_card_air.card_type_as_string
                 if (pingStrAir !== "") {
-                    return cardTypeStr + " " + pingStrAir + " ms"
+                    return qsTr("%1 %2 ms").arg(cardTypeStr).arg(pingStrAir)
                 } else {
                     return cardTypeStr
                 }
@@ -157,7 +159,7 @@ Column {
         }
 
         m_error_text: {
-            var message = "Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. be warned !"
+            var message = qsTr("Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned.")
             return message
         }
 
@@ -179,30 +181,25 @@ Column {
     //     }
     // }
     StatusCardRow{
-        m_left_text: "Hidden:"
-        m_right_text: "No"
+        m_left_text: qsTr("Hidden:")
+        m_right_text: qsTr("No")
     }
     StatusCardRow{
         visible: !m_is_ground
-        m_left_text: "SysId:"
+        m_left_text: qsTr("SysId:")
         m_right_text: {
             var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
             if(air_fc_sys_id==-1){
-                return "NOT FOUND"
+                return qsTr("NOT FOUND")
             }
-            return "FOUND:"+air_fc_sys_id;
+            return qsTr("FOUND: %1").arg(air_fc_sys_id);
         }
         m_error_text: {
             var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
             if(air_fc_sys_id==-1){
-                return "Your AIR Unit cannot find your FC (UART). Please check:\n"+
-                        "1) Wiring\n"+
-                        "2) Right serial port enabled (OpenHD AIR param set)\n"+
-                        "3) MAVLINK selected on your FC uart";
+                return qsTr("Your AIR Unit cannot find your FC (UART). Please check:\n1) Wiring\n2) Right serial port enabled (OpenHD AIR param set)\n3) MAVLINK selected on your FC uart");
             }
-            return "Please make sure:\n"+
-                    "1) ARDUPILOT / PX4: FC sys id needs to be set to 1 (DEFAULT ARDUPILOT SYSID)\n"+
-                    "2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0";
+            return qsTr("Please make sure:\n1) ARDUPILOT / PX4: FC sys id needs to be set to 1 (DEFAULT ARDUPILOT SYSID)\n2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0");
         }
         m_has_error: {
             if(!_ohdSystemAir.is_alive)return false;
@@ -214,18 +211,18 @@ Column {
         m_error_view: true;
     }
     StatusCardRow{
-        m_left_text: "WiFi HS:"
+        m_left_text: qsTr("WiFi HS:")
         m_right_text: {
             if(!m_model.is_alive || m_model.wifi_hotspot_state<0){
-                return "N/A";
+                return qsTr("N/A");
             }
             if(m_model.wifi_hotspot_state==0){
-                return "UNAVAILABLE";
+                return qsTr("UNAVAILABLE");
             }
             if(m_model.wifi_hotspot_state==1){
-                return "DISABLED";
+                return qsTr("DISABLED");
             }
-            return "ENABLED";
+            return qsTr("ENABLED");
         }
         m_right_text_color: {
             if(m_right_text=="DISABLED" || m_right_text=="ENABLED"){
@@ -236,14 +233,14 @@ Column {
         m_right_text_color_error: "black";
         m_error_text: {
             if(m_model.wifi_hotspot_state==0){
-                var message="To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module. "
+                var message=qsTr("To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module.")
                 return message;
             }
             if(m_model.wifi_hotspot_state==1 || m_model.wifi_hotspot_state==2){
-                var message="WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on";
+                var message=qsTr("WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on");
                 return message;
             }
-            return "I should not appear";
+            return qsTr("I should not appear");
         }
         m_has_error: {
             return m_right_text=="UNAVAILABLE";
@@ -251,21 +248,21 @@ Column {
     }
     StatusCardRow{
         visible: m_is_ground;
-        m_left_text: "Shared:"
+        m_left_text: qsTr("Shared:")
         m_right_text: {
             if(_ohdSystemGround.external_devices_count<0){
-                return "No";
+                return qsTr("No");
             }
             if(_ohdSystemGround.external_devices_count==0){
-                return "Yes";
+                return qsTr("Yes");
             }
-            return _ohdSystemGround.external_devices_count+"x";
+            return qsTr("%1x").arg(_ohdSystemGround.external_devices_count);
         }
     }
     StatusCardRow{
         visible: false;
-        m_left_text: "Licence:"
-        m_right_text: "Community"
+        m_left_text: qsTr("License:")
+        m_right_text: qsTr("Community")
     }
 
     // Padding

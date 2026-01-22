@@ -40,15 +40,16 @@ Card {
     }
 
     function get_card_title_string(){
-        return "Frequency "+m_wanted_frequency+"Mhz"
+        return qsTr("Frequency %1 MHz").arg(m_wanted_frequency)
     }
 
     function get_card_body_string(){
         const channel_nr=_frequencyHelper.get_frequency_channel_nr(m_wanted_frequency);
         const channel_nr_openhd=_frequencyHelper.get_frequency_openhd_race_band(m_wanted_frequency);
         const channel_nr_openhd_licensed=_frequencyHelper.get_frequency_openhd_licensed_band(m_wanted_frequency);
-        return "Set AIR and GROUND to CHANNEL ["+channel_nr+"]\n"+
-                "("+m_wanted_frequency+" Mhz) ?";
+        return qsTr("Set AIR and GROUND to CHANNEL [%1]\n(%2 MHz) ?")
+            .arg(channel_nr)
+            .arg(m_wanted_frequency);
 
     }
 
@@ -73,7 +74,7 @@ Card {
             leftPadding: 12
             rightPadding: 12
             wrapMode: Text.WordWrap
-            text: "WARNING !\n CHANGING FREQUENCY WHILE ARMED IS NOT RECOMMENDED !";
+            text: qsTr("WARNING !\n CHANGING FREQUENCY WHILE ARMED IS NOT RECOMMENDED !");
             color: "red"
             visible: m_fc_is_armed
         }
@@ -86,7 +87,7 @@ Card {
 
             Button{
                 Layout.preferredWidth: 150
-                text: "CANCEL"
+                text: qsTr("CANCEL")
                 onPressed: {
                     dialoqueFreqChangeAirGnd.visible=false;
                 }
@@ -94,28 +95,28 @@ Card {
 
             Button{
                 Layout.preferredWidth: 150
-                text: "YES";
+                text: qsTr("YES");
                 Material.accent: m_fc_is_armed ?  Material.Red : Material.Grey
                 highlighted: m_fc_is_armed ? true : false;
 
                 onPressed: {
                     var result= _wbLinkSettingsHelper.change_param_air_and_ground_frequency(m_wanted_frequency);
                     if(result==0){
-                        _qopenhd.show_toast("SUCCESS");
+                        _qopenhd.show_toast(qsTr("SUCCESS"));
                         dialoqueFreqChangeAirGnd.visible=false;
                         return;
                     }else if(result==-1){
                         // Air unit rejected
-                        _qopenhd.show_toast("ERROR - AIR REJECTED");
+                        _qopenhd.show_toast(qsTr("ERROR - AIR REJECTED"));
                         return;
                     }else if(result==-2){
                         // Couldn't reach air unit
-                        var error_message_not_reachable="Couldn't reach air unit -";
-                        _qopenhd.show_toast("ERROR -COULDN'T REACH AIR");
+                        var error_message_not_reachable=qsTr("Couldn't reach air unit -");
+                        _qopenhd.show_toast(qsTr("ERROR -COULDN'T REACH AIR"));
                         return;
                     }
                     // Really really bad
-                    _messageBoxInstance.set_text_and_show("Something went wrong - please use 'FIND AIR UNIT' to fix");
+                    _messageBoxInstance.set_text_and_show(qsTr("Something went wrong - please use 'FIND AIR UNIT' to fix"));
                     dialoqueFreqChangeAirGnd.visible=false;
                 }
             }

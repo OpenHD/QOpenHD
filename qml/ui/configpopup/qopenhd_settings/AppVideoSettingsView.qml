@@ -30,8 +30,8 @@ ScrollView {
 
             ListModel {
                 id: itemsVideoCodec
-                ListElement { text: "H264"; }
-                ListElement { text: "H265";  }
+                ListElement { text: qsTr("H264"); }
+                ListElement { text: qsTr("H265");  }
             }
             SettingBaseElement{
                 m_short_description:  "Number of Cameras" //will be removed in the future, we just should autodetect it
@@ -232,9 +232,9 @@ ScrollView {
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                         anchors.verticalCenter: parent.verticalCenter
                         model: ListModel {
-                            ListElement { text: "UDP secondary port" }
-                            ListElement { text: "UDP primary port" }
-                            ListElement { text: "HTTP test clip" }
+                            ListElement { text: qsTr("UDP secondary port") }
+                            ListElement { text: qsTr("UDP primary port") }
+                            ListElement { text: qsTr("HTTP test clip") }
                         }
                         Component.onCompleted: {
                             if(settings.dev_secondary_video_input_mode < 0 || settings.dev_secondary_video_input_mode > 2){
@@ -291,9 +291,9 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.horizontalCenter: parent.horizonatalCenter
                         model: ListModel {
-                            ListElement { text: "DISABLE"; }
-                            ListElement { text: "RAW_VIDEO";  }
-                            ListElement { text: "RAW_DECODE_ENCODE"; }
+                            ListElement { text: qsTr("DISABLE"); }
+                            ListElement { text: qsTr("RAW_VIDEO");  }
+                            ListElement { text: qsTr("RAW_DECODE_ENCODE"); }
                         }
                         Component.onCompleted: {
                             // out of bounds checking

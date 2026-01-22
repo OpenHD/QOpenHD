@@ -547,7 +547,7 @@ Item {
     }
 
     Label{
-        text: "JOSTICK NAVIGATION ENABLED"
+        text: qsTr("JOYSTICK NAVIGATION ENABLED")
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 30

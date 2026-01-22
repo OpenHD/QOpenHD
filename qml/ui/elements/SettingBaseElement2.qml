@@ -89,7 +89,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
-        text: "EDIT";
+        text: qsTr("EDIT");
         enabled: m_enable_edit_button
         visible: m_show_edit_button
         onClicked: {

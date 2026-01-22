@@ -16,7 +16,7 @@ BaseWidget {
     visible: settings.show_flight_mode && settings.show_widgets
 
     widgetIdentifier: "flight_mode_widget"
-    bw_verbose_name: "FLIGHT MODE"
+    bw_verbose_name: qsTr("FLIGHT MODE")
 
     defaultAlignment: 3
     defaultHCenter: true
@@ -210,7 +210,7 @@ BaseWidget {
             width: parent.width
             color: settings.color_text
             opacity: bw_current_opacity
-            text: "DISARMED"
+            text: qsTr("DISARMED")
             anchors.bottom: parent.top
             anchors.left: parent.left
             bottomPadding: 5

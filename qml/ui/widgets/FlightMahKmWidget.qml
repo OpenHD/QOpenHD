@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_flight_mah_km && settings.show_widgets
 
     widgetIdentifier: "flight_mah_km_widget"
-    bw_verbose_name: "EFFICIENCY IN MAH/KM"
+    bw_verbose_name: qsTr("EFFICIENCY IN MAH/KM")
 
     defaultAlignment: 3
     defaultXOffset: 220

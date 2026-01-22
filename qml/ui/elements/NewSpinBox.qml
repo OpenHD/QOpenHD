@@ -110,7 +110,7 @@ SpinBox {
         }
 
         Text {
-            text: "+"
+            text: qsTr("+")
             anchors.centerIn: parent
             font.pixelSize: control.font.pixelSize * 2
             color: control.selected ? "black" : "grey"
@@ -142,7 +142,7 @@ SpinBox {
         }
 
         Text {
-            text: "-"
+            text: qsTr("-")
             anchors.centerIn: parent
             font.pixelSize: control.font.pixelSize * 2
             color: control.selected ? "black" : "grey"

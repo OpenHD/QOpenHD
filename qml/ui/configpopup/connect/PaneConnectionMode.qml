@@ -79,7 +79,7 @@ Rectangle{
 
     function applyTcpTarget(ip) {
         if (!_qopenhd.is_valid_ip(ip)) {
-            _qopenhd.show_toast("Please enter a valid ip")
+            _qopenhd.show_toast(qsTr("Please enter a valid ip"))
             return
         }
         textFieldip.text = ip
@@ -138,7 +138,7 @@ Rectangle{
                         Layout.fillWidth: true
                         spacing: 8
                         Text {
-                            text: "Connection mode"
+                            text: qsTr("Connection mode")
                             font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
                             font.bold: true
                             color: "#2d3436"
@@ -165,9 +165,9 @@ Rectangle{
                             id: connection_mode_dropdown
                             model: ListModel {
                                 id: font_text
-                                ListElement { text: "AUTO" }
-                                ListElement { text: "MANUAL UDP" }
-                                ListElement { text: "MANUAL TCP" }
+                                ListElement { text: qsTr("AUTO") }
+                                ListElement { text: qsTr("MANUAL UDP") }
+                                ListElement { text: qsTr("MANUAL TCP") }
                             }
                             onActivated: {
                                 if (currentIndex === 0 || currentIndex === 1 || currentIndex === 2) {
@@ -236,21 +236,19 @@ Rectangle{
                         spacing: 10
                         visible: showConnectionModeInfo
                         Button {
-                            text: "Android Tethering"
+                            text: qsTr("Android Tethering")
                             Layout.preferredWidth: m_prefered_width
                             Layout.alignment: Qt.AlignCenter
                             onClicked: {
                                 if (_qopenhd.is_android()) {
                                     _qopenhd.android_open_tethering_settings()
                                 } else {
-                                    _messageBoxInstance.set_text_and_show("This feature is only available on android")
+                                    _messageBoxInstance.set_text_and_show(qsTr("This feature is only available on android"))
                                 }
                             }
                         }
                         ButtonIconInfoText {
-                            m_info_text: "1) Connect via USB to ground station\n" +
-                                         "2) Enable tethering on your phone\n" +
-                                         "3) Open this app and start your ground station"
+                            m_info_text: qsTr("1) Connect via USB to ground station\n2) Enable tethering on your phone\n3) Open this app and start your ground station")
                         }
                     }
 
@@ -259,19 +257,15 @@ Rectangle{
                         spacing: 10
                         visible: showConnectionModeInfo
                         Button {
-                            text: "ETHERNET FORWARD+INTERNET"
+                            text: qsTr("ETHERNET FORWARD+INTERNET")
                             Layout.preferredWidth: m_prefered_width
                             Layout.alignment: Qt.AlignCenter
                             onClicked: {
-                                _qopenhd.show_toast("Please read info")
+                                _qopenhd.show_toast(qsTr("Please read info"))
                             }
                         }
                         ButtonIconInfoText {
-                            m_info_text: "1) Set ETHERNET to FORWARD+INTERNET\n" +
-                                         "2) Reboot ground\n" +
-                                         "3) Connect your external device (phone) to your ground station via ethernet.\n\n" +
-                                         "4) Select 'share my internet with ...' when the (android) connection setup pops up\n\n" +
-                                         "Video and telemetry forwarding is started automatically, internet will be forwarded from your phone."
+                            m_info_text: qsTr("1) Set ETHERNET to FORWARD+INTERNET\n2) Reboot ground\n3) Connect your external device (phone) to your ground station via ethernet.\n\n4) Select 'share my internet with ...' when the (android) connection setup pops up\n\nVideo and telemetry forwarding is started automatically, internet will be forwarded from your phone.")
                         }
                     }
 
@@ -280,19 +274,15 @@ Rectangle{
                         spacing: 10
                         visible: showConnectionModeInfo
                         Button {
-                            text: "ETHERNET HOTSPOT"
+                            text: qsTr("ETHERNET HOTSPOT")
                             Layout.preferredWidth: m_prefered_width
                             Layout.alignment: Qt.AlignCenter
                             onClicked: {
-                                _qopenhd.show_toast("Please read info")
+                                _qopenhd.show_toast(qsTr("Please read info"))
                             }
                         }
                         ButtonIconInfoText {
-                            m_info_text: "1) Set ETHERNET to HOTSPOT\n" +
-                                         "2) Reboot ground\n" +
-                                         "3) Connect your external device to your ground station via ethernet.\n\n" +
-                                         "You might need to disable wifi and cellular on your phone\n\n" +
-                                         "Video and telemetry forwarding should start automatically, internet will not be available."
+                            m_info_text: qsTr("1) Set ETHERNET to HOTSPOT\n2) Reboot ground\n3) Connect your external device to your ground station via ethernet.\n\nYou might need to disable wifi and cellular on your phone\n\nVideo and telemetry forwarding should start automatically, internet will not be available.")
                         }
                     }
                 }
@@ -339,7 +329,7 @@ Rectangle{
 
                     Text {
                         Layout.fillWidth: true
-                        text: "UDP PORT: 5600"
+                        text: qsTr("UDP PORT: %1").arg(5600)
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                         color: "#576574"
                     }
@@ -389,17 +379,17 @@ Rectangle{
                             }
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             text: settings.qopenhd_mavlink_connection_manual_tcp_ip
-                            placeholderText: "192.168.x.x"
+                            placeholderText: qsTr("192.168.x.x")
                         }
                         Button {
-                            text: "Save"
+                            text: qsTr("Save")
                             onClicked: applyTcpTarget(textFieldip.text)
                         }
                     }
 
                     Text {
                         Layout.fillWidth: true
-                        text: "TCP PORT: 5760"
+                        text: qsTr("TCP PORT: %1").arg(5760)
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                         color: "#576574"
                     }
@@ -414,13 +404,13 @@ Rectangle{
                         Layout.fillWidth: true
                         spacing: 8
                         Button {
-                            text: isScanning ? "Scanning..." : "Scan Ethernet for devices"
+                            text: isScanning ? qsTr("Scanning...") : qsTr("Scan Ethernet for devices")
                             enabled: !isScanning
                             Layout.preferredWidth: m_prefered_width + 40
                             onClicked: startScan()
                         }
                         Text {
-                            text: "Subnet: " + scanPrefix + ".x"
+                            text: qsTr("Subnet: %1.x").arg(scanPrefix)
                             color: "#7f8c8d"
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }
@@ -442,8 +432,8 @@ Rectangle{
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
                         text: scanResultsModel.count === 0 ?
-                                  (isScanning ? "Scanning for responsive hosts..." : "No devices discovered yet. Start a scan to look for ground stations.") :
-                                  "Tap an IP below to connect via TCP."
+                                  (isScanning ? qsTr("Scanning for responsive hosts...") : qsTr("No devices discovered yet. Start a scan to look for ground stations.")) :
+                                  qsTr("Tap an IP below to connect via TCP.")
                         color: "#7f8c8d"
                         font.pixelSize: settings.qopenhd_general_font_pixel_size
                     }
@@ -470,7 +460,7 @@ Rectangle{
                                     Layout.fillWidth: true
                                 }
                                 Button {
-                                    text: "Connect"
+                                    text: qsTr("Connect")
                                     onClicked: applyTcpTarget(ip)
                                 }
                             }

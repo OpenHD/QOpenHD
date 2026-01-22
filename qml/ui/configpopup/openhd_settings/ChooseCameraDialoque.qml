@@ -13,7 +13,7 @@ Card {
     height: 340
     z: 5.0
     anchors.centerIn: parent
-    cardName: "Camera Selection"
+    cardName: qsTr("Camera Selection")
     cardNameColor: "black"
     visible: false
 
@@ -58,9 +58,9 @@ Card {
              success=_airCameraSettingsModel.try_update_parameter_int("CAMERA_TYPE",openhd_core_cam_type)=="";
         }
         if(!success){
-            _qopenhd.show_toast("Cannot save, please try again");
+            _qopenhd.show_toast(qsTr("Cannot save, please try again"));
         }else{
-            _messageBoxInstance.set_text_and_show("Saved, rebooting air unit",10);
+            _messageBoxInstance.set_text_and_show(qsTr("Saved, rebooting air unit"),10);
             close();
         }
     }
@@ -68,11 +68,11 @@ Card {
     // The manufacturer model(s) don't need a value
     ListModel{
         id: model_manufacturers
-        ListElement {title: "DUMMY_MANUFACTURER"}
+        ListElement {title: qsTr("DUMMY_MANUFACTURER")}
     }
     ListModel{
         id: model_cameras_for_this_manufacturer
-        ListElement {title: "CAM TYPE"; value: 0}
+        ListElement {title: qsTr("CAM TYPE"); value: 0}
     }
 
     function initialize_and_show(){
@@ -145,7 +145,7 @@ Card {
         spacing: 10
         Text{
             width: 300
-            text: "Your AIR Platform: "+get_platform_name();
+            text: qsTr("Your AIR Platform: %1").arg(get_platform_name());
         }
         ComboBox {
             width: 300
@@ -171,7 +171,7 @@ Card {
         }
         Text{
             width: 300
-            text: "NOTE: Changing your camera automatically\nreboots your air unit";
+            text: qsTr("NOTE: Changing your camera automatically\nreboots your air unit");
             visible: button_save.enabled
             font.pixelSize: 13
 
@@ -193,7 +193,7 @@ Item {
 
             Button {
                 Layout.preferredWidth: 150
-                text: "CANCEL"
+                text: qsTr("CANCEL")
                 onPressed: {
                     close();
                 }
@@ -202,7 +202,7 @@ Item {
             Button {
                 id: button_save
                 Layout.preferredWidth: 150
-                text: "SAVE"
+                text: qsTr("SAVE")
                 onPressed: {
                     on_user_clicked_save();
                 }

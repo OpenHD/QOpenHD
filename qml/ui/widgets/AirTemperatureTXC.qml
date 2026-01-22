@@ -19,7 +19,7 @@ BaseWidget {
     visible: _ohdSystemAir.curr_txc_temp_degree_1 > 5 && settings.show_widgets && settings.show_txc_temp_air
 
     widgetIdentifier: "Air Transceiver Temperature"
-    bw_verbose_name: "AIR_RCX_TEMP"
+    bw_verbose_name: qsTr("AIR_RCX_TEMP")
     property real airTemp: _ohdSystemAir.curr_txc_temp_degree_1
 
     defaultAlignment: 1
@@ -148,4 +148,3 @@ BaseWidget {
         }
     }
 }
-

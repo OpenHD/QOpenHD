@@ -63,7 +63,7 @@ BaseWidget {
                 id: gpio1
                 width: parent.width
                 height: 32
-                text: "GPIO5"
+                text: qsTr("GPIO5")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -76,7 +76,7 @@ BaseWidget {
                 id: gpio2
                 width: parent.width
                 height: 32
-                text: "GPIO6"
+                text: qsTr("GPIO6")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -89,7 +89,7 @@ BaseWidget {
                 id: gpio3
                 width: parent.width
                 height: 32
-                text: "GPIO12"
+                text: qsTr("GPIO12")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -102,7 +102,7 @@ BaseWidget {
                 id: gpio4
                 width: parent.width
                 height: 32
-                text: "GPIO13"
+                text: qsTr("GPIO13")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -115,7 +115,7 @@ BaseWidget {
                 id: gpio5
                 width: parent.width
                 height: 32
-                text: "GPIO16"
+                text: qsTr("GPIO16")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -128,7 +128,7 @@ BaseWidget {
                 id: gpio6
                 width: parent.width
                 height: 32
-                text: "GPIO19"
+                text: qsTr("GPIO19")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -141,7 +141,7 @@ BaseWidget {
                 id: gpio7
                 width: parent.width
                 height: 32
-                text: "GPIO26"
+                text: qsTr("GPIO26")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -154,7 +154,7 @@ BaseWidget {
                 id: gpio8
                 width: parent.width
                 height: 32
-                text: "GPIO32"
+                text: qsTr("GPIO32")
                 boxColor: "white"
                 textColor: "white"
                 checkColor: "black"
@@ -173,7 +173,7 @@ BaseWidget {
             id: gpioIcon
             width: 64
             height: 64
-            text: "G"
+            text: qsTr("G")
             color: "white"
             anchors.left: parent.left
             anchors.leftMargin: 12

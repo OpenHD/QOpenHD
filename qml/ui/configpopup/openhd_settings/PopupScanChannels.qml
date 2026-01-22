@@ -16,10 +16,10 @@ import "../../elements"
 
 PopupBigGeneric{
     // Overwritten from parent
-    m_title:  "Find Air Unit"
+    m_title:  qsTr("Find Air Unit")
     onCloseButtonClicked: {
         if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 1) {
-            _qopenhd.show_toast("STILL SCANNING, PLEASE WAIT ...");
+            _qopenhd.show_toast(qsTr("STILL SCANNING, PLEASE WAIT ..."));
             return;
         }
         close()
@@ -38,9 +38,9 @@ PopupBigGeneric{
 
     ListModel{
         id: model_chann_to_scan
-        ListElement {title: "OpenHD [1-7] only"; value: 0}
-        ListElement {title: "All 2.4G channels"; value: 1}
-        ListElement {title: "All 5.8G channels"; value: 2}
+        ListElement {title: qsTr("OpenHD [1-7] only"); value: 0}
+        ListElement {title: qsTr("All 2.4G channels"); value: 1}
+        ListElement {title: qsTr("All 5.8G channels"); value: 2}
     }
 
     ColumnLayout{
@@ -57,7 +57,7 @@ PopupBigGeneric{
             id:channelSelectorRow
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Button{
-                text: "START"
+                text: qsTr("START")
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
                 onClicked: {
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
@@ -65,10 +65,10 @@ PopupBigGeneric{
                     console.log("Initate channel scan "+how_many_freq_bands+","+how_many_bandwidths)
                     var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands,how_many_bandwidths)
                     if(result){
-                        _qopenhd.show_toast("Channel scan started, please wait",true)
+                        _qopenhd.show_toast(qsTr("Channel scan started, please wait"),true)
                     }else{
                         console.log("Cannot initiate channel scan");
-                        _qopenhd.show_toast("Busy,please try again later",true)
+                        _qopenhd.show_toast(qsTr("Busy,please try again later"),true)
                     }
                 }
             }
@@ -89,10 +89,7 @@ PopupBigGeneric{
             ButtonIconInfo{
                 visible:false
                 onClicked: {
-                    _messageBoxInstance.set_text_and_show("Initiate Channel Scan (Find a running air unit). Similar to analogue TX / RX, this listens on each channel for a short time"+
-                                                          " to find a running openhd air unit."+
-                                                          "Quick if you are only using the 5 OpenHD recommended channels, otherwise"+
-                                                          " please specify the generic band and give it some time (There are a ton of possible channels, especially in 5.8G)")
+                    _messageBoxInstance.set_text_and_show(qsTr("Initiate Channel Scan (Find a running air unit). Similar to analogue TX / RX, this listens on each channel for a short time to find a running openhd air unit. Quick if you are only using the 5 OpenHD recommended channels, otherwise please specify the generic band and give it some time (There are a ton of possible channels, especially in 5.8G)"))
                 }
             }
         }

@@ -18,10 +18,10 @@ import QtCharts 2.15
 
 PopupBigGeneric{
     // Overwritten from parent
-    m_title: "Scan for clean Channels"
+    m_title: qsTr("Scan for clean Channels")
     onCloseButtonClicked: {
         if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 2) {
-            _qopenhd.show_toast("STILL ANALYZING, PLEASE WAIT ...");
+            _qopenhd.show_toast(qsTr("STILL ANALYZING, PLEASE WAIT ..."));
             return;
         }
         close()
@@ -46,14 +46,12 @@ PopupBigGeneric{
 
     ListModel{
         id: model_filter
-        ListElement {title: "OHD [1-7]"; value: 0}
-        ListElement {title: "All 2.4G"; value: 1}
-        ListElement {title: "All 5.8G"; value: 2}
+        ListElement {title: qsTr("OHD [1-7]"); value: 0}
+        ListElement {title: qsTr("All 2.4G"); value: 1}
+        ListElement {title: qsTr("All 5.8G"); value: 2}
     }
 
-    property string m_info_string: "Analyze channels for pollution by wifi access points.\n"+
-                                   "NOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended !\n"+
-                                   "In short: Any frequency with red bars (small or big) should not be used, unless there are no options / other reasons to do so."
+    property string m_info_string: qsTr("Analyze channels for pollution by wifi access points.\nNOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended !\nIn short: Any frequency with red bars (small or big) should not be used, unless there are no options / other reasons to do so.")
 
     ColumnLayout{
         id: main_layout
@@ -79,14 +77,14 @@ PopupBigGeneric{
             Layout.alignment: Qt.AlignHCenter
             Button{
                 id:startButton
-                text: "START"
+                text: qsTr("START")
                 onClicked: {
                     var how_many_freq_bands=comboBoxWhichFrequencyToAnalyze.currentIndex
                     var result=_wbLinkSettingsHelper.start_analyze_channels(how_many_freq_bands)
                     if(result!==true){
-                        _qopenhd.show_toast("Busy,please try again later",true);
+                        _qopenhd.show_toast(qsTr("Busy,please try again later"),true);
                     }else{
-                        _qopenhd.show_toast("STARTED, THIS MIGHT TAKE A WHILE !");
+                        _qopenhd.show_toast(qsTr("STARTED, THIS MIGHT TAKE A WHILE !"));
                     }
                 }
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
@@ -108,12 +106,12 @@ PopupBigGeneric{
                     m_normalize_data=checked
                     pollution_chart.update_pollution_graph();
                     if(m_normalize_data){
-                        _qopenhd.show_toast("WARNING: THIS VIEW CAN BE DECEIVING !");
+                        _qopenhd.show_toast(qsTr("WARNING: THIS VIEW CAN BE DECEIVING !"));
                     }
                 }
             }
             Text{
-                text: m_normalize_data ? "Relative" : "Absolute"
+                text: m_normalize_data ? qsTr("Relative") : qsTr("Absolute")
                 color: "#fff"
                 font.pixelSize: 18
                 verticalAlignment: Qt.AlignVCenter
@@ -138,7 +136,7 @@ PopupBigGeneric{
                 if(_wbLinkSettingsHelper.current_analyze_frequency<=0){
                     return "";
                 }
-                return "Analyzed "+_wbLinkSettingsHelper.current_analyze_frequency+" Mhz ...";
+                return qsTr("Analyzed %1 MHz ...").arg(_wbLinkSettingsHelper.current_analyze_frequency);
             }
         }
         ScrollView{
@@ -214,28 +212,28 @@ PopupBigGeneric{
                         max: 30
                         labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
                         CategoryRange {
-                            label: "perfect"
+                            label: qsTr("perfect")
                             endValue: 0
 
                         }
                         CategoryRange {
-                            label: "good"
+                            label: qsTr("good")
                             endValue: 10
 
                         }
                         CategoryRange {
-                            label: "medium"
+                            label: qsTr("medium")
                             endValue: 20
                         }
                         CategoryRange {
-                            label: "bad"
+                            label: qsTr("bad")
                             endValue: 30
                         }
                     }
                     BarSet {
                         id: bar_set
                         //label: m_normalize_data ? "Pollution estimate %" : "WiFiPollution estimate (pps)";
-                        label: "WiFi pollution estimate"
+                        label: qsTr("WiFi pollution estimate")
                         values: [5,10,3,100]
                         //values: [0,0,0,0]
                         color: "red"

@@ -17,7 +17,7 @@ BaseWidget {
     visible: settings.show_home_distance && settings.show_widgets
 
     widgetIdentifier: "home_distance_widget"
-    bw_verbose_name: "HOME DISTANCE"
+    bw_verbose_name: qsTr("HOME DISTANCE")
 
     defaultAlignment: 2
     defaultXOffset: 0
@@ -160,7 +160,7 @@ BaseWidget {
                 Button{
                     height:32
                     id: requestHomeButton
-                    text: "Request Home"
+                    text: qsTr("Request Home")
                     onClicked: {
                         _fcMavlinkAction.request_home_position_from_fc();
                     }

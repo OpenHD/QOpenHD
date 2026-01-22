@@ -26,7 +26,7 @@ ColumnLayout{
         height: 42
         Text {
             id: settings_title
-            text: qsTr(bw_verbose_name)
+            text: bw_verbose_name
             color: "white"
             height: parent.height - 10
             width: parent.width

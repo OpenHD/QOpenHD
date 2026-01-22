@@ -12,7 +12,7 @@ Item {
     // Filled with icon
     property string m_icon_text: "IC"
     // Filled with description
-    property string m_description_text: "DESCR"
+    property string m_description_text: qsTr("DESCR")
 
     // Stack layout element that should be shown when this element is selected
     property int m_selection_index: -1
@@ -50,7 +50,7 @@ Item {
             anchors.left: genericIcon.right
             anchors.leftMargin: 6
 
-            text: qsTr(m_description_text)
+            text: m_description_text
             font.pixelSize: 15
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter

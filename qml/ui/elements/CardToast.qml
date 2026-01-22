@@ -11,7 +11,7 @@ Item {
     id: card_toast
     z: 22.0
 
-    property string m_text: "FILL ME TEXT"
+    property string m_text: qsTr("FILL ME TEXT")
 
     width: parent.width
     height: parent.height

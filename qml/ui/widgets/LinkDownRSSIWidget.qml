@@ -19,7 +19,7 @@ BaseWidget {
     visible: settings.show_downlink_rssi && settings.show_widgets
 
     widgetIdentifier: "downlink_rssi_widget"
-    bw_verbose_name: "DOWNLINK/GND RSSI"
+    bw_verbose_name: qsTr("DOWNLINK/GND RSSI")
 
     defaultAlignment: 0
     defaultXOffset: 20
@@ -302,7 +302,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks lost: "+_cameraStreamModelPrimary.count_blocks_lost
+                text: qsTr("Blocks lost: %1").arg(_cameraStreamModelPrimary.count_blocks_lost)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -311,7 +311,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks recovered: "+_cameraStreamModelPrimary.count_blocks_recovered;
+                text: qsTr("Blocks recovered: %1").arg(_cameraStreamModelPrimary.count_blocks_recovered)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -320,7 +320,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Fragments recovered: "+_cameraStreamModelPrimary.count_fragments_recovered;
+                text: qsTr("Fragments recovered: %1").arg(_cameraStreamModelPrimary.count_fragments_recovered)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -329,7 +329,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "AIR TX: "+_ohdSystemAir.tx_packets_per_second_and_bits_per_second
+                text: qsTr("AIR TX: %1").arg(_ohdSystemAir.tx_packets_per_second_and_bits_per_second)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -338,7 +338,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "AIR TX tele: "+_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second;
+                text: qsTr("AIR TX tele: %1").arg(_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -347,7 +347,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "AIR TX video0: "+_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second;
+                text: qsTr("AIR TX video0: %1").arg(_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -356,7 +356,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "AIR RX: "+_ohdSystemAir.rx_packets_per_second_and_bits_per_second
+                text: qsTr("AIR RX: %1").arg(_ohdSystemAir.rx_packets_per_second_and_bits_per_second)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -365,7 +365,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "TX PWR Air: "+_wifi_card_air.tx_power +" "+ _wifi_card_air.tx_power_unit;
+                text: qsTr("TX PWR Air: %1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -469,7 +469,7 @@ BaseWidget {
             spacing:0
             Text {
                 visible: true
-                text: "Loss: " + m_packet_loss_perc+"%"
+                text: qsTr("Loss: %1%").arg(m_packet_loss_perc)
                 color: warning_level_to_color(get_packet_loss_perc_warning_level())
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -482,7 +482,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_pollution_show
-                text: settings.downlink_pollution_show? ("Pollution: "+_ohdSystemGround.wb_link_curr_foreign_pps+ " pps") : ""
+                text: settings.downlink_pollution_show ? qsTr("Pollution: %1 pps").arg(_ohdSystemGround.wb_link_curr_foreign_pps) : ""
                 color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -495,7 +495,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_signal_quality_show
-                text: settings.downlink_signal_quality_show ? ("Quality: "+_ohdSystemGround.current_rx_signal_quality+ "%") : ""
+                text: settings.downlink_signal_quality_show ? qsTr("Quality: %1%").arg(_ohdSystemGround.current_rx_signal_quality) : ""
                 color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -508,7 +508,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_show_received_injected_packets ? true : false
-                text: "TX: " + Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+                text: qsTr("TX: %1").arg(Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -521,7 +521,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_show_received_injected_packets ? true : false
-                text: "RX: " + Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+                text: qsTr("RX: %1").arg(Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

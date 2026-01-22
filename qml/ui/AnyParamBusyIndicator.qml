@@ -33,17 +33,17 @@ Item{
             if(_qopenhd.is_busy){
                 return _qopenhd.busy_reason;
             }
-            var busy_param="ERROR"
+            var busy_param = qsTr("ERROR")
             if(_airCameraSettingsModel.ui_is_busy){
-                busy_param="CAM1";
+                busy_param = qsTr("CAM1");
             }else if(_airCameraSettingsModel2.ui_is_busy){
-                busy_param="CAM2";
+                busy_param = qsTr("CAM2");
             }else if(_ohdSystemAirSettingsModel.ui_is_busy){
-               busy_param="AIR";
+               busy_param = qsTr("AIR");
             }else if(_ohdSystemGroundSettings.ui_is_busy){
-                busy_param="GND";
+                busy_param = qsTr("GND");
             }
-            return busy_param+" PARAM BUSY ...";
+            return qsTr("%1 PARAM BUSY ...").arg(busy_param);
         }
         visible: any_param_busy_indiscator.running
         font.pixelSize: text_font_pixel_size
@@ -65,7 +65,7 @@ Item{
         id: cam_busy_description
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: cam_busy_indicator.bottom
-        text: "Restarting Camera ..."
+        text: qsTr("Restarting Camera ...")
         visible: cam_busy_indicator.running
         font.pixelSize: text_font_pixel_size
         color: "green"

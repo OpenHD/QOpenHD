@@ -13,7 +13,7 @@ Card {
     height: 340
     z: 5.0
     anchors.centerIn: parent
-    cardName: "Resolution Selection"
+    cardName: qsTr("Resolution Selection")
     cardNameColor: "black"
     visible: false
 
@@ -28,9 +28,9 @@ Card {
     ListModel{
         id: resolutions_model
         // NOTE: elements are overridden when we know the camera
-        ListElement {title: "480p@60fps  (4:3)"; value: "640x480@60"}
-        ListElement {title: "720p@60fps  (16:9)"; value: "1280x720@60"}
-        ListElement {title: "1080p@30fps (16:9)"; value: "1920x1080@30"}
+        ListElement {title: qsTr("480p@60fps  (4:3)"); value: "640x480@60"}
+        ListElement {title: qsTr("720p@60fps  (16:9)"); value: "1280x720@60"}
+        ListElement {title: qsTr("1080p@30fps (16:9)"); value: "1920x1080@30"}
     }
 
     function close(){
@@ -97,11 +97,11 @@ Card {
         padding: 10
         Text{
             width: 200
-            text: "Your Camera: "+m_cam_type_as_string;
+            text: qsTr("Your Camera: %1").arg(m_cam_type_as_string);
         }
         Text{
             width: 200
-            text: "Default Resolution: "+m_default_resolution_fps
+            text: qsTr("Default Resolution: %1").arg(m_default_resolution_fps)
         }
         ComboBox {
             width: 300
@@ -118,7 +118,7 @@ Card {
             TextInput{
                 //width: 300
                 id: text_input_cameras
-                text: "WIDTHxHEIGHT@FPS"
+                text: qsTr("WIDTHxHEIGHT@FPS")
                 visible: advanced_checkbox.checked
                 maximumLength: 13 //3840x2160@200 | 13 chars
                 font.pixelSize: 20
@@ -147,14 +147,14 @@ Card {
             ButtonIconInfo{
                 visible: text_input_cameras.visible
                 onClicked: {
-                    _messageBoxInstance.set_text_and_show("You can enter any (UNCHECKED !) resolution@fps you like here.")
+                    _messageBoxInstance.set_text_and_show(qsTr("You can enter any (UNCHECKED !) resolution@fps you like here."))
                 }
             }
         }
         // Toggles between text and drop down input
         CheckBox{
             id: advanced_checkbox
-            text: "experiment"
+            text: qsTr("experiment")
         }
     }
     hasFooter: true
@@ -167,14 +167,14 @@ Card {
 
             Button {
                 Layout.preferredWidth: 150
-                text: "CANCEL"
+                text: qsTr("CANCEL")
                 onPressed: {
                     close();
                 }
             }
             Button{
                 Layout.preferredWidth: 150
-                text: "SAVE"
+                text: qsTr("SAVE")
                 onPressed: {
                     var success=false;
                     const selected_res_fps=get_user_selected_resolution();
@@ -185,10 +185,10 @@ Card {
                         success=_airCameraSettingsModel.try_update_parameter_string("RESOLUTION_FPS",selected_res_fps)===""
                     }
                     if(success){
-                        _messageBoxInstance.set_text_and_show("Saved "+selected_res_fps);
+                        _messageBoxInstance.set_text_and_show(qsTr("Saved %1").arg(selected_res_fps));
                         close();
                     }else{
-                        _messageBoxInstance.set_text_and_show("Failed,please try again");
+                        _messageBoxInstance.set_text_and_show(qsTr("Failed,please try again"));
                     }
                 }
                 enabled: {

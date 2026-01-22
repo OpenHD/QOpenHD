@@ -40,7 +40,7 @@ ScrollView {
                     Text{
                         Layout.alignment: Qt.AlignLeft
                         //text: "PRESETS\nColor/Font"
-                        text: "Presets Color/Font"
+                        text: qsTr("Presets Color/Font")
                         font.weight: Font.Bold
                         font.pixelSize: 13
                     }
@@ -49,7 +49,7 @@ ScrollView {
                         Layout.fillHeight: true
                     }
                     Button{
-                        text: "Matrix"
+                        text: qsTr("Matrix")
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
@@ -63,7 +63,7 @@ ScrollView {
                         }
                     }
                     Button{
-                        text: "Trainwreck"
+                        text: qsTr("Trainwreck")
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
@@ -77,7 +77,7 @@ ScrollView {
                         }
                     }
                     Button{
-                        text: "RESET"
+                        text: qsTr("RESET")
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10

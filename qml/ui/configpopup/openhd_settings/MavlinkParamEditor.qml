@@ -241,7 +241,7 @@ Rectangle{
     // This button closes the param editor
     Button{
         id:exit_button
-        text: "x"
+        text: qsTr("x")
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.topMargin: 5
@@ -280,7 +280,7 @@ Rectangle{
 
         Label{
             height: customHeight
-            text: "Parameter editor"
+            text: qsTr("Parameter editor")
             color: "white"
             font.bold: true
             font.pixelSize: 18
@@ -303,7 +303,7 @@ Rectangle{
             height:customHeight
             Layout.alignment: Qt.AlignCenter
             color: "white"
-            text: "Description not availble"
+            text: qsTr("Description not availble")
             visible: !m_has_param_description
         }
 
@@ -336,7 +336,7 @@ Rectangle{
         // The best example is the typical yes/no, or uart1,uart2,uart3,...
         ListModel{
             id: intEnumDynamicListModel
-            ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
+            ListElement {title: qsTr("I SHOULD NEVER APPEAR"); value: 0}
         }
         ComboBox {
             id: intEnumDynamicComboBox
@@ -356,7 +356,7 @@ Rectangle{
         // if we have a mapping / pre-selected recommended choices
         ListModel{
             id: stringEnumDynamicListModel
-            ListElement {title: "I SHOULD NEVER APPEAR"; value:"ERROR"}
+            ListElement {title: qsTr("I SHOULD NEVER APPEAR"); value:"ERROR"}
         }
 
         ComboBox {
@@ -412,7 +412,7 @@ Rectangle{
             Layout.alignment: Qt.AlignHCenter
 
             Button{
-                text: "Advanced"
+                text: qsTr("Advanced")
                 visible: settings.dev_show_advanced_button
                 Layout.alignment: Qt.AlignLeft
                 onClicked: {
@@ -424,7 +424,7 @@ Rectangle{
                 enabled: !instanceMavlinkSettingsModel.ui_is_busy
             }
             Button{
-                text: "Save"
+                text: qsTr("Save")
                 Layout.alignment: Qt.AlignRight
                 onClicked: {
                     var res="";

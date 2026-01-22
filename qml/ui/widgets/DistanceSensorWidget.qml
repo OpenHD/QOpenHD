@@ -20,7 +20,7 @@ BaseWidget {
     visible: settings.show_distance_sensor_widget && settings.show_widgets
 
     widgetIdentifier: "distance_sensor_widget"
-    bw_verbose_name: "DISTANCE SENSOR"
+    bw_verbose_name: qsTr("DISTANCE SENSOR")
 
     hasWidgetDetail: true
 

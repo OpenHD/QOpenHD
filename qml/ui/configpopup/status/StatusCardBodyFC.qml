@@ -18,7 +18,7 @@ Column {
 
     property bool m_is_alive: _fcMavlinkSystem.is_alive
     function get_alive_text(){
-        return m_is_alive ? "Yes" : "No"
+        return m_is_alive ? qsTr("Yes") : qsTr("No")
     }
     function get_alive_text_color(){
         //return m_is_alive ? "green" : "red"
@@ -48,7 +48,7 @@ Column {
 
     StatusCardRow{
         m_left_text: qsTr("SysID:")
-        m_right_text: _fcMavlinkSystem.for_osd_sys_id == -1 ? "N/A" : qsTr(""+_fcMavlinkSystem.for_osd_sys_id)
+        m_right_text: _fcMavlinkSystem.for_osd_sys_id == -1 ? qsTr("N/A") : String(_fcMavlinkSystem.for_osd_sys_id)
     }
     // Padding
     Item{

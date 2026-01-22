@@ -16,7 +16,7 @@ BaseWidget {
     visible: settings.show_rc_rssi && settings.show_widgets
 
     widgetIdentifier: "rc_rssi_widget"
-    bw_verbose_name: "RC RSSI"
+    bw_verbose_name: qsTr("RC RSSI")
 
     defaultAlignment: 1
     defaultXOffset: 12

@@ -35,7 +35,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "Raphael"
+                    text: qsTr("Raphael")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"
@@ -84,7 +84,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "Max"
+                    text: qsTr("Max")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"
@@ -132,7 +132,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "Former Developers"
+                    text: qsTr("Former Developers")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"
@@ -171,7 +171,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "Honorable Mentions"
+                    text: qsTr("Honorable Mentions")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "white"
@@ -208,7 +208,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "Thomas"
+                    text: qsTr("Thomas")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"
@@ -256,7 +256,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "Pete"
+                    text: qsTr("Pete")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"
@@ -304,7 +304,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: "You ?"
+                    text: qsTr("You ?")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"

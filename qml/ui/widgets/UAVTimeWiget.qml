@@ -22,7 +22,7 @@ BaseWidget {
     visible: settings.show_time_widget && settings.show_widgets
 
     widgetIdentifier: "timer_widget"
-    bw_verbose_name: "GPS TIME"
+    bw_verbose_name: qsTr("GPS TIME")
 
     hasWidgetDetail: true
 

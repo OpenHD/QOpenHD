@@ -207,7 +207,7 @@ ScrollView {
                 width: parent.width
                 Text {
                     id: simplePopupHackText
-                    text: "Do you really want to erase all your QOpenHD settings?"
+                    text: qsTr("Do you really want to erase all your QOpenHD settings?")
                     width: parent.width-24
                     height:parent.height
                     leftPadding: 12

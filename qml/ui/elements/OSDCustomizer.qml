@@ -176,7 +176,7 @@ Rectangle {
 
                 Text {
                     id: fontBoxDescription
-                    text: "Font"
+                    text: qsTr("Font")
                     height: 20
                     color: settings.color_text
                     font.bold: true

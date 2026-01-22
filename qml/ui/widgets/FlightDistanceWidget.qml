@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_flight_distance && settings.show_widgets
 
     widgetIdentifier: "flight_distance_widget"
-    bw_verbose_name: "TOTAL FLIGHT DISTANCE"
+    bw_verbose_name: qsTr("TOTAL FLIGHT DISTANCE")
 
     defaultAlignment: 2
     defaultXOffset: 100

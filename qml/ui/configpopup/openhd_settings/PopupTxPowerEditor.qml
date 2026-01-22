@@ -119,39 +119,39 @@ PopupBigGeneric{
     // Should never show up !
     ListModel{
         id: model_manufacturer_unknown_chipset
-        ListElement {title: "Unknown chipset"; value: -1}
+        ListElement {title: qsTr("Unknown chipset"); value: -1}
     }
     ListModel{
         id: model_error
-        ListElement {title: "ERROR"; value: -1}
+        ListElement {title: qsTr("ERROR"); value: -1}
     }
 
     ListModel{
         id: model_rtl8812au_manufacturers
-        ListElement {title: "Please Select"; value: -1}
-        ListElement {title: "AC56/AWUS036ACH [RTL88XXAU]"; value: 0}
-        ListElement {title: "AC180 [RTL88XXAU]"; value: 1}
-        ListElement {title: "OpenHD HW [RTL88XXAU]"; value: 2}
-        ListElement {title: "OTHER [RTL88XXAU]"; value: 3}
+        ListElement {title: qsTr("Please Select"); value: -1}
+        ListElement {title: qsTr("AC56/AWUS036ACH [RTL88XXAU]"); value: 0}
+        ListElement {title: qsTr("AC180 [RTL88XXAU]"); value: 1}
+        ListElement {title: qsTr("OpenHD HW [RTL88XXAU]"); value: 2}
+        ListElement {title: qsTr("OTHER [RTL88XXAU]"); value: 3}
     }
     ListModel{
         id: model_rtl8812bu_manufacturers
-        ListElement {title: "Please Select"; value: -1}
-        ListElement {title: "COMFAST [RTL88XXBU]"; value: 0}
-        ListElement {title: "OTHER [RTL88XXBU]"; value: 1}
+        ListElement {title: qsTr("Please Select"); value: -1}
+        ListElement {title: qsTr("COMFAST [RTL88XXBU]"); value: 0}
+        ListElement {title: qsTr("OTHER [RTL88XXBU]"); value: 1}
     }
         ListModel{
         id: model_rtl8812eu_manufacturers
-        ListElement {title: "Please Select"; value: -1}
-        ListElement {title: "LB-Link [RTL88XXEU]"; value: 0}
-        ListElement {title: "OpenHD [RTL88XXEU]"; value: 1}
-        ListElement {title: "OTHER [RTL88XXEU]"; value: 2}
+        ListElement {title: qsTr("Please Select"); value: -1}
+        ListElement {title: qsTr("LB-Link [RTL88XXEU]"); value: 0}
+        ListElement {title: qsTr("OpenHD [RTL88XXEU]"); value: 1}
+        ListElement {title: qsTr("OTHER [RTL88XXEU]"); value: 2}
     }        
         ListModel{
         id: model_qualcomm_manufacturers
-        ListElement {title: "Please Select"; value: -1}
-        ListElement {title: "Coretronic"; value: 0}
-        ListElement {title: "OTHER"; value: 1}
+        ListElement {title: qsTr("Please Select"); value: -1}
+        ListElement {title: qsTr("Coretronic"); value: 0}
+        ListElement {title: qsTr("OTHER"); value: 1}
     }
 
     function get_model_manufacturer_for_chip_type(){
@@ -171,106 +171,106 @@ PopupBigGeneric{
     // TX power choices for each chipset / manufacturer
     ListModel{
         id: model_rtl8812au_manufacturer_asus_txpower
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "LOW    [10] ~5mW (DEFAULT)  "; value: 10}
-        ListElement {title: "LOW    [22] ~20mW           "; value: 22}
-        ListElement {title: "MEDIUM [37] ~100mW          "; value: 37}
-        ListElement {title: "HIGH   [53] ~320mW          "; value: 53}
-        ListElement {title: "MAX1   [58] ~420mW (MCS<=2!)"; value: 58}
-        ListElement {title: "MAX2   [63] ~500mW (MCS<=2!)"; value: 63}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("LOW    [10] ~5mW (DEFAULT)  "); value: 10}
+        ListElement {title: qsTr("LOW    [22] ~20mW           "); value: 22}
+        ListElement {title: qsTr("MEDIUM [37] ~100mW          "); value: 37}
+        ListElement {title: qsTr("HIGH   [53] ~320mW          "); value: 53}
+        ListElement {title: qsTr("MAX1   [58] ~420mW (MCS<=2!)"); value: 58}
+        ListElement {title: qsTr("MAX2   [63] ~500mW (MCS<=2!)"); value: 63}
     }
     ListModel{
         id: model_rtl8812au_manufacturer_aliexpress_hp
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "LOW    [10]"; value: 10}
-        ListElement {title: "LOW    [16]"; value: 16}
-        ListElement {title: "MEDIUM [22]"; value: 22}
-        ListElement {title: "HIGH   [24]"; value: 24}
-        ListElement {title: "MAX    [26]"; value: 26}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("LOW    [10]"); value: 10}
+        ListElement {title: qsTr("LOW    [16]"); value: 16}
+        ListElement {title: qsTr("MEDIUM [22]"); value: 22}
+        ListElement {title: qsTr("HIGH   [24]"); value: 24}
+        ListElement {title: qsTr("MAX    [26]"); value: 26}
     }
     ListModel{
         id: model_rtl8812au_manufacturer_openhd
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "HIGH PWR  [1]"; value: 1}
-        ListElement {title: "HIGH PWR  [5]"; value: 5}
-        ListElement {title: "HIGH PWR  [10]"; value: 10}
-        ListElement {title: "HIGH PWR  [15]"; value: 15}
-        ListElement {title: "HIGH PWR  [20]"; value: 20}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("HIGH PWR  [1]"); value: 1}
+        ListElement {title: qsTr("HIGH PWR  [5]"); value: 5}
+        ListElement {title: qsTr("HIGH PWR  [10]"); value: 10}
+        ListElement {title: qsTr("HIGH PWR  [15]"); value: 15}
+        ListElement {title: qsTr("HIGH PWR  [20]"); value: 20}
     }
     ListModel{
         id: model_rtl8812au_manufacturer_generic
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "[10] (TX Power Level)"; value: 10}
-        ListElement {title: "[22] (TX Power Level)"; value: 22}
-        ListElement {title: "[30] (TX Power Level)"; value: 30}
-        ListElement {title: "[37] (TX Power Level)"; value: 37}
-        ListElement {title: "[53] (TX Power Level)"; value: 53}
-        ListElement {title: "[58] (TX Power Level)"; value: 58}
-        ListElement {title: "[63] (TX Power Level)"; value: 63}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("[10] (TX Power Level)"); value: 10}
+        ListElement {title: qsTr("[22] (TX Power Level)"); value: 22}
+        ListElement {title: qsTr("[30] (TX Power Level)"); value: 30}
+        ListElement {title: qsTr("[37] (TX Power Level)"); value: 37}
+        ListElement {title: qsTr("[53] (TX Power Level)"); value: 53}
+        ListElement {title: qsTr("[58] (TX Power Level)"); value: 58}
+        ListElement {title: qsTr("[63] (TX Power Level)"); value: 63}
     }
     // RTL8812BU begin
     ListModel{
         id: model_rtl8812bu_manufacturer_comfast
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "~25mW"; value: 25}
-        ListElement {title: "~100mW"; value: 100}
-        ListElement {title: "~200mW"; value: 200}
-        ListElement {title: "~300mW"; value: 300}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("~25mW"); value: 25}
+        ListElement {title: qsTr("~100mW"); value: 100}
+        ListElement {title: qsTr("~200mW"); value: 200}
+        ListElement {title: qsTr("~300mW"); value: 300}
     }
     ListModel{
         id: model_rtl8812bu_manufacturer_generic
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "25mW (maybe)"; value: 25}
-        ListElement {title: "100mW (maybe)"; value: 100}
-        ListElement {title: "<=300mW (maybe)"; value: 300}
-        ListElement {title: "<=1000mW (maybe)"; value: 1000}
-        ListElement {title: "<=20000mW (maybe)"; value: 2000}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("25mW (maybe)"); value: 25}
+        ListElement {title: qsTr("100mW (maybe)"); value: 100}
+        ListElement {title: qsTr("<=300mW (maybe)"); value: 300}
+        ListElement {title: qsTr("<=1000mW (maybe)"); value: 1000}
+        ListElement {title: qsTr("<=20000mW (maybe)"); value: 2000}
     }
    //RTL8812EU begin
     ListModel{
         id: model_rtl8812eu_manufacturer_lb_link
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "~25mW"; value: 25}
-        ListElement {title: "~100mW"; value: 100}
-        ListElement {title: "~300mW"; value: 300}
-        ListElement {title: "~500mW"; value: 500}
-        ListElement {title: "~800mW"; value: 800}
-        ListElement {title: "~1000mW"; value: 1000}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("~25mW"); value: 25}
+        ListElement {title: qsTr("~100mW"); value: 100}
+        ListElement {title: qsTr("~300mW"); value: 300}
+        ListElement {title: qsTr("~500mW"); value: 500}
+        ListElement {title: qsTr("~800mW"); value: 800}
+        ListElement {title: qsTr("~1000mW"); value: 1000}
     }
     ListModel{
         id: model_rtl8812eu_manufacturer_openhd
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "~25mW"; value: 25}
-        ListElement {title: "~100mW"; value: 100}
-        ListElement {title: "~300mW"; value: 300}
-        ListElement {title: "~500mW"; value: 500}
-        ListElement {title: "~800mW"; value: 800}
-        ListElement {title: "~1000mW"; value: 1000}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("~25mW"); value: 25}
+        ListElement {title: qsTr("~100mW"); value: 100}
+        ListElement {title: qsTr("~300mW"); value: 300}
+        ListElement {title: qsTr("~500mW"); value: 500}
+        ListElement {title: qsTr("~800mW"); value: 800}
+        ListElement {title: qsTr("~1000mW"); value: 1000}
     }
         ListModel{
         id: model_rtl8812eu_manufacturer_generic
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "~25mW"; value: 25}
-        ListElement {title: "~100mW"; value: 100}
-        ListElement {title: "~300mW"; value: 300}
-        ListElement {title: "~500mW"; value: 500}
-        ListElement {title: "~800mW"; value: 800}
-        ListElement {title: "~1000mW"; value: 1000}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("~25mW"); value: 25}
+        ListElement {title: qsTr("~100mW"); value: 100}
+        ListElement {title: qsTr("~300mW"); value: 300}
+        ListElement {title: qsTr("~500mW"); value: 500}
+        ListElement {title: qsTr("~800mW"); value: 800}
+        ListElement {title: qsTr("~1000mW"); value: 1000}
     }
     //QUALCOMM begin
     ListModel{
         id: model_qualcomm_manufacturer_coretronic
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "~30mw"; value: 30}
-        ListElement {title: "~100mW"; value: 100}
-        ListElement {title: "~200mW"; value: 200}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("~30mw"); value: 30}
+        ListElement {title: qsTr("~100mW"); value: 100}
+        ListElement {title: qsTr("~200mW"); value: 200}
     }
     ListModel{
         id: model_qualcomm_manufacturer_generic
-        ListElement {title: "Please select"; value: -1}
-        ListElement {title: "~30mw"; value: 30}
-        ListElement {title: "~100mW"; value: 100}
-        ListElement {title: "~200mW"; value: 200}
+        ListElement {title: qsTr("Please select"); value: -1}
+        ListElement {title: qsTr("~30mw"); value: 30}
+        ListElement {title: qsTr("~100mW"); value: 100}
+        ListElement {title: qsTr("~200mW"); value: 200}
     }
 
     // Such that we can copy and add the extra value for "NOT ENABLED"
@@ -330,7 +330,7 @@ PopupBigGeneric{
             for(var i = 0; i < ret.count; ++i){
                 model_txpower_for_chip_type_manufacturer_armed.insert(i,ret.get(i));
             }
-            model_txpower_for_chip_type_manufacturer_armed.insert(1,{title: "Snyncronised with Disarmed", value: 0});
+model_txpower_for_chip_type_manufacturer_armed.insert(1,{title: qsTr("Snyncronised with Disarmed"), value: 0});
             return model_txpower_for_chip_type_manufacturer_armed;
         }
         return ret;
@@ -407,11 +407,11 @@ PopupBigGeneric{
                         Layout.minimumWidth: 180
                         Layout.preferredWidth: 480
                         model: ListModel {
-                            ListElement { text: "All Cards (Global)"; value: -1 }
-                            ListElement { text: "Card 0"; value: 0 }
-                            ListElement { text: "Card 1"; value: 1 }
-                            ListElement { text: "Card 2"; value: 2 }
-                            ListElement { text: "Card 3"; value: 3 }
+                            ListElement { text: qsTr("All Cards (Global)"); value: -1 }
+                            ListElement { text: qsTr("Card 0"); value: 0 }
+                            ListElement { text: qsTr("Card 1"); value: 1 }
+                            ListElement { text: qsTr("Card 2"); value: 2 }
+                            ListElement { text: qsTr("Card 3"); value: 3 }
                         }
                         textRole: "text"
                         onActivated: {
@@ -448,7 +448,7 @@ PopupBigGeneric{
                     Button {
                         id:saveButton
                         width:200
-                        text: "SAVE Disarmed "
+            text: qsTr("SAVE Disarmed ")
                         enabled: m_user_selected_card_manufacturer >= 0;
                         onClicked: {
                             var tx_power_index_or_mw = combo_box_txpower_disarmed.model.get(combo_box_txpower_disarmed.currentIndex).value;
@@ -483,7 +483,7 @@ PopupBigGeneric{
                 RowLayout {
                     Layout.fillWidth: true
                     Button {
-                        text: "    SAVE Armed    "
+            text: qsTr("    SAVE Armed    ")
                         enabled: m_user_selected_card_manufacturer >= 0;
                         onClicked: {
                             isSynced=true;
@@ -521,7 +521,7 @@ PopupBigGeneric{
                         Text {
                             Layout.fillWidth: true
                             Layout.minimumHeight: 50
-                            text: "Disarmed: ";
+            text: qsTr("Disarmed: ");
                             color: "black"
                             wrapMode: Text.WordWrap
                             verticalAlignment: Qt.AlignVCenter
@@ -538,7 +538,7 @@ PopupBigGeneric{
                         Text {
                             Layout.fillWidth: true
                             Layout.minimumHeight: 50
-                            text: "      ";
+            text: qsTr("      ");
                             color: "black"
                             wrapMode: Text.WordWrap
                             verticalAlignment: Qt.AlignVCenter
@@ -546,7 +546,7 @@ PopupBigGeneric{
                         Text {
                             Layout.fillWidth: true
                             Layout.minimumHeight: 50
-                            text: "Armed: ";
+            text: qsTr("Armed: ");
                             color: "black"
                             wrapMode: Text.WordWrap
                             verticalAlignment: Qt.AlignVCenter
@@ -576,7 +576,7 @@ PopupBigGeneric{
         Text{
             Layout.fillWidth: true
             Layout.minimumHeight: 50
-            text: "Caution: Not all cards are designed to handle high power levels.\n Excessive power may lead to card damage";
+            text: qsTr("Caution: Not all cards are designed to handle high power levels.\n Excessive power may lead to card damage");
             color: "white"
             //style: Text.Outline
             //styleColor: "black"
@@ -587,7 +587,7 @@ PopupBigGeneric{
         }
         Text{
             Layout.fillWidth: true
-            text: "WARNING: ARMING WILL REDUCE YOUR TX POWER"
+            text: qsTr("WARNING: ARMING WILL REDUCE YOUR TX POWER")
             //visible: true
             visible: {
                 var txpower_disarmed=get_current_tx_power_int(1);

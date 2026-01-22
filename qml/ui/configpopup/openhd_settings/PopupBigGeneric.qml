@@ -30,7 +30,7 @@ Rectangle{
     color: "#333c4c"
 
     // These should be overridden by implementation !
-    property string m_title: "FILL ME"
+    property string m_title: qsTr("FILL ME")
     signal closeButtonClicked();
 
     property int dirty_top_margin_for_implementation: 40
@@ -55,7 +55,7 @@ Rectangle{
         }
 
         Text{
-            text: qsTr(m_title)
+            text: m_title
             font.weight: Font.Bold
             font.pixelSize: 13
             anchors.fill: parent
@@ -67,7 +67,7 @@ Rectangle{
             anchors.right: parent.right
             anchors.rightMargin: 2
             id:closeButton
-            text: "X"
+            text: qsTr("X")
             height: parent.height
             width: parent.height
             background: Rectangle {

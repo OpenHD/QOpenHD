@@ -15,7 +15,7 @@ BaseWidget {
     visible: settings.show_performance_horizon && settings.show_widgets
 
     widgetIdentifier: "horizon_performance2"
-    bw_verbose_name: "ARTIFICIAL HORIZON 2"
+    bw_verbose_name: qsTr("ARTIFICIAL HORIZON 2")
 
     defaultHCenter: true
     defaultVCenter: true

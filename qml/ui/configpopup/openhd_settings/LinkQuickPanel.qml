@@ -111,7 +111,7 @@ Rectangle{
 
     ListModel{
         id: frequencies_model
-        ListElement {title: "Unknown"; value_frequency_mhz:-1}
+        ListElement {title: qsTr("Unknown"); value_frequency_mhz:-1}
     }
 
     function create_list_models_frequency(){
@@ -171,11 +171,15 @@ Rectangle{
 
     function get_text_stbc_ldpc(air){
         if(air){
-            if(!_ohdSystemAir.is_alive)return "N/A";
-            return ""+(_ohdSystemAir.wb_stbc_enabled ? "YES" : "NO")+"/"+(_ohdSystemAir.wb_lpdc_enabled ? "YES" : "NO");
+            if(!_ohdSystemAir.is_alive)return qsTr("N/A");
+            return qsTr("%1/%2")
+                .arg(_ohdSystemAir.wb_stbc_enabled ? qsTr("YES") : qsTr("NO"))
+                .arg(_ohdSystemAir.wb_lpdc_enabled ? qsTr("YES") : qsTr("NO"));
         }
-        if(!_ohdSystemGround.is_alive)return "N/A";
-        return ""+(_ohdSystemGround.wb_stbc_enabled ? "YES" : "NO")+"/"+(_ohdSystemGround.wb_lpdc_enabled ? "YES" : "NO");
+        if(!_ohdSystemGround.is_alive)return qsTr("N/A");
+        return qsTr("%1/%2")
+            .arg(_ohdSystemGround.wb_stbc_enabled ? qsTr("YES") : qsTr("NO"))
+            .arg(_ohdSystemGround.wb_lpdc_enabled ? qsTr("YES") : qsTr("NO"));
     }
 
     Component.onCompleted: {
@@ -187,11 +191,11 @@ Rectangle{
 
     function get_text_wifi_tx_power(air){
         if(air){
-            if(!_wifi_card_air.alive) return "N/A";
-            return ""+_wifi_card_air.tx_power+" "+_wifi_card_air.tx_power_unit;
+            if(!_wifi_card_air.alive) return qsTr("N/A");
+            return qsTr("%1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit);
         }
-        if(!_wifi_card_gnd0.alive) return "N/A";
-        return ""+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit;
+        if(!_wifi_card_gnd0.alive) return qsTr("N/A");
+        return qsTr("%1 %2").arg(_wifi_card_gnd0.tx_power).arg(_wifi_card_gnd0.tx_power_unit);
     }
 
     ScrollView {
@@ -261,7 +265,7 @@ Rectangle{
                                 const frequency_mhz=comboBoxFreq.model.get(currentIndex).value_frequency_mhz
                                 console.log("Selected frequency: "+frequency_mhz);
                                 if(!_frequencyHelper.hw_supports_frequency_threadsafe(frequency_mhz)){
-                                    _qopenhd.show_toast("your HW does not support "+frequency_mhz+" Mhz");
+                                    _qopenhd.show_toast(qsTr("your HW does not support %1 MHz").arg(frequency_mhz));
                                     return;
                                 }
                                 if(_wbLinkSettingsHelper.curr_channel_mhz==frequency_mhz){
@@ -269,7 +273,7 @@ Rectangle{
                                     return;
                                 }
                                 if(!_ohdSystemAir.is_alive){
-                                    var error_message_not_alive="AIR Unit not alive -"
+                                    var error_message_not_alive=qsTr("AIR Unit not alive -")
                                     dialoqueFreqChangeGndOnly.initialize_and_show_frequency(frequency_mhz,error_message_not_alive);
                                     return;
                                 }
@@ -290,11 +294,11 @@ Rectangle{
                                 }
                             }
                             TabButton {
-                                text: "OpenHD"
+                                text: qsTr("OpenHD")
                                 font.capitalization: Font.MixedCase
                             }
                             TabButton {
-                                text: "2.4G"
+                                text: qsTr("2.4G")
                                 enabled: {
                                     if (_ohdSystemAir.is_alive && _ohdSystemAir.ohd_platform_type == 30) {
                                         // X20 does not support 2.4G
@@ -304,11 +308,11 @@ Rectangle{
                                 }
                             }
                             TabButton {
-                                text: "5.8G"
+                                text: qsTr("5.8G")
                             }
                             enabled: comboBoxFreq.enabled
                             TabButton {
-                                text: "Custom"
+                                text: qsTr("Custom")
                                 font.capitalization: Font.MixedCase
                                 visible: settings.dev_show_5180mhz_lowband
                             }
@@ -332,7 +336,7 @@ Rectangle{
                         Button{
                             width:  150
                             id: b_find_air_unit
-                            text: "SCAN"
+                            text: qsTr("SCAN")
                             enabled: _ohdSystemGround.is_alive
                             onClicked: {
                                 close_all_dialoques();
@@ -362,7 +366,7 @@ Rectangle{
                         }
                         Button{
                             width:  150
-                            text: "ANALYZE"
+                            text: qsTr("ANALYZE")
                             enabled: _ohdSystemGround.is_alive
                             onClicked: {
                                 close_all_dialoques();
@@ -376,7 +380,7 @@ Rectangle{
                             width:  m_small_width
                             height: m_small_height
                             text:{
-                                "LOSS:\n"+_ohdSystemGround.curr_rx_packet_loss_perc+"%"
+                                qsTr("LOSS:\n%1%").arg(_ohdSystemGround.curr_rx_packet_loss_perc)
                             }
                             color: _ohdSystemGround.curr_rx_packet_loss_perc > 5 ? "red" : "black"
                             verticalAlignment: Qt.AlignVCenter
@@ -400,7 +404,7 @@ Rectangle{
                             width:  m_small_width
                             height: m_small_height
                             text: {
-                                return "TX ERRORS:\n"+_cameraStreamModelPrimary.total_n_tx_dropped_frames
+                                return qsTr("TX ERRORS:\n%1").arg(_cameraStreamModelPrimary.total_n_tx_dropped_frames)
                             }
                             color: _ohdSystemGround.wb_link_curr_foreign_pps > 20 ? "red" : "black"
                             verticalAlignment: Qt.AlignVCenter
@@ -432,21 +436,21 @@ Rectangle{
                 }
 
                 SettingsCategory{
-                    m_description: "TX POWER";
+                    m_description: qsTr("TX POWER");
                     m_hide_elements: false;
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
                         Text{
                             width:  m_small_width
                             height: m_small_height
-                            text: "AIR:\n "+get_text_wifi_tx_power(true)
+                            text: qsTr("AIR:\n %1").arg(get_text_wifi_tx_power(true))
                             verticalAlignment: Qt.AlignVCenter
                             horizontalAlignment: Qt.AlignHCenter
                             font.bold: false
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }
                         Button{
-                            text: "EDIT"
+                            text: qsTr("EDIT")
                             enabled: _ohdSystemAir.is_alive
                             //enabled: true
                             onClicked: {
@@ -458,14 +462,14 @@ Rectangle{
                         Text{
                             width:  m_small_width
                             height: m_small_height
-                            text: "GND:\n"+get_text_wifi_tx_power(false)
+                            text: qsTr("GND:\n%1").arg(get_text_wifi_tx_power(false))
                             verticalAlignment: Qt.AlignVCenter
                             horizontalAlignment: Qt.AlignHCenter
                             font.bold: false
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }
                         Button{
-                            text: "EDIT"
+                            text: qsTr("EDIT")
                             enabled: _ohdSystemGround.is_alive
                             //enabled: true
                             onClicked: {
@@ -479,7 +483,7 @@ Rectangle{
                 }
 
                 SettingsCategory{
-                    m_description: "RETRANSMISSION";
+                    m_description: qsTr("RETRANSMISSION");
                     m_hide_elements: false;
                     Column{
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -489,7 +493,7 @@ Rectangle{
                             Text{
                                 width:  m_small_width
                                 height: m_small_height
-                                text: "VIDEO"
+                                text: qsTr("VIDEO")
                                 verticalAlignment: Qt.AlignVCenter
                                 horizontalAlignment: Qt.AlignHCenter
                                 font.bold: false
@@ -508,7 +512,7 @@ Rectangle{
                             Text{
                                 width:  m_small_width
                                 height: m_small_height
-                                text: "TELEMETRY"
+                                text: qsTr("TELEMETRY")
                                 verticalAlignment: Qt.AlignVCenter
                                 horizontalAlignment: Qt.AlignHCenter
                                 font.bold: false
@@ -527,7 +531,7 @@ Rectangle{
                             Text{
                                 width:  m_small_width
                                 height: m_small_height
-                                text: "RC"
+                                text: qsTr("RC")
                                 verticalAlignment: Qt.AlignVCenter
                                 horizontalAlignment: Qt.AlignHCenter
                                 font.bold: false
@@ -546,7 +550,7 @@ Rectangle{
                             Text{
                                 width:  m_small_width
                                 height: m_small_height
-                                text: "VIDEO\nMAX MS"
+                                text: qsTr("VIDEO\nMAX MS")
                                 verticalAlignment: Qt.AlignVCenter
                                 horizontalAlignment: Qt.AlignHCenter
                                 font.bold: false
@@ -568,7 +572,7 @@ Rectangle{
                             Text{
                                 width:  m_small_width
                                 height: m_small_height
-                                text: "TELEM\nMAX MS"
+                                text: qsTr("TELEM\nMAX MS")
                                 verticalAlignment: Qt.AlignVCenter
                                 horizontalAlignment: Qt.AlignHCenter
                                 font.bold: false
@@ -590,7 +594,7 @@ Rectangle{
                             Text{
                                 width:  m_small_width
                                 height: m_small_height
-                                text: "RC\nMAX MS"
+                                text: qsTr("RC\nMAX MS")
                                 verticalAlignment: Qt.AlignVCenter
                                 horizontalAlignment: Qt.AlignHCenter
                                 font.bold: false
@@ -612,7 +616,7 @@ Rectangle{
                             Text{
                                 width:  m_small_width
                                 height: m_small_height
-                                text: "REQ\nRETRIES"
+                                text: qsTr("REQ\nRETRIES")
                                 verticalAlignment: Qt.AlignVCenter
                                 horizontalAlignment: Qt.AlignHCenter
                                 font.bold: false
@@ -633,14 +637,14 @@ Rectangle{
                 }
 
                 SettingsCategory{
-                    m_description: "ADVANCED (STBC,LDPC)"
+                    m_description: qsTr("ADVANCED (STBC,LDPC)")
                     m_hide_elements: false;
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
                         Text{
                             width:  m_small_width
                             height: m_small_height
-                            text: "AIR:\n"+get_text_stbc_ldpc(true);
+                            text: qsTr("AIR:\n%1").arg(get_text_stbc_ldpc(true))
                             verticalAlignment: Qt.AlignVCenter
                             horizontalAlignment: Qt.AlignHCenter
                             font.bold: false
@@ -649,14 +653,14 @@ Rectangle{
                         Text{
                             width:  m_small_width
                             height: m_small_height
-                            text: "GND:\n"+get_text_stbc_ldpc(false);
+                            text: qsTr("GND:\n%1").arg(get_text_stbc_ldpc(false))
                             verticalAlignment: Qt.AlignVCenter
                             horizontalAlignment: Qt.AlignHCenter
                             font.bold: false
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }
                         Button{
-                            text: "EDIT";
+                            text: qsTr("EDIT");
                             //enabled: true
                             enabled: _ohdSystemAir.is_alive && _ohdSystemGround.is_alive && (_wbLinkSettingsHelper.ui_rebuild_models>=0) &&
                                      (_ohdSystemGround.wb_stbc_enabled!=true || _ohdSystemGround.wb_lpdc_enabled!=true || _ohdSystemAir.wb_stbc_enabled!=true || _ohdSystemAir.wb_lpdc_enabled!=true);

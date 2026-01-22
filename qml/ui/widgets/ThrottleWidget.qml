@@ -22,7 +22,7 @@ BaseWidget {
     visible: settings.show_throttle && settings.show_widgets
 
     widgetIdentifier: "throttle_widget"
-    bw_verbose_name: "THROTTLE"
+    bw_verbose_name: qsTr("THROTTLE")
 
     defaultAlignment: 2
     defaultXOffset: 96
@@ -73,7 +73,7 @@ BaseWidget {
             Item {
                 height: 32
                 Text {
-                    text: "Only For Ardupilot/PX4/inav"
+                    text: qsTr("Only For Ardupilot/PX4/inav")
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
@@ -167,7 +167,7 @@ BaseWidget {
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: qsTr("throttle")
+                text: qsTr("Throttle")
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom

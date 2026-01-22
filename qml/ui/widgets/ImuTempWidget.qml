@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_imu_temp && settings.show_widgets
 
     widgetIdentifier: "imu_temp_widget"
-    bw_verbose_name: "IMU TEMPERATURE"
+    bw_verbose_name: qsTr("IMU TEMPERATURE")
 
     defaultAlignment: 1
     defaultXOffset: 27

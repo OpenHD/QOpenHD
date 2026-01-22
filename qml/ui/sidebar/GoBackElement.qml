@@ -22,7 +22,7 @@ Item{
         opacity: go_back_element.focus ? 1.0 : 0.3;
     }
     Text{
-         text: "BACK"
+        text: qsTr("BACK")
          color: "white"
          verticalAlignment: Qt.AlignVCenter
          horizontalAlignment: Qt.AlignHCenter

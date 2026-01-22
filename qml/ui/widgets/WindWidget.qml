@@ -23,7 +23,7 @@
         visible: settings.show_wind && settings.show_widgets
 
         widgetIdentifier: "wind_widget"
-        bw_verbose_name: "WIND"
+        bw_verbose_name: qsTr("WIND")
 
         defaultAlignment: 3
         defaultXOffset: 6

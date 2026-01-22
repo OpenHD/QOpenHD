@@ -5,8 +5,8 @@ Item {
     //height: 24
     height: 20
 
-    property string m_left_text: "FILL ME"
-    property string m_right_text: "FILL ME"
+    property string m_left_text: qsTr("FILL ME")
+    property string m_right_text: qsTr("FILL ME")
 
     property color m_right_text_color: "white"
 

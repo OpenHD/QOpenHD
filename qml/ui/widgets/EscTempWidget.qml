@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_esc_temp && settings.show_widgets
 
     widgetIdentifier: "esc_temp_widget"
-    bw_verbose_name: "ESC TEMPERATURE"
+    bw_verbose_name: qsTr("ESC TEMPERATURE")
 
     defaultAlignment: 1
     defaultXOffset: 90
@@ -193,4 +193,3 @@ BaseWidget {
         }
     }
 }
-

@@ -19,7 +19,7 @@ BaseWidgetForm {
     // Used to uniquely identify persistent settings for this widget. Should only contain lowercase letters and "_" (aka no blank space, extra characters and more)
     property string widgetIdentifier
     // Shown to the user as a more verbose description of what this widget does
-    property string bw_verbose_name: "PLS FILL ME"
+    property string bw_verbose_name: qsTr("PLS FILL ME")
 
     // Show a "hand" icon to let the user know where to touch to drag the widget around.
     // Only used by "MAP" right now (to my knowledge)

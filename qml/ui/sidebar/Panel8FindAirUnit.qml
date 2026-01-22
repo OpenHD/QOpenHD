@@ -76,7 +76,7 @@ Button {
     id: startButton
     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
     Layout.preferredWidth: 250
-    text: "START SCAN"
+            text: qsTr("START SCAN")
     enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
     hoverEnabled: true
 

@@ -19,7 +19,7 @@ BaseWidget {
     visible: settings.show_mission && settings.show_widgets
 
     widgetIdentifier: "mission_widget"
-    bw_verbose_name: "MISSIONS"
+    bw_verbose_name: qsTr("MISSIONS")
 
     defaultAlignment: 2
     defaultXOffset: 50
@@ -56,7 +56,7 @@ BaseWidget {
             Item {
                 height: 32
                 Text {
-                    text: "Only For Ardupilot/PX4"
+                    text: qsTr("Only For Ardupilot/PX4")
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
@@ -77,7 +77,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: qsTr(_fcMavlinkMissionHandler.mission_waypoints_current+"/"+_fcMavlinkMissionHandler.mission_waypoints_current_total)
+                    text: _fcMavlinkMissionHandler.mission_waypoints_current + "/" + _fcMavlinkMissionHandler.mission_waypoints_current_total
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -99,7 +99,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: qsTr(_fcMavlinkMissionHandler.mission_current_type)
+                    text: _fcMavlinkMissionHandler.mission_current_type
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -121,7 +121,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: qsTr(_fcMavlinkMissionHandler.current_status)
+                    text: _fcMavlinkMissionHandler.current_status
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -134,7 +134,7 @@ BaseWidget {
                 width: parent.width
                 height: 20
                 Button{
-                    text: "RESYNC";
+                    text: qsTr("RESYNC");
                     onClicked: {
                         _fcMavlinkMissionHandler.resync()
                     }
@@ -159,8 +159,7 @@ BaseWidget {
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: qsTr(
-                          "Mission") + ": " + qsTr(_fcMavlinkMissionHandler.mission_waypoints_current+"/"+_fcMavlinkMissionHandler.mission_waypoints_current_total)
+                text: qsTr("Mission: %1").arg(_fcMavlinkMissionHandler.mission_waypoints_current + "/" + _fcMavlinkMissionHandler.mission_waypoints_current_total)
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom

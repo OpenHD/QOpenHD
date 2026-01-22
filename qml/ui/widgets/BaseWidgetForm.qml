@@ -331,7 +331,7 @@ Rectangle {
                     anchors.top: parent.top
                     anchors.bottom: vCenter.top
 
-                    text: "Horizontal Center"
+                text: qsTr("Horizontal Center")
 
                     // @disable-check M223
                     Component.onCompleted: {
@@ -390,7 +390,7 @@ Rectangle {
                     anchors.top: hCenter.bottom
                     anchors.bottom: parent.bottom
 
-                    text: "Vertical Center"
+                text: qsTr("Vertical Center")
 
                     // @disable-check M223
                     Component.onCompleted: {

@@ -92,7 +92,7 @@ Rectangle {
             enabled: m_instanceCheckIsAvlie.is_alive && (!m_any_param_busy)
         }
         Text{
-            text: "FULL "+m_name+" PARAM SET"
+            text: qsTr("FULL %1 PARAM SET").arg(m_name)
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
@@ -187,10 +187,10 @@ Rectangle {
                     onClicked: {
                         var text = model.shortDescription
                         if(text==="TODO"){
-                            text = "This parameter is not documented yet";
+                            text = qsTr("This parameter is not documented yet");
                          }
                         if(model.read_only){
-                            text ="This parameter is read-only (cannot be edited)\n"+text;
+                            text = qsTr("This parameter is read-only (cannot be edited)\n%1").arg(text);
                         }
                         _messageBoxInstance.set_text_and_show(text)
                     }
@@ -222,7 +222,7 @@ Rectangle {
                     id: warning_whitelisted
                     anchors.verticalCenter: parent.verticalCenter
                     onClicked: {
-                        _messageBoxInstance.set_text_and_show("This param is whitelisted (You should not edit it from here / editing can break things))")
+                        _messageBoxInstance.set_text_and_show(qsTr("This param is whitelisted (You should not edit it from here / editing can break things))"))
                     }
                     visible: model.whitelisted
                 }
@@ -268,7 +268,7 @@ Rectangle {
             visible: !m_instanceMavlinkSettingsModel.has_params_fetched && m_instanceCheckIsAvlie.is_alive
             Text{
                 anchors.centerIn: parent
-                text: "Please fetch";
+                text: qsTr("Please fetch");
                 font.bold: true
             }
         }

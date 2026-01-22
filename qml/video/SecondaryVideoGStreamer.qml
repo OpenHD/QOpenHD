@@ -79,9 +79,9 @@ Item {
         anchors.fill: video_holder
         text: {
             if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
-                return "WAITING FOR\nSECONDARY VIDEO";
+                return qsTr("WAITING FOR\nSECONDARY VIDEO");
             }
-            return "SECONDARY VIEO\nNOT AVAILABLE\nON THIS PLATFORM";
+            return qsTr("SECONDARY VIDEO\nNOT AVAILABLE\nON THIS PLATFORM");
         }
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
@@ -195,7 +195,7 @@ Item {
                     Layout.fillWidth: true
                     Text{
                         width: 100
-                        text: "Minimized Width (px)"
+                        text: qsTr("Minimized Width (px)")
                     }
                     SpinBox {
                         stepSize: 1
@@ -212,7 +212,7 @@ Item {
                     Layout.fillWidth: true
                     Text{
                         width: 100
-                        text: "Minimized Height (px)"
+                        text: qsTr("Minimized Height (px)")
                     }
                     SpinBox {
                         stepSize: 1
@@ -229,7 +229,7 @@ Item {
                     Layout.fillWidth: true
                     Text{
                         width: 100
-                        text: "Maximize factor %"
+                        text: qsTr("Maximize factor %")
                     }
                     SpinBox {
                         stepSize: 1

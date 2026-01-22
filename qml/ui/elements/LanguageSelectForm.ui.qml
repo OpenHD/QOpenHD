@@ -2,31 +2,32 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 Item {
+    property var localesModel: [
+        { text: qsTr("German"), locale: "de" },
+        { text: qsTr("Ukrainian"), locale: "uk" },
+        { text: qsTr("Russian"), locale: "ru" },
+        { text: qsTr("English"), locale: "en" },
+        { text: qsTr("French"), locale: "fr" },
+        { text: qsTr("Spanish"), locale: "es" },
+        { text: qsTr("Dutch"), locale: "nl" },
+        { text: qsTr("Romanian"), locale: "ro" },
+        { text: qsTr("Chinese"), locale: "zh" },
+        { text: qsTr("Italian"), locale: "it" }
+    ]
+
     ComboBox {
         anchors.fill: parent
 
-        model: ListModel {
-            id: locales
-            ListElement { text: "German"; locale: "de" }
-            ListElement { text: "Ukranian"; locale: "uk" }
-            ListElement { text: "Russian"; locale: "ru" }
-            ListElement { text: "English"; locale: "en" }
-            ListElement { text: "French"; locale: "fr" }
-            ListElement { text: "Spanish"; locale: "es" }
-            ListElement { text: "Dutch"; locale: "nl" }
-            ListElement { text: "Romanian"; locale: "ro" }
-            ListElement { text: "Chinese"; locale: "zh" }
-            ListElement { text: "Italian"; locale: "it" }
-        }
+        model: localesModel
 
         textRole: "text"
 
         // @disable-check M223
         Component.onCompleted: {
             // @disable-check M223
-            for (var i = 0; i < model.count; i++) {
+            for (var i = 0; i < model.length; i++) {
                 // @disable-check M222
-                var choice = model.get(i);
+                var choice = model[i];
                 // @disable-check M223
                 if (choice.locale == settings.locale) {
                     currentIndex = i;
@@ -36,7 +37,7 @@ Item {
         }
 
         onActivated: {
-            settings.locale = locales.get(currentIndex).locale
+            settings.locale = model[currentIndex].locale
 
             _qopenhd.switchToLanguage(settings.locale);
         }

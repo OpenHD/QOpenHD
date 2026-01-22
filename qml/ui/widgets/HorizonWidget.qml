@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_horizon && settings.show_widgets
 
     widgetIdentifier: "horizon_widget"
-    bw_verbose_name: "ARTIFICIAL HORIZON"
+    bw_verbose_name: qsTr("ARTIFICIAL HORIZON")
 
     defaultHCenter: true
     defaultVCenter: true

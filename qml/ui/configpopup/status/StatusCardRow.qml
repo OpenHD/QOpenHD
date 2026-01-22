@@ -30,16 +30,16 @@ Item {
     height: 48
 
     id: main_item
-    property string m_left_text: "LEFT"
+    property string m_left_text: qsTr("LEFT")
 
-    property string m_right_text: "RIFGHT"
+    property string m_right_text: qsTr("RIGHT")
 
     property bool m_has_error: false
 
     property color m_right_text_color: "green"
     property color m_right_text_color_error: "red"
 
-    property string m_error_text: "NONE"
+    property string m_error_text: qsTr("NONE")
 
     property bool m_error_view: false
 

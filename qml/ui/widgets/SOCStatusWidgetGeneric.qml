@@ -13,7 +13,7 @@ BaseWidget {
     visible: settings.show_air_status && settings.show_widgets
 
     widgetIdentifier: "air_status_widget"
-    bw_verbose_name: "CPU LOAD AIR"
+    bw_verbose_name: qsTr("CPU LOAD AIR")
 
     property bool m_is_air: false
 
@@ -343,7 +343,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "CPU freq: "+m_curr_cpu_freq_mhz+" Mhz";
+                text: qsTr("CPU freq: %1 MHz").arg(m_curr_cpu_freq_mhz);
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -352,7 +352,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "ISP freq: "+m_curr_isp_freq_mhz+" Mhz";
+                text: qsTr("ISP freq: %1 MHz").arg(m_curr_isp_freq_mhz);
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -361,7 +361,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "H264 freq: "+m_curr_h264_freq_mhz+" Mhz";
+                text: qsTr("H264 freq: %1 MHz").arg(m_curr_h264_freq_mhz);
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -370,7 +370,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Core freq: "+m_curr_core_freq_mhz+" Mhz";
+                text: qsTr("Core freq: %1 MHz").arg(m_curr_core_freq_mhz);
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -379,7 +379,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "v3d freq: "+m_curr_v3d_freq_mhz+" Mhz"
+                text: qsTr("v3d freq: %1 MHz").arg(m_curr_v3d_freq_mhz)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -388,7 +388,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "RAM: "+m_ram_usage_perc+" %"
+                text: qsTr("RAM: %1%").arg(m_ram_usage_perc)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -397,7 +397,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "RPI undervolt: "+(m_rpi_undervolt_error ? "Y" : "N")
+                text: qsTr("RPI undervolt: %1").arg(m_rpi_undervolt_error ? qsTr("Y") : qsTr("N"))
                 color: "white"
                 font.bold: true
                 height: parent.height

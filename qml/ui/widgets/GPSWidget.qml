@@ -15,7 +15,7 @@ BaseWidget {
     visible: settings.show_gps && settings.show_widgets
 
     widgetIdentifier: "gps_widget"
-    bw_verbose_name: "GPS WIDGET"
+    bw_verbose_name: qsTr("GPS WIDGET")
 
     defaultAlignment: 2
     defaultXOffset: 96

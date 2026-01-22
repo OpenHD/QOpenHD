@@ -77,14 +77,14 @@ Rectangle {
 
                 Button {
                     width: 400
-                    text: "Restart local OHD service"
+                    text: qsTr("Restart local OHD service")
                     onClicked: {
                         _qopenhd.restart_local_oenhd_service();
                     }
                 }
                 Button {
                     id: local_ip_button
-                    text: "Show local IP"
+                    text: qsTr("Show local IP")
                     onClicked: {
                         var text = _qopenhd.show_local_ip();
                         local_ip_button.text = text;
@@ -92,7 +92,7 @@ Rectangle {
                 }
                 Button {
                     id: write_local_log
-                    text: "Write GND log to SD"
+                    text: qsTr("Write GND log to SD")
                     onClicked: {
                         var text = _qopenhd.write_local_log();
                         write_local_log.text = text;
@@ -100,51 +100,51 @@ Rectangle {
                 }
                 Button {
                     id: write_air_log
-                    text: "Write AIR log to SD"
+                    text: qsTr("Write AIR log to SD")
                     onClicked: {
-                        var text = "Not implemented yet";
+                        var text = qsTr("Not implemented yet");
                         write_air_log.text = text;
                     }
                 }
                 Button {
-                    text: "Set Tele rates"
+                    text: qsTr("Set Tele rates")
                     onClicked: {
                         _mavlinkTelemetry.re_apply_rates();
                     }
                 }
                 Button {
                     visible: _qopenhd.is_linux()
-                    text: "Start openhd"
+                    text: qsTr("Start OpenHD")
                     onClicked: {
                         _qopenhd.sysctl_openhd(0);
                     }
                 }
                 Button {
                     visible: _qopenhd.is_linux()
-                    text: "Stop openhd"
+                    text: qsTr("Stop OpenHD")
                     onClicked: {
                         _qopenhd.sysctl_openhd(1);
                     }
                 }
                 Button {
                     visible: _qopenhd.is_linux()
-                    text: "Enable openhd"
+                    text: qsTr("Enable OpenHD")
                     onClicked: {
                         _qopenhd.sysctl_openhd(2);
                     }
                 }
                 Button {
                     visible: _qopenhd.is_linux()
-                    text: "Disable openhd"
+                    text: qsTr("Disable OpenHD")
                     onClicked: {
                         _qopenhd.sysctl_openhd(3);
                     }
                 }
                 Button {
                     id: sdbut
-                    text: "Self Destruct"
+                    text: qsTr("Self Destruct")
                     onClicked: {
-                        sdbut.text = "just kidding";
+                        sdbut.text = qsTr("just kidding");
                     }
                 }
                 Button {
@@ -193,23 +193,23 @@ Rectangle {
                 spacing: 10
 
                 Button {
-                    text: "Show Air Info"
+                    text: qsTr("Show Air Info")
                     onClicked: {
-                        showSystemInfo(_ohdSystemAir, "Air");
+                        showSystemInfo(_ohdSystemAir, qsTr("Air"));
                         terminalContainer.visible = true;
                     }
                 }
                 Button {
-                    text: "Show Ground Info"
+                    text: qsTr("Show Ground Info")
                     onClicked: {
-                        showSystemInfo(_ohdSystemGround, "Ground");
+                        showSystemInfo(_ohdSystemGround, qsTr("Ground"));
                         terminalContainer.visible = true;
                     }
                 }
                 Button {
-                    text: "Show Mavlink Info"
+                    text: qsTr("Show Mavlink Info")
                     onClicked: {
-                        showSystemInfo(_fcMavlinkSystem, "Mavlink");
+                        showSystemInfo(_fcMavlinkSystem, qsTr("Mavlink"));
                         terminalContainer.visible = true;
                     }
                 }
@@ -225,14 +225,14 @@ Rectangle {
 
     function showSystemInfo(systemObject, title) {
         if (systemObject) {
-            terminalTextArea.text += title + " System Information:\n\n";
+            terminalTextArea.text += qsTr("%1 System Information:\n\n").arg(title);
             for (var key in systemObject) {
                 if (systemObject.hasOwnProperty(key) && typeof systemObject[key] !== "function") {
                     terminalTextArea.text += key + ": " + systemObject[key] + "\n";
                 }
             }
         } else {
-            terminalTextArea.text += title + " System Information unavailable.\n";
+            terminalTextArea.text += qsTr("%1 System Information unavailable.\n").arg(title);
         }
     }
 

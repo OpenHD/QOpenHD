@@ -21,7 +21,7 @@ BaseWidget {
     visible: settings.show_vibration && settings.show_widgets
 
     widgetIdentifier: "vibration_widget"
-    bw_verbose_name: "VIBRATION"
+    bw_verbose_name: qsTr("VIBRATION")
 
     hasWidgetDetail: true
 

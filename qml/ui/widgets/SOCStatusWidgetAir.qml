@@ -22,7 +22,7 @@ SOCStatusWidgetGeneric {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetIdentifier: "air_status_widget"
-    bw_verbose_name: "CPU LOAD AIR"
+    bw_verbose_name: qsTr("CPU LOAD AIR")
 
     m_is_air: true
 }

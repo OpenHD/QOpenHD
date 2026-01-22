@@ -17,7 +17,7 @@ import "../../elements"
 Rectangle{
     property int m_background_color_type: 0
 
-    property string m_main_text: "[] XXXXMhz"
+    property string m_main_text: qsTr("[] XXXX MHz")
 
     // 0: this row matches current openhd selected frequency
     // 1: otherwise
@@ -59,7 +59,7 @@ Rectangle{
         }
         Text{
             Layout.alignment: Qt.AlignLeft
-            text: "2.4G"
+            text: qsTr("2.4G")
             //color: value > 3000 ? "green" : "#ff8c00" //"orange"
             color: "#706F1D" // dark green
             visible: m_is_2G
@@ -88,7 +88,7 @@ Rectangle{
         Text{
             Layout.alignment: Qt.AlignLeft
             Layout.preferredWidth: 60
-            text: "Default"
+            text: qsTr("Default")
             font.family: "Font Awesome 5 Free"
             color: "green"
             visible: m_openhd_race_band==2
@@ -98,7 +98,7 @@ Rectangle{
             Layout.alignment: Qt.AlignRight
             Layout.preferredWidth: 60
             text: {
-                qsTr("OHD "+m_openhd_race_band)
+                qsTr("OHD %1").arg(m_openhd_race_band)
             }
             visible: m_openhd_race_band>=0
             font.family: "Font Awesome 5 Free"

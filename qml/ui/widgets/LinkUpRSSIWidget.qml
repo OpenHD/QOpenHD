@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_uplink_rssi && settings.show_widgets
 
     widgetIdentifier: "uplink_rssi_widget"
-    bw_verbose_name: "UPLINK/AIR RSSI"
+    bw_verbose_name: qsTr("UPLINK/AIR RSSI")
 
     defaultAlignment: 1
     defaultXOffset: 0
@@ -82,7 +82,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "TX error/dropped: "+_ohdSystemGround.count_tx_inj_error_hint+" "+_ohdSystemGround.count_tx_dropped_packets
+                text: qsTr("TX error/dropped: %1 %2").arg(_ohdSystemGround.count_tx_inj_error_hint).arg(_ohdSystemGround.count_tx_dropped_packets)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -91,7 +91,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "GND TX: "+_ohdSystemGround.tx_packets_per_second_and_bits_per_second
+                text: qsTr("GND TX: %1").arg(_ohdSystemGround.tx_packets_per_second_and_bits_per_second)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -100,7 +100,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "GND RX: "+_ohdSystemGround.rx_packets_per_second_and_bits_per_second
+                text: qsTr("GND RX: %1").arg(_ohdSystemGround.rx_packets_per_second_and_bits_per_second)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -109,7 +109,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "GND RX tele: "+_ohdSystemAir.rx_tele_packets_per_second_and_bits_per_second
+                text: qsTr("GND RX tele: %1").arg(_ohdSystemAir.rx_tele_packets_per_second_and_bits_per_second)
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -118,7 +118,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power+" "+_wifi_card_gnd0.tx_power_unit
+                text: qsTr("TX PWR Gnd: %1 %2").arg(_wifi_card_gnd0.tx_power).arg(_wifi_card_gnd0.tx_power_unit)
                 color: "white"
                 font.bold: true
                 height: parent.height

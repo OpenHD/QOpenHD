@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_battery_temp && settings.show_widgets
 
     widgetIdentifier: "battery_temp_widget"
-    bw_verbose_name: "BATTERY SENSOR TEMP"
+    bw_verbose_name: qsTr("BATTERY SENSOR TEMP")
 
 
     defaultAlignment: 1
@@ -218,4 +218,3 @@ BaseWidget {
         }
     }
 }
-

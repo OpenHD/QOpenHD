@@ -16,7 +16,7 @@ BaseWidget {
     visible: settings.show_arrow && settings.show_widgets
 
     widgetIdentifier: "arrow_widget"
-    bw_verbose_name: "HOME ARROW"
+    bw_verbose_name: qsTr("HOME ARROW")
 
     defaultHCenter: true
     defaultVCenter: false
@@ -100,4 +100,3 @@ BaseWidget {
         }
     }
 }
-

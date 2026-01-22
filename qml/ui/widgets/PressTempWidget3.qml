@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_press_temp3 && settings.show_widgets
 
     widgetIdentifier: "press_temp_widget3"
-    bw_verbose_name: "PREASSURE3 SENSOR TEMP"
+    bw_verbose_name: qsTr("PREASSURE3 SENSOR TEMP")
 
     defaultAlignment: 1
     defaultXOffset: 205

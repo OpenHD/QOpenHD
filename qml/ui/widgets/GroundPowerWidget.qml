@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_ground_battery && settings.show_widgets && _ohdSystemGround.ina219_current_milliamps !== -1
 
     widgetIdentifier: "ground_battery_widget"
-    bw_verbose_name: "GROUND BATTERY"
+    bw_verbose_name: qsTr("GROUND BATTERY")
 
     defaultAlignment: 2
     defaultXOffset: 188
@@ -165,7 +165,7 @@ BaseWidget {
                     placeholderText: (settings.ground_battery_full/10)
                 }
                 Button {
-                    text: "Save"
+                    text: qsTr("Save")
                     visible: customType.visible
                     Layout.alignment: Qt.AlignHCenter // Center the button horizontally
                     onClicked: {
@@ -218,7 +218,7 @@ BaseWidget {
             y: 0
             rotation: -90
             color: settings.color_text
-            text: "gnd"
+            text: qsTr("gnd")
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: -2

@@ -17,7 +17,7 @@ BaseWidget {
     visible: settings.show_retransmission_stats && settings.show_widgets && m_retransmission_enabled
 
     widgetIdentifier: "retransmission_stats_widget"
-    bw_verbose_name: "RETRANSMISSION STATS"
+    bw_verbose_name: qsTr("RETRANSMISSION STATS")
 
     defaultAlignment: 0
     defaultXOffset: 420
@@ -86,7 +86,7 @@ BaseWidget {
             spacing: 2
 
             Text {
-                text: "RTX"
+                text: qsTr("RTX")
                 color: settings.color_text
                 font.bold: true
                 font.pixelSize: 12
@@ -95,7 +95,7 @@ BaseWidget {
             }
 
             Text {
-                text: "LOSS/s: "+stat_value_or_na(m_missing_per_second)
+                text: qsTr("LOSS/s: %1").arg(stat_value_or_na(m_missing_per_second))
                 color: settings.color_text
                 font.pixelSize: 11
                 style: Text.Outline
@@ -103,7 +103,7 @@ BaseWidget {
             }
 
             Text {
-                text: "REQ/s: "+stat_value_or_na(m_requests_per_second)
+                text: qsTr("REQ/s: %1").arg(stat_value_or_na(m_requests_per_second))
                 color: settings.color_text
                 font.pixelSize: 11
                 style: Text.Outline
@@ -111,7 +111,7 @@ BaseWidget {
             }
 
             Text {
-                text: "FIX/s: "+stat_value_or_na(m_fixed_per_second)
+                text: qsTr("FIX/s: %1").arg(stat_value_or_na(m_fixed_per_second))
                 color: settings.color_text
                 font.pixelSize: 11
                 style: Text.Outline

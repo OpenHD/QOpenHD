@@ -20,7 +20,7 @@ BaseWidget {
     visible: settings.show_speed_second && !sidebar.m_is_active && settings.show_widgets
 
     widgetIdentifier: "speed_second_widget"
-    bw_verbose_name: "SECOND SPEED"
+    bw_verbose_name: qsTr("SECOND SPEED")
 
     hasWidgetDetail: true
 
