@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-// Copyright (C) 2024 OpenHD
-
 #ifndef V4L2_DECODER_DETECTOR_H
 #define V4L2_DECODER_DETECTOR_H
 

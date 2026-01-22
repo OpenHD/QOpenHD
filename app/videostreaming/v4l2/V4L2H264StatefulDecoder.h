@@ -1,14 +1,8 @@
-// SPDX-License-Identifier: MIT
-// Copyright (C) 2024 OpenHD
-
 #ifndef V4L2_DECODER_H
 #define V4L2_DECODER_H
 
-#ifdef ENABLE_V4L2_GL_PLAYER
-
 #include "V4L2Device.h"
-#include "dma_heap.h"
-#include "dma_buffers_manager.h"
+#include "DmaBuffersAllocator.h"
 #include "../libplacebo/placebo_frame_queue.h"
 
 #include <cstdint>
@@ -21,28 +15,13 @@
 #include <condition_variable>
 #include <queue>
 
-
-/**
- * @brief V4L2 Memory-to-Memory (M2M) hardware video decoder.
- *
- * This class implements V4L2 M2M video decoding using DMA-BUF buffers
- * for zero-copy operation. Decoded frames are output as PlaceboFrame
- * structures suitable for rendering with libplacebo.
- *
- * Buffer model:
- * - INPUT (OUTPUT_MPLANE): H.264 NAL units → decoder
- * - CAPTURE (CAPTURE_MPLANE): Decoded YUV frames ← decoder
- * - All buffers use V4L2_MEMORY_DMABUF with externally allocated DMA-BUF
- *
- * Thread model:
- * - feed_nal_unit() is called from RTP receiver thread
- * - Internal decode loop handles V4L2 buffer management
- * - Frame callback is invoked from decode thread
- *
- * Based on RtpDrmPlayer reference implementation.
- */
 class V4L2H264StatefulDecoder
 {
+private:
+    std::unique_ptr<V4L2Device> device_;
+    std::unique_ptr<DmaBuffersAllocator> dmaBuffersAllocator_;
+    uint32_t pixelFormat_ = 0;
+
 public:
     ~V4L2H264StatefulDecoder();
 
@@ -51,14 +30,6 @@ public:
     V4L2H264StatefulDecoder& operator=(const V4L2H264StatefulDecoder&) = delete;
     V4L2H264StatefulDecoder(V4L2H264StatefulDecoder&&) = delete;
     V4L2H264StatefulDecoder& operator=(V4L2H264StatefulDecoder&&) = delete;
-
-    /**
-     * @brief Supported codecs.
-     */
-    enum class Codec {
-        H264,
-        H265
-    };
 
     /**
      * @brief Decoder capabilities (reported after first frame).
@@ -100,10 +71,9 @@ public:
     /**
      * @brief Factory method to create decoder with V4L2 device and codec.
      * @param device V4L2 device (must be valid and open)
-     * @param codec Codec to decode
      * @return unique_ptr to decoder on success, nullptr on failure
      */
-    static std::unique_ptr<V4L2H264StatefulDecoder> Create(std::unique_ptr<V4L2Device> device, Codec codec);
+    static std::unique_ptr<V4L2H264StatefulDecoder> Create(std::unique_ptr<V4L2Device> device);
 
     /**
      * @brief Start decoding.
@@ -168,19 +138,12 @@ public:
     bool is_running() const { return running_.load(); }
 
 private:
-    // Private constructor - only factory method can create instances
-    V4L2H264StatefulDecoder(std::unique_ptr<V4L2Device> device, Codec codec);
+    V4L2H264StatefulDecoder(std::unique_ptr<V4L2Device> device);
 
-    // Configuration
-    Codec codec_ = Codec::H264;
-
-    // V4L2 device
-    std::unique_ptr<V4L2Device> device_;
-
-    // DMA-BUF allocator and buffer managers
-    std::shared_ptr<DmaHeap> dma_heap_;
-    std::unique_ptr<DmaBuffersManager> input_buffers_;
-    std::unique_ptr<DmaBuffersManager> output_buffers_;
+    void Init();
+    void SubscribeToEvents();
+    void ConfigureFormats();
+    void SetupBuffers();
 
     // Capabilities (filled after SOURCE_CHANGE event)
     Capabilities capabilities_;
@@ -222,26 +185,6 @@ private:
 
     // Frame sequence counter
     uint64_t frame_sequence_ = 0;
-
-    // Internal methods
-    bool checkDmaBufSupport();
-    bool setupInputFormat();
-    bool setupInputBuffers();
-    bool handleSourceChange();
-    bool setupCaptureFormat();
-    bool setupCaptureBuffers();
-    bool startStreaming();
-    bool stopStreaming();
-
-    void decodeLoop();
-    bool processNal(const NalUnit& nal);
-    bool queueInputBuffer(int buffer_idx, const uint8_t* data, size_t size, int64_t timestamp_us);
-    bool processOutputBuffer(uint32_t index);
-    bool requeueOutputBuffer(uint32_t index);
-
-    void setError(const std::string& error);
 };
-
-#endif // ENABLE_V4L2_GL_PLAYER
 
 #endif // V4L2_DECODER_H

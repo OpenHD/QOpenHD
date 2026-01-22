@@ -1,0 +1,26 @@
+#ifndef DMA_HEAP_H
+#define DMA_HEAP_H
+
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+#include "DmaBuffer.h"
+
+class DmaBuffersAllocator {
+public:
+    DmaBuffersAllocator(const DmaBuffersAllocator&) = delete;
+    DmaBuffersAllocator& operator=(const DmaBuffersAllocator&) = delete;
+    DmaBuffersAllocator(DmaBuffersAllocator&&) = delete;
+    DmaBuffersAllocator& operator=(DmaBuffersAllocator&&) = delete;
+
+    static std::unique_ptr<DmaBuffersAllocator> Create();
+
+    std::vector<std::unique_ptr<DmaBuffer>> Allocate(size_t size);
+
+private:
+    DmaBuffersAllocator(int fd);
+};
+
+#endif // DMA_HEAP_H

@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-// Copyright (C) 2024 OpenHD
-
 #ifndef UVGRTP_RECEIVER_H
 #define UVGRTP_RECEIVER_H
 

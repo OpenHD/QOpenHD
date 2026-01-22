@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-// Copyright (C) 2024 OpenHD
-
 #ifdef ENABLE_V4L2_GL_PLAYER
 
 #include "v4l2_pipeline.h"

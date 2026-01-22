@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT
-// Copyright (C) 2024 OpenHD
-
 #include "uvgrtp_receiver.h"
 
 #include <QDebug>

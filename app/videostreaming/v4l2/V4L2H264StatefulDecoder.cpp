@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2024 OpenHD
-
-#ifdef ENABLE_V4L2_GL_PLAYER
-
 #include "V4L2H264StatefulDecoder.h"
 
 #include <QDebug>
@@ -32,10 +29,12 @@ static constexpr uint32_t OUTPUT_BUFFER_COUNT = 4;
 static constexpr uint32_t DEFAULT_INPUT_BUFFER_SIZE = 2 * 1024 * 1024;  // 2MB for H.264/H.265
 
 
-V4L2H264StatefulDecoder::V4L2H264StatefulDecoder(std::unique_ptr<V4L2Device> device, Codec codec)
-    : device_(std::move(device)), codec_(codec)
+V4L2H264StatefulDecoder::V4L2H264StatefulDecoder(
+    std::unique_ptr<V4L2Device> device,
+    std::unique_ptr<DmaBuffersAllocator> dmaBuffersAllocator)
+    : device_(std::move(device)), dmaBuffersAllocator_(std::move(dmaBuffersAllocator))
 {
-    qDebug() << "V4L2Decoder: created with codec:" << (codec == Codec::H264 ? "H264" : "H265");
+    qDebug() << "V4L2H264StatefulDecoder created";
 }
 
 V4L2H264StatefulDecoder::~V4L2H264StatefulDecoder()
@@ -55,90 +54,76 @@ void V4L2H264StatefulDecoder::set_capabilities_callback(CapabilitiesCallback cal
     capabilities_callback_ = std::move(callback);
 }
 
-std::unique_ptr<V4L2H264StatefulDecoder> V4L2H264StatefulDecoder::Create(std::unique_ptr<V4L2Device> device, Codec codec)
+std::unique_ptr<V4L2H264StatefulDecoder> V4L2H264StatefulDecoder::Create(
+    std::unique_ptr<V4L2Device> device)
 {
     if (!device) {
-        qWarning() << "V4L2Decoder::Create: null device provided";
         return nullptr;
     }
 
-    qInfo() << "V4L2Decoder: creating decoder with codec:" << (codec == Codec::H264 ? "H264" : "H265");
-
-    // Create decoder instance with private constructor
-    auto decoder = std::unique_ptr<V4L2H264StatefulDecoder>(new V4L2H264StatefulDecoder(std::move(device), codec));
-
-    int fd = decoder->device_->GetFd();
-
-    // Query capabilities
     struct v4l2_capability cap = {};
-    if (ioctl(fd, VIDIOC_QUERYCAP, &cap) < 0) {
-        decoder->setError(std::string("VIDIOC_QUERYCAP failed: ") + strerror(errno));
+    if (device->QueryCapabilities(&cap) < 0) {
+        qWarning() << "V4L2Decoder::Create: failed to query caps";
         return nullptr;
     }
 
     // Check for M2M support
     if (!(cap.capabilities & V4L2_CAP_VIDEO_M2M_MPLANE)) {
-        decoder->setError("Device does not support M2M MPLANE");
+        qWarning() << "Device does not support M2M MPLANE";
         return nullptr;
     }
 
-    qInfo() << "V4L2Decoder: opened device" << (const char*)cap.card
-            << "driver:" << (const char*)cap.driver;
+    auto dmaBuffersAllocator = DmaBuffersAllocator::Create();
+    auto decoder = std::unique_ptr<V4L2H264StatefulDecoder>(
+        new V4L2H264StatefulDecoder(
+            std::move(device),
+            std::move(dmaBuffersAllocator)));
+}
 
-    // Subscribe to events
-    struct v4l2_event_subscription sub = {};
-    sub.type = V4L2_EVENT_SOURCE_CHANGE;
-    if (ioctl(fd, VIDIOC_SUBSCRIBE_EVENT, &sub) < 0) {
+void V4L2H264StatefulDecoder::Init()
+{
+    SubscribeToEvents();
+    ConfigureFormats();
+    SetupBuffers();
+}
+
+void V4L2H264StatefulDecoder::SubscribeToEvents()
+{
+    struct v4l2_event_subscription sourceChanged = {};
+    sourceChanged.type = V4L2_EVENT_SOURCE_CHANGE;
+    if (device_->SubscribeEvent(&sourceChanged) < 0) {
         qWarning() << "V4L2Decoder: failed to subscribe to SOURCE_CHANGE event";
     }
 
-    sub.type = V4L2_EVENT_EOS;
-    if (ioctl(fd, VIDIOC_SUBSCRIBE_EVENT, &sub) < 0) {
+    struct v4l2_event_subscription eos = {};
+    eos.type = V4L2_EVENT_EOS;
+    if (device_->SubscribeEvent(&eos) < 0) {
         qWarning() << "V4L2Decoder: failed to subscribe to EOS event";
     }
+}
 
-    // Check DMA-buf support (critical for this implementation)
-    if (!decoder->checkDmaBufSupport()) {
-        decoder->setError("V4L2 driver does not support DMA-buf");
-        return nullptr;
-    }
+void V4L2H264StatefulDecoder::ConfigureFormats()
+{
+    struct v4l2_format captureFormat = {};
+    captureFormat.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+    device_->GetFormat(&captureFormat);
+    captureFormat.fmt.pix_mp.width = 1920;
+    captureFormat.fmt.pix_mp.height = 1080;
+    device_->SetFormat(&captureFormat);
 
-    // Initialize DMA heap allocator
-    decoder->dma_heap_ = std::make_shared<DmaHeap>();
-    if (!decoder->dma_heap_->isValid()) {
-        decoder->setError("Failed to initialize DMA heap");
-        return nullptr;
-    }
+    pixelFormat_ = captureFormat.fmt.pix_mp.pixelformat;
 
-    // Create buffer managers
-    decoder->input_buffers_ = std::make_unique<DmaBuffersManager>(
-        decoder->dma_heap_, INPUT_BUFFER_COUNT, V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-    decoder->output_buffers_ = std::make_unique<DmaBuffersManager>(
-        decoder->dma_heap_, OUTPUT_BUFFER_COUNT, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+    struct v4l2_format outputFormat = {};
+    outputFormat.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+    device_->GetFormat(&outputFormat);
+    outputFormat.fmt.pix_mp.width = 1920;
+    outputFormat.fmt.pix_mp.height = 1080;
+    device_->SetFormat(&outputFormat);
+}
 
-    // Setup input format (OUTPUT queue - compressed data)
-    if (!decoder->setupInputFormat()) {
-        return nullptr;
-    }
+void V4L2H264StatefulDecoder::SetupBuffers()
+{
 
-    // Setup capture format (CAPTURE queue - decoded frames)
-    // This must be done BEFORE allocating buffers
-    if (!decoder->setupCaptureFormat()) {
-        return nullptr;
-    }
-
-    // Setup input buffers
-    if (!decoder->setupInputBuffers()) {
-        return nullptr;
-    }
-
-    // Setup capture buffers - do this upfront, not waiting for SOURCE_CHANGE
-    if (!decoder->setupCaptureBuffers()) {
-        return nullptr;
-    }
-
-    qInfo() << "V4L2Decoder: initialized successfully";
-    return decoder;
 }
 
 bool V4L2H264StatefulDecoder::start()
@@ -151,6 +136,7 @@ bool V4L2H264StatefulDecoder::start()
 
     stop_requested_ = false;
     running_ = true;
+    Init();
 
     // Start decode thread
     decode_thread_ = std::thread(&V4L2H264StatefulDecoder::decodeLoop, this);
@@ -259,14 +245,14 @@ bool V4L2H264StatefulDecoder::checkDmaBufSupport()
     req.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     req.memory = V4L2_MEMORY_DMABUF;
 
-    bool supported = (ioctl(device_->GetFd(), VIDIOC_REQBUFS, &req) == 0);
+    bool supported = (device_->RequestBuffers(&req) == 0);
 
     qInfo() << "V4L2Decoder: DMA-buf support check:" << (supported ? "OK" : "FAIL");
 
     // Reset buffers after testing
     if (supported) {
         req.count = 0;
-        ioctl(device_->GetFd(), VIDIOC_REQBUFS, &req);
+        device_->RequestBuffers(&req);
     }
 
     return supported;
@@ -275,22 +261,22 @@ bool V4L2H264StatefulDecoder::checkDmaBufSupport()
 
 bool V4L2H264StatefulDecoder::setupInputFormat()
 {
-    // Set OUTPUT (input) format - compressed data
-    struct v4l2_format fmt_out = {};
-    fmt_out.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-    fmt_out.fmt.pix_mp.width = 1920;   // Hint, will be updated from stream
-    fmt_out.fmt.pix_mp.height = 1080;
-    fmt_out.fmt.pix_mp.pixelformat = (codec_ == Codec::H264) ? V4L2_PIX_FMT_H264 : V4L2_PIX_FMT_HEVC;
-    fmt_out.fmt.pix_mp.num_planes = 1;
-    fmt_out.fmt.pix_mp.plane_fmt[0].sizeimage = 2 * 1024 * 1024;  // 2MB for H.264/H.265
-
-    if (ioctl(device_->GetFd(), VIDIOC_S_FMT, &fmt_out) < 0) {
-        setError(std::string("Failed to set OUTPUT format: ") + strerror(errno));
-        return false;
-    }
-
-    qInfo() << "V4L2Decoder: OUTPUT format set to"
-            << (codec_ == Codec::H264 ? "H.264" : "H.265");
+    // // Set OUTPUT (input) format - compressed data
+    // struct v4l2_format fmt_out = {};
+    // fmt_out.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+    // fmt_out.fmt.pix_mp.width = 1920;   // Hint, will be updated from stream
+    // fmt_out.fmt.pix_mp.height = 1080;
+    // fmt_out.fmt.pix_mp.pixelformat = (codec_ == Codec::H264) ? V4L2_PIX_FMT_H264 : V4L2_PIX_FMT_HEVC;
+    // fmt_out.fmt.pix_mp.num_planes = 1;
+    // fmt_out.fmt.pix_mp.plane_fmt[0].sizeimage = 2 * 1024 * 1024;  // 2MB for H.264/H.265
+    //
+    // if (device_->SetFormat(&fmt_out) < 0) {
+    //     setError(std::string("Failed to set OUTPUT format: ") + strerror(errno));
+    //     return false;
+    // }
+    //
+    // qInfo() << "V4L2Decoder: OUTPUT format set to"
+    //         << (codec_ == Codec::H264 ? "H.264" : "H.265");
 
     return true;
 }
@@ -300,7 +286,7 @@ bool V4L2H264StatefulDecoder::setupInputBuffers()
     // Get input buffer size from format
     struct v4l2_format fmt_out = {};
     fmt_out.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-    if (ioctl(device_->GetFd(), VIDIOC_G_FMT, &fmt_out) < 0) {
+    if (device_->GetFormat(&fmt_out) < 0) {
         setError(std::string("Failed to get OUTPUT format: ") + strerror(errno));
         return false;
     }
@@ -334,7 +320,7 @@ bool V4L2H264StatefulDecoder::handleSourceChange()
     struct v4l2_format fmt_cap = {};
     fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
 
-    if (ioctl(device_->GetFd(), VIDIOC_G_FMT, &fmt_cap) < 0) {
+    if (device_->GetFormat(&fmt_cap) < 0) {
         qWarning() << "V4L2Decoder: failed to get CAPTURE format after SOURCE_CHANGE";
         return true;  // Non-critical, continue with existing capabilities
     }
@@ -382,13 +368,13 @@ bool V4L2H264StatefulDecoder::setupCaptureFormat()
     fmt_cap.fmt.pix_mp.num_planes = 1;
 
     // First try to set format (without specifying pixelformat - let driver choose)
-    if (ioctl(device_->GetFd(), VIDIOC_S_FMT, &fmt_cap) < 0) {
+    if (device_->SetFormat(&fmt_cap) < 0) {
         qWarning() << "V4L2Decoder: S_FMT for CAPTURE failed, querying default";
     }
 
     // Always query back the actual format the decoder will use
     fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-    if (ioctl(device_->GetFd(), VIDIOC_G_FMT, &fmt_cap) < 0) {
+    if (device_->GetFormat(&fmt_cap) < 0) {
         setError(std::string("Failed to get CAPTURE format: ") + strerror(errno));
         return false;
     }
@@ -413,7 +399,7 @@ bool V4L2H264StatefulDecoder::setupCaptureFormat()
     struct v4l2_control ctrl = {};
     ctrl.id = V4L2_CID_MIN_BUFFERS_FOR_CAPTURE;
     ctrl.value = 1;
-    if (ioctl(device_->GetFd(), VIDIOC_S_CTRL, &ctrl) < 0) {
+    if (device_->SetControl(&ctrl) < 0) {
         qDebug() << "V4L2Decoder: V4L2_CID_MIN_BUFFERS_FOR_CAPTURE not supported (non-critical)";
     } else {
         qInfo() << "V4L2Decoder: MIN_BUFFERS_FOR_CAPTURE set to 1 for low latency";
@@ -433,7 +419,7 @@ bool V4L2H264StatefulDecoder::setupCaptureBuffers()
     // Get CAPTURE format (already set in setupCaptureFormat)
     struct v4l2_format fmt_cap = {};
     fmt_cap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-    if (ioctl(device_->GetFd(), VIDIOC_G_FMT, &fmt_cap) < 0) {
+    if (device_->GetFormat(&fmt_cap) < 0) {
         setError(std::string("Failed to get CAPTURE format: ") + strerror(errno));
         return false;
     }
@@ -494,18 +480,18 @@ bool V4L2H264StatefulDecoder::startStreaming()
 {
     // Enable OUTPUT streaming (input data)
     int type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-    if (ioctl(device_->GetFd(), VIDIOC_STREAMON, &type) < 0) {
+    if (device_->StreamOn(type) < 0) {
         setError(std::string("STREAMON OUTPUT failed: ") + strerror(errno));
         return false;
     }
 
     // Enable CAPTURE streaming (decoded frames)
     type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-    if (ioctl(device_->GetFd(), VIDIOC_STREAMON, &type) < 0) {
+    if (device_->StreamOn(type) < 0) {
         setError(std::string("STREAMON CAPTURE failed: ") + strerror(errno));
         // Rollback
         type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-        ioctl(device_->GetFd(), VIDIOC_STREAMOFF, &type);
+        device_->StreamOff(type);
         return false;
     }
 
@@ -520,10 +506,10 @@ bool V4L2H264StatefulDecoder::stopStreaming()
     }
 
     int type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-    ioctl(device_->GetFd(), VIDIOC_STREAMOFF, &type);
+    device_->StreamOff(type);
 
     type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-    ioctl(device_->GetFd(), VIDIOC_STREAMOFF, &type);
+    device_->StreamOff(type);
 
     qInfo() << "V4L2Decoder: streaming stopped";
     return true;
@@ -564,7 +550,7 @@ void V4L2H264StatefulDecoder::decodeLoop()
         if (!streaming_started) {
             // Start OUTPUT streaming first
             int type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-            if (ioctl(device_->GetFd(), VIDIOC_STREAMON, &type) < 0) {
+            if (device_->StreamOn(type) < 0) {
                 setError(std::string("STREAMON OUTPUT failed: ") + strerror(errno));
                 decode_errors_++;
                 continue;
@@ -573,11 +559,11 @@ void V4L2H264StatefulDecoder::decodeLoop()
 
             // Start CAPTURE streaming immediately (buffers already queued in init)
             type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-            if (ioctl(device_->GetFd(), VIDIOC_STREAMON, &type) < 0) {
+            if (device_->StreamOn(type) < 0) {
                 setError(std::string("STREAMON CAPTURE failed: ") + strerror(errno));
                 // Rollback OUTPUT streaming
                 type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-                ioctl(device_->GetFd(), VIDIOC_STREAMOFF, &type);
+                device_->StreamOff(type);
                 decode_errors_++;
                 continue;
             }
@@ -608,7 +594,7 @@ void V4L2H264StatefulDecoder::decodeLoop()
             // Handle events (SOURCE_CHANGE for dynamic resolution)
             if (pfd.revents & POLLPRI) {
                 struct v4l2_event ev = {};
-                while (ioctl(device_->GetFd(), VIDIOC_DQEVENT, &ev) == 0) {
+                while (device_->DequeueEvent(&ev) == 0) {
                     if (ev.type == V4L2_EVENT_SOURCE_CHANGE) {
                         qInfo() << "V4L2Decoder: SOURCE_CHANGE event (resolution change)";
                         if (ev.u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION) {
@@ -638,7 +624,7 @@ void V4L2H264StatefulDecoder::decodeLoop()
                 out_buf.length = capabilities_.plane_count > 0 ? capabilities_.plane_count : 1;
 
                 // Dequeue available CAPTURE buffer
-                if (ioctl(device_->GetFd(), VIDIOC_DQBUF, &out_buf) == 0) {
+                if (device_->DequeueBuffer(&out_buf) == 0) {
                     V4L2_DEBUG("DQBUF CAPTURE index:" << out_buf.index);
                     processOutputBuffer(out_buf.index);
                     frames_processed = true;
@@ -662,7 +648,7 @@ bool V4L2H264StatefulDecoder::processNal(const NalUnit& nal)
     dq_buf_in.m.planes = &dq_plane_in;
     dq_buf_in.length = 1;
 
-    while (ioctl(device_->GetFd(), VIDIOC_DQBUF, &dq_buf_in) == 0) {
+    while (device_->DequeueBuffer(&dq_buf_in) == 0) {
         V4L2_DEBUG("DQBUF OUTPUT index:" << dq_buf_in.index);
         input_buffers_->markFree(dq_buf_in.index);
     }
@@ -677,7 +663,7 @@ bool V4L2H264StatefulDecoder::processNal(const NalUnit& nal)
         pfd.events = POLLOUT | POLLERR;
 
         if (poll(&pfd, 1, 50) > 0 && (pfd.revents & POLLOUT)) {
-            if (ioctl(device_->GetFd(), VIDIOC_DQBUF, &dq_buf_in) == 0) {
+            if (device_->DequeueBuffer(&dq_buf_in) == 0) {
                 V4L2_DEBUG("DQBUF OUTPUT (after wait) index:" << dq_buf_in.index);
                 input_buffers_->markFree(dq_buf_in.index);
                 buffer_idx = dq_buf_in.index;
@@ -741,7 +727,7 @@ bool V4L2H264StatefulDecoder::queueInputBuffer(int buffer_idx, const uint8_t* da
 
     V4L2_DEBUG("QBUF OUTPUT index:" << buffer_idx << "size:" << copy_size);
 
-    if (ioctl(device_->GetFd(), VIDIOC_QBUF, &buf) < 0) {
+    if (device_->QueueBuffer(&buf) < 0) {
         qCritical() << "V4L2Decoder: QBUF OUTPUT failed:" << strerror(errno);
         // Rollback: mark buffer as free since QBUF failed
         input_buffers_->markFree(buffer_idx);
@@ -818,7 +804,7 @@ bool V4L2H264StatefulDecoder::requeueOutputBuffer(uint32_t index)
     planes[0].m.fd = buf_info.fd;
     planes[0].length = buf_info.size;
 
-    if (ioctl(device_->GetFd(), VIDIOC_QBUF, &buf) < 0) {
+    if (device_->QueueBuffer(&buf) < 0) {
         qCritical() << "V4L2Decoder: QBUF CAPTURE failed for buffer" << index
                     << ":" << strerror(errno);
         return false;
@@ -826,5 +812,3 @@ bool V4L2H264StatefulDecoder::requeueOutputBuffer(uint32_t index)
 
     return true;
 }
-
-#endif // ENABLE_V4L2_GL_PLAYER
