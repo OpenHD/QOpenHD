@@ -8,6 +8,7 @@ set(V4L2_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_decoder_detector.cpp
     ${CMAKE_CURRENT_LIST_DIR}/uvgrtp_receiver.cpp
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/V4L2Device.cpp
 )
 
 set(V4L2_HEADERS
@@ -17,4 +18,5 @@ set(V4L2_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_decoder_detector.h
     ${CMAKE_CURRENT_LIST_DIR}/uvgrtp_receiver.h
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_pipeline.h
+    ${CMAKE_CURRENT_LIST_DIR}/V4L2Device.h
 )
