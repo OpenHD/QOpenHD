@@ -138,7 +138,9 @@ public:
     bool is_running() const { return running_.load(); }
 
 private:
-    V4L2H264StatefulDecoder(std::unique_ptr<V4L2Device> device);
+    V4L2H264StatefulDecoder(
+        std::unique_ptr<V4L2Device> device,
+        std::unique_ptr<DmaBuffersAllocator> dmaBuffersAllocator);
 
     void Init();
     void SubscribeToEvents();

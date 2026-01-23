@@ -9,7 +9,7 @@ private:
     int fd_;
     std::size_t size_;
     bool wasMapped_ = false;
-    uint8_t* mapPtr;
+    uint8_t* mapPtr_;
 
 public:
     DmaBuffer(const DmaBuffer&) = delete;
@@ -21,7 +21,7 @@ public:
     ~DmaBuffer();
 
     void MapBuffer();
-    void Sync();
+    void Write(const void* data, std::size_t size);
 };
 
 

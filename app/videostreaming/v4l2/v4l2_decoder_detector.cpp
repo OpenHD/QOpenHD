@@ -1,6 +1,5 @@
-#ifdef ENABLE_V4L2_GL_PLAYER
-
 #include "v4l2_decoder_detector.h"
+#include "V4L2DecoderType.h"
 
 #include <QDebug>
 
@@ -18,7 +17,6 @@
 #include <sys/sysmacros.h>
 
 #include <linux/videodev2.h>
-#include <linux/media.h>
 
 // Stateless codec pixel formats (slice-based) - defined if not present in headers
 #ifndef V4L2_PIX_FMT_H264_SLICE
@@ -29,7 +27,7 @@
 #endif
 
 
-std::vector<V4L2DecoderDetector::DecoderInfo> V4L2DecoderDetector::detect_decoders()
+std::vector<DecoderInfo> V4L2DecoderDetector::detect_decoders()
 {
     std::vector<DecoderInfo> decoders;
 
@@ -131,8 +129,8 @@ bool V4L2DecoderDetector::probe_device(const std::string& device_path,
     // Create decoder info entries for each supported codec
     if (supports_h264) {
         DecoderInfo info;
-        info.codec = V4L2H264StatefulDecoder::Codec::H264;
-        info.type = stateless ? DecoderType::Stateless : DecoderType::Stateful;
+        info.codec = VideoCodec::H264;
+        info.type = stateless ? V4L2DecoderType::Stateless : V4L2DecoderType::Stateful;
         info.device_path = device_path;
         info.media_device_path = media_device;
         info.driver_name = driver_name;
@@ -142,8 +140,8 @@ bool V4L2DecoderDetector::probe_device(const std::string& device_path,
 
     if (supports_h265) {
         DecoderInfo info;
-        info.codec = V4L2H264StatefulDecoder::Codec::H265;
-        info.type = stateless ? DecoderType::Stateless : DecoderType::Stateful;
+        info.codec = VideoCodec::H265;
+        info.type = stateless ? V4L2DecoderType::Stateless : V4L2DecoderType::Stateful;
         info.device_path = device_path;
         info.media_device_path = media_device;
         info.driver_name = driver_name;
@@ -349,4 +347,3 @@ std::string V4L2DecoderDetector::get_device_name(const std::string& device_path)
     return device_path.substr(pos + 1);
 }
 
-#endif // ENABLE_V4L2_GL_PLAYER

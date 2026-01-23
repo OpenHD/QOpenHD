@@ -6,39 +6,30 @@
 #include <QDebug>
 
 
-V4L2Pipeline::V4L2Pipeline(const Config& config, const V4L2DecoderDetector::DecoderInfo& decoder_info)
+V4L2Pipeline::V4L2Pipeline(const Config& config, const DecoderInfo& decoderInfo)
     : m_config(config)
 {
-    qDebug() << "V4L2Pipeline: creating with decoder" << decoder_info.device_path.c_str();
+    qDebug() << "V4L2Pipeline: creating with decoder" << decoderInfo.device_path.c_str();
 
     qInfo() << "V4L2Pipeline: initializing...";
     qInfo() << "  RTP:" << config.rtp_listen_addr.c_str() << ":" << config.rtp_listen_port;
-    qInfo() << "  Codec:" << (decoder_info.codec == V4L2H264StatefulDecoder::Codec::H264 ? "H264" : "H265");
-    qInfo() << "  V4L2 device:" << decoder_info.device_path.c_str();
-    qInfo() << "  Driver:" << decoder_info.driver_name.c_str();
-    qInfo() << "  Type:" << (decoder_info.type == V4L2DecoderDetector::DecoderType::Stateless ? "Stateless" : "Stateful");
-    if (!decoder_info.media_device_path.empty()) {
-        qInfo() << "  Media device:" << decoder_info.media_device_path.c_str();
+    qInfo() << "  Codec:" << (decoderInfo.codec == VideoCodec::H264 ? "H264" : "H265");
+    qInfo() << "  V4L2 device:" << decoderInfo.device_path.c_str();
+    qInfo() << "  Driver:" << decoderInfo.driver_name.c_str();
+    qInfo() << "  Type:" << (decoderInfo.type == V4L2DecoderType::Stateless ? "Stateless" : "Stateful");
+    if (!decoderInfo.media_device_path.empty()) {
+        qInfo() << "  Media device:" << decoderInfo.media_device_path.c_str();
     }
 
     // Create components
     m_rtp_receiver = std::make_unique<UvgRtpReceiver>();
-    m_decoder = std::make_unique<V4L2H264StatefulDecoder>();
 
-    // Initialize RTP receiver
-    UvgRtpReceiver::Codec rtp_codec = (decoder_info.codec == V4L2H264StatefulDecoder::Codec::H264)
-        ? UvgRtpReceiver::Codec::H264
-        : UvgRtpReceiver::Codec::H265;
+    auto device = V4L2Device::Open(decoderInfo.device_path);
+    m_decoder = V4L2H264StatefulDecoder::Create(std::move(device));
 
-    if (!m_rtp_receiver->init(config.rtp_listen_addr, config.rtp_listen_port, rtp_codec)) {
+    if (!m_rtp_receiver->init(config.rtp_listen_addr, config.rtp_listen_port, decoderInfo.codec)) {
         qFatal("V4L2Pipeline: failed to init RTP receiver: %s",
                m_rtp_receiver->get_last_error().c_str());
-    }
-
-    // Initialize V4L2 decoder
-    if (!m_decoder->init(decoder_info.device_path, decoder_info.codec)) {
-        qFatal("V4L2Pipeline: failed to init decoder: %s",
-               m_decoder->get_last_error().c_str());
     }
 
     // Wire up callbacks

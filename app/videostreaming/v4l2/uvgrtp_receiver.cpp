@@ -14,7 +14,7 @@ UvgRtpReceiver::~UvgRtpReceiver()
     qDebug() << "UvgRtpReceiver: destroyed";
 }
 
-bool UvgRtpReceiver::init(const std::string& local_addr, uint16_t local_port, Codec codec)
+bool UvgRtpReceiver::init(const std::string& local_addr, uint16_t local_port, VideoCodec codec)
 {
     if (initialized_.load()) {
         last_error_ = "Already initialized";
@@ -26,7 +26,7 @@ bool UvgRtpReceiver::init(const std::string& local_addr, uint16_t local_port, Co
     codec_ = codec;
 
     qInfo() << "UvgRtpReceiver: initializing on" << local_addr.c_str() << ":" << local_port
-            << "codec:" << (codec == Codec::H264 ? "H264" : "H265");
+            << "codec:" << (codec == VideoCodec::H264 ? "H264" : "H265");
 
     // Create uvgRTP context
     ctx_ = std::make_unique<uvgrtp::context>();
@@ -43,7 +43,7 @@ bool UvgRtpReceiver::init(const std::string& local_addr, uint16_t local_port, Co
     }
 
     // Determine RTP format based on codec
-    rtp_format_t format = (codec_ == Codec::H264) ? RTP_FORMAT_H264 : RTP_FORMAT_H265;
+    rtp_format_t format = (codec_ == VideoCodec::H264) ? RTP_FORMAT_H264 : RTP_FORMAT_H265;
 
     // Create media stream with receive-only and generic fragmentation flags
     // RCE_RECEIVE_ONLY: Only receive, don't set up sender

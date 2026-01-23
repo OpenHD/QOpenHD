@@ -1,6 +1,7 @@
 #include "DmaBuffer.h"
 
 #include <cstdint>
+#include <cstring>
 #include <stdexcept>
 #include <unistd.h>
 #include <sys/mman.h>
@@ -23,10 +24,17 @@ void DmaBuffer::MapBuffer()
         throw std::runtime_error("Failed to map DMA buffer");
     }
     wasMapped_ = true;
-    mapPtr = static_cast<uint8_t*>(ptr);
+    mapPtr_ = static_cast<uint8_t*>(ptr);
 }
 
-void DmaBuffer::Sync()
+void DmaBuffer::Write(const void* data, std::size_t size)
 {
-    msync(mapPtr, size_, MS_SYNC);
+    if (!wasMapped_) {
+        throw std::runtime_error("Buffer not mapped");
+    }
+    if (size > size_) {
+        throw std::runtime_error("Write size exceeds buffer size");
+    }
+    std::memcpy(mapPtr_, data, size);
+    msync(mapPtr_, size_, MS_SYNC);
 }

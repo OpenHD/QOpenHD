@@ -73,39 +73,25 @@ PlaceboVideoItem::PlaceboVideoItem(QQuickItem *parent)
     const auto settings = QOpenHDVideoHelper::read_config_from_settings();
     const auto& stream_config = settings.primary_stream_config;
 
-    qInfo() << "PlaceboVideoItem: stream config -"
-            << "codec:" << stream_config.video_codec
-            << "rtp:" << stream_config.udp_rtp_input_ip_address.c_str()
-            << ":" << stream_config.udp_rtp_input_port;
-
-    // Convert VideoCodec to V4L2Decoder::Codec
-    V4L2H264StatefulDecoder::Codec required_codec;
-    if (stream_config.video_codec == QOpenHDVideoHelper::VideoCodecH265) {
-        required_codec = V4L2H264StatefulDecoder::Codec::H265;
-    } else {
-        required_codec = V4L2H264StatefulDecoder::Codec::H264;
-    }
-
     // Detect available V4L2 decoders
     auto decoders = V4L2DecoderDetector::detect_decoders();
     qInfo() << "PlaceboVideoItem: found" << decoders.size() << "V4L2 decoders";
 
     // Find first decoder matching required codec
-    V4L2DecoderDetector::DecoderInfo* selected_decoder = nullptr;
+    DecoderInfo* selected_decoder = nullptr;
     for (auto& dec : decoders) {
         qInfo() << "  Decoder:" << dec.device_path.c_str()
-                << "codec:" << (dec.codec == V4L2H264StatefulDecoder::Codec::H264 ? "H264" : "H265")
-                << "type:" << (dec.type == V4L2DecoderDetector::DecoderType::Stateless ? "Stateless" : "Stateful")
+                << "codec:" << (dec.codec == VideoCodec::H264 ? "H264" : "H265")
+                << "type:" << (dec.type == V4L2DecoderType::Stateless ? "Stateless" : "Stateful")
                 << "driver:" << dec.driver_name.c_str();
 
-        if (dec.codec == required_codec && !selected_decoder) {
+        if (dec.codec == stream_config.video_codec && !selected_decoder) {
             selected_decoder = &dec;
         }
     }
 
     if (!selected_decoder) {
-        qFatal("PlaceboVideoItem: No V4L2 decoder found for codec %s",
-               required_codec == V4L2H264StatefulDecoder::Codec::H264 ? "H264" : "H265");
+        qFatal("PlaceboVideoItem: No V4L2 decoder found for codec");
     }
 
     qInfo() << "PlaceboVideoItem: selected decoder" << selected_decoder->device_path.c_str();

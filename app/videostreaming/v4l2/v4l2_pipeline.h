@@ -43,9 +43,9 @@ public:
     /**
      * @brief Construct pipeline with configuration and decoder info
      * @param config RTP configuration
-     * @param decoder_info Detected V4L2 decoder to use
+     * @param decoderInfo Detected V4L2 decoder to use
      */
-    V4L2Pipeline(const Config& config, const V4L2DecoderDetector::DecoderInfo& decoder_info);
+    V4L2Pipeline(const Config& config, const DecoderInfo& decoderInfo);
     ~V4L2Pipeline();
 
     // Delete copy/move

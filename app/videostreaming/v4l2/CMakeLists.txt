@@ -9,11 +9,13 @@ set(V4L2_SOURCES
 )
 
 set(V4L2_HEADERS
+    ${CMAKE_CURRENT_LIST_DIR}/DecoderInfo.h
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffer.h
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffersAllocator.h
     ${CMAKE_CURRENT_LIST_DIR}/V4L2H264StatefulDecoder.h
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_decoder_detector.h
     ${CMAKE_CURRENT_LIST_DIR}/uvgrtp_receiver.h
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_pipeline.h
+    ${CMAKE_CURRENT_LIST_DIR}/V4L2DecoderType.h
     ${CMAKE_CURRENT_LIST_DIR}/V4L2Device.h
 )

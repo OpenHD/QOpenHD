@@ -1,5 +1,5 @@
-#ifndef DMA_HEAP_H
-#define DMA_HEAP_H
+#ifndef DMA_BUFFERS_ALLOCATOR_H
+#define DMA_BUFFERS_ALLOCATOR_H
 
 #include <cstddef>
 #include <cstdint>
@@ -23,4 +23,4 @@ private:
     DmaBuffersAllocator(int fd);
 };
 
-#endif // DMA_HEAP_H
+#endif // DMA_BUFFERS_ALLOCATOR_H

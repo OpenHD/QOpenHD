@@ -1,60 +1,16 @@
 #ifndef V4L2_DECODER_DETECTOR_H
 #define V4L2_DECODER_DETECTOR_H
 
-#ifdef ENABLE_V4L2_GL_PLAYER
-
 #include "V4L2H264StatefulDecoder.h"
+#include "DecoderInfo.h"
 
-#include <cstdint>
 #include <string>
 #include <vector>
 
-/**
- * @brief V4L2 decoder detection utility.
- *
- * Scans the system for available V4L2 M2M video decoders and returns
- * information about their capabilities, including codec support and
- * whether they are stateful or stateless decoders.
- *
- * For stateless decoders, the associated media device path is also
- * provided, which is required for request API operations.
- */
 class V4L2DecoderDetector
 {
 public:
-    /**
-     * @brief Decoder type (stateful vs stateless).
-     *
-     * Stateful decoders handle all parsing and state management internally.
-     * Stateless decoders require the application to manage decoder state
-     * and use the media request API.
-     */
-    enum class DecoderType {
-        Stateful,
-        Stateless
-    };
 
-    /**
-     * @brief Information about a detected decoder.
-     */
-    struct DecoderInfo {
-        V4L2H264StatefulDecoder::Codec codec;           ///< Supported codec (H264 or H265)
-        DecoderType type;                   ///< Stateful or stateless
-        std::string device_path;            ///< Path to V4L2 device (e.g., /dev/video0)
-        std::string media_device_path;      ///< Path to media device (only for stateless)
-        std::string driver_name;            ///< Driver name (e.g., "hantro-vpu")
-        std::string card_name;              ///< Card/device description
-    };
-
-    /**
-     * @brief Detect all available V4L2 decoders in the system.
-     *
-     * Scans /dev/video* devices, probes their capabilities using V4L2 ioctls,
-     * and returns information about each decoder found. Each supported codec
-     * on a device is reported as a separate DecoderInfo entry.
-     *
-     * @return Vector of detected decoders (may be empty if none found)
-     */
     static std::vector<DecoderInfo> detect_decoders();
 
 private:
@@ -106,7 +62,5 @@ private:
      */
     static std::string get_device_name(const std::string& device_path);
 };
-
-#endif // ENABLE_V4L2_GL_PLAYER
 
 #endif // V4L2_DECODER_DETECTOR_H

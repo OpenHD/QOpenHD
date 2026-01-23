@@ -12,7 +12,7 @@
 
 #include <uvgrtp/lib.hh>
 #include <uvgrtp/frame.hh>
-
+#include "../vscommon/VideoCodec.h"
 
 /**
  * @brief RTP receiver using uvgRTP library with automatic defragmentation.
@@ -39,14 +39,6 @@ public:
     UvgRtpReceiver& operator=(const UvgRtpReceiver&) = delete;
 
     /**
-     * @brief Supported codecs.
-     */
-    enum class Codec {
-        H264,
-        H265
-    };
-
-    /**
      * @brief Callback for received NAL units.
      * Called from uvgRTP thread when a complete NAL is received.
      * Parameters: data pointer, size, timestamp in microseconds
@@ -70,7 +62,7 @@ public:
      * @param codec Codec type (H264 or H265)
      * @return true on success
      */
-    bool init(const std::string& local_addr, uint16_t local_port, Codec codec);
+    bool init(const std::string& local_addr, uint16_t local_port, VideoCodec codec);
 
     /**
      * @brief Set callback for received NAL units.
@@ -121,7 +113,7 @@ private:
     // Configuration
     std::string local_addr_;
     uint16_t local_port_ = 0;
-    Codec codec_ = Codec::H264;
+    VideoCodec codec_ = VideoCodec::H264;
 
     // State
     std::atomic<bool> running_{false};

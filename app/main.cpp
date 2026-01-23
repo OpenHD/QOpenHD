@@ -55,6 +55,7 @@
 #include "videostreaming/libplacebo/placebo_video_item.h"
 #include "videostreaming/v4l2/v4l2_pipeline.h"
 #include "videostreaming/v4l2/v4l2_decoder_detector.h"
+#include "V4L2DecoderType.h"
 #endif
 // Video end
 
@@ -270,8 +271,8 @@ int main(int argc, char *argv[]) {
     qDebug() << "V4L2 Decoders found:" << decoders.size();
     for (const auto& dec : decoders) {
         qDebug() << "  Device:" << QString::fromStdString(dec.device_path)
-                 << "Codec:" << (dec.codec == V4L2Decoder::Codec::H264 ? "H264" : "H265")
-                 << "Type:" << (dec.type == V4L2DecoderDetector::DecoderType::Stateful ? "Stateful" : "Stateless")
+                 << "Codec:" << (dec.codec == VideoCodec::H264 ? "H264" : "H265")
+                 << "Type:" << (dec.type == V4L2DecoderType::Stateful ? "Stateful" : "Stateless")
                  << "Media:" << QString::fromStdString(dec.media_device_path)
                  << "Driver:" << QString::fromStdString(dec.driver_name);
     }
