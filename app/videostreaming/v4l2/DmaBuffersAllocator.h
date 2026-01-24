@@ -19,7 +19,7 @@ public:
 
     static std::unique_ptr<DmaBuffersAllocator> Create();
 
-    std::vector<std::unique_ptr<DmaBuffer>> Allocate(size_t size);
+    std::unique_ptr<DmaBuffer> Allocate(size_t size);
 
 private:
     DmaBuffersAllocator(int fd);

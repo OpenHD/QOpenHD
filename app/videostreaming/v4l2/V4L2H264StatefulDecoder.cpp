@@ -125,7 +125,14 @@ void V4L2H264StatefulDecoder::ConfigureFormats()
 
 void V4L2H264StatefulDecoder::SetupBuffers()
 {
-
+    // Allocate buffers for encoded frames
+    // We use really safe size that have to be enought for any stream - 2MB
+    std::array<std::unique_ptr<DmaBuffer>, INPUT_BUFFER_COUNT> encodedBuffers;
+    for (int i = 0; i < INPUT_BUFFER_COUNT; ++i)
+    {
+        auto buffer = dmaBuffersAllocator_->Allocate(DEFAULT_INPUT_BUFFER_SIZE);
+        encodedBuffers[i] = std::move(buffer);
+    }
 }
 
 bool V4L2H264StatefulDecoder::start()
