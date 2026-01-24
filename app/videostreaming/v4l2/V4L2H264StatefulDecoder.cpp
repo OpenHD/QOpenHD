@@ -88,6 +88,10 @@ void V4L2H264StatefulDecoder::Init()
     SubscribeToEvents();
     ConfigureFormats();
     SetupBuffers();
+
+    // Queue all CAPTURE buffers to give decoder buffers to write decoded frames into
+    device_->GetDecodedBuffersQueue()->QueueAllBuffers();
+
     device_->GetEncodedBuffersQueue()->StreamOn();
     device_->GetDecodedBuffersQueue()->StreamOn();
 }
@@ -213,6 +217,16 @@ void V4L2H264StatefulDecoder::recycle_buffer(uint32_t buffer_index)
 {
     std::lock_guard<std::mutex> lock(recycle_mutex_);
     recycle_queue_.push(buffer_index);
+}
+
+DecodedFrame V4L2H264StatefulDecoder::wait_for_decoded_frame()
+{
+    return device_->GetDecodedBuffersQueue()->WaitForDecodedFrame();
+}
+
+void V4L2H264StatefulDecoder::recycle_decoded_buffer(uint32_t buffer_index)
+{
+    device_->GetDecodedBuffersQueue()->ReuseBuffer(buffer_index);
 }
 
 V4L2H264StatefulDecoder::Stats V4L2H264StatefulDecoder::get_stats() const

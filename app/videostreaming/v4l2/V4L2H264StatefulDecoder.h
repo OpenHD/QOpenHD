@@ -3,6 +3,7 @@
 
 #include "V4L2Device.h"
 #include "DmaBuffersAllocator.h"
+#include "DecodedDmaBuffersQueue.h"
 #include "../libplacebo/placebo_frame_queue.h"
 
 #include <gsl/span>
@@ -98,6 +99,18 @@ public:
      * @param buffer_index The buffer index from PlaceboFrame
      */
     void recycle_buffer(uint32_t buffer_index);
+
+    /**
+     * @brief Wait for next decoded frame (blocking).
+     * @return DecodedFrame on success (check is_valid())
+     */
+    DecodedFrame wait_for_decoded_frame();
+
+    /**
+     * @brief Recycle a decoded buffer back to V4L2 device.
+     * @param buffer_index The buffer index from DecodedFrame
+     */
+    void recycle_decoded_buffer(uint32_t buffer_index);
 
     /**
      * @brief Set frame callback.

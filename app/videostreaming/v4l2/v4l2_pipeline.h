@@ -15,6 +15,7 @@
 
 #include "UvgRtpReceiver.h"
 #include "V4L2H264StatefulDecoder.h"
+#include "DecodedDmaBuffersQueue.h"
 #include "v4l2_decoder_detector.h"
 #include "../libplacebo/placebo_frame_queue.h"
 #include "../libplacebo/placebo_renderer.h"
@@ -45,6 +46,10 @@ public:
         // RTP reception
         std::string rtp_listen_addr = "0.0.0.0";
         uint16_t rtp_listen_port = 5600;
+
+        // Testing mode: immediately recycle decoded frames back to decoder
+        // (skip presenter, useful for testing RTP+decoding without display)
+        bool stub_presenter_mode = false;
     };
 
     /**
@@ -94,6 +99,9 @@ public:
         uint64_t rtp_frames_received = 0;
         uint64_t rtp_bytes_received = 0;
         uint64_t nals_fed_to_decoder = 0;
+        // Decoded frame statistics
+        uint64_t frames_from_decoder = 0;
+        uint64_t frames_recycled_stub = 0;  // Only in stub mode
         // Decoder statistics
         V4L2H264StatefulDecoder::Stats decoder;
         // Frame queue statistics
@@ -128,19 +136,25 @@ private:
     std::mutex m_rtp_queue_mutex;
     std::condition_variable m_rtp_queue_cv;
 
-    // Processing thread
+    // Thread 1: RTP frame processing (uvgRTP queue → decoder input)
     std::thread m_processing_thread;
     void processRtpFrameLoop();
+
+    // Thread 2: Decoded frame processing (decoder output → presenter/stub)
+    std::thread m_decode_output_thread;
+    void processDecodedFramesLoop();
 
     // Callbacks
     void on_rtp_frame_received(uvgrtp::frame::rtp_frame* frame);
     void on_frame_decoded(PlaceboFrame frame);
     void on_decoder_capabilities(const V4L2H264StatefulDecoder::Capabilities& caps);
 
-    // Statistics (updated from processing thread)
+    // Statistics (updated from processing threads)
     std::atomic<uint64_t> m_rtp_frames_received{0};
     std::atomic<uint64_t> m_rtp_bytes_received{0};
     std::atomic<uint64_t> m_nals_fed_to_decoder{0};
+    std::atomic<uint64_t> m_frames_from_decoder{0};
+    std::atomic<uint64_t> m_frames_recycled_stub{0};
 
     // Renderer format notification (to be picked up by PlaceboVideoItem)
     PlaceboRenderer::FrameFormat m_frame_format;

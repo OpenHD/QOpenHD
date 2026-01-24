@@ -38,16 +38,11 @@ V4L2Pipeline::V4L2Pipeline(const Config& config, const DecoderInfo& decoderInfo)
         on_rtp_frame_received(frame);
     });
 
-    m_decoder->set_frame_callback([this](PlaceboFrame frame) {
-        on_frame_decoded(std::move(frame));
-    });
-
-    m_decoder->set_capabilities_callback([this](const V4L2H264StatefulDecoder::Capabilities& caps) {
-        on_decoder_capabilities(caps);
-    });
+    // Note: decoder callbacks removed - we use explicit polling in processDecodedFramesLoop
 
     m_initialized = true;
-    qInfo() << "V4L2Pipeline: initialized successfully";
+    qInfo() << "V4L2Pipeline: initialized successfully"
+            << (config.stub_presenter_mode ? "(STUB MODE - frames will be recycled immediately)" : "");
 }
 
 V4L2Pipeline::~V4L2Pipeline()
@@ -78,8 +73,11 @@ bool V4L2Pipeline::start()
 
     m_running = true;
 
-    // Start processing thread (before RTP receiver to be ready for frames)
+    // Start Thread 1: RTP frame processing (before RTP receiver to be ready for frames)
     m_processing_thread = std::thread(&V4L2Pipeline::processRtpFrameLoop, this);
+
+    // Start Thread 2: Decoded frame processing
+    m_decode_output_thread = std::thread(&V4L2Pipeline::processDecodedFramesLoop, this);
 
     // Start RTP receiver
     if (!m_rtp_receiver->start()) {
@@ -89,11 +87,14 @@ bool V4L2Pipeline::start()
         if (m_processing_thread.joinable()) {
             m_processing_thread.join();
         }
+        if (m_decode_output_thread.joinable()) {
+            m_decode_output_thread.join();
+        }
         m_decoder->stop();
         return false;
     }
 
-    qInfo() << "V4L2Pipeline: started";
+    qInfo() << "V4L2Pipeline: started with 2 processing threads";
     return true;
 }
 
@@ -111,13 +112,20 @@ void V4L2Pipeline::stop()
         m_rtp_receiver->stop();
     }
 
-    // Signal processing thread to stop and wake it up
+    // Signal processing threads to stop and wake them up
     m_running = false;
     m_rtp_queue_cv.notify_all();
 
-    // Wait for processing thread
+    // Wait for Thread 1: RTP frame processing
     if (m_processing_thread.joinable()) {
         m_processing_thread.join();
+    }
+
+    // Wait for Thread 2: Decoded frame processing
+    // Note: This thread may be blocked in WaitForDecodedFrame()
+    // TODO: Add proper interrupt mechanism for decoder wait
+    if (m_decode_output_thread.joinable()) {
+        m_decode_output_thread.join();
     }
 
     // Drain remaining RTP frames in queue
@@ -157,6 +165,8 @@ V4L2Pipeline::Stats V4L2Pipeline::get_stats() const
     stats.rtp_frames_received = m_rtp_frames_received.load();
     stats.rtp_bytes_received = m_rtp_bytes_received.load();
     stats.nals_fed_to_decoder = m_nals_fed_to_decoder.load();
+    stats.frames_from_decoder = m_frames_from_decoder.load();
+    stats.frames_recycled_stub = m_frames_recycled_stub.load();
 
     if (m_decoder) {
         stats.decoder = m_decoder->get_stats();
@@ -171,6 +181,8 @@ void V4L2Pipeline::reset_stats()
     m_rtp_frames_received = 0;
     m_rtp_bytes_received = 0;
     m_nals_fed_to_decoder = 0;
+    m_frames_from_decoder = 0;
+    m_frames_recycled_stub = 0;
 
     if (m_decoder) {
         m_decoder->reset_stats();
@@ -205,7 +217,7 @@ void V4L2Pipeline::on_rtp_frame_received(uvgrtp::frame::rtp_frame* frame)
 
 void V4L2Pipeline::processRtpFrameLoop()
 {
-    qDebug() << "V4L2Pipeline: processing thread started";
+    qDebug() << "V4L2Pipeline: Thread 1 (RTP processing) started";
 
     while (m_running.load()) {
         uvgrtp::frame::rtp_frame* frame = nullptr;
@@ -244,7 +256,70 @@ void V4L2Pipeline::processRtpFrameLoop()
         }
     }
 
-    qDebug() << "V4L2Pipeline: processing thread stopped";
+    qDebug() << "V4L2Pipeline: Thread 1 (RTP processing) stopped";
+}
+
+void V4L2Pipeline::processDecodedFramesLoop()
+{
+    qDebug() << "V4L2Pipeline: Thread 2 (decoded frame processing) started"
+             << (m_config.stub_presenter_mode ? "[STUB MODE]" : "[NORMAL MODE]");
+
+    while (m_running.load()) {
+        try {
+            // Wait for decoded frame (blocking)
+            DecodedFrame decoded_frame = m_decoder->wait_for_decoded_frame();
+
+            if (!decoded_frame.is_valid()) {
+                qWarning() << "V4L2Pipeline: received invalid decoded frame";
+                continue;
+            }
+
+            m_frames_from_decoder++;
+
+            if (m_config.stub_presenter_mode) {
+                // STUB MODE: Immediately recycle buffer back to decoder
+                // This is for testing RTP reception and decoding without display
+                m_decoder->recycle_decoded_buffer(decoded_frame.buffer_index);
+                m_frames_recycled_stub++;
+
+                // Log every 100 frames for monitoring
+                if (m_frames_recycled_stub % 100 == 0) {
+                    qDebug() << "V4L2Pipeline: [STUB] decoded and recycled"
+                             << m_frames_recycled_stub.load() << "frames";
+                }
+            } else {
+                // NORMAL MODE: Pass frame to presenter via PlaceboFrameQueue
+                PlaceboFrame placebo_frame;
+                placebo_frame.buffer_index = decoded_frame.buffer_index;
+                placebo_frame.plane_count = decoded_frame.planes_count;
+                placebo_frame.timestamp_us = decoded_frame.timestamp_us;
+                placebo_frame.sequence = m_frames_from_decoder.load();
+
+                // Copy plane information
+                for (uint32_t i = 0; i < decoded_frame.planes_count && i < 4; ++i) {
+                    placebo_frame.planes[i].fd = decoded_frame.planes[i].fd;
+                    placebo_frame.planes[i].offset = decoded_frame.planes[i].offset;
+                    placebo_frame.planes[i].pitch = decoded_frame.planes[i].length;
+                    placebo_frame.planes[i].size = decoded_frame.planes[i].bytesused;
+                }
+
+                // TODO: Fill in width, height, pixel_format from decoder capabilities
+                // once we handle SOURCE_CHANGE event properly
+
+                on_frame_decoded(std::move(placebo_frame));
+            }
+        } catch (const std::exception& e) {
+            if (m_running.load()) {
+                qWarning() << "V4L2Pipeline: error waiting for decoded frame:" << e.what();
+            }
+            // On error, check if we should continue
+            if (!m_running.load()) {
+                break;
+            }
+        }
+    }
+
+    qDebug() << "V4L2Pipeline: Thread 2 (decoded frame processing) stopped";
 }
 
 void V4L2Pipeline::on_frame_decoded(PlaceboFrame frame)
