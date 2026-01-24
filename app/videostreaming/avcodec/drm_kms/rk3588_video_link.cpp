@@ -247,6 +247,7 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
         return false;
     }
     uint32_t chosen = 0;
+    uint32_t chosen_in_use = 0;
     for (uint32_t i = 0; i < planes->count_planes; ++i) {
         drmModePlane* plane = drmModeGetPlane(drm_fd, planes->planes[i]);
         if (!plane) {
@@ -260,17 +261,19 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
             drmModeFreePlane(plane);
             continue;
         }
-        if (plane->crtc_id == 0) {
+        if (plane->crtc_id == 0 && !chosen) {
             chosen = plane->plane_id;
-            drmModeFreePlane(plane);
-            break;
-        }
-        if (!chosen) {
-            chosen = plane->plane_id;
+        } else if (plane->crtc_id != 0 && !chosen_in_use) {
+            chosen_in_use = plane->plane_id;
         }
         drmModeFreePlane(plane);
     }
     drmModeFreePlaneResources(planes);
+    if (!chosen && chosen_in_use) {
+        std::cerr << "Rk3588VideoLink: no free overlay plane, falling back to in-use plane "
+                  << chosen_in_use << "\n";
+        chosen = chosen_in_use;
+    }
     if (!chosen) {
         return false;
     }
@@ -630,8 +633,21 @@ void Rk3588VideoLink::present_if_pending() {
     if (drmModeAtomicCommit(drm_fd, req, DRM_MODE_ATOMIC_NONBLOCK, nullptr) == 0) {
         current_fb_id = frame.fb_id;
     } else {
-        std::cerr << "Rk3588VideoLink: atomic commit failed: " << strerror(errno)
-                  << " is_master=" << drmIsMaster(drm_fd) << "\n";
+        const int saved_errno = errno;
+        std::cerr << "Rk3588VideoLink: atomic commit failed: " << strerror(saved_errno)
+                  << " is_master=" << drmIsMaster(drm_fd)
+                  << " plane=" << plane_id << " crtc=" << crtc_id << "\n";
+        if (saved_errno == EBUSY) {
+            if (drmModeSetPlane(drm_fd, plane_id, crtc_id, frame.fb_id, 0,
+                                0, 0, display_width, display_height,
+                                0, 0, frame.meta.width << 16, frame.meta.height << 16) == 0) {
+                current_fb_id = frame.fb_id;
+                std::cerr << "Rk3588VideoLink: drmModeSetPlane fallback succeeded\n";
+            } else {
+                std::cerr << "Rk3588VideoLink: drmModeSetPlane fallback failed: "
+                          << strerror(errno) << "\n";
+            }
+        }
     }
     drmModeAtomicFree(req);
 }
