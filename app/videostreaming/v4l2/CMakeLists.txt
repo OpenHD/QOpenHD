@@ -1,4 +1,5 @@
 set(V4L2_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/DecodedDmaBuffersQueue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffersAllocator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/EncodedDmaBuffersQueue.cpp
@@ -10,6 +11,7 @@ set(V4L2_SOURCES
 )
 
 set(V4L2_HEADERS
+    ${CMAKE_CURRENT_LIST_DIR}/DecodedDmaBuffersQueue.h
     ${CMAKE_CURRENT_LIST_DIR}/DecoderInfo.h
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffer.h
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffersAllocator.h
