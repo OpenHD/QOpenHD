@@ -1,6 +1,6 @@
 #include "qrenderstats.h"
 
-#if defined(__linux__) && defined(IS_PLATFORM_ROCK)
+#if defined(__linux__)
 #include "videostreaming/avcodec/drm_kms/rk3588_video_link.h"
 #endif
 
@@ -35,7 +35,7 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
     connect(window, &QQuickWindow::afterRendering, this, &QRenderStats::m_QQuickWindow_afterRendering, Qt::DirectConnection);
     connect(window, &QQuickWindow::beforeRenderPassRecording, this, &QRenderStats::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
     connect(window, &QQuickWindow::afterRenderPassRecording, this, &QRenderStats::m_QQuickWindow_afterRenderPassRecording, Qt::DirectConnection);
-#if defined(__linux__) && defined(IS_PLATFORM_ROCK)
+#if defined(__linux__)
     Rk3588VideoLink::instance().ensure_started();
 #endif
 }
@@ -57,7 +57,7 @@ void QRenderStats::set_display_width_height(int width, int height)
 void QRenderStats::m_QQuickWindow_beforeRendering()
 {
     //m_avg_rendering_time.start();
-#if defined(__linux__) && defined(IS_PLATFORM_ROCK)
+#if defined(__linux__)
     Rk3588VideoLink::instance().present_if_pending();
 #endif
 }

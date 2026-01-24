@@ -1,6 +1,6 @@
 #include "rk3588_video_link.h"
 
-#if defined(__linux__) && defined(IS_PLATFORM_ROCK)
+#if defined(__linux__)
 
 #include <errno.h>
 #include <fcntl.h>
@@ -131,6 +131,8 @@ bool Rk3588VideoLink::init_drm() {
         std::cerr << "Rk3588VideoLink: missing required plane properties\n";
         return false;
     }
+    std::cerr << "Rk3588VideoLink: using connector " << connector_id << " crtc " << crtc_id
+              << " plane " << plane_id << " display " << display_width << "x" << display_height << "\n";
     return true;
 }
 
@@ -331,6 +333,8 @@ void Rk3588VideoLink::receiver_thread() {
         close(sock);
         return;
     }
+    std::cerr << "Rk3588VideoLink: listening on " << kSocketPath << "\n";
+    uint64_t recv_count = 0;
     while (!shutdown_requested) {
         DmabufFrameInfo info{};
         char cmsgbuf[CMSG_SPACE(sizeof(int) * 4)];
@@ -395,6 +399,14 @@ void Rk3588VideoLink::receiver_thread() {
             pending.fb_id = fb_id;
             pending.meta = meta;
             has_pending = true;
+            recv_count++;
+            if (recv_count % 120 == 0) {
+                std::cerr << "Rk3588VideoLink: received " << recv_count << " frames ("
+                          << meta.width << "x" << meta.height << ")\n";
+            }
+        } else {
+            std::cerr << "Rk3588VideoLink: import failed for frame "
+                      << meta.width << "x" << meta.height << "\n";
         }
         close_fds(fds);
     }
@@ -550,6 +562,8 @@ void Rk3588VideoLink::present_if_pending() {
     }
     if (drmModeAtomicCommit(drm_fd, req, DRM_MODE_ATOMIC_NONBLOCK, nullptr) == 0) {
         current_fb_id = frame.fb_id;
+    } else {
+        std::cerr << "Rk3588VideoLink: atomic commit failed: " << strerror(errno) << "\n";
     }
     drmModeAtomicFree(req);
 }

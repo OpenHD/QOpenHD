@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#if defined(__linux__) && defined(IS_PLATFORM_ROCK)
+#if defined(__linux__)
 #include <atomic>
 #include <mutex>
 #include <thread>
