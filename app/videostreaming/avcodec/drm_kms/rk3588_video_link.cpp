@@ -17,6 +17,10 @@
 #include <drm_fourcc.h>
 #include <drm/drm_mode.h>
 
+#include <QGuiApplication>
+#include <QPlatformNativeInterface>
+#include <QScreen>
+
 #include "util/qrenderstats.h"
 
 namespace {
@@ -52,7 +56,7 @@ Rk3588VideoLink::~Rk3588VideoLink() {
         recv_thread.join();
     }
     cleanup_cache();
-    if (drm_fd >= 0) {
+    if (drm_fd >= 0 && owns_fd) {
         close(drm_fd);
         drm_fd = -1;
     }
@@ -99,18 +103,70 @@ void Rk3588VideoLink::ensure_started() {
 }
 
 bool Rk3588VideoLink::init_drm() {
-    drm_fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+    owns_fd = true;
+    if (QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)) {
+        auto* pni = QGuiApplication::platformNativeInterface();
+        if (pni) {
+            void* fd_ptr = pni->nativeResourceForIntegration("dri_fd");
+            if (fd_ptr) {
+                drm_fd = static_cast<int>(reinterpret_cast<qintptr>(fd_ptr));
+                owns_fd = false;
+                QScreen* screen = QGuiApplication::primaryScreen();
+                if (screen) {
+                    void* crtc_ptr = pni->nativeResourceForScreen("dri_crtcid", screen);
+                    void* conn_ptr = pni->nativeResourceForScreen("dri_connectorid", screen);
+                    if (crtc_ptr) {
+                        crtc_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(crtc_ptr));
+                    }
+                    if (conn_ptr) {
+                        connector_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(conn_ptr));
+                    }
+                    if (screen) {
+                        const auto size = screen->size();
+                        display_width = size.width();
+                        display_height = size.height();
+                    }
+                }
+                std::cerr << "Rk3588VideoLink: using EGLFS drm fd=" << drm_fd
+                          << " is_master=" << drmIsMaster(drm_fd)
+                          << " crtc=" << crtc_id << " connector=" << connector_id << "\n";
+            }
+        }
+    }
     if (drm_fd < 0) {
-        std::cerr << "Rk3588VideoLink: failed to open /dev/dri/card0: " << strerror(errno) << "\n";
-        return false;
+        drm_fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+        if (drm_fd < 0) {
+            std::cerr << "Rk3588VideoLink: failed to open /dev/dri/card0: " << strerror(errno) << "\n";
+            return false;
+        }
+    }
+    if (drmSetClientCap(drm_fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1) != 0) {
+        std::cerr << "Rk3588VideoLink: failed to enable universal planes: " << strerror(errno) << "\n";
     }
     if (drmSetClientCap(drm_fd, DRM_CLIENT_CAP_ATOMIC, 1) != 0) {
         std::cerr << "Rk3588VideoLink: failed to enable atomic: " << strerror(errno) << "\n";
         return false;
     }
-    if (!find_active_crtc()) {
-        std::cerr << "Rk3588VideoLink: failed to find active CRTC\n";
-        return false;
+    if (crtc_id == 0 || connector_id == 0) {
+        if (!find_active_crtc()) {
+            std::cerr << "Rk3588VideoLink: failed to find active CRTC\n";
+            return false;
+        }
+    } else {
+        drmModeRes* res = drmModeGetResources(drm_fd);
+        if (res) {
+            for (int c = 0; c < res->count_crtcs; ++c) {
+                if (res->crtcs[c] == crtc_id) {
+                    crtc_index = c;
+                    break;
+                }
+            }
+            drmModeFreeResources(res);
+        }
+        if (crtc_index < 0) {
+            std::cerr << "Rk3588VideoLink: failed to map crtc index for crtc " << crtc_id << "\n";
+            return false;
+        }
     }
     if (!pick_overlay_plane(DRM_FORMAT_NV12, DRM_FORMAT_MOD_INVALID)) {
         std::cerr << "Rk3588VideoLink: failed to find overlay plane\n";
@@ -574,7 +630,8 @@ void Rk3588VideoLink::present_if_pending() {
     if (drmModeAtomicCommit(drm_fd, req, DRM_MODE_ATOMIC_NONBLOCK, nullptr) == 0) {
         current_fb_id = frame.fb_id;
     } else {
-        std::cerr << "Rk3588VideoLink: atomic commit failed: " << strerror(errno) << "\n";
+        std::cerr << "Rk3588VideoLink: atomic commit failed: " << strerror(errno)
+                  << " is_master=" << drmIsMaster(drm_fd) << "\n";
     }
     drmModeAtomicFree(req);
 }

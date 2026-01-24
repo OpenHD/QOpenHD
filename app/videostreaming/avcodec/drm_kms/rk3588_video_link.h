@@ -80,6 +80,7 @@ private:
     std::thread recv_thread;
 
     int drm_fd = -1;
+    bool owns_fd = true;
     uint32_t connector_id = 0;
     uint32_t crtc_id = 0;
     int crtc_index = -1;
