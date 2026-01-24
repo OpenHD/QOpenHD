@@ -335,6 +335,8 @@ void Rk3588VideoLink::receiver_thread() {
     }
     std::cerr << "Rk3588VideoLink: listening on " << kSocketPath << "\n";
     uint64_t recv_count = 0;
+    uint64_t short_count = 0;
+    uint64_t bad_magic_count = 0;
     while (!shutdown_requested) {
         DmabufFrameInfo info{};
         char cmsgbuf[CMSG_SPACE(sizeof(int) * 4)];
@@ -361,10 +363,19 @@ void Rk3588VideoLink::receiver_thread() {
             }
         }
         if (static_cast<size_t>(ret) < sizeof(DmabufFrameInfo)) {
+            short_count++;
+            if (short_count % 120 == 0) {
+                std::cerr << "Rk3588VideoLink: short packet size=" << ret << "\n";
+            }
             close_fds(fds);
             continue;
         }
         if (info.magic != kMagic || info.version != kVersion) {
+            bad_magic_count++;
+            if (bad_magic_count % 120 == 0) {
+                std::cerr << "Rk3588VideoLink: bad magic/version " << info.magic
+                          << " v" << info.version << "\n";
+            }
             close_fds(fds);
             continue;
         }
