@@ -18,7 +18,7 @@
 #include <drm/drm_mode.h>
 
 #include <QGuiApplication>
-#include <QPlatformNativeInterface>
+#include <qpa/qplatformnativeinterface.h>
 #include <QScreen>
 
 #include "util/qrenderstats.h"
