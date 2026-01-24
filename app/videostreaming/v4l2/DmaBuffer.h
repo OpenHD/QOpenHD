@@ -1,7 +1,8 @@
 #ifndef QOPENHDPROJECT_DMABUFFER_H
 #define QOPENHDPROJECT_DMABUFFER_H
 #include <cstddef>
-#include <bits/stdint-uintn.h>
+#include <cstdint>
+#include <gsl/span>
 
 
 class DmaBuffer {
@@ -20,8 +21,11 @@ public:
     DmaBuffer(int fd, std::size_t size);
     ~DmaBuffer();
 
+    int GetFd() const { return fd_; }
+    std::size_t GetSize() const { return size_; }
+
     void MapBuffer();
-    void Write(const void* data, std::size_t size);
+    void Write(gsl::span<const uint8_t> data);
 };
 
 

@@ -79,6 +79,14 @@ if(ENABLE_UVGRTP)
     FetchContent_MakeAvailable(uvgRTP)
 endif()
 
+FetchContent_Declare(GSL
+    GIT_REPOSITORY "https://github.com/microsoft/GSL"
+    GIT_TAG "v4.2.0"
+    GIT_SHALLOW ON
+)
+
+FetchContent_MakeAvailable(GSL)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -261,6 +269,8 @@ endif()
 if(ENABLE_UVGRTP)
     target_link_libraries(QOpenHDApp PRIVATE uvgrtp)
 endif()
+
+target_link_libraries(QOpenHDApp PRIVATE Microsoft.GSL::GSL)
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
              ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)
