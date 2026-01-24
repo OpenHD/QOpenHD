@@ -37,6 +37,7 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
     connect(window, &QQuickWindow::afterRenderPassRecording, this, &QRenderStats::m_QQuickWindow_afterRenderPassRecording, Qt::DirectConnection);
 #if defined(__linux__)
     Rk3588VideoLink::instance().ensure_started();
+    set_external_video_fps_str("0 fps");
     if (!m_present_timer) {
         m_present_timer = new QTimer(this);
         m_present_timer->setTimerType(Qt::PreciseTimer);

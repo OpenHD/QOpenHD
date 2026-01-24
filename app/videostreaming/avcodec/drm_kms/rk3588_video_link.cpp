@@ -43,6 +43,28 @@ struct DmabufFrameInfo {
     uint64_t pts_ms;
 };
 
+static int64_t get_prop_value_by_name(int fd, uint32_t obj_id, uint32_t obj_type, const char* name) {
+    drmModeObjectProperties* props = drmModeObjectGetProperties(fd, obj_id, obj_type);
+    if (!props) {
+        return -1;
+    }
+    int64_t value = -1;
+    for (uint32_t i = 0; i < props->count_props; ++i) {
+        drmModePropertyRes* prop = drmModeGetProperty(fd, props->props[i]);
+        if (!prop) {
+            continue;
+        }
+        if (strcmp(prop->name, name) == 0) {
+            value = static_cast<int64_t>(props->prop_values[i]);
+            drmModeFreeProperty(prop);
+            break;
+        }
+        drmModeFreeProperty(prop);
+    }
+    drmModeFreeObjectProperties(props);
+    return value;
+}
+
 } // namespace
 
 Rk3588VideoLink& Rk3588VideoLink::instance() {
@@ -248,6 +270,8 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
     }
     uint32_t chosen = 0;
     uint32_t chosen_in_use = 0;
+    int64_t chosen_zpos = INT64_MAX;
+    int64_t chosen_in_use_zpos = INT64_MAX;
     for (uint32_t i = 0; i < planes->count_planes; ++i) {
         drmModePlane* plane = drmModeGetPlane(drm_fd, planes->planes[i]);
         if (!plane) {
@@ -261,23 +285,32 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
             drmModeFreePlane(plane);
             continue;
         }
-        if (plane->crtc_id == 0 && !chosen) {
-            chosen = plane->plane_id;
-        } else if (plane->crtc_id != 0 && !chosen_in_use) {
-            chosen_in_use = plane->plane_id;
+        const int64_t zpos_val = get_prop_value_by_name(drm_fd, plane->plane_id, DRM_MODE_OBJECT_PLANE, "zpos");
+        if (plane->crtc_id == 0) {
+            if (!chosen || (zpos_val >= 0 && zpos_val < chosen_zpos)) {
+                chosen = plane->plane_id;
+                chosen_zpos = zpos_val;
+            }
+        } else {
+            if (!chosen_in_use || (zpos_val >= 0 && zpos_val < chosen_in_use_zpos)) {
+                chosen_in_use = plane->plane_id;
+                chosen_in_use_zpos = zpos_val;
+            }
         }
         drmModeFreePlane(plane);
     }
     drmModeFreePlaneResources(planes);
     if (!chosen && chosen_in_use) {
         std::cerr << "Rk3588VideoLink: no free overlay plane, falling back to in-use plane "
-                  << chosen_in_use << "\n";
+                  << chosen_in_use << " zpos=" << chosen_in_use_zpos << "\n";
         chosen = chosen_in_use;
+        chosen_zpos = chosen_in_use_zpos;
     }
     if (!chosen) {
         return false;
     }
     plane_id = chosen;
+    std::cerr << "Rk3588VideoLink: selected plane " << plane_id << " zpos=" << chosen_zpos << "\n";
     return true;
 }
 
