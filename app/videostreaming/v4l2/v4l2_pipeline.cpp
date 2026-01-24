@@ -3,6 +3,7 @@
 #include "v4l2_pipeline.h"
 #include "v4l2_decoder_detector.h"
 
+#include <gsl/span>
 #include <QDebug>
 
 
@@ -33,8 +34,8 @@ V4L2Pipeline::V4L2Pipeline(const Config& config, const DecoderInfo& decoderInfo)
     }
 
     // Wire up callbacks
-    m_rtp_receiver->set_nal_callback([this](const uint8_t* data, size_t size, int64_t ts) {
-        on_nal_received(data, size, ts);
+    m_rtp_receiver->set_frame_callback([this](uvgrtp::frame::rtp_frame* frame) {
+        on_rtp_frame_received(frame);
     });
 
     m_decoder->set_frame_callback([this](PlaceboFrame frame) {
@@ -75,14 +76,23 @@ bool V4L2Pipeline::start()
         return false;
     }
 
+    m_running = true;
+
+    // Start processing thread (before RTP receiver to be ready for frames)
+    m_processing_thread = std::thread(&V4L2Pipeline::processRtpFrameLoop, this);
+
     // Start RTP receiver
     if (!m_rtp_receiver->start()) {
         qCritical() << "V4L2Pipeline: failed to start RTP receiver";
+        m_running = false;
+        m_rtp_queue_cv.notify_all();
+        if (m_processing_thread.joinable()) {
+            m_processing_thread.join();
+        }
         m_decoder->stop();
         return false;
-   }
+    }
 
-    m_running = true;
     qInfo() << "V4L2Pipeline: started";
     return true;
 }
@@ -101,6 +111,25 @@ void V4L2Pipeline::stop()
         m_rtp_receiver->stop();
     }
 
+    // Signal processing thread to stop and wake it up
+    m_running = false;
+    m_rtp_queue_cv.notify_all();
+
+    // Wait for processing thread
+    if (m_processing_thread.joinable()) {
+        m_processing_thread.join();
+    }
+
+    // Drain remaining RTP frames in queue
+    {
+        std::lock_guard<std::mutex> lock(m_rtp_queue_mutex);
+        while (!m_rtp_frame_queue.empty()) {
+            uvgrtp::frame::rtp_frame* frame = m_rtp_frame_queue.front();
+            m_rtp_frame_queue.pop();
+            UvgRtpReceiver::deallocate_frame(frame);
+        }
+    }
+
     // Stop decoder
     if (m_decoder) {
         m_decoder->stop();
@@ -109,7 +138,6 @@ void V4L2Pipeline::stop()
     // Reset frame queue (clears any remaining frames)
     m_frame_queue.reset();
 
-    m_running = false;
     m_format_ready = false;
 
     qInfo() << "V4L2Pipeline: stopped";
@@ -126,9 +154,9 @@ V4L2Pipeline::Stats V4L2Pipeline::get_stats() const
 {
     Stats stats;
 
-    if (m_rtp_receiver) {
-        stats.rtp = m_rtp_receiver->get_stats();
-    }
+    stats.rtp_frames_received = m_rtp_frames_received.load();
+    stats.rtp_bytes_received = m_rtp_bytes_received.load();
+    stats.nals_fed_to_decoder = m_nals_fed_to_decoder.load();
 
     if (m_decoder) {
         stats.decoder = m_decoder->get_stats();
@@ -140,9 +168,10 @@ V4L2Pipeline::Stats V4L2Pipeline::get_stats() const
 
 void V4L2Pipeline::reset_stats()
 {
-    if (m_rtp_receiver) {
-        m_rtp_receiver->reset_stats();
-    }
+    m_rtp_frames_received = 0;
+    m_rtp_bytes_received = 0;
+    m_nals_fed_to_decoder = 0;
+
     if (m_decoder) {
         m_decoder->reset_stats();
     }
@@ -164,12 +193,58 @@ std::string V4L2Pipeline::get_last_error() const
     return "";
 }
 
-void V4L2Pipeline::on_nal_received(const uint8_t* data, size_t size, int64_t timestamp_us)
+void V4L2Pipeline::on_rtp_frame_received(uvgrtp::frame::rtp_frame* frame)
 {
-    // Forward NAL unit to decoder
-    if (m_decoder && m_running) {
-        m_decoder->feed_nal_unit(data, size, timestamp_us);
+    // Just enqueue the frame - processing happens in dedicated thread
+    {
+        std::lock_guard<std::mutex> lock(m_rtp_queue_mutex);
+        m_rtp_frame_queue.push(frame);
     }
+    m_rtp_queue_cv.notify_one();
+}
+
+void V4L2Pipeline::processRtpFrameLoop()
+{
+    qDebug() << "V4L2Pipeline: processing thread started";
+
+    while (m_running.load()) {
+        uvgrtp::frame::rtp_frame* frame = nullptr;
+
+        // Wait for a frame
+        {
+            std::unique_lock<std::mutex> lock(m_rtp_queue_mutex);
+            m_rtp_queue_cv.wait(lock, [this] {
+                return !m_rtp_frame_queue.empty() || !m_running.load();
+            });
+
+            if (!m_running.load() && m_rtp_frame_queue.empty()) {
+                break;
+            }
+
+            if (!m_rtp_frame_queue.empty()) {
+                frame = m_rtp_frame_queue.front();
+                m_rtp_frame_queue.pop();
+            }
+        }
+
+        if (frame) {
+            // Update statistics
+            m_rtp_frames_received++;
+            m_rtp_bytes_received += frame->payload_len;
+
+            // Feed NAL unit to decoder (blocking call)
+            if (m_decoder && frame->payload && frame->payload_len > 0) {
+                gsl::span<const uint8_t> nal_data(frame->payload, frame->payload_len);
+                m_decoder->feed_nal_unit(nal_data);
+                m_nals_fed_to_decoder++;
+            }
+
+            // Return frame to uvgRTP
+            UvgRtpReceiver::deallocate_frame(frame);
+        }
+    }
+
+    qDebug() << "V4L2Pipeline: processing thread stopped";
 }
 
 void V4L2Pipeline::on_frame_decoded(PlaceboFrame frame)

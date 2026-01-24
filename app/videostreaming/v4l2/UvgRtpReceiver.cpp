@@ -1,4 +1,4 @@
-#include "uvgrtp_receiver.h"
+#include "UvgRtpReceiver.h"
 
 #include <QDebug>
 
@@ -78,10 +78,10 @@ bool UvgRtpReceiver::init(const std::string& local_addr, uint16_t local_port, Vi
     return true;
 }
 
-void UvgRtpReceiver::set_nal_callback(NalCallback callback)
+void UvgRtpReceiver::set_frame_callback(FrameCallback callback)
 {
     std::lock_guard<std::mutex> lock(callback_mutex_);
-    nal_callback_ = std::move(callback);
+    frame_callback_ = std::move(callback);
 }
 
 bool UvgRtpReceiver::start()
@@ -132,19 +132,6 @@ void UvgRtpReceiver::stop()
     qInfo() << "UvgRtpReceiver: stopped";
 }
 
-UvgRtpReceiver::Stats UvgRtpReceiver::get_stats() const
-{
-    std::lock_guard<std::mutex> lock(stats_mutex_);
-    return stats_;
-}
-
-void UvgRtpReceiver::reset_stats()
-{
-    std::lock_guard<std::mutex> lock(stats_mutex_);
-    stats_ = Stats();
-    first_rtp_ts_set_ = false;
-}
-
 void UvgRtpReceiver::frameReceiveHook(void* arg, uvgrtp::frame::rtp_frame* frame)
 {
     if (!arg || !frame) {
@@ -155,51 +142,25 @@ void UvgRtpReceiver::frameReceiveHook(void* arg, uvgrtp::frame::rtp_frame* frame
     }
 
     auto* receiver = static_cast<UvgRtpReceiver*>(arg);
-    receiver->processFrame(frame);
-}
 
-void UvgRtpReceiver::processFrame(uvgrtp::frame::rtp_frame* frame)
-{
-    if (!running_.load() || !frame || !frame->payload || frame->payload_len == 0) {
-        if (frame) {
-            uvgrtp::frame::dealloc_frame(frame);
-        }
+    if (!receiver->running_.load() || !frame->payload || frame->payload_len == 0) {
+        uvgrtp::frame::dealloc_frame(frame);
         return;
     }
 
-    // Update statistics
-    {
-        std::lock_guard<std::mutex> lock(stats_mutex_);
-        stats_.packets_received++;
-        stats_.bytes_received += frame->payload_len;
+    // Forward frame to callback - caller takes ownership and must deallocate
+    std::lock_guard<std::mutex> lock(receiver->callback_mutex_);
+    if (receiver->frame_callback_) {
+        receiver->frame_callback_(frame);
+    } else {
+        // No callback registered - deallocate frame
+        uvgrtp::frame::dealloc_frame(frame);
     }
+}
 
-    // Calculate timestamp in microseconds
-    // RTP timestamp is in 90kHz clock units for video
-    int64_t timestamp_us = 0;
-    auto now = std::chrono::steady_clock::now();
-
-    if (!first_rtp_ts_set_) {
-        first_rtp_ts_ = frame->header.timestamp;
-        first_recv_time_ = now;
-        first_rtp_ts_set_ = true;
+void UvgRtpReceiver::deallocate_frame(uvgrtp::frame::rtp_frame* frame)
+{
+    if (frame) {
+        uvgrtp::frame::dealloc_frame(frame);
     }
-
-    // Convert RTP timestamp delta to microseconds (90kHz -> us)
-    uint32_t rtp_delta = frame->header.timestamp - first_rtp_ts_;
-    timestamp_us = static_cast<int64_t>(rtp_delta) * 1000000 / 90000;
-
-    // Deliver NAL unit via callback
-    {
-        std::lock_guard<std::mutex> lock(callback_mutex_);
-        if (nal_callback_) {
-            nal_callback_(frame->payload, frame->payload_len, timestamp_us);
-
-            std::lock_guard<std::mutex> stats_lock(stats_mutex_);
-            stats_.nals_delivered++;
-        }
-    }
-
-    // Free frame
-    uvgrtp::frame::dealloc_frame(frame);
 }

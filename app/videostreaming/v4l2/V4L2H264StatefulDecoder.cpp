@@ -184,12 +184,6 @@ void V4L2H264StatefulDecoder::stop()
     // Signal stop
     stop_requested_ = true;
 
-    // Wake up decode thread
-    {
-        std::lock_guard<std::mutex> lock(nal_mutex_);
-        nal_cv_.notify_all();
-    }
-
     // Wait for decode thread
     if (decode_thread_.joinable()) {
         decode_thread_.join();
@@ -203,24 +197,14 @@ void V4L2H264StatefulDecoder::stop()
     qInfo() << "V4L2Decoder: stopped. Decoded frames:" << frames_decoded_.load();
 }
 
-void V4L2H264StatefulDecoder::feed_nal_unit(const uint8_t* data, size_t size, int64_t timestamp_us)
+void V4L2H264StatefulDecoder::feed_nal_unit(gsl::span<const uint8_t> data)
 {
-    if (!running_.load() || !data || size == 0) {
+    if (!running_.load() || data.empty()) {
         return;
     }
 
-    nals_received_++;
-
-    // Add to queue
-    NalUnit nal;
-    nal.data.assign(data, data + size);
-    nal.timestamp_us = timestamp_us;
-
-    {
-        std::lock_guard<std::mutex> lock(nal_mutex_);
-        nal_queue_.push(std::move(nal));
-    }
-    nal_cv_.notify_one();
+    // Write NAL unit directly to V4L2 device (blocking)
+    device_->GetEncodedBuffersQueue()->WaitWrite(data);
 }
 
 void V4L2H264StatefulDecoder::recycle_buffer(uint32_t buffer_index)
@@ -234,7 +218,6 @@ V4L2H264StatefulDecoder::Stats V4L2H264StatefulDecoder::get_stats() const
     Stats stats;
     stats.frames_decoded = frames_decoded_.load();
     stats.frames_dropped = frames_dropped_.load();
-    stats.nals_received = nals_received_.load();
     stats.decode_errors = decode_errors_.load();
     return stats;
 }
@@ -243,7 +226,6 @@ void V4L2H264StatefulDecoder::reset_stats()
 {
     frames_decoded_ = 0;
     frames_dropped_ = 0;
-    nals_received_ = 0;
     decode_errors_ = 0;
 }
 

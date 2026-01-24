@@ -6,8 +6,14 @@
 #include <memory>
 #include <string>
 #include <atomic>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
-#include "uvgrtp_receiver.h"
+#include <uvgrtp/frame.hh>
+
+#include "UvgRtpReceiver.h"
 #include "V4L2H264StatefulDecoder.h"
 #include "v4l2_decoder_detector.h"
 #include "../libplacebo/placebo_frame_queue.h"
@@ -24,8 +30,9 @@
  * The PlaceboVideoItem connects to this pipeline to receive frames.
  *
  * Thread model:
- * - uvgRTP thread: receives RTP packets, reassembles NALs
- * - V4L2 decoder thread: decodes NALs, produces DMA-BUF frames
+ * - uvgRTP thread: receives RTP packets, reassembles NALs, enqueues to pipeline
+ * - Pipeline processing thread: dequeues frames, feeds decoder, deallocates RTP frames
+ * - V4L2 decoder: decodes NALs (blocking WaitWrite), produces DMA-BUF frames
  * - Qt render thread: renders frames via PlaceboRenderer
  */
 class V4L2Pipeline
@@ -83,8 +90,13 @@ public:
      * @brief Get pipeline statistics
      */
     struct Stats {
-        UvgRtpReceiver::Stats rtp;
+        // RTP reception statistics
+        uint64_t rtp_frames_received = 0;
+        uint64_t rtp_bytes_received = 0;
+        uint64_t nals_fed_to_decoder = 0;
+        // Decoder statistics
         V4L2H264StatefulDecoder::Stats decoder;
+        // Frame queue statistics
         PlaceboFrameQueue::Stats queue;
     };
     Stats get_stats() const;
@@ -110,10 +122,25 @@ private:
     bool m_initialized = false;
     std::atomic<bool> m_running{false};
 
+    // RTP frame queue (uvgRTP thread → processing thread)
+    // TODO: Consider adding capacity limit
+    std::queue<uvgrtp::frame::rtp_frame*> m_rtp_frame_queue;
+    std::mutex m_rtp_queue_mutex;
+    std::condition_variable m_rtp_queue_cv;
+
+    // Processing thread
+    std::thread m_processing_thread;
+    void processRtpFrameLoop();
+
     // Callbacks
-    void on_nal_received(const uint8_t* data, size_t size, int64_t timestamp_us);
+    void on_rtp_frame_received(uvgrtp::frame::rtp_frame* frame);
     void on_frame_decoded(PlaceboFrame frame);
     void on_decoder_capabilities(const V4L2H264StatefulDecoder::Capabilities& caps);
+
+    // Statistics (updated from processing thread)
+    std::atomic<uint64_t> m_rtp_frames_received{0};
+    std::atomic<uint64_t> m_rtp_bytes_received{0};
+    std::atomic<uint64_t> m_nals_fed_to_decoder{0};
 
     // Renderer format notification (to be picked up by PlaceboVideoItem)
     PlaceboRenderer::FrameFormat m_frame_format;

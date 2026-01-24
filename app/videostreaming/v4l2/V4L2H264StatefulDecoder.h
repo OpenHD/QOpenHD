@@ -5,6 +5,7 @@
 #include "DmaBuffersAllocator.h"
 #include "../libplacebo/placebo_frame_queue.h"
 
+#include <gsl/span>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -12,7 +13,6 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
-#include <condition_variable>
 #include <queue>
 
 class V4L2H264StatefulDecoder
@@ -53,7 +53,6 @@ public:
     struct Stats {
         uint64_t frames_decoded = 0;
         uint64_t frames_dropped = 0;
-        uint64_t nals_received = 0;
         uint64_t decode_errors = 0;
     };
 
@@ -88,12 +87,10 @@ public:
 
     /**
      * @brief Feed a NAL unit to the decoder.
-     * Can be called from any thread.
+     * Blocks until data is written to V4L2 device.
      * @param data NAL unit data (with start code)
-     * @param size Size in bytes
-     * @param timestamp_us Presentation timestamp in microseconds
      */
-    void feed_nal_unit(const uint8_t* data, size_t size, int64_t timestamp_us);
+    void feed_nal_unit(gsl::span<const uint8_t> data);
 
     /**
      * @brief Recycle a buffer back to the decoder.
@@ -166,15 +163,6 @@ private:
     std::atomic<bool> running_{false};
     std::atomic<bool> stop_requested_{false};
 
-    // NAL unit queue (from RTP thread to decode thread)
-    struct NalUnit {
-        std::vector<uint8_t> data;
-        int64_t timestamp_us;
-    };
-    std::queue<NalUnit> nal_queue_;
-    std::mutex nal_mutex_;
-    std::condition_variable nal_cv_;
-
     // Buffer recycling queue
     std::queue<uint32_t> recycle_queue_;
     std::mutex recycle_mutex_;
@@ -182,7 +170,6 @@ private:
     // Statistics
     std::atomic<uint64_t> frames_decoded_{0};
     std::atomic<uint64_t> frames_dropped_{0};
-    std::atomic<uint64_t> nals_received_{0};
     std::atomic<uint64_t> decode_errors_{0};
 
     // Frame sequence counter

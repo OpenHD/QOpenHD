@@ -7,8 +7,6 @@
 #include <string>
 #include <atomic>
 #include <mutex>
-#include <vector>
-#include <chrono>
 
 #include <uvgrtp/lib.hh>
 #include <uvgrtp/frame.hh>
@@ -24,7 +22,8 @@
  *
  * Thread model:
  * - Reception runs in uvgRTP's internal thread
- * - NAL callback is invoked from uvgRTP thread with complete NAL units
+ * - Frame callback is invoked from uvgRTP thread with complete frames
+ * - Caller is responsible for frame deallocation via deallocate_frame()
  *
  * Based on RtpDrmPlayer reference implementation.
  */
@@ -39,21 +38,11 @@ public:
     UvgRtpReceiver& operator=(const UvgRtpReceiver&) = delete;
 
     /**
-     * @brief Callback for received NAL units.
-     * Called from uvgRTP thread when a complete NAL is received.
-     * Parameters: data pointer, size, timestamp in microseconds
+     * @brief Callback for received RTP frames.
+     * Called from uvgRTP thread when a complete frame is received.
+     * Caller must deallocate frame via deallocate_frame() after processing.
      */
-    using NalCallback = std::function<void(const uint8_t* data, size_t size, int64_t timestamp_us)>;
-
-    /**
-     * @brief Reception statistics.
-     */
-    struct Stats {
-        uint64_t packets_received = 0;
-        uint64_t bytes_received = 0;
-        uint64_t nals_delivered = 0;
-        uint64_t packets_lost = 0;
-    };
+    using FrameCallback = std::function<void(uvgrtp::frame::rtp_frame* frame)>;
 
     /**
      * @brief Initialize the receiver.
@@ -65,9 +54,10 @@ public:
     bool init(const std::string& local_addr, uint16_t local_port, VideoCodec codec);
 
     /**
-     * @brief Set callback for received NAL units.
+     * @brief Set callback for received frames.
+     * Callback receives ownership of the frame and must call deallocate_frame().
      */
-    void set_nal_callback(NalCallback callback);
+    void set_frame_callback(FrameCallback callback);
 
     /**
      * @brief Start receiving.
@@ -86,14 +76,10 @@ public:
     bool is_running() const { return running_.load(); }
 
     /**
-     * @brief Get current statistics.
+     * @brief Deallocate an RTP frame received via callback.
+     * Must be called after processing each frame.
      */
-    Stats get_stats() const;
-
-    /**
-     * @brief Reset statistics counters.
-     */
-    void reset_stats();
+    static void deallocate_frame(uvgrtp::frame::rtp_frame* frame);
 
     /**
      * @brief Get last error message.
@@ -103,7 +89,6 @@ public:
 private:
     // uvgRTP frame receive hook (static for C callback interface)
     static void frameReceiveHook(void* arg, uvgrtp::frame::rtp_frame* frame);
-    void processFrame(uvgrtp::frame::rtp_frame* frame);
 
     // uvgRTP objects
     std::unique_ptr<uvgrtp::context> ctx_;
@@ -120,18 +105,9 @@ private:
     std::atomic<bool> initialized_{false};
     std::string last_error_;
 
-    // Callback for complete NAL units
-    NalCallback nal_callback_;
+    // Callback for received frames
+    FrameCallback frame_callback_;
     std::mutex callback_mutex_;
-
-    // Statistics
-    mutable std::mutex stats_mutex_;
-    Stats stats_;
-
-    // RTP timestamp tracking for converting to microseconds
-    uint32_t first_rtp_ts_ = 0;
-    bool first_rtp_ts_set_ = false;
-    std::chrono::steady_clock::time_point first_recv_time_;
 };
 
 #endif // UVGRTP_RECEIVER_H
