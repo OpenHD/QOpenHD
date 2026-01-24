@@ -4,6 +4,7 @@
 #include <QObject>
 #include <qqmlapplicationengine.h>
 #include <qquickwindow.h>
+#include <QTimer>
 
 #include "../common/TimeHelper.hpp"
 #include "util/lqutils_include.h"
@@ -52,6 +53,7 @@ private:
     // looks like there is a glFLush() or somethin in QT.
     //Chronometer m_avg_rendering_time{};
     Chronometer m_avg_renderpass_time{};
+    QTimer* m_present_timer = nullptr;
 
 };
 

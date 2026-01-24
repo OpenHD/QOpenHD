@@ -613,6 +613,14 @@ void Rk3588VideoLink::present_if_pending() {
         frame = pending;
         has_pending = false;
     }
+    if (force_legacy_setplane.load(std::memory_order_relaxed)) {
+        if (drmModeSetPlane(drm_fd, plane_id, crtc_id, frame.fb_id, 0,
+                            0, 0, display_width, display_height,
+                            0, 0, frame.meta.width << 16, frame.meta.height << 16) == 0) {
+            current_fb_id = frame.fb_id;
+        }
+        return;
+    }
     drmModeAtomicReq* req = drmModeAtomicAlloc();
     if (!req) {
         return;
@@ -638,11 +646,12 @@ void Rk3588VideoLink::present_if_pending() {
                   << " is_master=" << drmIsMaster(drm_fd)
                   << " plane=" << plane_id << " crtc=" << crtc_id << "\n";
         if (saved_errno == EBUSY) {
+            force_legacy_setplane.store(true, std::memory_order_relaxed);
             if (drmModeSetPlane(drm_fd, plane_id, crtc_id, frame.fb_id, 0,
                                 0, 0, display_width, display_height,
                                 0, 0, frame.meta.width << 16, frame.meta.height << 16) == 0) {
                 current_fb_id = frame.fb_id;
-                std::cerr << "Rk3588VideoLink: drmModeSetPlane fallback succeeded\n";
+                std::cerr << "Rk3588VideoLink: switching to drmModeSetPlane path\n";
             } else {
                 std::cerr << "Rk3588VideoLink: drmModeSetPlane fallback failed: "
                           << strerror(errno) << "\n";

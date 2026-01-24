@@ -111,6 +111,8 @@ private:
     std::atomic<uint64_t> received_frames{0};
     std::chrono::steady_clock::time_point fps_last_time{};
     uint64_t fps_last_count = 0;
+
+    std::atomic<bool> force_legacy_setplane{false};
 };
 
 #else
