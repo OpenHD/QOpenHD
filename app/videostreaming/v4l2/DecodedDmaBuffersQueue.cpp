@@ -8,43 +8,13 @@
 #include <linux/videodev2.h>
 
 DecodedDmaBuffersQueue::DecodedDmaBuffersQueue(int fd, std::function<uint32_t()> planesCountGetter)
-    : fd_(fd)
-    , planesCountGetter_(std::move(planesCountGetter))
+    : DmaBuffersQueueBase(fd, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, std::move(planesCountGetter))
 {
-}
-
-void DecodedDmaBuffersQueue::RegisterBuffers(std::vector<std::unique_ptr<DmaBuffer>> buffers)
-{
-    if (buffers.empty()) {
-        throw std::runtime_error("Cannot register empty buffer list");
-    }
-
-    planesCount_ = planesCountGetter_();
-
-    // Request buffers from V4L2 device for CAPTURE queue
-    struct v4l2_requestbuffers reqbufs = {};
-    reqbufs.count = buffers.size();
-    reqbufs.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-    reqbufs.memory = V4L2_MEMORY_DMABUF;
-
-    if (ioctl(fd_, VIDIOC_REQBUFS, &reqbufs) < 0) {
-        throw std::runtime_error(std::string("VIDIOC_REQBUFS failed for CAPTURE: ") + std::strerror(errno));
-    }
-
-    if (reqbufs.count < buffers.size()) {
-        throw std::runtime_error("Device allocated fewer CAPTURE buffers than requested");
-    }
-
-    // Store buffers and initialize tracking state
-    buffers_ = std::move(buffers);
-    inUse_.assign(buffers_.size(), false);
-
-    // Note: We do NOT map buffers here - GPU reads directly via DMA-BUF
 }
 
 void DecodedDmaBuffersQueue::QueueAllBuffers()
 {
-    const uint32_t planesCount = planesCount_;
+    const uint32_t planesCount = GetPlanesCount();
 
     for (size_t i = 0; i < buffers_.size(); ++i) {
         std::vector<struct v4l2_plane> planes(planesCount);
@@ -94,7 +64,7 @@ DecodedFrame DecodedDmaBuffersQueue::WaitForDecodedFrame()
     }
 
     // Dequeue the decoded buffer
-    const uint32_t planesCount = planesCount_;
+    const uint32_t planesCount = GetPlanesCount();
     std::vector<struct v4l2_plane> planes(planesCount);
     std::memset(planes.data(), 0, sizeof(v4l2_plane) * planesCount);
 
@@ -136,7 +106,7 @@ void DecodedDmaBuffersQueue::ReuseBuffer(uint32_t buffer_index)
         throw std::runtime_error("Invalid buffer index: " + std::to_string(buffer_index));
     }
 
-    const uint32_t planesCount = planesCount_;
+    const uint32_t planesCount = GetPlanesCount();
     std::vector<struct v4l2_plane> planes(planesCount);
     std::memset(planes.data(), 0, sizeof(v4l2_plane) * planesCount);
 

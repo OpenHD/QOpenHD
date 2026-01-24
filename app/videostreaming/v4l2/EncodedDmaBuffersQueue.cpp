@@ -8,41 +8,8 @@
 #include <linux/videodev2.h>
 
 EncodedDmaBuffersQueue::EncodedDmaBuffersQueue(int fd, std::function<uint32_t()> planesCountGetter)
-    : fd_(fd)
-    , planesCountGetter_(std::move(planesCountGetter))
+    : DmaBuffersQueueBase(fd, V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, std::move(planesCountGetter))
 {
-}
-
-void EncodedDmaBuffersQueue::RegisterBuffers(std::vector<std::unique_ptr<DmaBuffer>> buffers)
-{
-    if (buffers.empty()) {
-        throw std::runtime_error("Cannot register empty buffer list");
-    }
-
-    planesCount_ = planesCountGetter_();
-
-    // Request buffers from V4L2 device
-    struct v4l2_requestbuffers reqbufs = {};
-    reqbufs.count = buffers.size();
-    reqbufs.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-    reqbufs.memory = V4L2_MEMORY_DMABUF;
-
-    if (ioctl(fd_, VIDIOC_REQBUFS, &reqbufs) < 0) {
-        throw std::runtime_error(std::string("VIDIOC_REQBUFS failed: ") + std::strerror(errno));
-    }
-
-    if (reqbufs.count < buffers.size()) {
-        throw std::runtime_error("Device allocated fewer buffers than requested");
-    }
-
-    // Store buffers and initialize tracking state
-    buffers_ = std::move(buffers);
-    inUse_.assign(buffers_.size(), false);
-
-    // Map all buffers for CPU access
-    for (auto& buffer : buffers_) {
-        buffer->MapBuffer();
-    }
 }
 
 void EncodedDmaBuffersQueue::WaitWrite(gsl::span<const uint8_t> data)
@@ -58,7 +25,7 @@ void EncodedDmaBuffersQueue::WaitWrite(gsl::span<const uint8_t> data)
             buffers_[freeIndex]->Write(data);
 
             // Prepare v4l2_buffer for queuing
-            const uint32_t planesCount = planesCount_;
+            const uint32_t planesCount = GetPlanesCount();
             std::vector<struct v4l2_plane> planes(planesCount);
             std::memset(planes.data(), 0, sizeof(v4l2_plane) * planesCount);
 
@@ -106,7 +73,7 @@ void EncodedDmaBuffersQueue::WaitWrite(gsl::span<const uint8_t> data)
 
 void EncodedDmaBuffersQueue::TryDequeueCompletedBuffers()
 {
-    const uint32_t planesCount = planesCount_;
+    const uint32_t planesCount = GetPlanesCount();
     std::vector<struct v4l2_plane> planes(planesCount);
 
     while (true) {

@@ -2,6 +2,7 @@ set(V4L2_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/DecodedDmaBuffersQueue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffersAllocator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DmaBuffersQueueBase.cpp
     ${CMAKE_CURRENT_LIST_DIR}/EncodedDmaBuffersQueue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/V4L2H264StatefulDecoder.cpp
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_decoder_detector.cpp
@@ -15,6 +16,7 @@ set(V4L2_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/DecoderInfo.h
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffer.h
     ${CMAKE_CURRENT_LIST_DIR}/DmaBuffersAllocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/DmaBuffersQueueBase.h
     ${CMAKE_CURRENT_LIST_DIR}/EncodedDmaBuffersQueue.h
     ${CMAKE_CURRENT_LIST_DIR}/V4L2H264StatefulDecoder.h
     ${CMAKE_CURRENT_LIST_DIR}/v4l2_decoder_detector.h

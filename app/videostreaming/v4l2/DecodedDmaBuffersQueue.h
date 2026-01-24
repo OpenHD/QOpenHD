@@ -2,11 +2,8 @@
 #define QOPENHDPROJECT_DECODEDDMABUFFERSQUEUE_H
 
 #include <cstdint>
-#include <functional>
-#include <memory>
-#include <vector>
 
-#include "DmaBuffer.h"
+#include "DmaBuffersQueueBase.h"
 
 /**
  * @brief Lightweight view of a decoded frame from V4L2 CAPTURE queue.
@@ -54,14 +51,7 @@ struct DecodedFrame {
  *
  * Thread safety: All methods are expected to be called sequentially from a single thread.
  */
-class DecodedDmaBuffersQueue {
-private:
-    int fd_;
-    std::function<uint32_t()> planesCountGetter_;
-    std::vector<std::unique_ptr<DmaBuffer>> buffers_;
-    std::vector<bool> inUse_;
-    uint32_t planesCount_ = 0;
-
+class DecodedDmaBuffersQueue : public DmaBuffersQueueBase {
 public:
     /**
      * @brief Constructs a DecodedDmaBuffersQueue.
@@ -70,24 +60,7 @@ public:
      */
     DecodedDmaBuffersQueue(int fd, std::function<uint32_t()> planesCountGetter);
 
-    DecodedDmaBuffersQueue(const DecodedDmaBuffersQueue&) = delete;
-    DecodedDmaBuffersQueue& operator=(const DecodedDmaBuffersQueue&) = delete;
-    DecodedDmaBuffersQueue(DecodedDmaBuffersQueue&&) = delete;
-    DecodedDmaBuffersQueue& operator=(DecodedDmaBuffersQueue&&) = delete;
-
-    ~DecodedDmaBuffersQueue() = default;
-
-    /**
-     * @brief Registers DMA buffers for use with the V4L2 device CAPTURE queue.
-     *
-     * Calls VIDIOC_REQBUFS to register the buffers with the device
-     * and initializes tracking state. Buffers are NOT mapped since
-     * the GPU will read them directly via DMA-BUF.
-     *
-     * @param buffers Vector of DmaBuffer unique_ptrs to register.
-     * @throws std::runtime_error if VIDIOC_REQBUFS fails.
-     */
-    void RegisterBuffers(std::vector<std::unique_ptr<DmaBuffer>> buffers);
+    ~DecodedDmaBuffersQueue() override = default;
 
     /**
      * @brief Queues all registered buffers to the V4L2 device.
@@ -117,11 +90,6 @@ public:
      * @throws std::runtime_error if buffer_index is invalid or VIDIOC_QBUF fails.
      */
     void ReuseBuffer(uint32_t buffer_index);
-
-    /**
-     * @brief Returns the number of registered buffers.
-     */
-    size_t GetBufferCount() const { return buffers_.size(); }
 };
 
 #endif //QOPENHDPROJECT_DECODEDDMABUFFERSQUEUE_H

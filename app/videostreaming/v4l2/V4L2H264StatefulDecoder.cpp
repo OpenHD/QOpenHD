@@ -132,6 +132,7 @@ void V4L2H264StatefulDecoder::SetupBuffers()
     for (uint32_t i = 0; i < INPUT_BUFFER_COUNT; ++i)
     {
         auto buffer = dmaBuffersAllocator_->Allocate(DEFAULT_INPUT_BUFFER_SIZE);
+        buffer->MapBuffer();
         encodedBuffers.push_back(std::move(buffer));
     }
 
