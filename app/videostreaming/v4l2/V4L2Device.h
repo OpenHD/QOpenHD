@@ -8,9 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "EncodedDmaBuffersQueue.h"
+
 class V4L2Device {
 private:
     int fd_ = -1;
+    std::unique_ptr<EncodedDmaBuffersQueue> encodedBuffersQueue_;
 
     // Private constructor - only factory method can create instances
     explicit V4L2Device(int fd);
@@ -30,6 +33,12 @@ public:
 
     // Get file descriptor
     int GetFd() const { return fd_; }
+
+    // Get the number of planes for encoded (OUTPUT) buffers
+    uint32_t GetEncodedPlanesCount() const;
+
+    // Get the encoded buffers queue
+    EncodedDmaBuffersQueue* GetEncodedBuffersQueue() { return encodedBuffersQueue_.get(); }
 
     // ioctl wrappers - all return 0 on success, -1 on error (with errno set)
 

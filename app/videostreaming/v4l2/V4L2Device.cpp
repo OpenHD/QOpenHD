@@ -10,7 +10,12 @@
 #include <linux/videodev2.h>
 
 // Private constructor
-V4L2Device::V4L2Device(int fd) : fd_(fd) {}
+V4L2Device::V4L2Device(int fd) : fd_(fd) {
+    encodedBuffersQueue_ = std::make_unique<EncodedDmaBuffersQueue>(
+        fd_,
+        [this]() { return GetEncodedPlanesCount(); }
+    );
+}
 
 // Destructor
 V4L2Device::~V4L2Device() {
@@ -81,4 +86,13 @@ int V4L2Device::DequeueBuffer(struct v4l2_buffer* buf) const {
 
 int V4L2Device::QueueBuffer(struct v4l2_buffer* buf) const {
     return ioctl(fd_, VIDIOC_QBUF, buf);
+}
+
+uint32_t V4L2Device::GetEncodedPlanesCount() const {
+    struct v4l2_format fmt = {};
+    fmt.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+    if (ioctl(fd_, VIDIOC_G_FMT, &fmt) < 0) {
+        return 1; // Default to 1 plane on error
+    }
+    return fmt.fmt.pix_mp.num_planes;
 }
