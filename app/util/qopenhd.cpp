@@ -687,6 +687,7 @@ bool QOpenHD::set_screen_mode(QString mode)
         release_drm_context(ctx);
         return false;
     }
+    drmModeModeInfo chosen_mode = *chosen;
     const int ret = drmModeSetCrtc(ctx.fd,
                                    ctx.crtc_id,
                                    ctx.crtc->buffer_id,
@@ -694,7 +695,7 @@ bool QOpenHD::set_screen_mode(QString mode)
                                    0,
                                    &ctx.connector_id,
                                    1,
-                                   chosen);
+                                   &chosen_mode);
     if (ret != 0) {
         qWarning() << "set_screen_mode: drmModeSetCrtc failed" << strerror(errno);
         release_drm_context(ctx);
