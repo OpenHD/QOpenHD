@@ -88,6 +88,8 @@ void V4L2H264StatefulDecoder::Init()
     SubscribeToEvents();
     ConfigureFormats();
     SetupBuffers();
+    device_->GetEncodedBuffersQueue()->StreamOn();
+    device_->GetDecodedBuffersQueue()->StreamOn();
 }
 
 void V4L2H264StatefulDecoder::SubscribeToEvents()
