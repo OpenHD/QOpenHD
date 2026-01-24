@@ -26,6 +26,8 @@ public:
     L_RO_PROP(QString, qt_rendering_time, set_qt_rendering_time, "NA")
     // Time QT spent "recording the render pass"
     L_RO_PROP(QString, qt_renderpass_time, set_qt_renderpass_time, "NA")
+    // External video overlay stats (e.g. RK3588 DMA-BUF overlay)
+    L_RO_PROP(QString, external_video_fps_str, set_external_video_fps_str, "NA")
 private:
     explicit QRenderStats(QObject *parent = nullptr);
 public:

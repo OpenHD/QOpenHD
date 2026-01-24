@@ -150,6 +150,7 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/util/restartqopenhdmessagebox.cpp \
+    app/videostreaming/avcodec/drm_kms/rk3588_video_link.cpp \
     app/main.cpp \
 
 HEADERS += \
@@ -170,6 +171,7 @@ HEADERS += \
     app/util/qrenderstats.h \
     app/util/restartqopenhdmessagebox.h \
     app/util/lqutils_include.h \
+    app/videostreaming/avcodec/drm_kms/rk3588_video_link.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner

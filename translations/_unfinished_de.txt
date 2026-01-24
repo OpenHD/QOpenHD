@@ -1,0 +1,181 @@
+﻿001 | AppGeneralSettingsView | Animation Smoothing
+002 | AppScreenSettingsView | 0°
+003 | AppScreenSettingsView | 90° (WARNING)
+004 | AppScreenSettingsView | 180°
+005 | AppScreenSettingsView | 270° (WARNING)
+006 | AppScreenSettingsView | -1 Disable
+007 | AppScreenSettingsView | 0 Auto (Recommended)
+008 | AppScreenSettingsView | 50 (ultra small)
+009 | AppScreenSettingsView | 72 (smaller)
+010 | AppScreenSettingsView | 100
+011 | AppScreenSettingsView | 120 (bigger)
+012 | AppScreenSettingsView | 150 (ultra big)
+013 | AppSettingsPanel | Widgets
+014 | AppSettingsPanel | Style
+015 | AppSettingsPanel | General
+016 | AppSettingsPanel | Vehicle
+017 | AppSettingsPanel | Screen
+018 | AppSettingsPanel | Video
+019 | AppSettingsPanel | Dev
+020 | AppWidgetSettingsView | Show GPS
+021 | AppWidgetSettingsView | Show Home Distance
+022 | AppWidgetSettingsView | Show RC RSSI (not OpenHD RC)
+023 | AppWidgetSettingsView | Show Flight Timer
+024 | AppWidgetSettingsView | Show Flight Mode
+025 | AppWidgetSettingsView | Show IMU Sensor Temperature
+026 | AppWidgetSettingsView | Show Pressure Sensor Temperature
+027 | AppWidgetSettingsView | Show Pressure Sensor 2 Temperature
+028 | AppWidgetSettingsView | Show Pressure Sensor 3 Temperature
+029 | AppWidgetSettingsView | Show Airspeed Sensor Temperature
+030 | AppWidgetSettingsView | Show Esc Temperature
+031 | AppWidgetSettingsView | Show Battery Temperature
+032 | AppWidgetSettingsView | Show Ground Status
+033 | AppWidgetSettingsView | Show Ground Battery
+034 | AppWidgetSettingsView | Show Air Status
+035 | AppWidgetSettingsView | Show Air Battery
+036 | AppWidgetSettingsView | Show mAh
+037 | AppWidgetSettingsView | Show Efficiency in mAh/km
+038 | AppWidgetSettingsView | Show Total Flight Distance
+039 | AppWidgetSettingsView | Show Horizon
+040 | AppWidgetSettingsView | Show performance horizon
+041 | AppWidgetSettingsView | Show Flight Path Vector
+042 | AppWidgetSettingsView | Show Altitude
+043 | AppWidgetSettingsView | Show Speed
+044 | AppWidgetSettingsView | Show Second Speed
+045 | AppWidgetSettingsView | Show Heading
+046 | AppWidgetSettingsView | Show Second Altitude
+047 | AppWidgetSettingsView | Show Bank Angle Indicator
+048 | AppWidgetSettingsView | Show Home Arrow
+049 | AppWidgetSettingsView | Show Throttle
+050 | AppWidgetSettingsView | Show Control Inputs
+051 | AppWidgetSettingsView | Show Vibration
+052 | AppWidgetSettingsView | Show Vertical Speed (minimal)
+053 | AppWidgetSettingsView | Show Vertical Speed Gauge
+054 | AppWidgetSettingsView | Show Wind (Experimental)
+055 | AppWidgetSettingsView | Show Missions
+056 | AppWidgetSettingsView | Show Angle of Attack
+057 | AppWidgetSettingsView | Show Map
+058 | AppWidgetSettingsView | Show ADSB
+059 | AppWidgetSettingsView | Show log messages on-screen
+060 | AppWidgetSettingsView | Show Sidebar
+061 | AppWidgetSettingsView | Show QT Render stats
+062 | AppWidgetSettingsView | Show GPIO
+063 | ColorPicker | Cancel
+064 | ColorPicker | Select
+065 | ConnectPanel | CONNECT TO OPENHD GND / AIR UNIT
+066 | DialoqueFreqChangeGndOnly | GND Only
+067 | DialoqueFreqChangeGndOnly | Okay
+068 | DialoqueFreqChangeGndOnly | YES,GND ONLY
+069 | DialoqueFreqChangeGndOnly | Cancel
+070 | DialoqueNotAlive | OKAY
+071 | DialoqueNotAlive | TAKE ME
+072 | ErrorMessageBox | Okay
+073 | ExampleWidget | Example widget
+074 | FCMavlinkSystem | %1 flight mode
+075 | FooterRebootShutdownWarning | REBOOT
+076 | FooterRebootShutdownWarning | Compass calibration requested
+077 | FooterRebootShutdownWarning | Compass calibration failed
+078 | FooterRebootShutdownWarning | SHUTDOWN
+079 | LogMessagesStatusView | LOG GND
+080 | LogMessagesStatusView | LOG OpenHD AIR
+081 | LogMessagesStatusView | LOG FC
+082 | MapWidgetForm.ui | MAP
+083 | MapWidgetForm.ui | Zoom
+084 | MapWidgetForm.ui | Size
+085 | MapWidgetForm.ui | Transparency(S)
+086 | MapWidgetForm.ui | Lock map to drone direction
+087 | MapWidgetForm.ui | Map API key (for Mapbox)
+088 | MapWidgetForm.ui | pk.xxxxx
+089 | MapWidgetForm.ui | Get a free Mapbox access token at account.mapbox.com -> Tokens, then paste it above.
+090 | MapWidgetForm.ui | Show Drone Track
+091 | MapWidgetForm.ui | Show Mission waypoints
+092 | MapWidgetForm.ui | Enable ADSB
+093 | MapWidgetForm.ui | ADSB Internet Source
+094 | MapWidgetForm.ui | ADSB SDR Source
+095 | MapWidgetForm.ui | ADSB Radius
+096 | MapWidgetForm.ui | Map API key (Mapbox)
+097 | MapWidgetForm.ui | How to get a key: 1) Sign up at account.mapbox.com. 2) Open Tokens. 3) Copy your Default public token and paste it above.
+098 | MapWidgetForm.ui | Transparency(B)
+099 | MapWidgetForm.ui | An API key is required for the selected map provider.
+100 | MapWidgetForm.ui | Add your Mapbox access token in the map settings, then reload the map.
+101 | MavlinkDebugPanel | Mavlink Debug
+102 | MavlinkDebugPanel | Clear table
+103 | MavlinkDebugPanel | Start
+104 | MavlinkDebugPanel | Stop
+105 | MavlinkDebugPanel | Incoming Mavlink messages (grouped by sys/comp/msg)
+106 | MavlinkDebugPanel | Capturing
+107 | MavlinkDebugPanel | Paused
+108 | MavlinkDebugPanel | Sys
+109 | MavlinkDebugPanel | Cmp
+110 | MavlinkDebugPanel | Msg
+111 | MavlinkDebugPanel | Origin
+112 | MavlinkDebugPanel | Message
+113 | MavlinkDebugPanel | Last seen
+114 | MavlinkDebugPanel | Count
+115 | MavlinkDebugPanel | Message details
+116 | MavlinkDebugPanel | Name
+117 | MavlinkDebugPanel | ID
+118 | MavlinkDebugPanel | Field count
+119 | MavlinkDebugPanel | Field
+120 | MavlinkDebugPanel | Type
+121 | MavlinkDebugPanel | Array length
+122 | MavlinkDebugPanel | Value
+123 | NewSwitch | SwitchDelegate
+124 | OHDSettingsPanel | LINK/QUICK
+125 | OHDSettingsPanel | AIR CAM 1
+126 | OHDSettingsPanel | AIR CAM 2
+127 | OHDSettingsPanel | AIR
+128 | OHDSettingsPanel | GROUND
+129 | Panel4Recording | Status
+130 | Panel4Recording | disabled
+131 | PanelStatus | SYSTEM STATUS
+132 | PowerActionDialoque | Confirm Power Change
+133 | PowerActionDialoque | If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode!
+134 | PowerActionDialoque | Cancel
+135 | PowerActionDialoque | Reboot Ground
+136 | PowerActionDialoque | Shutdown Ground
+137 | PowerActionDialoque | Reboot Air
+138 | PowerActionDialoque | Shutdown Air
+139 | PowerActionDialoque | Reboot FC
+140 | PowerActionDialoque | Shutdown FC
+141 | PowerActionDialoque | Yes
+142 | QOpenHDServiceDialoque | Cancel
+143 | RcDebugScreenFC | FC RC (for debugging)
+144 | RcDebugScreenFC | NOTE: Only works on ardupilot!
+NOTE: Slow update rate(1Hz)-only for debugging
+Here you can see the rc channel values your FC reports via mavlink
+145 | RcDebugScreenFC | ranges: 1000-2000(pwm) 
+unused: 65535, 
+not set: -1
+146 | RcDebugScreenOpenHD | OpenHD RC
+147 | RcDebugScreenOpenHD | Here you can view the values which OpenHD reads from your Joystick
+ and sends to the FC via wifibroadcast (If enabled)
+148 | RcDebugScreenOpenHD | ranges: 1000-2000(pwm) 
+unused: 65535, 
+not set: -1
+149 | RcInfoPanel | About
+150 | RcInfoPanel | RC over OpenHD - debug
+151 | RcInfoPanel | FC channels - debug
+152 | RcInfoScreen | Info
+153 | RcInfoScreen | Enable OpenHD-RC: 
+
+1. OpenHD GND: Set 'ENABLE_JOY_RC' to 'ENABLED',
+2.Connect a joystick via USB to GND Station
+3.Optionally reboot
+
+You can use the other screens to validate/debug your setup.
+NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !
+
+154 | RcInfoScreen | Channel mapping
+155 | RcInfoScreen | Channel mapping is not intuitive, but it works when done correctly.
+If you cannot make it work, any proper RC controller (e.g. running EdgeTX / OpenTX)
+supports more advanced channel mapping and works via USB !
+156 | RestartQOpenHDMessageBox | Restart
+157 | RestartQOpenHDMessageBox | Cancel
+158 | SettingsCategory | 
+159 | SettingsCategory | 
+160 | StatusCardsColumn | Ground station
+161 | StatusCardsColumn | Air unit
+162 | StatusCardsColumn | Flight Controller
+163 | WorkaroundMessageBox | Okay
+164 | main | QOpenHD EVO

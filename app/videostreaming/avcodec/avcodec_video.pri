@@ -4,6 +4,7 @@ INCLUDEPATH += C:/ffmpeg/include
 LIBS += -LC:/ffmpeg/lib -lavcodec -lavutil -lavformat
 # TODO dirty
 LIBS += -lGLESv2 -lEGL
+LIBS += -ldrm
 
 win32 {
     INCLUDEPATH += $$PWD/../../../build-libs-windows/ffmpeg/include

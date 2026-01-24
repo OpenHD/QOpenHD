@@ -1,0 +1,242 @@
+001 | AltitudeSecondWidget | SECOND ALTITUDE | ZWEITE H?HE
+002 | AltitudeWidget | ALTITUDE | H?HE
+003 | AppDevSettingsView | Reset | Zur?cksetzen
+004 | AppDevSettingsView | Do you really want to erase all your QOpenHD settings? | M?chtest du wirklich alle QOpenHD?Einstellungen l?schen?
+005 | AppDeveloperStatsPanel | Developer Menu | Entwicklermen?
+006 | AppDeveloperStatsPanel | Restart local OHD service | Lokalen OHD?Dienst neu starten
+007 | AppDeveloperStatsPanel | Write GND log to SD | GND?Log auf SD schreiben
+008 | AppDeveloperStatsPanel | Write AIR log to SD | AIR?Log auf SD schreiben
+009 | AppDeveloperStatsPanel | Set Tele rates | Tele?Raten setzen
+010 | AppDeveloperStatsPanel | Self Destruct | Selbstzerst?rung
+011 | AppDeveloperStatsPanel | Show Air Info | Air?Info anzeigen
+012 | AppDeveloperStatsPanel | Show Ground Info | Ground?Info anzeigen
+013 | AppDeveloperStatsPanel | Show Mavlink Info | Mavlink?Info anzeigen
+014 | AppDeveloperStatsPanel | %1 System Information unavailable.
+ | %1 Systeminformationen nicht verf?gbar.
+
+015 | AppGeneralSettingsView | Animation Smoothing | Animationsgl?ttung
+016 | AppScreenSettingsView | 120 (bigger) | 120 (gr??er)
+017 | AppScreenSettingsView | 150 (ultra big) | 150 (ultra gro?)
+018 | AppWidgetSettingsView | Show Altitude | Zeige H?he
+019 | AppWidgetSettingsView | Show Second Altitude | Zeige zweite H?he
+020 | AppWidgetStyleSettingsView | RESET | ZUR?CKSETZEN
+021 | BaseWidget | PLS FILL ME | BITTE AUSF?LLEN
+022 | CardToast | FILL ME TEXT | PLATZHALTER?TEXT
+023 | ChooseCameraDialoque | Saved, rebooting air unit | Gespeichert, AIR?Unit wird neu gestartet
+024 | ChooseCameraDialoque | Your AIR Platform: %1 | Deine AIR?Plattform: %1
+025 | ChooseCameraDialoque | NOTE: Changing your camera automatically
+reboots your air unit | HINWEIS: Das ?ndern der Kamera
+startet deine AIR?Unit automatisch neu
+026 | ChooseResolutionDialoque | Resolution Selection | Aufl?sungsauswahl
+027 | ChooseResolutionDialoque | Default Resolution: %1 | Standardaufl?sung: %1
+028 | ChooseResolutionDialoque | WIDTHxHEIGHT@FPS | BREITE x H?HE @ FPS
+029 | ChooseResolutionDialoque | You can enter any (UNCHECKED !) resolution@fps you like here. | Hier kannst du eine beliebige (NICHT gepr?fte!) Aufl?sung@fps eingeben.
+030 | ColorPicker | Select | Ausw?hlen
+031 | ConfigPopup | No joystick navigation for this panel | Keine Joystick-Navigation f?r dieses Panel
+032 | ControlWidget | CONTROL INPUTS | STEUEREING?NGE
+033 | ControlWidget | Use FC channels | FC-Kan?le verwenden
+034 | Credits | Honorable Mentions | Besondere Erw?hnungen
+035 | Credits | You ? | Du?
+036 | DevStreamingInfo | BLKS L/R: | BL?CKE V/R:
+037 | DevStreamingInfo | TX Delay: | TX-Verz?gerung:
+038 | DialoqueFreqChangeAirGnd | Set AIR and GROUND to CHANNEL [%1]
+(%2 MHz) ? | AIR und GROUND auf KANAL [%1]
+(%2 MHz) setzen?
+039 | DialoqueFreqChangeAirGnd | Couldn't reach air unit - | AIR?Unit nicht erreichbar -
+040 | FlightModeWidget | Only For Ardupilot | Nur f?r Ardupilot
+041 | GPSWidget | Hide identity | Identit?t verbergen
+042 | GoBackElement | BACK | ZUR?CK
+043 | HorizonWidget | ARTIFICIAL HORIZON | K?NSTLICHER HORIZONT
+044 | LanguageSelectForm.ui | French | Franz?sisch
+045 | LanguageSelectForm.ui | Dutch | Niederl?ndisch
+046 | LanguageSelectForm.ui | Romanian | Rum?nisch
+047 | LinkDownRSSIWidget | Show pollution estimate % | St?rungsabsch?tzung % anzeigen
+048 | LinkDownRSSIWidget | Show signal quality % | Signalqualit?t % anzeigen
+049 | LinkDownRSSIWidget | Blocks lost: %1 | Bl?cke verloren: %1
+050 | LinkDownRSSIWidget | Blocks recovered: %1 | Bl?cke wiederhergestellt: %1
+051 | LinkDownRSSIWidget | TX PWR Air: %1 %2 | TX?Leistung AIR: %1 %2
+052 | LinkDownRSSIWidget | Pollution: %1 pps | St?rungen: %1 pps
+053 | LinkDownRSSIWidget | Quality: %1% | Qualit?t: %1%
+054 | LinkOverviewWidget | LINK OVERVIEW | LINK-?BERSICHT
+055 | LinkQuickPanel | your HW does not support %1 MHz | Deine HW unterst?tzt %1 MHz nicht
+056 | LinkQuickPanel | AIR Unit not alive - | AIR?Unit nicht erreichbar -
+057 | LinkQuickPanel | TX ERRORS:
+%1 | TX?FEHLER:
+%1
+058 | LinkQuickPanel | TX POWER | TX?LEISTUNG
+059 | LinkQuickPanel | RETRANSMISSION | WIEDER?BERTRAGUNG
+060 | LinkUpRSSIWidget | TX PWR Gnd: %1 %2 | TX?Leistung GND: %1 %2
+061 | MapWidgetForm.ui | Size | Gr??e
+062 | MapWidgetForm.ui | Map API key (for Mapbox) | Map-API-Schl?ssel (f?r Mapbox)
+063 | MapWidgetForm.ui | Get a free Mapbox access token at account.mapbox.com -> Tokens, then paste it above. | Hol dir einen kostenlosen Mapbox-Access-Token bei account.mapbox.com -> Tokens und f?ge ihn oben ein.
+064 | MapWidgetForm.ui | Map API key (Mapbox) | Map-API-Schl?ssel (Mapbox)
+065 | MapWidgetForm.ui | How to get a key: 1) Sign up at account.mapbox.com. 2) Open Tokens. 3) Copy your Default public token and paste it above. | So bekommst du einen Schl?ssel: 1) Registriere dich bei account.mapbox.com. 2) ?ffne Tokens. 3) Kopiere deinen Default public token und f?ge ihn oben ein.
+066 | MapWidgetForm.ui | An API key is required for the selected map provider. | F?r den ausgew?hlten Kartenanbieter ist ein API-Schl?ssel erforderlich.
+067 | MapWidgetForm.ui | Add your Mapbox access token in the map settings, then reload the map. | F?ge deinen Mapbox-Access-Token in den Karteneinstellungen ein und lade die Karte neu.
+068 | MavlinkDebugPanel | Capturing | Erfassung l?uft
+069 | MavlinkDebugPanel | Array length | Array-L?nge
+070 | MavlinkParamEditor | Description not availble | Beschreibung nicht verf?gbar
+071 | MavlinkParamPanel | FULL %1 PARAM SET | VOLLES %1?PARAMETERSET
+072 | MavlinkParamPanel | This parameter is read-only (cannot be edited)
+%1 | Dieser Parameter ist schreibgesch?tzt (kann nicht bearbeitet werden)
+%1
+073 | MissionWidget | Only For Ardupilot/PX4 | Nur f?r Ardupilot/PX4
+074 | PaneConnectionMode | Please enter a valid ip | Bitte gib eine g?ltige IP ein
+075 | PaneConnectionMode | Android Tethering | Android?Tethering
+076 | PaneConnectionMode | This feature is only available on android | Diese Funktion ist nur unter Android verf?gbar
+077 | PaneConnectionMode | 1) Connect via USB to ground station
+2) Enable tethering on your phone
+3) Open this app and start your ground station | 1) Per USB an die Bodenstation anschlie?en
+2) Tethering am Handy aktivieren
+3) App ?ffnen und Bodenstation starten
+078 | PaneConnectionMode | 1) Set ETHERNET to FORWARD+INTERNET
+2) Reboot ground
+3) Connect your external device (phone) to your ground station via ethernet.
+
+4) Select 'share my internet with ...' when the (android) connection setup pops up
+
+Video and telemetry forwarding is started automatically, internet will be forwarded from your phone. | 1) ETHERNET auf FORWARD+INTERNET stellen
+2) Ground neu starten
+3) Externes Ger?t (Telefon) per Ethernet verbinden
+
+4) Bei der (Android-)Einrichtung 'Mein Internet freigeben f?r ...' w?hlen
+
+Video- und Telemetrie-Weiterleitung startet automatisch, Internet wird vom Telefon weitergeleitet.
+079 | PaneConnectionMode | ETHERNET HOTSPOT | ETHERNET?HOTSPOT
+080 | PaneConnectionMode | 1) Set ETHERNET to HOTSPOT
+2) Reboot ground
+3) Connect your external device to your ground station via ethernet.
+
+You might need to disable wifi and cellular on your phone
+
+Video and telemetry forwarding should start automatically, internet will not be available. | 1) ETHERNET auf HOTSPOT stellen
+2) Ground neu starten
+3) Externes Ger?t per Ethernet verbinden
+
+Ggf. WLAN und Mobilfunk am Telefon deaktivieren
+
+Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nicht verf?gbar.
+081 | PaneConnectionMode | UDP PORT: %1 | UDP?PORT: %1
+082 | PaneConnectionMode | TCP PORT: %1 | TCP?PORT: %1
+083 | PaneConnectionMode | Scan Ethernet for devices | Ethernet nach Ger?ten scannen
+084 | PaneConnectionMode | No devices discovered yet. Start a scan to look for ground stations. | Noch keine Ger?te gefunden. Starte einen Scan, um Bodenstationen zu finden.
+085 | Panel7Status | Advanced Menu | Erweitertes Men?
+086 | PerformanceHorizonWidget2 | ARTIFICIAL HORIZON 2 | K?NSTLICHER HORIZONT 2
+087 | PingUtilColumn | Ping all systems, aka check if they respond to the mavlink ping command. Both OpenHD air and ground support this command, FC only ardupilot / px4 support this command. The command is lossy, aka you might need to use it more than once to get a response from all systems. No response after >10 tries is a hint that one of your systems is not functioning properly. | Alle Systeme anpingen, d.?h. pr?fen, ob sie auf den MAVLink?Ping reagieren. OpenHD Air und Ground unterst?tzen den Befehl, FC nur Ardupilot/PX4. Der Befehl ist verlustbehaftet ? ggf. mehrfach ausf?hren. Keine Antwort nach >10 Versuchen deutet auf ein Problem eines Systems hin.
+088 | PingUtilColumn | Auto-ping | Auto?Ping
+089 | PopupAnalyzeChannels | Scan for clean Channels | Saubere Kan?le scannen
+090 | PopupAnalyzeChannels | STILL ANALYZING, PLEASE WAIT ... | ANALYSE L?UFT, BITTE WARTEN ...
+091 | PopupAnalyzeChannels | Analyze channels for pollution by wifi access points.
+NOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended !
+In short: Any frequency with red bars (small or big) should not be used, unless there are no options / other reasons to do so. | Analysiert Kan?le auf St?rungen durch WLAN?APs.
+HINWEIS: Das gibt nur Hinweise auf freie Kan?le; ein echter Kanal?Analyzer (z.?B. am Handy) ist empfehlenswert!
+Kurz: Frequenzen mit roten Balken (klein oder gro?) solltest du nicht nutzen, au?er es gibt keine Alternativen.
+092 | PopupAnalyzeChannels | Busy,please try again later | Besch?ftigt, bitte sp?ter erneut versuchen
+093 | PopupAnalyzeChannels | WARNING: THIS VIEW CAN BE DECEIVING ! | WARNUNG: DIESE ANSICHT KANN IRREF?HREND SEIN!
+094 | PopupAnalyzeChannels | WiFi pollution estimate | WLAN?St?rungsabsch?tzung
+095 | PopupEnableSTBCLDPC | AIR: PLEASE SELECT N RF PATH / ANTENNAS | AIR: BITTE ANZAHL RF?PFADE/ANTENNEN W?HLEN
+096 | PopupEnableSTBCLDPC | AIR: 1 RF PATH / ANTENNAS | AIR: 1 RF?PFAD / ANTENNEN
+097 | PopupEnableSTBCLDPC | AIR: 2 RF PATHS / ANTENNAS | AIR: 2 RF?PFADE / ANTENNEN
+098 | PopupEnableSTBCLDPC | GND: PLEASE SELECT N RF PATH / ANTENNAS | GND: BITTE ANZAHL RF?PFADE/ANTENNEN W?HLEN
+099 | PopupEnableSTBCLDPC | GND: 1 RF PATH / ANTENNAS | GND: 1 RF?PFAD / ANTENNEN
+100 | PopupEnableSTBCLDPC | GND: 2 RF PATHS / ANTENNAS | GND: 2 RF?PFADE / ANTENNEN
+101 | PopupEnableSTBCLDPC | CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS | NUR M?GLICH, WENN AIR UND GND JE 2 RF?PFADE/ANTENNEN HABEN
+102 | PopupEnableSTBCLDPC | WARNING:
+ YOU NEED TO REFLASH YOUR AIR / GROUND UNIT
+IF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW | WARNUNG:
+ DU MUSST AIR/GROUND NEU FLASHEN,
+WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD
+103 | PopupScanChannels | Find Air Unit | AIR?Unit finden
+104 | PopupScanChannels | STILL SCANNING, PLEASE WAIT ... | SCAN L?UFT, BITTE WARTEN ...
+105 | PopupScanChannels | All 2.4G channels | Alle 2.4G?Kan?le
+106 | PopupScanChannels | All 5.8G channels | Alle 5.8G?Kan?le
+107 | PopupScanChannels | Channel scan started, please wait | Kanal?Scan gestartet, bitte warten
+108 | PopupScanChannels | Busy,please try again later | Besch?ftigt, bitte sp?ter erneut versuchen
+109 | PopupScanChannels | Initiate Channel Scan (Find a running air unit). Similar to analogue TX / RX, this listens on each channel for a short time to find a running openhd air unit. Quick if you are only using the 5 OpenHD recommended channels, otherwise please specify the generic band and give it some time (There are a ton of possible channels, especially in 5.8G) | Kanal?Scan starten (laufende AIR?Unit finden). ?hnlich wie analoges TX/RX wird auf jedem Kanal kurz gelauscht, um eine laufende OpenHD?AIR?Unit zu finden. Schnell, wenn du nur die 5 empfohlenen OpenHD?Kan?le nutzt; sonst w?hle das Band und plane etwas Zeit ein (es gibt sehr viele Kan?le, besonders in 5.8G).
+110 | PopupTxPowerEditor | Please Select | Bitte ausw?hlen
+111 | PopupTxPowerEditor | Please select | Bitte ausw?hlen
+112 | PopupTxPowerEditor | Caution: Not all cards are designed to handle high power levels.
+ Excessive power may lead to card damage | Achtung: Nicht alle Karten sind f?r hohe Leistungsstufen ausgelegt.
+ Zu hohe Leistung kann die Karte besch?digen
+113 | PopupTxPowerEditor | WARNING: ARMING WILL REDUCE YOUR TX POWER | WARNUNG: BEWAFFNEN REDUZIERT DIE TX?LEISTUNG
+114 | PowerActionDialoque | Confirm Power Change | Energie?nderung best?tigen
+115 | PowerActionDialoque | If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode! | Wenn dein Copter in der Luft ist, kann ein Neustart oder Herunterfahren zu einem Absturz f?hren oder den Failsafe ausl?sen!
+116 | QRenderStatsWidget | Doing wait_for_frame_decode: | wait_for_frame_decode l?uft:
+117 | QRenderStatsWidget | Rtp parse n gaps: | RTP Parse L?cken:
+118 | QRenderStatsWidget | estimate fps: | FPS gesch?tzt:
+119 | QRenderStatsWidget | estimate keyframe i: | Keyframe-I gesch?tzt:
+120 | RcDebugScreenFC | NOTE: Only works on ardupilot!
+NOTE: Slow update rate(1Hz)-only for debugging
+Here you can see the rc channel values your FC reports via mavlink | HINWEIS: Funktioniert nur mit ArduPilot!
+HINWEIS: Langsame Aktualisierung (1 Hz) ? nur zum Debuggen
+Hier siehst du die RC-Kanalwerte, die dein FC per Mavlink meldet
+121 | RcInfoPanel | About | ?ber
+122 | RcInfoPanel | RC over OpenHD - debug | RC ?ber OpenHD ? Debug
+123 | RcInfoPanel | FC channels - debug | FC-Kan?le ? Debug
+124 | RcInfoScreen | Enable OpenHD-RC: 
+
+1. OpenHD GND: Set 'ENABLE_JOY_RC' to 'ENABLED',
+2.Connect a joystick via USB to GND Station
+3.Optionally reboot
+
+You can use the other screens to validate/debug your setup.
+NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !
+ | OpenHD-RC aktivieren:
+
+1. OpenHD GND: Setze 'ENABLE_JOY_RC' auf 'ENABLED',
+2. Verbinde einen Joystick per USB mit der GND-Station
+3. Optional neu starten
+
+Du kannst die anderen Seiten nutzen, um dein Setup zu pr?fen/debuggen.
+HINWEIS: Eine separate RC-Verbindung (z. B. ExpressLRS) wird empfohlen!
+
+125 | RcInfoScreen | Channel mapping is not intuitive, but it works when done correctly.
+If you cannot make it work, any proper RC controller (e.g. running EdgeTX / OpenTX)
+supports more advanced channel mapping and works via USB ! | Die Kanalzuordnung ist nicht intuitiv, aber sie funktioniert, wenn man es richtig macht.
+Wenn du es nicht hinbekommst, unterst?tzt jede gute RC-Fernsteuerung (z. B. mit EdgeTX/OpenTX)
+fortgeschrittenes Channel Mapping und funktioniert per USB!
+126 | RetransmissionStarsWidget | RETRANSMISSION STATS | WIEDER?BERTRAGUNGSSTATISTIK
+127 | SOCStatusWidgetAir | CPU LOAD AIR | CPU?LAST AIR
+128 | SOCStatusWidgetGeneric | CPU LOAD AIR | CPU?LAST AIR
+129 | SOCStatusWidgetGeneric | CPU freq: %1 MHz | CPU?Takt: %1 MHz
+130 | SOCStatusWidgetGeneric | ISP freq: %1 MHz | ISP?Takt: %1 MHz
+131 | SOCStatusWidgetGeneric | H264 freq: %1 MHz | H264?Takt: %1 MHz
+132 | SOCStatusWidgetGeneric | Core freq: %1 MHz | Core?Takt: %1 MHz
+133 | SOCStatusWidgetGeneric | v3d freq: %1 MHz | v3d?Takt: %1 MHz
+134 | SecondaryVideoGStreamer | WAITING FOR
+SECONDARY VIDEO | WARTE AUF
+SEKUND?RVIDEO
+135 | SecondaryVideoGStreamer | SECONDARY VIDEO
+NOT AVAILABLE
+ON THIS PLATFORM | SEKUND?RVIDEO
+NICHT VERF?GBAR
+AUF DIESER PLATTFORM
+136 | SecondaryVideoGStreamer | Minimized Height (px) | Minimierte H?he (px)
+137 | StatusCardBodyOpenHD | Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned. | Die Verwendung nicht unterst?tzter Karten hat Nebenwirkungen wie nicht funktionierende Frequenzwechsel, kein Uplink GND?AIR oder schlechte Reichweite. Vorsicht.
+138 | StatusCardBodyOpenHD | Your AIR Unit cannot find your FC (UART). Please check:
+1) Wiring
+2) Right serial port enabled (OpenHD AIR param set)
+3) MAVLINK selected on your FC uart | Deine AIR?Unit findet den FC (UART) nicht. Bitte pr?f:
+1) Verkabelung
+2) Richtiger serieller Port aktiviert (OpenHD AIR Parameter)
+3) MAVLINK am FC?UART ausgew?hlt
+139 | StatusCardBodyOpenHD | Please make sure:
+1) ARDUPILOT / PX4: FC sys id needs to be set to 1 (DEFAULT ARDUPILOT SYSID)
+2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0 | Stell bitte sicher:
+1) ARDUPILOT / PX4: FC?SysID auf 1 setzen (Standard Ardupilot SysID)
+2) INAV / Betaflight: Nichts ?ndern, SysID sollte 0 sein
+140 | StatusCardBodyOpenHD | UNAVAILABLE | NICHT VERF?GBAR
+141 | StatusCardBodyOpenHD | To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module. | F?r den WiFi-Hotspot auf Air/Ground wird ein RPI/ROCK mit integriertem WLAN-Modul ben?tigt.
+142 | StatusCardBodyOpenHD | WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on | Der WiFi-Hotspot wird bei Bewaffnung automatisch deaktiviert und beim Entwaffnen aktiviert. Um dieses Verhalten zu ?ndern (nicht empfohlen), auf immer aus/immer an stellen.
+143 | ThrottleWidget | Only For Ardupilot/PX4/inav | Nur f?r Ardupilot/PX4/inav
+144 | VideoBitrateWidgetGeneric | Air unit not alive, cannot set recording for %1 | AIR?Unit nicht erreichbar, Aufnahme f?r %1 nicht m?glich
+145 | VideoBitrateWidgetGeneric | Resolution: | Aufl?sung:
+146 | VideoBitrateWidgetGeneric | Switch primary & secondary | Prim?r & Sekund?r tauschen
+147 | WBLinkRateControlWidget | 30%:2 POLLUTED | 30%:2 ST?RBELEGT
+148 | WBLinkRateControlWidget | RATE N/A | RATE nicht verf?gbar
+149 | WBLinkRateControlWidget | Cannot change BW: %1 MHz, AIR not alive | BW kann nicht ge?ndert werden: %1 MHz, AIR nicht erreichbar
+150 | WBLinkRateControlWidget | FEC: %1% : KEY: %2 ? | FEC: %1% : KEY: %2 ?
+151 | WBLinkRateControlWidget | A higher bandwidth / 40 MHz channel width increases the bitrate significantly, but also increases interference and reduces the maximum range. It is recommended to use a 40 MHz channel width if possible, and control the MCS index for fine adjustments. | Eine h?here Bandbreite bzw. 40?MHz?Kanalbreite erh?ht die Bitrate deutlich, steigert aber auch die St?rungen und reduziert die maximale Reichweite. Am besten nutzt du, wenn m?glich, 40?MHz?Kanalbreite und steuerst den MCS?Index f?r Feinabstimmung.
+152 | WBLinkRateControlWidget | The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data. This means that with a lower MCS index, you have a much greater range (but less bitrate). If you want to, you can change this value using the RC channel switcher - this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.) | Je niedriger der MCS?Index (Modulation und Codierung), desto weniger Signal (dBm) wird f?r den Datenempfang ben?tigt. Das bedeutet: niedrigerer MCS?Index = deutlich mehr Reichweite (aber weniger Bitrate). Optional kannst du den Wert ?ber den RC?Kanalumschalter ?ndern ? so l?sst sich w?hrend des Flugs schnell ein niedrigerer MCS?Index w?hlen (z.?B. f?r mehr Reichweite oder wenn das Modell den Antennentracker?Korridor verl?sst).
+153 | WBLinkRateControlWidget | Make the video more stable (less microfreezes) at the cost of less image quality. Internally, this changes the encode keyframe interval and/or FEC overhead in percent. DEFAULT is a good trade-off regarding image quality and stability and works in most cases. Use CITY/POLLUTED on polluted channels, but it is always better to find a free channel. | Macht das Video stabiler (weniger Mikro?Ruckler) auf Kosten der Bildqualit?t. Intern werden das Keyframe?Intervall und/oder der FEC?Overhead in Prozent angepasst. DEFAULT ist ein guter Kompromiss und funktioniert in den meisten F?llen. CITY/POLLUTED bei stark belasteten Kan?len nutzen ? besser ist es immer, einen freien Kanal zu w?hlen.
+154 | WBLinkRateControlWidget | Resiliency vs Bitrate | Stabilit?t vs. Bitrate

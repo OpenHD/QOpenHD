@@ -30,7 +30,7 @@ BaseWidget {
     property real m_txc_temp: _ohdSystemGround.curr_txc_temp_degree_1
     property string linkFont: "Quicksand"
     property string linkMonoFont: "ShareTechMono"
-    property int snrBlockCount: 8
+    property int snrBlockCount: 9
     property real snrBlockWidth: 12
     property real snrBlockHeight: 8
     property real snrBlockSkew: 4
@@ -371,3 +371,4 @@ BaseWidget {
         }
     }
 }
+
