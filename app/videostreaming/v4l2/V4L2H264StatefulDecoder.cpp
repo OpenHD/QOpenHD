@@ -24,9 +24,10 @@
 #endif
 
 // Configuration constants
-static constexpr uint32_t INPUT_BUFFER_COUNT = 6;
-static constexpr uint32_t OUTPUT_BUFFER_COUNT = 4;
-static constexpr uint32_t DEFAULT_INPUT_BUFFER_SIZE = 2 * 1024 * 1024;  // 2MB for H.264/H.265
+static constexpr uint32_t ENCODED_BUFFER_COUNT = 6;
+static constexpr uint32_t DECODED_BUFFER_COUNT = 4;
+static constexpr uint32_t DEFAULT_ENCODED_BUFFER_SIZE = 2 * 1024 * 1024;  // 2MB for H.264/H.265
+static constexpr uint32_t DEFAULT_DECODED_BUFFER_SIZE = 10 * 1024 * 1024;  // 10MB for decoded frames
 
 
 V4L2H264StatefulDecoder::V4L2H264StatefulDecoder(
@@ -128,16 +129,29 @@ void V4L2H264StatefulDecoder::SetupBuffers()
     // Allocate buffers for encoded frames
     // We use really safe size that have to be enough for any stream - 2MB
     std::vector<std::unique_ptr<DmaBuffer>> encodedBuffers;
-    encodedBuffers.reserve(INPUT_BUFFER_COUNT);
-    for (uint32_t i = 0; i < INPUT_BUFFER_COUNT; ++i)
+    encodedBuffers.reserve(ENCODED_BUFFER_COUNT);
+    for (uint32_t i = 0; i < ENCODED_BUFFER_COUNT; ++i)
     {
-        auto buffer = dmaBuffersAllocator_->Allocate(DEFAULT_INPUT_BUFFER_SIZE);
+        auto buffer = dmaBuffersAllocator_->Allocate(DEFAULT_ENCODED_BUFFER_SIZE);
         buffer->MapBuffer();
         encodedBuffers.push_back(std::move(buffer));
     }
 
     // Register buffers with the device's encoded buffers queue
     device_->GetEncodedBuffersQueue()->RegisterBuffers(std::move(encodedBuffers));
+
+    // Allocate buffers for decoded frames
+    // We use really safe size that have to be enough for any stream - 10MB
+    std::vector<std::unique_ptr<DmaBuffer>> decodedBuffers;
+    decodedBuffers.reserve(DECODED_BUFFER_COUNT);
+    for (uint32_t i = 0; i < DECODED_BUFFER_COUNT; ++i)
+    {
+        auto buffer = dmaBuffersAllocator_->Allocate(DEFAULT_DECODED_BUFFER_SIZE);
+        decodedBuffers.push_back(std::move(buffer));
+    }
+
+    // Register buffers with the device's decoded buffers queue
+    device_->GetDecodedBuffersQueue()->RegisterBuffers(std::move(decodedBuffers));
 }
 
 bool V4L2H264StatefulDecoder::start()
