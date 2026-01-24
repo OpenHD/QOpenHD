@@ -470,13 +470,10 @@ void Rk3588VideoLink::receiver_thread() {
             pending.meta = meta;
             has_pending = true;
             recv_count++;
-            if (recv_count % 120 == 0) {
-                std::cerr << "Rk3588VideoLink: received " << recv_count << " frames ("
-                          << meta.width << "x" << meta.height << ")\n";
-            }
-        } else {
-            std::cerr << "Rk3588VideoLink: import failed for frame "
+            if (recv_count % 120 != 0) {
+                std::cerr << "Rk3588VideoLink: import failed for frame "
                       << meta.width << "x" << meta.height << "\n";
+            }
         }
         close_fds(fds);
     }
