@@ -25,3 +25,10 @@ std::unique_ptr<DmaBuffersAllocator> DmaBuffersAllocator::Create() {
 
     throw std::runtime_error("Failed to open DMA heap");
 }
+
+
+DmaBuffersAllocator::DmaBuffersAllocator(int fd)
+    : fd_(fd)
+{
+
+}

@@ -9,6 +9,8 @@
 #include "DmaBuffer.h"
 
 class DmaBuffersAllocator {
+private:
+    int fd_ = 0;
 public:
     DmaBuffersAllocator(const DmaBuffersAllocator&) = delete;
     DmaBuffersAllocator& operator=(const DmaBuffersAllocator&) = delete;
