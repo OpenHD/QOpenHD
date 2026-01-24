@@ -209,6 +209,13 @@ bool Rk3588VideoLink::init_drm() {
         std::cerr << "Rk3588VideoLink: missing required plane properties\n";
         return false;
     }
+    if (prop_zpos) {
+        if (drmModeObjectSetProperty(drm_fd, plane_id, DRM_MODE_OBJECT_PLANE, prop_zpos, 0) == 0) {
+            std::cerr << "Rk3588VideoLink: set plane zpos=0\n";
+        } else {
+            std::cerr << "Rk3588VideoLink: failed to set plane zpos=0: " << strerror(errno) << "\n";
+        }
+    }
     std::cerr << "Rk3588VideoLink: using connector " << connector_id << " crtc " << crtc_id
               << " plane " << plane_id << " display " << display_width << "x" << display_height << "\n";
     return true;
