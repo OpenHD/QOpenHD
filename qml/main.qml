@@ -106,19 +106,6 @@ ApplicationWindow {
             layer.enabled: false
         }
 
-        Text {
-            id: externalVideoFps
-            text: _qrenderstats.external_video_fps_str
-            visible: _qrenderstats.external_video_fps_str !== "NA"
-            color: "white"
-            font.pixelSize: 16
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.topMargin: 6
-            anchors.rightMargin: 10
-            z: 4.0
-        }
-
         ConfigPopup {
             id: settings_panel
             visible: false

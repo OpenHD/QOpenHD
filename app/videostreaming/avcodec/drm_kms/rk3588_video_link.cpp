@@ -77,6 +77,9 @@ Rk3588VideoLink::~Rk3588VideoLink() {
     if (recv_thread.joinable()) {
         recv_thread.join();
     }
+    if (present_thread.joinable()) {
+        present_thread.join();
+    }
     cleanup_cache();
     if (drm_fd >= 0 && owns_fd) {
         close(drm_fd);
@@ -119,9 +122,9 @@ void Rk3588VideoLink::ensure_started() {
     if (!init_drm()) {
         return;
     }
-    fps_last_time = std::chrono::steady_clock::now();
-    fps_last_count = 0;
     recv_thread = std::thread(&Rk3588VideoLink::receiver_thread, this);
+    present_thread_running.store(true, std::memory_order_relaxed);
+    present_thread = std::thread(&Rk3588VideoLink::present_loop, this);
 }
 
 bool Rk3588VideoLink::init_drm() {
@@ -631,16 +634,6 @@ void Rk3588VideoLink::present_if_pending() {
     if (!started) {
         return;
     }
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - fps_last_time);
-    if (elapsed.count() >= 1000) {
-        const uint64_t total = received_frames.load(std::memory_order_relaxed);
-        const uint64_t delta = total - fps_last_count;
-        fps_last_count = total;
-        fps_last_time = now;
-        const QString fps = QString("%1 fps").arg(static_cast<double>(delta));
-        QRenderStats::instance().set_external_video_fps_str(fps);
-    }
     PendingFrame frame{};
     {
         std::lock_guard<std::mutex> lock(pending_mutex);
@@ -696,6 +689,18 @@ void Rk3588VideoLink::present_if_pending() {
         }
     }
     drmModeAtomicFree(req);
+}
+
+uint64_t Rk3588VideoLink::get_received_frames() const {
+    return received_frames.load(std::memory_order_relaxed);
+}
+
+void Rk3588VideoLink::present_loop() {
+    while (!shutdown_requested.load(std::memory_order_relaxed)) {
+        present_if_pending();
+        std::this_thread::sleep_for(std::chrono::milliseconds(8));
+    }
+    present_thread_running.store(false, std::memory_order_relaxed);
 }
 
 #endif

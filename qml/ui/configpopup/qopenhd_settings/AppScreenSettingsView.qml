@@ -18,6 +18,8 @@ ScrollView {
     contentHeight: screenColumn.height
 
     clip: true
+    property var screen_modes: _qopenhd.get_screen_modes()
+    property string screen_mode_current: _qopenhd.get_screen_mode_current()
 
     Item {
         anchors.fill: parent
@@ -129,6 +131,42 @@ ScrollView {
                 m_description: "Advanced settings"
                 m_hide_elements: true
 
+                SettingBaseElement{
+                    visible: _qopenhd.is_platform_rock()
+                    m_short_description: "Screen mode"
+
+                    ComboBox {
+                        id: screenModeCombo
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        width: 320
+                        model: appScreenSettingsView.screen_modes
+                        enabled: model && model.length > 0
+                        Component.onCompleted: {
+                            for (var i = 0; i < model.length; i++) {
+                                if (model[i] === appScreenSettingsView.screen_mode_current) {
+                                    currentIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                        onActivated: {
+                            const mode = model[currentIndex]
+                            if (mode === appScreenSettingsView.screen_mode_current) {
+                                return;
+                            }
+                            if (_qopenhd.set_screen_mode(mode)) {
+                                appScreenSettingsView.screen_mode_current = mode
+                                _restartqopenhdmessagebox.show_with_text("Screen mode changed. Restart QOpenHD if the UI looks wrong.")
+                            } else {
+                                _qopenhd.show_toast("Failed to set screen mode " + mode, true)
+                            }
+                        }
+                    }
+                }
                 SettingBaseElement{
                     m_short_description: "Screen rotation"
                     // anything other than 0 and 180 can breaks things

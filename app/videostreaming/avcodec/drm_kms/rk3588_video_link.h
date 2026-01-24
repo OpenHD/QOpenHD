@@ -15,6 +15,7 @@ public:
     static Rk3588VideoLink& instance();
     void ensure_started();
     void present_if_pending();
+    uint64_t get_received_frames() const;
 
 private:
     Rk3588VideoLink() = default;
@@ -74,10 +75,13 @@ private:
     void destroy_fb_entry(FbEntry& entry);
     void cleanup_cache();
     uint32_t get_prop_id(uint32_t obj_id, uint32_t obj_type, const char* name);
+    void present_loop();
 
     std::atomic<bool> started{false};
     std::atomic<bool> shutdown_requested{false};
     std::thread recv_thread;
+    std::thread present_thread;
+    std::atomic<bool> present_thread_running{false};
 
     int drm_fd = -1;
     bool owns_fd = true;
@@ -109,8 +113,6 @@ private:
     std::unordered_map<CacheKey, FbEntry, CacheKeyHash, CacheKeyEq> fb_cache;
 
     std::atomic<uint64_t> received_frames{0};
-    std::chrono::steady_clock::time_point fps_last_time{};
-    uint64_t fps_last_count = 0;
 
     std::atomic<bool> force_legacy_setplane{false};
 };

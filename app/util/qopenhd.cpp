@@ -10,12 +10,25 @@
 
 #include<iostream>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include<fstream>
 #include<string>
 #include <QProcess>
+#include <cmath>
+#include <cerrno>
+#include <cstring>
 
 #if defined(__linux__) || defined(__macos__)
 #include "common/openhd-util.hpp"
+#endif
+
+#if defined(__linux__)
+#include <QGuiApplication>
+#include <QScreen>
+#include <QtGui/qpa/qplatformnativeinterface.h>
+#include <xf86drm.h>
+#include <xf86drmMode.h>
 #endif
 
 #if defined(ENABLE_SPEECH)
@@ -31,6 +44,187 @@
 #endif
 
 #include "mousehelper.h"
+
+#if defined(__linux__)
+namespace {
+struct DrmContext {
+    int fd = -1;
+    bool owns_fd = false;
+    uint32_t crtc_id = 0;
+    uint32_t connector_id = 0;
+    drmModeConnector* connector = nullptr;
+    drmModeCrtc* crtc = nullptr;
+};
+
+static double calc_vrefresh(const drmModeModeInfo& mode) {
+    if (mode.htotal == 0 || mode.vtotal == 0) {
+        return 0.0;
+    }
+    double refresh = (mode.clock * 1000.0) / (static_cast<double>(mode.htotal) * static_cast<double>(mode.vtotal));
+    if (mode.vscan > 1) {
+        refresh /= mode.vscan;
+    }
+    if (mode.flags & DRM_MODE_FLAG_INTERLACE) {
+        refresh *= 2.0;
+    }
+    return refresh;
+}
+
+static QString mode_to_string(const drmModeModeInfo& mode) {
+    const double refresh = calc_vrefresh(mode);
+    const int refresh_int = static_cast<int>(std::round(refresh));
+    return QString("%1x%2@%3").arg(mode.hdisplay).arg(mode.vdisplay).arg(refresh_int);
+}
+
+static bool parse_mode_string(const QString& mode_str, int& width, int& height, int& refresh) {
+    const QStringList parts = mode_str.split("@");
+    if (parts.isEmpty()) {
+        return false;
+    }
+    const QStringList size_parts = parts[0].split("x");
+    if (size_parts.size() != 2) {
+        return false;
+    }
+    bool ok_w = false;
+    bool ok_h = false;
+    width = size_parts[0].toInt(&ok_w);
+    height = size_parts[1].toInt(&ok_h);
+    if (!ok_w || !ok_h) {
+        return false;
+    }
+    refresh = 0;
+    if (parts.size() > 1) {
+        bool ok_r = false;
+        refresh = parts[1].toInt(&ok_r);
+        if (!ok_r) {
+            refresh = 0;
+        }
+    }
+    return true;
+}
+
+static void release_drm_context(DrmContext& ctx) {
+    if (ctx.connector) {
+        drmModeFreeConnector(ctx.connector);
+        ctx.connector = nullptr;
+    }
+    if (ctx.crtc) {
+        drmModeFreeCrtc(ctx.crtc);
+        ctx.crtc = nullptr;
+    }
+    if (ctx.owns_fd && ctx.fd >= 0) {
+        close(ctx.fd);
+        ctx.fd = -1;
+    }
+}
+
+static bool get_drm_context(DrmContext& ctx) {
+    if (QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)) {
+        auto* pni = QGuiApplication::platformNativeInterface();
+        if (pni) {
+            void* fd_ptr = pni->nativeResourceForIntegration("dri_fd");
+            if (fd_ptr) {
+                ctx.fd = static_cast<int>(reinterpret_cast<qintptr>(fd_ptr));
+            }
+            QScreen* screen = QGuiApplication::primaryScreen();
+            if (screen) {
+                void* crtc_ptr = pni->nativeResourceForScreen("dri_crtcid", screen);
+                void* conn_ptr = pni->nativeResourceForScreen("dri_connectorid", screen);
+                if (crtc_ptr) {
+                    ctx.crtc_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(crtc_ptr));
+                }
+                if (conn_ptr) {
+                    ctx.connector_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(conn_ptr));
+                }
+            }
+        }
+    }
+
+    if (ctx.fd < 0) {
+        ctx.fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+        if (ctx.fd < 0) {
+            qWarning() << "get_screen_modes: failed to open /dev/dri/card0";
+            return false;
+        }
+        ctx.owns_fd = true;
+    }
+
+    drmModeRes* res = drmModeGetResources(ctx.fd);
+    if (!res) {
+        qWarning() << "get_screen_modes: drmModeGetResources failed";
+        release_drm_context(ctx);
+        return false;
+    }
+
+    if (ctx.connector_id != 0) {
+        ctx.connector = drmModeGetConnector(ctx.fd, ctx.connector_id);
+        if (!ctx.connector || ctx.connector->connection != DRM_MODE_CONNECTED) {
+            if (ctx.connector) {
+                drmModeFreeConnector(ctx.connector);
+                ctx.connector = nullptr;
+            }
+            ctx.connector_id = 0;
+        }
+    }
+
+    if (ctx.connector_id == 0) {
+        for (int i = 0; i < res->count_connectors; ++i) {
+            drmModeConnector* conn = drmModeGetConnector(ctx.fd, res->connectors[i]);
+            if (!conn) {
+                continue;
+            }
+            if (conn->connection == DRM_MODE_CONNECTED && conn->count_modes > 0) {
+                ctx.connector = conn;
+                ctx.connector_id = conn->connector_id;
+                break;
+            }
+            drmModeFreeConnector(conn);
+        }
+    }
+
+    if (ctx.connector && ctx.crtc_id == 0) {
+        for (int i = 0; i < ctx.connector->count_encoders; ++i) {
+            drmModeEncoder* enc = drmModeGetEncoder(ctx.fd, ctx.connector->encoders[i]);
+            if (!enc) {
+                continue;
+            }
+            if (enc->crtc_id) {
+                ctx.crtc_id = enc->crtc_id;
+                drmModeFreeEncoder(enc);
+                break;
+            }
+            drmModeFreeEncoder(enc);
+        }
+    }
+
+    drmModeFreeResources(res);
+
+    if (ctx.connector_id == 0 || ctx.crtc_id == 0) {
+        qWarning() << "get_screen_modes: missing connector/crtc";
+        release_drm_context(ctx);
+        return false;
+    }
+
+    if (!ctx.connector) {
+        ctx.connector = drmModeGetConnector(ctx.fd, ctx.connector_id);
+    }
+    if (!ctx.connector) {
+        qWarning() << "get_screen_modes: drmModeGetConnector failed";
+        release_drm_context(ctx);
+        return false;
+    }
+
+    ctx.crtc = drmModeGetCrtc(ctx.fd, ctx.crtc_id);
+    if (!ctx.crtc) {
+        qWarning() << "get_screen_modes: drmModeGetCrtc failed";
+        release_drm_context(ctx);
+        return false;
+    }
+
+    return true;
+}
+} // namespace
+#endif
 
 QOpenHD &QOpenHD::instance()
 {
@@ -401,6 +595,117 @@ bool QOpenHD::is_platform_nxp()
 #ifdef IS_PLATFORM_NXP
     return true;
 #else
+    return false;
+#endif
+}
+
+QStringList QOpenHD::get_screen_modes()
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        return {};
+    }
+    DrmContext ctx;
+    if (!get_drm_context(ctx)) {
+        return {};
+    }
+    QStringList modes;
+    for (int i = 0; i < ctx.connector->count_modes; ++i) {
+        modes.push_back(mode_to_string(ctx.connector->modes[i]));
+    }
+    modes.removeDuplicates();
+    release_drm_context(ctx);
+    return modes;
+#else
+    return {};
+#endif
+}
+
+QString QOpenHD::get_screen_mode_current()
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        return QString("NA");
+    }
+    DrmContext ctx;
+    if (!get_drm_context(ctx)) {
+        return QString("NA");
+    }
+    QString mode = QString("NA");
+    if (ctx.crtc && ctx.crtc->mode_valid) {
+        mode = mode_to_string(ctx.crtc->mode);
+    } else if (ctx.connector && ctx.connector->count_modes > 0) {
+        mode = mode_to_string(ctx.connector->modes[0]);
+    }
+    release_drm_context(ctx);
+    return mode;
+#else
+    return QString("NA");
+#endif
+}
+
+bool QOpenHD::set_screen_mode(QString mode)
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        return false;
+    }
+    int width = 0;
+    int height = 0;
+    int refresh = 0;
+    if (!parse_mode_string(mode, width, height, refresh)) {
+        qWarning() << "set_screen_mode: invalid mode string" << mode;
+        return false;
+    }
+    DrmContext ctx;
+    if (!get_drm_context(ctx)) {
+        return false;
+    }
+    if (!ctx.crtc || !ctx.connector) {
+        release_drm_context(ctx);
+        return false;
+    }
+    const drmModeModeInfo* chosen = nullptr;
+    for (int i = 0; i < ctx.connector->count_modes; ++i) {
+        const drmModeModeInfo& m = ctx.connector->modes[i];
+        if (m.hdisplay != width || m.vdisplay != height) {
+            continue;
+        }
+        const int refresh_int = static_cast<int>(std::round(calc_vrefresh(m)));
+        if (refresh == 0 || refresh_int == refresh) {
+            chosen = &m;
+            break;
+        }
+    }
+    if (!chosen) {
+        qWarning() << "set_screen_mode: mode not found" << mode;
+        release_drm_context(ctx);
+        return false;
+    }
+    if (ctx.crtc->buffer_id == 0) {
+        qWarning() << "set_screen_mode: current CRTC has no FB";
+        release_drm_context(ctx);
+        return false;
+    }
+    const int ret = drmModeSetCrtc(ctx.fd,
+                                   ctx.crtc_id,
+                                   ctx.crtc->buffer_id,
+                                   0,
+                                   0,
+                                   &ctx.connector_id,
+                                   1,
+                                   chosen);
+    if (ret != 0) {
+        qWarning() << "set_screen_mode: drmModeSetCrtc failed" << strerror(errno);
+        release_drm_context(ctx);
+        return false;
+    }
+    QSettings settings;
+    settings.setValue("screen_mode_override", mode);
+    release_drm_context(ctx);
+    return true;
+#else
+    Q_UNUSED(mode);
     return false;
 #endif
 }

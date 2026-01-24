@@ -7,6 +7,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QSettings>
+#include <QStringList>
 
 #ifdef ENABLE_SPEECH
 #include <QTextToSpeech>
@@ -70,6 +71,9 @@ public:
     Q_INVOKABLE bool is_platform_rpi();
     Q_INVOKABLE bool is_platform_rock();
     Q_INVOKABLE bool is_platform_nxp();
+    Q_INVOKABLE QStringList get_screen_modes();
+    Q_INVOKABLE QString get_screen_mode_current();
+    Q_INVOKABLE bool set_screen_mode(QString mode);
     //
     // Tries to mimic android toast as much as possible
     //
