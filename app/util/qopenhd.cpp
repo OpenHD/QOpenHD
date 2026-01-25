@@ -260,6 +260,9 @@ static QStringList get_modes_from_modetest() {
         }
         break;
     }
+    if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
+        return {};
+    }
     const QString output = QString::fromUtf8(proc.readAllStandardOutput());
     const QStringList lines = output.split('\n');
     QRegularExpression re("^\\s*#?\\d+\\s+(\\d+x\\d+)\\s+([0-9.]+)");

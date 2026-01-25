@@ -47,6 +47,8 @@ public slots:
     void m_QQuickWindow_afterRendering();
     void m_QQuickWindow_beforeRenderPassRecording();
     void m_QQuickWindow_afterRenderPassRecording();
+protected:
+    bool eventFilter(QObject* watched, QEvent* event) override;
 private:
     // for the main render thread (render pass recording)
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
@@ -63,6 +65,7 @@ private:
     std::chrono::steady_clock::time_point m_last_external_ts = std::chrono::steady_clock::now();
     QTimer* m_ui_fps_timer = nullptr;
     int m_ui_fps_cap = 0;
+    std::chrono::steady_clock::time_point m_last_ui_update = std::chrono::steady_clock::now();
 
 };
 

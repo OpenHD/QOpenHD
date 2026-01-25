@@ -7,6 +7,7 @@
 #include <qapplication.h>
 #include "util/qopenhd.h"
 #include <algorithm>
+#include <QEvent>
 
 QRenderStats::QRenderStats(QObject *parent)
     : QObject{parent}
@@ -61,17 +62,27 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
     }
 
     m_ui_fps_cap = QOpenHD::instance().get_ui_fps_cap();
-    if (m_ui_fps_cap > 0 && !m_ui_fps_timer) {
+    if (m_ui_fps_cap > 0) {
+        window->installEventFilter(this);
         window->setPersistentSceneGraph(true);
         window->setClearBeforeRendering(false);
         window->setColor(Qt::transparent);
-        m_ui_fps_timer = new QTimer(this);
-        m_ui_fps_timer->setTimerType(Qt::PreciseTimer);
-        m_ui_fps_timer->setInterval(std::max(1, 1000 / m_ui_fps_cap));
-        connect(m_ui_fps_timer, &QTimer::timeout, window, QOverload<>::of(&QQuickWindow::update));
-        m_ui_fps_timer->start();
     }
 #endif
+}
+
+bool QRenderStats::eventFilter(QObject* watched, QEvent* event)
+{
+    if (m_ui_fps_cap > 0 && event->type() == QEvent::UpdateRequest) {
+        const auto now = std::chrono::steady_clock::now();
+        const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_last_ui_update);
+        const int min_interval_ms = std::max(1, 1000 / m_ui_fps_cap);
+        if (elapsed.count() < min_interval_ms) {
+            return true;
+        }
+        m_last_ui_update = now;
+    }
+    return QObject::eventFilter(watched, event);
 }
 
 void QRenderStats::set_screen_width_height(int width, int height)
