@@ -15,7 +15,11 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 #include <drm_fourcc.h>
+#if __has_include(<drm/drm_mode.h>)
 #include <drm/drm_mode.h>
+#else
+#include <drm_mode.h>
+#endif
 
 #include <QGuiApplication>
 #include <qpa/qplatformnativeinterface.h>
