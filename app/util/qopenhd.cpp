@@ -12,6 +12,7 @@
 #include <QMutexLocker>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QFile>
 
 #include<iostream>
 #include <sys/stat.h>
@@ -526,6 +527,15 @@ void QOpenHD::quit_qopenhd()
     qDebug()<<"quit_qopenhd() end";
 }
 
+void QOpenHD::exit_for_restart()
+{
+    qDebug()<<"exit_for_restart() begin";
+    QCoreApplication::quit();
+    QTimer::singleShot(250, [] {
+        ::_exit(0);
+    });
+}
+
 void QOpenHD::disable_service_and_quit()
 {
 #ifdef __linux__
@@ -969,6 +979,44 @@ int QOpenHD::get_ui_fps_cap()
 QString QOpenHD::get_screen_modes_last_error()
 {
     return m_screen_modes_last_error;
+}
+
+QString QOpenHD::get_hw_cursor_status()
+{
+#if defined(__linux__)
+    const QString platform = QGuiApplication::platformName();
+    const QString env_value = QString::fromUtf8(qgetenv("QT_QPA_EGLFS_HWCURSOR"));
+    const QString env_note = env_value.isEmpty() ? "unset" : env_value;
+    const QString cfg_path = QString::fromUtf8(qgetenv("QT_QPA_EGLFS_KMS_CONFIG"));
+    QString status = QString("eglfs=%1 env=%2").arg(platform, env_note);
+    if (cfg_path.isEmpty()) {
+        status += " config=unset";
+        return status;
+    }
+    status += QString(" config=%1").arg(cfg_path);
+    QFile cfg_file(cfg_path);
+    if (!cfg_file.open(QIODevice::ReadOnly)) {
+        status += " hwcursor=unreadable";
+        return status;
+    }
+    const QByteArray payload = cfg_file.readAll();
+    QJsonParseError parse_error{};
+    const QJsonDocument doc = QJsonDocument::fromJson(payload, &parse_error);
+    if (parse_error.error != QJsonParseError::NoError || !doc.isObject()) {
+        status += " hwcursor=invalid-json";
+        return status;
+    }
+    const QJsonObject obj = doc.object();
+    if (!obj.contains("hwcursor")) {
+        status += " hwcursor=missing";
+        return status;
+    }
+    const bool hwcursor = obj.value("hwcursor").toBool(false);
+    status += QString(" hwcursor=%1").arg(hwcursor ? "true" : "false");
+    return status;
+#else
+    return QString("not linux");
+#endif
 }
 
 void QOpenHD::keep_screen_on(bool on)

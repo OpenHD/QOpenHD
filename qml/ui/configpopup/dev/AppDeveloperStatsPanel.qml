@@ -61,6 +61,10 @@ Rectangle {
             }
             Text {
                 height: 23
+                text: qsTr("HW Cursor: " + _qopenhd.get_hw_cursor_status())
+            }
+            Text {
+                height: 23
                 text: qsTr("Art Horizon mavlink update rate:" + _fcMavlinkSystem.curr_update_rate_mavlink_message_attitude + " Hz")
             }
             Text {

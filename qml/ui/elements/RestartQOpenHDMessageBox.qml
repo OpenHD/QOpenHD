@@ -56,7 +56,7 @@ Card {
             onPressed: {
                 _restartqopenhdmessagebox.hide_element()
                 // Let service restart
-                _qopenhd.quit_qopenhd();
+                _qopenhd.exit_for_restart();
             }
         }
         Button {

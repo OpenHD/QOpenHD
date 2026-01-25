@@ -35,6 +35,8 @@ public:
     // This only terminates the App, on most OpenHD images the system service will then restart
     // QOpenHD. Can be usefully for debugging, if something's wrong with the app and you need to restart it
     Q_INVOKABLE void quit_qopenhd();
+    // Exit fast for restart when KMS state is wedged.
+    Q_INVOKABLE void exit_for_restart();
     // This not only quits qopenhd, but also disables the autostart service
     // (until next reboot)
     Q_INVOKABLE void disable_service_and_quit();
@@ -76,6 +78,7 @@ public:
     Q_INVOKABLE bool set_screen_mode(QString mode);
     Q_INVOKABLE int get_ui_fps_cap();
     Q_INVOKABLE QString get_screen_modes_last_error();
+    Q_INVOKABLE QString get_hw_cursor_status();
     //
     // Tries to mimic android toast as much as possible
     //
