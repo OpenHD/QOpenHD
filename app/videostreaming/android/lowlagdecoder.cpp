@@ -169,7 +169,6 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
 }
 
 void LowLagDecoder::configureStartDecoder(){
-    void LowLagDecoder::configureStartDecoder(){
     const std::string MIME=IS_H265 ? "video/hevc" : "video/avc";
     
     // ... existing codec creation code ...
