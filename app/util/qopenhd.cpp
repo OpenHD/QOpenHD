@@ -7,15 +7,40 @@
 #include <qapplication.h>
 #include <QTimer>
 #include <QHostAddress>
+#include <QDateTime>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QFile>
 
 #include<iostream>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include<fstream>
 #include<string>
 #include <QProcess>
+#include <cmath>
+#include <cerrno>
+#include <cstring>
+#include <QRegularExpression>
 
 #if defined(__linux__) || defined(__macos__)
 #include "common/openhd-util.hpp"
+#endif
+
+#if defined(__linux__)
+#include <QGuiApplication>
+#include <QScreen>
+#include <QtGui/qpa/qplatformnativeinterface.h>
+#include <xf86drm.h>
+#include <xf86drmMode.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <poll.h>
+#include "telemetry/models/aohdsystem.h"
+#include "telemetry/models/openhd_core/platform.hpp"
 #endif
 
 #if defined(ENABLE_SPEECH)
@@ -31,6 +56,356 @@
 #endif
 
 #include "mousehelper.h"
+
+#if defined(__linux__)
+namespace {
+struct DrmContext {
+    int fd = -1;
+    bool owns_fd = false;
+    uint32_t crtc_id = 0;
+    uint32_t connector_id = 0;
+    drmModeConnector* connector = nullptr;
+    drmModeCrtc* crtc = nullptr;
+};
+
+struct SysutilsPlatformInfo {
+    int platform_type = -1;
+    QString platform_name;
+};
+
+static double calc_vrefresh(const drmModeModeInfo& mode) {
+    if (mode.htotal == 0 || mode.vtotal == 0) {
+        return 0.0;
+    }
+    double refresh = (mode.clock * 1000.0) / (static_cast<double>(mode.htotal) * static_cast<double>(mode.vtotal));
+    if (mode.vscan > 1) {
+        refresh /= mode.vscan;
+    }
+    if (mode.flags & DRM_MODE_FLAG_INTERLACE) {
+        refresh *= 2.0;
+    }
+    return refresh;
+}
+
+static QString mode_to_string(const drmModeModeInfo& mode) {
+    const double refresh = calc_vrefresh(mode);
+    const int refresh_int = static_cast<int>(std::round(refresh));
+    return QString("%1x%2@%3").arg(mode.hdisplay).arg(mode.vdisplay).arg(refresh_int);
+}
+
+static bool parse_mode_string(const QString& mode_str, int& width, int& height, int& refresh) {
+    const QStringList parts = mode_str.split("@");
+    if (parts.isEmpty()) {
+        return false;
+    }
+    const QStringList size_parts = parts[0].split("x");
+    if (size_parts.size() != 2) {
+        return false;
+    }
+    bool ok_w = false;
+    bool ok_h = false;
+    width = size_parts[0].toInt(&ok_w);
+    height = size_parts[1].toInt(&ok_h);
+    if (!ok_w || !ok_h) {
+        return false;
+    }
+    refresh = 0;
+    if (parts.size() > 1) {
+        bool ok_r = false;
+        refresh = parts[1].toInt(&ok_r);
+        if (!ok_r) {
+            refresh = 0;
+        }
+    }
+    return true;
+}
+
+static void release_drm_context(DrmContext& ctx) {
+    if (ctx.connector) {
+        drmModeFreeConnector(ctx.connector);
+        ctx.connector = nullptr;
+    }
+    if (ctx.crtc) {
+        drmModeFreeCrtc(ctx.crtc);
+        ctx.crtc = nullptr;
+    }
+    if (ctx.owns_fd && ctx.fd >= 0) {
+        close(ctx.fd);
+        ctx.fd = -1;
+    }
+}
+
+static bool query_sysutils_platform(SysutilsPlatformInfo& info, QString& error_out) {
+    constexpr const char* kSocketPath = "/run/openhd/openhd_sys.sock";
+    int fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd < 0) {
+        error_out = "sysutils socket failed";
+        return false;
+    }
+    sockaddr_un addr{};
+    addr.sun_family = AF_UNIX;
+    if (std::strlen(kSocketPath) >= sizeof(addr.sun_path)) {
+        error_out = "sysutils socket path too long";
+        ::close(fd);
+        return false;
+    }
+    std::strncpy(addr.sun_path, kSocketPath, sizeof(addr.sun_path) - 1);
+    if (::connect(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
+        error_out = "sysutils connect failed";
+        ::close(fd);
+        return false;
+    }
+    constexpr const char* payload = "{\"type\":\"sysutil.platform.request\"}\n";
+    const ssize_t sent = ::send(fd, payload, std::strlen(payload), MSG_NOSIGNAL);
+    if (sent != static_cast<ssize_t>(std::strlen(payload))) {
+        error_out = "sysutils send failed";
+        ::close(fd);
+        return false;
+    }
+
+    pollfd pfd{};
+    pfd.fd = fd;
+    pfd.events = POLLIN;
+    const int poll_ret = ::poll(&pfd, 1, 200);
+    if (poll_ret <= 0 || !(pfd.revents & POLLIN)) {
+        error_out = "sysutils response timeout";
+        ::close(fd);
+        return false;
+    }
+
+    std::string response;
+    char buffer[256];
+    while (true) {
+        const ssize_t read_bytes = ::recv(fd, buffer, sizeof(buffer), 0);
+        if (read_bytes <= 0) {
+            break;
+        }
+        response.append(buffer, buffer + read_bytes);
+        if (response.find('\n') != std::string::npos) {
+            break;
+        }
+    }
+    ::close(fd);
+    const auto newline_pos = response.find('\n');
+    if (newline_pos != std::string::npos) {
+        response.resize(newline_pos);
+    }
+    if (response.empty()) {
+        error_out = "sysutils empty response";
+        return false;
+    }
+    QJsonParseError parse_error{};
+    const QJsonDocument doc = QJsonDocument::fromJson(QByteArray::fromStdString(response), &parse_error);
+    if (parse_error.error != QJsonParseError::NoError || !doc.isObject()) {
+        error_out = "sysutils json parse failed";
+        return false;
+    }
+    const QJsonObject obj = doc.object();
+    if (obj.value("type").toString() != "sysutil.platform.response") {
+        error_out = "sysutils response type mismatch";
+        return false;
+    }
+    info.platform_type = obj.value("platform_type").toInt(-1);
+    info.platform_name = obj.value("platform_name").toString();
+    if (info.platform_type < 0) {
+        error_out = "sysutils missing platform_type";
+        return false;
+    }
+    return true;
+}
+
+static bool get_sysutils_platform_cached(SysutilsPlatformInfo& info, QString& error_out) {
+    static QMutex mutex;
+    static SysutilsPlatformInfo cached;
+    static qint64 last_ms = 0;
+    static bool has_cache = false;
+    QMutexLocker lock(&mutex);
+    const qint64 now_ms = QDateTime::currentMSecsSinceEpoch();
+    if (has_cache && (now_ms - last_ms) < 5000) {
+        info = cached;
+        return true;
+    }
+    SysutilsPlatformInfo fresh;
+    QString err;
+    if (query_sysutils_platform(fresh, err)) {
+        cached = fresh;
+        last_ms = now_ms;
+        has_cache = true;
+        info = cached;
+        return true;
+    }
+    error_out = err;
+    return false;
+}
+
+static bool get_drm_context(DrmContext& ctx, QString& error_out) {
+    if (QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)) {
+        auto* pni = QGuiApplication::platformNativeInterface();
+        if (pni) {
+            void* fd_ptr = pni->nativeResourceForIntegration("dri_fd");
+            if (fd_ptr) {
+                ctx.fd = static_cast<int>(reinterpret_cast<qintptr>(fd_ptr));
+            }
+            QScreen* screen = QGuiApplication::primaryScreen();
+            if (screen) {
+                void* crtc_ptr = pni->nativeResourceForScreen("dri_crtcid", screen);
+                void* conn_ptr = pni->nativeResourceForScreen("dri_connectorid", screen);
+                if (crtc_ptr) {
+                    ctx.crtc_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(crtc_ptr));
+                }
+                if (conn_ptr) {
+                    ctx.connector_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(conn_ptr));
+                }
+            }
+        }
+    }
+
+    if (ctx.fd < 0) {
+        ctx.fd = open("/dev/dri/card0", O_RDONLY | O_CLOEXEC);
+        if (ctx.fd < 0) {
+            error_out = "open /dev/dri/card0 failed";
+            qWarning() << "get_screen_modes: failed to open /dev/dri/card0";
+            return false;
+        }
+        ctx.owns_fd = true;
+    }
+
+    drmModeRes* res = drmModeGetResources(ctx.fd);
+    if (!res) {
+        if (!ctx.owns_fd) {
+            // Retry with a fresh /dev/dri/card0 fd if EGLFS fd doesn't work.
+            int retry_fd = open("/dev/dri/card0", O_RDONLY | O_CLOEXEC);
+            if (retry_fd >= 0) {
+                drmModeRes* retry_res = drmModeGetResources(retry_fd);
+                if (retry_res) {
+                    ctx.fd = retry_fd;
+                    ctx.owns_fd = true;
+                    res = retry_res;
+                } else {
+                    close(retry_fd);
+                }
+            }
+        }
+        if (!res) {
+            error_out = "drmModeGetResources failed";
+            qWarning() << "get_screen_modes: drmModeGetResources failed";
+            release_drm_context(ctx);
+            return false;
+        }
+    }
+
+    if (ctx.connector_id != 0) {
+        ctx.connector = drmModeGetConnector(ctx.fd, ctx.connector_id);
+        if (!ctx.connector || ctx.connector->connection != DRM_MODE_CONNECTED) {
+            if (ctx.connector) {
+                drmModeFreeConnector(ctx.connector);
+                ctx.connector = nullptr;
+            }
+            ctx.connector_id = 0;
+        }
+    }
+
+    if (ctx.connector_id == 0) {
+        for (int i = 0; i < res->count_connectors; ++i) {
+            drmModeConnector* conn = drmModeGetConnector(ctx.fd, res->connectors[i]);
+            if (!conn) {
+                continue;
+            }
+            if (conn->connection == DRM_MODE_CONNECTED && conn->count_modes > 0) {
+                ctx.connector = conn;
+                ctx.connector_id = conn->connector_id;
+                break;
+            }
+            drmModeFreeConnector(conn);
+        }
+    }
+
+    if (ctx.connector && ctx.crtc_id == 0) {
+        for (int i = 0; i < ctx.connector->count_encoders; ++i) {
+            drmModeEncoder* enc = drmModeGetEncoder(ctx.fd, ctx.connector->encoders[i]);
+            if (!enc) {
+                continue;
+            }
+            if (enc->crtc_id) {
+                ctx.crtc_id = enc->crtc_id;
+                drmModeFreeEncoder(enc);
+                break;
+            }
+            drmModeFreeEncoder(enc);
+        }
+    }
+
+    drmModeFreeResources(res);
+
+    if (ctx.connector_id == 0 || ctx.crtc_id == 0) {
+        error_out = "missing connector/crtc";
+        qWarning() << "get_screen_modes: missing connector/crtc";
+        release_drm_context(ctx);
+        return false;
+    }
+
+    if (!ctx.connector) {
+        ctx.connector = drmModeGetConnector(ctx.fd, ctx.connector_id);
+    }
+    if (!ctx.connector) {
+        qWarning() << "get_screen_modes: drmModeGetConnector failed";
+        error_out = "drmModeGetConnector failed";
+        release_drm_context(ctx);
+        return false;
+    }
+
+    ctx.crtc = drmModeGetCrtc(ctx.fd, ctx.crtc_id);
+    if (!ctx.crtc) {
+        qWarning() << "get_screen_modes: drmModeGetCrtc failed";
+        error_out = "drmModeGetCrtc failed";
+        release_drm_context(ctx);
+        return false;
+    }
+
+    return true;
+}
+
+static QStringList get_modes_from_modetest() {
+    const QStringList candidates = {
+        "/usr/bin/modetest",
+        "/usr/local/bin/modetest",
+        "modetest"
+    };
+    QProcess proc;
+    for (const QString& path : candidates) {
+        proc.start(path, {"-M", "rockchip", "-c"});
+        if (!proc.waitForStarted(1000)) {
+            continue;
+        }
+        if (!proc.waitForFinished(2000)) {
+            proc.kill();
+            proc.waitForFinished();
+            continue;
+        }
+        break;
+    }
+    if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
+        return {};
+    }
+    const QString output = QString::fromUtf8(proc.readAllStandardOutput());
+    const QStringList lines = output.split('\n');
+    QRegularExpression re("^\\s*#?\\d+\\s+(\\d+x\\d+)\\s+([0-9.]+)");
+    QStringList modes;
+    for (const QString& line : lines) {
+        const QRegularExpressionMatch m = re.match(line);
+        if (!m.hasMatch()) {
+            continue;
+        }
+        const QString size = m.captured(1);
+        const double refresh = m.captured(2).toDouble();
+        const int refresh_int = static_cast<int>(std::round(refresh));
+        modes.push_back(QString("%1@%2").arg(size).arg(refresh_int));
+    }
+    modes.removeDuplicates();
+    return modes;
+}
+} // namespace
+#endif
 
 QOpenHD &QOpenHD::instance()
 {
@@ -150,6 +525,15 @@ void QOpenHD::quit_qopenhd()
     qDebug()<<"quit_qopenhd() begin";
     QApplication::quit();
     qDebug()<<"quit_qopenhd() end";
+}
+
+void QOpenHD::exit_for_restart()
+{
+    qDebug()<<"exit_for_restart() begin";
+    QCoreApplication::quit();
+    QTimer::singleShot(250, [] {
+        ::_exit(0);
+    });
 }
 
 void QOpenHD::disable_service_and_quit()
@@ -392,6 +776,22 @@ bool QOpenHD::is_platform_rock()
 #ifdef IS_PLATFORM_ROCK
     return true;
 #else
+    const auto is_rock_platform = [](int type) {
+        return type >= X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W &&
+               type < X_PLATFORM_TYPE_ALWINNER_X20;
+    };
+#if defined(__linux__)
+    SysutilsPlatformInfo info;
+    QString error;
+    if (get_sysutils_platform_cached(info, error)) {
+        return is_rock_platform(info.platform_type);
+    }
+#endif
+    const int ground_platform = AOHDSystem::instanceGround().ohd_platform_type();
+    const int air_platform = AOHDSystem::instanceAir().ohd_platform_type();
+    if (is_rock_platform(ground_platform) || is_rock_platform(air_platform)) {
+        return true;
+    }
     return false;
 #endif
 }
@@ -402,6 +802,220 @@ bool QOpenHD::is_platform_nxp()
     return true;
 #else
     return false;
+#endif
+}
+
+QStringList QOpenHD::get_screen_modes()
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        m_screen_modes_last_error = "not rock platform";
+        return {};
+    }
+    DrmContext ctx;
+    QString error;
+    if (!get_drm_context(ctx, error)) {
+        m_screen_modes_last_error = error;
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
+            return fallback;
+        }
+        const QString current = get_screen_mode_current();
+        if (current != "NA") {
+            m_screen_modes_last_error = "ok (current mode fallback)";
+            return {current};
+        }
+        return {};
+    }
+    QStringList modes;
+    for (int i = 0; i < ctx.connector->count_modes; ++i) {
+        modes.push_back(mode_to_string(ctx.connector->modes[i]));
+    }
+    modes.removeDuplicates();
+    release_drm_context(ctx);
+    if (modes.isEmpty()) {
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
+            return fallback;
+        }
+        m_screen_modes_last_error = "no modes from drm or modetest";
+    }
+    if (!modes.isEmpty()) {
+        m_screen_modes_last_error = "ok";
+    }
+    return modes;
+#else
+    m_screen_modes_last_error = "not linux";
+    return {};
+#endif
+}
+
+QString QOpenHD::get_screen_mode_current()
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        m_screen_modes_last_error = "not rock platform";
+        return QString("NA");
+    }
+    DrmContext ctx;
+    QString error;
+    if (!get_drm_context(ctx, error)) {
+        m_screen_modes_last_error = error;
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
+            return fallback.first();
+        }
+        return QString("NA");
+    }
+    QString mode = QString("NA");
+    if (ctx.crtc && ctx.crtc->mode_valid) {
+        mode = mode_to_string(ctx.crtc->mode);
+    } else if (ctx.connector && ctx.connector->count_modes > 0) {
+        mode = mode_to_string(ctx.connector->modes[0]);
+    }
+    release_drm_context(ctx);
+    if (mode == "NA") {
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
+            return fallback.first();
+        }
+        m_screen_modes_last_error = "current mode not found";
+    } else {
+        m_screen_modes_last_error = "ok";
+    }
+    return mode;
+#else
+    m_screen_modes_last_error = "not linux";
+    return QString("NA");
+#endif
+}
+
+bool QOpenHD::set_screen_mode(QString mode)
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        return false;
+    }
+    int width = 0;
+    int height = 0;
+    int refresh = 0;
+    if (!parse_mode_string(mode, width, height, refresh)) {
+        qWarning() << "set_screen_mode: invalid mode string" << mode;
+        return false;
+    }
+    DrmContext ctx;
+    QString error;
+    if (!get_drm_context(ctx, error)) {
+        m_screen_modes_last_error = error;
+        return false;
+    }
+    if (!ctx.crtc || !ctx.connector) {
+        release_drm_context(ctx);
+        return false;
+    }
+    const drmModeModeInfo* chosen = nullptr;
+    for (int i = 0; i < ctx.connector->count_modes; ++i) {
+        const drmModeModeInfo& m = ctx.connector->modes[i];
+        if (m.hdisplay != width || m.vdisplay != height) {
+            continue;
+        }
+        const int refresh_int = static_cast<int>(std::round(calc_vrefresh(m)));
+        if (refresh == 0 || refresh_int == refresh) {
+            chosen = &m;
+            break;
+        }
+    }
+    if (!chosen) {
+        qWarning() << "set_screen_mode: mode not found" << mode;
+        release_drm_context(ctx);
+        return false;
+    }
+    if (ctx.crtc->buffer_id == 0) {
+        qWarning() << "set_screen_mode: current CRTC has no FB";
+        release_drm_context(ctx);
+        return false;
+    }
+    drmModeModeInfo chosen_mode = *chosen;
+    const int ret = drmModeSetCrtc(ctx.fd,
+                                   ctx.crtc_id,
+                                   ctx.crtc->buffer_id,
+                                   0,
+                                   0,
+                                   &ctx.connector_id,
+                                   1,
+                                   &chosen_mode);
+    if (ret != 0) {
+        qWarning() << "set_screen_mode: drmModeSetCrtc failed" << strerror(errno);
+        release_drm_context(ctx);
+        return false;
+    }
+    QSettings settings;
+    settings.setValue("screen_mode_override", mode);
+    release_drm_context(ctx);
+    return true;
+#else
+    Q_UNUSED(mode);
+    return false;
+#endif
+}
+
+int QOpenHD::get_ui_fps_cap()
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        return 0;
+    }
+    QSettings settings;
+    return settings.value("ui_fps_cap", 30).toInt();
+#else
+    return 0;
+#endif
+}
+
+QString QOpenHD::get_screen_modes_last_error()
+{
+    return m_screen_modes_last_error;
+}
+
+QString QOpenHD::get_hw_cursor_status()
+{
+#if defined(__linux__)
+    const QString platform = QGuiApplication::platformName();
+    const QString env_value = QString::fromUtf8(qgetenv("QT_QPA_EGLFS_HWCURSOR"));
+    const QString env_note = env_value.isEmpty() ? "unset" : env_value;
+    const QString cfg_path = QString::fromUtf8(qgetenv("QT_QPA_EGLFS_KMS_CONFIG"));
+    QString status = QString("eglfs=%1 env=%2").arg(platform, env_note);
+    if (cfg_path.isEmpty()) {
+        status += " config=unset";
+        return status;
+    }
+    status += QString(" config=%1").arg(cfg_path);
+    QFile cfg_file(cfg_path);
+    if (!cfg_file.open(QIODevice::ReadOnly)) {
+        status += " hwcursor=unreadable";
+        return status;
+    }
+    const QByteArray payload = cfg_file.readAll();
+    QJsonParseError parse_error{};
+    const QJsonDocument doc = QJsonDocument::fromJson(payload, &parse_error);
+    if (parse_error.error != QJsonParseError::NoError || !doc.isObject()) {
+        status += " hwcursor=invalid-json";
+        return status;
+    }
+    const QJsonObject obj = doc.object();
+    if (!obj.contains("hwcursor")) {
+        status += " hwcursor=missing";
+        return status;
+    }
+    const bool hwcursor = obj.value("hwcursor").toBool(false);
+    status += QString(" hwcursor=%1").arg(hwcursor ? "true" : "false");
+    return status;
+#else
+    return QString("not linux");
 #endif
 }
 

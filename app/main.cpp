@@ -330,6 +330,16 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
+    if (QOpenHD::instance().is_platform_rock()) {
+        const QString mode_override = settings.value("screen_mode_override", "").toString();
+        if (!mode_override.isEmpty()) {
+            const QString current_mode = QOpenHD::instance().get_screen_mode_current();
+            if (current_mode != mode_override) {
+                QOpenHD::instance().set_screen_mode(mode_override);
+            }
+        }
+    }
+
     // Load translation based on saved locale (requires an active Q(Core)Application on Qt5)
     QString localeStr = settings.value("locale", "en").toString();
     QOpenHD::instance().installTranslatorForLanguage(localeStr, &settings);

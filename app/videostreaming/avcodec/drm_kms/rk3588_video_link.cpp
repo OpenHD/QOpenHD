@@ -1,6 +1,6 @@
 #include "rk3588_video_link.h"
 
-#if defined(__linux__) && defined(IS_PLATFORM_ROCK)
+#if defined(__linux__)
 
 #include <errno.h>
 #include <fcntl.h>
@@ -16,6 +16,10 @@
 #include <xf86drmMode.h>
 #include <drm_fourcc.h>
 #include <drm/drm_mode.h>
+
+#include <QGuiApplication>
+#include <qpa/qplatformnativeinterface.h>
+#include <QScreen>
 
 #include "util/qrenderstats.h"
 
@@ -39,6 +43,28 @@ struct DmabufFrameInfo {
     uint64_t pts_ms;
 };
 
+static int64_t get_prop_value_by_name(int fd, uint32_t obj_id, uint32_t obj_type, const char* name) {
+    drmModeObjectProperties* props = drmModeObjectGetProperties(fd, obj_id, obj_type);
+    if (!props) {
+        return -1;
+    }
+    int64_t value = -1;
+    for (uint32_t i = 0; i < props->count_props; ++i) {
+        drmModePropertyRes* prop = drmModeGetProperty(fd, props->props[i]);
+        if (!prop) {
+            continue;
+        }
+        if (strcmp(prop->name, name) == 0) {
+            value = static_cast<int64_t>(props->prop_values[i]);
+            drmModeFreeProperty(prop);
+            break;
+        }
+        drmModeFreeProperty(prop);
+    }
+    drmModeFreeObjectProperties(props);
+    return value;
+}
+
 } // namespace
 
 Rk3588VideoLink& Rk3588VideoLink::instance() {
@@ -51,8 +77,11 @@ Rk3588VideoLink::~Rk3588VideoLink() {
     if (recv_thread.joinable()) {
         recv_thread.join();
     }
+    if (present_thread.joinable()) {
+        present_thread.join();
+    }
     cleanup_cache();
-    if (drm_fd >= 0) {
+    if (drm_fd >= 0 && owns_fd) {
         close(drm_fd);
         drm_fd = -1;
     }
@@ -93,24 +122,76 @@ void Rk3588VideoLink::ensure_started() {
     if (!init_drm()) {
         return;
     }
-    fps_last_time = std::chrono::steady_clock::now();
-    fps_last_count = 0;
     recv_thread = std::thread(&Rk3588VideoLink::receiver_thread, this);
+    present_thread_running.store(true, std::memory_order_relaxed);
+    present_thread = std::thread(&Rk3588VideoLink::present_loop, this);
 }
 
 bool Rk3588VideoLink::init_drm() {
-    drm_fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+    owns_fd = true;
+    if (QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)) {
+        auto* pni = QGuiApplication::platformNativeInterface();
+        if (pni) {
+            void* fd_ptr = pni->nativeResourceForIntegration("dri_fd");
+            if (fd_ptr) {
+                drm_fd = static_cast<int>(reinterpret_cast<qintptr>(fd_ptr));
+                owns_fd = false;
+                QScreen* screen = QGuiApplication::primaryScreen();
+                if (screen) {
+                    void* crtc_ptr = pni->nativeResourceForScreen("dri_crtcid", screen);
+                    void* conn_ptr = pni->nativeResourceForScreen("dri_connectorid", screen);
+                    if (crtc_ptr) {
+                        crtc_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(crtc_ptr));
+                    }
+                    if (conn_ptr) {
+                        connector_id = static_cast<uint32_t>(reinterpret_cast<qintptr>(conn_ptr));
+                    }
+                    if (screen) {
+                        const auto size = screen->size();
+                        display_width = size.width();
+                        display_height = size.height();
+                    }
+                }
+                std::cerr << "Rk3588VideoLink: using EGLFS drm fd=" << drm_fd
+                          << " is_master=" << drmIsMaster(drm_fd)
+                          << " crtc=" << crtc_id << " connector=" << connector_id << "\n";
+            }
+        }
+    }
     if (drm_fd < 0) {
-        std::cerr << "Rk3588VideoLink: failed to open /dev/dri/card0: " << strerror(errno) << "\n";
-        return false;
+        drm_fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+        if (drm_fd < 0) {
+            std::cerr << "Rk3588VideoLink: failed to open /dev/dri/card0: " << strerror(errno) << "\n";
+            return false;
+        }
+    }
+    if (drmSetClientCap(drm_fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1) != 0) {
+        std::cerr << "Rk3588VideoLink: failed to enable universal planes: " << strerror(errno) << "\n";
     }
     if (drmSetClientCap(drm_fd, DRM_CLIENT_CAP_ATOMIC, 1) != 0) {
         std::cerr << "Rk3588VideoLink: failed to enable atomic: " << strerror(errno) << "\n";
         return false;
     }
-    if (!find_active_crtc()) {
-        std::cerr << "Rk3588VideoLink: failed to find active CRTC\n";
-        return false;
+    if (crtc_id == 0 || connector_id == 0) {
+        if (!find_active_crtc()) {
+            std::cerr << "Rk3588VideoLink: failed to find active CRTC\n";
+            return false;
+        }
+    } else {
+        drmModeRes* res = drmModeGetResources(drm_fd);
+        if (res) {
+            for (int c = 0; c < res->count_crtcs; ++c) {
+                if (res->crtcs[c] == crtc_id) {
+                    crtc_index = c;
+                    break;
+                }
+            }
+            drmModeFreeResources(res);
+        }
+        if (crtc_index < 0) {
+            std::cerr << "Rk3588VideoLink: failed to map crtc index for crtc " << crtc_id << "\n";
+            return false;
+        }
     }
     if (!pick_overlay_plane(DRM_FORMAT_NV12, DRM_FORMAT_MOD_INVALID)) {
         std::cerr << "Rk3588VideoLink: failed to find overlay plane\n";
@@ -131,6 +212,15 @@ bool Rk3588VideoLink::init_drm() {
         std::cerr << "Rk3588VideoLink: missing required plane properties\n";
         return false;
     }
+    if (prop_zpos) {
+        if (drmModeObjectSetProperty(drm_fd, plane_id, DRM_MODE_OBJECT_PLANE, prop_zpos, 0) == 0) {
+            std::cerr << "Rk3588VideoLink: set plane zpos=0\n";
+        } else {
+            std::cerr << "Rk3588VideoLink: failed to set plane zpos=0: " << strerror(errno) << "\n";
+        }
+    }
+    std::cerr << "Rk3588VideoLink: using connector " << connector_id << " crtc " << crtc_id
+              << " plane " << plane_id << " display " << display_width << "x" << display_height << "\n";
     return true;
 }
 
@@ -189,6 +279,9 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
         return false;
     }
     uint32_t chosen = 0;
+    uint32_t chosen_in_use = 0;
+    int64_t chosen_zpos = INT64_MAX;
+    int64_t chosen_in_use_zpos = INT64_MAX;
     for (uint32_t i = 0; i < planes->count_planes; ++i) {
         drmModePlane* plane = drmModeGetPlane(drm_fd, planes->planes[i]);
         if (!plane) {
@@ -202,21 +295,32 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
             drmModeFreePlane(plane);
             continue;
         }
+        const int64_t zpos_val = get_prop_value_by_name(drm_fd, plane->plane_id, DRM_MODE_OBJECT_PLANE, "zpos");
         if (plane->crtc_id == 0) {
-            chosen = plane->plane_id;
-            drmModeFreePlane(plane);
-            break;
-        }
-        if (!chosen) {
-            chosen = plane->plane_id;
+            if (!chosen || (zpos_val >= 0 && zpos_val < chosen_zpos)) {
+                chosen = plane->plane_id;
+                chosen_zpos = zpos_val;
+            }
+        } else {
+            if (!chosen_in_use || (zpos_val >= 0 && zpos_val < chosen_in_use_zpos)) {
+                chosen_in_use = plane->plane_id;
+                chosen_in_use_zpos = zpos_val;
+            }
         }
         drmModeFreePlane(plane);
     }
     drmModeFreePlaneResources(planes);
+    if (!chosen && chosen_in_use) {
+        std::cerr << "Rk3588VideoLink: no free overlay plane, falling back to in-use plane "
+                  << chosen_in_use << " zpos=" << chosen_in_use_zpos << "\n";
+        chosen = chosen_in_use;
+        chosen_zpos = chosen_in_use_zpos;
+    }
     if (!chosen) {
         return false;
     }
     plane_id = chosen;
+    std::cerr << "Rk3588VideoLink: selected plane " << plane_id << " zpos=" << chosen_zpos << "\n";
     return true;
 }
 
@@ -331,6 +435,10 @@ void Rk3588VideoLink::receiver_thread() {
         close(sock);
         return;
     }
+    std::cerr << "Rk3588VideoLink: listening on " << kSocketPath << "\n";
+    uint64_t recv_count = 0;
+    uint64_t short_count = 0;
+    uint64_t bad_magic_count = 0;
     while (!shutdown_requested) {
         DmabufFrameInfo info{};
         char cmsgbuf[CMSG_SPACE(sizeof(int) * 4)];
@@ -357,10 +465,19 @@ void Rk3588VideoLink::receiver_thread() {
             }
         }
         if (static_cast<size_t>(ret) < sizeof(DmabufFrameInfo)) {
+            short_count++;
+            if (short_count % 120 == 0) {
+                std::cerr << "Rk3588VideoLink: short packet size=" << ret << "\n";
+            }
             close_fds(fds);
             continue;
         }
         if (info.magic != kMagic || info.version != kVersion) {
+            bad_magic_count++;
+            if (bad_magic_count % 120 == 0) {
+                std::cerr << "Rk3588VideoLink: bad magic/version " << info.magic
+                          << " v" << info.version << "\n";
+            }
             close_fds(fds);
             continue;
         }
@@ -395,6 +512,11 @@ void Rk3588VideoLink::receiver_thread() {
             pending.fb_id = fb_id;
             pending.meta = meta;
             has_pending = true;
+            recv_count++;
+            if (recv_count % 120 != 0) {
+                std::cerr << "Rk3588VideoLink: import failed for frame "
+                      << meta.width << "x" << meta.height << "\n";
+            }
         }
         close_fds(fds);
     }
@@ -512,16 +634,6 @@ void Rk3588VideoLink::present_if_pending() {
     if (!started) {
         return;
     }
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - fps_last_time);
-    if (elapsed.count() >= 1000) {
-        const uint64_t total = received_frames.load(std::memory_order_relaxed);
-        const uint64_t delta = total - fps_last_count;
-        fps_last_count = total;
-        fps_last_time = now;
-        const QString fps = QString("%1 fps").arg(static_cast<double>(delta));
-        QRenderStats::instance().set_external_video_fps_str(fps);
-    }
     PendingFrame frame{};
     {
         std::lock_guard<std::mutex> lock(pending_mutex);
@@ -530,6 +642,14 @@ void Rk3588VideoLink::present_if_pending() {
         }
         frame = pending;
         has_pending = false;
+    }
+    if (force_legacy_setplane.load(std::memory_order_relaxed)) {
+        if (drmModeSetPlane(drm_fd, plane_id, crtc_id, frame.fb_id, 0,
+                            0, 0, display_width, display_height,
+                            0, 0, frame.meta.width << 16, frame.meta.height << 16) == 0) {
+            current_fb_id = frame.fb_id;
+        }
+        return;
     }
     drmModeAtomicReq* req = drmModeAtomicAlloc();
     if (!req) {
@@ -550,8 +670,37 @@ void Rk3588VideoLink::present_if_pending() {
     }
     if (drmModeAtomicCommit(drm_fd, req, DRM_MODE_ATOMIC_NONBLOCK, nullptr) == 0) {
         current_fb_id = frame.fb_id;
+    } else {
+        const int saved_errno = errno;
+        std::cerr << "Rk3588VideoLink: atomic commit failed: " << strerror(saved_errno)
+                  << " is_master=" << drmIsMaster(drm_fd)
+                  << " plane=" << plane_id << " crtc=" << crtc_id << "\n";
+        if (saved_errno == EBUSY) {
+            force_legacy_setplane.store(true, std::memory_order_relaxed);
+            if (drmModeSetPlane(drm_fd, plane_id, crtc_id, frame.fb_id, 0,
+                                0, 0, display_width, display_height,
+                                0, 0, frame.meta.width << 16, frame.meta.height << 16) == 0) {
+                current_fb_id = frame.fb_id;
+                std::cerr << "Rk3588VideoLink: switching to drmModeSetPlane path\n";
+            } else {
+                std::cerr << "Rk3588VideoLink: drmModeSetPlane fallback failed: "
+                          << strerror(errno) << "\n";
+            }
+        }
     }
     drmModeAtomicFree(req);
+}
+
+uint64_t Rk3588VideoLink::get_received_frames() const {
+    return received_frames.load(std::memory_order_relaxed);
+}
+
+void Rk3588VideoLink::present_loop() {
+    while (!shutdown_requested.load(std::memory_order_relaxed)) {
+        present_if_pending();
+        std::this_thread::sleep_for(std::chrono::milliseconds(8));
+    }
+    present_thread_running.store(false, std::memory_order_relaxed);
 }
 
 #endif

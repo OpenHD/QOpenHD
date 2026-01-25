@@ -4,6 +4,7 @@
 #include <QObject>
 #include <qqmlapplicationengine.h>
 #include <qquickwindow.h>
+#include <QTimer>
 
 #include "../common/TimeHelper.hpp"
 #include "util/lqutils_include.h"
@@ -19,6 +20,8 @@ public:
     // Resolution of the screen / display itself
     L_RO_PROP(QString, display_width_height_str, set_display_width_height_str, "NA")
     L_RO_PROP(QString, screen_width_height_str, set_screen_width_height_str, "NA")
+    // Screen FPS derived from Qt render pass tick
+    L_RO_PROP(QString, screen_fps_str, set_screen_fps_str, "NA")
     // Resolution qopenhd is rendering at
     L_RW_PROP(int, window_width, set_window_width, -1)
     L_RW_PROP(int, window_height, set_window_height, -1)
@@ -44,14 +47,25 @@ public slots:
     void m_QQuickWindow_afterRendering();
     void m_QQuickWindow_beforeRenderPassRecording();
     void m_QQuickWindow_afterRenderPassRecording();
+protected:
+    bool eventFilter(QObject* watched, QEvent* event) override;
 private:
     // for the main render thread (render pass recording)
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     AvgCalculator avgMainRenderFrameDelta{};
+    bool m_seen_render_pass = false;
+    std::chrono::steady_clock::time_point last_frame_before=std::chrono::steady_clock::now();
+    AvgCalculator avgMainRenderFrameDeltaBefore{};
     // NOTE: For some reason there seems to be no difference between frame time and before / after rendering -
     // looks like there is a glFLush() or somethin in QT.
     //Chronometer m_avg_rendering_time{};
     Chronometer m_avg_renderpass_time{};
+    QTimer* m_present_timer = nullptr;
+    uint64_t m_last_external_frames = 0;
+    std::chrono::steady_clock::time_point m_last_external_ts = std::chrono::steady_clock::now();
+    QTimer* m_ui_fps_timer = nullptr;
+    int m_ui_fps_cap = 0;
+    std::chrono::steady_clock::time_point m_last_ui_update = std::chrono::steady_clock::now();
 
 };
 

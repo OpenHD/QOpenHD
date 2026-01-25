@@ -47,19 +47,7 @@ packagesExist(mmal) {
    DEFINES += IS_PLATFORM_RPI
 }
 
-exists(/usr/local/share/openhd/platform/rock/) {
-    message(This is a Rock)
-    DEFINES += IS_PLATFORM_ROCK
-} else {
-    message(This is not a Rock)
-}
-
-exists(/usr/local/share/openhd/platform/nxp/) {
-    message(This is an NXP device)
-    DEFINES += IS_PLATFORM_NXP
-} else {
-    message(This is not an NXP device)
-}
+# Platform detection is handled at runtime via openhd-sysutils.
 
 # can be used in c++, also set to be exposed in qml
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
