@@ -182,6 +182,12 @@ ScrollView {
                             height: elementHeight
                             onClicked: {
                                 appScreenSettingsView.refresh_modes()
+                                const err = _qopenhd.get_screen_modes_last_error()
+                                if (!screenModeCombo.model || screenModeCombo.model.length === 0) {
+                                    _qopenhd.show_toast("Screen modes empty: " + err, true)
+                                } else if (err && err !== "ok") {
+                                    _qopenhd.show_toast("Screen modes: " + err, false)
+                                }
                             }
                         }
                     }
