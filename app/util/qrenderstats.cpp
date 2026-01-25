@@ -101,9 +101,6 @@ void QRenderStats::set_display_width_height(int width, int height)
 
 void QRenderStats::m_QQuickWindow_beforeRendering()
 {
-    if (m_seen_render_pass) {
-        return;
-    }
     const auto delta = std::chrono::steady_clock::now() - last_frame_before;
     last_frame_before = std::chrono::steady_clock::now();
     avgMainRenderFrameDeltaBefore.add(delta);

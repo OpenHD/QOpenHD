@@ -7,6 +7,11 @@
 #include <qapplication.h>
 #include <QTimer>
 #include <QHostAddress>
+#include <QDateTime>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include<iostream>
 #include <sys/stat.h>
@@ -30,6 +35,11 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <poll.h>
+#include "telemetry/models/aohdsystem.h"
+#include "telemetry/models/openhd_core/platform.hpp"
 #endif
 
 #if defined(ENABLE_SPEECH)
@@ -55,6 +65,11 @@ struct DrmContext {
     uint32_t connector_id = 0;
     drmModeConnector* connector = nullptr;
     drmModeCrtc* crtc = nullptr;
+};
+
+struct SysutilsPlatformInfo {
+    int platform_type = -1;
+    QString platform_name;
 };
 
 static double calc_vrefresh(const drmModeModeInfo& mode) {
@@ -117,6 +132,109 @@ static void release_drm_context(DrmContext& ctx) {
         close(ctx.fd);
         ctx.fd = -1;
     }
+}
+
+static bool query_sysutils_platform(SysutilsPlatformInfo& info, QString& error_out) {
+    constexpr const char* kSocketPath = "/run/openhd/openhd_sys.sock";
+    int fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd < 0) {
+        error_out = "sysutils socket failed";
+        return false;
+    }
+    sockaddr_un addr{};
+    addr.sun_family = AF_UNIX;
+    if (std::strlen(kSocketPath) >= sizeof(addr.sun_path)) {
+        error_out = "sysutils socket path too long";
+        ::close(fd);
+        return false;
+    }
+    std::strncpy(addr.sun_path, kSocketPath, sizeof(addr.sun_path) - 1);
+    if (::connect(fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
+        error_out = "sysutils connect failed";
+        ::close(fd);
+        return false;
+    }
+    constexpr const char* payload = "{\"type\":\"sysutil.platform.request\"}\n";
+    const ssize_t sent = ::send(fd, payload, std::strlen(payload), MSG_NOSIGNAL);
+    if (sent != static_cast<ssize_t>(std::strlen(payload))) {
+        error_out = "sysutils send failed";
+        ::close(fd);
+        return false;
+    }
+
+    pollfd pfd{};
+    pfd.fd = fd;
+    pfd.events = POLLIN;
+    const int poll_ret = ::poll(&pfd, 1, 200);
+    if (poll_ret <= 0 || !(pfd.revents & POLLIN)) {
+        error_out = "sysutils response timeout";
+        ::close(fd);
+        return false;
+    }
+
+    std::string response;
+    char buffer[256];
+    while (true) {
+        const ssize_t read_bytes = ::recv(fd, buffer, sizeof(buffer), 0);
+        if (read_bytes <= 0) {
+            break;
+        }
+        response.append(buffer, buffer + read_bytes);
+        if (response.find('\n') != std::string::npos) {
+            break;
+        }
+    }
+    ::close(fd);
+    const auto newline_pos = response.find('\n');
+    if (newline_pos != std::string::npos) {
+        response.resize(newline_pos);
+    }
+    if (response.empty()) {
+        error_out = "sysutils empty response";
+        return false;
+    }
+    QJsonParseError parse_error{};
+    const QJsonDocument doc = QJsonDocument::fromJson(QByteArray::fromStdString(response), &parse_error);
+    if (parse_error.error != QJsonParseError::NoError || !doc.isObject()) {
+        error_out = "sysutils json parse failed";
+        return false;
+    }
+    const QJsonObject obj = doc.object();
+    if (obj.value("type").toString() != "sysutil.platform.response") {
+        error_out = "sysutils response type mismatch";
+        return false;
+    }
+    info.platform_type = obj.value("platform_type").toInt(-1);
+    info.platform_name = obj.value("platform_name").toString();
+    if (info.platform_type < 0) {
+        error_out = "sysutils missing platform_type";
+        return false;
+    }
+    return true;
+}
+
+static bool get_sysutils_platform_cached(SysutilsPlatformInfo& info, QString& error_out) {
+    static QMutex mutex;
+    static SysutilsPlatformInfo cached;
+    static qint64 last_ms = 0;
+    static bool has_cache = false;
+    QMutexLocker lock(&mutex);
+    const qint64 now_ms = QDateTime::currentMSecsSinceEpoch();
+    if (has_cache && (now_ms - last_ms) < 5000) {
+        info = cached;
+        return true;
+    }
+    SysutilsPlatformInfo fresh;
+    QString err;
+    if (query_sysutils_platform(fresh, err)) {
+        cached = fresh;
+        last_ms = now_ms;
+        has_cache = true;
+        info = cached;
+        return true;
+    }
+    error_out = err;
+    return false;
 }
 
 static bool get_drm_context(DrmContext& ctx, QString& error_out) {
@@ -648,6 +766,22 @@ bool QOpenHD::is_platform_rock()
 #ifdef IS_PLATFORM_ROCK
     return true;
 #else
+    const auto is_rock_platform = [](int type) {
+        return type >= X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W &&
+               type < X_PLATFORM_TYPE_ALWINNER_X20;
+    };
+#if defined(__linux__)
+    SysutilsPlatformInfo info;
+    QString error;
+    if (get_sysutils_platform_cached(info, error)) {
+        return is_rock_platform(info.platform_type);
+    }
+#endif
+    const int ground_platform = AOHDSystem::instanceGround().ohd_platform_type();
+    const int air_platform = AOHDSystem::instanceAir().ohd_platform_type();
+    if (is_rock_platform(ground_platform) || is_rock_platform(air_platform)) {
+        return true;
+    }
     return false;
 #endif
 }
