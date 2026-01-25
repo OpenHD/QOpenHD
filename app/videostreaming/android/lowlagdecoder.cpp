@@ -7,7 +7,6 @@
 #include <android/native_window_jni.h>
 #include <media/NdkMediaFormat.h>
 #include <utility>
-#include <time.h>  // For systemTime()
 #define MLOGD if(m_printDebugInfo) qDebug()<<"["<<m_logTag.c_str()<<"]"
 
 using namespace std::chrono;
@@ -278,8 +277,8 @@ void LowLagDecoder::checkOutputLoop() {
     bool decoderProducedUnknown=false;
     
     // Set high priority for output thread
-    #include <sys/resource.h>
-    setpriority(PRIO_PROCESS, 0, -19); // Highest priority (-20 to 19, lower = higher priority)
+    //#include <sys/resource.h>
+    //setpriority(PRIO_PROCESS, 0, -19); // Highest priority (-20 to 19, lower = higher priority)
     
     while(!decoderSawEOS && !decoderProducedUnknown) {
         // Use shorter timeout for more responsive polling
@@ -292,9 +291,9 @@ void LowLagDecoder::checkOutputLoop() {
             const bool renderFrame = info.size > 0 && decoder.window != nullptr;
             
             if (renderFrame) {
-                // CRITICAL FIX: Use releaseOutputBufferAtTime with proper nanosecond timestamp
-                // This bypasses the SurfaceFlinger queue and renders immediately
-                const int64_t renderTimeNs = systemTime(CLOCK_MONOTONIC);
+                // Alternative: Use immediate rendering with current time in nanoseconds
+                const int64_t renderTimeNs = duration_cast<nanoseconds>(
+                    steady_clock::now().time_since_epoch()).count();
                 AMediaCodec_releaseOutputBufferAtTime(decoder.codec, (size_t)index, renderTimeNs);
             } else {
                 AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)index, false);
