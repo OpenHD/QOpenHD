@@ -60,7 +60,7 @@ public:
      */
     DecodedDmaBuffersQueue(int fd, std::function<uint32_t()> planesCountGetter);
 
-    ~DecodedDmaBuffersQueue() override = default;
+    ~DecodedDmaBuffersQueue() override;
 
     /**
      * @brief Queues all registered buffers to the V4L2 device.
@@ -90,6 +90,17 @@ public:
      * @throws std::runtime_error if buffer_index is invalid or VIDIOC_QBUF fails.
      */
     void ReuseBuffer(uint32_t buffer_index);
+
+    /**
+     * @brief Interrupts a blocking WaitForDecodedFrame() call.
+     *
+     * Thread-safe. Can be called from any thread to unblock a waiting thread.
+     * After this call, WaitForDecodedFrame() will return an invalid DecodedFrame.
+     */
+    void InterruptWait();
+
+private:
+    int eventfd_ = -1;  ///< eventfd for interrupting poll()
 };
 
 #endif //QOPENHDPROJECT_DECODEDDMABUFFERSQUEUE_H

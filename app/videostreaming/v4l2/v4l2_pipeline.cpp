@@ -217,7 +217,7 @@ void V4L2Pipeline::on_rtp_frame_received(uvgrtp::frame::rtp_frame* frame)
 
 void V4L2Pipeline::processRtpFrameLoop()
 {
-    qDebug() << "V4L2Pipeline: Thread 1 (RTP processing) started";
+    qInfo() << "V4L2Pipeline: Thread 1 (RTP processing) started";
 
     while (m_running.load()) {
         uvgrtp::frame::rtp_frame* frame = nullptr;
@@ -249,6 +249,8 @@ void V4L2Pipeline::processRtpFrameLoop()
                 gsl::span<const uint8_t> nal_data(frame->payload, frame->payload_len);
                 m_decoder->feed_nal_unit(nal_data);
                 m_nals_fed_to_decoder++;
+                // qInfo() << "V4L2Pipeline: fed NAL unit of size"
+                //         << frame->payload_len << "bytes to decoder";
             }
 
             // Return frame to uvgRTP
@@ -256,12 +258,12 @@ void V4L2Pipeline::processRtpFrameLoop()
         }
     }
 
-    qDebug() << "V4L2Pipeline: Thread 1 (RTP processing) stopped";
+    qInfo() << "V4L2Pipeline: Thread 1 (RTP processing) stopped";
 }
 
 void V4L2Pipeline::processDecodedFramesLoop()
 {
-    qDebug() << "V4L2Pipeline: Thread 2 (decoded frame processing) started"
+    qInfo() << "V4L2Pipeline: Thread 2 (decoded frame processing) started"
              << (m_config.stub_presenter_mode ? "[STUB MODE]" : "[NORMAL MODE]");
 
     while (m_running.load()) {
@@ -319,7 +321,7 @@ void V4L2Pipeline::processDecodedFramesLoop()
         }
     }
 
-    qDebug() << "V4L2Pipeline: Thread 2 (decoded frame processing) stopped";
+    qInfo() << "V4L2Pipeline: Thread 2 (decoded frame processing) stopped";
 }
 
 void V4L2Pipeline::on_frame_decoded(PlaceboFrame frame)
