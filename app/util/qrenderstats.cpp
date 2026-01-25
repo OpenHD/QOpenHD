@@ -5,6 +5,8 @@
 #endif
 
 #include <qapplication.h>
+#include "util/qopenhd.h"
+#include <algorithm>
 
 QRenderStats::QRenderStats(QObject *parent)
     : QObject{parent}
@@ -57,6 +59,18 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
         });
         m_present_timer->start();
     }
+
+    m_ui_fps_cap = QOpenHD::instance().get_ui_fps_cap();
+    if (m_ui_fps_cap > 0 && !m_ui_fps_timer) {
+        window->setPersistentSceneGraph(true);
+        window->setClearBeforeRendering(false);
+        window->setColor(Qt::transparent);
+        m_ui_fps_timer = new QTimer(this);
+        m_ui_fps_timer->setTimerType(Qt::PreciseTimer);
+        m_ui_fps_timer->setInterval(std::max(1, 1000 / m_ui_fps_cap));
+        connect(m_ui_fps_timer, &QTimer::timeout, window, QOverload<>::of(&QQuickWindow::update));
+        m_ui_fps_timer->start();
+    }
 #endif
 }
 
@@ -76,7 +90,21 @@ void QRenderStats::set_display_width_height(int width, int height)
 
 void QRenderStats::m_QQuickWindow_beforeRendering()
 {
-    //m_avg_rendering_time.start();
+    if (m_seen_render_pass) {
+        return;
+    }
+    const auto delta = std::chrono::steady_clock::now() - last_frame_before;
+    last_frame_before = std::chrono::steady_clock::now();
+    avgMainRenderFrameDeltaBefore.add(delta);
+    avgMainRenderFrameDeltaBefore.recalculate_in_fixed_time_intervals(std::chrono::seconds(1),[this](const AvgCalculator& self){
+        const auto main_stats=QString(self.getAvgReadable().c_str());
+        set_main_render_stats(main_stats);
+        const auto avg_ns = self.getAvg().count();
+        if (avg_ns > 0) {
+            const double fps = 1000000000.0 / static_cast<double>(avg_ns);
+            set_screen_fps_str(QString("%1 fps").arg(fps, 0, 'f', 0));
+        }
+    });
 }
 
 void QRenderStats::m_QQuickWindow_afterRendering()
@@ -92,6 +120,7 @@ void QRenderStats::m_QQuickWindow_afterRendering()
 
 void QRenderStats::m_QQuickWindow_beforeRenderPassRecording()
 {
+    m_seen_render_pass = true;
     m_avg_renderpass_time.start();
     // Calculate frame time by calculating the delta between calls to render pass recording
     const auto delta=std::chrono::steady_clock::now()-last_frame;

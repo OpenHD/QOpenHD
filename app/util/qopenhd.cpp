@@ -18,6 +18,7 @@
 #include <cmath>
 #include <cerrno>
 #include <cstring>
+#include <QRegularExpression>
 
 #if defined(__linux__) || defined(__macos__)
 #include "common/openhd-util.hpp"
@@ -141,7 +142,7 @@ static bool get_drm_context(DrmContext& ctx) {
     }
 
     if (ctx.fd < 0) {
-        ctx.fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
+        ctx.fd = open("/dev/dri/card0", O_RDONLY | O_CLOEXEC);
         if (ctx.fd < 0) {
             qWarning() << "get_screen_modes: failed to open /dev/dri/card0";
             return false;
@@ -151,9 +152,25 @@ static bool get_drm_context(DrmContext& ctx) {
 
     drmModeRes* res = drmModeGetResources(ctx.fd);
     if (!res) {
-        qWarning() << "get_screen_modes: drmModeGetResources failed";
-        release_drm_context(ctx);
-        return false;
+        if (!ctx.owns_fd) {
+            // Retry with a fresh /dev/dri/card0 fd if EGLFS fd doesn't work.
+            int retry_fd = open("/dev/dri/card0", O_RDONLY | O_CLOEXEC);
+            if (retry_fd >= 0) {
+                drmModeRes* retry_res = drmModeGetResources(retry_fd);
+                if (retry_res) {
+                    ctx.fd = retry_fd;
+                    ctx.owns_fd = true;
+                    res = retry_res;
+                } else {
+                    close(retry_fd);
+                }
+            }
+        }
+        if (!res) {
+            qWarning() << "get_screen_modes: drmModeGetResources failed";
+            release_drm_context(ctx);
+            return false;
+        }
     }
 
     if (ctx.connector_id != 0) {
@@ -222,6 +239,43 @@ static bool get_drm_context(DrmContext& ctx) {
     }
 
     return true;
+}
+
+static QStringList get_modes_from_modetest() {
+    const QStringList candidates = {
+        "/usr/bin/modetest",
+        "/usr/local/bin/modetest",
+        "modetest"
+    };
+    QProcess proc;
+    for (const QString& path : candidates) {
+        proc.start(path, {"-M", "rockchip", "-c"});
+        if (!proc.waitForStarted(1000)) {
+            continue;
+        }
+        if (!proc.waitForFinished(2000)) {
+            proc.kill();
+            proc.waitForFinished();
+            continue;
+        }
+        break;
+    }
+    const QString output = QString::fromUtf8(proc.readAllStandardOutput());
+    const QStringList lines = output.split('\n');
+    QRegularExpression re("^\\s*#?\\d+\\s+(\\d+x\\d+)\\s+([0-9.]+)");
+    QStringList modes;
+    for (const QString& line : lines) {
+        const QRegularExpressionMatch m = re.match(line);
+        if (!m.hasMatch()) {
+            continue;
+        }
+        const QString size = m.captured(1);
+        const double refresh = m.captured(2).toDouble();
+        const int refresh_int = static_cast<int>(std::round(refresh));
+        modes.push_back(QString("%1@%2").arg(size).arg(refresh_int));
+    }
+    modes.removeDuplicates();
+    return modes;
 }
 } // namespace
 #endif
@@ -607,6 +661,14 @@ QStringList QOpenHD::get_screen_modes()
     }
     DrmContext ctx;
     if (!get_drm_context(ctx)) {
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            return fallback;
+        }
+        const QString current = get_screen_mode_current();
+        if (current != "NA") {
+            return {current};
+        }
         return {};
     }
     QStringList modes;
@@ -615,6 +677,12 @@ QStringList QOpenHD::get_screen_modes()
     }
     modes.removeDuplicates();
     release_drm_context(ctx);
+    if (modes.isEmpty()) {
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            return fallback;
+        }
+    }
     return modes;
 #else
     return {};
@@ -629,6 +697,10 @@ QString QOpenHD::get_screen_mode_current()
     }
     DrmContext ctx;
     if (!get_drm_context(ctx)) {
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            return fallback.first();
+        }
         return QString("NA");
     }
     QString mode = QString("NA");
@@ -638,6 +710,12 @@ QString QOpenHD::get_screen_mode_current()
         mode = mode_to_string(ctx.connector->modes[0]);
     }
     release_drm_context(ctx);
+    if (mode == "NA") {
+        const auto fallback = get_modes_from_modetest();
+        if (!fallback.isEmpty()) {
+            return fallback.first();
+        }
+    }
     return mode;
 #else
     return QString("NA");
@@ -708,6 +786,19 @@ bool QOpenHD::set_screen_mode(QString mode)
 #else
     Q_UNUSED(mode);
     return false;
+#endif
+}
+
+int QOpenHD::get_ui_fps_cap()
+{
+#if defined(__linux__)
+    if (!is_platform_rock()) {
+        return 0;
+    }
+    QSettings settings;
+    return settings.value("ui_fps_cap", 30).toInt();
+#else
+    return 0;
 #endif
 }
 

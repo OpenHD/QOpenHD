@@ -415,6 +415,7 @@ Settings {
     property bool dev_enable_live_audio_playback: true
     // might / might not work
     property bool dev_set_swap_interval_zero: false
+    property int ui_fps_cap: 30
 
     // Discard actual video ratio and fit primary video to whatever ratio the screen is at (might distort video)
     property bool primary_video_scale_to_fit: false

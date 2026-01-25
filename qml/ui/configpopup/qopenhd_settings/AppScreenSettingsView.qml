@@ -251,6 +251,41 @@ ScrollView {
                         onCheckedChanged: settings.dev_set_swap_interval_zero = checked
                     }
                 }
+                SettingBaseElement{
+                    visible: _qopenhd.is_platform_rock()
+                    m_short_description: "UI FPS cap"
+                    m_long_description: "Limits QML render rate to reduce CPU usage (restart required)."
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        width: 320
+                        model: ListModel {
+                            ListElement { text: qsTr("0 (uncapped)") ; value: 0 }
+                            ListElement { text: qsTr("30 fps") ; value: 30 }
+                            ListElement { text: qsTr("60 fps") ; value: 60 }
+                            ListElement { text: qsTr("120 fps") ; value: 120 }
+                        }
+                        textRole: "text"
+                        Component.onCompleted: {
+                            for (var i = 0; i < model.count; i++) {
+                                var choice = model.get(i);
+                                if (choice.value == settings.ui_fps_cap) {
+                                    currentIndex = i;
+                                }
+                            }
+                        }
+                        onActivated:{
+                            const value_cap = model.get(currentIndex).value
+                            if(settings.ui_fps_cap != value_cap){
+                                settings.ui_fps_cap = value_cap
+                                _restartqopenhdmessagebox.show_with_text("UI FPS cap changed. Restart QOpenHD to apply.")
+                            }
+                        }
+                    }
+                }
 
                 // SettingBaseElement{
                 //     m_short_description: "Settings window scale"

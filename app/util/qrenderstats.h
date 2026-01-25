@@ -51,6 +51,9 @@ private:
     // for the main render thread (render pass recording)
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     AvgCalculator avgMainRenderFrameDelta{};
+    bool m_seen_render_pass = false;
+    std::chrono::steady_clock::time_point last_frame_before=std::chrono::steady_clock::now();
+    AvgCalculator avgMainRenderFrameDeltaBefore{};
     // NOTE: For some reason there seems to be no difference between frame time and before / after rendering -
     // looks like there is a glFLush() or somethin in QT.
     //Chronometer m_avg_rendering_time{};
@@ -58,6 +61,8 @@ private:
     QTimer* m_present_timer = nullptr;
     uint64_t m_last_external_frames = 0;
     std::chrono::steady_clock::time_point m_last_external_ts = std::chrono::steady_clock::now();
+    QTimer* m_ui_fps_timer = nullptr;
+    int m_ui_fps_cap = 0;
 
 };
 

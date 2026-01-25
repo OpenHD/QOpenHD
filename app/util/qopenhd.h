@@ -74,6 +74,7 @@ public:
     Q_INVOKABLE QStringList get_screen_modes();
     Q_INVOKABLE QString get_screen_mode_current();
     Q_INVOKABLE bool set_screen_mode(QString mode);
+    Q_INVOKABLE int get_ui_fps_cap();
     //
     // Tries to mimic android toast as much as possible
     //
