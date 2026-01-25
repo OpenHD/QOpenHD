@@ -5,6 +5,7 @@ LIBS += -LC:/ffmpeg/lib -lavcodec -lavutil -lavformat
 # TODO dirty
 LIBS += -lGLESv2 -lEGL
 LIBS += -ldrm
+PKGCONFIG += libdrm
 
 win32 {
     INCLUDEPATH += $$PWD/../../../build-libs-windows/ffmpeg/include
