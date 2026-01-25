@@ -119,7 +119,7 @@ static void release_drm_context(DrmContext& ctx) {
     }
 }
 
-static bool get_drm_context(DrmContext& ctx) {
+static bool get_drm_context(DrmContext& ctx, QString& error_out) {
     if (QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)) {
         auto* pni = QGuiApplication::platformNativeInterface();
         if (pni) {
@@ -144,6 +144,7 @@ static bool get_drm_context(DrmContext& ctx) {
     if (ctx.fd < 0) {
         ctx.fd = open("/dev/dri/card0", O_RDONLY | O_CLOEXEC);
         if (ctx.fd < 0) {
+            error_out = "open /dev/dri/card0 failed";
             qWarning() << "get_screen_modes: failed to open /dev/dri/card0";
             return false;
         }
@@ -167,6 +168,7 @@ static bool get_drm_context(DrmContext& ctx) {
             }
         }
         if (!res) {
+            error_out = "drmModeGetResources failed";
             qWarning() << "get_screen_modes: drmModeGetResources failed";
             release_drm_context(ctx);
             return false;
@@ -217,6 +219,7 @@ static bool get_drm_context(DrmContext& ctx) {
     drmModeFreeResources(res);
 
     if (ctx.connector_id == 0 || ctx.crtc_id == 0) {
+        error_out = "missing connector/crtc";
         qWarning() << "get_screen_modes: missing connector/crtc";
         release_drm_context(ctx);
         return false;
@@ -227,6 +230,7 @@ static bool get_drm_context(DrmContext& ctx) {
     }
     if (!ctx.connector) {
         qWarning() << "get_screen_modes: drmModeGetConnector failed";
+        error_out = "drmModeGetConnector failed";
         release_drm_context(ctx);
         return false;
     }
@@ -234,6 +238,7 @@ static bool get_drm_context(DrmContext& ctx) {
     ctx.crtc = drmModeGetCrtc(ctx.fd, ctx.crtc_id);
     if (!ctx.crtc) {
         qWarning() << "get_screen_modes: drmModeGetCrtc failed";
+        error_out = "drmModeGetCrtc failed";
         release_drm_context(ctx);
         return false;
     }
@@ -660,16 +665,21 @@ QStringList QOpenHD::get_screen_modes()
 {
 #if defined(__linux__)
     if (!is_platform_rock()) {
+        m_screen_modes_last_error = "not rock platform";
         return {};
     }
     DrmContext ctx;
-    if (!get_drm_context(ctx)) {
+    QString error;
+    if (!get_drm_context(ctx, error)) {
+        m_screen_modes_last_error = error;
         const auto fallback = get_modes_from_modetest();
         if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
             return fallback;
         }
         const QString current = get_screen_mode_current();
         if (current != "NA") {
+            m_screen_modes_last_error = "ok (current mode fallback)";
             return {current};
         }
         return {};
@@ -683,11 +693,17 @@ QStringList QOpenHD::get_screen_modes()
     if (modes.isEmpty()) {
         const auto fallback = get_modes_from_modetest();
         if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
             return fallback;
         }
+        m_screen_modes_last_error = "no modes from drm or modetest";
+    }
+    if (!modes.isEmpty()) {
+        m_screen_modes_last_error = "ok";
     }
     return modes;
 #else
+    m_screen_modes_last_error = "not linux";
     return {};
 #endif
 }
@@ -696,12 +712,16 @@ QString QOpenHD::get_screen_mode_current()
 {
 #if defined(__linux__)
     if (!is_platform_rock()) {
+        m_screen_modes_last_error = "not rock platform";
         return QString("NA");
     }
     DrmContext ctx;
-    if (!get_drm_context(ctx)) {
+    QString error;
+    if (!get_drm_context(ctx, error)) {
+        m_screen_modes_last_error = error;
         const auto fallback = get_modes_from_modetest();
         if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
             return fallback.first();
         }
         return QString("NA");
@@ -716,11 +736,16 @@ QString QOpenHD::get_screen_mode_current()
     if (mode == "NA") {
         const auto fallback = get_modes_from_modetest();
         if (!fallback.isEmpty()) {
+            m_screen_modes_last_error = "ok (modetest fallback)";
             return fallback.first();
         }
+        m_screen_modes_last_error = "current mode not found";
+    } else {
+        m_screen_modes_last_error = "ok";
     }
     return mode;
 #else
+    m_screen_modes_last_error = "not linux";
     return QString("NA");
 #endif
 }
@@ -739,7 +764,9 @@ bool QOpenHD::set_screen_mode(QString mode)
         return false;
     }
     DrmContext ctx;
-    if (!get_drm_context(ctx)) {
+    QString error;
+    if (!get_drm_context(ctx, error)) {
+        m_screen_modes_last_error = error;
         return false;
     }
     if (!ctx.crtc || !ctx.connector) {
@@ -803,6 +830,11 @@ int QOpenHD::get_ui_fps_cap()
 #else
     return 0;
 #endif
+}
+
+QString QOpenHD::get_screen_modes_last_error()
+{
+    return m_screen_modes_last_error;
 }
 
 void QOpenHD::keep_screen_on(bool on)

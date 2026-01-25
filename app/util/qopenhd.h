@@ -75,6 +75,7 @@ public:
     Q_INVOKABLE QString get_screen_mode_current();
     Q_INVOKABLE bool set_screen_mode(QString mode);
     Q_INVOKABLE int get_ui_fps_cap();
+    Q_INVOKABLE QString get_screen_modes_last_error();
     //
     // Tries to mimic android toast as much as possible
     //
@@ -126,6 +127,7 @@ signals:
 private:
     void do_not_call_toast_add(QString text,bool long_toast);
     void show_toast_and_add_remove_timer(QString text,bool long_toast);
+    QString m_screen_modes_last_error;
 };
 
 #endif // QOPENHD_H
