@@ -79,6 +79,12 @@ ApplicationWindow {
                 if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
                     return "../video/ExpMainVideoAndroid.qml"
                 }
+                if (_qopenhd.is_platform_rock() && settings.dev_always_use_generic_external_decode_service) {
+                    return ""
+                }
+                if (settings.dev_disable_primary_video) {
+                    return ""
+                }
                 // If we have avcodec at compile time, we prefer it over qmlglsink since it provides lower latency
                 // (not really avcodec itself, but in this namespace we have 1) the preferred sw decode path and
                 // 2) also the mmal rpi path )

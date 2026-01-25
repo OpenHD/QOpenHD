@@ -20,6 +20,15 @@ ScrollView {
     clip: true
     property var screen_modes: _qopenhd.get_screen_modes()
     property string screen_mode_current: _qopenhd.get_screen_mode_current()
+    function refresh_modes() {
+        screen_modes = _qopenhd.get_screen_modes()
+        screen_mode_current = _qopenhd.get_screen_mode_current()
+    }
+    onVisibleChanged: {
+        if (visible) {
+            refresh_modes()
+        }
+    }
 
     Item {
         anchors.fill: parent
@@ -146,6 +155,7 @@ ScrollView {
                         model: appScreenSettingsView.screen_modes
                         enabled: model && model.length > 0
                         Component.onCompleted: {
+                            appScreenSettingsView.refresh_modes()
                             for (var i = 0; i < model.length; i++) {
                                 if (model[i] === appScreenSettingsView.screen_mode_current) {
                                     currentIndex = i;

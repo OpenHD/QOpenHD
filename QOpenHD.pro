@@ -63,7 +63,6 @@ CONFIG(debug, debug|release) {
     DEFINES += QT_NO_DEBUG
     CONFIG += installer
     DESTDIR = $${OUT_PWD}/release
-    DEFINES += QMLJSDEBUGGER
 }
 
 #https://doc.qt.io/qt-6/portingguide.html
