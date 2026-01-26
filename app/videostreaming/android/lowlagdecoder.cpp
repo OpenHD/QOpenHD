@@ -7,7 +7,7 @@
 #include <android/native_window_jni.h>
 #include <media/NdkMediaFormat.h>
 #include <utility>
-#define MLOGD if(m_printDebugInfo) qDebug()<<"["<<m_logTag.c_str()<<"]"
+#define MLOGD if(true) qDebug()<<"["<<m_logTag.c_str()<<"]"
 
 using namespace std::chrono;
 
@@ -178,14 +178,15 @@ void LowLagDecoder::configureStartDecoder(){
             decoder.codec = AMediaCodec_createCodecByName("OMX.google.h264.decoder");
         }
     }else {
-        decoder.codec = AMediaCodec_createDecoderByType(MIME.c_str());
+        //decoder.codec = AMediaCodec_createDecoderByType(MIME.c_str());
+        decoder.codec = findBestLowLatencyDecoder(MIME, m_printDebugInfo);
         //decoder.codec = AMediaCodec_createDecoderByType("video/mjpeg");
         //const std::string s=(decoder.codec== nullptr ? "No" : "YES");
         //MDebug::log("Created decoder"+s);
-        //char* name;
-        //AMediaCodec_getName(decoder.codec,&name);
-        //MLOGD<<"Created decoder "<<std::string(name);
-        //AMediaCodec_releaseName(decoder.codec,name);
+        char* name;
+        AMediaCodec_getName(decoder.codec,&name);
+        MLOGD<<"Created decoder "<<std::string(name);
+        AMediaCodec_releaseName(decoder.codec,name);
     }
     if (decoder.codec== nullptr) {
         MLOGD<<"Cannot create decoder";
@@ -212,9 +213,14 @@ void LowLagDecoder::configureStartDecoder(){
     
     // 2. Set highest priority (Qualcomm)
     AMediaFormat_setInt32(format, "vendor.qti-ext-dec-priority.value", 0);
+    AMediaFormat_setInt32(format, "vendor.qti-ext-dec-picture-order.enable", 1);
+    
     
     // 3. Generic low-latency hint
     AMediaFormat_setInt32(format, "low-latency", 1);
+
+    AMediaFormat_setInt32(format, "vdec-lowlatency", 1);
+    
     
     // 4. Request maximum performance
     AMediaFormat_setFloat(format, "operating-rate", INT32_MAX);
@@ -292,6 +298,42 @@ void LowLagDecoder::feedDecoder(const NALU& nalu){
     }
     
     MLOGD << "dequeueInputBuffer error: " << (int)index;
+}
+// Add this function to find the best decoder
+AMediaCodec* findBestLowLatencyDecoder(const std::string& mimeType, bool verboseLogging) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11+
+        // Try to find a decoder with FEATURE_LowLatency
+        int numCodecs = AMediaCodecList_getCodecCount(AMediaCodecList_findCodecByName());
+        
+        for (int i = 0; i < numCodecs; i++) {
+            AMediaCodecInfo* codecInfo = AMediaCodecList_getCodecInfoAt(i);
+            
+            if (AMediaCodecInfo_isEncoder(codecInfo)) {
+                continue;
+            }
+            
+            const char* codecName = AMediaCodecInfo_getName(codecInfo);
+            
+            // Check if this codec supports low latency
+            AMediaFormat* caps = AMediaCodecInfo_getCapabilitiesForType(codecInfo, mimeType.c_str());
+            
+            // Look for specific low-latency decoders
+            std::string name(codecName);
+            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+            
+            // Priority order for Qualcomm devices:
+            if (name.find("c2.qti.avc.decoder.low_latency") != std::string::npos ||
+                name.find("c2.qti.hevc.decoder.low_latency") != std::string::npos) {
+                if (verboseLogging) {
+                    qDebug() << "Found Qualcomm low-latency decoder:" << codecName;
+                }
+                return AMediaCodec_createByCodecName(codecName);
+            }
+        }
+    }
+    
+    // Fallback to default
+    return AMediaCodec_createDecoderByType(mimeType.c_str());
 }
 
 void LowLagDecoder::checkOutputLoop() {
