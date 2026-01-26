@@ -170,7 +170,31 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
 void LowLagDecoder::configureStartDecoder(){
     const std::string MIME=IS_H265 ? "video/hevc" : "video/avc";
     
-    // ... existing codec creation code ...
+     if(USE_SW_DECODER_INSTEAD){
+        if(IS_H265){
+            // Not sure if google.hevc.decoder is even SW ?!
+            decoder.codec = AMediaCodec_createCodecByName("OMX.google.hevc.decoder");
+        }else{
+            decoder.codec = AMediaCodec_createCodecByName("OMX.google.h264.decoder");
+        }
+    }else {
+        decoder.codec = AMediaCodec_createDecoderByType(MIME.c_str());
+        //decoder.codec = AMediaCodec_createDecoderByType("video/mjpeg");
+        //const std::string s=(decoder.codec== nullptr ? "No" : "YES");
+        //MDebug::log("Created decoder"+s);
+        //char* name;
+        //AMediaCodec_getName(decoder.codec,&name);
+        //MLOGD<<"Created decoder "<<std::string(name);
+        //AMediaCodec_releaseName(decoder.codec,name);
+    }
+    if (decoder.codec== nullptr) {
+        MLOGD<<"Cannot create decoder";
+        //set csd-0 and csd-1 back to 0, maybe they were just faulty but we have better luck with the next ones
+        mKeyFrameFinder.reset();
+        return;
+    }
+
+
     
     AMediaFormat* format=AMediaFormat_new();
     AMediaFormat_setString(format,AMEDIAFORMAT_KEY_MIME,MIME.c_str());
