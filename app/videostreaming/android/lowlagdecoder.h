@@ -55,6 +55,7 @@ private:
         AMediaCodec *codec= nullptr;
         ANativeWindow* window= nullptr;
     };
+    std::atomic<int> m_queuedFrameCount{0};
 public:
     //Make sure to do no heavy lifting on this callback, since it is called from the low-latency mCheckOutputThread thread (best to copy values and leave processing to another thread)
     //The decoding info callback is called every DECODING_INFO_RECALCULATION_INTERVAL_MS
@@ -78,6 +79,9 @@ public:
     //configure as soon as possible
     // If the input pipe was closed (surface has been removed or is not set yet), only buffer key frames
     void interpretNALU(const NALU& nalu);
+    int getQueuedFrameCount() const {
+        return m_queuedFrameCount.load();
+    }
 private:
     void releaseDecoderResources(bool releaseWindow);
     void releaseDecoderResourcesLocked(bool releaseWindow);
