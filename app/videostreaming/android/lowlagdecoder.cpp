@@ -169,7 +169,7 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
 
 void LowLagDecoder::configureStartDecoder(){
     const std::string MIME=IS_H265 ? "video/hevc" : "video/avc";
-    
+    m_printDebugInfo = true;
      if(USE_SW_DECODER_INSTEAD){
         if(IS_H265){
             // Not sure if google.hevc.decoder is even SW ?!
@@ -182,7 +182,8 @@ void LowLagDecoder::configureStartDecoder(){
         // Try Qualcomm low-latency decoder
         const char* qtiLowLatName = IS_H265 ? 
             "c2.qti.hevc.decoder.low_latency" : 
-            "c2.qti.avc.decoder.low_latency";
+            "c2.qti.avc.decoder";
+            //"c2.qti.avc.decoder.low_latency";
         
         decoder.codec = AMediaCodec_createCodecByName(qtiLowLatName);
         
@@ -330,76 +331,124 @@ void LowLagDecoder::feedDecoder(const NALU& nalu){
 
 
 void LowLagDecoder::checkOutputLoop() {
-    //NDKThreadHelper::setProcessThreadPriorityAttachDetach(javaVm,FPV_VR_PRIORITY::CPU_PRIORITY_DECODER_OUTPUT,"DecoderCheckOutput");
     AMediaCodecBufferInfo info;
-    bool decoderSawEOS=false;
-    bool decoderProducedUnknown=false;
-    
-    // Set high priority for output thread
-    //#include <sys/resource.h>
-    //setpriority(PRIO_PROCESS, 0, -19); // Highest priority (-20 to 19, lower = higher priority)
+    bool decoderSawEOS = false;
+    bool decoderProducedUnknown = false;
     
     while(!decoderSawEOS && !decoderProducedUnknown) {
-        // Use shorter timeout for more responsive polling
-        const ssize_t index = AMediaCodec_dequeueOutputBuffer(decoder.codec, &info, 10000); // 10ms
+        // === DRAIN ALL AVAILABLE FRAMES, ONLY RENDER THE LATEST ===
+        std::vector<ssize_t> availableFrames;
         
-        if (index >= 0) {
+        // Collect all immediately available frames
+        while (true) {
+            ssize_t index = AMediaCodec_dequeueOutputBuffer(decoder.codec, &info, 0); // Non-blocking
+            
+            if (index >= 0) {
+                availableFrames.push_back(index);
+            } else if (index == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
+                auto format = AMediaCodec_getOutputFormat(decoder.codec);
+                int width = 0, height = 0;
+                AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_WIDTH, &width);
+                AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_HEIGHT, &height);
+                MLOGD << "Output format changed: " << width << "x" << height;
+                if(onDecoderRatioChangedCallback != nullptr && width != 0 && height != 0){
+                    onDecoderRatioChangedCallback({width, height});
+                }
+                AMediaFormat_delete(format);
+            } else if (index == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
+                MLOGD << "OUTPUT_BUFFERS_CHANGED";
+            } else {
+                // No more frames available immediately
+                break;
+            }
+        }
+        
+        // If we have frames queued, drop all but the latest
+        if (availableFrames.size() > 0) {
             const auto now = steady_clock::now();
             const int64_t nowUS = (int64_t)duration_cast<microseconds>(now.time_since_epoch()).count();
             
-            const bool renderFrame = info.size > 0 && decoder.window != nullptr;
+            // Drop all frames except the last one
+            for (size_t i = 0; i < availableFrames.size() - 1; i++) {
+                AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)availableFrames[i], false);
+                if (m_printDebugInfo) {
+                    MLOGD << "DROPPED old frame " << i << " of " << availableFrames.size();
+                }
+            }
+            
+            // Render only the latest frame
+            ssize_t latestIndex = availableFrames.back();
+            
+            // Get buffer info for the latest frame
+            AMediaCodec_dequeueOutputBuffer(decoder.codec, &info, 0); // This should return the same index
+            // Actually, we need to track the info for each frame...
+            
+            const bool renderFrame = decoder.window != nullptr;
             
             if (renderFrame) {
-                // Alternative: Use immediate rendering with current time in nanoseconds
-                const int64_t renderTimeNs = duration_cast<nanoseconds>(
-                    steady_clock::now().time_since_epoch()).count();
-                AMediaCodec_releaseOutputBufferAtTime(decoder.codec, (size_t)index, renderTimeNs);
+                // BYPASS VSYNC: timestamp = 1 nanosecond (immediate)
+                AMediaCodec_releaseOutputBufferAtTime(decoder.codec, (size_t)latestIndex, 1);
             } else {
-                AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)index, false);
+                AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)latestIndex, false);
             }
             
             decodingTime.add(std::chrono::microseconds(nowUS - info.presentationTimeUs));
             nDecodedFrames.add(1);
+            
+            if (availableFrames.size() > 1 && m_printDebugInfo) {
+                MLOGD << "Frame latency: " << ((nowUS - info.presentationTimeUs) / 1000.0) 
+                      << "ms | Dropped " << (availableFrames.size() - 1) << " old frames";
+            }
             
             if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
                 MLOGD << "Decoder saw EOS";
                 decoderSawEOS = true;
                 continue;
             }
-        } else if (index == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
-            // ... existing format change handling ...
-            auto format = AMediaCodec_getOutputFormat(decoder.codec);
-            int width=0, height=0;
-            AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_WIDTH, &width);
-            AMediaFormat_getInt32(format, AMEDIAFORMAT_KEY_HEIGHT, &height);
-            MLOGD << "Output format: " << width << "x" << height;
-            
-            if(onDecoderRatioChangedCallback != nullptr && width != 0 && height != 0){
-                onDecoderRatioChangedCallback({width, height});
-            }
-            AMediaFormat_delete(format);
-        } else if(index == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED){
-            // This is deprecated in newer Android versions
-            MLOGD << "OUTPUT_BUFFERS_CHANGED";
-        } else if(index == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
-            // Normal timeout - continue
         } else {
-            MLOGD << "dequeueOutputBuffer error: " << (int)index;
-            decoderProducedUnknown = true;
-            continue;
+            // No frames available, wait with timeout
+            ssize_t index = AMediaCodec_dequeueOutputBuffer(decoder.codec, &info, 10000);
+            
+            if (index >= 0) {
+                const auto now = steady_clock::now();
+                const int64_t nowUS = (int64_t)duration_cast<microseconds>(now.time_since_epoch()).count();
+                
+                const bool renderFrame = decoder.window != nullptr;
+                
+                if (renderFrame) {
+                    AMediaCodec_releaseOutputBufferAtTime(decoder.codec, (size_t)index, 1);
+                } else {
+                    AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)index, false);
+                }
+                
+                decodingTime.add(std::chrono::microseconds(nowUS - info.presentationTimeUs));
+                nDecodedFrames.add(1);
+                
+                if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
+                    decoderSawEOS = true;
+                    continue;
+                }
+            } else if (index == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
+                // ... format change handling ...
+            } else if (index == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
+                // Normal timeout
+            } else {
+                MLOGD << "dequeueOutputBuffer error: " << (int)index;
+                decoderProducedUnknown = true;
+            }
         }
         
-        // ... existing stats calculation code ...
-        const auto now=steady_clock::now();
-        const auto delta=now-decodingInfo.lastCalculation;
-        if(delta>DECODING_INFO_RECALCULATION_INTERVAL){
-            decodingInfo.lastCalculation=steady_clock::now();
-            decodingInfo.currentFPS=(float)nDecodedFrames.getDeltaSinceLastCall()/(float)duration_cast<seconds>(delta).count();
-            decodingInfo.currentKiloBitsPerSecond=((float)nNALUBytesFed.getDeltaSinceLastCall()/duration_cast<seconds>(delta).count())/1024.0f*8.0f;
-            decodingInfo.avgDecodingTime_ms=decodingTime.getAvg_ms();
-            decodingInfo.avgParsingTime_ms=parsingTime.getAvg_ms();
-            decodingInfo.avgWaitForInputBTime_ms=waitForInputB.getAvg_ms();
-            decodingInfo.nDecodedFrames=nDecodedFrames.getAbsolute();
+        // ... existing stats calculation ...
+        const auto now = steady_clock::now();
+        const auto delta = now - decodingInfo.lastCalculation;
+        if(delta > DECODING_INFO_RECALCULATION_INTERVAL){
+            decodingInfo.lastCalculation = steady_clock::now();
+            decodingInfo.currentFPS = (float)nDecodedFrames.getDeltaSinceLastCall() / (float)duration_cast<seconds>(delta).count();
+            decodingInfo.currentKiloBitsPerSecond = ((float)nNALUBytesFed.getDeltaSinceLastCall() / duration_cast<seconds>(delta).count()) / 1024.0f * 8.0f;
+            decodingInfo.avgDecodingTime_ms = decodingTime.getAvg_ms();
+            decodingInfo.avgParsingTime_ms = parsingTime.getAvg_ms();
+            decodingInfo.avgWaitForInputBTime_ms = waitForInputB.getAvg_ms();
+            decodingInfo.nDecodedFrames = nDecodedFrames.getAbsolute();
             printAvgLog();
             if(onDecodingInfoChangedCallback != nullptr){
                 onDecodingInfoChangedCallback(decodingInfo);
