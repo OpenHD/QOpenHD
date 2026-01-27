@@ -169,7 +169,6 @@ void LowLagDecoder::interpretNALU(const NALU& nalu){
 
 void LowLagDecoder::configureStartDecoder(){
     const std::string MIME=IS_H265 ? "video/hevc" : "video/avc";
-    m_printDebugInfo = true;
      if(USE_SW_DECODER_INSTEAD){
         if(IS_H265){
             // Not sure if google.hevc.decoder is even SW ?!
@@ -230,9 +229,9 @@ void LowLagDecoder::configureStartDecoder(){
     AMediaFormat_setString(format,AMEDIAFORMAT_KEY_MIME,MIME.c_str());
     
     if(IS_H265){
-        h265_configureAMediaFormat(mKeyFrameFinder, format, m_printDebugInfo, m_logTag);
+        h265_configureAMediaFormat(mKeyFrameFinder, format, true, m_logTag);
     }else{
-        h264_configureAMediaFormat(mKeyFrameFinder, format, m_printDebugInfo, m_logTag);
+        h264_configureAMediaFormat(mKeyFrameFinder, format, true, m_logTag);
     }
 
     // ===== LOW-LATENCY OPTIMIZATIONS START =====
@@ -371,7 +370,7 @@ void LowLagDecoder::checkOutputLoop() {
             // Drop all frames except the last one
             for (size_t i = 0; i < availableFrames.size() - 1; i++) {
                 AMediaCodec_releaseOutputBuffer(decoder.codec, (size_t)availableFrames[i], false);
-                if (m_printDebugInfo) {
+                if (1) {
                     MLOGD << "DROPPED old frame " << i << " of " << availableFrames.size();
                 }
             }
@@ -459,9 +458,6 @@ void LowLagDecoder::checkOutputLoop() {
 }
 
 void LowLagDecoder::printAvgLog() {
-    if(!m_printDebugInfo){
-        return;
-    }
     auto now=steady_clock::now();
     if((now-lastLog)>TIME_BETWEEN_LOGS){
         lastLog=now;
