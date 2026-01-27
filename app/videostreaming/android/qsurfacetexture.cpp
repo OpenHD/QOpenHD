@@ -3,7 +3,7 @@
 #include <QAndroidJniEnvironment>
 #include <QSGGeometryNode>
 #include <QSGSimpleMaterialShader>
-
+#include <QTimer>
 #include "../vscommon/QOpenHDVideoHelper.hpp"
 #include "../vscommon/video_ratio_helper.hpp"
 
