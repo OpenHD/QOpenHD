@@ -170,11 +170,6 @@ static void qrectf_flip_horizontally(QRectF& rect){
     rect.setBottom(tmp);
 }
 
-bool checkIfMoreFramesAvailable(void) {
-
-    return m_decoder->getQueuedFrameCount() > 0;
-}
-
 QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNodeData *)
 {
     SurfaceTextureNode *node = static_cast<SurfaceTextureNode *>(n);
@@ -222,20 +217,8 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
     QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     // XX
+ 
 
-    bool moreFramesAvailable = checkIfMoreFramesAvailable(); // You need to implement this
-    
-    if (moreFramesAvailable) {
-        QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), 
-                                 "update", 
-                                 Qt::DirectConnection);
-    } else {
-        QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), 
-                                 "update", 
-                                 Qt::QueuedConnection);
-    }
-    
-        
     //QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
     return node;
 }
