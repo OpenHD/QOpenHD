@@ -177,16 +177,44 @@ void LowLagDecoder::configureStartDecoder(){
         }else{
             decoder.codec = AMediaCodec_createCodecByName("OMX.google.h264.decoder");
         }
-    }else {
-        //decoder.codec = AMediaCodec_createDecoderByType(MIME.c_str());
-        decoder.codec = findBestLowLatencyDecoder(MIME, m_printDebugInfo);
-        //decoder.codec = AMediaCodec_createDecoderByType("video/mjpeg");
-        //const std::string s=(decoder.codec== nullptr ? "No" : "YES");
-        //MDebug::log("Created decoder"+s);
-        char* name;
-        AMediaCodec_getName(decoder.codec,&name);
-        MLOGD<<"Created decoder "<<std::string(name);
-        AMediaCodec_releaseName(decoder.codec,name);
+       } else {
+        // === TRY LOW-LATENCY DECODERS FIRST ===
+        // Try Qualcomm low-latency decoder
+        const char* qtiLowLatName = IS_H265 ? 
+            "c2.qti.hevc.decoder.low_latency" : 
+            "c2.qti.avc.decoder.low_latency";
+        
+        decoder.codec = AMediaCodec_createCodecByName(qtiLowLatName);
+        
+        if (decoder.codec != nullptr) {
+            MLOGD << "Using Qualcomm low-latency decoder: " << qtiLowLatName;
+        } else {
+            // Try MediaTek low-latency decoder
+            const char* mtkLowLatName = IS_H265 ?
+                "c2.mtk.hevc.decoder.low-latency" :
+                "c2.mtk.avc.decoder.low-latency";
+            
+            decoder.codec = AMediaCodec_createCodecByName(mtkLowLatName);
+            
+            if (decoder.codec != nullptr) {
+                MLOGD << "Using MediaTek low-latency decoder: " << mtkLowLatName;
+            } else {
+                // Try Samsung low-latency decoder
+                const char* secLowLatName = IS_H265 ?
+                    "c2.sec.hevc.decoder.low_latency" :
+                    "c2.sec.avc.decoder.low_latency";
+                
+                decoder.codec = AMediaCodec_createCodecByName(secLowLatName);
+                
+                if (decoder.codec != nullptr) {
+                    MLOGD << "Using Samsung low-latency decoder: " << secLowLatName;
+                } else {
+                    // Fallback to default decoder
+                    MLOGD << "No low-latency decoder found, using standard decoder";
+                    decoder.codec = AMediaCodec_createDecoderByType(MIME.c_str());
+                }
+            }
+        }
     }
     if (decoder.codec== nullptr) {
         MLOGD<<"Cannot create decoder";
@@ -299,42 +327,7 @@ void LowLagDecoder::feedDecoder(const NALU& nalu){
     
     MLOGD << "dequeueInputBuffer error: " << (int)index;
 }
-// Add this function to find the best decoder
-AMediaCodec* findBestLowLatencyDecoder(const std::string& mimeType, bool verboseLogging) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11+
-        // Try to find a decoder with FEATURE_LowLatency
-        int numCodecs = AMediaCodecList_getCodecCount(AMediaCodecList_findCodecByName());
-        
-        for (int i = 0; i < numCodecs; i++) {
-            AMediaCodecInfo* codecInfo = AMediaCodecList_getCodecInfoAt(i);
-            
-            if (AMediaCodecInfo_isEncoder(codecInfo)) {
-                continue;
-            }
-            
-            const char* codecName = AMediaCodecInfo_getName(codecInfo);
-            
-            // Check if this codec supports low latency
-            AMediaFormat* caps = AMediaCodecInfo_getCapabilitiesForType(codecInfo, mimeType.c_str());
-            
-            // Look for specific low-latency decoders
-            std::string name(codecName);
-            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-            
-            // Priority order for Qualcomm devices:
-            if (name.find("c2.qti.avc.decoder.low_latency") != std::string::npos ||
-                name.find("c2.qti.hevc.decoder.low_latency") != std::string::npos) {
-                if (verboseLogging) {
-                    qDebug() << "Found Qualcomm low-latency decoder:" << codecName;
-                }
-                return AMediaCodec_createByCodecName(codecName);
-            }
-        }
-    }
-    
-    // Fallback to default
-    return AMediaCodec_createDecoderByType(mimeType.c_str());
-}
+
 
 void LowLagDecoder::checkOutputLoop() {
     //NDKThreadHelper::setProcessThreadPriorityAttachDetach(javaVm,FPV_VR_PRIORITY::CPU_PRIORITY_DECODER_OUTPUT,"DecoderCheckOutput");
