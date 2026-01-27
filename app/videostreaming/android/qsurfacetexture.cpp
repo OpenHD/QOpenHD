@@ -142,6 +142,10 @@ QSurfaceTexture::QSurfaceTexture(QQuickItem *parent)
     : QQuickItem(parent)
 {
     setFlags(ItemHasContents);
+    QTimer *updateTimer = new QTimer(this);
+    connect(updateTimer, &QTimer::timeout, this, &QSurfaceTexture::update);
+    updateTimer->setInterval(1);  // As fast as possible, or use 1-5ms
+    updateTimer->start();
 }
 
 QSurfaceTexture::~QSurfaceTexture()
@@ -164,6 +168,11 @@ static void qrectf_flip_horizontally(QRectF& rect){
     float tmp = rect.top();
     rect.setTop(rect.bottom());
     rect.setBottom(tmp);
+}
+
+bool checkIfMoreFramesAvailable(void) {
+
+    return m_decoder->getQueuedFrameCount() > 0;
 }
 
 QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNodeData *)
@@ -213,6 +222,20 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
     QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     // XX
+
+    bool moreFramesAvailable = checkIfMoreFramesAvailable(); // You need to implement this
+    
+    if (moreFramesAvailable) {
+        QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), 
+                                 "update", 
+                                 Qt::DirectConnection);
+    } else {
+        QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), 
+                                 "update", 
+                                 Qt::QueuedConnection);
+    }
+    
+        
     //QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
     return node;
 }
