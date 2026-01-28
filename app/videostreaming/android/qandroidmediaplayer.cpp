@@ -34,7 +34,7 @@ void QAndroidMediaPlayer::setup_start_video_decoder_display(const QOpenHDVideoHe
         DecodingStatistcs::instance().util_set_primary_stream_frame_format("android",ratio.width,ratio.height);
         if(m_videoOut){
             m_videoOut->set_video_texture_size(ratio.width,ratio.height);
-            m_videoOut->setDecoder(m_low_lag_decoder);
+            m_videoOut->setDecoder(m_low_lag_decoder.get());
         }
     };
     m_low_lag_decoder->registerOnDecoderRatioChangedCallback(ratio_changed_cb);
