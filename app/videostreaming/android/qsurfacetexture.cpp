@@ -176,7 +176,7 @@ void QSurfaceTexture::setDecoder(LowLagDecoder* decoder) {
     if (!m_updateTimer) {
         m_updateTimer = new QTimer(this);
         connect(m_updateTimer, &QTimer::timeout, this, [this]() {
-            if (m_decoder && m_decoder->hasFramesAvailable()) {
+            if (m_decoder && mLowLagDecoder->getQueuedFrameCount()) {
                 this->update();
             }
         });
