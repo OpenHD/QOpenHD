@@ -4,6 +4,8 @@
 #include <QAndroidJniObject>
 #include <QQuickItem>
 
+#include "lowlagdecoder.h"
+
 class QSurfaceTexture : public QQuickItem
 {
     Q_OBJECT
@@ -36,6 +38,7 @@ private:
     int m_texture_width_px=0;
     int m_texture_height_px=0;
     LowLagDecoder* m_decoder;
+    QTimer *m_updateTimer;
 };
 
 #endif // QSURFACETEXTURE_H
