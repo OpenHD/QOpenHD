@@ -361,7 +361,7 @@ void LowLagDecoder::checkOutputLoop() {
                 break;
             }
         }
-        
+        m_queuedFrameCount.store(availableFrames.size());
         // If we have frames queued, drop all but the latest
         if (availableFrames.size() > 0) {
             const auto now = steady_clock::now();

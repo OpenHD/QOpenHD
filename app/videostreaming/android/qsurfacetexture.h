@@ -17,7 +17,7 @@ public:
     // Needs to be explicitly called from c++ to do proper aspect ratio
     // not thread safe, but this doesn't matter
     void set_video_texture_size(int width_px,int height_px);
-
+    void setDecoder(LowLagDecoder* decoder);
     // QQuickItem interface
 protected:
     QSGNode *updatePaintNode(QSGNode *n, UpdatePaintNodeData *) override;
@@ -26,6 +26,7 @@ signals:
     void surfaceTextureChanged(QSurfaceTexture *surfaceTexture);
 
 private:
+
     // our texture
     uint32_t m_textureId = 0;
 
@@ -34,6 +35,7 @@ private:
 
     int m_texture_width_px=0;
     int m_texture_height_px=0;
+    LowLagDecoder* m_decoder;
 };
 
 #endif // QSURFACETEXTURE_H

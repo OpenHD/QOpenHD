@@ -169,7 +169,21 @@ static void qrectf_flip_horizontally(QRectF& rect){
     rect.setTop(rect.bottom());
     rect.setBottom(tmp);
 }
-
+void QSurfaceTexture::setDecoder(LowLagDecoder* decoder) {
+    m_decoder = decoder;
+    
+    // Now start the timer
+    if (!m_updateTimer) {
+        m_updateTimer = new QTimer(this);
+        connect(m_updateTimer, &QTimer::timeout, this, [this]() {
+            if (m_decoder && m_decoder->hasFramesAvailable()) {
+                this->update();
+            }
+        });
+        m_updateTimer->setInterval(4);
+        m_updateTimer->start();
+    }
+}
 QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNodeData *)
 {
     SurfaceTextureNode *node = static_cast<SurfaceTextureNode *>(n);
@@ -201,24 +215,32 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
         node = new SurfaceTextureNode(m_surfaceTexture, m_textureId);
         emit surfaceTextureChanged(this);
     }
-    QRectF rect(boundingRect());
-    if(m_texture_width_px>0 && m_texture_height_px>0){
-        auto coords=helper::ratio::calculate_viewport(boundingRect().width(),boundingRect().height(),m_texture_width_px,m_texture_height_px,QOpenHDVideoHelper::get_primary_video_scale_to_fit());
-        rect=QRectF(coords.x,coords.y,coords.width,coords.height);
-    }
-    // flip vertical - for some reason video by default is upside down on android otherwise
-    qrectf_flip_horizontally(rect);
 
-     const QRectF texture_coords=QRectF(0, 0, 1, 1);
+    bool moreFramesAvailable = mLowLagDecoder->getQueuedFrameCount(); // You need to implement this
+    if (moreFramesAvailable) {
+        QRectF rect(boundingRect());
+        if(m_texture_width_px>0 && m_texture_height_px>0){
+            auto coords=helper::ratio::calculate_viewport(boundingRect().width(),boundingRect().height(),m_texture_width_px,m_texture_height_px,QOpenHDVideoHelper::get_primary_video_scale_to_fit());
+            rect=QRectF(coords.x,coords.y,coords.width,coords.height);
+        }
+        // flip vertical - for some reason video by default is upside down on android otherwise
+        qrectf_flip_horizontally(rect);
 
-    //qDebug()<<rect.width()<<" "<<rect.height();
-    //rect.setWidth(rect.width()*0.5);
+        const QRectF texture_coords=QRectF(0, 0, 1, 1);
 
-    QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
-    node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
-    // XX
+        //qDebug()<<rect.width()<<" "<<rect.height();
+        //rect.setWidth(rect.width()*0.5);
+
+        QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
+        node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
+        // XX
  
-
+    
+    
+        QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), 
+                                 "update", 
+                                 Qt::DirectConnection);
+    } //else {
     //QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
     return node;
 }
