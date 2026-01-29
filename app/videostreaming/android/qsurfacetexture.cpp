@@ -176,7 +176,7 @@ void QSurfaceTexture::setDecoder(LowLagDecoder* decoder) {
     if (!m_updateTimer) {
         m_updateTimer = new QTimer(this);
         connect(m_updateTimer, &QTimer::timeout, this, [this]() {
-            if (m_decoder && mLowLagDecoder->getQueuedFrameCount()) {
+            if (m_decoder && m_decoder->getQueuedFrameCount()) {
                 this->update();
             }
         });
@@ -216,7 +216,7 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
         emit surfaceTextureChanged(this);
     }
 
-    bool moreFramesAvailable = mLowLagDecoder->getQueuedFrameCount(); // You need to implement this
+    bool moreFramesAvailable = m_decoder->getQueuedFrameCount(); // You need to implement this
     if (moreFramesAvailable) {
         QRectF rect(boundingRect());
         if(m_texture_width_px>0 && m_texture_height_px>0){
