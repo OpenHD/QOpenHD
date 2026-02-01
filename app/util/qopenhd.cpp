@@ -490,9 +490,9 @@ void QOpenHD::switchToLanguage(const QString &language) {
     }
     QSettings settings;
     installTranslatorForLanguage(language, &settings);
-    if (m_engine) {
-        m_engine->retranslate();
-    }
+    // if (m_engine) {
+    //     m_engine->retranslate();
+    // }
     // QML should automatically retranslate when translator is installed/removed
     // Calling retranslate() can cause UI issues in QML applications
 }
