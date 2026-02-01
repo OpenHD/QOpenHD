@@ -129,6 +129,12 @@ LinuxBuild {
     # Gstreamer / qmlglsink decode and display, all sources
     # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
     include(app/videostreaming/gstreamer/gst_video.pri)
+
+    SOURCES += \
+        app/videostreaming/avcodec/drm_kms/rk3588_video_link.cpp
+
+    HEADERS += \
+        app/videostreaming/avcodec/drm_kms/rk3588_video_link.h
 }
 
 # gst Qt plugins in windows is hard
@@ -149,7 +155,6 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/util/restartqopenhdmessagebox.cpp \
-    app/videostreaming/avcodec/drm_kms/rk3588_video_link.cpp \
     app/main.cpp \
 
 HEADERS += \
@@ -170,7 +175,6 @@ HEADERS += \
     app/util/qrenderstats.h \
     app/util/restartqopenhdmessagebox.h \
     app/util/lqutils_include.h \
-    app/videostreaming/avcodec/drm_kms/rk3588_video_link.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner

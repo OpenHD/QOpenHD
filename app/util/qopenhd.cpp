@@ -807,7 +807,7 @@ bool QOpenHD::is_platform_nxp()
 
 QStringList QOpenHD::get_screen_modes()
 {
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
     if (!is_platform_rock()) {
         m_screen_modes_last_error = "not rock platform";
         return {};
@@ -854,7 +854,7 @@ QStringList QOpenHD::get_screen_modes()
 
 QString QOpenHD::get_screen_mode_current()
 {
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
     if (!is_platform_rock()) {
         m_screen_modes_last_error = "not rock platform";
         return QString("NA");
@@ -896,7 +896,7 @@ QString QOpenHD::get_screen_mode_current()
 
 bool QOpenHD::set_screen_mode(QString mode)
 {
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
     if (!is_platform_rock()) {
         return false;
     }
@@ -965,7 +965,7 @@ bool QOpenHD::set_screen_mode(QString mode)
 
 int QOpenHD::get_ui_fps_cap()
 {
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
     if (!is_platform_rock()) {
         return 0;
     }
@@ -983,7 +983,7 @@ QString QOpenHD::get_screen_modes_last_error()
 
 QString QOpenHD::get_hw_cursor_status()
 {
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
     const QString platform = QGuiApplication::platformName();
     const QString env_value = QString::fromUtf8(qgetenv("QT_QPA_EGLFS_HWCURSOR"));
     const QString env_note = env_value.isEmpty() ? "unset" : env_value;
