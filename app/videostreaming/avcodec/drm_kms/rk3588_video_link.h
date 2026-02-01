@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
 #include <atomic>
 #include <mutex>
 #include <thread>

@@ -30,7 +30,7 @@
 #include "common/openhd-util.hpp"
 #endif
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
 #include <QGuiApplication>
 #include <QScreen>
 #include <QtGui/qpa/qplatformnativeinterface.h>
@@ -57,7 +57,7 @@
 
 #include "mousehelper.h"
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
 namespace {
 struct DrmContext {
     int fd = -1;

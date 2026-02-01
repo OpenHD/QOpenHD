@@ -1,6 +1,6 @@
 #include "qrenderstats.h"
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
 #include "videostreaming/avcodec/drm_kms/rk3588_video_link.h"
 #endif
 
@@ -38,7 +38,7 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
     connect(window, &QQuickWindow::afterRendering, this, &QRenderStats::m_QQuickWindow_afterRendering, Qt::DirectConnection);
     connect(window, &QQuickWindow::beforeRenderPassRecording, this, &QRenderStats::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
     connect(window, &QQuickWindow::afterRenderPassRecording, this, &QRenderStats::m_QQuickWindow_afterRenderPassRecording, Qt::DirectConnection);
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
     Rk3588VideoLink::instance().ensure_started();
     set_external_video_fps_str("0 fps");
     if (!m_present_timer) {
