@@ -1,7 +1,7 @@
 #include "qrenderstats.h"
 
 #if defined(__linux__) && !defined(__android__)
-#include "videostreaming/avcodec/drm_kms/rk3588_video_link.h"
+#include "videostreaming/avcodec/drm_kms/kms_renderer.h"
 #endif
 
 #include <qapplication.h>
@@ -39,7 +39,7 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
     connect(window, &QQuickWindow::beforeRenderPassRecording, this, &QRenderStats::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
     connect(window, &QQuickWindow::afterRenderPassRecording, this, &QRenderStats::m_QQuickWindow_afterRenderPassRecording, Qt::DirectConnection);
 #if defined(__linux__) && !defined(__android__)
-    Rk3588VideoLink::instance().ensure_started();
+    KmsRenderer::instance().ensure_started();
     set_external_video_fps_str("0 fps");
     if (!m_present_timer) {
         m_present_timer = new QTimer(this);
@@ -51,7 +51,7 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
             if (elapsed.count() <= 0) {
                 return;
             }
-            const uint64_t total = Rk3588VideoLink::instance().get_received_frames();
+            const uint64_t total = KmsRenderer::instance().get_received_frames();
             const uint64_t delta = total - m_last_external_frames;
             const double fps = (static_cast<double>(delta) * 1000.0) / static_cast<double>(elapsed.count());
             m_last_external_frames = total;
@@ -158,3 +158,4 @@ void QRenderStats::m_QQuickWindow_afterRenderPassRecording()
         set_qt_renderpass_time(stats);
     });
 }
+

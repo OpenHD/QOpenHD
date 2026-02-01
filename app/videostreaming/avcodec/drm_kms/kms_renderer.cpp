@@ -1,6 +1,6 @@
-#include "rk3588_video_link.h"
+#include "kms_renderer.h"
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(__android__)
 
 #include <errno.h>
 #include <fcntl.h>
@@ -71,12 +71,12 @@ static int64_t get_prop_value_by_name(int fd, uint32_t obj_id, uint32_t obj_type
 
 } // namespace
 
-Rk3588VideoLink& Rk3588VideoLink::instance() {
-    static Rk3588VideoLink instance{};
+KmsRenderer& KmsRenderer::instance() {
+    static KmsRenderer instance{};
     return instance;
 }
 
-Rk3588VideoLink::~Rk3588VideoLink() {
+KmsRenderer::~KmsRenderer() {
     shutdown_requested = true;
     if (recv_thread.joinable()) {
         recv_thread.join();
@@ -91,7 +91,7 @@ Rk3588VideoLink::~Rk3588VideoLink() {
     }
 }
 
-size_t Rk3588VideoLink::CacheKeyHash::operator()(const CacheKey& key) const noexcept {
+size_t KmsRenderer::CacheKeyHash::operator()(const CacheKey& key) const noexcept {
     size_t h = std::hash<uint64_t>{}(key.inode);
     h ^= std::hash<uint32_t>{}(key.width) + 0x9e3779b9 + (h << 6) + (h >> 2);
     h ^= std::hash<uint32_t>{}(key.height) + 0x9e3779b9 + (h << 6) + (h >> 2);
@@ -105,7 +105,7 @@ size_t Rk3588VideoLink::CacheKeyHash::operator()(const CacheKey& key) const noex
     return h;
 }
 
-bool Rk3588VideoLink::CacheKeyEq::operator()(const CacheKey& a, const CacheKey& b) const noexcept {
+bool KmsRenderer::CacheKeyEq::operator()(const CacheKey& a, const CacheKey& b) const noexcept {
     if (a.inode != b.inode || a.width != b.width || a.height != b.height || a.fourcc != b.fourcc ||
         a.num_planes != b.num_planes) {
         return false;
@@ -118,7 +118,7 @@ bool Rk3588VideoLink::CacheKeyEq::operator()(const CacheKey& a, const CacheKey& 
     return true;
 }
 
-void Rk3588VideoLink::ensure_started() {
+void KmsRenderer::ensure_started() {
     bool expected = false;
     if (!started.compare_exchange_strong(expected, true)) {
         return;
@@ -126,12 +126,12 @@ void Rk3588VideoLink::ensure_started() {
     if (!init_drm()) {
         return;
     }
-    recv_thread = std::thread(&Rk3588VideoLink::receiver_thread, this);
+    recv_thread = std::thread(&KmsRenderer::receiver_thread, this);
     present_thread_running.store(true, std::memory_order_relaxed);
-    present_thread = std::thread(&Rk3588VideoLink::present_loop, this);
+    present_thread = std::thread(&KmsRenderer::present_loop, this);
 }
 
-bool Rk3588VideoLink::init_drm() {
+bool KmsRenderer::init_drm() {
     owns_fd = true;
     if (QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)) {
         auto* pni = QGuiApplication::platformNativeInterface();
@@ -156,7 +156,7 @@ bool Rk3588VideoLink::init_drm() {
                         display_height = size.height();
                     }
                 }
-                std::cerr << "Rk3588VideoLink: using EGLFS drm fd=" << drm_fd
+                std::cerr << "KmsRenderer: using EGLFS drm fd=" << drm_fd
                           << " is_master=" << drmIsMaster(drm_fd)
                           << " crtc=" << crtc_id << " connector=" << connector_id << "\n";
             }
@@ -165,20 +165,20 @@ bool Rk3588VideoLink::init_drm() {
     if (drm_fd < 0) {
         drm_fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
         if (drm_fd < 0) {
-            std::cerr << "Rk3588VideoLink: failed to open /dev/dri/card0: " << strerror(errno) << "\n";
+            std::cerr << "KmsRenderer: failed to open /dev/dri/card0: " << strerror(errno) << "\n";
             return false;
         }
     }
     if (drmSetClientCap(drm_fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1) != 0) {
-        std::cerr << "Rk3588VideoLink: failed to enable universal planes: " << strerror(errno) << "\n";
+        std::cerr << "KmsRenderer: failed to enable universal planes: " << strerror(errno) << "\n";
     }
     if (drmSetClientCap(drm_fd, DRM_CLIENT_CAP_ATOMIC, 1) != 0) {
-        std::cerr << "Rk3588VideoLink: failed to enable atomic: " << strerror(errno) << "\n";
+        std::cerr << "KmsRenderer: failed to enable atomic: " << strerror(errno) << "\n";
         return false;
     }
     if (crtc_id == 0 || connector_id == 0) {
         if (!find_active_crtc()) {
-            std::cerr << "Rk3588VideoLink: failed to find active CRTC\n";
+            std::cerr << "KmsRenderer: failed to find active CRTC\n";
             return false;
         }
     } else {
@@ -193,12 +193,12 @@ bool Rk3588VideoLink::init_drm() {
             drmModeFreeResources(res);
         }
         if (crtc_index < 0) {
-            std::cerr << "Rk3588VideoLink: failed to map crtc index for crtc " << crtc_id << "\n";
+            std::cerr << "KmsRenderer: failed to map crtc index for crtc " << crtc_id << "\n";
             return false;
         }
     }
     if (!pick_overlay_plane(DRM_FORMAT_NV12, DRM_FORMAT_MOD_INVALID)) {
-        std::cerr << "Rk3588VideoLink: failed to find overlay plane\n";
+        std::cerr << "KmsRenderer: failed to find overlay plane\n";
         return false;
     }
     prop_fb_id = get_prop_id(plane_id, DRM_MODE_OBJECT_PLANE, "FB_ID");
@@ -213,22 +213,22 @@ bool Rk3588VideoLink::init_drm() {
     prop_crtc_h = get_prop_id(plane_id, DRM_MODE_OBJECT_PLANE, "CRTC_H");
     prop_zpos = get_prop_id(plane_id, DRM_MODE_OBJECT_PLANE, "zpos");
     if (!prop_fb_id || !prop_crtc_id || !prop_src_w || !prop_src_h || !prop_crtc_w || !prop_crtc_h) {
-        std::cerr << "Rk3588VideoLink: missing required plane properties\n";
+        std::cerr << "KmsRenderer: missing required plane properties\n";
         return false;
     }
     if (prop_zpos) {
         if (drmModeObjectSetProperty(drm_fd, plane_id, DRM_MODE_OBJECT_PLANE, prop_zpos, 0) == 0) {
-            std::cerr << "Rk3588VideoLink: set plane zpos=0\n";
+            std::cerr << "KmsRenderer: set plane zpos=0\n";
         } else {
-            std::cerr << "Rk3588VideoLink: failed to set plane zpos=0: " << strerror(errno) << "\n";
+            std::cerr << "KmsRenderer: failed to set plane zpos=0: " << strerror(errno) << "\n";
         }
     }
-    std::cerr << "Rk3588VideoLink: using connector " << connector_id << " crtc " << crtc_id
+    std::cerr << "KmsRenderer: using connector " << connector_id << " crtc " << crtc_id
               << " plane " << plane_id << " display " << display_width << "x" << display_height << "\n";
     return true;
 }
 
-bool Rk3588VideoLink::find_active_crtc() {
+bool KmsRenderer::find_active_crtc() {
     drmModeRes* res = drmModeGetResources(drm_fd);
     if (!res) {
         return false;
@@ -277,7 +277,7 @@ bool Rk3588VideoLink::find_active_crtc() {
     return found;
 }
 
-bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
+bool KmsRenderer::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
     drmModePlaneRes* planes = drmModeGetPlaneResources(drm_fd);
     if (!planes) {
         return false;
@@ -315,7 +315,7 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
     }
     drmModeFreePlaneResources(planes);
     if (!chosen && chosen_in_use) {
-        std::cerr << "Rk3588VideoLink: no free overlay plane, falling back to in-use plane "
+        std::cerr << "KmsRenderer: no free overlay plane, falling back to in-use plane "
                   << chosen_in_use << " zpos=" << chosen_in_use_zpos << "\n";
         chosen = chosen_in_use;
         chosen_zpos = chosen_in_use_zpos;
@@ -324,11 +324,11 @@ bool Rk3588VideoLink::pick_overlay_plane(uint32_t fourcc, uint64_t modifier) {
         return false;
     }
     plane_id = chosen;
-    std::cerr << "Rk3588VideoLink: selected plane " << plane_id << " zpos=" << chosen_zpos << "\n";
+    std::cerr << "KmsRenderer: selected plane " << plane_id << " zpos=" << chosen_zpos << "\n";
     return true;
 }
 
-bool Rk3588VideoLink::plane_supports_format(uint32_t plane_id, uint32_t fourcc, uint64_t modifier) {
+bool KmsRenderer::plane_supports_format(uint32_t plane_id, uint32_t fourcc, uint64_t modifier) {
     drmModeObjectProperties* props = drmModeObjectGetProperties(drm_fd, plane_id, DRM_MODE_OBJECT_PLANE);
     if (!props) {
         return false;
@@ -402,7 +402,7 @@ bool Rk3588VideoLink::plane_supports_format(uint32_t plane_id, uint32_t fourcc, 
     return supported;
 }
 
-uint32_t Rk3588VideoLink::get_prop_id(uint32_t obj_id, uint32_t obj_type, const char* name) {
+uint32_t KmsRenderer::get_prop_id(uint32_t obj_id, uint32_t obj_type, const char* name) {
     drmModeObjectProperties* props = drmModeObjectGetProperties(drm_fd, obj_id, obj_type);
     if (!props) {
         return 0;
@@ -424,10 +424,10 @@ uint32_t Rk3588VideoLink::get_prop_id(uint32_t obj_id, uint32_t obj_type, const 
     return prop_id;
 }
 
-void Rk3588VideoLink::receiver_thread() {
+void KmsRenderer::receiver_thread() {
     int sock = socket(AF_UNIX, SOCK_DGRAM, 0);
     if (sock < 0) {
-        std::cerr << "Rk3588VideoLink: socket failed: " << strerror(errno) << "\n";
+        std::cerr << "KmsRenderer: socket failed: " << strerror(errno) << "\n";
         return;
     }
     sockaddr_un addr{};
@@ -435,11 +435,11 @@ void Rk3588VideoLink::receiver_thread() {
     std::strncpy(addr.sun_path, kSocketPath, sizeof(addr.sun_path) - 1);
     unlink(kSocketPath);
     if (bind(sock, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
-        std::cerr << "Rk3588VideoLink: bind failed: " << strerror(errno) << "\n";
+        std::cerr << "KmsRenderer: bind failed: " << strerror(errno) << "\n";
         close(sock);
         return;
     }
-    std::cerr << "Rk3588VideoLink: listening on " << kSocketPath << "\n";
+    std::cerr << "KmsRenderer: listening on " << kSocketPath << "\n";
     uint64_t recv_count = 0;
     uint64_t short_count = 0;
     uint64_t bad_magic_count = 0;
@@ -471,7 +471,7 @@ void Rk3588VideoLink::receiver_thread() {
         if (static_cast<size_t>(ret) < sizeof(DmabufFrameInfo)) {
             short_count++;
             if (short_count % 120 == 0) {
-                std::cerr << "Rk3588VideoLink: short packet size=" << ret << "\n";
+                std::cerr << "KmsRenderer: short packet size=" << ret << "\n";
             }
             close_fds(fds);
             continue;
@@ -479,7 +479,7 @@ void Rk3588VideoLink::receiver_thread() {
         if (info.magic != kMagic || info.version != kVersion) {
             bad_magic_count++;
             if (bad_magic_count % 120 == 0) {
-                std::cerr << "Rk3588VideoLink: bad magic/version " << info.magic
+                std::cerr << "KmsRenderer: bad magic/version " << info.magic
                           << " v" << info.version << "\n";
             }
             close_fds(fds);
@@ -518,7 +518,7 @@ void Rk3588VideoLink::receiver_thread() {
             has_pending = true;
             recv_count++;
             if (recv_count % 120 != 0) {
-                std::cerr << "Rk3588VideoLink: import failed for frame "
+                std::cerr << "KmsRenderer: import failed for frame "
                       << meta.width << "x" << meta.height << "\n";
             }
         }
@@ -528,7 +528,7 @@ void Rk3588VideoLink::receiver_thread() {
     unlink(kSocketPath);
 }
 
-bool Rk3588VideoLink::cache_lookup_or_import(const FrameMeta& meta, const std::vector<int>& fds, uint32_t& out_fb_id) {
+bool KmsRenderer::cache_lookup_or_import(const FrameMeta& meta, const std::vector<int>& fds, uint32_t& out_fb_id) {
     if (fds.empty()) {
         return false;
     }
@@ -567,14 +567,14 @@ bool Rk3588VideoLink::cache_lookup_or_import(const FrameMeta& meta, const std::v
     return true;
 }
 
-bool Rk3588VideoLink::import_dmabuf_to_fb(const FrameMeta& meta, const std::vector<int>& fds, FbEntry& out_entry) {
+bool KmsRenderer::import_dmabuf_to_fb(const FrameMeta& meta, const std::vector<int>& fds, FbEntry& out_entry) {
     if (meta.fourcc != DRM_FORMAT_NV12 || meta.num_planes < 2 || fds.empty()) {
         return false;
     }
     uint32_t handles[4]{};
     for (uint32_t i = 0; i < meta.fd_count; ++i) {
         if (drmPrimeFDToHandle(drm_fd, fds[i], &handles[i]) != 0) {
-            std::cerr << "Rk3588VideoLink: drmPrimeFDToHandle failed: " << strerror(errno) << "\n";
+            std::cerr << "KmsRenderer: drmPrimeFDToHandle failed: " << strerror(errno) << "\n";
             return false;
         }
     }
@@ -587,7 +587,7 @@ bool Rk3588VideoLink::import_dmabuf_to_fb(const FrameMeta& meta, const std::vect
     if (drmModeAddFB2WithModifiers(drm_fd, meta.width, meta.height, meta.fourcc, bo_handles,
                                    meta.strides, meta.offsets, meta.modifiers, &fb_id,
                                    DRM_MODE_FB_MODIFIERS) != 0) {
-        std::cerr << "Rk3588VideoLink: drmModeAddFB2WithModifiers failed: " << strerror(errno) << "\n";
+        std::cerr << "KmsRenderer: drmModeAddFB2WithModifiers failed: " << strerror(errno) << "\n";
         for (uint32_t i = 0; i < meta.fd_count; ++i) {
             if (handles[i]) {
                 drm_gem_close close_req{handles[i]};
@@ -604,7 +604,7 @@ bool Rk3588VideoLink::import_dmabuf_to_fb(const FrameMeta& meta, const std::vect
     return true;
 }
 
-void Rk3588VideoLink::close_fds(const std::vector<int>& fds) {
+void KmsRenderer::close_fds(const std::vector<int>& fds) {
     for (int fd : fds) {
         if (fd >= 0) {
             close(fd);
@@ -612,7 +612,7 @@ void Rk3588VideoLink::close_fds(const std::vector<int>& fds) {
     }
 }
 
-void Rk3588VideoLink::destroy_fb_entry(FbEntry& entry) {
+void KmsRenderer::destroy_fb_entry(FbEntry& entry) {
     if (entry.fb_id) {
         drmModeRmFB(drm_fd, entry.fb_id);
         entry.fb_id = 0;
@@ -626,7 +626,7 @@ void Rk3588VideoLink::destroy_fb_entry(FbEntry& entry) {
     }
 }
 
-void Rk3588VideoLink::cleanup_cache() {
+void KmsRenderer::cleanup_cache() {
     std::lock_guard<std::mutex> lock(cache_mutex);
     for (auto& kv : fb_cache) {
         destroy_fb_entry(kv.second);
@@ -634,7 +634,7 @@ void Rk3588VideoLink::cleanup_cache() {
     fb_cache.clear();
 }
 
-void Rk3588VideoLink::present_if_pending() {
+void KmsRenderer::present_if_pending() {
     if (!started) {
         return;
     }
@@ -676,7 +676,7 @@ void Rk3588VideoLink::present_if_pending() {
         current_fb_id = frame.fb_id;
     } else {
         const int saved_errno = errno;
-        std::cerr << "Rk3588VideoLink: atomic commit failed: " << strerror(saved_errno)
+        std::cerr << "KmsRenderer: atomic commit failed: " << strerror(saved_errno)
                   << " is_master=" << drmIsMaster(drm_fd)
                   << " plane=" << plane_id << " crtc=" << crtc_id << "\n";
         if (saved_errno == EBUSY) {
@@ -685,9 +685,9 @@ void Rk3588VideoLink::present_if_pending() {
                                 0, 0, display_width, display_height,
                                 0, 0, frame.meta.width << 16, frame.meta.height << 16) == 0) {
                 current_fb_id = frame.fb_id;
-                std::cerr << "Rk3588VideoLink: switching to drmModeSetPlane path\n";
+                std::cerr << "KmsRenderer: switching to drmModeSetPlane path\n";
             } else {
-                std::cerr << "Rk3588VideoLink: drmModeSetPlane fallback failed: "
+                std::cerr << "KmsRenderer: drmModeSetPlane fallback failed: "
                           << strerror(errno) << "\n";
             }
         }
@@ -695,11 +695,11 @@ void Rk3588VideoLink::present_if_pending() {
     drmModeAtomicFree(req);
 }
 
-uint64_t Rk3588VideoLink::get_received_frames() const {
+uint64_t KmsRenderer::get_received_frames() const {
     return received_frames.load(std::memory_order_relaxed);
 }
 
-void Rk3588VideoLink::present_loop() {
+void KmsRenderer::present_loop() {
     while (!shutdown_requested.load(std::memory_order_relaxed)) {
         present_if_pending();
         std::this_thread::sleep_for(std::chrono::milliseconds(8));
@@ -708,3 +708,4 @@ void Rk3588VideoLink::present_loop() {
 }
 
 #endif
+

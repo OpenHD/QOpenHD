@@ -131,10 +131,10 @@ LinuxBuild {
     include(app/videostreaming/gstreamer/gst_video.pri)
 
     SOURCES += \
-        app/videostreaming/avcodec/drm_kms/rk3588_video_link.cpp
+        app/videostreaming/avcodec/drm_kms/kms_renderer.cpp
 
     HEADERS += \
-        app/videostreaming/avcodec/drm_kms/rk3588_video_link.h
+        app/videostreaming/avcodec/drm_kms/kms_renderer.h
 }
 
 # gst Qt plugins in windows is hard
@@ -305,3 +305,4 @@ android{
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
+

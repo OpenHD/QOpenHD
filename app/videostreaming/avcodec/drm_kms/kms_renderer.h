@@ -1,5 +1,5 @@
-#ifndef RK3588_VIDEO_LINK_H
-#define RK3588_VIDEO_LINK_H
+#ifndef KMS_RENDERER_H
+#define KMS_RENDERER_H
 
 #include <cstdint>
 
@@ -10,18 +10,18 @@
 #include <unordered_map>
 #include <vector>
 
-class Rk3588VideoLink {
+class KmsRenderer {
 public:
-    static Rk3588VideoLink& instance();
+    static KmsRenderer& instance();
     void ensure_started();
     void present_if_pending();
     uint64_t get_received_frames() const;
 
 private:
-    Rk3588VideoLink() = default;
-    ~Rk3588VideoLink();
-    Rk3588VideoLink(const Rk3588VideoLink&) = delete;
-    Rk3588VideoLink& operator=(const Rk3588VideoLink&) = delete;
+    KmsRenderer() = default;
+    ~KmsRenderer();
+    KmsRenderer(const KmsRenderer&) = delete;
+    KmsRenderer& operator=(const KmsRenderer&) = delete;
 
     struct FrameMeta {
         uint32_t width = 0;
@@ -118,16 +118,16 @@ private:
 };
 
 #else
-class Rk3588VideoLink {
+class KmsRenderer {
 public:
-    static Rk3588VideoLink& instance() {
-        static Rk3588VideoLink instance{};
+    static KmsRenderer& instance() {
+        static KmsRenderer instance{};
         return instance;
     }
     void ensure_started() {}
     void present_if_pending() {}
 private:
-    Rk3588VideoLink() = default;
+    KmsRenderer() = default;
 };
 #endif
 
