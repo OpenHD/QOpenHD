@@ -1,27 +1,14 @@
-DEFINES += QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
-
-#DEFINES += QOPENHD_GSTREAMER_PRIMARY_VIDEO
-DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
-
-SOURCES += \
-    $$PWD/gstqmlglsinkstream.cpp \
-    $$PWD/gstrtpaudioplayer.cpp \
-    $$PWD/gstrtpreceiver.cpp
-
-HEADERS += \
-    $$PWD/gst_helper.hpp \
-    $$PWD/gstqmlglsinkstream.h \
-    $$PWD/gstrtpaudioplayer.h \
-    $$PWD/gstrtpreceiver.h
-
 android{
     message("gst android")
     # More or less taken from QGroundControl.
     # this is already the "least dirty" solution I could come up with :/
     #DOWNLOADED_GST_FOLDER= /home/hyperion/gstreamer-1.0-android-universal-1.20.5
     #DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
-    #DOWNLOADED_GST_FOLDER= $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
-    DOWNLOADED_GST_FOLDER= $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal
+    # Prefer the current path, then fall back to the legacy versioned folder.
+    DOWNLOADED_GST_FOLDER = $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal
+    !exists($$DOWNLOADED_GST_FOLDER) {
+        DOWNLOADED_GST_FOLDER = $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
+    }
 
     # Set the right folder for the compile arch
     GSTREAMER_ARCH_FOLDER = armv7
@@ -46,6 +33,21 @@ android{
     exists($$GST_ROOT) {
         message(Doing QGC gstreamer stuff)
         message($$GST_ROOT)
+        DEFINES += QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+        #DEFINES += QOPENHD_GSTREAMER_PRIMARY_VIDEO
+        DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
+
+        SOURCES += \
+            $$PWD/gstqmlglsinkstream.cpp \
+            $$PWD/gstrtpaudioplayer.cpp \
+            $$PWD/gstrtpreceiver.cpp
+
+        HEADERS += \
+            $$PWD/gst_helper.hpp \
+            $$PWD/gstqmlglsinkstream.h \
+            $$PWD/gstrtpaudioplayer.h \
+            $$PWD/gstrtpreceiver.h
+
         QMAKE_CXXFLAGS  += -pthread
         CONFIG          += VideoEnabled
 
@@ -91,10 +93,25 @@ android{
             $$GST_ROOT/include/glib-2.0 \
             $$GST_ROOT/lib/glib-2.0/include
     }else {
-        message(Gstreamer prebuilt directory does not exist)
+        message(Gstreamer prebuilt directory does not exist - disabling Android GStreamer)
     }
 }else {
     message(gst linux)
+    DEFINES += QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+    #DEFINES += QOPENHD_GSTREAMER_PRIMARY_VIDEO
+    DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
+
+    SOURCES += \
+        $$PWD/gstqmlglsinkstream.cpp \
+        $$PWD/gstrtpaudioplayer.cpp \
+        $$PWD/gstrtpreceiver.cpp
+
+    HEADERS += \
+        $$PWD/gst_helper.hpp \
+        $$PWD/gstqmlglsinkstream.h \
+        $$PWD/gstrtpaudioplayer.h \
+        $$PWD/gstrtpreceiver.h
+
     CONFIG += link_pkgconfig
     PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
 }
