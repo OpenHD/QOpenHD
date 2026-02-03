@@ -2,6 +2,11 @@
 
 #include <qapplication.h>
 
+#if defined(__linux__) && !defined(__android__)
+#include "videostreaming/avcodec/drm_kms/kms_renderer.h"
+#include <QSettings>
+#endif
+
 QRenderStats::QRenderStats(QObject *parent)
     : QObject{parent}
 {
@@ -31,6 +36,12 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
     connect(window, &QQuickWindow::afterRendering, this, &QRenderStats::m_QQuickWindow_afterRendering, Qt::DirectConnection);
     connect(window, &QQuickWindow::beforeRenderPassRecording, this, &QRenderStats::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
     connect(window, &QQuickWindow::afterRenderPassRecording, this, &QRenderStats::m_QQuickWindow_afterRenderPassRecording, Qt::DirectConnection);
+#if defined(__linux__) && !defined(__android__)
+    QSettings settings;
+    if (settings.value("enable_kms_renderer", false).toBool()) {
+        KmsRenderer::instance().ensure_started();
+    }
+#endif
 }
 
 void QRenderStats::set_screen_width_height(int width, int height)

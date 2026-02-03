@@ -441,6 +441,9 @@ Settings {
     property int screen_settings_overlay_size_percent : 100
     property bool screen_settings_openhd_parameters_transparent: false
 
+    // Enable Linux KMS DRM overlay renderer (requires restart)
+    property bool enable_kms_renderer: false
+
     property double hide_identity_latitude_offset: 0.0
     property double hide_identity_longitude_offset: 0.0
 

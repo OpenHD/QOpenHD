@@ -4,7 +4,10 @@ INCLUDEPATH += C:/ffmpeg/include
 LIBS += -LC:/ffmpeg/lib -lavcodec -lavutil -lavformat
 # TODO dirty
 LIBS += -lGLESv2 -lEGL
-
+unix:!android {
+    LIBS += -ldrm
+    PKGCONFIG += libdrm
+}
 win32 {
     INCLUDEPATH += $$PWD/../../../build-libs-windows/ffmpeg/include
     LIBS += -L$$PWD/../../../build-libs-windows/ffmpeg/lib -lavcodec -lavutil -lavformat
@@ -34,6 +37,10 @@ HEADERS += \
     $$PWD/texturerenderer.h \
     $$PWD/avcodec_decoder.h \
 
+unix:!android {
+    SOURCES += $$PWD/drm_kms/kms_renderer.cpp
+    HEADERS += $$PWD/drm_kms/kms_renderer.h
+}
 
 
 # experimental
