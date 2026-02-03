@@ -40,6 +40,7 @@ Item {
             settings.locale = model[currentIndex].locale
 
             _qopenhd.switchToLanguage(settings.locale);
+            _restartqopenhdmessagebox.show_with_text(qsTr("Language change will apply after restart."));
         }
     }
 }
