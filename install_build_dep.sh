@@ -14,10 +14,10 @@ function install_pi_packages {
 PLATFORM_PACKAGES=""
 }
 function install_x86_packages {
-PLATFORM_PACKAGES="qml-module-qt-labs-platform"
+PLATFORM_PACKAGES="qml-module-qt-labs-platform qtbase5-private-dev"
 }
 function install_rock_packages {
-PLATFORM_PACKAGES="qml-module-qt-labs-platform"
+PLATFORM_PACKAGES="qml-module-qt-labs-platform qtbase5-private-dev"
 }
 
  # Add OpenHD Repository platform-specific packages
