@@ -22,8 +22,16 @@
 #endif
 
 #include <QGuiApplication>
-#include <qpa/qplatformnativeinterface.h>
 #include <QScreen>
+#if __has_include(<qpa/qplatformnativeinterface.h>)
+#include <qpa/qplatformnativeinterface.h>
+#define QOPENHD_HAVE_QPA_PNI 1
+#elif __has_include(<QtGui/qpa/qplatformnativeinterface.h>)
+#include <QtGui/qpa/qplatformnativeinterface.h>
+#define QOPENHD_HAVE_QPA_PNI 1
+#else
+#define QOPENHD_HAVE_QPA_PNI 0
+#endif
 
 #include "util/qrenderstats.h"
 
@@ -133,6 +141,7 @@ void KmsRenderer::ensure_started() {
 
 bool KmsRenderer::init_drm() {
     owns_fd = true;
+#if QOPENHD_HAVE_QPA_PNI
     if (QGuiApplication::platformName().contains("eglfs", Qt::CaseInsensitive)) {
         auto* pni = QGuiApplication::platformNativeInterface();
         if (pni) {
@@ -162,6 +171,7 @@ bool KmsRenderer::init_drm() {
             }
         }
     }
+#endif
     if (drm_fd < 0) {
         drm_fd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC);
         if (drm_fd < 0) {
