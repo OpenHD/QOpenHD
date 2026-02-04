@@ -5,6 +5,11 @@
 #include <QQmlComponent>
 #include <QDebug>
 #include <QFontDatabase>
+#include <QElapsedTimer>
+#include <QHash>
+#include <QMutex>
+#include <QMutexLocker>
+#include <cstdio>
 #if defined(__android__)
 #include <QtAndroid>
 #endif
@@ -153,6 +158,60 @@ static void load_fonts(){
     QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
 }
 
+#if defined(__linux__) && !defined(__android__)
+namespace {
+struct LogRateLimiter {
+    QElapsedTimer timer;
+    QMutex mutex;
+    QHash<QString, qint64> last_ms;
+    const qint64 interval_ms = 1000;
+
+    LogRateLimiter() { timer.start(); }
+
+    bool should_log(const QString& msg) {
+        QMutexLocker locker(&mutex);
+        const qint64 now = timer.elapsed();
+        auto it = last_ms.find(msg);
+        if (it != last_ms.end() && (now - it.value()) < interval_ms) {
+            return false;
+        }
+        last_ms[msg] = now;
+        return true;
+    }
+};
+
+LogRateLimiter& log_limiter() {
+    static LogRateLimiter limiter{};
+    return limiter;
+}
+
+void rate_limited_message_handler(QtMsgType type, const QMessageLogContext&,
+                                  const QString& msg) {
+    if (!log_limiter().should_log(msg)) {
+        return;
+    }
+    const QByteArray local = msg.toLocal8Bit();
+    switch (type) {
+    case QtDebugMsg:
+        std::fprintf(stderr, "DEBUG: %s\n", local.constData());
+        break;
+    case QtInfoMsg:
+        std::fprintf(stderr, "INFO: %s\n", local.constData());
+        break;
+    case QtWarningMsg:
+        std::fprintf(stderr, "WARN: %s\n", local.constData());
+        break;
+    case QtCriticalMsg:
+        std::fprintf(stderr, "CRIT: %s\n", local.constData());
+        break;
+    case QtFatalMsg:
+        std::fprintf(stderr, "FATAL: %s\n", local.constData());
+        std::abort();
+    }
+}
+} // namespace
+#endif
+
 // Write context properties for all platforms, e.g. such that we have boolean variable(s) accessible from .qml
 static void write_platform_context_properties(QQmlApplicationEngine& engine){
 #if defined(__android__)
@@ -253,6 +312,10 @@ static void android_check_permissions(){
 
 
 int main(int argc, char *argv[]) {
+
+#if defined(__linux__) && !defined(__android__)
+    qInstallMessageHandler(rate_limited_message_handler);
+#endif
 
 #if defined(__windows__)
     QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
