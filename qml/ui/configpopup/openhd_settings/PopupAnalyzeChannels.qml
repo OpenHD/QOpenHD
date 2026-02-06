@@ -240,7 +240,7 @@ PopupBigGeneric{
                     }
                     /*BarSet{
                         id: bar_set2
-                        label: "GOOD"
+                        label: qsTr("GOOD")
                         color: "green"
                         values: [5,10,3,100]
                     }*/

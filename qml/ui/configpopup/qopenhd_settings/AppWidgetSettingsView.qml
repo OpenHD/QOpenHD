@@ -130,7 +130,7 @@ ScrollView {
 
             // TODO finalize
             /*SettingBaseElement{
-                m_short_description: "Presets"
+                m_short_description: qsTr("Presets")
                 m_long_description: "You can use these presets to quickly enable / disable a lot of elements before refining things further.\n"+
                                     "P1 (Preset 1): Enable all elements (completely overloaded)\n"+
                                     "P2 (Preset 2): Example for fixed wing usage, a lot less elements.\n"+
@@ -141,13 +141,13 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 5
                     Button{
-                        text:"P1"
+                        text: qsTr("P1")
                         onClicked: {
                             configure_preset1()
                         }
                     }
                     Button{
-                        text: "P2"
+                        text: qsTr("P2")
                         onClicked: {
                             configure_preset2()
                         }
@@ -165,7 +165,7 @@ ScrollView {
                 m_description: "OHD LINK / STREAMING WIDGETS"
 
                 SettingBaseElement{
-                    m_short_description: "Show Widgets"
+                    m_short_description: qsTr("Show Widgets")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -179,7 +179,7 @@ ScrollView {
                 }
                 
                 SettingBaseElement{
-                    m_short_description: "Show Transceiver Temperature Air"
+                    m_short_description: qsTr("Show Transceiver Temperature Air")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -193,7 +193,7 @@ ScrollView {
                 }
                 
                 SettingBaseElement{
-                    m_short_description: "Show Transceiver Temperature Ground"
+                    m_short_description: qsTr("Show Transceiver Temperature Ground")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -207,8 +207,8 @@ ScrollView {
                 }
 
                 SettingBaseElement{
-                    m_short_description: "Show Retransmission Stats"
-                    m_long_description: "Shows packet loss and retransmission activity for video."
+                    m_short_description: qsTr("Show Retransmission Stats")
+                    m_long_description: qsTr("Shows packet loss and retransmission activity for video.")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -222,8 +222,8 @@ ScrollView {
                 }
 
                 SettingBaseElement{
-                    m_short_description: "Show Downlink RSSI"
-                    m_long_description: "RSSI / Stats about downlink"
+                    m_short_description: qsTr("Show Downlink RSSI")
+                    m_long_description: qsTr("RSSI / Stats about downlink")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -236,8 +236,8 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Show Link Overview"
-                    m_long_description: "Compact overview for RSSI, TXC temp, SNR, and link status."
+                    m_short_description: qsTr("Show Link Overview")
+                    m_long_description: qsTr("Compact overview for RSSI, TXC temp, SNR, and link status.")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -251,8 +251,8 @@ ScrollView {
                 }
 
                 SettingBaseElement{
-                    m_short_description: "Show Uplink RSSI"
-                    m_long_description: "RSSI / Stats about uplink"
+                    m_short_description: qsTr("Show Uplink RSSI")
+                    m_long_description: qsTr("RSSI / Stats about uplink")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -265,8 +265,8 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Show live rate control widget"
-                    m_long_description: "Trade range / stability for bitrate at run time. Requires hw support."
+                    m_short_description: qsTr("Show live rate control widget")
+                    m_long_description: qsTr("Trade range / stability for bitrate at run time. Requires hw support.")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -279,8 +279,8 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Show video widget"
-                    m_long_description: "More stats about each camera stream, quick resolution changes and quick air recording."
+                    m_short_description: qsTr("Show video widget")
+                    m_long_description: qsTr("More stats about each camera stream, quick resolution changes and quick air recording.")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -1375,8 +1375,8 @@ ScrollView {
 
 
                 SettingBaseElement{
-                    m_short_description: "Show distance sensor widget"
-                    m_long_description: "For UAVs with a distance sensor"
+                    m_short_description: qsTr("Show distance sensor widget")
+                    m_long_description: qsTr("For UAVs with a distance sensor")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -1390,8 +1390,8 @@ ScrollView {
                 }
 
                 SettingBaseElement{
-                    m_short_description: "Show (GPS) time widget"
-                    m_long_description: "For UAVs with GPS, shows the time as reported by the UAV"
+                    m_short_description: qsTr("Show (GPS) time widget")
+                    m_long_description: qsTr("For UAVs with GPS, shows the time as reported by the UAV")
                     Switch {
                         width: 32
                         height: elementHeight

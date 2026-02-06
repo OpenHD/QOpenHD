@@ -29,7 +29,7 @@ ScrollView {
             anchors.right: parent.right
             //
             SettingBaseElement{
-                m_short_description: "Enable advanced settings"
+                m_short_description: qsTr("Enable advanced settings")
                 Switch {
                     width: 32
                     height: elementHeight
@@ -45,7 +45,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description:"Allow frequency change when armed"
+                m_short_description: qsTr("Allow frequency change when armed")
                 Switch {
                     width: 32
                     height: elementHeight
@@ -58,7 +58,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description:"Show all wifi channels"
+                m_short_description: qsTr("Show all wifi channels")
                 Switch {
                     width: 32
                     height: elementHeight
@@ -71,7 +71,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description:"Disable auto fetch"
+                m_short_description: qsTr("Disable auto fetch")
                 Switch {
                     width: 32
                     height: elementHeight
@@ -84,8 +84,8 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Save Settings to file"
-                m_long_description: "Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux."
+                m_short_description: qsTr("Save Settings to file")
+                m_long_description: qsTr("Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux.")
 
                 Button {
                     id:save
@@ -108,8 +108,8 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Load Settings from file"
-                m_long_description: "Load a previosly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux."
+                m_short_description: qsTr("Load Settings from file")
+                m_long_description: qsTr("Load a previosly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux.")
 
                 Button {
                     id:load
@@ -132,7 +132,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Reset all QOpenHD Settings"
+                m_short_description: qsTr("Reset all QOpenHD Settings")
 
                 Button {
                     id:reset
@@ -150,7 +150,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Enable audio playback"
+                m_short_description: qsTr("Enable audio playback")
 
                 Switch {
                     width: 32
@@ -164,7 +164,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Improve Inav support"
+                m_short_description: qsTr("Improve Inav support")
 
                 Switch {
                     width: 32
@@ -178,7 +178,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Disable STBC warning"
+                m_short_description: qsTr("Disable STBC warning")
                 Switch {
                     width: 32
                     height: elementHeight

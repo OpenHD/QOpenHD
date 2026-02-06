@@ -29,7 +29,7 @@ ScrollView {
             anchors.right: parent.right
 
             SettingBaseElement{
-                m_short_description: "Screen Scale"
+                m_short_description: qsTr("Screen Scale")
                 Text {
                     text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
                     font.pixelSize: 16
@@ -66,7 +66,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Auto hide cursor"
+                m_short_description: qsTr("Auto hide cursor")
 
                 Switch {
                     width: 32
@@ -85,7 +85,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Set cursor Skin"
+                m_short_description: qsTr("Set cursor Skin")
                 SpinBox {
                     width: 210
                     font.pixelSize: 14
@@ -105,7 +105,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Cursor Scale"
+                m_short_description: qsTr("Cursor Scale")
 
                 SpinBox {
                     width: 210
@@ -130,7 +130,7 @@ ScrollView {
                 m_hide_elements: true
 
                 SettingBaseElement{
-                    m_short_description: "Screen rotation"
+                    m_short_description: qsTr("Screen rotation")
                     // anything other than 0 and 180 can breaks things
                     ComboBox {
                         height: elementHeight
@@ -161,7 +161,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Transparent Background"
+                    m_short_description: qsTr("Transparent Background")
 
                     Switch {
                         width: 32
@@ -175,7 +175,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Full screen"
+                    m_short_description: qsTr("Full screen")
 
                     Switch {
                         width: 32
@@ -189,8 +189,8 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Swap interval 0"
-                    m_long_description: "Can decrease latency on x86 / laptop. Requires restart. Experimental."
+                    m_short_description: qsTr("Swap interval 0")
+                    m_long_description: qsTr("Can decrease latency on x86 / laptop. Requires restart. Experimental.")
 
                     Switch {
                         width: 32
@@ -225,7 +225,7 @@ ScrollView {
                 //     }
                 // }
                 SettingBaseElement{
-                    m_short_description: "Transparent settings"
+                    m_short_description: qsTr("Transparent settings")
 
                     Switch {
                         width: 32
@@ -239,8 +239,8 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Font DPI"
-                    m_long_description: "Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD."
+                    m_short_description: qsTr("Font DPI")
+                    m_long_description: qsTr("Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD.")
                     ComboBox {
                         height: elementHeight
                         anchors.right: parent.right

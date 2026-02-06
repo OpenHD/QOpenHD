@@ -337,7 +337,7 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="66" />
         <source>Animation Smoothing</source>
-        <translation type="unfinished" />
+        <translation>Animationsgl?ttung</translation>
     </message>
 </context>
 <context>
@@ -345,57 +345,57 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="144" />
         <source>0°</source>
-        <translation type="unfinished" />
+        <translation>0Â°</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="145" />
         <source>90° (WARNING)</source>
-        <translation type="unfinished" />
+        <translation>90Â° (WARNUNG)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="146" />
         <source>180°</source>
-        <translation type="unfinished" />
+        <translation>180Â°</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="147" />
         <source>270° (WARNING)</source>
-        <translation type="unfinished" />
+        <translation>270Â° (WARNUNG)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="252" />
         <source>-1 Disable</source>
-        <translation type="unfinished" />
+        <translation>-1 Deaktivieren</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="253" />
         <source>0 Auto (Recommended)</source>
-        <translation type="unfinished" />
+        <translation>0 Auto (Empfohlen)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="254" />
         <source>50 (ultra small)</source>
-        <translation type="unfinished" />
+        <translation>50 (ultraklein)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="255" />
         <source>72 (smaller)</source>
-        <translation type="unfinished" />
+        <translation>72 (kleiner)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="256" />
         <source>100</source>
-        <translation type="unfinished" />
+        <translation>100</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="257" />
         <source>120 (bigger)</source>
-        <translation type="unfinished" />
+        <translation>120 (gr??er)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="258" />
         <source>150 (ultra big)</source>
-        <translation type="unfinished" />
+        <translation>150 (ultragro?)</translation>
     </message>
 </context>
 <context>
@@ -403,37 +403,37 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="52" />
         <source>Widgets</source>
-        <translation type="unfinished" />
+        <translation>Widgets</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="59" />
         <source>Style</source>
-        <translation type="unfinished" />
+        <translation>Stil</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="67" />
         <source>General</source>
-        <translation type="unfinished" />
+        <translation>Allgemein</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="75" />
         <source>Vehicle</source>
-        <translation type="unfinished" />
+        <translation>Fahrzeug</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="82" />
         <source>Screen</source>
-        <translation type="unfinished" />
+        <translation>Bildschirm</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="89" />
         <source>Video</source>
-        <translation type="unfinished" />
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml" line="96" />
         <source>Dev</source>
-        <translation type="unfinished" />
+        <translation>Entwickler</translation>
     </message>
 </context>
 <context>
@@ -494,217 +494,217 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="308" />
         <source>Show GPS</source>
-        <translation type="unfinished" />
+        <translation>GPS anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="337" />
         <source>Show Home Distance</source>
-        <translation type="unfinished" />
+        <translation>Home-Distanz anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="365" />
         <source>Show RC RSSI (not OpenHD RC)</source>
-        <translation type="unfinished" />
+        <translation>RC-RSSI anzeigen (nicht OpenHD RC)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="394" />
         <source>Show Flight Timer</source>
-        <translation type="unfinished" />
+        <translation>Flugtimer anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="423" />
         <source>Show Flight Mode</source>
-        <translation type="unfinished" />
+        <translation>Flugmodus anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="452" />
         <source>Show IMU Sensor Temperature</source>
-        <translation type="unfinished" />
+        <translation>IMU-Sensortemperatur anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="481" />
         <source>Show Pressure Sensor Temperature</source>
-        <translation type="unfinished" />
+        <translation>Drucksensors-Temperatur anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="510" />
         <source>Show Pressure Sensor 2 Temperature</source>
-        <translation type="unfinished" />
+        <translation>Drucksensor-2-Temperatur anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="538" />
         <source>Show Pressure Sensor 3 Temperature</source>
-        <translation type="unfinished" />
+        <translation>Drucksensor-3-Temperatur anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="566" />
         <source>Show Airspeed Sensor Temperature</source>
-        <translation type="unfinished" />
+        <translation>Airspeed-Sensortemperatur anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="595" />
         <source>Show Esc Temperature</source>
-        <translation type="unfinished" />
+        <translation>ESC-Temperatur anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="624" />
         <source>Show Battery Temperature</source>
-        <translation type="unfinished" />
+        <translation>Akkutemperatur anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="652" />
         <source>Show Ground Status</source>
-        <translation type="unfinished" />
+        <translation>Ground-Status anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="681" />
         <source>Show Ground Battery</source>
-        <translation type="unfinished" />
+        <translation>Ground-Akku anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="710" />
         <source>Show Air Status</source>
-        <translation type="unfinished" />
+        <translation>Air-Status anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="739" />
         <source>Show Air Battery</source>
-        <translation type="unfinished" />
+        <translation>Air-Akku anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="768" />
         <source>Show mAh</source>
-        <translation type="unfinished" />
+        <translation>mAh anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="797" />
         <source>Show Efficiency in mAh/km</source>
-        <translation type="unfinished" />
+        <translation>Effizienz in mAh/km anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="826" />
         <source>Show Total Flight Distance</source>
-        <translation type="unfinished" />
+        <translation>Gesamte Flugstrecke anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="855" />
         <source>Show Horizon</source>
-        <translation type="unfinished" />
+        <translation>Horizont anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="884" />
         <source>Show performance horizon</source>
-        <translation type="unfinished" />
+        <translation>Performance-Horizont anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="914" />
         <source>Show Flight Path Vector</source>
-        <translation type="unfinished" />
+        <translation>Flugpfadvektor anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="943" />
         <source>Show Altitude</source>
-        <translation type="unfinished" />
+        <translation>H?he anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="972" />
         <source>Show Speed</source>
-        <translation type="unfinished" />
+        <translation>Geschwindigkeit anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1001" />
         <source>Show Second Speed</source>
-        <translation type="unfinished" />
+        <translation>Zweite Geschwindigkeit anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1030" />
         <source>Show Heading</source>
-        <translation type="unfinished" />
+        <translation>Kurs anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1059" />
         <source>Show Second Altitude</source>
-        <translation type="unfinished" />
+        <translation>Zweite H?he anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1088" />
         <source>Show Bank Angle Indicator</source>
-        <translation type="unfinished" />
+        <translation>Querneigungsanzeige anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1117" />
         <source>Show Home Arrow</source>
-        <translation type="unfinished" />
+        <translation>Heimrichtungspfeil anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1146" />
         <source>Show Throttle</source>
-        <translation type="unfinished" />
+        <translation>Gas anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1175" />
         <source>Show Control Inputs</source>
-        <translation type="unfinished" />
+        <translation>Steuereingaben anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1206" />
         <source>Show Vibration</source>
-        <translation type="unfinished" />
+        <translation>Vibration anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1235" />
         <source>Show Vertical Speed (minimal)</source>
-        <translation type="unfinished" />
+        <translation>Vertikalgeschwindigkeit (minimal) anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1263" />
         <source>Show Vertical Speed Gauge</source>
-        <translation type="unfinished" />
+        <translation>Vertikalgeschwindigkeitsanzeige anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1291" />
         <source>Show Wind (Experimental)</source>
-        <translation type="unfinished" />
+        <translation>Wind anzeigen (experimentell)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1320" />
         <source>Show Missions</source>
-        <translation type="unfinished" />
+        <translation>Missionen anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1351" />
         <source>Show Angle of Attack</source>
-        <translation type="unfinished" />
+        <translation>Anstellwinkel anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1417" />
         <source>Show Map</source>
-        <translation type="unfinished" />
+        <translation>Karte anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1452" />
         <source>Show ADSB</source>
-        <translation type="unfinished" />
+        <translation>ADSB anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1480" />
         <source>Show log messages on-screen</source>
-        <translation type="unfinished" />
+        <translation>Logmeldungen auf dem Bildschirm anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1508" />
         <source>Show Sidebar</source>
-        <translation type="unfinished" />
+        <translation>Seitenleiste anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1536" />
         <source>Show QT Render stats</source>
-        <translation type="unfinished" />
+        <translation>Qt-Render-Statistiken anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1567" />
         <source>Show GPIO</source>
-        <translation type="unfinished" />
+        <translation>GPIO anzeigen</translation>
     </message>
 </context>
 <context>
@@ -979,12 +979,12 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/elements/ColorPicker.qml" line="100" />
         <source>Cancel</source>
-        <translation type="unfinished" />
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/ColorPicker.qml" line="126" />
         <source>Select</source>
-        <translation type="unfinished" />
+        <translation>Ausw?hlen</translation>
     </message>
 </context>
 <context>
@@ -1053,7 +1053,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/connect/ConnectPanel.qml" line="30" />
         <source>CONNECT TO OPENHD GND / AIR UNIT</source>
-        <translation type="unfinished" />
+        <translation>MIT OPENHD GND / AIR UNIT VERBINDEN</translation>
     </message>
 </context>
 <context>
@@ -1247,22 +1247,22 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="85" />
         <source>GND Only</source>
-        <translation type="unfinished" />
+        <translation>Nur GND</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="94" />
         <source>Okay</source>
-        <translation type="unfinished" />
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="107" />
         <source>YES,GND ONLY</source>
-        <translation type="unfinished" />
+        <translation>JA, NUR GND</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="123" />
         <source>Cancel</source>
-        <translation type="unfinished" />
+        <translation>Abbrechen</translation>
     </message>
 </context>
 <context>
@@ -1275,12 +1275,12 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="69" />
         <source>OKAY</source>
-        <translation type="unfinished" />
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/DialoqueNotAlive.qml" line="86" />
         <source>TAKE ME</source>
-        <translation type="unfinished" />
+        <translation>LOS GEHT'S</translation>
     </message>
 </context>
 <context>
@@ -1301,7 +1301,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/elements/ErrorMessageBox.qml" line="56" />
         <source>Okay</source>
-        <translation type="unfinished" />
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -1337,7 +1337,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/ExampleWidget.qml" line="30" />
         <source>Example widget</source>
-        <translation type="unfinished" />
+        <translation>Beispiel-Widget</translation>
     </message>
 </context>
 <context>
@@ -1345,7 +1345,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../app/telemetry/models/fcmavlinksystem.cpp" line="585" />
         <source>%1 flight mode</source>
-        <translation type="unfinished">%1 Flugmodus</translation>
+        <translation>%1 Flugmodus</translation>
     </message>
 </context>
 <context>
@@ -1408,22 +1408,22 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/FooterRebootShutdownWarning.qml" line="68" />
         <source>REBOOT</source>
-        <translation type="unfinished" />
+        <translation>NEUSTART</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/FooterRebootShutdownWarning.qml" line="81" />
         <source>Compass calibration requested</source>
-        <translation type="unfinished" />
+        <translation>Kompasskalibrierung angefordert</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/FooterRebootShutdownWarning.qml" line="83" />
         <source>Compass calibration failed</source>
-        <translation type="unfinished" />
+        <translation>Kompasskalibrierung fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/FooterRebootShutdownWarning.qml" line="91" />
         <source>SHUTDOWN</source>
-        <translation type="unfinished" />
+        <translation>HERUNTERFAHREN</translation>
     </message>
 </context>
 <context>
@@ -2317,17 +2317,17 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/log/LogMessagesStatusView.qml" line="25" />
         <source>LOG GND</source>
-        <translation type="unfinished" />
+        <translation>GND-LOG</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/log/LogMessagesStatusView.qml" line="28" />
         <source>LOG OpenHD AIR</source>
-        <translation type="unfinished" />
+        <translation>OpenHD AIR-LOG</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/log/LogMessagesStatusView.qml" line="31" />
         <source>LOG FC</source>
-        <translation type="unfinished" />
+        <translation>FC-LOG</translation>
     </message>
 </context>
 <context>
@@ -2335,100 +2335,100 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="73" />
         <source>MAP</source>
-        <translation type="unfinished" />
+        <translation>KARTE</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="98" />
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="628" />
         <source>Zoom</source>
-        <translation type="unfinished" />
+        <translation>Zoom</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="127" />
         <source>Size</source>
-        <translation type="unfinished" />
+        <translation>Gr??e</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="154" />
         <source>Transparency(S)</source>
-        <translation type="unfinished" />
+        <translation>Transparenz (S)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="179" />
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="687" />
         <source>Lock map to drone direction</source>
-        <translation type="unfinished" />
+        <translation>Karte an Drohnenrichtung ausrichten</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="203" />
         <source>Map API key (for Mapbox)</source>
-        <translation type="unfinished" />
+        <translation>Map-API-Schl?ssel (f?r Mapbox)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="212" />
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="581" />
         <source>pk.xxxxx</source>
-        <translation type="unfinished" />
+        <translation>pk.xxxxx</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="225" />
         <source>Get a free Mapbox access token at account.mapbox.com -&gt; Tokens, then paste it above.</source>
-        <translation type="unfinished" />
+        <translation>Hole dir ein kostenloses Mapbox-Zugriffstoken unter account.mapbox.com -&gt; Tokens und f?ge es oben ein.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="235" />
         <source>Show Drone Track</source>
-        <translation type="unfinished" />
+        <translation>Drohnenpfad anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="256" />
         <source>Show Mission waypoints</source>
-        <translation type="unfinished" />
+        <translation>Missions-Wegpunkte anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="277" />
         <source>Enable ADSB</source>
-        <translation type="unfinished" />
+        <translation>ADSB aktivieren</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="299" />
         <source>ADSB Internet Source</source>
-        <translation type="unfinished" />
+        <translation>ADSB-Internetquelle</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="322" />
         <source>ADSB SDR Source</source>
-        <translation type="unfinished" />
+        <translation>ADSB-SDR-Quelle</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="345" />
         <source>ADSB Radius</source>
-        <translation type="unfinished" />
+        <translation>ADSB-Radius</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="572" />
         <source>Map API key (Mapbox)</source>
-        <translation type="unfinished" />
+        <translation>Map-API-Schl?ssel (Mapbox)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="594" />
         <source>How to get a key: 1) Sign up at account.mapbox.com. 2) Open Tokens. 3) Copy your Default public token and paste it above.</source>
-        <translation type="unfinished" />
+        <translation>So bekommst du einen Schl?ssel: 1) Bei account.mapbox.com registrieren. 2) Tokens ?ffnen. 3) Den Default public token kopieren und oben einf?gen.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="658" />
         <source>Transparency(B)</source>
-        <translation type="unfinished" />
+        <translation>Transparenz (B)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="721" />
         <source>An API key is required for the selected map provider.</source>
-        <translation type="unfinished" />
+        <translation>F?r den ausgew?hlten Kartenanbieter ist ein API-Schl?ssel erforderlich.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="729" />
         <source>Add your Mapbox access token in the map settings, then reload the map.</source>
-        <translation type="unfinished" />
+        <translation>F?ge dein Mapbox-Zugriffstoken in den Karteneinstellungen hinzu und lade die Karte neu.</translation>
     </message>
 </context>
 <context>
@@ -2436,7 +2436,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="26" />
         <source>Mavlink Debug</source>
-        <translation type="unfinished" />
+        <translation>Mavlink-Debug</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="48" />
@@ -2446,107 +2446,107 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="52" />
         <source>Clear table</source>
-        <translation type="unfinished" />
+        <translation>Tabelle leeren</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="56" />
         <source>Start</source>
-        <translation type="unfinished" />
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="61" />
         <source>Stop</source>
-        <translation type="unfinished" />
+        <translation>Stopp</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="66" />
         <source>Incoming Mavlink messages (grouped by sys/comp/msg)</source>
-        <translation type="unfinished" />
+        <translation>Eingehende Mavlink-Nachrichten (gruppiert nach Sys/Comp/Msg)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="72" />
         <source>Capturing</source>
-        <translation type="unfinished" />
+        <translation>Aufzeichnung</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="72" />
         <source>Paused</source>
-        <translation type="unfinished" />
+        <translation>Pausiert</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="92" />
         <source>Sys</source>
-        <translation type="unfinished" />
+        <translation>Sys</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="93" />
         <source>Cmp</source>
-        <translation type="unfinished" />
+        <translation>Cmp</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="94" />
         <source>Msg</source>
-        <translation type="unfinished" />
+        <translation>Msg</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="95" />
         <source>Origin</source>
-        <translation type="unfinished" />
+        <translation>Quelle</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="96" />
         <source>Message</source>
-        <translation type="unfinished" />
+        <translation>Nachricht</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="97" />
         <source>Last seen</source>
-        <translation type="unfinished" />
+        <translation>Zuletzt gesehen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="98" />
         <source>Count</source>
-        <translation type="unfinished" />
+        <translation>Anzahl</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="147" />
         <source>Message details</source>
-        <translation type="unfinished" />
+        <translation>Nachrichtendetails</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="165" />
         <source>Name</source>
-        <translation type="unfinished" />
+        <translation>Name</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="167" />
         <source>ID</source>
-        <translation type="unfinished" />
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="169" />
         <source>Field count</source>
-        <translation type="unfinished" />
+        <translation>Feldanzahl</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="184" />
         <source>Field</source>
-        <translation type="unfinished" />
+        <translation>Feld</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="185" />
         <source>Type</source>
-        <translation type="unfinished" />
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="186" />
         <source>Array length</source>
-        <translation type="unfinished" />
+        <translation>Array-L?nge</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="187" />
         <source>Value</source>
-        <translation type="unfinished" />
+        <translation>Wert</translation>
     </message>
 </context>
 <context>
@@ -2680,7 +2680,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/elements/NewSwitch.qml" line="10" />
         <source>SwitchDelegate</source>
-        <translation type="unfinished" />
+        <translation>SwitchDelegate</translation>
     </message>
 </context>
 <context>
@@ -2688,27 +2688,27 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="40" />
         <source>LINK/QUICK</source>
-        <translation type="unfinished" />
+        <translation>LINK/QUICK</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="43" />
         <source>AIR CAM 1</source>
-        <translation type="unfinished" />
+        <translation>AIR CAM 1</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="46" />
         <source>AIR CAM 2</source>
-        <translation type="unfinished" />
+        <translation>AIR CAM 2</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="50" />
         <source>AIR</source>
-        <translation type="unfinished" />
+        <translation>AIR</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="53" />
         <source>GROUND</source>
-        <translation type="unfinished" />
+        <translation>GROUND</translation>
     </message>
 </context>
 <context>
@@ -2896,12 +2896,12 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/sidebar/Panel4Recording.qml" line="53" />
         <source>Status</source>
-        <translation type="unfinished" />
+        <translation>Status</translation>
     </message>
     <message>
         <location filename="../qml/ui/sidebar/Panel4Recording.qml" line="66" />
         <source>disabled</source>
-        <translation type="unfinished" />
+        <translation>deaktiviert</translation>
     </message>
 </context>
 <context>
@@ -2925,7 +2925,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/configpopup/status/PanelStatus.qml" line="38" />
         <source>SYSTEM STATUS</source>
-        <translation type="unfinished" />
+        <translation>SYSTEMSTATUS</translation>
     </message>
 </context>
 <context>
@@ -3547,52 +3547,52 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="72" />
         <source>Confirm Power Change</source>
-        <translation type="unfinished" />
+        <translation>Energie?nderung best?tigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="78" />
         <source>If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode!</source>
-        <translation type="unfinished" />
+        <translation>Wenn deine Drohne in der Luft ist, kann ein Neustart oder Herunterfahren einen Absturz verursachen oder den Failsafe ausl?sen!</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="93" />
         <source>Cancel</source>
-        <translation type="unfinished" />
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="121" />
         <source>Reboot Ground</source>
-        <translation type="unfinished" />
+        <translation>Ground neu starten</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="124" />
         <source>Shutdown Ground</source>
-        <translation type="unfinished" />
+        <translation>Ground herunterfahren</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="127" />
         <source>Reboot Air</source>
-        <translation type="unfinished" />
+        <translation>Air neu starten</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="130" />
         <source>Shutdown Air</source>
-        <translation type="unfinished" />
+        <translation>Air herunterfahren</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="133" />
         <source>Reboot FC</source>
-        <translation type="unfinished" />
+        <translation>FC neu starten</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="136" />
         <source>Shutdown FC</source>
-        <translation type="unfinished" />
+        <translation>FC herunterfahren</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="138" />
         <source>Yes</source>
-        <translation type="unfinished" />
+        <translation>Ja</translation>
     </message>
 </context>
 <context>
@@ -3689,7 +3689,7 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/dev/QOpenHDServiceDialoque.qml" line="70" />
         <source>Cancel</source>
-        <translation type="unfinished" />
+        <translation>Abbrechen</translation>
     </message>
 </context>
 <context>
@@ -3819,21 +3819,25 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcDebugScreenFC.qml" line="35" />
         <source>FC RC (for debugging)</source>
-        <translation type="unfinished" />
+        <translation>FC RC (zum Debuggen)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcDebugScreenFC.qml" line="38" />
         <source>NOTE: Only works on ardupilot!
 NOTE: Slow update rate(1Hz)-only for debugging
 Here you can see the rc channel values your FC reports via mavlink</source>
-        <translation type="unfinished" />
+        <translation>HINWEIS: Funktioniert nur mit ArduPilot!
+HINWEIS: Langsame Aktualisierung (1 Hz) ? nur zum Debuggen
+Hier siehst du die RC?Kanalwerte, die dein FC per Mavlink meldet</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcDebugScreenFC.qml" line="53" />
         <source>ranges: 1000-2000(pwm) 
 unused: 65535, 
 not set: -1</source>
-        <translation type="unfinished" />
+        <translation>Bereich: 1000-2000 (PWM)
+ungenutzt: 65535,
+nicht gesetzt: -1</translation>
     </message>
 </context>
 <context>
@@ -3841,20 +3845,23 @@ not set: -1</source>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcDebugScreenOpenHD.qml" line="36" />
         <source>OpenHD RC</source>
-        <translation type="unfinished" />
+        <translation>OpenHD RC</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcDebugScreenOpenHD.qml" line="39" />
         <source>Here you can view the values which OpenHD reads from your Joystick
  and sends to the FC via wifibroadcast (If enabled)</source>
-        <translation type="unfinished" />
+        <translation>Hier kannst du die Werte sehen, die OpenHD von deinem Joystick liest
+ und per Wifibroadcast an den FC sendet (falls aktiviert)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcDebugScreenOpenHD.qml" line="54" />
         <source>ranges: 1000-2000(pwm) 
 unused: 65535, 
 not set: -1</source>
-        <translation type="unfinished" />
+        <translation>Bereich: 1000-2000 (PWM)
+ungenutzt: 65535,
+nicht gesetzt: -1</translation>
     </message>
 </context>
 <context>
@@ -3862,17 +3869,17 @@ not set: -1</source>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="30" />
         <source>About</source>
-        <translation type="unfinished" />
+        <translation>?ber</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="33" />
         <source>RC over OpenHD - debug</source>
-        <translation type="unfinished" />
+        <translation>RC ?ber OpenHD - Debug</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="36" />
         <source>FC channels - debug</source>
-        <translation type="unfinished" />
+        <translation>FC-Kan?le - Debug</translation>
     </message>
 </context>
 <context>
@@ -3880,7 +3887,7 @@ not set: -1</source>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="35" />
         <source>Info</source>
-        <translation type="unfinished" />
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="38" />
@@ -3893,19 +3900,28 @@ not set: -1</source>
 You can use the other screens to validate/debug your setup.
 NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !
 </source>
-        <translation type="unfinished" />
+        <translation>OpenHD?RC aktivieren:
+
+ 1. OpenHD GND: Setze 'ENABLE_JOY_RC' auf 'ENABLED',
+ 2. Joystick per USB mit der GND?Station verbinden
+ 3. Optional neu starten
+
+ Du kannst die anderen Seiten nutzen, um dein Setup zu pr?fen/debuggen.
+ HINWEIS: Eine separate RC?Verbindung (z. B. ExpressLRS) wird empfohlen!</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="54" />
         <source>Channel mapping</source>
-        <translation type="unfinished" />
+        <translation>Kanalzuordnung</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="57" />
         <source>Channel mapping is not intuitive, but it works when done correctly.
 If you cannot make it work, any proper RC controller (e.g. running EdgeTX / OpenTX)
 supports more advanced channel mapping and works via USB !</source>
-        <translation type="unfinished" />
+        <translation>Die Kanalzuordnung ist nicht intuitiv, aber sie funktioniert, wenn sie korrekt durchgef?hrt wird.
+Falls es nicht klappt, unterst?tzt jeder richtige RC?Sender (z. B. mit EdgeTX / OpenTX)
+erweiterte Kanalzuordnung und funktioniert per USB!</translation>
     </message>
 </context>
 <context>
@@ -3918,12 +3934,12 @@ supports more advanced channel mapping and works via USB !</source>
     <message>
         <location filename="../qml/ui/elements/RestartQOpenHDMessageBox.qml" line="55" />
         <source>Restart</source>
-        <translation type="unfinished" />
+        <translation>Neustart</translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/RestartQOpenHDMessageBox.qml" line="73" />
         <source>Cancel</source>
-        <translation type="unfinished" />
+        <translation>Abbrechen</translation>
     </message>
 </context>
 <context>
@@ -4128,12 +4144,12 @@ AUF DIESER PLATTFORM</translation>
     <message>
         <location filename="../qml/ui/elements/SettingsCategory.qml" line="68" />
         <source></source>
-        <translation type="unfinished" />
+        <translation></translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/SettingsCategory.qml" line="68" />
         <source></source>
-        <translation type="unfinished" />
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -4457,17 +4473,17 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardsColumn.qml" line="29" />
         <source>Ground station</source>
-        <translation type="unfinished" />
+        <translation>Bodenstation</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardsColumn.qml" line="47" />
         <source>Air unit</source>
-        <translation type="unfinished" />
+        <translation>Lufteinheit</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardsColumn.qml" line="65" />
         <source>Flight Controller</source>
-        <translation type="unfinished" />
+        <translation>Flugcontroller</translation>
     </message>
 </context>
 <context>
@@ -4968,7 +4984,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/elements/WorkaroundMessageBox.qml" line="56" />
         <source>Okay</source>
-        <translation type="unfinished" />
+        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -4976,7 +4992,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/main.qml" line="43" />
         <source>QOpenHD EVO</source>
-        <translation type="unfinished" />
+        <translation>QOpenHD EVO</translation>
     </message>
 </context>
 </TS>

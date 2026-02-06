@@ -29,7 +29,7 @@ ScrollView {
             anchors.right: parent.right
 
             SettingBaseElement{
-                m_short_description: "Enable text to speech"
+                m_short_description: qsTr("Enable text to speech")
 
                 Switch {
                     width: 32
@@ -43,7 +43,7 @@ ScrollView {
             }
 
             SettingBaseElement{
-                m_short_description: "Use Imperial units"
+                m_short_description: qsTr("Use Imperial units")
 
                 Switch {
                     width: 32
@@ -108,7 +108,7 @@ ScrollView {
             }
 
             SettingBaseElement{
-                m_short_description: "Ground Battery Cells"
+                m_short_description: qsTr("Ground Battery Cells")
 
                 SpinBox {
                     id: gndBatteryCellspinBox
@@ -128,7 +128,7 @@ ScrollView {
             }
 
             SettingBaseElement{
-                m_short_description: "Language"
+                m_short_description: qsTr("Language")
 
                 LanguageSelect {
                     id: languageSelectBox
@@ -143,8 +143,8 @@ ScrollView {
 
             // exp
             SettingBaseElement{
-                m_short_description: "Mavlink sys id"
-                m_long_description: "Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart."
+                m_short_description: qsTr("Mavlink sys id")
+                m_long_description: qsTr("Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart.")
 
                 SpinBox {
                     id: mavlinkSysIDSpinBox
@@ -169,8 +169,8 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Latitude GPS offset"
-                m_long_description: "Set this to a random value only you know to hide lat identity"
+                m_short_description: qsTr("Latitude GPS offset")
+                m_long_description: qsTr("Set this to a random value only you know to hide lat identity")
 
                 /*SpinBox {
                     height: elementHeight
@@ -209,8 +209,8 @@ ScrollView {
 
             }
             SettingBaseElement{
-                m_short_description: "Longitude GPS offset"
-                m_long_description: "Set this to a random value only you know to hide lon identity"
+                m_short_description: qsTr("Longitude GPS offset")
+                m_long_description: qsTr("Set this to a random value only you know to hide lon identity")
 
                 XDecimalSpinBox{
                     height: elementHeight

@@ -394,7 +394,7 @@ Rectangle{
         // Type string only end --------------------------
         /*CheckBox{
             id: advanced_checkbox
-            text: "experiment"
+            text: qsTr("experiment")
             Layout.alignment: Qt.AlignHCenter
             onClicked: {
                 enableAdvanced= !enableAdvanced

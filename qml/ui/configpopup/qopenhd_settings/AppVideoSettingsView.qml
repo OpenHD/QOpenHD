@@ -59,7 +59,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Scale primary video to fit screen"
+                m_short_description: qsTr("Scale primary video to fit screen")
 
                 Switch {
                     width: 32
@@ -74,7 +74,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                    m_short_description: "Switch primary / secondary video"
+                    m_short_description: qsTr("Switch primary / secondary video")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -92,7 +92,7 @@ ScrollView {
                 m_hide_elements: true
 
                 SettingBaseElement{
-                    m_short_description: "Primary video codec"
+                    m_short_description: qsTr("Primary video codec")
                     ComboBox {
                         id: selectVideoCodecPrimary
                         width: 320
@@ -116,7 +116,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Use low latency RTP parser"
+                    m_short_description: qsTr("Use low latency RTP parser")
                     visible: _qopenhd.is_platform_nxp()
                     Switch {
                         width: 32
@@ -129,7 +129,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Use Software Decode"
+                    m_short_description: qsTr("Use Software Decode")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -145,7 +145,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Primary video udp port"
+                    m_short_description: qsTr("Primary video udp port")
                     SpinBox {
                         height: elementHeight
                         width: 210
@@ -162,7 +162,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Secondary video codec"
+                    m_short_description: qsTr("Secondary video codec")
                     // only show to dualcam users
                     visible: settings.dev_qopenhd_n_cameras==2
                     ComboBox {
@@ -204,7 +204,7 @@ ScrollView {
                 //     }
                 // }
                 SettingBaseElement{
-                    m_short_description: "Secondary video udp port"
+                    m_short_description: qsTr("Secondary video udp port")
                     visible: settings.dev_qopenhd_n_cameras==2
                     SpinBox {
                         height: elementHeight
@@ -223,7 +223,7 @@ ScrollView {
                 }
 
                 SettingBaseElement{
-                    m_short_description: "Secondary video input (Android dev)"
+                    m_short_description: qsTr("Secondary video input (Android dev)")
                     visible: _qopenhd.is_android()
                     ComboBox {
                         width: 320
@@ -247,8 +247,8 @@ ScrollView {
                 }
 
                 SettingBaseElement{
-                    m_short_description: "Disable primary video (Android)"
-                    m_long_description: "Stops rendering the primary stream on Android to debug the secondary feed. Requires restart."
+                    m_short_description: qsTr("Disable primary video (Android)")
+                    m_long_description: qsTr("Stops rendering the primary stream on Android to debug the secondary feed. Requires restart.")
                     visible: _qopenhd.is_android()
                     Switch {
                         width: 32
@@ -429,7 +429,7 @@ ScrollView {
 
                 // dirty
                 SettingBaseElement{
-                    m_short_description: "Use RPI decoding"
+                    m_short_description: qsTr("Use RPI decoding")
                     //m_long_description: "On by default, RPI specific."
                     Switch {
                         width: 32
@@ -443,7 +443,7 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Use external decoding service"
+                    m_short_description: qsTr("Use external decoding service")
                     //m_long_description: "Video decode is not done via QOpenHD, but rather in an extra service (started and stopped by QOpenHD). For platforms other than rpi"
                     Switch {
                         width: 32
@@ -456,8 +456,8 @@ ScrollView {
                     }
                 }
                 SettingBaseElement{
-                    m_short_description: "Use KMS DRM overlay renderer (experimental)"
-                    m_long_description: "Linux only. Requires restart. Disable external decode service for this to take effect."
+                    m_short_description: qsTr("Use KMS DRM overlay renderer (experimental)")
+                    m_long_description: qsTr("Linux only. Requires restart. Disable external decode service for this to take effect.")
                     Switch {
                         width: 32
                         height: elementHeight

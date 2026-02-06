@@ -29,8 +29,8 @@ ScrollView {
             anchors.right: parent.right
 
             SettingBaseElement{
-                m_short_description: "Vehicle Battery Cells"
-                m_long_description: "When show voltage per cell is selected (off by dfault) in the HUD, set this to the N of cells your air battery has."
+                m_short_description: qsTr("Vehicle Battery Cells")
+                m_long_description: qsTr("When show voltage per cell is selected (off by dfault) in the HUD, set this to the N of cells your air battery has.")
                 SpinBox {
                     height: elementHeight
                     width: 210
@@ -50,7 +50,7 @@ ScrollView {
             }
 
             SettingBaseElement{
-                m_short_description: "Show FC Messages in HUD"
+                m_short_description: qsTr("Show FC Messages in HUD")
                 Switch {
                     width: 32
                     height: elementHeight
@@ -62,7 +62,7 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Set mavlink message rates"
+                m_short_description: qsTr("Set mavlink message rates")
                 m_long_description: "Set mavlink message rate(s) that should work for most users. NOTE: When disabling this feature, you have to manually set the mavlink message rate(s)
  via mission planner for your autpilot running ardupilot/ PX4 ! After disabling, a reboot of the FC is required."
                 Switch {
@@ -78,8 +78,8 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "High mavlink message rates"
-                m_long_description: "Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD."
+                m_short_description: qsTr("High mavlink message rates")
+                m_long_description: qsTr("Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD.")
                 Switch {
                     width: 32
                     height: elementHeight
@@ -96,8 +96,8 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "High mavlink message rates RC"
-                m_long_description: "Increases the rate for mavlink down rc channel messages (This does not affect your RC over openhd latency !)"
+                m_short_description: qsTr("High mavlink message rates RC")
+                m_long_description: qsTr("Increases the rate for mavlink down rc channel messages (This does not affect your RC over openhd latency !)")
                 Switch {
                     width: 32
                     height: elementHeight
@@ -114,8 +114,8 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Log quiet FC warning"
-                m_long_description: "Log a warning when we get heartbeats from the FC, but not proper data"
+                m_short_description: qsTr("Log quiet FC warning")
+                m_long_description: qsTr("Log a warning when we get heartbeats from the FC, but not proper data")
                 Switch {
                     width: 32
                     height: elementHeight
