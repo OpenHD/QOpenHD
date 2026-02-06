@@ -61,39 +61,59 @@ BaseWidget {
 
                 property real normalizedSize: Math.min(width, height)
 
-                Canvas {
+                Shape {
                     id: gaugeCanvas
                     anchors.centerIn: parent
                     width: tempGauge.normalizedSize
                     height: tempGauge.normalizedSize
+                    layer.enabled: true
+                    layer.samples: 4
 
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.clearRect(0, 0, width, height);
+                    property real cx: width / 2
+                    property real cy: height / 2
+                    property real r: width * 0.45
+                    property real strokeW: width * 0.08
 
-                        var cx = width / 2;
-                        var cy = height / 2;
-                        var r = width * 0.45;
-                        var start = Math.PI * 0.75;
-                        var end = Math.PI * 2.25;
-
-                        ctx.lineWidth = width * 0.08;
-                        ctx.strokeStyle = "#333";
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, r, start, end);
-                        ctx.stroke();
-
-                        var zones = [
-                                    { color: settings.color_text, from: start, to: start + Math.PI * 1.0 },
-                                    { color: "red", from: start + Math.PI * 1.0, to: end }
-                                ];
-
-                        for (var i = 0; i < zones.length; i++) {
-                            var z = zones[i];
-                            ctx.strokeStyle = z.color;
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, r, z.from, z.to);
-                            ctx.stroke();
+                    ShapePath {
+                        fillColor: "transparent"
+                        strokeColor: "#333"
+                        strokeWidth: gaugeCanvas.strokeW
+                        capStyle: ShapePath.FlatCap
+                        PathAngleArc {
+                            centerX: gaugeCanvas.cx
+                            centerY: gaugeCanvas.cy
+                            radiusX: gaugeCanvas.r
+                            radiusY: gaugeCanvas.r
+                            startAngle: 135
+                            sweepAngle: 270
+                        }
+                    }
+                    ShapePath {
+                        fillColor: "transparent"
+                        strokeColor: settings.color_text
+                        strokeWidth: gaugeCanvas.strokeW
+                        capStyle: ShapePath.FlatCap
+                        PathAngleArc {
+                            centerX: gaugeCanvas.cx
+                            centerY: gaugeCanvas.cy
+                            radiusX: gaugeCanvas.r
+                            radiusY: gaugeCanvas.r
+                            startAngle: 135
+                            sweepAngle: 180
+                        }
+                    }
+                    ShapePath {
+                        fillColor: "transparent"
+                        strokeColor: "red"
+                        strokeWidth: gaugeCanvas.strokeW
+                        capStyle: ShapePath.FlatCap
+                        PathAngleArc {
+                            centerX: gaugeCanvas.cx
+                            centerY: gaugeCanvas.cy
+                            radiusX: gaugeCanvas.r
+                            radiusY: gaugeCanvas.r
+                            startAngle: 315
+                            sweepAngle: 90
                         }
                     }
                 }
