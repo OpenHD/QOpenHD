@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QtQuick>
+#include <QTimer>
 #include <chrono>
+#include <atomic>
 #include <mutex>
 #include <thread>
 
@@ -113,6 +115,13 @@ private:
     // Returns true if QOpenHD is running on the ground station itself (e.g. on a rpi, rock)
     // and always expects data via localhost::udp only.
     bool is_localhost_only_usage();
+private:
+    void publish_cached_telemetry_stats();
+    QTimer m_publish_timer;
+    std::mutex m_telemetry_stats_mutex;
+    int m_cached_telemetry_pps_in = -1;
+    int m_cached_telemetry_bps_in = -1;
+    std::atomic_bool m_telemetry_stats_dirty{false};
 };
 
 #endif // OHDMAVLINKCONNECTION_H

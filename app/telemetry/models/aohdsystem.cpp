@@ -16,6 +16,7 @@
 #include <logging/hudlogmessagesmodel.h>
 
 #include "util/qopenhd.h"
+#include "util/freezedebug.h"
 #include "../tutil/qopenhdmavlinkhelper.hpp"
 
 #include <../util/WorkaroundMessageBox.h>
@@ -86,6 +87,10 @@ AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     m_alive_timer = std::make_unique<QTimer>(this);
     QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &AOHDSystem::update_alive);
     m_alive_timer->start(1000);
+
+    m_publish_timer = std::make_unique<QTimer>(this);
+    QObject::connect(m_publish_timer.get(), &QTimer::timeout, this, &AOHDSystem::publish_cached_updates);
+    m_publish_timer->start(100);
 }
 
 AOHDSystem &AOHDSystem::instanceAir()
@@ -106,51 +111,54 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"AOHDSystem::process_message: wron sys id";
         return false;
     }
-    autofech_params_if_apropriate();
     m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    {
+        std::lock_guard<std::mutex> lock(m_cache_mutex);
+        m_autofetch_pending = true;
+    }
     bool consumed=false;
     switch(msg.msgid){
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
             mavlink_openhd_version_message_t parsedMsg;
             mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
-            set_openhd_version(ohd_version_as_string(parsedMsg.major,parsedMsg.minor,parsedMsg.patch,parsedMsg.release_type).c_str());
+            cache_openhd_version_message(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_CORE_STATUS:{
             mavlink_openhd_core_status_t parsedMsg;
             mavlink_msg_openhd_core_status_decode(&msg,&parsedMsg);
-            process_openhd_core_status(parsedMsg);
+            cache_openhd_core_status(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_POWER_STATUS:{
             mavlink_openhd_power_status_t parsedMsg;
             mavlink_msg_openhd_power_status_decode(&msg,&parsedMsg);
-            process_openhd_power_status(parsedMsg);
+            cache_openhd_power_status(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_MICROHARD_STATUS:{
             mavlink_openhd_microhard_status_t parsedMsg;
             mavlink_msg_openhd_microhard_status_decode(&msg,&parsedMsg);
-            process_openhd_microhard_status(parsedMsg);
+            cache_openhd_microhard_status(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD:{
             mavlink_openhd_stats_monitor_mode_wifi_card_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_card_decode(&msg,&parsedMsg);
             //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.rx_rssi;
-            process_x0(parsedMsg);
+            cache_x0(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_LINK:{
             mavlink_openhd_stats_monitor_mode_wifi_link_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_link_decode(&msg,&parsedMsg);
-            process_x1(parsedMsg);
+            cache_x1(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_TELEMETRY:{
             mavlink_openhd_stats_telemetry_t parsedMsg;
             mavlink_msg_openhd_stats_telemetry_decode(&msg,&parsedMsg);
-            process_x2(parsedMsg);
+            cache_x2(parsedMsg);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_AIR:{
@@ -267,14 +275,14 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_OPENHD_SYS_STATUS1:{
             mavlink_openhd_sys_status1_t parsed;
             mavlink_msg_openhd_sys_status1_decode(&msg,&parsed);
-            process_sys_status1(parsed);
+            cache_sys_status1(parsed);
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_GND_OPERATING_MODE:{
             if(m_is_air) qDebug()<<"Message mismatch"; // only ground reports operating mode
             mavlink_openhd_wifbroadcast_gnd_operating_mode_t parsed;
             mavlink_msg_openhd_wifbroadcast_gnd_operating_mode_decode(&msg,&parsed);
-            process_op_mode(parsed);
+            cache_op_mode(parsed);
             consumed=true;
         }break;
         default:{
@@ -295,6 +303,210 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         }*/
     }
     return consumed;
+}
+
+void AOHDSystem::cache_openhd_version_message(const mavlink_openhd_version_message_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_version = msg;
+    m_cache_has_version = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_openhd_core_status(const mavlink_openhd_core_status_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_core_status = msg;
+    m_cache_has_core_status = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_openhd_power_status(const mavlink_openhd_power_status_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_power_status = msg;
+    m_cache_has_power_status = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_openhd_microhard_status(const mavlink_openhd_microhard_status_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_microhard_status = msg;
+    m_cache_has_microhard_status = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg)
+{
+    const int idx = static_cast<int>(msg.card_index);
+    if (idx < 0 || idx >= kMaxWifiCards) {
+        return;
+    }
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_x0[idx] = msg;
+    m_cache_has_x0[idx] = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_x1 = msg;
+    m_cache_has_x1 = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_x2(const mavlink_openhd_stats_telemetry_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_x2 = msg;
+    m_cache_has_x2 = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_sys_status1(const mavlink_openhd_sys_status1_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_sys_status1 = msg;
+    m_cache_has_sys_status1 = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::cache_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t &msg)
+{
+    std::lock_guard<std::mutex> lock(m_cache_mutex);
+    m_cached_op_mode = msg;
+    m_cache_has_op_mode = true;
+    m_autofetch_pending = true;
+}
+
+void AOHDSystem::publish_cached_updates()
+{
+    mavlink_openhd_version_message_t version{};
+    bool has_version = false;
+    mavlink_openhd_core_status_t core_status{};
+    bool has_core_status = false;
+    mavlink_openhd_power_status_t power_status{};
+    bool has_power_status = false;
+    mavlink_openhd_microhard_status_t microhard_status{};
+    bool has_microhard_status = false;
+    std::array<bool, kMaxWifiCards> has_x0{};
+    std::array<mavlink_openhd_stats_monitor_mode_wifi_card_t, kMaxWifiCards> x0{};
+    mavlink_openhd_stats_monitor_mode_wifi_link_t x1{};
+    bool has_x1 = false;
+    mavlink_openhd_stats_telemetry_t x2{};
+    bool has_x2 = false;
+    mavlink_openhd_sys_status1_t sys_status1{};
+    bool has_sys_status1 = false;
+    mavlink_openhd_wifbroadcast_gnd_operating_mode_t op_mode{};
+    bool has_op_mode = false;
+    bool do_autofetch = false;
+
+    {
+        std::lock_guard<std::mutex> lock(m_cache_mutex);
+        if (m_cache_has_version) {
+            version = m_cached_version;
+            has_version = true;
+            m_cache_has_version = false;
+        }
+        if (m_cache_has_core_status) {
+            core_status = m_cached_core_status;
+            has_core_status = true;
+            m_cache_has_core_status = false;
+        }
+        if (m_cache_has_power_status) {
+            power_status = m_cached_power_status;
+            has_power_status = true;
+            m_cache_has_power_status = false;
+        }
+        if (m_cache_has_microhard_status) {
+            microhard_status = m_cached_microhard_status;
+            has_microhard_status = true;
+            m_cache_has_microhard_status = false;
+        }
+        for (int i = 0; i < kMaxWifiCards; ++i) {
+            if (m_cache_has_x0[i]) {
+                x0[i] = m_cached_x0[i];
+                has_x0[i] = true;
+                m_cache_has_x0[i] = false;
+            }
+        }
+        if (m_cache_has_x1) {
+            x1 = m_cached_x1;
+            has_x1 = true;
+            m_cache_has_x1 = false;
+        }
+        if (m_cache_has_x2) {
+            x2 = m_cached_x2;
+            has_x2 = true;
+            m_cache_has_x2 = false;
+        }
+        if (m_cache_has_sys_status1) {
+            sys_status1 = m_cached_sys_status1;
+            has_sys_status1 = true;
+            m_cache_has_sys_status1 = false;
+        }
+        if (m_cache_has_op_mode) {
+            op_mode = m_cached_op_mode;
+            has_op_mode = true;
+            m_cache_has_op_mode = false;
+        }
+        if (m_autofetch_pending) {
+            do_autofetch = true;
+            m_autofetch_pending = false;
+        }
+    }
+
+    if (has_version) {
+        set_openhd_version(ohd_version_as_string(version.major, version.minor, version.patch, version.release_type).c_str());
+        FreezeDebug::countStatusUpdate();
+    }
+    if (has_core_status) {
+        process_openhd_core_status(core_status);
+        FreezeDebug::countStatusUpdate();
+    }
+    if (has_power_status) {
+        process_openhd_power_status(power_status);
+        FreezeDebug::countStatusUpdate();
+    }
+    if (has_microhard_status) {
+        process_openhd_microhard_status(microhard_status);
+        FreezeDebug::countStatusUpdate();
+    }
+    for (int i = 0; i < kMaxWifiCards; ++i) {
+        if (has_x0[i]) {
+            process_x0(x0[i]);
+            FreezeDebug::countStatusUpdate();
+        }
+    }
+    if (has_x1) {
+        process_x1(x1);
+        FreezeDebug::countStatusUpdate();
+    }
+    if (has_x2) {
+        process_x2(x2);
+        FreezeDebug::countTelemetryUpdate();
+    }
+    if (has_sys_status1) {
+        process_sys_status1(sys_status1);
+        FreezeDebug::countStatusUpdate();
+    }
+    if (has_op_mode) {
+        process_op_mode(op_mode);
+        FreezeDebug::countStatusUpdate();
+    }
+
+    if (do_autofetch) {
+        const auto elapsed = std::chrono::steady_clock::now() - m_last_autofetch_check;
+        if (elapsed >= std::chrono::milliseconds(500)) {
+            m_last_autofetch_check = std::chrono::steady_clock::now();
+            autofech_params_if_apropriate();
+        } else {
+            std::lock_guard<std::mutex> lock(m_cache_mutex);
+            m_autofetch_pending = true;
+        }
+    }
 }
 
 QString AOHDSystem::get_rate_for_mcs_bw(int mcs, int bw)
@@ -804,6 +1016,7 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
             message << "disconnected";
             HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
         }
+        FreezeDebug::recordConnectionChange(m_is_air ? "air" : "ground", alive);
         if(!m_is_air){
             LogMessagesModel::instanceGround().add_message_debug("QOpenHD",message.str().c_str());
         }else{

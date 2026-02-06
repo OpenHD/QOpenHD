@@ -19,6 +19,7 @@ import "sidebar"
 Item {
     id: hudOverlayGrid
     focus: true
+    property bool m_disable_link_widgets: QOPENHD_DEBUG_DISABLE_LINK_WIDGETS === true
     // cross to indicate horizontal / vertical center
     // used by BaseWidget
     property bool m_show_vertical_center_indicator: false
@@ -291,9 +292,11 @@ Item {
         // --------------------------------------------------------------------------
         LinkDownRSSIWidget {
             id: downlink
+            visible: !m_disable_link_widgets && settings.show_widgets
         }
         LinkOverviewWidget {
             id: linkOverviewWidget
+            visible: !m_disable_link_widgets && settings.show_widgets
         }
         AirTemperatureTXC {
             id:airTempTxc
@@ -303,9 +306,11 @@ Item {
         }
         WBLinkRateControlWidget{
             id: wBLinkRateControlWidget
+            visible: !m_disable_link_widgets && settings.show_widgets
         }
         RetransmissionStarsWidget{
             id: retransmissionStarsWidget
+            visible: !m_disable_link_widgets && settings.show_widgets
         }
         // exp
         Loader {
@@ -328,6 +333,7 @@ Item {
         }
         LinkUpRSSIWidget {
             id: uplink
+            visible: !m_disable_link_widgets && settings.show_widgets
         }
         // ----------------------------------------------------------------------------
         // TODO SORT ME

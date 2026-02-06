@@ -145,6 +145,7 @@ SOURCES += \
     app/adsb/qmlobjectlistmodel.cpp \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
+    app/util/freezedebug.cpp \
     app/util/mousehelper.cpp \
     app/util/qopenhd.cpp \
     app/util/WorkaroundMessageBox.cpp \
@@ -164,6 +165,7 @@ HEADERS += \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
+    app/util/freezedebug.h \
     app/util/mousehelper.h \
     app/util/qopenhd.h \
     app/util/WorkaroundMessageBox.h \

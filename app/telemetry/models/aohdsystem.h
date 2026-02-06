@@ -8,6 +8,7 @@
 #include <QQmlContext>
 #include <QVariantList>
 #include <atomic>
+#include <mutex>
 
 #include "../tutil/mavlink_include.h"
 
@@ -165,6 +166,17 @@ public:
     Q_INVOKABLE QVariantList get_onboard_link_tx_max() const;
     Q_INVOKABLE QVariantList get_onboard_link_rx_max() const;
 private:
+    void publish_cached_updates();
+    void cache_openhd_version_message(const mavlink_openhd_version_message_t& msg);
+    void cache_openhd_core_status(const mavlink_openhd_core_status_t& msg);
+    void cache_openhd_power_status(const mavlink_openhd_power_status_t& msg);
+    void cache_openhd_microhard_status(const mavlink_openhd_microhard_status_t& msg);
+    void cache_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t& msg);
+    void cache_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t& msg);
+    void cache_x2(const mavlink_openhd_stats_telemetry_t& msg);
+    void cache_sys_status1(const mavlink_openhd_sys_status1_t& msg);
+    void cache_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t& msg);
+
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
         return m_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
@@ -189,7 +201,7 @@ private:
      void autofech_params_if_apropriate();
 private:
      std::atomic<int64_t> m_last_heartbeat_ms = -1;
-     std::atomic<int64_t> m_last_message_ms= -1;
+    std::atomic<int64_t> m_last_message_ms= -1;
      //
      QString m_curr_incoming_bitrate="Bitrate NA";
      QString m_curr_incoming_tele_bitrate="Bitrate NA";
@@ -197,6 +209,7 @@ private:
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     std::unique_ptr<QTimer> m_alive_timer = nullptr;
+    std::unique_ptr<QTimer> m_publish_timer = nullptr;
     void update_alive();
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end
@@ -223,6 +236,30 @@ private:
     std::array<uint8_t, 4> m_onboard_gpu_cores{};
     std::array<uint8_t, 10> m_onboard_gpu_combined{};
     std::array<int8_t, 8> m_onboard_temperature_core{};
+    std::chrono::steady_clock::time_point m_last_autofetch_check=std::chrono::steady_clock::now();
+    bool m_autofetch_pending=false;
+
+private:
+    static constexpr int kMaxWifiCards = 4;
+    std::mutex m_cache_mutex;
+    bool m_cache_has_version = false;
+    mavlink_openhd_version_message_t m_cached_version{};
+    bool m_cache_has_core_status = false;
+    mavlink_openhd_core_status_t m_cached_core_status{};
+    bool m_cache_has_power_status = false;
+    mavlink_openhd_power_status_t m_cached_power_status{};
+    bool m_cache_has_microhard_status = false;
+    mavlink_openhd_microhard_status_t m_cached_microhard_status{};
+    std::array<bool, kMaxWifiCards> m_cache_has_x0{};
+    std::array<mavlink_openhd_stats_monitor_mode_wifi_card_t, kMaxWifiCards> m_cached_x0{};
+    bool m_cache_has_x1 = false;
+    mavlink_openhd_stats_monitor_mode_wifi_link_t m_cached_x1{};
+    bool m_cache_has_x2 = false;
+    mavlink_openhd_stats_telemetry_t m_cached_x2{};
+    bool m_cache_has_sys_status1 = false;
+    mavlink_openhd_sys_status1_t m_cached_sys_status1{};
+    bool m_cache_has_op_mode = false;
+    mavlink_openhd_wifbroadcast_gnd_operating_mode_t m_cached_op_mode{};
 };
 
 
