@@ -37,12 +37,12 @@ public:
     void registerOnWindow(QQuickWindow* window);
     void set_screen_width_height(int width,int height);
     void set_display_width_height(int width,int height);
-public slots:
+  public slots:
     void m_QQuickWindow_beforeRendering();
     void m_QQuickWindow_afterRendering();
     void m_QQuickWindow_beforeRenderPassRecording();
     void m_QQuickWindow_afterRenderPassRecording();
-private:
+  private:
     // for the main render thread (render pass recording)
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     AvgCalculator avgMainRenderFrameDelta{};
@@ -50,6 +50,9 @@ private:
     // looks like there is a glFLush() or somethin in QT.
     //Chronometer m_avg_rendering_time{};
     Chronometer m_avg_renderpass_time{};
+    bool m_stats_enabled = false;
+    bool m_renderpass_time_active = false;
+    std::chrono::steady_clock::time_point last_stats_update = std::chrono::steady_clock::now();
 
 };
 

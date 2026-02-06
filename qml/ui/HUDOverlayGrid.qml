@@ -308,8 +308,11 @@ Item {
             id: retransmissionStarsWidget
         }
         // exp
-        QRenderStatsWidget {
+        Loader {
             id: qRenderStatsWidget
+            active: settings.qrenderstats_show
+            visible: active
+            sourceComponent: QRenderStatsWidget { }
         }
         VideoBitrateWidgetPrimary {
             id: bitrate1

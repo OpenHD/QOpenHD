@@ -1,6 +1,7 @@
 #include "qrenderstats.h"
 
 #include <qapplication.h>
+#include <QSettings>
 
 #if defined(__linux__) && !defined(__android__)
 #include "videostreaming/avcodec/drm_kms/kms_renderer.h"
@@ -32,16 +33,24 @@ void QRenderStats::register_to_root_window(QQmlApplicationEngine& engine)
 
 void QRenderStats::registerOnWindow(QQuickWindow *window)
 {
+    QSettings settings;
+#if defined(__linux__) && !defined(__android__)
+    const bool enable_kms_renderer = settings.value("enable_kms_renderer", false).toBool();
+    const bool use_rpi_external = settings.value("dev_rpi_use_external_omx_decode_service", true).toBool();
+    const bool use_generic_external = settings.value("dev_always_use_generic_external_decode_service", false).toBool();
+    if (enable_kms_renderer && !use_rpi_external && !use_generic_external) {
+        KmsRenderer::instance().ensure_started();
+    }
+#endif
+    m_stats_enabled = settings.value("qrenderstats_show", false).toBool();
+
+    if (!m_stats_enabled) {
+        return;
+    }
     connect(window, &QQuickWindow::beforeRendering, this, &QRenderStats::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
     connect(window, &QQuickWindow::afterRendering, this, &QRenderStats::m_QQuickWindow_afterRendering, Qt::DirectConnection);
     connect(window, &QQuickWindow::beforeRenderPassRecording, this, &QRenderStats::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
     connect(window, &QQuickWindow::afterRenderPassRecording, this, &QRenderStats::m_QQuickWindow_afterRenderPassRecording, Qt::DirectConnection);
-#if defined(__linux__) && !defined(__android__)
-    QSettings settings;
-    if (settings.value("enable_kms_renderer", false).toBool()) {
-        KmsRenderer::instance().ensure_started();
-    }
-#endif
 }
 
 void QRenderStats::set_screen_width_height(int width, int height)
@@ -76,10 +85,19 @@ void QRenderStats::m_QQuickWindow_afterRendering()
 
 void QRenderStats::m_QQuickWindow_beforeRenderPassRecording()
 {
+    if (!m_stats_enabled) {
+        return;
+    }
+    const auto now = std::chrono::steady_clock::now();
+    if (now - last_stats_update < std::chrono::seconds(1)) {
+        return;
+    }
+    last_stats_update = now;
+    m_renderpass_time_active = true;
     m_avg_renderpass_time.start();
     // Calculate frame time by calculating the delta between calls to render pass recording
-    const auto delta=std::chrono::steady_clock::now()-last_frame;
-    last_frame=std::chrono::steady_clock::now();
+    const auto delta = now - last_frame;
+    last_frame = now;
     //const auto frame_time_us=std::chrono::duration_cast<std::chrono::microseconds>(delta).count();
     //const float frame_time_ms=((float)frame_time_us)/1000.0f;
     //qDebug()<<"QRenderStats main frame time:"<<frame_time_ms<<"ms";
@@ -93,6 +111,10 @@ void QRenderStats::m_QQuickWindow_beforeRenderPassRecording()
 
 void QRenderStats::m_QQuickWindow_afterRenderPassRecording()
 {
+    if (!m_stats_enabled || !m_renderpass_time_active) {
+        return;
+    }
+    m_renderpass_time_active = false;
     m_avg_renderpass_time.stop();
     m_avg_renderpass_time.recalculate_in_fixed_time_intervals(std::chrono::seconds(1),[this](const AvgCalculator& self){
         const auto stats=QString(self.getAvgReadable().c_str());

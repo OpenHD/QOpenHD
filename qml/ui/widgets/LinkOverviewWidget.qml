@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Shapes 1.12
 
 import OpenHD 1.0
 
@@ -195,41 +196,24 @@ BaseWidget {
         scale: bw_current_scale
         clip: true
 
-        Canvas {
-    id: cutRect
-    anchors.fill: parent
-    property real cutXRatio: 0.80
-    property color fillColor: Qt.rgba(0, 0, 0, 0.5)
+        Shape {
+            id: cutRect
+            anchors.fill: parent
+            property real cutXRatio: 0.80
+            property color fillColor: Qt.rgba(0, 0, 0, 0.5)
 
-    onWidthChanged: requestPaint()
-    onHeightChanged: requestPaint()
-    onCutXRatioChanged: requestPaint()
-    onFillColorChanged: requestPaint()
-
-    onPaint: {
-        const ctx = getContext("2d");
-        ctx.clearRect(0, 0, width, height);
-
-        const w = width;
-        const h = height;
-
-        // Clamp so you can't accidentally invert the polygon
-        const cutX = Math.max(0, Math.min(w, w * cutXRatio));
-
-        ctx.fillStyle = fillColor;
-        ctx.beginPath();
-
-        // Rectangle with a diagonal cut on the right side:
-        // (0,0) -> (w,0) -> (cutX,h) -> (0,h)
-        ctx.moveTo(0, 0);
-        ctx.lineTo(w, 0);
-        ctx.lineTo(cutX, h);
-        ctx.lineTo(0, h);
-
-        ctx.closePath();
-        ctx.fill();
-    }
-}
+            ShapePath {
+                strokeWidth: 0
+                strokeColor: "transparent"
+                fillColor: cutRect.fillColor
+                startX: 0
+                startY: 0
+                PathLine { x: width; y: 0 }
+                PathLine { x: width * cutRect.cutXRatio; y: height }
+                PathLine { x: 0; y: height }
+                PathLine { x: 0; y: 0 }
+            }
+        }
 
 
         Item {
@@ -326,44 +310,26 @@ BaseWidget {
             Row {
                 id: snrBlocks
                 spacing: snrRow.spacing
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.alignment: Qt.AlignVCenter
 
                 Repeater {
                     model: snrBlockCount
-                    delegate: Canvas {
+                    delegate: Shape {
                         width: snrBlockWidth + snrBlockSkew
                         height: snrBlockHeight
                         property bool isActive: m_snr_value >= (index + 1) * 10
                         property color shapeColor: settings.color_shape
 
-                        onIsActiveChanged: requestPaint()
-                        onShapeColorChanged: requestPaint()
-                        onWidthChanged: requestPaint()
-                        onHeightChanged: requestPaint()
-
-                        onPaint: {
-                            const ctx = getContext("2d");
-                            ctx.clearRect(0, 0, width, height);
-
-                            const w = snrBlockWidth;
-                            const h = snrBlockHeight;
-                            const s = snrBlockSkew;
-
-                            ctx.beginPath();
-                            ctx.moveTo(0, h);
-                            ctx.lineTo(s, 0);
-                            ctx.lineTo(w + s, 0);
-                            ctx.lineTo(w, h);
-                            ctx.closePath();
-
-                            if (isActive) {
-                                ctx.fillStyle = shapeColor;
-                                ctx.fill();
-                            } else {
-                                ctx.strokeStyle = shapeColor;
-                                ctx.lineWidth = 1;
-                                ctx.stroke();
-                            }
+                        ShapePath {
+                            strokeWidth: 1
+                            strokeColor: shapeColor
+                            fillColor: isActive ? shapeColor : "transparent"
+                            startX: 0
+                            startY: height
+                            PathLine { x: snrBlockSkew; y: 0 }
+                            PathLine { x: snrBlockWidth + snrBlockSkew; y: 0 }
+                            PathLine { x: snrBlockWidth; y: height }
+                            PathLine { x: 0; y: height }
                         }
                     }
                 }
@@ -371,3 +337,4 @@ BaseWidget {
         }
     }
 }
+

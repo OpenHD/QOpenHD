@@ -455,6 +455,19 @@ ScrollView {
                         onCheckedChanged: settings.dev_always_use_generic_external_decode_service = checked
                     }
                 }
+                SettingBaseElement{
+                    m_short_description: "Use KMS DRM overlay renderer (experimental)"
+                    m_long_description: "Linux only. Requires restart. Disable external decode service for this to take effect."
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.enable_kms_renderer
+                        onCheckedChanged: settings.enable_kms_renderer = checked
+                    }
+                }
             }
         }
     }
