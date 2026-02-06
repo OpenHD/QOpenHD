@@ -9,6 +9,7 @@
 #include <QHash>
 #include <QMutex>
 #include <QMutexLocker>
+#include <atomic>
 #include <cstdio>
 #if defined(__android__)
 #include <QtAndroid>
@@ -160,6 +161,8 @@ static void load_fonts(){
 
 #if defined(__linux__) && !defined(__android__)
 namespace {
+std::atomic<bool> g_log_warnings_only{true};
+
 struct LogRateLimiter {
     QElapsedTimer timer;
     QMutex mutex;
@@ -187,6 +190,11 @@ LogRateLimiter& log_limiter() {
 
 void rate_limited_message_handler(QtMsgType type, const QMessageLogContext&,
                                   const QString& msg) {
+    if (g_log_warnings_only.load(std::memory_order_relaxed)) {
+        if (type == QtDebugMsg || type == QtInfoMsg) {
+            return;
+        }
+    }
     if (!log_limiter().should_log(msg)) {
         return;
     }
@@ -336,6 +344,10 @@ int main(int argc, char *argv[]) {
     }
     
     QSettings settings;
+#if defined(__linux__) && !defined(__android__)
+    g_log_warnings_only.store(settings.value("log_warnings_only", true).toBool(),
+                              std::memory_order_relaxed);
+#endif
     qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     // RPI and ROCK - disable font dpi. The user has to scale manually when using displays
     // (Big screens) according to its preferences. Auto scale is just bugged,

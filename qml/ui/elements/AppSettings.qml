@@ -407,6 +407,8 @@ Settings {
     property bool mavlink_message_rates_high_speed_rc_channels: false
     // log a warning if fc is quiet - happened to a lot of people new to mavlink
     property bool log_quiet_fc_warning_to_hud : true
+    // Reduce log spam in system logs
+    property bool log_warnings_only: true
 
     // only works on select platforms (on rpi, we are automatically already full screen)
     property bool dev_force_show_full_screen: false
