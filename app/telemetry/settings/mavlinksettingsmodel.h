@@ -26,6 +26,7 @@ class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    struct QtParamSet;
     // R.N we have one or two instances for the camera(s) (system air only and comp_id==camera0)
     // and one instance each for air and ground that does the rest (mostly interface)
     static MavlinkSettingsModel& instanceAirCamera();
