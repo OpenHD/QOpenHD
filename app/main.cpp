@@ -89,7 +89,6 @@ void attachConsole() {
 #include "util/mousehelper.h"
 #include "util/WorkaroundMessageBox.h"
 #include "util/restartqopenhdmessagebox.h"
-#include "util/freezedebug.h"
 
 #if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 RESOLVEFUNC(SSL_get1_peer_certificate);
@@ -405,7 +404,6 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
     QApplication app(argc, argv);
-    FreezeDebug::initializeFromEnv(&app);
 
     // Load translation based on saved locale (requires an active Q(Core)Application on Qt5)
     QString localeStr = settings.value("locale", "en").toString();
@@ -484,8 +482,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
     engine.rootContext()->setContextProperty("_mavlinkMessageStatsModel", &MavlinkMessageStatsModel::instance());
-    const bool disable_link_widgets = (qgetenv("QOPENHD_DEBUG_DISABLE_LINK_WIDGETS") == "1");
-    engine.rootContext()->setContextProperty("QOPENHD_DEBUG_DISABLE_LINK_WIDGETS", QVariant(disable_link_widgets));
     auto adsbVehicleManager = ADSBVehicleManager::instance();
     engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
     adsbVehicleManager->onStarted();

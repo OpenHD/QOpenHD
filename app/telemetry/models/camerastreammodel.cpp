@@ -8,7 +8,6 @@
 
 #include <logging/hudlogmessagesmodel.h>
 #include <logging/logmessagesmodel.h>
-#include "util/freezedebug.h"
 
 #include "openhd_core/camera.hpp"
 
@@ -22,9 +21,6 @@ CameraStreamModel::CameraStreamModel(int m_camera_index,QObject *parent)
     : QObject{parent},
       m_camera_index(m_camera_index)
 {
-    m_publish_timer = std::make_unique<QTimer>(this);
-    QObject::connect(m_publish_timer.get(), &QTimer::timeout, this, &CameraStreamModel::publish_cached_updates);
-    m_publish_timer->start(100);
 
 }
 
@@ -110,105 +106,6 @@ QString CameraStreamModel::make_resolution_fps_verbose(QString input)
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)
 {
-    std::lock_guard<std::mutex> lock(m_cache_mutex);
-    m_cache_wb_video_air = msg;
-    m_cache_has_wb_video_air = true;
-}
-
-void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_openhd_camera_status_air_t &msg)
-{
-    std::lock_guard<std::mutex> lock(m_cache_mutex);
-    m_cache_camera_status = msg;
-    m_cache_has_camera_status = true;
-}
-
-void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
-{
-    std::lock_guard<std::mutex> lock(m_cache_mutex);
-    m_cache_wb_video_air_fec = msg;
-    m_cache_has_wb_video_air_fec = true;
-}
-
-void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
-{
-    std::lock_guard<std::mutex> lock(m_cache_mutex);
-    m_cache_wb_video_ground = msg;
-    m_cache_has_wb_video_ground = true;
-}
-
-void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performance(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
-{
-    std::lock_guard<std::mutex> lock(m_cache_mutex);
-    m_cache_wb_video_ground_fec = msg;
-    m_cache_has_wb_video_ground_fec = true;
-}
-
-void CameraStreamModel::publish_cached_updates()
-{
-    mavlink_openhd_stats_wb_video_air_t wb_video_air{};
-    bool has_wb_video_air = false;
-    mavlink_openhd_stats_wb_video_air_fec_performance_t wb_video_air_fec{};
-    bool has_wb_video_air_fec = false;
-    mavlink_openhd_stats_wb_video_ground_t wb_video_ground{};
-    bool has_wb_video_ground = false;
-    mavlink_openhd_stats_wb_video_ground_fec_performance_t wb_video_ground_fec{};
-    bool has_wb_video_ground_fec = false;
-    mavlink_openhd_camera_status_air_t camera_status{};
-    bool has_camera_status = false;
-
-    {
-        std::lock_guard<std::mutex> lock(m_cache_mutex);
-        if (m_cache_has_wb_video_air) {
-            wb_video_air = m_cache_wb_video_air;
-            has_wb_video_air = true;
-            m_cache_has_wb_video_air = false;
-        }
-        if (m_cache_has_wb_video_air_fec) {
-            wb_video_air_fec = m_cache_wb_video_air_fec;
-            has_wb_video_air_fec = true;
-            m_cache_has_wb_video_air_fec = false;
-        }
-        if (m_cache_has_wb_video_ground) {
-            wb_video_ground = m_cache_wb_video_ground;
-            has_wb_video_ground = true;
-            m_cache_has_wb_video_ground = false;
-        }
-        if (m_cache_has_wb_video_ground_fec) {
-            wb_video_ground_fec = m_cache_wb_video_ground_fec;
-            has_wb_video_ground_fec = true;
-            m_cache_has_wb_video_ground_fec = false;
-        }
-        if (m_cache_has_camera_status) {
-            camera_status = m_cache_camera_status;
-            has_camera_status = true;
-            m_cache_has_camera_status = false;
-        }
-    }
-
-    if (has_wb_video_air) {
-        apply_mavlink_openhd_stats_wb_video_air(wb_video_air);
-        FreezeDebug::countVideoUpdate();
-    }
-    if (has_wb_video_air_fec) {
-        apply_mavlink_openhd_stats_wb_video_air_fec_performance(wb_video_air_fec);
-        FreezeDebug::countVideoUpdate();
-    }
-    if (has_wb_video_ground) {
-        apply_mavlink_openhd_stats_wb_video_ground(wb_video_ground);
-        FreezeDebug::countVideoUpdate();
-    }
-    if (has_wb_video_ground_fec) {
-        apply_mavlink_openhd_stats_wb_video_ground_fec_performance(wb_video_ground_fec);
-        FreezeDebug::countVideoUpdate();
-    }
-    if (has_camera_status) {
-        apply_mavlink_openhd_camera_status_air(camera_status);
-        FreezeDebug::countVideoUpdate();
-    }
-}
-
-void CameraStreamModel::apply_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)
-{
     const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
     set_curr_recommended_bitrate_from_message(curr_recommended_bitrate_kbits);
     set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
@@ -256,7 +153,7 @@ void CameraStreamModel::apply_mavlink_openhd_stats_wb_video_air(const mavlink_op
     set_air_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_injected_bitrate,msg.curr_injected_pps).c_str());
 }
 
-void CameraStreamModel::apply_mavlink_openhd_camera_status_air(const mavlink_openhd_camera_status_air_t &msg)
+void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_openhd_camera_status_air_t &msg)
 {
     //qDebug()<<"X:"<<(int)msg.cam_type;
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
@@ -302,7 +199,7 @@ void CameraStreamModel::apply_mavlink_openhd_camera_status_air(const mavlink_ope
     set_camera_status(msg.cam_status);
 }
 
-void CameraStreamModel::apply_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
 {
     set_curr_fec_encode_time_avg_min_max(
         Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
@@ -312,7 +209,7 @@ void CameraStreamModel::apply_mavlink_openhd_stats_wb_video_air_fec_performance(
         Telemetryutil::us_min_max_avg_to_string(msg.curr_tx_delay_min_us,msg.curr_tx_delay_max_us,msg.curr_tx_delay_avg_us));
 }
 
-void CameraStreamModel::apply_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
 {
     set_curr_received_bitrate_with_fec(Telemetryutil::bitrate_bps_to_qstring(msg.curr_incoming_bitrate));
     set_count_blocks_lost(msg.count_blocks_lost);
@@ -325,7 +222,7 @@ void CameraStreamModel::apply_mavlink_openhd_stats_wb_video_ground(const mavlink
     //set_gnd_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_incoming_bitrate,msg.cur_).c_str());
 }
 
-void CameraStreamModel::apply_mavlink_openhd_stats_wb_video_ground_fec_performance(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performance(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
 {
     set_curr_fec_decode_time_avg_min_max(
         Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));

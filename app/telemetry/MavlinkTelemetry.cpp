@@ -11,13 +11,9 @@
 #include "action/fcmsgintervalhandler.h"
 #include "action/impl/xparam.h"
 #include "util/qopenhd.h"
-#include "util/freezedebug.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
-    m_publish_timer.setInterval(100);
-    QObject::connect(&m_publish_timer, &QTimer::timeout, this, &MavlinkTelemetry::publish_cached_telemetry_stats);
-    m_publish_timer.start();
 }
 
 void MavlinkTelemetry::start()
@@ -124,14 +120,8 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
     std::lock_guard<std::mutex> lock(m_udp_or_tcp_mavlink_message_mutex);
     m_tele_received_packets++;
     m_tele_received_bytes+=get_message_size(msg);
-    const int new_pps = m_tele_pps_in.get_last_or_recalculate(m_tele_received_packets);
-    const int new_bps = m_tele_bitrate_in.get_last_or_recalculate(m_tele_received_bytes);
-    {
-        std::lock_guard<std::mutex> lock(m_telemetry_stats_mutex);
-        m_cached_telemetry_pps_in = new_pps;
-        m_cached_telemetry_bps_in = new_bps;
-        m_telemetry_stats_dirty.store(true, std::memory_order_relaxed);
-    }
+    set_telemetry_pps_in(m_tele_pps_in.get_last_or_recalculate(m_tele_received_packets));
+    set_telemetry_bps_in(m_tele_bitrate_in.get_last_or_recalculate(m_tele_received_bytes));
     //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
     const int source_sysid=msg.sysid;
     const int source_compid=msg.compid;
@@ -216,24 +206,6 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
             qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet known) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
         }
     }
-}
-
-void MavlinkTelemetry::publish_cached_telemetry_stats()
-{
-    if (!m_telemetry_stats_dirty.load(std::memory_order_relaxed)) {
-        return;
-    }
-    int pps = -1;
-    int bps = -1;
-    {
-        std::lock_guard<std::mutex> lock(m_telemetry_stats_mutex);
-        pps = m_cached_telemetry_pps_in;
-        bps = m_cached_telemetry_bps_in;
-        m_telemetry_stats_dirty.store(false, std::memory_order_relaxed);
-    }
-    set_telemetry_pps_in(pps);
-    set_telemetry_bps_in(bps);
-    FreezeDebug::countTelemetryUpdate();
 }
 
 void MavlinkTelemetry::process_broadcast_message_openhd_air(const mavlink_message_t &msg)

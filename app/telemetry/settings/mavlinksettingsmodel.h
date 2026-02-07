@@ -8,7 +8,6 @@
 #include <thread>
 #include <mutex>
 #include <QJSValue>
-#include <QTimer>
 
 #include "../tutil/mavlink_include.h"
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
@@ -100,7 +99,6 @@ public slots:
     void updateData(std::optional<int> row,MavlinkSettingsModel::SettingData new_data);
     void addData(MavlinkSettingsModel::SettingData data);
 private:
-    void apply_replace_param_set(const QtParamSet& qt_param_set);
     QVector<MavlinkSettingsModel::SettingData> m_data;
     const uint8_t m_sys_id;
     const uint8_t m_comp_id;
@@ -184,9 +182,6 @@ signals:
 private:
     std::atomic<bool> m_is_ready=false;
     std::atomic_bool m_is_currently_busy=false;
-    QTimer m_replace_timer;
-    std::optional<QtParamSet> m_pending_param_set;
-    bool m_replace_pending=false;
 private:
     void finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result);
     void perform_dirty_actions(const MavlinkSettingsModel::SettingData& data);

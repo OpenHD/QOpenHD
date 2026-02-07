@@ -6,12 +6,9 @@
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
 #include "tutil/openhd_defines.hpp"
-#include "util/freezedebug.h"
 
 #include <QSettings>
 #include <QVariant>
-#include <QElapsedTimer>
-#include <QtGlobal>
 
 #include "../action/impl/xparam.h"
 // Dirty
@@ -79,19 +76,6 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     connect(this, &MavlinkSettingsModel::signal_ui_thread_replace_param_set, this, &MavlinkSettingsModel::ui_thread_replace_param_set);
     //
     //connect(this, &MavlinkSettingsModel::signalCallResultCb, this, &MavlinkSettingsModel::do_not_call_me_signalCallResultCb);
-
-    m_replace_timer.setSingleShot(true);
-    m_replace_timer.setInterval(200);
-    QObject::connect(&m_replace_timer, &QTimer::timeout, this, [this]() {
-        if (!m_pending_param_set.has_value()) {
-            m_replace_pending = false;
-            return;
-        }
-        const auto pending = m_pending_param_set.value();
-        m_pending_param_set.reset();
-        m_replace_pending = false;
-        apply_replace_param_set(pending);
-    });
 }
 
 bool MavlinkSettingsModel::is_air_or_cam_param_busy()
@@ -393,7 +377,6 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
     m_data[row]=new_data;
     QModelIndex topLeft = createIndex(row,0);
     emit dataChanged(topLeft, topLeft);
-    FreezeDebug::countModelDataChanged();
 }
 
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
@@ -644,55 +627,26 @@ void MavlinkSettingsModel::remove_and_replace_param_set(const std::vector<mavlin
 
 void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
 {
-    static QElapsedTimer log_timer;
-    if (!log_timer.isValid()) {
-        log_timer.start();
+    qDebug()<<"Replacing full param set, previous size:"<<rowCount()<<" new size:"<<qt_param_set.param_set.size();
+    // first, remove anything the QT model has cached
+    while(rowCount()>0){
+        removeData(rowCount()-1);
     }
-    if (qgetenv("QOPENHD_DEBUG_DISABLE_PARAM_UI") == "1") {
-        if (log_timer.elapsed() > 5000) {
-            qWarning() << "Param UI disabled via QOPENHD_DEBUG_DISABLE_PARAM_UI";
-            log_timer.restart();
+    qDebug()<<"Done removing old params";
+    for(int i=0;i<qt_param_set.param_set.size();i++){
+        const auto param=qt_param_set.param_set[i];
+        const QString param_id=param.param_id;
+        std::variant<int32_t,std::string> param_value;
+        if(param.type==0){
+            int32_t value=param.param_value.value<int>();
+            param_value=value;
+        }else{
+            QString value=param.param_value.value<QString>();
+            param_value=value.toStdString();
         }
-        return;
+        MavlinkSettingsModel::SettingData data{param_id,param_value};
+        addData(data);
     }
-
-    m_pending_param_set = qt_param_set;
-    if (!m_replace_pending) {
-        m_replace_pending = true;
-        m_replace_timer.start();
-    }
-    if (log_timer.elapsed() > 5000) {
-        qWarning() << "Queued full param set replace, pending size:"
-                   << qt_param_set.param_set.size();
-        log_timer.restart();
-    }
-}
-
-void MavlinkSettingsModel::apply_replace_param_set(const QtParamSet& qt_param_set)
-{
-    beginResetModel();
-    m_data.clear();
-    m_data.reserve(qt_param_set.param_set.size());
-    for (int i = 0; i < qt_param_set.param_set.size(); ++i) {
-        const auto param = qt_param_set.param_set[i];
-        const QString param_id = param.param_id;
-        std::variant<int32_t, std::string> param_value;
-        if (param.type == 0) {
-            int32_t value = param.param_value.value<int>();
-            param_value = value;
-        } else {
-            QString value = param.param_value.value<QString>();
-            param_value = value.toStdString();
-        }
-        if (is_param_whitelisted(param_id.toStdString())) {
-            continue;
-        }
-        MavlinkSettingsModel::SettingData data{param_id, param_value};
-        perform_dirty_actions(data);
-        m_data.push_back(data);
-    }
-    endResetModel();
-    FreezeDebug::countModelReset();
 }
 
 void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result)
