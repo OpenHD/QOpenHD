@@ -5,7 +5,7 @@ wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.20.7/gstreamer
 # NOTE: We intentionally do not include the version in the extracted folder
 mkdir -p gstreamer-1.0-android-universal
 
-tar xf gstreamer-1.0-android-universal-* -C gstreamer-1.0-android-universal
+tar xf gstreamer-1.0-android-universal-* -C gstreamer-1.0-android-universal --strip-components=1
 
 ls
 
