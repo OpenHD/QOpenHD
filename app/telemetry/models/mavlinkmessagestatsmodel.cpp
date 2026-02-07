@@ -1,6 +1,5 @@
 #include "mavlinkmessagestatsmodel.h"
 
-#include <QDebug>
 #include <algorithm>
 #include <QtEndian>
 #include <cstring>
@@ -9,17 +8,6 @@
 #include "../tutil/openhd_defines.hpp"
 #include "../tutil/qopenhdmavlinkhelper.hpp"
 #include "../tutil/mavlink_include.h"
-
-namespace {
-struct Key {
-    int sysid;
-    int compid;
-    int msgid;
-    bool operator==(const Key& other) const {
-        return sysid == other.sysid && compid == other.compid && msgid == other.msgid;
-    }
-};
-}
 
 MavlinkMessageStatsModel &MavlinkMessageStatsModel::instance()
 {
@@ -30,7 +18,9 @@ MavlinkMessageStatsModel &MavlinkMessageStatsModel::instance()
 MavlinkMessageStatsModel::MavlinkMessageStatsModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    connect(this, &MavlinkMessageStatsModel::signal_record_message, this, &MavlinkMessageStatsModel::handle_record_message, Qt::QueuedConnection);
+    m_flush_timer.setInterval(200);
+    m_flush_timer.setTimerType(Qt::CoarseTimer);
+    connect(&m_flush_timer, &QTimer::timeout, this, &MavlinkMessageStatsModel::flush_pending);
 }
 
 int MavlinkMessageStatsModel::rowCount(const QModelIndex &parent) const
@@ -51,7 +41,7 @@ QVariant MavlinkMessageStatsModel::data(const QModelIndex &index, int role) cons
     case SourceLabelRole:
         return source_label_for(entry);
     case OriginCategoryRole:
-        return entry.origin_category;
+        return origin_category_for_sysid(entry.system_id);
     case SystemIdRole:
         return entry.system_id;
     case ComponentIdRole:
@@ -59,7 +49,7 @@ QVariant MavlinkMessageStatsModel::data(const QModelIndex &index, int role) cons
     case MessageIdRole:
         return entry.message_id;
     case MessageNameRole:
-        return entry.message_name;
+        return message_name_for_id(entry.message_id);
     case LastSeenRole:
         return entry.last_seen_ms;
     case LastSeenReadableRole:
@@ -92,7 +82,10 @@ void MavlinkMessageStatsModel::clear()
 {
     beginResetModel();
     m_data.clear();
+    m_index.clear();
     endResetModel();
+    std::lock_guard<std::mutex> lock(m_pending_mutex);
+    m_pending_messages.clear();
 }
 
 QString MavlinkMessageStatsModel::decodeMessage(int messageId) const
@@ -157,7 +150,7 @@ QVariantMap MavlinkMessageStatsModel::decodeMessageDetails(int row) const
     const auto &entry = m_data.at(static_cast<size_t>(row));
     const int messageId = entry.message_id;
     result.insert(QStringLiteral("messageId"), messageId);
-    result.insert(QStringLiteral("messageName"), entry.message_name);
+    result.insert(QStringLiteral("messageName"), message_name_for_id(entry.message_id));
     result.insert(QStringLiteral("fieldCount"), 0);
     QVariantList fields;
     const auto payload_len = entry.has_payload ? static_cast<int>(entry.last_payload_len) : 0;
@@ -310,11 +303,11 @@ QVariantMap MavlinkMessageStatsModel::get(int row) const
     }
     const auto &entry = m_data.at(static_cast<size_t>(row));
     result.insert(QStringLiteral("source_label"), source_label_for(entry));
-    result.insert(QStringLiteral("origin_category"), entry.origin_category);
+    result.insert(QStringLiteral("origin_category"), origin_category_for_sysid(entry.system_id));
     result.insert(QStringLiteral("system_id"), entry.system_id);
     result.insert(QStringLiteral("component_id"), entry.component_id);
     result.insert(QStringLiteral("message_id"), entry.message_id);
-    result.insert(QStringLiteral("message_name"), entry.message_name);
+    result.insert(QStringLiteral("message_name"), message_name_for_id(entry.message_id));
     result.insert(QStringLiteral("last_seen_ms"), entry.last_seen_ms);
     result.insert(QStringLiteral("last_seen_readable"), last_seen_readable(entry.last_seen_ms));
     result.insert(QStringLiteral("update_count"), entry.update_count);
@@ -328,6 +321,15 @@ void MavlinkMessageStatsModel::setEnabled(bool enabled)
         return;
     }
     m_enabled.store(enabled, std::memory_order_relaxed);
+    if (enabled) {
+        if (!m_flush_timer.isActive()) {
+            m_flush_timer.start();
+        }
+    } else {
+        m_flush_timer.stop();
+        std::lock_guard<std::mutex> lock(m_pending_mutex);
+        m_pending_messages.clear();
+    }
     emit enabledChanged();
 }
 
@@ -336,30 +338,93 @@ bool MavlinkMessageStatsModel::enabled() const
     return m_enabled.load(std::memory_order_relaxed);
 }
 
+int MavlinkMessageStatsModel::maxEntries() const
+{
+    return m_maxEntries;
+}
+
+void MavlinkMessageStatsModel::setMaxEntries(int maxEntries)
+{
+    const int clamped = std::max(1, maxEntries);
+    if (m_maxEntries == clamped) {
+        return;
+    }
+    m_maxEntries = clamped;
+    beginResetModel();
+    prune_entries();
+    sort_entries();
+    rebuild_index();
+    endResetModel();
+    emit maxEntriesChanged();
+}
+
 void MavlinkMessageStatsModel::record_message(const mavlink_message_t &msg)
 {
     if (!m_enabled.load(std::memory_order_relaxed)) {
         return;
     }
-    QByteArray payload(reinterpret_cast<const char*>(msg.payload64), msg.len);
-    emit signal_record_message(msg.sysid, msg.compid, msg.msgid, payload);
+    PendingMessage pending;
+    pending.system_id = msg.sysid;
+    pending.component_id = msg.compid;
+    pending.message_id = msg.msgid;
+    pending.timestamp_ms = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    pending.payload_len = static_cast<uint8_t>(std::min<int>(msg.len, MAVLINK_MAX_PAYLOAD_LEN));
+    if (pending.payload_len > 0) {
+        std::memcpy(pending.payload.data(), msg.payload64, pending.payload_len);
+        pending.has_payload = true;
+    }
+    std::lock_guard<std::mutex> lock(m_pending_mutex);
+    if (static_cast<int>(m_pending_messages.size()) >= m_maxPendingMessages) {
+        m_pending_messages.pop_front();
+    }
+    m_pending_messages.push_back(pending);
 }
 
-void MavlinkMessageStatsModel::handle_record_message(int sysid, int compid, int msgid, const QByteArray &payload)
+void MavlinkMessageStatsModel::flush_pending()
 {
-    Entry entry;
-    entry.system_id = sysid;
-    entry.component_id = compid;
-    entry.message_id = msgid;
-    entry.origin_category = origin_category_for_sysid(sysid);
-    entry.message_name = message_name_for_id(msgid);
-    entry.last_seen_ms = QOpenHDMavlinkHelper::getTimeMilliseconds();
-    entry.last_payload_len = static_cast<uint8_t>(std::min<int>(payload.size(), MAVLINK_MAX_PAYLOAD_LEN));
-    if (entry.last_payload_len > 0) {
-        std::copy_n(reinterpret_cast<const uint8_t*>(payload.constData()), entry.last_payload_len, entry.last_payload.begin());
-        entry.has_payload = true;
+    if (!m_enabled.load(std::memory_order_relaxed)) {
+        return;
     }
-    update_or_insert_entry(entry);
+
+    std::deque<PendingMessage> batch;
+    {
+        std::lock_guard<std::mutex> lock(m_pending_mutex);
+        if (m_pending_messages.empty()) {
+            return;
+        }
+        batch.swap(m_pending_messages);
+    }
+
+    bool will_insert = false;
+    for (const auto &pending : batch) {
+        Key key{pending.system_id, pending.component_id, pending.message_id};
+        if (m_index.find(key) == m_index.end()) {
+            will_insert = true;
+            break;
+        }
+    }
+
+    if (will_insert) {
+        beginResetModel();
+    }
+
+    bool any_updates = false;
+    for (const auto &pending : batch) {
+        update_or_insert_entry(pending);
+        any_updates = true;
+    }
+
+    if (will_insert) {
+        prune_entries();
+        sort_entries();
+        rebuild_index();
+        endResetModel();
+        return;
+    }
+
+    if (any_updates && rowCount() > 0) {
+        emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
+    }
 }
 
 QString MavlinkMessageStatsModel::source_label_for(const Entry &entry) const
@@ -402,33 +467,36 @@ QString MavlinkMessageStatsModel::last_seen_readable(qint64 last_seen_ms) const
     return QStringLiteral("%1 m ago").arg(minutes);
 }
 
-void MavlinkMessageStatsModel::update_or_insert_entry(const Entry &entry_template)
+void MavlinkMessageStatsModel::update_or_insert_entry(const PendingMessage &pending)
 {
-    const Key needle{entry_template.system_id, entry_template.component_id, entry_template.message_id};
-    auto it = std::find_if(m_data.begin(), m_data.end(), [&needle](const Entry &e) {
-        return e.system_id == needle.sysid && e.component_id == needle.compid && e.message_id == needle.msgid;
-    });
+    const Key needle{pending.system_id, pending.component_id, pending.message_id};
+    auto it = m_index.find(needle);
 
-    if (it != m_data.end()) {
-        const int row = static_cast<int>(std::distance(m_data.begin(), it));
-        it->last_seen_ms = entry_template.last_seen_ms;
-        it->update_count += 1;
-        if (entry_template.has_payload) {
-            it->last_payload_len = entry_template.last_payload_len;
-            it->has_payload = entry_template.has_payload;
-            std::copy_n(entry_template.last_payload.begin(), entry_template.last_payload_len, it->last_payload.begin());
+    if (it != m_index.end()) {
+        Entry &entry = m_data[it->second];
+        entry.last_seen_ms = pending.timestamp_ms;
+        entry.update_count += 1;
+        if (pending.has_payload) {
+            entry.last_payload_len = pending.payload_len;
+            entry.has_payload = true;
+            std::copy_n(pending.payload.begin(), pending.payload_len, entry.last_payload.begin());
         }
-        emit dataChanged(index(row, 0), index(row, 0));
-        sort_entries();
         return;
     }
 
-    const int insert_row = rowCount();
-    beginInsertRows(QModelIndex(), insert_row, insert_row);
-    m_data.push_back(entry_template);
-    m_data.back().update_count = 1;
-    endInsertRows();
-    sort_entries();
+    Entry entry;
+    entry.system_id = pending.system_id;
+    entry.component_id = pending.component_id;
+    entry.message_id = pending.message_id;
+    entry.last_seen_ms = pending.timestamp_ms;
+    entry.update_count = 1;
+    if (pending.has_payload) {
+        entry.last_payload_len = pending.payload_len;
+        entry.has_payload = true;
+        std::copy_n(pending.payload.begin(), pending.payload_len, entry.last_payload.begin());
+    }
+    m_data.push_back(entry);
+    m_index.emplace(needle, m_data.size() - 1);
 }
 
 void MavlinkMessageStatsModel::sort_entries()
@@ -438,14 +506,43 @@ void MavlinkMessageStatsModel::sort_entries()
     }
     // Sort by origin, then system id, then component id, then message id for stable grouping
     std::stable_sort(m_data.begin(), m_data.end(), [](const Entry &a, const Entry &b) {
-        if (a.origin_category != b.origin_category)
-            return a.origin_category < b.origin_category;
-        if (a.system_id != b.system_id)
+        const int a_origin = (a.system_id == OHD_SYS_ID_AIR || a.system_id == OHD_SYS_ID_GROUND) ? 0 : 1;
+        const int b_origin = (b.system_id == OHD_SYS_ID_AIR || b.system_id == OHD_SYS_ID_GROUND) ? 0 : 1;
+        if (a_origin != b_origin) {
+            return a_origin < b_origin;
+        }
+        if (a.system_id != b.system_id) {
             return a.system_id < b.system_id;
-        if (a.component_id != b.component_id)
+        }
+        if (a.component_id != b.component_id) {
             return a.component_id < b.component_id;
+        }
         return a.message_id < b.message_id;
     });
-    // Notify views that ordering changed
-    emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
+}
+
+void MavlinkMessageStatsModel::prune_entries()
+{
+    if (m_maxEntries <= 0) {
+        return;
+    }
+    while (static_cast<int>(m_data.size()) > m_maxEntries) {
+        auto oldest_it = std::min_element(m_data.begin(), m_data.end(), [](const Entry &a, const Entry &b) {
+            return a.last_seen_ms < b.last_seen_ms;
+        });
+        if (oldest_it == m_data.end()) {
+            break;
+        }
+        m_data.erase(oldest_it);
+    }
+}
+
+void MavlinkMessageStatsModel::rebuild_index()
+{
+    m_index.clear();
+    for (size_t i = 0; i < m_data.size(); ++i) {
+        const Entry &entry = m_data[i];
+        Key key{entry.system_id, entry.component_id, entry.message_id};
+        m_index.emplace(key, i);
+    }
 }

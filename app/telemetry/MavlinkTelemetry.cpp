@@ -114,7 +114,10 @@ static int get_message_size(const mavlink_message_t& msg){
 
 void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
 {
-    MavlinkMessageStatsModel::instance().record_message(msg);
+    auto &statsModel = MavlinkMessageStatsModel::instance();
+    if (statsModel.enabled()) {
+        statsModel.record_message(msg);
+    }
     // The message might come from udp or tcp endpoint - make sure there are no weird races
     // from 2 threads providing telemetry data (which is an edge case, normally, there is only one
     // connection feeding us data

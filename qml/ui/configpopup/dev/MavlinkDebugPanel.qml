@@ -19,6 +19,9 @@ Rectangle {
     property real columnCountWidth: 50
     property var decodedMessageDetails: ({messageName: "", messageId: 0, fieldCount: 0, fields: []})
 
+    onVisibleChanged: _mavlinkMessageStatsModel.setEnabled(visible)
+    Component.onCompleted: _mavlinkMessageStatsModel.setEnabled(visible)
+
     TabBar {
         id: selectItemInStackLayoutBar
         width: parent.width
