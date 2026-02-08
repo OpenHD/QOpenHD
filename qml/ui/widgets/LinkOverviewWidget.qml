@@ -35,6 +35,7 @@ BaseWidget {
     property real snrBlockWidth: 12
     property real snrBlockHeight: 8
     property real snrBlockSkew: 4
+    property var snrBlockThresholds: [1, 5, 10, 16, 22, 28, 34, 40]
 
     function get_dbm_text() {
         var dbm = _ohdSystemGround.current_rx_rssi;
@@ -317,7 +318,7 @@ BaseWidget {
                     delegate: Shape {
                         width: snrBlockWidth + snrBlockSkew
                         height: snrBlockHeight
-                        property bool isActive: m_snr_value >= (index + 1) * 10
+                        property bool isActive: snr_is_valid(m_best_snr_db) && m_best_snr_db >= snrBlockThresholds[index]
                         property color shapeColor: settings.color_shape
 
                         ShapePath {
