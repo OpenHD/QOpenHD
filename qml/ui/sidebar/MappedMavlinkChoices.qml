@@ -93,6 +93,13 @@ Item {
         ListElement {value: 2; verbose:"CLIENT"}
     }
     ListModel{
+        id: elements_model_tx_power_level
+        ListElement {value: 0; verbose:"LOWEST"}
+        ListElement {value: 1; verbose:"LOW"}
+        ListElement {value: 2; verbose:"MID"}
+        ListElement {value: 3; verbose:"HIGH"}
+    }
+    ListModel{
         id: elements_model_camera_rotation_degree
         ListElement {value: 0; verbose:"0°\n(Default)"}
         ListElement {value: 1; verbose:"180°\n"}
@@ -201,6 +208,8 @@ Item {
             return elements_model_hotspot
         }else if(param_id=="WIFI_MODE"){
             return elements_model_wifi_mode
+        }else if(param_id=="TX_PWR_LVL"){
+            return elements_model_tx_power_level
         }else if(param_id=="ROTATION_FLIP"){
             return elements_model_camera_rotation_flip
         }else if(param_id=="RESOLUTION_FPS"){
