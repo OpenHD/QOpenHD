@@ -164,13 +164,18 @@ Rectangle{
                 const values=instanceMavlinkSettingsModel.int_param_get_enum_values(parameterId);
                 intEnumDynamicListModel.clear()
                 var currently_selected_index=-1;
+                var list_index=-1;
                 for (var i = 0; i < keys.length; i++) {
                     var key=keys[i];
                     var value=values[i];
+                    if(parameterId==="WB_CHANNEL_W" && !settings.dev_allow_40mhz && value===40){
+                        continue;
+                    }
                     //console.log(key,value);
                     intEnumDynamicListModel.append({title: key, value: value})
+                    list_index=intEnumDynamicListModel.count-1
                     if(value===paramValueInt){
-                        currently_selected_index=i;
+                        currently_selected_index=list_index;
                     }
                 }
                 if(currently_selected_index==-1){
@@ -430,14 +435,18 @@ Rectangle{
                     var res="";
                     if(paramValueType==0){
                         var value_int;
-                        if(intEnumDynamicComboBox.visible){
-                            value_int=intEnumDynamicListModel.get(intEnumDynamicComboBox.currentIndex).value
-                        }else{
-                            value_int=spinBoxInputParamtypeInt.value
-                        }
-                        //var value_int_as_string=spinBoxInputParamtypeInt.text
-                        //var value_int = parseInt(value_int_as_string)
-                        //console.log("UI set int:{"+value_int_as_string+"}={"+value_int+"}")
+                    if(intEnumDynamicComboBox.visible){
+                        value_int=intEnumDynamicListModel.get(intEnumDynamicComboBox.currentIndex).value
+                    }else{
+                        value_int=spinBoxInputParamtypeInt.value
+                    }
+                    if(parameterId==="WB_CHANNEL_W" && value_int===40 && !settings.dev_allow_40mhz){
+                        _qopenhd.show_toast(qsTr("40 MHz is disabled (enable in Advanced Settings)"),true);
+                        return;
+                    }
+                    //var value_int_as_string=spinBoxInputParamtypeInt.text
+                    //var value_int = parseInt(value_int_as_string)
+                    //console.log("UI set int:{"+value_int_as_string+"}={"+value_int+"}")
                         console.log("UI set int:{"+value_int+"}")
                         //res=instanceMavlinkSettingsModel.try_update_parameter_int(parameterId,value_int)
                         instanceMavlinkSettingsModel.try_set_param_int_async(parameterId,value_int,true);

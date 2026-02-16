@@ -178,7 +178,9 @@ PopupBigGeneric{
                         frequencies_to_analyze=_frequencyHelper.get_frequencies(1);
                     }else{
                         frequencies_to_analyze=_frequencyHelper.get_frequencies(2);
-                        frequencies_to_analyze=_frequencyHelper.filter_frequencies_40mhz_ht40plus_only(frequencies_to_analyze);
+                        if(settings.dev_allow_40mhz){
+                            frequencies_to_analyze=_frequencyHelper.filter_frequencies_40mhz_ht40plus_only(frequencies_to_analyze);
+                        }
                     }
                     var categories = _pollutionHelper.pollution_frequencies_int_to_qstringlist(frequencies_to_analyze);
                     var values = _pollutionHelper.pollution_frequencies_int_get_pollution(frequencies_to_analyze,m_normalize_data);

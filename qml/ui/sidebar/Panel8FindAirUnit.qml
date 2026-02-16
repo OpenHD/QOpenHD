@@ -98,7 +98,7 @@ Button {
 
     function startScan(){
         var how_many_freq_bands = bandSelection.currentIndex;
-        var how_many_bandwidths = 2;
+        var how_many_bandwidths = settings.dev_allow_40mhz ? 2 : 1;
         var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, how_many_bandwidths);
         if(result){
             _qopenhd.show_toast("Channel scan started, please wait", true);

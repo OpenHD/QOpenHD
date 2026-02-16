@@ -61,7 +61,7 @@ PopupBigGeneric{
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
                 onClicked: {
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
-                    var how_many_bandwidths = 2;
+                    var how_many_bandwidths = settings.dev_allow_40mhz ? 2 : 1;
                     console.log("Initate channel scan "+how_many_freq_bands+","+how_many_bandwidths)
                     var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands,how_many_bandwidths)
                     if(result){
