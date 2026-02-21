@@ -10,8 +10,7 @@ BaseWidget {
     width: 320
     height: 60
 
-    visible:true
-    //visible: settings.show_link_overview_widget && settings.show_widgets
+    visible: settings.show_link_overview_widget && settings.show_widgets
 
     widgetIdentifier: "link_overview_widget"
     bw_verbose_name: qsTr("LINK OVERVIEW")
@@ -28,14 +27,25 @@ BaseWidget {
     property int m_channel_width_mhz: _ohdSystemAir.curr_channel_width_mhz
     property int m_best_snr_db: get_best_snr_db()
     property int m_snr_value: snr_db_to_percent(m_best_snr_db)
+    property int snr_min_db: settings.link_snr_min_db
+    property int snr_max_db: settings.link_snr_max_db
     property real m_txc_temp: _ohdSystemGround.curr_txc_temp_degree_1
+    property int m_packet_loss_perc: _ohdSystemGround.curr_rx_packet_loss_perc
     property string linkFont: "Quicksand"
     property string linkMonoFont: "ShareTechMono"
     property int snrBlockCount: 8
     property real snrBlockWidth: 12
     property real snrBlockHeight: 8
     property real snrBlockSkew: 4
-    property var snrBlockThresholds: [1, 5, 10, 16, 22, 28, 34, 40]
+    property var snrBlockThresholds: {
+        var arr = [];
+        var span = Math.max(1, snr_max_db - snr_min_db);
+        var step = span / snrBlockCount;
+        for (var i = 0; i < snrBlockCount; i++) {
+            arr.push(snr_min_db + step * (i + 1));
+        }
+        return arr;
+    }
 
     function get_dbm_text() {
         var dbm = _ohdSystemGround.current_rx_rssi;
@@ -73,7 +83,9 @@ BaseWidget {
         if (!snr_is_valid(db)) {
             return 0;
         }
-        return Math.max(0, Math.min(100, Math.round(db * 2)));
+        var span = Math.max(1, snr_max_db - snr_min_db);
+        var pct = ((db - snr_min_db) / span) * 100.0;
+        return Math.max(0, Math.min(100, Math.round(pct)));
     }
 
     function best_snr_for_card(card) {
@@ -123,6 +135,39 @@ BaseWidget {
             return "N/A";
         }
         return db + " dB";
+    }
+
+    function int_to_string_N_chars_wide(value, n_chars) {
+        var ret = "" + value;
+        for (var i = ret.length; i < n_chars; i++) {
+            ret = "0" + ret;
+        }
+        return ret;
+    }
+
+    function text_for_card(card_idx) {
+        var card = _wifi_card_gnd0;
+        if (card_idx == 1) card = _wifi_card_gnd1;
+        if (card_idx == 2) card = _wifi_card_gnd2;
+        if (card_idx == 3) card = _wifi_card_gnd3;
+        var ret = "[" + (card_idx + 1) + "] " + int_to_string_N_chars_wide(card.n_received_packets_rolling, 4) + " ";
+        ret += " " + int_to_string_N_chars_wide(card.packet_loss_perc, 2) + "% ";
+        ret += card.curr_rx_rssi_dbm + " dBm";
+        if (settings.downlink_dbm_per_card_show_multiple_antennas) {
+             ret += (card.curr_rx_rssi_dbm_antenna1 + "/" + card.curr_rx_rssi_dbm_antenna2 + " dBm");
+        }
+        if (card.is_active_tx) {
+            ret += " TX";
+        }
+        return ret;
+    }
+
+    function get_text_dbm() {
+        var dbm = _ohdSystemGround.current_rx_rssi;
+        if (dbm <= -127) {
+            return "N/A";
+        }
+        return "" + dbm;
     }
 
     function get_mcs_color() {
@@ -177,6 +222,220 @@ BaseWidget {
                 height: 28
                 Text {
                     text: qsTr("SNR best: %1").arg(snr_text(m_best_snr_db))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("SNR min: %1 dB").arg(settings.link_snr_min_db)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.link_snr_min_db
+                    to: 40
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 120
+
+                    onValueChanged: {
+                        var v = Math.round(value);
+                        if (settings.link_snr_min_db !== v) {
+                            settings.link_snr_min_db = v;
+                        }
+                        if (settings.link_snr_min_db >= settings.link_snr_max_db) {
+                            settings.link_snr_max_db = settings.link_snr_min_db + 1;
+                        }
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("SNR max: %1 dB").arg(settings.link_snr_max_db)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.link_snr_max_db
+                    to: 40
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 120
+
+                    onValueChanged: {
+                        var v = Math.round(value);
+                        if (v <= settings.link_snr_min_db) {
+                            v = settings.link_snr_min_db + 1;
+                        }
+                        if (settings.link_snr_max_db !== v) {
+                            settings.link_snr_max_db = v;
+                        }
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("Loss: %1%").arg(m_packet_loss_perc)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("Pollution: %1 pps").arg(_ohdSystemGround.wb_link_curr_foreign_pps)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("Quality: %1%").arg(_ohdSystemGround.current_rx_signal_quality)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("TX: %1").arg(Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("RX: %1").arg(Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: _wifi_card_gnd0.alive
+                Text {
+                    text: text_for_card(0)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: _wifi_card_gnd1.alive
+                Text {
+                    text: text_for_card(1)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: _wifi_card_gnd2.alive
+                Text {
+                    text: text_for_card(2)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: _wifi_card_gnd3.alive
+                Text {
+                    text: text_for_card(3)
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -264,10 +523,11 @@ BaseWidget {
                     styleColor: settings.color_glow
                 }
                 Text {
-                    text: get_channel_width_index()
+                    text: "MCS: " + (m_curr_mcs_index >= 0 ? m_curr_mcs_index : "N/A")
                     color: settings.color_text
                     font.pixelSize: 12
                     font.family: linkFont
+                    x: -4
                     horizontalAlignment: Text.AlignHCenter
                     style: Text.Outline
                     styleColor: settings.color_glow

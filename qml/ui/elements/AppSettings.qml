@@ -123,11 +123,13 @@ Settings {
     property int smoothing: 33
 
     property bool show_widgets: true
-    property bool show_txc_temp_air: true
-    property bool show_txc_temp_gnd: true
-    property bool show_retransmission_stats: true
-    property bool show_downlink_rssi: true
-    property bool show_link_overview_widget: false
+    property bool show_txc_temp_air: false
+    property bool show_txc_temp_gnd: false
+    property bool show_retransmission_stats: false
+    property bool show_downlink_rssi: false
+    property bool show_link_overview_widget: true
+    property int link_snr_min_db: 0
+    property int link_snr_max_db: 40
     //Const10
     property bool downlink_show_dbm_and_packets_per_card: true
     property bool downlink_dbm_per_card_show_multiple_antennas:false
@@ -143,17 +145,17 @@ Settings {
     property bool downlink_signal_quality_show: false
     property bool downlink_pollution_show: false
 
-    property bool show_uplink_rssi: true
+    property bool show_uplink_rssi: false
     property bool uplink_rssi_declutter: false
     property double uplink_rssi_warn: 0
     property double uplink_rssi_caution: 0
 
-    property bool show_rc_rssi: true
+    property bool show_rc_rssi: false
     property bool rc_rssi_declutter: false
     property double rc_rssi_warn: 0
     property double rc_rssi_caution: 0
 
-    property bool show_bitrate: true
+    property bool show_bitrate: false
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
     property double bitrate_caution: 0
@@ -204,7 +206,7 @@ Settings {
 
     property bool show_flight_mah_km: true
 
-    property bool show_imu_temp: true
+    property bool show_imu_temp: false
     property bool imu_temp_declutter: false
     property double imu_temp_warn: 75
     property double imu_temp_caution: 65
@@ -243,7 +245,7 @@ Settings {
     property double battery_temp_warn: 60
     property double battery_temp_caution: 40
 
-    property bool show_ground_status: true
+    property bool show_ground_status: false
     property bool ground_status_declutter: false
     property bool ground_status_show_undervolt_icon: true
     property double ground_status_cpu_caution: 50
@@ -251,7 +253,7 @@ Settings {
     property double ground_status_temp_caution: 60
     property double ground_status_temp_warn: 70
 
-    property bool show_air_status: true
+    property bool show_air_status: false
     property bool air_status_declutter: false
     property bool air_status_show_undervolt_icon: true
     property double air_status_cpu_caution: 50
@@ -423,7 +425,7 @@ Settings {
     property bool primary_video_scale_to_fit: false
 
     // HUD WB link rate control element settings
-    property bool wb_link_rate_control_widget_show: true
+    property bool wb_link_rate_control_widget_show: false
     property bool wb_link_rate_control_widget_show_frequency: true
     property bool wb_link_rate_control_widget_show_bitrate: true
     property bool wb_link_rate_control_widget_show_fec_and_keyframe: true

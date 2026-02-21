@@ -177,64 +177,7 @@ ScrollView {
                         onCheckedChanged: settings.show_widgets = checked
                     }
                 }
-                
-                SettingBaseElement{
-                    m_short_description: qsTr("Show Transceiver Temperature Air")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_txc_temp_air
-                        onCheckedChanged: settings.show_txc_temp_air = checked
-                    }
-                }
-                
-                SettingBaseElement{
-                    m_short_description: qsTr("Show Transceiver Temperature Ground")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_txc_temp_gnd
-                        onCheckedChanged: settings.show_txc_temp_gnd = checked
-                    }
-                }
-
-                SettingBaseElement{
-                    m_short_description: qsTr("Show Retransmission Stats")
-                    m_long_description: qsTr("Shows packet loss and retransmission activity for video.")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_retransmission_stats
-                        onCheckedChanged: settings.show_retransmission_stats = checked
-                    }
-                }
-
-                SettingBaseElement{
-                    m_short_description: qsTr("Show Downlink RSSI")
-                    m_long_description: qsTr("RSSI / Stats about downlink")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_downlink_rssi
-                        onCheckedChanged: settings.show_downlink_rssi = checked
-                    }
-                }
                 SettingBaseElement{
                     m_short_description: qsTr("Show Link Overview")
                     m_long_description: qsTr("Compact overview for RSSI, TXC temp, SNR, and link status.")
@@ -247,49 +190,6 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_link_overview_widget
                         onCheckedChanged: settings.show_link_overview_widget = checked
-                    }
-                }
-
-                SettingBaseElement{
-                    m_short_description: qsTr("Show Uplink RSSI")
-                    m_long_description: qsTr("RSSI / Stats about uplink")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_uplink_rssi
-                        onCheckedChanged: settings.show_uplink_rssi = checked
-                    }
-                }
-                SettingBaseElement{
-                    m_short_description: qsTr("Show live rate control widget")
-                    m_long_description: qsTr("Trade range / stability for bitrate at run time. Requires hw support.")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.wb_link_rate_control_widget_show
-                        onCheckedChanged: settings.wb_link_rate_control_widget_show = checked
-                    }
-                }
-                SettingBaseElement{
-                    m_short_description: qsTr("Show video widget")
-                    m_long_description: qsTr("More stats about each camera stream, quick resolution changes and quick air recording.")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_bitrate
-                        onCheckedChanged: settings.show_bitrate = checked
                     }
                 }
 
@@ -356,35 +256,6 @@ ScrollView {
                         onCheckedChanged: settings.show_home_distance = checked
                     }
                 }
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show RC RSSI (not OpenHD RC)")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_rc_rssi
-                        onCheckedChanged: settings.show_rc_rssi = checked
-                    }
-                }
-
                 Rectangle {
                     width: parent.width
                     height: rowHeight
@@ -649,35 +520,6 @@ ScrollView {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: qsTr("Show Ground Status")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_ground_status
-                        onCheckedChanged: settings.show_ground_status = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
                         text: qsTr("Show Ground Battery")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -698,35 +540,6 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_ground_battery
                         onCheckedChanged: settings.show_ground_battery = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Air Status")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_air_status
-                        onCheckedChanged: settings.show_air_status = checked
                     }
                 }
 
@@ -1584,6 +1397,155 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_gpio
                         onCheckedChanged: settings.show_gpio = checked
+                    }
+                }
+            }
+
+            SettingsCategory{
+                m_description: "LEGACY"
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Transceiver Temperature Air")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_txc_temp_air
+                        onCheckedChanged: settings.show_txc_temp_air = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Transceiver Temperature Ground")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_txc_temp_gnd
+                        onCheckedChanged: settings.show_txc_temp_gnd = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Retransmission Stats")
+                    m_long_description: qsTr("Shows packet loss and retransmission activity for video.")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_retransmission_stats
+                        onCheckedChanged: settings.show_retransmission_stats = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Downlink RSSI")
+                    m_long_description: qsTr("RSSI / Stats about downlink")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_downlink_rssi
+                        onCheckedChanged: settings.show_downlink_rssi = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Uplink RSSI")
+                    m_long_description: qsTr("RSSI / Stats about uplink")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_uplink_rssi
+                        onCheckedChanged: settings.show_uplink_rssi = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show live rate control widget")
+                    m_long_description: qsTr("Trade range / stability for bitrate at run time. Requires hw support.")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.wb_link_rate_control_widget_show
+                        onCheckedChanged: settings.wb_link_rate_control_widget_show = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show video widget")
+                    m_long_description: qsTr("More stats about each camera stream, quick resolution changes and quick air recording.")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_bitrate
+                        onCheckedChanged: settings.show_bitrate = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show RC RSSI (not OpenHD RC)")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_rc_rssi
+                        onCheckedChanged: settings.show_rc_rssi = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Ground Status")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_ground_status
+                        onCheckedChanged: settings.show_ground_status = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Air Status")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_air_status
+                        onCheckedChanged: settings.show_air_status = checked
                     }
                 }
             }
