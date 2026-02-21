@@ -105,6 +105,27 @@ BaseWidget {
         set_recording_mode(m_camera_is_currently_recording ? 0 : 1);
     }
 
+    function format_temp(value) {
+        if (value <= -127) {
+            return "N/A";
+        }
+        return Math.round(value) + "C";
+    }
+
+    function format_cpu(value, alive) {
+        if (!alive || value < 0) {
+            return "N/A";
+        }
+        return Math.round(value) + "%";
+    }
+
+    function format_space_mb(value, alive) {
+        if (!alive || value < 0) {
+            return "N/A";
+        }
+        return Math.round(value) + " MB";
+    }
+
     function uplink_ok() {
         if (_ohdSystemGround.tx_operating_mode == 1) {
             return false;
@@ -130,6 +151,77 @@ BaseWidget {
         BaseWidgetDefaultUiControlElements {
             id: idBaseWidgetDefaultUiControlElements
             show_transparency: false
+
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("Air CPU temp: %1").arg(format_temp(_ohdSystemAir.curr_soc_temp_degree))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("GND CPU temp: %1").arg(format_temp(_ohdSystemGround.curr_soc_temp_degree))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("Air CPU: %1").arg(format_cpu(_ohdSystemAir.curr_cpuload_perc, _ohdSystemAir.is_alive))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("GND CPU: %1").arg(format_cpu(_ohdSystemGround.curr_cpuload_perc, _ohdSystemGround.is_alive))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("Rec space: %1").arg(format_space_mb(_ohdSystemAir.curr_space_left_mb, _ohdSystemAir.is_alive))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
         }
     }
 
