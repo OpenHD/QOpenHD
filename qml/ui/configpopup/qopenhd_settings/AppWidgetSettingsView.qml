@@ -205,92 +205,6 @@ ScrollView {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: qsTr("Show GPS")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_gps
-                        onCheckedChanged: settings.show_gps = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Home Distance")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_home_distance
-                        onCheckedChanged: settings.show_home_distance = checked
-                    }
-                }
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Flight Timer")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_flight_time
-                        onCheckedChanged: settings.show_flight_time = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
                         text: qsTr("Show Flight Mode")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -520,151 +434,6 @@ ScrollView {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: qsTr("Show Ground Battery")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_ground_battery
-                        onCheckedChanged: settings.show_ground_battery = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Air Battery")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_air_battery
-                        onCheckedChanged: settings.show_air_battery = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show mAh")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_flight_mah
-                        onCheckedChanged: settings.show_flight_mah = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Efficiency in mAh/km")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_flight_mah_km
-                        onCheckedChanged: settings.show_flight_mah_km = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Total Flight Distance")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_flight_distance
-                        onCheckedChanged: settings.show_flight_distance = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
                         text: qsTr("Show Horizon")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -811,35 +580,6 @@ ScrollView {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: qsTr("Show Second Speed")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_speed_second
-                        onCheckedChanged: settings.show_speed_second = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
                         text: qsTr("Show Heading")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -860,35 +600,6 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_heading
                         onCheckedChanged: settings.show_heading = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Second Altitude")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_altitude_second
-                        onCheckedChanged: settings.show_altitude_second = checked
                     }
                 }
 
@@ -947,35 +658,6 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_arrow
                         onCheckedChanged: settings.show_arrow = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Throttle")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_throttle
-                        onCheckedChanged: settings.show_throttle = checked
                     }
                 }
 
@@ -1045,34 +727,6 @@ ScrollView {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: qsTr("Show Vertical Speed (minimal)")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_vertical_speed_simple_widget
-                        onCheckedChanged: settings.show_vertical_speed_simple_widget = checked
-                    }
-                }
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
                         text: qsTr("Show Vertical Speed Gauge")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -1095,66 +749,6 @@ ScrollView {
                         onCheckedChanged: settings.show_vertical_speed_gauge_widget = checked
                     }
                 }
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Wind (Experimental)")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_wind
-                        onCheckedChanged: settings.show_wind = checked
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
-                        text: qsTr("Show Missions")
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_mission
-                        onCheckedChanged: {
-                            settings.show_mission = checked;
-                        }
-                    }
-                }
-
                 Rectangle {
                     width: parent.width
                     height: rowHeight
@@ -1432,18 +1026,21 @@ ScrollView {
                     }
                 }
 
-                SettingBaseElement{
-                    m_short_description: qsTr("Show Retransmission Stats")
-                    m_long_description: qsTr("Shows packet loss and retransmission activity for video.")
-                    Switch {
-                        width: 32
-                        height: elementHeight
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Loader {
+                    active: settings.dev_show_advanced_button
+                    sourceComponent: SettingBaseElement{
+                        m_short_description: qsTr("Show Retransmission Stats")
+                        m_long_description: qsTr("Shows packet loss and retransmission activity for video.")
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        checked: settings.show_retransmission_stats
-                        onCheckedChanged: settings.show_retransmission_stats = checked
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.show_retransmission_stats
+                            onCheckedChanged: settings.show_retransmission_stats = checked
+                        }
                     }
                 }
 
@@ -1546,6 +1143,202 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_air_status
                         onCheckedChanged: settings.show_air_status = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Air Battery")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_air_battery
+                        onCheckedChanged: settings.show_air_battery = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Ground Battery")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_ground_battery
+                        onCheckedChanged: settings.show_ground_battery = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show mAh")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_mah
+                        onCheckedChanged: settings.show_flight_mah = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Efficiency in mAh/km")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_mah_km
+                        onCheckedChanged: settings.show_flight_mah_km = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Total Flight Distance")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_distance
+                        onCheckedChanged: settings.show_flight_distance = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Wind")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_wind
+                        onCheckedChanged: settings.show_wind = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show GPS")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_gps
+                        onCheckedChanged: settings.show_gps = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Home Distance")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_home_distance
+                        onCheckedChanged: settings.show_home_distance = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Flight Timer")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_time
+                        onCheckedChanged: settings.show_flight_time = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Second Speed")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_speed_second
+                        onCheckedChanged: settings.show_speed_second = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Throttle")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_throttle
+                        onCheckedChanged: settings.show_throttle = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Missions")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_mission
+                        onCheckedChanged: settings.show_mission = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Vertical Speed (minimal)")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_vertical_speed_simple_widget
+                        onCheckedChanged: settings.show_vertical_speed_simple_widget = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Second Altitude")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_altitude_second
+                        onCheckedChanged: settings.show_altitude_second = checked
                     }
                 }
             }

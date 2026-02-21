@@ -167,8 +167,8 @@ Settings {
     property double qrenderstats_caution: 0
 
 
-    property bool show_air_battery: true
-    property bool show_ground_battery: true
+    property bool show_air_battery: false
+    property bool show_ground_battery: false
     property bool air_battery_show_voltage_current: true
     property bool air_battery_show_single_cell: false
     property bool air_battery_use_batt_id_0_only: false
@@ -184,27 +184,27 @@ Settings {
     property int ground_voltage_in_percent: 0
 
 
-    property bool show_gps: true
+    property bool show_gps: false
     property bool gps_show_all: false
     property bool gps_hide_identity_using_offset: false
     property bool gps_declutter: false
     property double gps_warn: 3
     property double gps_caution: 2
 
-    property bool show_home_distance: true
+    property bool show_home_distance: false
     property double home_saved_lat: 0.0
     property double home_saved_lon: 0.0
 
-    property bool show_flight_time: true
+    property bool show_flight_time: false
 
-    property bool show_flight_mode: true
+    property bool show_flight_mode: false
     property bool flight_mode_show_disarmed: true
 
-    property bool show_flight_distance: true
+    property bool show_flight_distance: false
 
-    property bool show_flight_mah: true
+    property bool show_flight_mah: false
 
-    property bool show_flight_mah_km: true
+    property bool show_flight_mah_km: false
 
     property bool show_imu_temp: false
     property bool imu_temp_declutter: false
@@ -304,7 +304,7 @@ Settings {
     property int speed_ladder_range: 100
     property int speed_ladder_minimum: 0
 
-    property bool show_speed_second: true
+    property bool show_speed_second: false
     property bool speed_second_use_groundspeed: true
     property bool speed_second_use_kmh: true
     property bool speed_second_show_unit: true
@@ -315,7 +315,7 @@ Settings {
     property int altitude_ladder_range: 100
     property bool altitude_ladder_show_unit: true
 
-    property bool show_altitude_second: true
+    property bool show_altitude_second: false
     property bool altitude_second_msl_rel: false
 
     property bool show_arrow: true
@@ -337,7 +337,7 @@ Settings {
 
     property int map_zoom: 18
     property double map_size: 1
-    property bool show_throttle: true
+    property bool show_throttle: false
 
     property bool show_control: false
     property bool double_control: true
@@ -355,7 +355,7 @@ Settings {
 
     // Simple is on by default, gauge is off by default
     // simple / minimal
-    property bool show_vertical_speed_simple_widget: true
+    property bool show_vertical_speed_simple_widget: false
     property bool vertical_speed_simple_widget_show_unit: true
     property bool vertical_speed_simple_widget_show_up_down_arrow: true
     // gauge
@@ -363,7 +363,7 @@ Settings {
     property int vertical_speed_gauge_widget_max: 20
 
 
-    property bool show_wind: true
+    property bool show_wind: false
     property bool wind_plane_copter: false //should default to plane
     property bool wind_arrow_circle: false
     //tumbler value had to be split into two values..
@@ -378,7 +378,7 @@ Settings {
     property bool bank_angle_indicator_widget_show_numbers: true
     property bool bank_angle_indicator_widget_sky_pointer: false
 
-    property bool show_mission: true
+    property bool show_mission: false
 
     property bool show_record_widget: true
     property double recordTextSize: 14

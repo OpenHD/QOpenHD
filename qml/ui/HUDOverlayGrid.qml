@@ -298,6 +298,9 @@ Item {
         LinkOverviewWidgetRight {
             id: linkOverviewWidgetRight
         }
+        LinkOverviewWidgetBottom {
+            id: linkOverviewWidgetBottom
+        }
         AirTemperatureTXC {
             id:airTempTxc
         }

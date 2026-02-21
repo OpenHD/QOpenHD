@@ -22,6 +22,7 @@
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>
         <file>ui/widgets/LinkOverviewWidget.qml</file>
         <file>ui/widgets/LinkOverviewWidgetRight.qml</file>
+        <file>ui/widgets/LinkOverviewWidgetBottom.qml</file>
         <file>ui/widgets/AirTemperatureTXC.qml</file>
         <file>ui/widgets/GndTemperatureTXC.qml</file>
         <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>

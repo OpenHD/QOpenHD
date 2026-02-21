@@ -482,154 +482,160 @@ Rectangle{
                     }
                 }
 
-                SettingsCategory{
-                    m_description: qsTr("RETRANSMISSION");
-                    m_hide_elements: false;
-                    Column{
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        spacing: 6
-                        Row{
-                            spacing: 12
-                            Text{
-                                width:  m_small_width
-                                height: m_small_height
-                                text: qsTr("VIDEO")
-                                verticalAlignment: Qt.AlignVCenter
-                                horizontalAlignment: Qt.AlignHCenter
-                                font.bold: false
-                                font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            }
-                            Switch{
-                                checked: m_retrans_video_enabled
-                                enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-                                onClicked: {
-                                    set_retransmission_param("WB_RTX_VIDEO", checked ? 1 : 0);
+                Loader{
+                    id: retransmissionLoader
+                    active: settings.dev_show_advanced_button
+                    width: parent.width
+                    height: item ? item.implicitHeight : 0
+                    sourceComponent: SettingsCategory{
+                        m_description: qsTr("RETRANSMISSION");
+                        m_hide_elements: false;
+                        Column{
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            spacing: 6
+                            Row{
+                                spacing: 12
+                                Text{
+                                    width:  m_small_width
+                                    height: m_small_height
+                                    text: qsTr("VIDEO")
+                                    verticalAlignment: Qt.AlignVCenter
+                                    horizontalAlignment: Qt.AlignHCenter
+                                    font.bold: false
+                                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                }
+                                Switch{
+                                    checked: m_retrans_video_enabled
+                                    enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                                    onClicked: {
+                                        set_retransmission_param("WB_RTX_VIDEO", checked ? 1 : 0);
+                                    }
                                 }
                             }
-                        }
-                        Row{
-                            spacing: 12
-                            Text{
-                                width:  m_small_width
-                                height: m_small_height
-                                text: qsTr("TELEMETRY")
-                                verticalAlignment: Qt.AlignVCenter
-                                horizontalAlignment: Qt.AlignHCenter
-                                font.bold: false
-                                font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            }
-                            Switch{
-                                checked: m_retrans_telemetry_enabled
-                                enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-                                onClicked: {
-                                    set_retransmission_param("WB_RTX_TELEM", checked ? 1 : 0);
+                            Row{
+                                spacing: 12
+                                Text{
+                                    width:  m_small_width
+                                    height: m_small_height
+                                    text: qsTr("TELEMETRY")
+                                    verticalAlignment: Qt.AlignVCenter
+                                    horizontalAlignment: Qt.AlignHCenter
+                                    font.bold: false
+                                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                }
+                                Switch{
+                                    checked: m_retrans_telemetry_enabled
+                                    enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                                    onClicked: {
+                                        set_retransmission_param("WB_RTX_TELEM", checked ? 1 : 0);
+                                    }
                                 }
                             }
-                        }
-                        Row{
-                            spacing: 12
-                            Text{
-                                width:  m_small_width
-                                height: m_small_height
-                                text: qsTr("RC")
-                                verticalAlignment: Qt.AlignVCenter
-                                horizontalAlignment: Qt.AlignHCenter
-                                font.bold: false
-                                font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            }
-                            Switch{
-                                checked: m_retrans_rc_enabled
-                                enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-                                onClicked: {
-                                    set_retransmission_param("WB_RTX_RC", checked ? 1 : 0);
+                            Row{
+                                spacing: 12
+                                Text{
+                                    width:  m_small_width
+                                    height: m_small_height
+                                    text: qsTr("RC")
+                                    verticalAlignment: Qt.AlignVCenter
+                                    horizontalAlignment: Qt.AlignHCenter
+                                    font.bold: false
+                                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                }
+                                Switch{
+                                    checked: m_retrans_rc_enabled
+                                    enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                                    onClicked: {
+                                        set_retransmission_param("WB_RTX_RC", checked ? 1 : 0);
+                                    }
                                 }
                             }
-                        }
-                        Row{
-                            spacing: 12
-                            Text{
-                                width:  m_small_width
-                                height: m_small_height
-                                text: qsTr("VIDEO\nMAX MS")
-                                verticalAlignment: Qt.AlignVCenter
-                                horizontalAlignment: Qt.AlignHCenter
-                                font.bold: false
-                                font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            }
-                            SpinBox{
-                                from: 1
-                                to: 100
-                                value: m_retrans_history_video_ms
-                                enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-                                onValueModified: {
-                                    if(m_block_retransmission_update)return;
-                                    set_retransmission_param("WB_RTX_V_MAXMS", value);
+                            Row{
+                                spacing: 12
+                                Text{
+                                    width:  m_small_width
+                                    height: m_small_height
+                                    text: qsTr("VIDEO\nMAX MS")
+                                    verticalAlignment: Qt.AlignVCenter
+                                    horizontalAlignment: Qt.AlignHCenter
+                                    font.bold: false
+                                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                }
+                                SpinBox{
+                                    from: 1
+                                    to: 100
+                                    value: m_retrans_history_video_ms
+                                    enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                                    onValueModified: {
+                                        if(m_block_retransmission_update)return;
+                                        set_retransmission_param("WB_RTX_V_MAXMS", value);
+                                    }
                                 }
                             }
-                        }
-                        Row{
-                            spacing: 12
-                            Text{
-                                width:  m_small_width
-                                height: m_small_height
-                                text: qsTr("TELEM\nMAX MS")
-                                verticalAlignment: Qt.AlignVCenter
-                                horizontalAlignment: Qt.AlignHCenter
-                                font.bold: false
-                                font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            }
-                            SpinBox{
-                                from: 1
-                                to: 100
-                                value: m_retrans_history_telemetry_ms
-                                enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-                                onValueModified: {
-                                    if(m_block_retransmission_update)return;
-                                    set_retransmission_param("WB_RTX_T_MAXMS", value);
+                            Row{
+                                spacing: 12
+                                Text{
+                                    width:  m_small_width
+                                    height: m_small_height
+                                    text: qsTr("TELEM\nMAX MS")
+                                    verticalAlignment: Qt.AlignVCenter
+                                    horizontalAlignment: Qt.AlignHCenter
+                                    font.bold: false
+                                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                }
+                                SpinBox{
+                                    from: 1
+                                    to: 100
+                                    value: m_retrans_history_telemetry_ms
+                                    enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                                    onValueModified: {
+                                        if(m_block_retransmission_update)return;
+                                        set_retransmission_param("WB_RTX_T_MAXMS", value);
+                                    }
                                 }
                             }
-                        }
-                        Row{
-                            spacing: 12
-                            Text{
-                                width:  m_small_width
-                                height: m_small_height
-                                text: qsTr("RC\nMAX MS")
-                                verticalAlignment: Qt.AlignVCenter
-                                horizontalAlignment: Qt.AlignHCenter
-                                font.bold: false
-                                font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            }
-                            SpinBox{
-                                from: 1
-                                to: 100
-                                value: m_retrans_history_rc_ms
-                                enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-                                onValueModified: {
-                                    if(m_block_retransmission_update)return;
-                                    set_retransmission_param("WB_RTX_R_MAXMS", value);
+                            Row{
+                                spacing: 12
+                                Text{
+                                    width:  m_small_width
+                                    height: m_small_height
+                                    text: qsTr("RC\nMAX MS")
+                                    verticalAlignment: Qt.AlignVCenter
+                                    horizontalAlignment: Qt.AlignHCenter
+                                    font.bold: false
+                                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                }
+                                SpinBox{
+                                    from: 1
+                                    to: 100
+                                    value: m_retrans_history_rc_ms
+                                    enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                                    onValueModified: {
+                                        if(m_block_retransmission_update)return;
+                                        set_retransmission_param("WB_RTX_R_MAXMS", value);
+                                    }
                                 }
                             }
-                        }
-                        Row{
-                            spacing: 12
-                            Text{
-                                width:  m_small_width
-                                height: m_small_height
-                                text: qsTr("REQ\nRETRIES")
-                                verticalAlignment: Qt.AlignVCenter
-                                horizontalAlignment: Qt.AlignHCenter
-                                font.bold: false
-                                font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            }
-                            SpinBox{
-                                from: 1
-                                to: 10
-                                value: m_retrans_request_retries
-                                enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
-                                onValueModified: {
-                                    if(m_block_retransmission_update)return;
-                                    set_retransmission_param("WB_RTX_REQ_REP", value);
+                            Row{
+                                spacing: 12
+                                Text{
+                                    width:  m_small_width
+                                    height: m_small_height
+                                    text: qsTr("REQ\nRETRIES")
+                                    verticalAlignment: Qt.AlignVCenter
+                                    horizontalAlignment: Qt.AlignHCenter
+                                    font.bold: false
+                                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                                }
+                                SpinBox{
+                                    from: 1
+                                    to: 10
+                                    value: m_retrans_request_retries
+                                    enabled: !m_block_retransmission_update && _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                                    onValueModified: {
+                                        if(m_block_retransmission_update)return;
+                                        set_retransmission_param("WB_RTX_REQ_REP", value);
+                                    }
                                 }
                             }
                         }
