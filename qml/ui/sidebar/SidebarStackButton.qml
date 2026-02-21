@@ -26,7 +26,13 @@ Item {
 
 
     function takeover_control(){
-        focus=true;
+        forceActiveFocus();
+    }
+
+    onActiveFocusChanged: {
+        if(activeFocus){
+            sidebar.ensure_stack_item_visible(sidebar_stack_button);
+        }
     }
 
 
@@ -35,8 +41,8 @@ Item {
         width: parent.width
         height: parent.height
         color: (mouseArea.containsMouse || m_stack_index==override_index) ? highlightColor : mainDarkColor
-        border.color: sidebar_stack_button.focus ? "#e7f4ff" : "#00000000"
-        border.width: sidebar_stack_button.focus ? 2 : 0
+        border.color: sidebar_stack_button.activeFocus ? "#e7f4ff" : "#00000000"
+        border.width: sidebar_stack_button.activeFocus ? 2 : 0
     }
     // Icon
     Text {
@@ -73,7 +79,7 @@ Item {
                         }else if(event.key === Qt.Key_Down){
                             m_stack_index++;
                             if(m_stack_index>7){
-                                m_stack_index=7;
+                                m_stack_index=0;
                             }
                             sidebar.handover_joystick_control_to_button(m_stack_index);
                             event.accepted=true;

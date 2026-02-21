@@ -46,7 +46,7 @@ BaseWidget {
     }
 
     function get_frequency_text() {
-        var freq = _ohdSystemAir.curr_channel_mhz;
+        var freq = _ohdSystemAir.is_alive ? _ohdSystemAir.curr_channel_mhz : _ohdSystemGround.curr_channel_mhz;
         if (freq <= 0) {
             return "N/A";
         }

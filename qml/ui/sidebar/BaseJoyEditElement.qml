@@ -80,16 +80,32 @@ Item{
                     }
 
     function takeover_control(){
-        focus=true;
+        forceActiveFocus();
+    }
+
+    function ensure_visible_in_panel(){
+        var p = parent;
+        while(p && !p.ensure_body_item_visible){
+            p = p.parent;
+        }
+        if(p){
+            p.ensure_body_item_visible(base_joy_edit_element);
+        }
+    }
+
+    onActiveFocusChanged: {
+        if(activeFocus){
+            ensure_visible_in_panel();
+        }
     }
 
     Rectangle{
         width: parent.width
         height:parent.height
         border.color: "white"
-        border.width: base_joy_edit_element.focus ? 3 : 0;
+        border.width: base_joy_edit_element.activeFocus ? 3 : 0;
         color: "#333c4c"
-        opacity: base_joy_edit_element.focus ? 1.0 : 0.3;
+        opacity: base_joy_edit_element.activeFocus ? 1.0 : 0.3;
     }
 
     Text {

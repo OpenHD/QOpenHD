@@ -20,7 +20,7 @@ SideBarBasePanel{
 
     Column {
         anchors.top: parent.top
-        anchors.topMargin: secondaryUiHeight/8
+        anchors.topMargin: 0
         spacing: 5
         MavlinkChoiceElement2{
             id: air_wifi_mode
@@ -65,30 +65,6 @@ SideBarBasePanel{
             m_settings_model: _ohdSystemGroundSettings
             onGoto_previous: {
                 air_wifi_hs.takeover_control();
-            }
-            onGoto_next: {
-                air_tx_power.takeover_control();
-            }
-        }
-        MavlinkChoiceElement2{
-            id: air_tx_power
-            m_title: "Air TX Power"
-            m_param_id: "TX_PWR_LVL"
-            m_settings_model: _ohdSystemAirSettingsModel
-            onGoto_previous: {
-                gnd_wifi_hs.takeover_control();
-            }
-            onGoto_next: {
-                gnd_tx_power.takeover_control();
-            }
-        }
-        MavlinkChoiceElement2{
-            id: gnd_tx_power
-            m_title: "Ground TX Power"
-            m_param_id: "TX_PWR_LVL"
-            m_settings_model: _ohdSystemGroundSettings
-            onGoto_previous: {
-                air_tx_power.takeover_control();
             }
             onGoto_next: {
                 sidebar.regain_control_on_sidebar_stack();

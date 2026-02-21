@@ -31,6 +31,7 @@ static constexpr auto WB_MCS_INDEX_VIA_RC_CHANNEL="MCS_VIA_RC";
 static constexpr auto WB_POWER_VIA_RC_CHANNEL="PWR_VIA_RC";
 static constexpr auto WB_BW_VIA_RC_CHANNEL = "BW_VIA_RC";
 static constexpr auto WB_PASSIVE_MODE ="WB_PASSIVE_MODE";
+static constexpr auto WB_PIT_MODE ="WB_PIT_MODE";
 static constexpr auto WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT="DEV_HIGH_RETR";
 static constexpr auto WB_ENABLE_RETRANSMISSION="WB_ENABLE_RETRA";
 static constexpr auto WB_ENABLE_RETRANSMISSION_VIDEO="WB_RTX_VIDEO";

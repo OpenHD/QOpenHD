@@ -37,6 +37,12 @@ BaseJoyEditElement2{
     property string mPARAM_ID_FREQUENCY: "FREQUENCY"
     property string mPARAM_ID_RATE: "RATE"
 
+    Settings {
+        id: pendingLinkSettings
+        category: "link_manual"
+        property int pending_mcs_index: -1
+    }
+
 
     signal goto_previous();
     signal goto_next();
@@ -202,21 +208,35 @@ BaseJoyEditElement2{
         if(m_param_id==mPARAM_ID_FREQUENCY){
             const new_frequency=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQUENCY");
-            _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
+            if(_ohdSystemAir.is_alive){
+                _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
+            }else if(_ohdSystemGround.is_alive){
+                _wbLinkSettingsHelper.change_param_ground_only_frequency(value_new)
+            }else{
+                _qopenhd.show_toast("No ground connection");
+            }
             return;
         }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
             const channel_width_mhz=value_new;
-            if(!_ohdSystemAir.is_alive){
-                _hudLogMessagesModel.add_message_warning("Cannot change BW:"+channel_width_mhz+"Mhz, AIR not alive");
-                return;
-            }
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING BW");
-            _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
+            if(_ohdSystemAir.is_alive){
+                _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
+            }else if(_ohdSystemGround.is_alive){
+                _wbLinkSettingsHelper.change_param_ground_only_channel_width(channel_width_mhz);
+            }else{
+                _qopenhd.show_toast("No ground connection");
+            }
             return;
         }else if(m_param_id==mPARAM_ID_RATE){
             const mcs_index=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,"CHANGING RATE");
-           _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
+            if(_ohdSystemAir.is_alive){
+                _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
+            }else{
+                pendingLinkSettings.pending_mcs_index = mcs_index;
+                update_display_text(mcs_index);
+                _qopenhd.show_toast("Will apply when air connects");
+            }
             return;
         }else{
             // 'normal' params
@@ -234,6 +254,10 @@ BaseJoyEditElement2{
     onCurr_channel_mhzChanged: {
         extra_populate();
     }
+    property int curr_gnd_channel_mhz: _ohdSystemGround.curr_channel_mhz
+    onCurr_gnd_channel_mhzChanged: {
+        extra_populate();
+    }
     property int curr_mcs_index:_ohdSystemAir.curr_mcs_index;
     onCurr_mcs_indexChanged: {
         extra_populate();
@@ -242,40 +266,72 @@ BaseJoyEditElement2{
     onCurr_bandwidth_mhzChanged: {
         extra_populate();
     }
+    property int curr_gnd_bandwidth_mhz: _ohdSystemGround.curr_channel_width_mhz
+    onCurr_gnd_bandwidth_mhzChanged: {
+        extra_populate();
+    }
+    property bool m_air_alive: _ohdSystemAir.is_alive
+    onM_air_aliveChanged: {
+        if(m_air_alive && m_param_id==mPARAM_ID_RATE && pendingLinkSettings.pending_mcs_index>=0){
+            _wbLinkSettingsHelper.set_param_air_only_mcs_async(pendingLinkSettings.pending_mcs_index);
+            pendingLinkSettings.pending_mcs_index = -1;
+        }
+        extra_populate();
+    }
+
     function extra_populate(){
         if(!(m_param_id==mPARAM_ID_CHANNEL_WIDTH || m_param_id==mPARAM_ID_FREQUENCY || m_param_id==mPARAM_ID_RATE)){
             return;
         }
-        // First, check if the system is alive
-        if(!m_settings_model.system_is_alive()){
-            // Do not enable the elements, system is not alive
-            m_param_exists=false;
-            populate_display_text="N/A";
-            return;
-        }
         if(m_param_id==mPARAM_ID_FREQUENCY){
-            if(curr_channel_mhz<=0){
-                m_param_exists=false;
-                populate_display_text="N/A";
+            var value = _ohdSystemAir.is_alive ? curr_channel_mhz : curr_gnd_channel_mhz;
+            if(value<=0){
+                const m_elements_model=mappedMavlinkChoices.get_model(m_param_id);
+                if(m_elements_model.count>0){
+                    update_display_text(m_elements_model.get(0).value);
+                    m_param_exists=true;
+                }else{
+                    m_param_exists=false;
+                    populate_display_text="N/A";
+                }
                 return;
             }
-            update_display_text(curr_channel_mhz);
+            update_display_text(value);
             m_param_exists=true;
         }else if(m_param_id==mPARAM_ID_RATE){
-            if(curr_mcs_index<0){
-                m_param_exists=false;
-                populate_display_text="N/A";
+            if(_ohdSystemAir.is_alive && curr_mcs_index>=0){
+                update_display_text(curr_mcs_index);
+                m_param_exists=true;
                 return;
             }
-            update_display_text(curr_mcs_index);
-            m_param_exists=true;
+            if(pendingLinkSettings.pending_mcs_index>=0){
+                update_display_text(pendingLinkSettings.pending_mcs_index);
+                m_param_exists=true;
+                return;
+            }
+            const m_elements_model=mappedMavlinkChoices.get_model(m_param_id);
+            if(m_elements_model.count>0){
+                update_display_text(m_elements_model.get(0).value);
+                m_param_exists=true;
+            }else{
+                m_param_exists=false;
+                populate_display_text="N/A";
+            }
+            return;
         }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
-            if(curr_bandwidth_mhz<=0){
-                m_param_exists=false;
-                populate_display_text="N/A";
+            var value = _ohdSystemAir.is_alive ? curr_bandwidth_mhz : curr_gnd_bandwidth_mhz;
+            if(value<=0){
+                const m_elements_model=mappedMavlinkChoices.get_model(m_param_id);
+                if(m_elements_model.count>0){
+                    update_display_text(m_elements_model.get(0).value);
+                    m_param_exists=true;
+                }else{
+                    m_param_exists=false;
+                    populate_display_text="N/A";
+                }
                 return;
             }
-            update_display_text(curr_bandwidth_mhz);
+            update_display_text(value);
             m_param_exists=true;
         }
     }

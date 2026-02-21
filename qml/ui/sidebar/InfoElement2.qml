@@ -15,15 +15,19 @@ RowLayout {
     property string override_text_left: "TODO"
     property string override_text_right: "TODO"
     property string override_color_right: "#fff"
+    Layout.fillWidth: true
+    spacing: 8
 
     Text {
-        width: 150
+        Layout.preferredWidth: 160
         text: override_text_left
         font.pixelSize: 14
         font.bold: true
         font.family: "AvantGarde-Medium"
         color: "#ffffff"
         smooth: true
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
     }
 
     Text {
@@ -32,6 +36,10 @@ RowLayout {
         font.family: "AvantGarde-Medium"
         color: override_color_right
         smooth: true
+        Layout.fillWidth: true
+        verticalAlignment: Qt.AlignVCenter
+        horizontalAlignment: Text.AlignRight
+        elide: Text.ElideRight
 
     }
 }

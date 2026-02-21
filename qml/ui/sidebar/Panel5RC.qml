@@ -26,7 +26,7 @@ SideBarBasePanel{
     Column {
         id: rcpanel
         anchors.top: parent.top
-        anchors.topMargin: secondaryUiHeight / 8
+        anchors.topMargin: 0
         spacing: 5
 
         MavlinkChoiceElement2 {

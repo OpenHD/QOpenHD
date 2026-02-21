@@ -10,7 +10,7 @@ SideBarBasePanel{
 
     Column {
         anchors.top: parent.top
-        anchors.topMargin: secondaryUiHeight/8
+        anchors.topMargin: 0
         spacing: 5
 
         /*EditFrequencyElement{
@@ -68,11 +68,29 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: edit_rate_element
-            m_title: "Bandwith"
+            m_title: "Modulation"
             m_param_id: mPARAM_ID_RATE
             m_settings_model: _ohdSystemAirSettingsModel
             onGoto_previous: {
                edit_channel_width_element.takeover_control()
+            }
+            onGoto_next: {
+                power_element.takeover_control()
+            }
+        }
+        PowerChoiceElement{
+            id: power_element
+            onGoto_previous: {
+                edit_rate_element.takeover_control()
+            }
+            onGoto_next: {
+                pit_mode_element.takeover_control()
+            }
+        }
+        PitModeElement{
+            id: pit_mode_element
+            onGoto_previous: {
+                power_element.takeover_control()
             }
             onGoto_next: {
                 sidebar.regain_control_on_sidebar_stack()

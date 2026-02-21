@@ -15,7 +15,7 @@ SideBarBasePanel{
 
     ColumnLayout{
         anchors.top: parent.top
-        anchors.topMargin: secondaryUiHeight/8
+        anchors.topMargin: 0
         anchors.left: parent.left
         anchors.right: parent.right
         spacing: 5
@@ -92,8 +92,8 @@ Button {
     background: Rectangle {
         color: "#171d25"
         border.color: "white"
-        border.width: startButton.focus ? 3 : 0
-        opacity: startButton.focus ? 1.0 : 0.8
+        border.width: startButton.activeFocus ? 3 : 0
+        opacity: startButton.activeFocus ? 1.0 : 0.8
     }
 
     function startScan(){

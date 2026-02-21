@@ -14,20 +14,21 @@ import "../elements"
 SideBarBasePanel {
     override_title: "Status"
 
+    property int status_top_padding: 8
+
     Rectangle {
         color: "#171d25"
         anchors.top: parent.top
-        anchors.topMargin: 50
-        height: 340
-        width: 320
+        anchors.topMargin: status_top_padding
+        height: secondaryUiHeight - headerHeight - status_top_padding
+        width: secondaryUiWidth
 
         ColumnLayout {
             spacing: 10
             anchors.fill: parent
-            anchors.topMargin: 12
+            anchors.margins: 12
 
             InfoElement2 {
-                Layout.alignment: Qt.AlignHCenter
                 override_text_left: "Connection:"
                 override_color_right: {
                     if (_ohdSystemAir.is_alive || _ohdSystemGround.is_alive) {
@@ -42,7 +43,6 @@ SideBarBasePanel {
                     return "Not connected";
                 }
             }            InfoElement2 {
-                Layout.alignment: Qt.AlignHCenter
                 override_text_left: "QOpenHD Version:"
                 override_color_right: "#20b383"
                 override_text_right: {
@@ -50,7 +50,6 @@ SideBarBasePanel {
                 }
             }
             InfoElement2 {
-                Layout.alignment: Qt.AlignHCenter
                 override_text_left: "OpenHD Version:"
                 override_color_right: {
                     if (_ohdSystemGround.openhd_version !== "N/A") {
@@ -66,7 +65,6 @@ SideBarBasePanel {
                 }
             }
             InfoElement2 {
-                Layout.alignment: Qt.AlignHCenter
                 override_text_left: "Chipset GND:"
                 override_color_right: _ohdSystemGround.is_alive ? "#20b383" : "#df4c7c"
                 override_text_right: {
@@ -77,7 +75,6 @@ SideBarBasePanel {
                 }
             }
             InfoElement2 {
-                Layout.alignment: Qt.AlignHCenter
                 override_text_left: "Chipset AIR:"
                 override_color_right: _ohdSystemAir.is_alive ? "#20b383" : "#df4c7c"
                 override_text_right: {
@@ -88,7 +85,6 @@ SideBarBasePanel {
                 }
             }
             InfoElement2 {
-                Layout.alignment: Qt.AlignHCenter
                 override_text_left: "Camera:"
                 override_color_right: _ohdSystemAir.is_alive ? "#20b383" : "#df4c7c"
                 override_text_right: _ohdSystemAir.is_alive ? _ohdSystemAir.ohd_cam_type : "Not connected"

@@ -79,6 +79,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                "Enable passive mode if you want to use your GCS as a passive listener to an existing openhd air-ground link. E.g. if you want to tune into"
                "someone elses openhd link (if encryption is enabled, you need his encryption key) but not interfere with any RC/MAVLINK control."
                );
+    append_int(ret,openhd::WB_PIT_MODE,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Pit mode for TX power levels: when enabled and TX power level mode is active, disarmed uses LOWEST and armed uses the selected level."
+               );
     append_int(ret,openhd::WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT,
                ImprovedIntSetting::createEnumEnableDisable(),
                "DEV ONLY - DO NOT TOUCH (LEAVE DISABLED). Sets a wifi param that needs to be investigated."

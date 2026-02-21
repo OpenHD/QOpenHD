@@ -92,6 +92,9 @@ public:
     Q_INVOKABLE bool change_param_ground_only_frequency(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_FREQ,value);
     }
+    Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
+        return change_param_ground_only_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
+    }
     // These params can be changed "on the fly" and are additionally their value(s) are broadcasted
     // so we can update them completely async, log the result to the user
     // and use the broadcasted value(s) to update the UI

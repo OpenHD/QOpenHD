@@ -15,12 +15,15 @@ Rectangle{
     property int m_current_user_selected_index: -1;
     // We are only 'clickable' if no joystick usage
     property bool m_allow_clickable: false
+    property bool m_force_callback: false
+    property string m_close_reason: ""
 
     property var m_parent
 
     function open_choices(x_model,current_value,parent){
         // First, find the current selection inside the model
         availableChociesModel.clear();
+        m_close_reason="";
         var current_value_index=0
         var current_value_found_in_model=false;
         for(var i=0;i<x_model.count;i++){
@@ -55,9 +58,17 @@ Rectangle{
         m_allow_clickable=clickable;
     }
 
+    function set_force_callback(force){
+        m_force_callback=force;
+    }
+
     // Calls the parent's update method if there is any change and closes
     function close_choices(){
-        if(m_current_user_selected_index!=m_initial_index){
+        var should_callback = (m_current_user_selected_index!=m_initial_index);
+        if(m_force_callback && m_close_reason!=="cancel" && m_close_reason!=="discard"){
+            should_callback = true;
+        }
+        if(should_callback){
             const value_old=availableChociesModel.get(m_initial_index).value;
             const value_new=availableChociesModel.get(m_current_user_selected_index).value;
             console.log("Changed from ["+m_initial_index+":"+value_old+"] to ["+m_current_user_selected_index+":"+value_new+"]");
@@ -67,6 +78,8 @@ Rectangle{
         m_initial_index=-1;
         visible=false;
         focus=false;
+        m_force_callback=false;
+        m_close_reason="";
         m_parent.takeover_control();
     }
 
@@ -76,6 +89,8 @@ Rectangle{
         m_initial_index=-1;
         visible=false;
         focus=false;
+        m_force_callback=false;
+        m_close_reason="discard";
     }
 
 
@@ -84,6 +99,7 @@ Rectangle{
                         if(event.key == Qt.Key_Left){
                             // Either close immediately or go back to the initial choice (don't save)
                             if(m_current_user_selected_index==m_initial_index){
+                                m_close_reason="cancel";
                                 close_choices();
                             }else{
                                 m_current_user_selected_index=m_initial_index;
@@ -92,8 +108,12 @@ Rectangle{
                         }else if(event.key == Qt.Key_Right){
                             // Save and close or do nothing
                             if(m_current_user_selected_index==m_initial_index){
-                                // Do nothing
+                                if(m_force_callback){
+                                    m_close_reason="accept";
+                                    close_choices();
+                                }
                             }else{
+                                m_close_reason="accept";
                                 close_choices();
                             }
                             event.accepted=true;
@@ -112,6 +132,7 @@ Rectangle{
                             }
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Enter || event.key==Qt.Key_Return){
+                            m_close_reason="accept";
                             close_choices();
                             event.accepted=true;
                         }
@@ -165,6 +186,7 @@ Rectangle{
                 anchors.fill: parent
                 onClicked: {
                     if(m_allow_clickable){
+                        m_close_reason="accept";
                         m_current_user_selected_index=index;
                         close_choices();
                     }

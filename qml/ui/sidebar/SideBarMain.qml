@@ -102,20 +102,28 @@ Item {
     function handover_joystick_control_to_button(stack_index){
         if(stack_index==0){
             b1.takeover_control();
+            ensure_stack_item_visible(b1);
         }else if(stack_index==1){
             b2.takeover_control();
+            ensure_stack_item_visible(b2);
         }else if(stack_index==2){
             b3.takeover_control();
+            ensure_stack_item_visible(b3);
         }else if(stack_index==3){
             b4.takeover_control();
+            ensure_stack_item_visible(b4);
         }else if(stack_index==4){
             b5.takeover_control();
+            ensure_stack_item_visible(b5);
         }else if(stack_index==5){
             b6.takeover_control();
+            ensure_stack_item_visible(b6);
         }else if(stack_index==6){
             b7.takeover_control();
+            ensure_stack_item_visible(b7);
         }else if(stack_index==7){
             b8.takeover_control();
+            ensure_stack_item_visible(b8);
         }
     }
 
@@ -136,6 +144,26 @@ Item {
             panel7.takeover_control();
         }else if(stack_index==7){
             panel8.takeover_control();
+        }
+    }
+
+    function ensure_stack_item_visible(item){
+        if(!item || !stack_manager.visible){
+            return;
+        }
+        const flickable = stack_manager.contentItem;
+        if(!flickable){
+            return;
+        }
+        const item_pos = item.mapToItem(flickable, 0, 0);
+        const item_top = item_pos.y;
+        const item_bottom = item_top + item.height;
+        const view_top = flickable.contentY;
+        const view_bottom = view_top + stack_manager.height;
+        if(item_top < view_top){
+            flickable.contentY = item_top;
+        }else if(item_bottom > view_bottom){
+            flickable.contentY = item_bottom - stack_manager.height;
         }
     }
 
@@ -173,64 +201,92 @@ Item {
         }
     }
 
-    Column{
+    ScrollView{
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         id: stack_manager
         visible: false
-        SidebarStackButton{
-            id: b0
-            override_text: "\uf053"
-            override_tag: "back"
-            override_index: -1
+        width: stack_manager_content.implicitWidth
+        height: secondaryUiHeight
+        clip: true
+        focus: false
+        activeFocusOnTab: false
+        Keys.onPressed: (event)=> {
+            if(event.key === Qt.Key_Left){
+                handover_joystick_control_to_button(m_stack_index);
+                event.accepted = true;
+            }else if(event.key === Qt.Key_Right){
+                handover_joystick_control_to_panel(m_stack_index);
+                event.accepted = true;
+            }else if(event.key === Qt.Key_Up || event.key === Qt.Key_Down){
+                handover_joystick_control_to_button(m_stack_index);
+                event.accepted = true;
+            }
         }
-        SidebarStackButton{
-            id: b1
-            override_text: "\uf002"
-            override_tag: "scan"
-            override_index: 0
+        ScrollBar.vertical: ScrollBar {
+            id: stack_manager_bar
+            policy: ScrollBar.AsNeeded
+            width: 6
         }
-        SidebarStackButton{
-            id: b2
-            override_text: "\uf1eb"
-            override_tag: "link"
-            override_index: 1
-        }
-        SidebarStackButton{
-            id: b3
-            override_text: "\uf03d"
-            override_tag: "video"
-            override_index: 2
-        }
-        SidebarStackButton{
-            id: b4
-            override_text:  "\uf030"
-            override_tag: "camera"
-            override_index: 3
-        }
-        SidebarStackButton{
-            id: b5
-            override_text: "\uf0c7"
-            override_tag: "recording"
-            override_index: 4
-        }
-        SidebarStackButton{
-            id: b6
-            override_text: "\uf11b"
-            override_tag: "rc"
-            override_index: 5
-        }
-        SidebarStackButton{
-            id: b7
-            override_text: "\uf26c"
-            override_tag: "misc"
-            override_index: 6
-        }
-        SidebarStackButton{
-            id: b8
-            override_text: "\uf55b"
-            override_tag: "status"
-            override_index: 7
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+        Column{
+            id: stack_manager_content
+            width: parent.width
+            SidebarStackButton{
+                id: b0
+                override_text: "\uf053"
+                override_tag: "back"
+                override_index: -1
+            }
+            SidebarStackButton{
+                id: b1
+                override_text: "\uf002"
+                override_tag: "scan"
+                override_index: 0
+            }
+            SidebarStackButton{
+                id: b2
+                override_text: "\uf1eb"
+                override_tag: "link"
+                override_index: 1
+            }
+            SidebarStackButton{
+                id: b3
+                override_text: "\uf03d"
+                override_tag: "video"
+                override_index: 2
+            }
+            SidebarStackButton{
+                id: b4
+                override_text:  "\uf030"
+                override_tag: "camera"
+                override_index: 3
+            }
+            SidebarStackButton{
+                id: b5
+                override_text: "\uf0c7"
+                override_tag: "recording"
+                override_index: 4
+            }
+            SidebarStackButton{
+                id: b6
+                override_text: "\uf11b"
+                override_tag: "rc"
+                override_index: 5
+            }
+            SidebarStackButton{
+                id: b7
+                override_text: "\uf26c"
+                override_tag: "misc"
+                override_index: 6
+            }
+            SidebarStackButton{
+                id: b8
+                override_text: "\uf55b"
+                override_tag: "status"
+                override_index: 7
+            }
         }
     }
 

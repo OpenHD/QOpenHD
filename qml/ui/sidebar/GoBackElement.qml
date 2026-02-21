@@ -17,9 +17,9 @@ Item{
         width: parent.width
         height: parent.height
         border.color: "black"
-        border.width: go_back_element.focus ? 3 : 0;
+        border.width: go_back_element.activeFocus ? 3 : 0;
         color: "#333c4c"
-        opacity: go_back_element.focus ? 1.0 : 0.3;
+        opacity: go_back_element.activeFocus ? 1.0 : 0.3;
     }
     Text{
         text: qsTr("BACK")
