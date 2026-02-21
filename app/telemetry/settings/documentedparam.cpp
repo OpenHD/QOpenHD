@@ -695,8 +695,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "enables / disables audio streaming from air to ground. In development. Enabling automatically restarts the air unit !"
                    );*/
         auto audio_items=std::vector<ImprovedIntSetting::Item>{
-         {"DISABLE",0},
-         {"ENABLE",1},
+         {"DISABLE",1},
+         {"ENABLE",0},
          {"TEST",100},
          };
         append_int(ret,"AUDIO_ENABLE",ImprovedIntSetting(0,1000000,audio_items),
@@ -855,6 +855,7 @@ static std::map<std::string, void *> get_whitelisted_params()
     //
 
     ret["STREAMING_E"]=nullptr;
+    ret["AUDIO_ENABLE"]=nullptr;
 
 
     ret[""]=nullptr;

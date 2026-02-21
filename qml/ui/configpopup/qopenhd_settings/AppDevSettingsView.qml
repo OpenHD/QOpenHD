@@ -163,20 +163,6 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: qsTr("Enable audio playback")
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_enable_live_audio_playback
-                    onCheckedChanged: settings.dev_enable_live_audio_playback = checked
-                }
-            }
-            SettingBaseElement{
                 m_short_description: qsTr("Improve Inav support")
 
                 Switch {

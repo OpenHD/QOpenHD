@@ -415,7 +415,7 @@ Settings {
     property bool dev_force_show_full_screen: false
 
     // experimental
-    property bool dev_enable_live_audio_playback: true
+    property bool dev_enable_live_audio_playback: false
     // might / might not work
     property bool dev_set_swap_interval_zero: false
 

@@ -18,7 +18,7 @@ void platform_start_audio_streaming_if_enabled()
         return;
     }
     QSettings settings;
-    const bool dev_enable_live_audio_playback=settings.value("dev_enable_live_audio_playback", true).toBool();
+    const bool dev_enable_live_audio_playback=settings.value("dev_enable_live_audio_playback", false).toBool();
     if(!dev_enable_live_audio_playback){
         qDebug()<<"Live audio playback is disabled";
         return;

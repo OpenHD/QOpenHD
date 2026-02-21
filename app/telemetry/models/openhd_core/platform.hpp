@@ -45,6 +45,8 @@ static constexpr int X_PLATFORM_TYPE_NVIDIA_XAVIER = 40;
 // Numbers 46..50 are reserved for QUALCOMM
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QRB5165 = 46;
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QCS405 = 47;
+// Numbers 61..65 are reserved for NXP
+static constexpr int X_PLATFORM_TYPE_NXP_IMX8 = 61;
 static constexpr int X_PLATFORM_TYPE_ORQA = 51;  // ORQA Digital
 static constexpr int X_PLATFORM_TYPE_UXV_MOD = 52;
 // Numbers 
@@ -88,6 +90,8 @@ static std::string x_platform_type_to_string(int platform_type) {
         return "NVIDIA_XAVIER";
     case X_PLATFORM_TYPE_ORQA:
         return "ORQA DIGITAL";
+    case X_PLATFORM_TYPE_NXP_IMX8:
+        return "NXP_IMX8";
     default:
         break;
     }
