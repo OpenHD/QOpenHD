@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
 import Qt.labs.settings 1.0
+import "../elements"
 
 // Can be used to quickly add the right UI elements for (persistently) setting scale and opacity for a HUD element (e.g. an element extending BaseWidget)
 // By default, placed in one of the popups, and more values can be added manually if needed
@@ -18,6 +19,8 @@ ColumnLayout{
     property bool show_vertical_lock: false
     property bool show_horizontal_lock: false
     property bool show_transparency: true
+    property bool show_background_color: false
+    property var background_color_target: null
 
     property bool show_quickpainteditem_font_scale: false
 
@@ -102,6 +105,47 @@ ColumnLayout{
 
             onValueChanged: {
                 bw_set_current_scale(item_scale_Slider.value)
+            }
+        }
+    }
+    Item {
+        width: parent.width
+        height: 32
+        visible: show_background_color
+        Text {
+            text: qsTr("Background Color")
+            color: "white"
+            height: parent.height
+            font.bold: true
+            font.pixelSize: detailPanelFontPixels
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+        }
+        Rectangle {
+            id: background_color_preview
+            width: 22
+            height: 22
+            radius: 11
+            color: background_color_target ? background_color_target.bw_current_background_color : bw_current_background_color
+            border.color: "white"
+            anchors.right: parent.right
+            anchors.rightMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    var picker = hudOverlayGrid ? hudOverlayGrid.colorPicker : null;
+                    if (!picker || !background_color_target) {
+                        return;
+                    }
+                    picker.customTarget = background_color_target
+                    picker.customProperty = "bw_current_background_color"
+                    picker.customPreviousColor = background_color_target.bw_current_background_color
+                    picker.currentColorType = ColorPicker.ColorType.CustomColor
+                    picker.color = background_color_target.bw_current_background_color
+                    picker.visible = true
+                }
             }
         }
     }

@@ -65,6 +65,46 @@ BaseWidgetForm {
     }
     // Feature persist scale end   --------------------------------------------------------------------------------------
 
+    // Feature persist background color begin --------------------------------------------------------------------------
+    property string bw_background_color_identifier: "%1_bg_color".arg(widgetIdentifier);
+    property string bw_current_background_color: settings.value(bw_background_color_identifier, "#000000");
+    property bool bw_background_color_normalizing: false
+    function bw_normalize_background_color(value){
+        if (typeof value === "string") {
+            if (value.length === 9 && value[0] === "#") {
+                return "#" + value.substr(3);
+            }
+            return value;
+        }
+        if (value && typeof value === "object"
+                && value.r !== undefined
+                && value.g !== undefined
+                && value.b !== undefined) {
+            var r = Math.round(value.r * 255).toString(16);
+            var g = Math.round(value.g * 255).toString(16);
+            var b = Math.round(value.b * 255).toString(16);
+            if (r.length < 2) r = "0" + r;
+            if (g.length < 2) g = "0" + g;
+            if (b.length < 2) b = "0" + b;
+            return "#" + r + g + b;
+        }
+        return value;
+    }
+    onBw_current_background_colorChanged: {
+        if (bw_background_color_normalizing) {
+            return;
+        }
+        bw_background_color_normalizing = true;
+        var normalized = bw_normalize_background_color(bw_current_background_color);
+        if (normalized !== bw_current_background_color) {
+            bw_current_background_color = normalized;
+        }
+        settings.setValue(bw_background_color_identifier, normalized);
+        settings.sync();
+        bw_background_color_normalizing = false;
+    }
+    // Feature persist background color end   ----------------------------------------------------------------------------
+
     // Feature persist opacity begin ------------------------------------------------------------------------------------
     property string bw_opacity_identifier: "%1_opacity".arg(widgetIdentifier);
     // Default opacity is 1, the value is persistent

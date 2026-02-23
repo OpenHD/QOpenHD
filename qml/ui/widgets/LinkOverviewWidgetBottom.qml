@@ -10,7 +10,9 @@ BaseWidget {
     width: parent.width
     height: 40
 
-    visible: settings.show_link_overview_widget && settings.show_widgets
+    visible: settings.show_link_overview_widget
+        && settings.show_link_overview_widget_bottom
+        && settings.show_widgets
 
     widgetIdentifier: "link_overview_widget_bottom"
     bw_verbose_name: qsTr("LINK OVERVIEW BOTTOM")
@@ -21,7 +23,7 @@ BaseWidget {
     defaultHCenter: true
     defaultVCenter: false
 
-    hasWidgetDetail: false
+    hasWidgetDetail: true
     disable_dragging: false
 
     property string linkFont: "Quicksand"
@@ -30,17 +32,237 @@ BaseWidget {
     property real notchDepth: 8
     property real notchSlope: 14
     property real sidePadding: 6
+    property real notchSafeWidth: notchWidth + (notchSlope * 2)
+    property real slotContentYOffset: 4
+    property bool hide_na: true
+    property string slot1Selection: "gnd_voltage"
+    property string slot2Selection: "gnd_mah"
+    property string slot3Selection: "air_voltage"
+    property string slot4Selection: "air_current"
+    property string slot5Selection: "air_speed"
+    property string slot6Selection: "home_distance"
+    property string slot7Selection: "satellites"
+    property string slot8Selection: "none"
+    property var slotLabels: [
+        qsTr("Left 1"),
+        qsTr("Left 2"),
+        qsTr("Left 3"),
+        qsTr("Left 4"),
+        qsTr("Right 1"),
+        qsTr("Right 2"),
+        qsTr("Right 3"),
+        qsTr("Right 4")
+    ]
+    property var slotOptions: [
+        { label: qsTr("Ground Voltage"), value: "gnd_voltage" },
+        { label: qsTr("Ground mAh"), value: "gnd_mah" },
+        { label: qsTr("Air Voltage"), value: "air_voltage" },
+        { label: qsTr("Air Current"), value: "air_current" },
+        { label: qsTr("Air Speed"), value: "air_speed" },
+        { label: qsTr("Altitude"), value: "altitude" },
+        { label: qsTr("Home Distance"), value: "home_distance" },
+        { label: qsTr("Satellites"), value: "satellites" },
+        { label: qsTr("None"), value: "none" }
+    ]
+    property int slot_update_tick: 0
 
     Component.onCompleted: {
         bw_set_current_scale(1.0);
         bw_set_current_opacity(settings.value("link_overview_widget_opacity", 1.0));
-        settings.setValue(alignmentIdentifier, 3);
-        settings.setValue(xOffsetIdentifier, 0);
-        settings.setValue(yOffsetIdentifier, 0);
-        settings.setValue(hCenterIdentifier, true);
-        settings.setValue(vCenterIdentifier, false);
-        settings.sync();
+        hide_na = setting_to_bool(settings.value("link_overview_widget_bottom_hide_na", true), true);
+        slot1Selection = settings.value("link_overview_widget_bottom_slot_1", slot1Selection);
+        slot2Selection = settings.value("link_overview_widget_bottom_slot_2", slot2Selection);
+        slot3Selection = settings.value("link_overview_widget_bottom_slot_3", slot3Selection);
+        slot4Selection = settings.value("link_overview_widget_bottom_slot_4", slot4Selection);
+        slot5Selection = settings.value("link_overview_widget_bottom_slot_5", slot5Selection);
+        slot6Selection = settings.value("link_overview_widget_bottom_slot_6", slot6Selection);
+        slot7Selection = settings.value("link_overview_widget_bottom_slot_7", slot7Selection);
+        slot8Selection = settings.value("link_overview_widget_bottom_slot_8", slot8Selection);
+        normalize_slot_selections();
+        slot_update_tick++;
         loadAlignment();
+    }
+
+    onHide_naChanged: {
+        settings.setValue("link_overview_widget_bottom_hide_na", hide_na);
+        settings.sync();
+    }
+    onSlot1SelectionChanged: save_slot_setting(1, slot1Selection)
+    onSlot2SelectionChanged: save_slot_setting(2, slot2Selection)
+    onSlot3SelectionChanged: save_slot_setting(3, slot3Selection)
+    onSlot4SelectionChanged: save_slot_setting(4, slot4Selection)
+    onSlot5SelectionChanged: save_slot_setting(5, slot5Selection)
+    onSlot6SelectionChanged: save_slot_setting(6, slot6Selection)
+    onSlot7SelectionChanged: save_slot_setting(7, slot7Selection)
+    onSlot8SelectionChanged: save_slot_setting(8, slot8Selection)
+
+    Connections {
+        target: widgetDetail
+        function onAboutToHide() {
+            apply_slot_settings();
+        }
+    }
+
+    function setting_to_bool(value, fallback) {
+        if (value === true || value === 1 || value === "true") {
+            return true;
+        }
+        if (value === false || value === 0 || value === "false") {
+            return false;
+        }
+        return fallback;
+    }
+
+    function save_slot_setting(index, value) {
+        settings.setValue("link_overview_widget_bottom_slot_" + index, value);
+        settings.sync();
+    }
+
+    function apply_slot_settings() {
+        normalize_slot_selections();
+        save_slot_setting(1, slot1Selection);
+        save_slot_setting(2, slot2Selection);
+        save_slot_setting(3, slot3Selection);
+        save_slot_setting(4, slot4Selection);
+        save_slot_setting(5, slot5Selection);
+        save_slot_setting(6, slot6Selection);
+        save_slot_setting(7, slot7Selection);
+        save_slot_setting(8, slot8Selection);
+        slot_update_tick++;
+    }
+
+    function normalize_slot_selections() {
+        var used = {};
+        for (var i = 1; i <= 8; i++) {
+            var value = get_slot_selection(i);
+            if (value === "none") {
+                continue;
+            }
+            if (used[value]) {
+                set_slot_selection(i, "none");
+            } else {
+                used[value] = true;
+            }
+        }
+    }
+
+    function get_slot_selection(index) {
+        if (index === 1) return slot1Selection;
+        if (index === 2) return slot2Selection;
+        if (index === 3) return slot3Selection;
+        if (index === 4) return slot4Selection;
+        if (index === 5) return slot5Selection;
+        if (index === 6) return slot6Selection;
+        if (index === 7) return slot7Selection;
+        if (index === 8) return slot8Selection;
+        return "none";
+    }
+
+    function set_slot_selection(index, value) {
+        if (index === 1) slot1Selection = value;
+        else if (index === 2) slot2Selection = value;
+        else if (index === 3) slot3Selection = value;
+        else if (index === 4) slot4Selection = value;
+        else if (index === 5) slot5Selection = value;
+        else if (index === 6) slot6Selection = value;
+        else if (index === 7) slot7Selection = value;
+        else if (index === 8) slot8Selection = value;
+    }
+
+    function find_slot_using(value, excludeIndex) {
+        if (value === "none") {
+            return -1;
+        }
+        for (var i = 1; i <= 8; i++) {
+            if (i === excludeIndex) {
+                continue;
+            }
+            if (get_slot_selection(i) === value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    function request_slot_selection(index, value) {
+        if (value === get_slot_selection(index)) {
+            return;
+        }
+        var otherIndex = find_slot_using(value, index);
+        if (otherIndex > 0) {
+            var currentValue = get_slot_selection(index);
+            set_slot_selection(otherIndex, currentValue);
+        }
+        set_slot_selection(index, value);
+        slot_update_tick++;
+    }
+
+    function slot_index_for_value(value) {
+        for (var i = 0; i < slotOptions.length; i++) {
+            if (slotOptions[i].value === value) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    function slot_text(selection) {
+        var _ = slot_update_tick;
+        if (selection === "gnd_voltage") {
+            return format_gnd_voltage();
+        } else if (selection === "gnd_mah") {
+            return format_gnd_mah();
+        } else if (selection === "air_voltage") {
+            return format_air_voltage();
+        } else if (selection === "air_current") {
+            return format_air_current();
+        } else if (selection === "air_speed") {
+            return format_air_speed();
+        } else if (selection === "altitude") {
+            return format_nav_alt();
+        } else if (selection === "home_distance") {
+            return format_home_distance();
+        } else if (selection === "satellites") {
+            return format_nav_sats();
+        }
+        return "";
+    }
+
+    function slot_icon(selection) {
+        var _ = slot_update_tick;
+        if (selection === "gnd_voltage") {
+            return "\uf0ac";
+        } else if (selection === "gnd_mah") {
+            return "\uf240";
+        } else if (selection === "air_voltage") {
+            return "\uf072";
+        } else if (selection === "air_current") {
+            return "\uf0e7";
+        } else if (selection === "air_speed") {
+            return "\uf3fd";
+        } else if (selection === "altitude") {
+            return "\uf062";
+        } else if (selection === "home_distance") {
+            return "\uf015";
+        } else if (selection === "satellites") {
+            return "\uf7bf";
+        }
+        return "";
+    }
+
+    function slot_is_valid(selection) {
+        var text = slot_text(selection);
+        return text !== "" && text !== "N/A";
+    }
+
+    function slot_visible(selection) {
+        if (selection === "none") {
+            return false;
+        }
+        if (!hide_na) {
+            return true;
+        }
+        return slot_is_valid(selection);
     }
 
     function format_air_voltage() {
@@ -95,6 +317,14 @@ BaseWidget {
         var mode = _fcMavlinkSystem.flight_mode;
         if (!_fcMavlinkSystem.is_alive || mode === "") {
             return "N/A";
+        }
+        return mode;
+    }
+
+    function flight_mode_display_text() {
+        var mode = format_flight_mode();
+        if (mode === "" || mode === "N/A") {
+            return qsTr("Manual");
         }
         return mode;
     }
@@ -204,6 +434,83 @@ BaseWidget {
         return rssi + "%";
     }
 
+    widgetDetailComponent: ScrollView {
+        contentHeight: detailColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        Column {
+            id: detailColumn
+            width: parent.width
+            spacing: 4
+
+            BaseWidgetDefaultUiControlElements {
+                id: idBaseWidgetDefaultUiControlElements
+                show_transparency: false
+                show_background_color: true
+                background_color_target: linkOverviewWidgetBottom
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Hide N/A")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: hide_na
+                    onCheckedChanged: hide_na = checked
+                }
+            }
+
+            Repeater {
+                model: slotLabels.length
+                delegate: Item {
+                    width: parent.width
+                    height: 32
+                    property int slotIndex: index + 1
+                    Text {
+                        text: slotLabels[index]
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    ComboBox {
+                        id: slotCombo
+                        model: slotOptions
+                        textRole: "label"
+                        currentIndex: slot_index_for_value(get_slot_selection(slotIndex))
+                        anchors.right: parent.right
+                        anchors.rightMargin: 6
+                        anchors.top: parent.top
+                        anchors.topMargin: 4
+                        width: 160
+                        height: parent.height - 4
+                        onActivated: {
+                            if (index < 0 || index >= slotOptions.length) {
+                                return;
+                            }
+                            request_slot_selection(slotIndex, slotOptions[index].value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Item {
         id: widgetInner
         anchors.fill: parent
@@ -214,7 +521,8 @@ BaseWidget {
         Shape {
             id: baseShape
             anchors.fill: parent
-            property color fillColor: Qt.rgba(0, 0, 0, 0.5)
+            opacity: 0.5
+            property color fillColor: bw_current_background_color
             property real topY: notchDepth
             property real notchStartX: (width - notchWidth) / 2
             property real notchEndX: notchStartX + notchWidth
@@ -238,15 +546,26 @@ BaseWidget {
             }
         }
 
+        Item {
+            id: contentArea
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            anchors.topMargin: notchDepth
+        }
+
         Text {
             id: flightModeText
-            text: format_flight_mode()
+            text: flight_mode_display_text()
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 1
             color: settings.color_text
             font.pixelSize: 16
             font.family: linkFont
+            font.bold: _fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed
+            font.strikeout: _fcMavlinkSystem.is_alive && !_fcMavlinkSystem.armed
             style: Text.Outline
             styleColor: settings.color_glow
         }
@@ -264,139 +583,96 @@ BaseWidget {
         }
 
         Item {
-            id: contentArea
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.top: parent.top
-            anchors.topMargin: notchDepth
-        }
-
-        RowLayout {
-            id: mainRow
+            id: leftArea
             anchors.left: contentArea.left
-            anchors.right: contentArea.right
-            anchors.top: contentArea.top
+            anchors.right: contentArea.horizontalCenter
+            anchors.rightMargin: notchSafeWidth / 2
             anchors.bottom: contentArea.bottom
+            anchors.top: contentArea.top
             anchors.leftMargin: 20
-            anchors.rightMargin: 20
-            spacing: 12
 
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredWidth: parent.width * 0.66
-                Row {
-                    spacing: 16
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: 4
-                    Text {
-                        text: "\uf0ac"
-                        color: settings.color_shape
-                        font.pixelSize: 16
-                        font.family: "Font Awesome 5 Free"
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: format_gnd_voltage()
-                        color: settings.color_text
-                        font.pixelSize: 16
-                        font.family: linkFont
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: format_gnd_mah()
-                        color: settings.color_text
-                        font.pixelSize: 16
-                        font.family: linkFont
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: "\uf072"
-                        color: settings.color_shape
-                        font.pixelSize: 16
-                        font.family: "Font Awesome 5 Free"
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: format_air_voltage()
-                        color: settings.color_text
-                        font.pixelSize: 16
-                        font.family: linkFont
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: format_air_current()
-                        color: settings.color_text
-                        font.pixelSize: 16
-                        font.family: linkFont
-                        style: Text.Outline
-                        styleColor: settings.color_glow
+            RowLayout {
+                anchors.fill: parent
+                anchors.bottomMargin: 4
+                spacing: 12
+                Repeater {
+                    model: [1, 2, 3, 4]
+                    delegate: Item {
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 0
+                        visible: slot_visible(get_slot_selection(modelData))
+                        Row {
+                            spacing: 6
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.verticalCenterOffset: slotContentYOffset
+                            Text {
+                                visible: slot_icon(get_slot_selection(modelData)) !== ""
+                                text: slot_icon(get_slot_selection(modelData))
+                                color: settings.color_shape
+                                font.pixelSize: 16
+                                font.family: "Font Awesome 5 Free"
+                                style: Text.Outline
+                                styleColor: settings.color_glow
+                            }
+                            Text {
+                                text: slot_text(get_slot_selection(modelData))
+                                color: settings.color_text
+                                font.pixelSize: 16
+                                font.family: linkFont
+                                style: Text.Outline
+                                styleColor: settings.color_glow
+                            }
+                        }
                     }
                 }
             }
+        }
 
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredWidth: parent.width * 0.34
-                Row {
-                    spacing: 16
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.verticalCenterOffset: 4
-                    layoutDirection: Qt.RightToLeft
-                    Text {
-                        text: "\uf3fd"
-                        color: settings.color_shape
-                        font.pixelSize: 16
-                        font.family: "Font Awesome 5 Free"
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: format_air_speed()
-                        color: settings.color_text
-                        font.pixelSize: 16
-                        font.family: linkFont
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: "\uf015"
-                        color: settings.color_shape
-                        font.pixelSize: 16
-                        font.family: "Font Awesome 5 Free"
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: format_home_distance()
-                        color: settings.color_text
-                        font.pixelSize: 16
-                        font.family: linkFont
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: "\uf7bf"
-                        color: settings.color_shape
-                        font.pixelSize: 16
-                        font.family: "Font Awesome 5 Free"
-                        style: Text.Outline
-                        styleColor: settings.color_glow
-                    }
-                    Text {
-                        text: format_nav_sats()
-                        color: settings.color_text
-                        font.pixelSize: 16
-                        font.family: linkFont
-                        style: Text.Outline
-                        styleColor: settings.color_glow
+        Item {
+            id: rightArea
+            anchors.left: contentArea.horizontalCenter
+            anchors.leftMargin: notchSafeWidth / 2
+            anchors.right: contentArea.right
+            anchors.bottom: contentArea.bottom
+            anchors.top: contentArea.top
+            anchors.rightMargin: 20
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.bottomMargin: 4
+                spacing: 12
+                layoutDirection: Qt.RightToLeft
+                Repeater {
+                    model: [5, 6, 7, 8]
+                    delegate: Item {
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 0
+                        visible: slot_visible(get_slot_selection(modelData))
+                        Row {
+                            spacing: 6
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.verticalCenterOffset: slotContentYOffset
+                            layoutDirection: Qt.RightToLeft
+                            Text {
+                                visible: slot_icon(get_slot_selection(modelData)) !== ""
+                                text: slot_icon(get_slot_selection(modelData))
+                                color: settings.color_shape
+                                font.pixelSize: 16
+                                font.family: "Font Awesome 5 Free"
+                                style: Text.Outline
+                                styleColor: settings.color_glow
+                            }
+                            Text {
+                                text: slot_text(get_slot_selection(modelData))
+                                color: settings.color_text
+                                font.pixelSize: 16
+                                font.family: linkFont
+                                style: Text.Outline
+                                styleColor: settings.color_glow
+                            }
+                        }
                     }
                 }
             }

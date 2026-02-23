@@ -23,6 +23,7 @@ Item {
     // used by BaseWidget
     property bool m_show_vertical_center_indicator: false
     property bool m_show_horizontal_center_indicator: false
+    property Item colorPicker: null
 
     //scale: settings.dev_some_scale
 

@@ -193,6 +193,21 @@ ScrollView {
                     }
                 }
 
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Bottom Link Bar")
+                    m_long_description: qsTr("Hide the bottom link sidebar without disabling other link widgets.")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_link_overview_widget_bottom
+                        onCheckedChanged: settings.show_link_overview_widget_bottom = checked
+                    }
+                }
+
             }
             SettingsCategory{
                 m_description: "UAV (FC) WIDGETS"

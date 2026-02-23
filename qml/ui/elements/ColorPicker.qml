@@ -19,10 +19,15 @@ Card {
     enum ColorType {
         ShapeColor,
         GlowColor,
-        TextColor
+        TextColor,
+        CustomColor
     }
 
     property int currentColorType: ColorPicker.ColorType.ShapeColor
+
+    property var customTarget: null
+    property string customProperty: ""
+    property color customPreviousColor
 
     property alias color: colorWheel.color
 
@@ -44,6 +49,11 @@ Card {
         if (colorPicker.currentColorType == ColorPicker.ColorType.TextColor) {
             settings.color_text = colorPicker.previousColor
         }
+        if (colorPicker.currentColorType == ColorPicker.ColorType.CustomColor) {
+            if (colorPicker.customTarget && colorPicker.customProperty !== "") {
+                colorPicker.customTarget[colorPicker.customProperty] = colorPicker.customPreviousColor
+            }
+        }
     }
 
     Connections {
@@ -58,6 +68,11 @@ Card {
             }
             if (colorPicker.currentColorType == ColorPicker.ColorType.TextColor) {
                 settings.color_text = colorPicker.color
+            }
+            if (colorPicker.currentColorType == ColorPicker.ColorType.CustomColor) {
+                if (colorPicker.customTarget && colorPicker.customProperty !== "") {
+                    colorPicker.customTarget[colorPicker.customProperty] = colorPicker.color
+                }
             }
         }
 

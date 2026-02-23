@@ -98,6 +98,7 @@ ApplicationWindow {
             id: hudOverlayGrid
             anchors.fill: parent
             z: 3.0
+            colorPicker: colorPicker
             //onSettingsButtonClicked: {
             //    settings_panel.openSettings();
             //}

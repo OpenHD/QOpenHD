@@ -199,6 +199,8 @@ BaseWidget {
         BaseWidgetDefaultUiControlElements {
             id: idBaseWidgetDefaultUiControlElements
             show_transparency: false
+            show_background_color: true
+            background_color_target: linkOverviewWidget
 
             Item {
                 width: parent.width
@@ -459,8 +461,9 @@ BaseWidget {
         Shape {
             id: cutRect
             anchors.fill: parent
+            opacity: 0.5
             property real cutXRatio: 0.80
-            property color fillColor: Qt.rgba(0, 0, 0, 0.5)
+            property color fillColor: bw_current_background_color
 
             ShapePath {
                 strokeWidth: 0

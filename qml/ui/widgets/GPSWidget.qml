@@ -9,8 +9,10 @@ import OpenHD 1.0
 
 BaseWidget {
     id: gpsWidget
-    width: 96
-    height: 24
+    implicitWidth: widgetInner.implicitWidth
+    implicitHeight: widgetInner.implicitHeight
+    width: implicitWidth
+    height: implicitHeight
 
     visible: settings.show_gps && settings.show_widgets
 
@@ -18,8 +20,8 @@ BaseWidget {
     bw_verbose_name: qsTr("GPS WIDGET")
 
     defaultAlignment: 2
-    defaultXOffset: 96
-    defaultYOffset: 24
+    defaultXOffset: 171
+    defaultYOffset: 160
     defaultHCenter: false
     defaultVCenter: false
 
@@ -68,6 +70,29 @@ BaseWidget {
         return Number(number).toLocaleString(Qt.locale(), 'f', 6)
     }
 
+    function gps_stats_visible() {
+        if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
+            return true;
+        }
+        if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
+            return true;
+        }
+        if (settings.gps_declutter == true && _fcMavlinkSystem.armed == true) {
+            return false;
+        }
+        return true;
+    }
+
+    function gps_stats_color() {
+        if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
+            return settings.color_warn;
+        }
+        if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
+            return settings.color_caution;
+        }
+        return settings.color_text;
+    }
+
 
     //----------------------------- DETAIL BELOW ----------------------------------
     widgetDetailComponent: ScrollView {
@@ -82,7 +107,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Always show lat/lon")
+                    text: qsTr("Lat/Lon only")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -379,131 +404,28 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-
-        Text {
-            id: satellite_icon
-            y: 0
-            width: 24
-            height: 24
-            color: settings.color_shape
-            opacity: bw_current_opacity
-            text: "\uf0ac"
-            anchors.right: satellites_visible.left
-            anchors.rightMargin: 6
-            font.family: "Font Awesome 5 Free"
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
-        Text {
-            id: satellites_visible
-            y: 0
-            width: 24
-            height: 24
-            //     color: _fcMavlinkSystem.gps_fix_type >= 3 ? settings.color_text : (_fcMavlinkSystem.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
-            color: {
-                if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
-                    widgetInner.visible = true
-                    return settings.color_warn
-                } else if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
-                    widgetInner.visible = true
-                    return settings.color_caution
-                } else if (settings.gps_declutter == true
-                           && _fcMavlinkSystem.armed == true) {
-                    widgetInner.visible = false
-                    return settings.color_text
-                } else {
-                    widgetInner.visible = true
-                    return settings.color_text
-                }
-            }
-            opacity: bw_current_opacity
-            text: _fcMavlinkSystem.satellites_visible
-            anchors.right: gps_hdop.left
-            anchors.rightMargin: 2
-            elide: Text.ElideNone
-            clip: true
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignRight
-            font.pixelSize: 16
-            font.family: settings.font_text
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
-        Text {
-            id: gps_hdop
-            width: 48
-            height: 24
-            color: {
-                if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
-                    widgetInner.visible = true
-                    return settings.color_warn
-                } else if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
-                    widgetInner.visible = true
-                    return settings.color_caution
-                } else if (settings.gps_declutter == true
-                           && _fcMavlinkSystem.armed == true) {
-                    widgetInner.visible = false
-                    return settings.color_text
-                } else {
-                    widgetInner.visible = true
-                    return settings.color_text
-                }
-            }
-            opacity: bw_current_opacity
-            text: qsTr("%L1").arg(_fcMavlinkSystem.gps_hdop)
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            verticalAlignment: Text.AlignTop
-            font.pixelSize: 10
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignLeft
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
+        visible: settings.gps_show_all || gps_stats_visible()
 
         Column {
-            id: lat_lon_column
-            anchors.bottom: parent.top
+            id: contentColumn
             anchors.left: parent.left
-            anchors.leftMargin: -12
-
-            spacing: 0
+            anchors.top: parent.top
+            spacing: 2
 
             Row {
+                id: latRow
                 spacing: 6
                 height: 16
-
-                Text {
-                    //need better icon
-                    id: lat_icon
-                    visible: settings.gps_show_all
-                    height: parent.height
-                    width: 32
-                    color: settings.color_shape
-                    opacity: bw_current_opacity
-                    //font.family: "Font Awesome 5 Free"
-                    text: qsTr("Lat:")
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: 14
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
+                visible: settings.gps_show_all
                 Text {
                     id: lat_onscreen
-                    visible: settings.gps_show_all
                     text: get_latitude()
                     color: settings.color_text
                     opacity: bw_current_opacity
                     font.bold: true
                     font.family: settings.font_text
                     height: parent.height
-                    width: 92
+                    width: 120
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignRight
                     style: Text.Outline
@@ -512,41 +434,79 @@ BaseWidget {
             }
 
             Row {
+                id: lonRow
                 spacing: 6
                 height: 16
-
-                Text {
-                    //need better icon
-                    id: lon_icon
-                    visible: settings.gps_show_all
-                    height: parent.height
-                    width: 32
-                    color: settings.color_shape
-                    opacity: bw_current_opacity
-                    //font.family: "Font Awesome 5 Free"
-                    text: qsTr("Lon:")
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: 14
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
+                visible: settings.gps_show_all
                 Text {
                     id: lon_onscreen
-                    visible: settings.gps_show_all
                     text: get_longitude()
                     color: settings.color_text
                     opacity: bw_current_opacity
                     font.bold: true
                     font.family: settings.font_text
                     height: parent.height
-                    width: 92
+                    width: 120
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignRight
                     style: Text.Outline
                     styleColor: settings.color_glow
                 }
             }
+
+            Row {
+                id: statsRow
+                spacing: 6
+                height: 24
+                visible: !settings.gps_show_all && gps_stats_visible()
+                Text {
+                    id: satellite_icon
+                    width: 24
+                    height: 24
+                    color: settings.color_shape
+                    opacity: bw_current_opacity
+                    text: "\uf0ac"
+                    font.family: "Font Awesome 5 Free"
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
+                Text {
+                    id: satellites_visible
+                    width: 24
+                    height: 24
+                    color: gps_stats_color()
+                    opacity: bw_current_opacity
+                    text: _fcMavlinkSystem.satellites_visible
+                    elide: Text.ElideNone
+                    clip: true
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignRight
+                    font.pixelSize: 16
+                    font.family: settings.font_text
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
+                Text {
+                    id: gps_hdop
+                    width: 48
+                    height: 24
+                    color: gps_stats_color()
+                    opacity: bw_current_opacity
+                    text: qsTr("%L1").arg(_fcMavlinkSystem.gps_hdop)
+                    verticalAlignment: Text.AlignTop
+                    font.pixelSize: 10
+                    font.family: settings.font_text
+                    horizontalAlignment: Text.AlignLeft
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
+            }
         }
+
+        implicitWidth: contentColumn.implicitWidth
+        implicitHeight: contentColumn.implicitHeight
     }
 }

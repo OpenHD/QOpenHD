@@ -128,6 +128,7 @@ Settings {
     property bool show_retransmission_stats: false
     property bool show_downlink_rssi: false
     property bool show_link_overview_widget: true
+    property bool show_link_overview_widget_bottom: true
     property int link_snr_min_db: 0
     property int link_snr_max_db: 40
     //Const10
@@ -184,8 +185,8 @@ Settings {
     property int ground_voltage_in_percent: 0
 
 
-    property bool show_gps: false
-    property bool gps_show_all: false
+    property bool show_gps: true
+    property bool gps_show_all: true
     property bool gps_hide_identity_using_offset: false
     property bool gps_declutter: false
     property double gps_warn: 3
