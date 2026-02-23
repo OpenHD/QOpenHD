@@ -143,6 +143,9 @@ static constexpr int X_CAM_TYPE_ORQA_HORNET = 122;
 static constexpr int X_CAM_TYPE_ORQA_JAGUAR = 123;
 static constexpr int X_CAM_TYPE_ORQA_REKINDLE = 124;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV = 125;
+// NXP i.MX8 specific starts here
+static constexpr int X_CAM_TYPE_NXP_IMX8_V4L2 = 130;
+static constexpr int X_CAM_TYPE_NXP_IMX8_OS08A20 = 131;
 
 //
 // ... rest is reserved for future use
@@ -275,6 +278,10 @@ static std::string x_cam_type_to_string(int camera_type) {
       return "ORQA_JAGUAR";
     case X_CAM_TYPE_ORQA_REKINDLE:
       return "ORQA_REKINDLE";
+    case X_CAM_TYPE_NXP_IMX8_V4L2:
+      return "NXP_IMX8_V4L2";
+    case X_CAM_TYPE_NXP_IMX8_OS08A20:
+      return "NXP_IMX8_OS08A20";
     default:
       break;
   }
@@ -603,6 +610,12 @@ struct XCamera {
       // correct specs still missing
       ret.push_back(ResolutionFramerate{1280, 720, 60});
       return ret;
+    } else if (camera_type == X_CAM_TYPE_NXP_IMX8_V4L2 ||
+               camera_type == X_CAM_TYPE_NXP_IMX8_OS08A20) {
+      std::vector<ResolutionFramerate> ret;
+      ret.push_back(ResolutionFramerate{1280, 720, 60});
+      ret.push_back(ResolutionFramerate{1920, 1080, 30});
+      return ret;
     } else {
       // Not mapped yet
       // return something that might work or might not work
@@ -865,6 +878,14 @@ static std::vector<ManufacturerForPlatform> get_camera_choices_for_platform(
     return std::vector<ManufacturerForPlatform>{
         ManufacturerForPlatform{"LEOPARD", nvidia_leopard_csi_cameras},
         MANUFACTURER_USB, MANUFACTURER_DEBUG};
+  } else if (platform_type == X_PLATFORM_TYPE_NXP_IMX8) {
+    std::vector<CameraNameAndType> nxp_cameras{
+        CameraNameAndType{"OS08A20", X_CAM_TYPE_NXP_IMX8_OS08A20},
+        CameraNameAndType{"V4L2 CSI", X_CAM_TYPE_NXP_IMX8_V4L2},
+    };
+    return std::vector<ManufacturerForPlatform>{
+        ManufacturerForPlatform{"NXP", nxp_cameras}, MANUFACTURER_USB,
+        MANUFACTURER_DEBUG};
   } else if (platform_type == X_PLATFORM_TYPE_ORQA) {
     std::vector<CameraNameAndType> orqa_cameras{
         CameraNameAndType{"HORNET", X_CAM_TYPE_ORQA_HORNET},
