@@ -42,6 +42,36 @@ PopupBigGeneric{
         ListElement {title: qsTr("All 2.4G channels"); value: 1}
         ListElement {title: qsTr("All 5.8G channels"); value: 2}
     }
+    ListModel{
+        id: model_bandwidth_to_scan
+    }
+
+    function rebuild_bandwidth_model(){
+        model_bandwidth_to_scan.clear();
+        model_bandwidth_to_scan.append({title: qsTr("10 MHz"), value: 10});
+        model_bandwidth_to_scan.append({title: qsTr("20 MHz"), value: 20});
+        if(settings.dev_allow_40mhz){
+            model_bandwidth_to_scan.append({title: qsTr("40 MHz"), value: 40});
+        }
+    }
+
+    function sync_bandwidth_selection(){
+        for(var i=0;i<model_bandwidth_to_scan.count;i++){
+            if(model_bandwidth_to_scan.get(i).value===settings.scan_channel_width_mhz){
+                comboBoxBandwidthToScan.currentIndex=i;
+                return;
+            }
+        }
+        if(model_bandwidth_to_scan.count>0){
+            comboBoxBandwidthToScan.currentIndex=0;
+            settings.scan_channel_width_mhz=model_bandwidth_to_scan.get(0).value;
+        }
+    }
+
+    Component.onCompleted: {
+        rebuild_bandwidth_model();
+        sync_bandwidth_selection();
+    }
 
     ColumnLayout{
         id: main_layout
@@ -61,9 +91,9 @@ PopupBigGeneric{
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
                 onClicked: {
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
-                    var how_many_bandwidths = settings.dev_allow_40mhz ? 2 : 1;
-                    console.log("Initate channel scan "+how_many_freq_bands+","+how_many_bandwidths)
-                    var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands,how_many_bandwidths)
+                    var channel_width_mhz = settings.scan_channel_width_mhz;
+                    console.log("Initate channel scan "+how_many_freq_bands+","+channel_width_mhz)
+                    var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands,channel_width_mhz)
                     if(result){
                         _qopenhd.show_toast(qsTr("Channel scan started, please wait"),true)
                     }else{
@@ -83,6 +113,18 @@ PopupBigGeneric{
                     (comboBoxWhichFrequencyToScan.currentIndex===0) ? "#2b9848" : "#ffae42"
                 }
                 onCurrentIndexChanged: {
+                }
+                enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
+            }
+            ComboBox {
+                Layout.preferredWidth: 160
+                Layout.minimumWidth: 80
+                id: comboBoxBandwidthToScan
+                model: model_bandwidth_to_scan
+                textRole: "title"
+                onCurrentIndexChanged: {
+                    if(comboBoxBandwidthToScan.currentIndex<0)return;
+                    settings.scan_channel_width_mhz = model_bandwidth_to_scan.get(comboBoxBandwidthToScan.currentIndex).value;
                 }
                 enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
             }

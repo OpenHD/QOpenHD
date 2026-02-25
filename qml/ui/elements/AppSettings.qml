@@ -95,6 +95,8 @@ Settings {
     property bool dev_show_5180mhz_lowband: false
     property bool dev_allow_40mhz: false
     property bool dev_disable_autofetch: false
+    // Channel scan bandwidth (used by "Find Air Unit")
+    property int scan_channel_width_mhz: 20
     // WARNING END
     //WARNING: THIS makes the RC panel visible
     property bool app_show_RC: false

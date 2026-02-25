@@ -26,6 +26,36 @@ SideBarBasePanel{
             ListElement { value: 1; verbose: "2.4G " }
             ListElement { value: 2; verbose: "5.8G " }
         }
+        ListModel{
+            id: scanBandwidthModel
+        }
+
+        function rebuildBandwidthModel(){
+            scanBandwidthModel.clear();
+            scanBandwidthModel.append({value: 10, verbose: "10 MHz"});
+            scanBandwidthModel.append({value: 20, verbose: "20 MHz"});
+            if(settings.dev_allow_40mhz){
+                scanBandwidthModel.append({value: 40, verbose: "40 MHz"});
+            }
+        }
+
+        function syncBandwidthIndex(){
+            for(var i=0;i<scanBandwidthModel.count;i++){
+                if(scanBandwidthModel.get(i).value===settings.scan_channel_width_mhz){
+                    bandwidthSelection.currentIndex=i;
+                    return;
+                }
+            }
+            if(scanBandwidthModel.count>0){
+                bandwidthSelection.currentIndex=0;
+                settings.scan_channel_width_mhz=scanBandwidthModel.get(0).value;
+            }
+        }
+
+        Component.onCompleted: {
+            rebuildBandwidthModel();
+            syncBandwidthIndex();
+        }
 
         BaseJoyEditElement2{
             id: bandSelection
@@ -49,7 +79,7 @@ SideBarBasePanel{
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Down){
                     choiceSelector.discard_and_close();
-                    startButton.focus=true;
+                    bandwidthSelection.takeover_control();
                     event.accepted=true;
                 }
             }
@@ -69,6 +99,54 @@ SideBarBasePanel{
 
             function user_selected_value(value_new){
                 currentIndex=parseInt(value_new);
+            }
+        }
+
+        BaseJoyEditElement2{
+            id: bandwidthSelection
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            m_title: "Bandwidth"
+
+            property int currentIndex: 0
+
+            m_displayed_value: scanBandwidthModel.get(currentIndex).verbose
+
+            Keys.onPressed: (event)=> {
+                if(event.key===Qt.Key_Left){
+                    sidebar.regain_control_on_sidebar_stack();
+                    event.accepted=true;
+                }else if(event.key===Qt.Key_Right || event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
+                    open_choices_menu(false);
+                    event.accepted=true;
+                }else if(event.key===Qt.Key_Up){
+                    choiceSelector.discard_and_close();
+                    bandSelection.takeover_control();
+                    event.accepted=true;
+                }else if(event.key===Qt.Key_Down){
+                    choiceSelector.discard_and_close();
+                    startButton.focus=true;
+                    event.accepted=true;
+                }
+            }
+
+            onBase_joy_edit_element_clicked: {
+                if(choiceSelector.visible){
+                    choiceSelector.close_choices();
+                }else{
+                    open_choices_menu(true);
+                }
+            }
+
+            function open_choices_menu(clickable){
+                choiceSelector.open_choices(scanBandwidthModel, scanBandwidthModel.get(currentIndex).value, bandwidthSelection);
+                choiceSelector.set_clickable(clickable);
+            }
+
+            function user_selected_value(value_new){
+                currentIndex=parseInt(value_new);
+                if(scanBandwidthModel.count>0){
+                    settings.scan_channel_width_mhz = scanBandwidthModel.get(currentIndex).value;
+                }
             }
         }
 
@@ -98,8 +176,8 @@ Button {
 
     function startScan(){
         var how_many_freq_bands = bandSelection.currentIndex;
-        var how_many_bandwidths = settings.dev_allow_40mhz ? 2 : 1;
-        var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, how_many_bandwidths);
+        var channel_width_mhz = settings.scan_channel_width_mhz;
+        var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, channel_width_mhz);
         if(result){
             _qopenhd.show_toast("Channel scan started, please wait", true);
         } else {
