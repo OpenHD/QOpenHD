@@ -54,7 +54,11 @@ static void init_gstreamer(int argc,char* argv[]){
 // NOTE: Basically, it looks as if you NEED to do this before QT loads any .qml file(s) and if it fails
 // qmlglsink won't work !!
 static bool init_qmlglsink(){
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    GstElement *sink = gst_element_factory_make("qml6glsink", NULL);
+#else
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
+#endif
     if(sink==nullptr){
         return false;
     }
