@@ -29,7 +29,7 @@ SideBarBasePanel {
             anchors.margins: 12
 
             InfoElement2 {
-                override_text_left: "Connection:"
+                override_text_left: qsTr("Connection:")
                 override_color_right: {
                     if (_ohdSystemAir.is_alive || _ohdSystemGround.is_alive) {
                         return _ohdSystemAir.is_alive && _ohdSystemGround.is_alive ? "#20b383" : "#df4c7c";
@@ -38,19 +38,21 @@ SideBarBasePanel {
                 }
                 override_text_right: {
                     if (_ohdSystemAir.is_alive || _ohdSystemGround.is_alive) {
-                        return _ohdSystemAir.is_alive && _ohdSystemGround.is_alive ? "Connected" : (_ohdSystemAir.is_alive ? "AIR only" : "GND only");
+                        return _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                            ? qsTr("Connected")
+                            : (_ohdSystemAir.is_alive ? qsTr("AIR only") : qsTr("GND only"));
                     }
-                    return "Not connected";
+                    return qsTr("Not connected");
                 }
             }            InfoElement2 {
-                override_text_left: "QOpenHD Version:"
+                override_text_left: qsTr("QOpenHD Version:")
                 override_color_right: "#20b383"
                 override_text_right: {
                     return _qopenhd.version_string;
                 }
             }
             InfoElement2 {
-                override_text_left: "OpenHD Version:"
+                override_text_left: qsTr("OpenHD Version:")
                 override_color_right: {
                     if (_ohdSystemGround.openhd_version !== "N/A") {
                         return _ohdSystemGround.openhd_version !== _ohdSystemAir.openhd_version ? "#df4c7c" : "#20b383";
@@ -59,35 +61,37 @@ SideBarBasePanel {
                 }
                 override_text_right: {
                     if (_ohdSystemGround.openhd_version !== "N/A") {
-                        return _ohdSystemGround.openhd_version !== _ohdSystemAir.openhd_version ? "Version mismatch" : _ohdSystemGround.openhd_version;
+                        return _ohdSystemGround.openhd_version !== _ohdSystemAir.openhd_version
+                            ? qsTr("Version mismatch")
+                            : _ohdSystemGround.openhd_version;
                     }
-                    return "Not connected";
+                    return qsTr("Not connected");
                 }
             }
             InfoElement2 {
-                override_text_left: "Chipset GND:"
+                override_text_left: qsTr("Chipset GND:")
                 override_color_right: _ohdSystemGround.is_alive ? "#20b383" : "#df4c7c"
                 override_text_right: {
                     if (_ohdSystemGround.is_alive) {
-                        return _ohdSystemGround.card_type_as_string || "Unknown";
+                        return _ohdSystemGround.card_type_as_string || qsTr("Unknown");
                     }
-                    return "Not connected";
+                    return qsTr("Not connected");
                 }
             }
             InfoElement2 {
-                override_text_left: "Chipset AIR:"
+                override_text_left: qsTr("Chipset AIR:")
                 override_color_right: _ohdSystemAir.is_alive ? "#20b383" : "#df4c7c"
                 override_text_right: {
                     if (_ohdSystemAir.is_alive) {
-                        return _ohdSystemAir.card_type_as_string || "Unknown";
+                        return _ohdSystemAir.card_type_as_string || qsTr("Unknown");
                     }
-                    return "Not connected";
+                    return qsTr("Not connected");
                 }
             }
             InfoElement2 {
-                override_text_left: "Camera:"
+                override_text_left: qsTr("Camera:")
                 override_color_right: _ohdSystemAir.is_alive ? "#20b383" : "#df4c7c"
-                override_text_right: _ohdSystemAir.is_alive ? _ohdSystemAir.ohd_cam_type : "Not connected"
+                override_text_right: _ohdSystemAir.is_alive ? _ohdSystemAir.ohd_cam_type : qsTr("Not connected")
             }
             Button {
                 Layout.alignment: Qt.AlignHCenter

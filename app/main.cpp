@@ -5,6 +5,7 @@
 #include <QQmlComponent>
 #include <QDebug>
 #include <QFontDatabase>
+#include <QFont>
 #include <QElapsedTimer>
 #include <QHash>
 #include <QMutex>
@@ -157,6 +158,16 @@ static void load_fonts(){
     QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-BoldItalic.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/Visitor.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
+}
+
+static void setup_font_substitutions(){
+#if defined(__windows__)
+    const QString mono_fallback = "Roboto Mono";
+    QFont::insertSubstitution("Fixedsys", mono_fallback);
+    QFont::insertSubstitution("8514oem", mono_fallback);
+    QFont::insertSubstitution("Terminal", mono_fallback);
+    QFont::insertSubstitution("monospace", mono_fallback);
+#endif
 }
 
 #if defined(__linux__) && !defined(__android__)
@@ -425,6 +436,7 @@ int main(int argc, char *argv[]) {
     QOpenHD::instance().keep_screen_on(true);
     android_check_permissions();
     load_fonts();
+    setup_font_substitutions();
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
     qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");

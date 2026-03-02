@@ -126,7 +126,7 @@ ScrollView {
                 }
             }
             SettingsCategory{
-                m_description: "Advanced settings"
+            m_description: qsTr("Advanced settings")
                 m_hide_elements: true
 
                 SettingBaseElement{

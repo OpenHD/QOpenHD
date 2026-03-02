@@ -127,7 +127,7 @@ Rectangle {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
-                    font.family: styleData.column <= 2 ? "monospace" : font.family
+                    font.family: styleData.column <= 2 ? "Roboto Mono" : font.family
                     text: styleData.column <= 2 ? ("000" + styleData.value).slice(-3) : styleData.value
                 }
 

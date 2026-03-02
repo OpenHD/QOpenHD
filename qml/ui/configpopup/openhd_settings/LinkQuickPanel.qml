@@ -219,7 +219,7 @@ Rectangle{
                 anchors.right: parent.right
 
                 SettingsCategory{
-                    m_description: "FREQUENCY / TOOLKIT"
+            m_description: qsTr("FREQUENCY / TOOLKIT")
                     spacing: 1
                     m_hide_elements: false;
 

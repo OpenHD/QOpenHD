@@ -145,7 +145,7 @@ BaseWidget {
                     onCheckedChanged: {
                         if(settings.gps_hide_identity_using_offset != checked && checked){
                             if(settings.hide_identity_latitude_offset==0.0 || settings.hide_identity_longitude_offset==0.0){
-                                _messageBoxInstance.set_text_and_show("Your identity is only hidden if you set custom offset values for lat,lon. Go to QOpenHD/General and set custom values.",10);
+                                _messageBoxInstance.set_text_and_show(qsTr("Your identity is only hidden if you set custom offset values for lat,lon. Go to QOpenHD/General and set custom values."),10);
                             }
                         }
                         settings.gps_hide_identity_using_offset = checked

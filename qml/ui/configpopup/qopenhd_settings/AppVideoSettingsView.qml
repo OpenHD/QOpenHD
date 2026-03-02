@@ -34,7 +34,7 @@ ScrollView {
                 ListElement { text: qsTr("H265");  }
             }
             SettingBaseElement{
-                m_short_description:  "Number of Cameras" //will be removed in the future, we just should autodetect it
+                m_short_description: qsTr("Number of Cameras") //will be removed in the future, we just should autodetect it
 
                 SpinBox {
                     id: dev_qopenhd_n_cameras_spinbox
@@ -88,7 +88,7 @@ ScrollView {
 
 
             SettingsCategory{
-                m_description: "Advanced Settings"
+                m_description: qsTr("Advanced Settings")
                 m_hide_elements: true
 
                 SettingBaseElement{

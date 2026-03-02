@@ -526,7 +526,7 @@ BaseWidget {
                     styleColor: settings.color_glow
                 }
                 Text {
-                    text: "MCS: " + (m_curr_mcs_index >= 0 ? m_curr_mcs_index : "N/A")
+                    text: qsTr("MCS: %1").arg(m_curr_mcs_index >= 0 ? m_curr_mcs_index : qsTr("N/A"))
                     color: settings.color_text
                     font.pixelSize: 12
                     font.family: linkFont

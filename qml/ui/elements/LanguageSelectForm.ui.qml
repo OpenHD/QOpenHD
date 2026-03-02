@@ -3,16 +3,8 @@ import QtQuick.Controls 2.12
 
 Item {
     property var localesModel: [
-        { text: qsTr("German"), locale: "de" },
-        { text: qsTr("Ukrainian"), locale: "uk" },
-        { text: qsTr("Russian"), locale: "ru" },
         { text: qsTr("English"), locale: "en" },
-        { text: qsTr("French"), locale: "fr" },
-        { text: qsTr("Spanish"), locale: "es" },
-        { text: qsTr("Dutch"), locale: "nl" },
-        { text: qsTr("Romanian"), locale: "ro" },
-        { text: qsTr("Chinese"), locale: "zh" },
-        { text: qsTr("Italian"), locale: "it" }
+        { text: qsTr("German"), locale: "de" }
     ]
 
     ComboBox {
@@ -25,13 +17,19 @@ Item {
         // @disable-check M223
         Component.onCompleted: {
             // @disable-check M223
+            var foundIndex = -1;
             for (var i = 0; i < model.length; i++) {
                 // @disable-check M222
                 var choice = model[i];
                 // @disable-check M223
                 if (choice.locale == settings.locale) {
+                    foundIndex = i;
                     currentIndex = i;
                 }
+            }
+            if (foundIndex === -1 && model.length > 0) {
+                currentIndex = 0;
+                settings.locale = model[0].locale;
             }
             _qopenhd.switchToLanguage(settings.locale);
         }

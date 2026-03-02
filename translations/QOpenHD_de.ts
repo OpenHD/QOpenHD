@@ -83,7 +83,7 @@
     <message>
         <location filename="../qml/ui/widgets/AltitudeSecondWidget.qml" line="23" />
         <source>SECOND ALTITUDE</source>
-        <translation>ZWEITE H?HE</translation>
+        <translation>SECOND ALTITUDE</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/AltitudeSecondWidget.qml" line="45" />
@@ -96,7 +96,7 @@
     <message>
         <location filename="../qml/ui/widgets/AltitudeWidget.qml" line="25" />
         <source>ALTITUDE</source>
-        <translation>H?HE</translation>
+        <translation>ALTITUDE</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/AltitudeWidget.qml" line="71" />
@@ -185,18 +185,14 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="145" />
         <source>Reset</source>
-        <translation>Zur?cksetzen</translation>
+        <translation>Zurücksetzen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="202" />
         <source>WARNING</source>
         <translation>WARNUNG</translation>
     </message>
-    <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="210" />
-        <source>Do you really want to erase all your QOpenHD settings?</source>
-        <translation>M?chtest du wirklich alle QOpenHD?Einstellungen l?schen?</translation>
-    </message>
+    
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="233" />
         <source>Continue</source>
@@ -207,18 +203,98 @@
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="32"/>
+        <source>Enable advanced settings</source>
+        <translation>Erweiterte Einstellungen aktivieren</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="48"/>
+        <source>Allow frequency change when armed</source>
+        <translation>Frequenzwechsel im scharfgeschalteten Zustand zulassen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="61"/>
+        <source>Show all wifi channels</source>
+        <translation>Alle WLAN-Kanäle anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="74"/>
+        <source>Allow 40 MHz channel width</source>
+        <translation>Erlauben Sie eine Kanalbreite von 40 MHz</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="87"/>
+        <source>Disable auto fetch</source>
+        <translation>Deaktivieren Sie den automatischen Abruf</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="100"/>
+        <source>Save Settings to file</source>
+        <translation>Speichern Sie die Einstellungen in einer Datei</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="101"/>
+        <source>Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux.</source>
+        <translation>Speichern Sie Ihre QOpenHD-Einstellungen (z. B. OSD-Layout usw.) als Backup zwischen Aktualisierungen auf Ihrer SD-Karte. Funktioniert nur von/nach Linux.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="115"/>
+        <source>QOpenHD settings backed up to /boot/openhd/QOpenHD.conf</source>
+        <translation>QOpenHD-Einstellungen wurden in /boot/openhd/QOpenHD.conf gesichert</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="117"/>
+        <source>Couldn&apos;t backup settings</source>
+        <translation>Die Einstellungen konnten nicht gesichert werden</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="124"/>
+        <source>Load Settings from file</source>
+        <translation>Einstellungen aus Datei laden</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="125"/>
+        <source>Load a previosly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux.</source>
+        <translation>Laden Sie eine zuvor gesicherte QOpenHD-Einstellungsdatei (z. B. OSD-Layout usw.) von Ihrer SD-Karte. Funktioniert nur von/nach Linux.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="141"/>
+        <source>Couldn&apos;t load settings - make sure "/boot/openhd/QOpenHD.conf" (a previous pbackup) exists on your SD card</source>
+        <translation>Die Einstellungen konnten nicht geladen werden. Stellen Sie sicher, dass „/boot/openhd/QOpenHD.conf“ (ein früheres Backup) auf Ihrer SD-Karte vorhanden ist</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="148"/>
+        <source>Reset all QOpenHD Settings</source>
+        <translation>Setzen Sie alle QOpenHD-Einstellungen zurück</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="166"/>
+        <source>Improve Inav support</source>
+        <translation>Verbessern Sie die Inav-Unterstützung</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="180"/>
+        <source>Disable STBC warning</source>
+        <translation>Deaktivieren Sie die STBC-Warnung</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppDevSettingsView.qml" line="240"/>
+        <source>Couldn&apos;t reset the settings</source>
+        <translation>Die Einstellungen konnten nicht zurückgesetzt werden</translation>
+    </message>
 </context>
 <context>
     <name>AppDeveloperStatsPanel</name>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="34" />
         <source>Developer Menu</source>
-        <translation>Entwicklermen?</translation>
+        <translation>Entwicklermenü</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="80" />
         <source>Restart local OHD service</source>
-        <translation>Lokalen OHD?Dienst neu starten</translation>
+        <translation>Starten Sie den lokalen OHD-Dienst neu</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="87" />
@@ -228,12 +304,12 @@
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="95" />
         <source>Write GND log to SD</source>
-        <translation>GND?Log auf SD schreiben</translation>
+        <translation>Schreiben Sie das GND-Protokoll in SD</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="103" />
         <source>Write AIR log to SD</source>
-        <translation>AIR?Log auf SD schreiben</translation>
+        <translation>Schreiben Sie das AIR-Protokoll in SD</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="105" />
@@ -243,7 +319,7 @@
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="110" />
         <source>Set Tele rates</source>
-        <translation>Tele?Raten setzen</translation>
+        <translation>Teletarife festlegen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="117" />
@@ -268,7 +344,7 @@
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="145" />
         <source>Self Destruct</source>
-        <translation>Selbstzerst?rung</translation>
+        <translation>Selbstzerstörung</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="147" />
@@ -288,27 +364,27 @@
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="196" />
         <source>Show Air Info</source>
-        <translation>Air?Info anzeigen</translation>
+        <translation>Air-Info anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="198" />
         <source>Air</source>
-        <translation>Air</translation>
+        <translation>Luft</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="203" />
         <source>Show Ground Info</source>
-        <translation>Ground?Info anzeigen</translation>
+        <translation>Ground-Info anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="205" />
         <source>Ground</source>
-        <translation>Ground</translation>
+        <translation>Boden</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="210" />
         <source>Show Mavlink Info</source>
-        <translation>Mavlink?Info anzeigen</translation>
+        <translation>Mavlink-Info anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="212" />
@@ -328,8 +404,7 @@
         <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="235" />
         <source>%1 System Information unavailable.
 </source>
-        <translation>%1 Systeminformationen nicht verf?gbar.
-</translation>
+        <translation>%1 Systeminformationen nicht verfügbar.</translation>
     </message>
 </context>
 <context>
@@ -337,7 +412,62 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="66" />
         <source>Animation Smoothing</source>
-        <translation>Animationsgl?ttung</translation>
+        <translation>Animationsglättung</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="32"/>
+        <source>Enable text to speech</source>
+        <translation>Aktivieren Sie Text-to-Speech</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="46"/>
+        <source>Use Imperial units</source>
+        <translation>Verwenden Sie imperiale Einheiten</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="111"/>
+        <source>Ground Battery Cells</source>
+        <translation>Ground Batteriezellen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="131"/>
+        <source>Language</source>
+        <translation>Sprache</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="146"/>
+        <source>Mavlink sys id</source>
+        <translation>Mavlink System-ID</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="147"/>
+        <source>Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart.</source>
+        <translation>Mavlink System-ID von QOpenHD (diese Ground-Kontrollstationsanwendung). Belassen Sie die Standardeinstellung (255) ! . Änderung erfordert Neustart.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="165"/>
+        <source>Do not use 100 or 101 for QOpenHD sys id</source>
+        <translation>Verwenden Sie nicht 100 oder 101 für die System-ID QOpenHD</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="172"/>
+        <source>Latitude GPS offset</source>
+        <translation>Breitengrad GPS Offset</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="173"/>
+        <source>Set this to a random value only you know to hide lat identity</source>
+        <translation>Stellen Sie dies auf einen zufälligen Wert ein, den nur Sie kennen, um die Lat-Identität zu verbergen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="212"/>
+        <source>Longitude GPS offset</source>
+        <translation>Längengrad GPS Offset</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml" line="213"/>
+        <source>Set this to a random value only you know to hide lon identity</source>
+        <translation>Stellen Sie dies auf einen zufälligen Wert ein, den nur Sie kennen, um Ihre Identität zu verbergen</translation>
     </message>
 </context>
 <context>
@@ -390,12 +520,97 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="257" />
         <source>120 (bigger)</source>
-        <translation>120 (gr??er)</translation>
+        <translation>120 (größer)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="258" />
         <source>150 (ultra big)</source>
-        <translation>150 (ultragro?)</translation>
+        <translation>150 (ultragroß)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="32"/>
+        <source>Screen Scale</source>
+        <translation>Bildschirmskalierung</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="69"/>
+        <source>Auto hide cursor</source>
+        <translation>Cursor automatisch ausblenden</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="88"/>
+        <source>Set cursor Skin</source>
+        <translation>Cursor-Skin festlegen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="108"/>
+        <source>Cursor Scale</source>
+        <translation>Cursorskala</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="129"/>
+        <source>Advanced settings</source>
+        <translation>Erweiterte Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="133"/>
+        <source>Screen rotation</source>
+        <translation>Bildschirmdrehung</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="144"/>
+        <source>0Â°</source>
+        <translation>0°</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="145"/>
+        <source>90Â° (WARNING)</source>
+        <translation>90° (WARNING)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="146"/>
+        <source>180Â°</source>
+        <translation>180°</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="147"/>
+        <source>270Â° (WARNING)</source>
+        <translation>270° (WARNING)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="164"/>
+        <source>Transparent Background</source>
+        <translation>Transparenter Hintergrund</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="178"/>
+        <source>Full screen</source>
+        <translation>Vollbild</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="192"/>
+        <source>Swap interval 0</source>
+        <translation>Swap-Intervall 0</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="193"/>
+        <source>Can decrease latency on x86 / laptop. Requires restart. Experimental.</source>
+        <translation>Kann die Latenz auf x86/Laptop verringern. Erfordert einen Neustart. Experimental.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="228"/>
+        <source>Transparent settings</source>
+        <translation>Transparente Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="242"/>
+        <source>Font DPI</source>
+        <translation>Schriftart DPI</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="243"/>
+        <source>Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD.</source>
+        <translation>Skalieren Sie die Text-/Liniengröße des künstlichen Horizonts/der Leitern, erfordert einen Neustart von QOpenHD.</translation>
     </message>
 </context>
 <context>
@@ -487,6 +702,116 @@
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="318" />
         <source>Limit FPS in test file</source>
         <translation>FPS in Testdatei begrenzen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="37"/>
+        <source>Number of Cameras</source>
+        <translation>Anzahl der Kameras</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="62"/>
+        <source>Scale primary video to fit screen</source>
+        <translation>Skalieren Sie das primäre Video, um es an den Bildschirm anzupassen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="77"/>
+        <source>Switch primary / secondary video</source>
+        <translation>Wechseln Sie zwischen primärem und sekundärem Video</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="91"/>
+        <source>Advanced Settings</source>
+        <translation>Erweiterte Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="95"/>
+        <source>Primary video codec</source>
+        <translation>Primärer Videocodec</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="119"/>
+        <source>Use low latency RTP parser</source>
+        <translation>Verwenden Sie einen RTP-Parser mit geringer Latenz</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="132"/>
+        <source>Enable audio playback (experimental)</source>
+        <translation>Audiowiedergabe aktivieren (experimentell)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="133"/>
+        <source>Plays the incoming audio stream on the ground station. Requires audio streaming to be enabled on the air unit.</source>
+        <translation>Spielt den eingehenden Audiostream auf der Bodenstation ab. Erfordert die Aktivierung des Audio-Streamings auf der Lufteinheit.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="146"/>
+        <source>Use Software Decode</source>
+        <translation>Verwenden Sie Software-Dekodierung</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="162"/>
+        <source>Primary video udp port</source>
+        <translation>Primärer Video-UDP-Port</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="179"/>
+        <source>Secondary video codec</source>
+        <translation>Sekundärer Videocodec</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="221"/>
+        <source>Secondary video udp port</source>
+        <translation>Sekundärer Video-UDP-Port</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="240"/>
+        <source>Secondary video input (Android dev)</source>
+        <translation>Sekundärer Videoeingang (Android-Entwickler)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="264"/>
+        <source>Disable primary video (Android)</source>
+        <translation>Primäres Video deaktivieren (Android)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="265"/>
+        <source>Stops rendering the primary stream on Android to debug the secondary feed. Requires restart.</source>
+        <translation>Stoppt das Rendern des primären Streams auf Android, um den sekundären Feed zu debuggen. Erfordert einen Neustart.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="367"/>
+        <source>Draw RGB dummy frames</source>
+        <translation>Zeichnen Sie RGB Dummy-Frames</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="395"/>
+        <source>dev_use_low_latency_parser_when_possible</source>
+        <translation>dev_use_low_latency_parser_when_possible</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="423"/>
+        <source>dev_feed_incomplete_frames_to_decoder</source>
+        <translation>dev_feed_incomplete_frames_to_decoder</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="446"/>
+        <source>Use RPI decoding</source>
+        <translation>Verwenden Sie die RPI-Dekodierung</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="460"/>
+        <source>Use external decoding service</source>
+        <translation>Verwenden Sie einen externen Dekodierungsdienst</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="473"/>
+        <source>Use KMS DRM overlay renderer (experimental)</source>
+        <translation>Verwenden Sie den Overlay-Renderer KMS DRM (experimentell)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml" line="474"/>
+        <source>Linux only. Requires restart. Disable external decode service for this to take effect.</source>
+        <translation>Nur Linux. Erfordert einen Neustart. Deaktivieren Sie den externen Dekodierungsdienst, damit dies wirksam wird.</translation>
     </message>
 </context>
 <context>
@@ -604,7 +929,7 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="943" />
         <source>Show Altitude</source>
-        <translation>H?he anzeigen</translation>
+        <translation>Höhe anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="972" />
@@ -624,7 +949,7 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1059" />
         <source>Show Second Altitude</source>
-        <translation>Zweite H?he anzeigen</translation>
+        <translation>Zweite Höhe anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1088" />
@@ -706,6 +1031,151 @@
         <source>Show GPIO</source>
         <translation>GPIO anzeigen</translation>
     </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="133"/>
+        <source>Presets</source>
+        <translation>Voreinstellungen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="144"/>
+        <source>P1</source>
+        <translation>P1</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="150"/>
+        <source>P2</source>
+        <translation>P2</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="165"/>
+        <source>OHD LINK / STREAMING WIDGETS</source>
+        <translation>OHD LINK / STREAMING WIDGETS</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="168"/>
+        <source>Show Widgets</source>
+        <translation>Widgets anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="182"/>
+        <source>Show Link Overview</source>
+        <translation>Linkübersicht anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="183"/>
+        <source>Compact overview for RSSI, TXC temp, SNR, and link status.</source>
+        <translation>Kompakte Übersicht für RSSI, TXC temp, SNR und Linkstatus.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="197"/>
+        <source>Show Bottom Link Bar</source>
+        <translation>Untere Linkleiste anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="198"/>
+        <source>Hide the bottom link sidebar without disabling other link widgets.</source>
+        <translation>Blenden Sie die untere Link-Seitenleiste aus, ohne andere Link-Widgets zu deaktivieren.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="213"/>
+        <source>UAV (FC) WIDGETS</source>
+        <translation>UAV (FC) WIDGETS</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="800"/>
+        <source>Show distance sensor widget</source>
+        <translation>Distanzsensor-Widget anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="801"/>
+        <source>For UAVs with a distance sensor</source>
+        <translation>Für UAVs mit Abstandssensor</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="815"/>
+        <source>Show (GPS) time widget</source>
+        <translation>Zeit-Widget (GPS) anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="816"/>
+        <source>For UAVs with GPS, shows the time as reported by the UAV</source>
+        <translation>Zeigt für UAVs mit GPS die vom UAV gemeldete Zeit an.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="831"/>
+        <source>OTHER</source>
+        <translation>OTHER</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1014"/>
+        <source>LEGACY</source>
+        <translation>LEGACY</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1017"/>
+        <source>Show Transceiver Temperature Air</source>
+        <translation>Transceiver-Temperatur anzeigen Air</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1031"/>
+        <source>Show Transceiver Temperature Ground</source>
+        <translation>Transceiver-Temperatur anzeigen Ground</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1047"/>
+        <source>Show Retransmission Stats</source>
+        <translation>Statistiken zur erneuten Übertragung anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1048"/>
+        <source>Shows packet loss and retransmission activity for video.</source>
+        <translation>Zeigt Paketverlust und Neuübertragungsaktivität für Video an.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1063"/>
+        <source>Show Downlink RSSI</source>
+        <translation>Downlink anzeigen RSSI</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1064"/>
+        <source>RSSI / Stats about downlink</source>
+        <translation>RSSI / Statistiken zum Downlink</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1078"/>
+        <source>Show Uplink RSSI</source>
+        <translation>Uplink anzeigen RSSI</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1079"/>
+        <source>RSSI / Stats about uplink</source>
+        <translation>RSSI / Statistiken zum Uplink</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1093"/>
+        <source>Show live rate control widget</source>
+        <translation>Live-Tarifkontroll-Widget anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1094"/>
+        <source>Trade range / stability for bitrate at run time. Requires hw support.</source>
+        <translation>Tauschen Sie Bereich/Stabilität gegen Bitrate zur Laufzeit. Erfordert HW-Unterstützung.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1108"/>
+        <source>Show video widget</source>
+        <translation>Video-Widget anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1109"/>
+        <source>More stats about each camera stream, quick resolution changes and quick air recording.</source>
+        <translation>Weitere Statistiken zu jedem Kamerastream, schnelle Auflösungsänderungen und schnelle Luftaufzeichnung.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml" line="1235"/>
+        <source>Show Wind</source>
+        <translation>Wind anzeigen</translation>
+    </message>
 </context>
 <context>
     <name>AppWidgetStyleSettingsView</name>
@@ -722,12 +1192,12 @@
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml" line="66" />
         <source>Trainwreck</source>
-        <translation>Trainwreck</translation>
+        <translation>Zugunglück</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml" line="80" />
         <source>RESET</source>
-        <translation>ZUR?CKSETZEN</translation>
+        <translation>RESET</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml" line="102" />
@@ -794,7 +1264,7 @@
     <message>
         <location filename="../qml/ui/widgets/BaseWidget.qml" line="22" />
         <source>PLS FILL ME</source>
-        <translation>BITTE AUSF?LLEN</translation>
+        <translation>PLS FILL ME</translation>
     </message>
 </context>
 <context>
@@ -853,7 +1323,7 @@
     <message>
         <location filename="../qml/ui/elements/CardToast.qml" line="14" />
         <source>FILL ME TEXT</source>
-        <translation>PLATZHALTER?TEXT</translation>
+        <translation>FILL ME TEXT</translation>
     </message>
 </context>
 <context>
@@ -871,7 +1341,7 @@
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseCameraDialoque.qml" line="63" />
         <source>Saved, rebooting air unit</source>
-        <translation>Gespeichert, AIR?Unit wird neu gestartet</translation>
+        <translation>Gespeichert, Lufteinheit wird neu gestartet</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseCameraDialoque.qml" line="71" />
@@ -886,14 +1356,14 @@
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseCameraDialoque.qml" line="148" />
         <source>Your AIR Platform: %1</source>
-        <translation>Deine AIR?Plattform: %1</translation>
+        <translation>Ihre AIR-Plattform: %1</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseCameraDialoque.qml" line="174" />
         <source>NOTE: Changing your camera automatically
 reboots your air unit</source>
-        <translation>HINWEIS: Das ?ndern der Kamera
-startet deine AIR?Unit automatisch neu</translation>
+        <translation>NOTE: Automatischer Kamerawechsel
+startet Ihre Lufteinheit neu</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseCameraDialoque.qml" line="196" />
@@ -911,22 +1381,22 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="16" />
         <source>Resolution Selection</source>
-        <translation>Aufl?sungsauswahl</translation>
+        <translation>Auswahl der Auflösung</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="31" />
         <source>480p@60fps  (4:3)</source>
-        <translation>480p@60fps  (4:3)</translation>
+        <translation>480p@60fps (4:3)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="32" />
         <source>720p@60fps  (16:9)</source>
-        <translation>720p@60fps  (16:9)</translation>
+        <translation>720p@60fps (16:9)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="33" />
         <source>1080p@30fps (16:9)</source>
-        <translation>1080p@30fps (16:9)</translation>
+        <translation>1080p@30__T0__ (16:9)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="100" />
@@ -936,17 +1406,17 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="104" />
         <source>Default Resolution: %1</source>
-        <translation>Standardaufl?sung: %1</translation>
+        <translation>Standardauflösung: %1</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="121" />
         <source>WIDTHxHEIGHT@FPS</source>
-        <translation>BREITE x H?HE @ FPS</translation>
+        <translation>BREITExHÖHE@FPS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="150" />
         <source>You can enter any (UNCHECKED !) resolution@fps you like here.</source>
-        <translation>Hier kannst du eine beliebige (NICHT gepr?fte!) Aufl?sung@fps eingeben.</translation>
+        <translation>Sie können hier eine beliebige (UNCHECKED !) Auflösung@fps eingeben.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/ChooseResolutionDialoque.qml" line="157" />
@@ -984,7 +1454,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/elements/ColorPicker.qml" line="126" />
         <source>Select</source>
-        <translation>Ausw?hlen</translation>
+        <translation>Wählen</translation>
     </message>
 </context>
 <context>
@@ -992,7 +1462,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/ConfigPopup.qml" line="164" />
         <source>No joystick navigation for this panel</source>
-        <translation>Keine Joystick-Navigation f?r dieses Panel</translation>
+        <translation>Keine Joystick-Navigation für dieses Panel</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/ConfigPopup.qml" line="188" />
@@ -1012,7 +1482,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/ConfigPopup.qml" line="213" />
         <source>Log</source>
-        <translation>Log</translation>
+        <translation>Protokoll</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/ConfigPopup.qml" line="221" />
@@ -1032,7 +1502,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/ConfigPopup.qml" line="246" />
         <source>Dev</source>
-        <translation>Dev</translation>
+        <translation>Entwickler</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/ConfigPopup.qml" line="252" />
@@ -1061,7 +1531,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/ControlWidget.qml" line="17" />
         <source>CONTROL INPUTS</source>
-        <translation>STEUEREING?NGE</translation>
+        <translation>CONTROL INPUTS</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/ControlWidget.qml" line="88" />
@@ -1071,7 +1541,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/ControlWidget.qml" line="109" />
         <source>Use FC channels</source>
-        <translation>FC-Kan?le verwenden</translation>
+        <translation>Verwenden Sie FC-Kanäle</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/ControlWidget.qml" line="130" />
@@ -1114,7 +1584,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/credits/Credits.qml" line="174" />
         <source>Honorable Mentions</source>
-        <translation>Besondere Erw?hnungen</translation>
+        <translation>Lobende Erwähnungen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/credits/Credits.qml" line="211" />
@@ -1126,11 +1596,7 @@ startet deine AIR?Unit automatisch neu</translation>
         <source>Pete</source>
         <translation>Pete</translation>
     </message>
-    <message>
-        <location filename="../qml/ui/configpopup/credits/Credits.qml" line="307" />
-        <source>You ?</source>
-        <translation>Du?</translation>
-    </message>
+    
 </context>
 <context>
     <name>DevStreamingInfo</name>
@@ -1147,12 +1613,12 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/DevStreamingInfo.qml" line="24" />
         <source>BLKS L/R:</source>
-        <translation>BL?CKE V/R:</translation>
+        <translation>BLKS L/R:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/DevStreamingInfo.qml" line="28" />
         <source>TX Delay:</source>
-        <translation>TX-Verz?gerung:</translation>
+        <translation>TX Verzögerung:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/DevStreamingInfo.qml" line="32" />
@@ -1192,13 +1658,7 @@ startet deine AIR?Unit automatisch neu</translation>
         <source>Frequency %1 MHz</source>
         <translation>Frequenz %1 MHz</translation>
     </message>
-    <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="50" />
-        <source>Set AIR and GROUND to CHANNEL [%1]
-(%2 MHz) ?</source>
-        <translation>AIR und GROUND auf KANAL [%1]
-(%2 MHz) setzen?</translation>
-    </message>
+    
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="77" />
         <source>WARNING !
@@ -1227,20 +1687,23 @@ startet deine AIR?Unit automatisch neu</translation>
         <translation>FEHLER - AIR ABGELEHNT</translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="114" />
-        <source>Couldn't reach air unit -</source>
-        <translation>AIR?Unit nicht erreichbar -</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="114"/>
+        <source>Couldn&apos;t reach air unit -</source>
+        <translation>Lufteinheit konnte nicht erreicht werden -</translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="115" />
-        <source>ERROR -COULDN'T REACH AIR</source>
-        <translation>FEHLER - AIR NICHT ERREICHBAR</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="115"/>
+        <source>ERROR -COULDN&apos;T REACH AIR</source>
+        <translation>FEHLER – AIR konnte nicht erreicht werden</translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="119" />
-        <source>Something went wrong - please use 'FIND AIR UNIT' to fix</source>
-        <translation>Etwas ist schiefgelaufen - bitte 'FIND AIR UNIT' verwenden</translation>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeAirGnd.qml" line="119"/>
+        <source>Something went wrong - please use &apos;FIND AIR UNIT&apos; to fix</source>
+        <translation>Es ist ein Fehler aufgetreten. Bitte verwenden Sie „FIND AIR UNIT“, um das Problem zu beheben</translation>
     </message>
+    
+    
+    
 </context>
 <context>
     <name>DialoqueFreqChangeGndOnly</name>
@@ -1263,6 +1726,16 @@ startet deine AIR?Unit automatisch neu</translation>
         <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="123" />
         <source>Cancel</source>
         <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="112"/>
+        <source>GND set to frequency %1 MHz</source>
+        <translation>GND auf Frequenz eingestellt %1 MHz</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml" line="115"/>
+        <source>Failed, GND busy, please try again later</source>
+        <translation>Fehlgeschlagen, GND beschäftigt, bitte versuchen Sie es später noch einmal</translation>
     </message>
 </context>
 <context>
@@ -1387,7 +1860,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/FlightModeWidget.qml" line="87" />
         <source>Only For Ardupilot</source>
-        <translation>Nur f?r Ardupilot</translation>
+        <translation>Nur für Ardupilot</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/FlightModeWidget.qml" line="213" />
@@ -1479,7 +1952,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/FreqComboBoxRow.qml" line="101" />
         <source>OHD %1</source>
-        <translation>OHD %1</translation>
+        <translation>O__T1__ %1</translation>
     </message>
 </context>
 <context>
@@ -1545,7 +2018,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/GPSWidget.qml" line="106" />
         <source>Hide identity</source>
-        <translation>Identit?t verbergen</translation>
+        <translation>Identität verbergen</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/GPSWidget.qml" line="134" />
@@ -1599,6 +2072,16 @@ startet deine AIR?Unit automatisch neu</translation>
         <source>%L1</source>
         <translation>%L1</translation>
     </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="110"/>
+        <source>Lat/Lon only</source>
+        <translation>Nur Lat/Lon</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidget.qml" line="148"/>
+        <source>Your identity is only hidden if you set custom offset values for lat,lon. Go to QOpenHD/General and set custom values.</source>
+        <translation>Ihre Identität wird nur ausgeblendet, wenn Sie benutzerdefinierte Offset-Werte für Breiten- und Längengrade festlegen. Gehen Sie zu QOpenHD/Allgemein und legen Sie benutzerdefinierte Werte fest.</translation>
+    </message>
 </context>
 <context>
     <name>GndTemperatureTXC</name>
@@ -1623,7 +2106,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/sidebar/GoBackElement.qml" line="25" />
         <source>BACK</source>
-        <translation>ZUR?CK</translation>
+        <translation>ZURÜCK</translation>
     </message>
 </context>
 <context>
@@ -1675,6 +2158,11 @@ startet deine AIR?Unit automatisch neu</translation>
         <location filename="../qml/ui/HUDOverlayGrid.qml" line="550" />
         <source>JOYSTICK NAVIGATION ENABLED</source>
         <translation>JOYSTICK-NAVIGATION AKTIVIERT</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/HUDOverlayGrid.qml" line="38"/>
+        <source>JOYSTICK NAVIGATION DISABLED</source>
+        <translation>JOYSTICK NAVIGATION DISABLED</translation>
     </message>
 </context>
 <context>
@@ -1760,6 +2248,11 @@ startet deine AIR?Unit automatisch neu</translation>
         <source>Request Home</source>
         <translation>Home anfordern</translation>
     </message>
+    <message>
+        <location filename="../qml/ui/widgets/HomeDistanceWidget.qml" line="141"/>
+        <source>Only For Ardupilot/PX4</source>
+        <translation>Nur für Ardupilot/PX4</translation>
+    </message>
 </context>
 <context>
     <name>HorizonLadder</name>
@@ -1809,7 +2302,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/HorizonWidget.qml" line="17" />
         <source>ARTIFICIAL HORIZON</source>
-        <translation>K?NSTLICHER HORIZONT</translation>
+        <translation>ARTIFICIAL HORIZON</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/HorizonWidget.qml" line="44" />
@@ -1925,7 +2418,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/elements/LanguageSelectForm.ui.qml" line="10" />
         <source>French</source>
-        <translation>Franz?sisch</translation>
+        <translation>Französisch</translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/LanguageSelectForm.ui.qml" line="11" />
@@ -1935,12 +2428,12 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/elements/LanguageSelectForm.ui.qml" line="12" />
         <source>Dutch</source>
-        <translation>Niederl?ndisch</translation>
+        <translation>Niederländisch</translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/LanguageSelectForm.ui.qml" line="13" />
         <source>Romanian</source>
-        <translation>Rum?nisch</translation>
+        <translation>rumänisch</translation>
     </message>
     <message>
         <location filename="../qml/ui/elements/LanguageSelectForm.ui.qml" line="14" />
@@ -1988,22 +2481,22 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="245" />
         <source>Show pollution estimate %</source>
-        <translation>St?rungsabsch?tzung % anzeigen</translation>
+        <translation>Verschmutzungsschätzung in % anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="266" />
         <source>Show signal quality %</source>
-        <translation>Signalqualit?t % anzeigen</translation>
+        <translation>Signalqualität % anzeigen</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="305" />
         <source>Blocks lost: %1</source>
-        <translation>Bl?cke verloren: %1</translation>
+        <translation>Verlorene Blöcke: %1</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="314" />
         <source>Blocks recovered: %1</source>
-        <translation>Bl?cke wiederhergestellt: %1</translation>
+        <translation>Wiederhergestellte Blöcke: %1</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="323" />
@@ -2033,7 +2526,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="368" />
         <source>TX PWR Air: %1 %2</source>
-        <translation>TX?Leistung AIR: %1 %2</translation>
+        <translation>TX PWR Air: %1 %2</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="428" />
@@ -2053,12 +2546,12 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="485" />
         <source>Pollution: %1 pps</source>
-        <translation>St?rungen: %1 pps</translation>
+        <translation>Verschmutzung: %1 PPS</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="498" />
         <source>Quality: %1%</source>
-        <translation>Qualit?t: %1%</translation>
+        <translation>Qualität: %1%</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkDownRSSIWidget.qml" line="511" />
@@ -2076,7 +2569,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="16" />
         <source>LINK OVERVIEW</source>
-        <translation>LINK-?BERSICHT</translation>
+        <translation>LINK-ÜBERSICHT</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="160" />
@@ -2087,6 +2580,56 @@ startet deine AIR?Unit automatisch neu</translation>
         <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="177" />
         <source>SNR best: %1</source>
         <translation>SNR best: %1</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="240"/>
+        <source>SNR min: %1 dB</source>
+        <translation>SNR min: %1 dB</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="275"/>
+        <source>SNR max: %1 dB</source>
+        <translation>SNR max: %1 dB</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="310"/>
+        <source>GND RSSI: %1 dBm</source>
+        <translation>GND RSSI: %1 dBm</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="324"/>
+        <source>Loss: %1%</source>
+        <translation>Verlust: %1%</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="338"/>
+        <source>Pollution: %1 pps</source>
+        <translation>Verschmutzung: %1 PPS</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="352"/>
+        <source>Quality: %1%</source>
+        <translation>Qualität: %1%</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="366"/>
+        <source>TX: %1</source>
+        <translation>TX: %1</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="380"/>
+        <source>RX: %1</source>
+        <translation>RX: %1</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="529"/>
+        <source>MCS: %1</source>
+        <translation>MCS: %1</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/LinkOverviewWidget.qml" line="529"/>
+        <source>N/A</source>
+        <translation>N / A</translation>
     </message>
 </context>
 <context>
@@ -2135,12 +2678,12 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="268" />
         <source>your HW does not support %1 MHz</source>
-        <translation>Deine HW unterst?tzt %1 MHz nicht</translation>
+        <translation>Ihr HW unterstützt %1 MHz nicht</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="276" />
         <source>AIR Unit not alive -</source>
-        <translation>AIR?Unit nicht erreichbar -</translation>
+        <translation>AIR Einheit nicht am Leben -</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="297" />
@@ -2183,20 +2726,20 @@ startet deine AIR?Unit automatisch neu</translation>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="407" />
         <source>TX ERRORS:
 %1</source>
-        <translation>TX?FEHLER:
+        <translation>TX ERRORS:
 %1</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="439" />
         <source>TX POWER</source>
-        <translation>TX?LEISTUNG</translation>
+        <translation>TX POWER</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="446" />
         <source>AIR:
  %1</source>
         <translation>AIR:
- %1</translation>
+%1</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="453" />
@@ -2216,7 +2759,7 @@ startet deine AIR?Unit automatisch neu</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="486" />
         <source>RETRANSMISSION</source>
-        <translation>WIEDER?BERTRAGUNG</translation>
+        <translation>RETRANSMISSION</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="496" />
@@ -2273,6 +2816,11 @@ WIEDERH.</translation>
         <translation>AIR:
 %1</translation>
     </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/LinkQuickPanel.qml" line="222"/>
+        <source>FREQUENCY / TOOLKIT</source>
+        <translation>FREQUENCY / TOOLKIT</translation>
+    </message>
 </context>
 <context>
     <name>LinkUpRSSIWidget</name>
@@ -2304,7 +2852,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/LinkUpRSSIWidget.qml" line="121" />
         <source>TX PWR Gnd: %1 %2</source>
-        <translation>TX?Leistung GND: %1 %2</translation>
+        <translation>TX PWR Masse: %1 %2</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/LinkUpRSSIWidget.qml" line="181" />
@@ -2346,7 +2894,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="127" />
         <source>Size</source>
-        <translation>Gr??e</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="154" />
@@ -2362,7 +2910,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="203" />
         <source>Map API key (for Mapbox)</source>
-        <translation>Map-API-Schl?ssel (f?r Mapbox)</translation>
+        <translation>Map API-Taste (für Mapbox)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="212" />
@@ -2373,7 +2921,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="225" />
         <source>Get a free Mapbox access token at account.mapbox.com -&gt; Tokens, then paste it above.</source>
-        <translation>Hole dir ein kostenloses Mapbox-Zugriffstoken unter account.mapbox.com -&gt; Tokens und f?ge es oben ein.</translation>
+        <translation>Holen Sie sich ein kostenloses Mapbox-Zugriffstoken unter account.mapbox.com -&gt; Tokens und fügen Sie es dann oben ein.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="235" />
@@ -2408,12 +2956,12 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="572" />
         <source>Map API key (Mapbox)</source>
-        <translation>Map-API-Schl?ssel (Mapbox)</translation>
+        <translation>Map API-Taste (Mapbox)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="594" />
         <source>How to get a key: 1) Sign up at account.mapbox.com. 2) Open Tokens. 3) Copy your Default public token and paste it above.</source>
-        <translation>So bekommst du einen Schl?ssel: 1) Bei account.mapbox.com registrieren. 2) Tokens ?ffnen. 3) Den Default public token kopieren und oben einf?gen.</translation>
+        <translation>So erhalten Sie einen Schlüssel: 1) Melden Sie sich unter account.mapbox.com an. 2) Offene Token. 3) Kopieren Sie Ihr öffentliches Standardtoken und fügen Sie es oben ein.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="658" />
@@ -2423,12 +2971,12 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="721" />
         <source>An API key is required for the selected map provider.</source>
-        <translation>F?r den ausgew?hlten Kartenanbieter ist ein API-Schl?ssel erforderlich.</translation>
+        <translation>Für den ausgewählten Kartenanbieter ist ein API-Schlüssel erforderlich.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/map/MapWidgetForm.ui.qml" line="729" />
         <source>Add your Mapbox access token in the map settings, then reload the map.</source>
-        <translation>F?ge dein Mapbox-Zugriffstoken in den Karteneinstellungen hinzu und lade die Karte neu.</translation>
+        <translation>Fügen Sie Ihr Mapbox-Zugriffstoken in den Karteneinstellungen hinzu und laden Sie dann die Karte neu.</translation>
     </message>
 </context>
 <context>
@@ -2521,7 +3069,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="167" />
         <source>ID</source>
-        <translation>ID</translation>
+        <translation>AUSWEIS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="169" />
@@ -2541,7 +3089,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="186" />
         <source>Array length</source>
-        <translation>Array-L?nge</translation>
+        <translation>Array-Länge</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/dev/MavlinkDebugPanel.qml" line="187" />
@@ -2554,7 +3102,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="244" />
         <source>x</source>
-        <translation>x</translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="283" />
@@ -2564,7 +3112,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="306" />
         <source>Description not availble</source>
-        <translation>Beschreibung nicht verf?gbar</translation>
+        <translation>Beschreibung nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="339" />
@@ -2581,6 +3129,26 @@ WIEDERH.</translation>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="427" />
         <source>Save</source>
         <translation>Speichern</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="402"/>
+        <source>experiment</source>
+        <translation>Experiment</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="444"/>
+        <source>40 MHz is disabled (enable in Advanced Settings)</source>
+        <translation>40 MHz ist deaktiviert (in den erweiterten Einstellungen aktivieren)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="461"/>
+        <source>Please reboot to apply</source>
+        <translation>Bitte starten Sie neu, um sich zu bewerben</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamEditor.qml" line="465"/>
+        <source>Set %1 to [%2]</source>
+        <translation>Setzen Sie %1 auf [%2]</translation>
     </message>
 </context>
 <context>
@@ -2599,7 +3167,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="95" />
         <source>FULL %1 PARAM SET</source>
-        <translation>VOLLES %1?PARAMETERSET</translation>
+        <translation>VOLLES %1-PARAMETERSET</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="190" />
@@ -2610,7 +3178,7 @@ WIEDERH.</translation>
         <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="193" />
         <source>This parameter is read-only (cannot be edited)
 %1</source>
-        <translation>Dieser Parameter ist schreibgesch?tzt (kann nicht bearbeitet werden)
+        <translation>Dieser Parameter ist schreibgeschützt (kann nicht bearbeitet werden)
 %1</translation>
     </message>
     <message>
@@ -2623,6 +3191,16 @@ WIEDERH.</translation>
         <source>Please fetch</source>
         <translation>Bitte abrufen</translation>
     </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="46"/>
+        <source>AIR not alive, parameters unavailable</source>
+        <translation>AIR nicht aktiv, Parameter nicht verfügbar</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/MavlinkParamPanel.qml" line="47"/>
+        <source>GND not alive, parameters unavailable</source>
+        <translation>GND nicht aktiv, Parameter nicht verfügbar</translation>
+    </message>
 </context>
 <context>
     <name>MissionWidget</name>
@@ -2634,7 +3212,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/widgets/MissionWidget.qml" line="59" />
         <source>Only For Ardupilot/PX4</source>
-        <translation>Nur f?r Ardupilot/PX4</translation>
+        <translation>Nur für Ardupilot/PX4</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/MissionWidget.qml" line="71" />
@@ -2688,7 +3266,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="40" />
         <source>LINK/QUICK</source>
-        <translation>LINK/QUICK</translation>
+        <translation>LINK/SCHNELL</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="43" />
@@ -2708,7 +3286,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/OHDSettingsPanel.qml" line="53" />
         <source>GROUND</source>
-        <translation>GROUND</translation>
+        <translation>BODEN</translation>
     </message>
 </context>
 <context>
@@ -2744,7 +3322,7 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="82" />
         <source>Please enter a valid ip</source>
-        <translation>Bitte eine g?ltige IP eingeben</translation>
+        <translation>Bitte geben Sie eine gültige IP ein</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="141" />
@@ -2769,21 +3347,21 @@ WIEDERH.</translation>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="239" />
         <source>Android Tethering</source>
-        <translation>Android?Tethering</translation>
+        <translation>Android-Tethering</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="246" />
         <source>This feature is only available on android</source>
-        <translation>Diese Funktion ist nur unter Android verf?gbar</translation>
+        <translation>Diese Funktion ist nur auf Android verfügbar</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="251" />
         <source>1) Connect via USB to ground station
 2) Enable tethering on your phone
 3) Open this app and start your ground station</source>
-        <translation>1) Per USB an die Bodenstation anschlie?en
-2) Tethering am Handy aktivieren
-3) App ?ffnen und Bodenstation starten</translation>
+        <translation>1) Über USB mit der Bodenstation verbinden
+2) Aktivieren Sie Tethering auf Ihrem Telefon
+3) Öffnen Sie diese App und starten Sie Ihre Bodenstation</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="260" />
@@ -2797,26 +3375,26 @@ WIEDERH.</translation>
         <translation>Bitte Infos lesen</translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="268" />
+        <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="268"/>
         <source>1) Set ETHERNET to FORWARD+INTERNET
 2) Reboot ground
 3) Connect your external device (phone) to your ground station via ethernet.
 
-4) Select 'share my internet with ...' when the (android) connection setup pops up
+4) Select &apos;share my internet with ...&apos; when the (android) connection setup pops up
 
 Video and telemetry forwarding is started automatically, internet will be forwarded from your phone.</source>
-        <translation>1) ETHERNET auf FORWARD+INTERNET stellen
-2) Ground neu starten
-3) Externes Ger?t (Telefon) per Ethernet verbinden
+        <translation>1) Setzen Sie ETHERNET auf FORWARD+INTERNET
+2) Boden neu starten
+3) Verbinden Sie Ihr externes Gerät (Telefon) über Ethernet mit Ihrer Bodenstation.
 
-4) Bei der (Android-)Einrichtung 'Mein Internet freigeben f?r ...' w?hlen
+4) Wählen Sie „Mein Internet teilen mit ...“, wenn die (Android-)Verbindungseinrichtung erscheint
 
-Video- und Telemetrie-Weiterleitung startet automatisch, Internet wird vom Telefon weitergeleitet.</translation>
+Die Video- und Telemetrieweiterleitung wird automatisch gestartet, die Internetweiterleitung erfolgt von Ihrem Telefon aus.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="277" />
         <source>ETHERNET HOTSPOT</source>
-        <translation>ETHERNET?HOTSPOT</translation>
+        <translation>ETHERNET HOTSPOT</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="285" />
@@ -2827,18 +3405,18 @@ Video- und Telemetrie-Weiterleitung startet automatisch, Internet wird vom Telef
 You might need to disable wifi and cellular on your phone
 
 Video and telemetry forwarding should start automatically, internet will not be available.</source>
-        <translation>1) ETHERNET auf HOTSPOT stellen
-2) Ground neu starten
-3) Externes Ger?t per Ethernet verbinden
+        <translation>1) Setzen Sie ETHERNET auf HOTSPOT
+2) Boden neu starten
+3) Verbinden Sie Ihr externes Gerät über Ethernet mit Ihrer Bodenstation.
 
-Ggf. WLAN und Mobilfunk am Telefon deaktivieren
+Möglicherweise müssen Sie WLAN und Mobilfunk auf Ihrem Telefon deaktivieren
 
-Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nicht verf?gbar.</translation>
+Die Video- und Telemetrieweiterleitung sollte automatisch starten, das Internet ist nicht verfügbar.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="332" />
         <source>UDP PORT: %1</source>
-        <translation>UDP?PORT: %1</translation>
+        <translation>UDP PORT: %1</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="382" />
@@ -2853,7 +3431,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="392" />
         <source>TCP PORT: %1</source>
-        <translation>TCP?PORT: %1</translation>
+        <translation>TCP PORT: %1</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="407" />
@@ -2863,7 +3441,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="407" />
         <source>Scan Ethernet for devices</source>
-        <translation>Ethernet nach Ger?ten scannen</translation>
+        <translation>Scannen Sie Ethernet nach Geräten</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="413" />
@@ -2878,7 +3456,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="435" />
         <source>No devices discovered yet. Start a scan to look for ground stations.</source>
-        <translation>Noch keine Ger?te gefunden. Starte einen Scan, um Bodenstationen zu finden.</translation>
+        <translation>Noch keine Geräte entdeckt. Starten Sie einen Scan, um nach Bodenstationen zu suchen.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/connect/PaneConnectionMode.qml" line="436" />
@@ -2890,6 +3468,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
         <source>Connect</source>
         <translation>Verbinden</translation>
     </message>
+    
 </context>
 <context>
     <name>Panel4Recording</name>
@@ -2909,7 +3488,55 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/sidebar/Panel7Status.qml" line="99" />
         <source>Advanced Menu</source>
-        <translation>Erweitertes Men?</translation>
+        <translation>Erweitertes Menü</translation>
+    </message>
+    <message>
+        <source>Connection:</source>
+        <translation>Verbindung:</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>Verbunden</translation>
+    </message>
+    <message>
+        <source>AIR only</source>
+        <translation>Nur AIR</translation>
+    </message>
+    <message>
+        <source>GND only</source>
+        <translation>Nur GND</translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation>Nicht verbunden</translation>
+    </message>
+    <message>
+        <source>QOpenHD Version:</source>
+        <translation>QOpenHD-Version:</translation>
+    </message>
+    <message>
+        <source>OpenHD Version:</source>
+        <translation>OpenHD-Version:</translation>
+    </message>
+    <message>
+        <source>Version mismatch</source>
+        <translation>Version stimmt nicht überein</translation>
+    </message>
+    <message>
+        <source>Chipset GND:</source>
+        <translation>Chipsatz GND:</translation>
+    </message>
+    <message>
+        <source>Chipset AIR:</source>
+        <translation>Chipsatz AIR:</translation>
+    </message>
+    <message>
+        <source>Camera:</source>
+        <translation>Kamera:</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>Unbekannt</translation>
     </message>
 </context>
 <context>
@@ -2918,6 +3545,14 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
         <location filename="../qml/ui/sidebar/Panel8FindAirUnit.qml" line="79" />
         <source>START SCAN</source>
         <translation>SCAN STARTEN</translation>
+    </message>
+    <message>
+        <source>Channel scan started, please wait</source>
+        <translation>Kanalscan gestartet, bitte warten</translation>
+    </message>
+    <message>
+        <source>Busy, please try again later</source>
+        <translation>Beschäftigt, bitte später erneut versuchen</translation>
     </message>
 </context>
 <context>
@@ -2933,7 +3568,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/widgets/PerformanceHorizonWidget2.qml" line="18" />
         <source>ARTIFICIAL HORIZON 2</source>
-        <translation>K?NSTLICHER HORIZONT 2</translation>
+        <translation>ARTIFICIAL HORIZON 2</translation>
     </message>
 </context>
 <context>
@@ -2941,7 +3576,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/configpopup/status/PingUtilColumn.qml" line="35" />
         <source>Ping all systems, aka check if they respond to the mavlink ping command. Both OpenHD air and ground support this command, FC only ardupilot / px4 support this command. The command is lossy, aka you might need to use it more than once to get a response from all systems. No response after &gt;10 tries is a hint that one of your systems is not functioning properly.</source>
-        <translation>Alle Systeme anpingen, d.?h. pr?fen, ob sie auf den MAVLink?Ping reagieren. OpenHD Air und Ground unterst?tzen den Befehl, FC nur Ardupilot/PX4. Der Befehl ist verlustbehaftet ? ggf. mehrfach ausf?hren. Keine Antwort nach &gt;10 Versuchen deutet auf ein Problem eines Systems hin.</translation>
+        <translation>Pingen Sie alle Systeme an, d. h. prüfen Sie, ob sie auf den mavlink-Ping-Befehl reagieren. Sowohl OpenHD Luft als auch Boden unterstützen diesen Befehl, FC unterstützt nur Arduino / px4 diesen Befehl. Der Befehl ist verlustbehaftet, d. h. Sie müssen ihn möglicherweise mehr als einmal verwenden, um eine Antwort von allen Systemen zu erhalten. Keine Reaktion nach &gt;10 Versuchen ist ein Hinweis darauf, dass eines Ihrer Systeme nicht ordnungsgemäß funktioniert.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PingUtilColumn.qml" line="39" />
@@ -2951,7 +3586,7 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/configpopup/status/PingUtilColumn.qml" line="43" />
         <source>Auto-ping</source>
-        <translation>Auto?Ping</translation>
+        <translation>Automatischer Ping</translation>
     </message>
 </context>
 <context>
@@ -2959,17 +3594,17 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="21" />
         <source>Scan for clean Channels</source>
-        <translation>Saubere Kan?le scannen</translation>
+        <translation>Suchen Sie nach sauberen Kanälen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="24" />
         <source>STILL ANALYZING, PLEASE WAIT ...</source>
-        <translation>ANALYSE L?UFT, BITTE WARTEN ...</translation>
+        <translation>STILL ANALYZING, PLEASE WAIT ...</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="49" />
         <source>OHD [1-7]</source>
-        <translation>OHD [1-7]</translation>
+        <translation>O__T0__ [1-7]</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="50" />
@@ -2986,9 +3621,9 @@ Video- und Telemetrie-Weiterleitung sollte automatisch starten, Internet ist nic
         <source>Analyze channels for pollution by wifi access points.
 NOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended !
 In short: Any frequency with red bars (small or big) should not be used, unless there are no options / other reasons to do so.</source>
-        <translation>Analysiert Kan?le auf St?rungen durch WLAN?APs.
-HINWEIS: Dies liefert nur Hinweise auf freie Kan?le; ein echter Kanal?Analyzer (z.?B. am Handy) wird empfohlen!
-Kurz: Frequenzen mit roten Balken (klein oder gro?) sollten nicht genutzt werden, au?er es gibt keine Alternativen.</translation>
+        <translation>Analysieren Sie Kanäle auf Verschmutzung durch WLAN-Zugangspunkte.
+NOTE: Dies gibt nur einen Hinweis auf freie Kanäle, die Verwendung eines geeigneten Kanalanalysators (z. B. am Telefon) wird empfohlen!
+Kurz gesagt: Frequenzen mit roten Balken (klein oder groß) sollten nicht verwendet werden, es sei denn, es gibt keine Optionen/anderen Gründe dafür.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="80" />
@@ -2998,7 +3633,7 @@ Kurz: Frequenzen mit roten Balken (klein oder gro?) sollten nicht genutzt werden
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="85" />
         <source>Busy,please try again later</source>
-        <translation>Besch?ftigt, bitte sp?ter erneut versuchen</translation>
+        <translation>Beschäftigt, bitte versuchen Sie es später noch einmal</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="87" />
@@ -3008,7 +3643,7 @@ Kurz: Frequenzen mit roten Balken (klein oder gro?) sollten nicht genutzt werden
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="109" />
         <source>WARNING: THIS VIEW CAN BE DECEIVING !</source>
-        <translation>WARNUNG: DIESE ANSICHT KANN IRREF?HREND SEIN!</translation>
+        <translation>WARNING: THIS VIEW CAN BE DECEIVING !</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="114" />
@@ -3048,7 +3683,7 @@ Kurz: Frequenzen mit roten Balken (klein oder gro?) sollten nicht genutzt werden
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml" line="236" />
         <source>WiFi pollution estimate</source>
-        <translation>WLAN?St?rungsabsch?tzung</translation>
+        <translation>WiFi Verschmutzungsschätzung</translation>
     </message>
 </context>
 <context>
@@ -3079,32 +3714,32 @@ Kurz: Frequenzen mit roten Balken (klein oder gro?) sollten nicht genutzt werden
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="40" />
         <source>AIR: PLEASE SELECT N RF PATH / ANTENNAS</source>
-        <translation>AIR: BITTE ANZAHL RF?PFADE/ANTENNEN W?HLEN</translation>
+        <translation>AIR: PLEASE SELECT N RF PATH / ANTENNAS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="41" />
         <source>AIR: 1 RF PATH / ANTENNAS</source>
-        <translation>AIR: 1 RF?PFAD / ANTENNEN</translation>
+        <translation>AIR: 1 RF PATH / ANTENNAS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="42" />
         <source>AIR: 2 RF PATHS / ANTENNAS</source>
-        <translation>AIR: 2 RF?PFADE / ANTENNEN</translation>
+        <translation>AIR: 2 RF PATHS / ANTENNAS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="46" />
         <source>GND: PLEASE SELECT N RF PATH / ANTENNAS</source>
-        <translation>GND: BITTE ANZAHL RF?PFADE/ANTENNEN W?HLEN</translation>
+        <translation>GND: PLEASE SELECT N RF PATH / ANTENNAS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="47" />
         <source>GND: 1 RF PATH / ANTENNAS</source>
-        <translation>GND: 1 RF?PFAD / ANTENNEN</translation>
+        <translation>GND: 1 RF PATH / ANTENNAS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="48" />
         <source>GND: 2 RF PATHS / ANTENNAS</source>
-        <translation>GND: 2 RF?PFADE / ANTENNEN</translation>
+        <translation>GND: 2 RF PATHS / ANTENNAS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="89" />
@@ -3124,16 +3759,16 @@ Kurz: Frequenzen mit roten Balken (klein oder gro?) sollten nicht genutzt werden
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="105" />
         <source>CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS</source>
-        <translation>NUR M?GLICH, WENN AIR UND GND JE 2 RF?PFADE/ANTENNEN HABEN</translation>
+        <translation>CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml" line="113" />
         <source>WARNING:
  YOU NEED TO REFLASH YOUR AIR / GROUND UNIT
 IF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW</source>
-        <translation>WARNUNG:
- DU MUSST AIR/GROUND NEU FLASHEN,
-WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
+        <translation>WARNING:
+ YOU NEED TO REFLASH YOUR AIR / GROUND UNIT
+IF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW</translation>
     </message>
 </context>
 <context>
@@ -3141,12 +3776,12 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="19" />
         <source>Find Air Unit</source>
-        <translation>AIR?Unit finden</translation>
+        <translation>Finden Sie die Einheit Air</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="22" />
         <source>STILL SCANNING, PLEASE WAIT ...</source>
-        <translation>SCAN L?UFT, BITTE WARTEN ...</translation>
+        <translation>STILL SCANNING, PLEASE WAIT ...</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="41" />
@@ -3156,12 +3791,12 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="42" />
         <source>All 2.4G channels</source>
-        <translation>Alle 2.4G?Kan?le</translation>
+        <translation>Alle 2.4G-Kanäle</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="43" />
         <source>All 5.8G channels</source>
-        <translation>Alle 5.8G?Kan?le</translation>
+        <translation>Alle 5.8G-Kanäle</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="60" />
@@ -3171,17 +3806,17 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="68" />
         <source>Channel scan started, please wait</source>
-        <translation>Kanal?Scan gestartet, bitte warten</translation>
+        <translation>Kanalsuchlauf gestartet, bitte warten</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="71" />
         <source>Busy,please try again later</source>
-        <translation>Besch?ftigt, bitte sp?ter erneut versuchen</translation>
+        <translation>Beschäftigt, bitte versuchen Sie es später noch einmal</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="92" />
         <source>Initiate Channel Scan (Find a running air unit). Similar to analogue TX / RX, this listens on each channel for a short time to find a running openhd air unit. Quick if you are only using the 5 OpenHD recommended channels, otherwise please specify the generic band and give it some time (There are a ton of possible channels, especially in 5.8G)</source>
-        <translation>Kanal?Scan starten (laufende AIR?Unit finden). ?hnlich wie analoges TX/RX wird auf jedem Kanal kurz gelauscht, um eine laufende OpenHD?AIR?Unit zu finden. Schnell, wenn nur die 5 empfohlenen OpenHD?Kan?le genutzt werden; sonst bitte das Band w?hlen und etwas Zeit einplanen (es gibt sehr viele Kan?le, besonders in 5.8G).</translation>
+        <translation>Starten Sie den Kanalscan (finden Sie eine laufende Lufteinheit). Ähnlich wie beim analogen TX / RX lauscht dieser für kurze Zeit auf jedem Kanal, um ein laufendes OpenHD-Luftgerät zu finden. Schnell, wenn Sie nur die 5 von OpenHD empfohlenen Kanäle verwenden, andernfalls geben Sie bitte das allgemeine Band an und geben Sie ihm etwas Zeit (Es gibt eine Menge möglicher Kanäle, insbesondere in 5.8G)</translation>
     </message>
 </context>
 <context>
@@ -3202,7 +3837,7 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="145" />
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="152" />
         <source>Please Select</source>
-        <translation>Bitte ausw?hlen</translation>
+        <translation>Bitte auswählen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="132" />
@@ -3272,7 +3907,7 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="263" />
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="270" />
         <source>Please select</source>
-        <translation>Bitte ausw?hlen</translation>
+        <translation>Bitte auswählen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="175" />
@@ -3297,12 +3932,12 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="179" />
         <source>MAX1   [58] ~420mW (MCS&lt;=2!)</source>
-        <translation>MAX1   [58] ~420mW (MCS&lt;=2!)</translation>
+        <translation>Max1 [58] ~Tq (MCS&lt;=T!)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="180" />
         <source>MAX2   [63] ~500mW (MCS&lt;=2!)</source>
-        <translation>MAX2   [63] ~500mW (MCS&lt;=2!)</translation>
+        <translation>Mxa [63] ~Taq (MCS&lt;=T!)</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="185" />
@@ -3533,13 +4168,33 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="579" />
         <source>Caution: Not all cards are designed to handle high power levels.
  Excessive power may lead to card damage</source>
-        <translation>Achtung: Nicht alle Karten sind f?r hohe Leistungsstufen ausgelegt.
- Zu hohe Leistung kann die Karte besch?digen</translation>
+        <translation>Achtung: Nicht alle Karten sind für hohe Leistungspegel ausgelegt.
+ Übermäßige Leistung kann zur Beschädigung der Karte führen</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="590" />
         <source>WARNING: ARMING WILL REDUCE YOUR TX POWER</source>
-        <translation>WARNUNG: BEWAFFNEN REDUZIERT DIE TX?LEISTUNG</translation>
+        <translation>WARNING: ARMING WILL REDUCE YOUR TX POWER</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="41"/>
+        <source>WARNING: Changing TX power while armed is not recommended !</source>
+        <translation>WARNING: Es wird nicht empfohlen, die Leistung von TX im scharfgeschalteten Zustand zu ändern!</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="456"/>
+        <source>Please select a valid tx power</source>
+        <translation>Bitte wählen Sie eine gültige Sendeleistung aus</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="462"/>
+        <source>SUCCESS</source>
+        <translation>SUCCESS</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupTxPowerEditor.qml" line="464"/>
+        <source>Cannot change TX power, please try again</source>
+        <translation>Die Leistung von TX kann nicht geändert werden. Bitte versuchen Sie es erneut</translation>
     </message>
 </context>
 <context>
@@ -3547,12 +4202,12 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="72" />
         <source>Confirm Power Change</source>
-        <translation>Energie?nderung best?tigen</translation>
+        <translation>Bestätigen Sie die Leistungsänderung</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="78" />
         <source>If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode!</source>
-        <translation>Wenn deine Drohne in der Luft ist, kann ein Neustart oder Herunterfahren einen Absturz verursachen oder den Failsafe ausl?sen!</translation>
+        <translation>Wenn sich Ihre Drohne in der Luft befindet, kann ein Neustart oder Herunterfahren zu einem Absturz führen oder dazu führen, dass sie in den Failsafe-Modus wechselt!</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/PowerActionDialoque.qml" line="93" />
@@ -3740,7 +4395,7 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="196" />
         <source>Doing wait_for_frame_decode:</source>
-        <translation>wait_for_frame_decode l?uft:</translation>
+        <translation>Wait_for_frame_decode ausführen:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="218" />
@@ -3755,7 +4410,7 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="262" />
         <source>Rtp parse n gaps:</source>
-        <translation>RTP Parse L?cken:</translation>
+        <translation>RTP-Analyse und Lücken:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="284" />
@@ -3765,12 +4420,12 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
     <message>
         <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="306" />
         <source>estimate fps:</source>
-        <translation>FPS gesch?tzt:</translation>
+        <translation>Schätzung fps:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="328" />
         <source>estimate keyframe i:</source>
-        <translation>Keyframe-I gesch?tzt:</translation>
+        <translation>Keyframe i schätzen:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="350" />
@@ -3826,9 +4481,9 @@ WENN STBC/LDPC AUF NICHT UNTERST?TZTER HW AKTIVIERT WIRD</translation>
         <source>NOTE: Only works on ardupilot!
 NOTE: Slow update rate(1Hz)-only for debugging
 Here you can see the rc channel values your FC reports via mavlink</source>
-        <translation>HINWEIS: Funktioniert nur mit ArduPilot!
-HINWEIS: Langsame Aktualisierung (1 Hz) ? nur zum Debuggen
-Hier siehst du die RC?Kanalwerte, die dein FC per Mavlink meldet</translation>
+        <translation>NOTE: Funktioniert nur auf Arduino!
+NOTE: Langsame Aktualisierungsrate (1 Hz) – nur zum Debuggen
+Hier können Sie die RC-Kanalwerte sehen, die Ihr FC über mavlink meldet</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcDebugScreenFC.qml" line="53" />
@@ -3869,17 +4524,17 @@ nicht gesetzt: -1</translation>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="30" />
         <source>About</source>
-        <translation>?ber</translation>
+        <translation>Über</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="33" />
         <source>RC over OpenHD - debug</source>
-        <translation>RC ?ber OpenHD - Debug</translation>
+        <translation>RC Über OpenHD - Debug</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoPanel.qml" line="36" />
         <source>FC channels - debug</source>
-        <translation>FC-Kan?le - Debug</translation>
+        <translation>FC Kanäle – debuggen</translation>
     </message>
 </context>
 <context>
@@ -3890,24 +4545,24 @@ nicht gesetzt: -1</translation>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="38" />
+        <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="38"/>
         <source>Enable OpenHD-RC: 
 
-1. OpenHD GND: Set 'ENABLE_JOY_RC' to 'ENABLED',
+1. OpenHD GND: Set &apos;ENABLE_JOY_RC&apos; to &apos;ENABLED&apos;,
 2.Connect a joystick via USB to GND Station
 3.Optionally reboot
 
 You can use the other screens to validate/debug your setup.
 NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !
 </source>
-        <translation>OpenHD?RC aktivieren:
+        <translation>Aktivieren Sie OpenHD-RC: 
 
- 1. OpenHD GND: Setze 'ENABLE_JOY_RC' auf 'ENABLED',
- 2. Joystick per USB mit der GND?Station verbinden
- 3. Optional neu starten
+1. OpenHD GND: Setzen Sie „ENABLE_JOY_RC“ auf „ENABLED“,
+2.Verbinden Sie einen Joystick über USB mit der GND Station
+3.Optional neu starten
 
- Du kannst die anderen Seiten nutzen, um dein Setup zu pr?fen/debuggen.
- HINWEIS: Eine separate RC?Verbindung (z. B. ExpressLRS) wird empfohlen!</translation>
+Sie können die anderen Bildschirme zum Validieren/Debuggen Ihres Setups verwenden.
+NOTE: Die Verwendung eines separaten RC-Links (z. B. ExpressLRS) wird empfohlen!</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/rc/RcInfoScreen.qml" line="54" />
@@ -3919,10 +4574,11 @@ NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !
         <source>Channel mapping is not intuitive, but it works when done correctly.
 If you cannot make it work, any proper RC controller (e.g. running EdgeTX / OpenTX)
 supports more advanced channel mapping and works via USB !</source>
-        <translation>Die Kanalzuordnung ist nicht intuitiv, aber sie funktioniert, wenn sie korrekt durchgef?hrt wird.
-Falls es nicht klappt, unterst?tzt jeder richtige RC?Sender (z. B. mit EdgeTX / OpenTX)
-erweiterte Kanalzuordnung und funktioniert per USB!</translation>
+        <translation>Die Kanalzuordnung ist nicht intuitiv, funktioniert aber, wenn sie richtig durchgeführt wird.
+Wenn Sie es nicht zum Laufen bringen können, verwenden Sie einen geeigneten RC-Controller (z. B. mit EdgeTX / OpenTX).
+unterstützt eine erweiterte Kanalzuordnung und funktioniert über USB!</translation>
     </message>
+    
 </context>
 <context>
     <name>RestartQOpenHDMessageBox</name>
@@ -3947,7 +4603,7 @@ erweiterte Kanalzuordnung und funktioniert per USB!</translation>
     <message>
         <location filename="../qml/ui/widgets/RetransmissionStarsWidget.qml" line="20" />
         <source>RETRANSMISSION STATS</source>
-        <translation>WIEDER?BERTRAGUNGSSTATISTIK</translation>
+        <translation>RETRANSMISSION STATS</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/RetransmissionStarsWidget.qml" line="89" />
@@ -4003,7 +4659,7 @@ erweiterte Kanalzuordnung und funktioniert per USB!</translation>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetAir.qml" line="25" />
         <source>CPU LOAD AIR</source>
-        <translation>CPU?LAST AIR</translation>
+        <translation>CPU LOAD AIR</translation>
     </message>
 </context>
 <context>
@@ -4011,7 +4667,7 @@ erweiterte Kanalzuordnung und funktioniert per USB!</translation>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="16" />
         <source>CPU LOAD AIR</source>
-        <translation>CPU?LAST AIR</translation>
+        <translation>CPU LOAD AIR</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="104" />
@@ -4046,27 +4702,27 @@ erweiterte Kanalzuordnung und funktioniert per USB!</translation>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="346" />
         <source>CPU freq: %1 MHz</source>
-        <translation>CPU?Takt: %1 MHz</translation>
+        <translation>CPU Frequenz: %1 MHz</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="355" />
         <source>ISP freq: %1 MHz</source>
-        <translation>ISP?Takt: %1 MHz</translation>
+        <translation>ISP Frequenz: %1 MHz</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="364" />
         <source>H264 freq: %1 MHz</source>
-        <translation>H264?Takt: %1 MHz</translation>
+        <translation>H264-Takt: %1 MHz</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="373" />
         <source>Core freq: %1 MHz</source>
-        <translation>Core?Takt: %1 MHz</translation>
+        <translation>Kernfrequenz: %1 MHz</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="382" />
         <source>v3d freq: %1 MHz</source>
-        <translation>v3d?Takt: %1 MHz</translation>
+        <translation>v3d-Frequenz: %1 MHz</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/SOCStatusWidgetGeneric.qml" line="391" />
@@ -4103,17 +4759,17 @@ erweiterte Kanalzuordnung und funktioniert per USB!</translation>
         <location filename="../qml/video/SecondaryVideoGStreamer.qml" line="82" />
         <source>WAITING FOR
 SECONDARY VIDEO</source>
-        <translation>WARTE AUF
-SEKUND?RVIDEO</translation>
+        <translation>WAITING FOR
+SECONDARY VIDEO</translation>
     </message>
     <message>
         <location filename="../qml/video/SecondaryVideoGStreamer.qml" line="84" />
         <source>SECONDARY VIDEO
 NOT AVAILABLE
 ON THIS PLATFORM</source>
-        <translation>SEKUND?RVIDEO
-NICHT VERF?GBAR
-AUF DIESER PLATTFORM</translation>
+        <translation>SECONDARY VIDEO
+NOT AVAILABLE
+ON THIS PLATFORM</translation>
     </message>
     <message>
         <location filename="../qml/video/SecondaryVideoGStreamer.qml" line="198" />
@@ -4123,7 +4779,7 @@ AUF DIESER PLATTFORM</translation>
     <message>
         <location filename="../qml/video/SecondaryVideoGStreamer.qml" line="215" />
         <source>Minimized Height (px)</source>
-        <translation>Minimierte H?he (px)</translation>
+        <translation>Minimierte Höhe (px)</translation>
     </message>
     <message>
         <location filename="../qml/video/SecondaryVideoGStreamer.qml" line="232" />
@@ -4246,7 +4902,7 @@ AUF DIESER PLATTFORM</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyFC.qml" line="34" />
         <source>Ping:</source>
-        <translation>Ping:</translation>
+        <translation>Klingeln:</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyFC.qml" line="39" />
@@ -4341,7 +4997,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="162" />
         <source>Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned.</source>
-        <translation>Die Verwendung nicht unterst?tzter Karten hat Nebenwirkungen wie nicht funktionierende Frequenzwechsel, kein Uplink GND?AIR oder schlechte Reichweite. Vorsicht.</translation>
+        <translation>Die Verwendung nicht unterstützter Karten hat Nebenwirkungen wie nicht funktionierende Frequenzänderungen, kein Uplink-GND-Air oder eine schlechte Reichweite. Seien Sie gewarnt.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="184" />
@@ -4375,19 +5031,19 @@ Bitte AIR/GROUND aktualisieren.</translation>
 1) Wiring
 2) Right serial port enabled (OpenHD AIR param set)
 3) MAVLINK selected on your FC uart</source>
-        <translation>Deine AIR?Unit findet den FC (UART) nicht. Bitte pr?fen:
+        <translation>Ihr AIR-Gerät kann Ihr FC (UART) nicht finden. Bitte überprüfen Sie:
 1) Verkabelung
-2) Richtiger serieller Port aktiviert (OpenHD AIR Parameter)
-3) MAVLINK am FC?UART ausgew?hlt</translation>
+2) Rechter serieller Port aktiviert (OpenHD AIR Parametersatz)
+3) MAVLINK auf Ihrem FC uart ausgewählt</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="202" />
         <source>Please make sure:
 1) ARDUPILOT / PX4: FC sys id needs to be set to 1 (DEFAULT ARDUPILOT SYSID)
 2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0</source>
-        <translation>Bitte sicherstellen:
-1) ARDUPILOT / PX4: FC?SysID auf 1 setzen (Standard Ardupilot SysID)
-2) INAV / Betaflight: Nichts ?ndern, SysID sollte 0 sein</translation>
+        <translation>Bitte stellen Sie sicher:
+1) ARDUPILOT / PX4: FC System-ID muss auf 1 gesetzt werden (DEFAULT ARDUPILOT SYSID)
+2) INAV / Betaflight: Es muss nichts geändert werden, die System-ID sollte 0 sein</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="214" />
@@ -4397,7 +5053,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="220" />
         <source>UNAVAILABLE</source>
-        <translation>NICHT VERF?GBAR</translation>
+        <translation>UNAVAILABLE</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="223" />
@@ -4412,12 +5068,12 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="236" />
         <source>To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module.</source>
-        <translation>F?r den WiFi-Hotspot auf Air/Ground wird ein RPI/ROCK mit integriertem WLAN-Modul ben?tigt.</translation>
+        <translation>Um die Hotspot-Funktion WiFi auf Ihrer Luft-/Bodeneinheit nutzen zu können, müssen Sie einen RPI / ROCK mit integriertem WLAN-Modul verwenden.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="240" />
         <source>WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on</source>
-        <translation>Der WiFi-Hotspot wird bei Bewaffnung automatisch deaktiviert und beim Entwaffnen aktiviert. Um dieses Verhalten zu ?ndern (nicht empfohlen), auf immer aus/immer an stellen.</translation>
+        <translation>Der WiFi-Hotspot wird bei Bewaffnung automatisch deaktiviert und beim Entwaffnen aktiviert. Um dieses Verhalten zu ändern (nicht empfohlen), auf immer aus/immer an stellen.</translation>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="243" />
@@ -4447,7 +5103,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/configpopup/status/StatusCardBodyOpenHD.qml" line="265" />
         <source>Community</source>
-        <translation>Community</translation>
+        <translation>Gemeinschaft</translation>
     </message>
 </context>
 <context>
@@ -4496,7 +5152,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/ThrottleWidget.qml" line="76" />
         <source>Only For Ardupilot/PX4/inav</source>
-        <translation>Nur f?r Ardupilot/PX4/inav</translation>
+        <translation>Nur für Ardupilot/PX4/inav</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/ThrottleWidget.qml" line="170" />
@@ -4591,7 +5247,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="80" />
         <source>Air unit not alive, cannot set recording for %1</source>
-        <translation>AIR?Unit nicht erreichbar, Aufnahme f?r %1 nicht m?glich</translation>
+        <translation>Air-Gerät nicht aktiv, Aufzeichnung für %1 kann nicht eingestellt werden</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="86" />
@@ -4623,7 +5279,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="115" />
         <source>480p@60fps  (4:3)</source>
-        <translation>480p@60fps  (4:3)</translation>
+        <translation>480p@60fps (4:3)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="116" />
@@ -4643,7 +5299,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="119" />
         <source>720p@60fps  (16:9)</source>
-        <translation>720p@60fps  (16:9)</translation>
+        <translation>720p@60fps (16:9)</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="120" />
@@ -4696,7 +5352,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="193" />
         <source>Resolution:</source>
-        <translation>Aufl?sung:</translation>
+        <translation>Auflösung:</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="195" />
@@ -4761,7 +5417,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/VideoBitrateWidgetGeneric.qml" line="311" />
         <source>Switch primary &amp; secondary</source>
-        <translation>Prim?r &amp; Sekund?r tauschen</translation>
+        <translation>Primär und sekundär wechseln</translation>
     </message>
 </context>
 <context>
@@ -4814,7 +5470,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="67" />
         <source>30%:2 POLLUTED</source>
-        <translation>30%:2 ST?RBELEGT</translation>
+        <translation>30%:2 POLLUTED</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="68" />
@@ -4860,7 +5516,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="106" />
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="113" />
         <source>RATE N/A</source>
-        <translation>RATE nicht verf?gbar</translation>
+        <translation>RATE N/A</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="108" />
@@ -4881,32 +5537,28 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="150" />
         <source>Cannot change BW: %1 MHz, AIR not alive</source>
-        <translation>BW kann nicht ge?ndert werden: %1 MHz, AIR nicht erreichbar</translation>
+        <translation>BW kann nicht geändert werden: %1 MHz, AIR nicht aktiv</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="174" />
         <source>MCS %1</source>
         <translation>MCS %1</translation>
     </message>
-    <message>
-        <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="181" />
-        <source>FEC: %1% : KEY: %2 ?</source>
-        <translation>FEC: %1% : KEY: %2 ?</translation>
-    </message>
+    
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="184" />
         <source>A higher bandwidth / 40 MHz channel width increases the bitrate significantly, but also increases interference and reduces the maximum range. It is recommended to use a 40 MHz channel width if possible, and control the MCS index for fine adjustments.</source>
-        <translation>Eine h?here Bandbreite bzw. 40?MHz?Kanalbreite erh?ht die Bitrate deutlich, steigert aber auch die St?rungen und reduziert die maximale Reichweite. Es wird empfohlen, wenn m?glich 40?MHz?Kanalbreite zu nutzen und den MCS?Index f?r Feinabstimmung zu verwenden.</translation>
+        <translation>Eine höhere Bandbreite / 40 MHz Kanalbreite erhöht die Bitrate deutlich, erhöht aber auch die Interferenzen und verringert die maximale Reichweite. Es wird empfohlen, wenn möglich eine Kanalbreite von 40 MHz zu verwenden und den Index MCS für Feineinstellungen zu kontrollieren.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="186" />
         <source>The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data. This means that with a lower MCS index, you have a much greater range (but less bitrate). If you want to, you can change this value using the RC channel switcher - this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)</source>
-        <translation>Je niedriger der MCS?Index (Modulation und Codierung), desto weniger Signal (dBm) wird f?r den Datenempfang ben?tigt. Das bedeutet: niedrigerer MCS?Index = deutlich mehr Reichweite (aber weniger Bitrate). Optional kannst du den Wert ?ber den RC?Kanalumschalter ?ndern ? so l?sst sich w?hrend des Flugs schnell ein niedrigerer MCS?Index w?hlen (z.?B. f?r mehr Reichweite oder wenn das Modell den Antennentracker?Korridor verl?sst).</translation>
+        <translation>Je niedriger der Index MCS (Modulation und Codierung), desto weniger Signal (dBm) ist zum Erfassen von Daten erforderlich. Das bedeutet, dass Sie mit einem niedrigeren MCS-Index eine viel größere Reichweite (aber weniger Bitrate) haben. Wenn Sie möchten, können Sie diesen Wert mit dem RC-Kanalumschalter ändern – so können Sie während des Fluges schnell einen niedrigeren MCS-Index auswählen (z. B. wenn Sie weiter fliegen möchten oder auf Probleme stoßen, z. B. wenn Ihr Flugzeug den Korridor Ihres Antennentrackers verlässt).</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="188" />
         <source>Make the video more stable (less microfreezes) at the cost of less image quality. Internally, this changes the encode keyframe interval and/or FEC overhead in percent. DEFAULT is a good trade-off regarding image quality and stability and works in most cases. Use CITY/POLLUTED on polluted channels, but it is always better to find a free channel.</source>
-        <translation>Macht das Video stabiler (weniger Mikro?Ruckler) auf Kosten der Bildqualit?t. Intern werden das Keyframe?Intervall und/oder der FEC?Overhead in Prozent angepasst. DEFAULT ist ein guter Kompromiss und funktioniert in den meisten F?llen. CITY/POLLUTED bei stark belasteten Kan?len nutzen ? besser ist es immer, einen freien Kanal zu w?hlen.</translation>
+        <translation>Machen Sie das Video stabiler (weniger Mikroeinfrierungen) auf Kosten einer geringeren Bildqualität. Intern ändert dies das Codierungs-Keyframe-Intervall und/oder den FEC-Overhead in Prozent. DEFAULT ist ein guter Kompromiss hinsichtlich Bildqualität und Stabilität und funktioniert in den meisten Fällen. Verwenden Sie CITY/POLLUTED auf verschmutzten Kanälen, es ist jedoch immer besser, einen freien Kanal zu finden.</translation>
     </message>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="203" />
@@ -4943,7 +5595,7 @@ Bitte AIR/GROUND aktualisieren.</translation>
     <message>
         <location filename="../qml/ui/widgets/WBLinkRateControlWidget.qml" line="378" />
         <source>Resiliency vs Bitrate</source>
-        <translation>Stabilit?t vs. Bitrate</translation>
+        <translation>Ausfallsicherheit vs. Bitrate</translation>
     </message>
 </context>
 <context>
@@ -4995,4 +5647,695 @@ Bitte AIR/GROUND aktualisieren.</translation>
         <translation>QOpenHD EVO</translation>
     </message>
 </context>
+<context>
+    <name>SideBarBasePanel</name>
+    <message>
+        <source>Link</source>
+        <translation>Link</translation>
+    </message>
+    <message>
+        <source>Video</source>
+        <translation>Video</translation>
+    </message>
+    <message>
+        <source>Camera</source>
+        <translation>Kamera</translation>
+    </message>
+    <message>
+        <source>Air recording</source>
+        <translation>Air-Aufnahme</translation>
+    </message>
+    <message>
+        <source>OpenHD RC</source>
+        <translation>OpenHD RC</translation>
+    </message>
+    <message>
+        <source>Misc</source>
+        <translation>Sonstiges</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Status</translation>
+    </message>
+    <message>
+        <source>Find Air Unit</source>
+        <translation>Air-Unit finden</translation>
+    </message>
+</context>
+<context>
+    <name>BaseJoyEditElement2</name>
+    <message>
+        <source>Frequency</source>
+        <translation>Frequenz</translation>
+    </message>
+    <message>
+        <source>Channel Width</source>
+        <translation>Kanalbreite</translation>
+    </message>
+    <message>
+        <source>Modulation</source>
+        <translation>Modulation</translation>
+    </message>
+    <message>
+        <source>Resolution</source>
+        <translation>Auflösung</translation>
+    </message>
+    <message>
+        <source>Rotation</source>
+        <translation>Rotation</translation>
+    </message>
+    <message>
+        <source>Brightness</source>
+        <translation>Helligkeit</translation>
+    </message>
+    <message>
+        <source>Saturation</source>
+        <translation>Sättigung</translation>
+    </message>
+    <message>
+        <source>Contrast</source>
+        <translation>Kontrast</translation>
+    </message>
+    <message>
+        <source>Sharpness</source>
+        <translation>Schärfe</translation>
+    </message>
+    <message>
+        <source>Recording</source>
+        <translation>Aufnahme</translation>
+    </message>
+    <message>
+        <source>Joystick</source>
+        <translation>Joystick</translation>
+    </message>
+    <message>
+        <source>Air WiFi Mode</source>
+        <translation>Air-WiFi-Modus</translation>
+    </message>
+    <message>
+        <source>Ground WiFi Mode</source>
+        <translation>Ground-WiFi-Modus</translation>
+    </message>
+    <message>
+        <source>Air Hotspot</source>
+        <translation>Air-Hotspot</translation>
+    </message>
+    <message>
+        <source>Ground Hotspot</source>
+        <translation>Ground-Hotspot</translation>
+    </message>
+    <message>
+        <source>Channels</source>
+        <translation>Kanäle</translation>
+    </message>
+    <message>
+        <source>Bandwidth</source>
+        <translation>Bandbreite</translation>
+    </message>
+    <message>
+        <source>Pit Mode</source>
+        <translation>Pit-Modus</translation>
+    </message>
+    <message>
+        <source>Power</source>
+        <translation>Leistung</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation>N / A</translation>
+    </message>
+    <message>
+        <source>Pending</source>
+        <translation>Ausstehend</translation>
+    </message>
+    <message>
+        <source>ON</source>
+        <translation>EIN</translation>
+    </message>
+    <message>
+        <source>OFF</source>
+        <translation>AUS</translation>
+    </message>
+    <message>
+        <source>ALWAYS
+OFF</source>
+        <translation>IMMER
+AUS</translation>
+    </message>
+    <message>
+        <source>ALWAYS
+ON</source>
+        <translation>IMMER
+EIN</translation>
+    </message>
+    <message>
+        <source>AUTO
+(WHEN ARMED)</source>
+        <translation>AUTO
+(WENN BEWAFFNET)</translation>
+    </message>
+    <message>
+        <source>AUTO
+(WHEN DISARMED)</source>
+        <translation>AUTO
+(WENN NICHT BEWAFFNET)</translation>
+    </message>
+    <message>
+        <source>WIFI
+OFF</source>
+        <translation>WIFI
+AUS</translation>
+    </message>
+    <message>
+        <source>HOTSPOT</source>
+        <translation>HOTSPOT</translation>
+    </message>
+    <message>
+        <source>CLIENT</source>
+        <translation>CLIENT</translation>
+    </message>
+    <message>
+        <source>LOWEST</source>
+        <translation>NIEDRIGST</translation>
+    </message>
+    <message>
+        <source>LOW</source>
+        <translation>NIEDRIG</translation>
+    </message>
+    <message>
+        <source>MID</source>
+        <translation>MITTEL</translation>
+    </message>
+    <message>
+        <source>HIGH</source>
+        <translation>HOCH</translation>
+    </message>
+    
+    
+    <message>
+        <source>VFLIP
+(mirror)
+</source>
+        <translation>VFLIP
+(Spiegel)
+</translation>
+    </message>
+    
+    <message>
+        <source>BOTH
+</source>
+        <translation>BEIDE
+</translation>
+    </message>
+    <message>
+        <source>0
+UNDEFINED</source>
+        <translation>0
+NICHT DEFINIERT</translation>
+    </message>
+    <message>
+        <source>1
+UNDEFINED</source>
+        <translation>1
+NICHT DEFINIERT</translation>
+    </message>
+    <message>
+        <source>2
+UNDEFINED</source>
+        <translation>2
+NICHT DEFINIERT</translation>
+    </message>
+    <message>
+        <source>VGA 4:3
+60fps</source>
+        <translation>VGA 4:3
+60fps</translation>
+    </message>
+    <message>
+        <source>HD 16:9
+60fps</source>
+        <translation>HD 16:9
+60fps</translation>
+    </message>
+    <message>
+        <source>FHD 16:9
+30fps</source>
+        <translation>FHD 16:9
+30fps</translation>
+    </message>
+    <message>
+        <source>10Mhz</source>
+        <translation>10Mhz</translation>
+    </message>
+    <message>
+        <source>20Mhz</source>
+        <translation>20Mhz</translation>
+    </message>
+    <message>
+        <source>40Mhz
+(HIGH BW)</source>
+        <translation>40Mhz
+(HOHE BW)</translation>
+    </message>
+    <message>
+        <source>MCS0
+(LONG RANGE)</source>
+        <translation>MCS0
+(LANGE REICHWEITE)</translation>
+    </message>
+    <message>
+        <source>MCS1
+(RANGE)</source>
+        <translation>MCS1
+(REICHWEITE)</translation>
+    </message>
+    <message>
+        <source>MCS2
+(QUALITY)</source>
+        <translation>MCS2
+(QUALITÄT)</translation>
+    </message>
+    <message>
+        <source>MCS8
+(2SS PARTIAL 0)</source>
+        <translation>MCS8
+(2SS TEIL 0)</translation>
+    </message>
+    <message>
+        <source>MCS9
+(2SS PARTIAL 1)</source>
+        <translation>MCS9
+(2SS TEIL 1)</translation>
+    </message>
+    <message>
+        <source>MCS10
+(2SS PARTIAL 2)</source>
+        <translation>MCS10
+(2SS TEIL 2)</translation>
+    </message>
+    <message>
+        <source>100%
+(Default)</source>
+        <translation>100%
+(Standard)</translation>
+    </message>
+    <message>
+        <source>OpenHD [1-7]</source>
+        <translation>OpenHD [1-7]</translation>
+    </message>
+    <message>
+        <source>2.4G</source>
+        <translation>2.4G</translation>
+    </message>
+    <message>
+        <source>5.8G</source>
+        <translation>5.8G</translation>
+    </message>
+    <message>
+        <source>10 MHz</source>
+        <translation>10 MHz</translation>
+    </message>
+    <message>
+        <source>20 MHz</source>
+        <translation>20 MHz</translation>
+    </message>
+    <message>
+        <source>40 MHz</source>
+        <translation>40 MHz</translation>
+    </message>
+    <message>
+        <source>Air</source>
+        <translation>Luft</translation>
+    </message>
+    <message>
+        <source>Ground</source>
+        <translation>Boden</translation>
+    </message>
+    <message>
+        <source>0°
+(Default)</source>
+        <translation>0°
+(Standard)</translation>
+    </message>
+    <message>
+        <source>180°
+</source>
+        <translation>180°
+</translation>
+    </message>
+    <message>
+        <source>HFLIP
+(180°)</source>
+        <translation>HFLIP
+(180°)</translation>
+    </message>
+</context>
+<context>
+    <name>ChoiceSelector</name>
+    <message>
+        <source>custom</source>
+        <translation>benutzerdefiniert</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation>N / A</translation>
+    </message>
+    <message>
+        <source>Pending</source>
+        <translation>Ausstehend</translation>
+    </message>
+    <message>
+        <source>ON</source>
+        <translation>EIN</translation>
+    </message>
+    <message>
+        <source>OFF</source>
+        <translation>AUS</translation>
+    </message>
+    <message>
+        <source>ALWAYS
+OFF</source>
+        <translation>IMMER
+AUS</translation>
+    </message>
+    <message>
+        <source>ALWAYS
+ON</source>
+        <translation>IMMER
+EIN</translation>
+    </message>
+    <message>
+        <source>AUTO
+(WHEN ARMED)</source>
+        <translation>AUTO
+(WENN BEWAFFNET)</translation>
+    </message>
+    <message>
+        <source>AUTO
+(WHEN DISARMED)</source>
+        <translation>AUTO
+(WENN NICHT BEWAFFNET)</translation>
+    </message>
+    <message>
+        <source>WIFI
+OFF</source>
+        <translation>WIFI
+AUS</translation>
+    </message>
+    <message>
+        <source>HOTSPOT</source>
+        <translation>HOTSPOT</translation>
+    </message>
+    <message>
+        <source>CLIENT</source>
+        <translation>CLIENT</translation>
+    </message>
+    <message>
+        <source>LOWEST</source>
+        <translation>NIEDRIGST</translation>
+    </message>
+    <message>
+        <source>LOW</source>
+        <translation>NIEDRIG</translation>
+    </message>
+    <message>
+        <source>MID</source>
+        <translation>MITTEL</translation>
+    </message>
+    <message>
+        <source>HIGH</source>
+        <translation>HOCH</translation>
+    </message>
+    
+    
+    <message>
+        <source>VFLIP
+(mirror)
+</source>
+        <translation>VFLIP
+(Spiegel)
+</translation>
+    </message>
+    
+    <message>
+        <source>BOTH
+</source>
+        <translation>BEIDE
+</translation>
+    </message>
+    <message>
+        <source>0
+UNDEFINED</source>
+        <translation>0
+NICHT DEFINIERT</translation>
+    </message>
+    <message>
+        <source>1
+UNDEFINED</source>
+        <translation>1
+NICHT DEFINIERT</translation>
+    </message>
+    <message>
+        <source>2
+UNDEFINED</source>
+        <translation>2
+NICHT DEFINIERT</translation>
+    </message>
+    <message>
+        <source>VGA 4:3
+60fps</source>
+        <translation>VGA 4:3
+60fps</translation>
+    </message>
+    <message>
+        <source>HD 16:9
+60fps</source>
+        <translation>HD 16:9
+60fps</translation>
+    </message>
+    <message>
+        <source>FHD 16:9
+30fps</source>
+        <translation>FHD 16:9
+30fps</translation>
+    </message>
+    <message>
+        <source>10Mhz</source>
+        <translation>10Mhz</translation>
+    </message>
+    <message>
+        <source>20Mhz</source>
+        <translation>20Mhz</translation>
+    </message>
+    <message>
+        <source>40Mhz
+(HIGH BW)</source>
+        <translation>40Mhz
+(HOHE BW)</translation>
+    </message>
+    <message>
+        <source>MCS0
+(LONG RANGE)</source>
+        <translation>MCS0
+(LANGE REICHWEITE)</translation>
+    </message>
+    <message>
+        <source>MCS1
+(RANGE)</source>
+        <translation>MCS1
+(REICHWEITE)</translation>
+    </message>
+    <message>
+        <source>MCS2
+(QUALITY)</source>
+        <translation>MCS2
+(QUALITÄT)</translation>
+    </message>
+    <message>
+        <source>MCS8
+(2SS PARTIAL 0)</source>
+        <translation>MCS8
+(2SS TEIL 0)</translation>
+    </message>
+    <message>
+        <source>MCS9
+(2SS PARTIAL 1)</source>
+        <translation>MCS9
+(2SS TEIL 1)</translation>
+    </message>
+    <message>
+        <source>MCS10
+(2SS PARTIAL 2)</source>
+        <translation>MCS10
+(2SS TEIL 2)</translation>
+    </message>
+    <message>
+        <source>100%
+(Default)</source>
+        <translation>100%
+(Standard)</translation>
+    </message>
+    <message>
+        <source>OpenHD [1-7]</source>
+        <translation>OpenHD [1-7]</translation>
+    </message>
+    <message>
+        <source>2.4G</source>
+        <translation>2.4G</translation>
+    </message>
+    <message>
+        <source>5.8G</source>
+        <translation>5.8G</translation>
+    </message>
+    <message>
+        <source>10 MHz</source>
+        <translation>10 MHz</translation>
+    </message>
+    <message>
+        <source>20 MHz</source>
+        <translation>20 MHz</translation>
+    </message>
+    <message>
+        <source>40 MHz</source>
+        <translation>40 MHz</translation>
+    </message>
+    <message>
+        <source>Air</source>
+        <translation>Luft</translation>
+    </message>
+    <message>
+        <source>Ground</source>
+        <translation>Boden</translation>
+    </message>
+    <message>
+        <source>0°
+(Default)</source>
+        <translation>0°
+(Standard)</translation>
+    </message>
+    <message>
+        <source>180°
+</source>
+        <translation>180°
+</translation>
+    </message>
+    <message>
+        <source>HFLIP
+(180°)</source>
+        <translation>HFLIP
+(180°)</translation>
+    </message>
+</context>
+<context>
+    <name>MavlinkChoiceElement2</name>
+    <message>
+        <source>N/A</source>
+        <translation>N / A</translation>
+    </message>
+    <message>
+        <source>Busy, please try again later</source>
+        <translation>Beschäftigt, bitte später erneut versuchen</translation>
+    </message>
+    <message>
+        <source>NOT
+AVAILABLE</source>
+        <translation>NICHT
+VERFÜGBAR</translation>
+    </message>
+    <message>
+        <source>CUSTOM</source>
+        <translation>BENUTZERDEFINIERT</translation>
+    </message>
+    <message>
+        <source>ARMED, change not possible</source>
+        <translation>BEWAFFNET, Änderung nicht möglich</translation>
+    </message>
+    <message>
+        <source>CHANGING FREQUENCY</source>
+        <translation>Frequenz wird geändert</translation>
+    </message>
+    <message>
+        <source>No ground connection</source>
+        <translation>Keine Ground-Verbindung</translation>
+    </message>
+    <message>
+        <source>CHANGING BW</source>
+        <translation>BW wird geändert</translation>
+    </message>
+    <message>
+        <source>CHANGING RATE</source>
+        <translation>Rate wird geändert</translation>
+    </message>
+    <message>
+        <source>Will apply when air connects</source>
+        <translation>Wird angewendet, sobald AIR verbindet</translation>
+    </message>
+</context>
+<context>
+    <name>PitModeElement</name>
+    <message>
+        <source>N/A</source>
+        <translation>N / A</translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation>Nicht verbunden</translation>
+    </message>
+</context>
+<context>
+    <name>PowerChoiceElement</name>
+    <message>
+        <source>Lowest</source>
+        <translation>Niedrigst</translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation>Niedrig</translation>
+    </message>
+    <message>
+        <source>Mid</source>
+        <translation>Mittel</translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation>Hoch</translation>
+    </message>
+    <message>
+        <source>Per-card</source>
+        <translation>Pro Karte</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation>N / A</translation>
+    </message>
+    <message>
+        <source>Pending</source>
+        <translation>Ausstehend</translation>
+    </message>
+    <message>
+        <source>Air %1
+Ground %2</source>
+        <translation>Air %1
+Ground %2</translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation>Nicht verbunden</translation>
+    </message>
+    <message>
+        <source>Invalid</source>
+        <translation>Ungültig</translation>
+    </message>
+</context>
+
+
+<context>
+    <name>BaseJoyEditElement</name>
+    <message>
+        <location filename="../qml/ui/sidebar/BaseJoyEditElement.qml" line="63"/>
+        <source>NOT AVAILABLE</source>
+        <translation>NOT AVAILABLE</translation>
+    </message>
+</context>
+
 </TS>

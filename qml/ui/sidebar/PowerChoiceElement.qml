@@ -41,12 +41,12 @@ BaseJoyEditElement2 {
     }
 
     function level_to_label(level) {
-        if (level === 0) return "Lowest";
-        if (level === 1) return "Low";
-        if (level === 2) return "Mid";
-        if (level === 3) return "High";
-        if (level === -1) return "Per-card";
-        return "N/A";
+        if (level === 0) return qsTr("Lowest");
+        if (level === 1) return qsTr("Low");
+        if (level === 2) return qsTr("Mid");
+        if (level === 3) return qsTr("High");
+        if (level === -1) return qsTr("Per-card");
+        return qsTr("N/A");
     }
 
     function get_model_for_target() {
@@ -93,23 +93,23 @@ BaseJoyEditElement2 {
     }
 
     function update_display() {
-        var air_label = "N/A";
-        var gnd_label = "N/A";
+        var air_label = qsTr("N/A");
+        var gnd_label = qsTr("N/A");
         var air_model = _ohdSystemAirSettingsModel;
         var gnd_model = _ohdSystemGroundSettings;
         if (can_use_model(air_model, true)) {
             var air_level = air_model.get_cached_int("TX_PWR_LVL");
             air_label = level_to_label(air_level);
         } else if (air_model !== undefined && air_model.system_is_alive()) {
-            air_label = air_model.has_params_fetched ? "N/A" : "Pending";
+            air_label = air_model.has_params_fetched ? qsTr("N/A") : qsTr("Pending");
         }
         if (can_use_model(gnd_model, true)) {
             var gnd_level = gnd_model.get_cached_int("TX_PWR_LVL");
             gnd_label = level_to_label(gnd_level);
         } else if (gnd_model !== undefined && gnd_model.system_is_alive()) {
-            gnd_label = gnd_model.has_params_fetched ? "N/A" : "Pending";
+            gnd_label = gnd_model.has_params_fetched ? qsTr("N/A") : qsTr("Pending");
         }
-        m_display_text = "Air " + air_label + "\nGround " + gnd_label;
+        m_display_text = qsTr("Air %1\nGround %2").arg(air_label).arg(gnd_label);
     }
 
     property int m_update_count: _ohdSystemGroundSettings.update_count + _ohdSystemAirSettingsModel.update_count
@@ -143,7 +143,7 @@ BaseJoyEditElement2 {
         m_last_clickable = clickable;
         refresh_target_model();
         if (targetModel.count === 0) {
-            _qopenhd.show_toast("N/A");
+            _qopenhd.show_toast(qsTr("N/A"));
             return;
         }
         if (targetModel.count === 1) {
@@ -164,7 +164,7 @@ BaseJoyEditElement2 {
         m_last_clickable = clickable;
         var model = get_model_for_target();
         if (!can_use_model(model, false)) {
-            _qopenhd.show_toast("N/A");
+            _qopenhd.show_toast(qsTr("N/A"));
             return;
         }
         var level = read_current_level();
@@ -179,11 +179,11 @@ BaseJoyEditElement2 {
     function apply_level(level) {
         var model = get_model_for_target();
         if (!can_use_model(model, false)) {
-            _qopenhd.show_toast("Not connected");
+            _qopenhd.show_toast(qsTr("Not connected"));
             return;
         }
         if (level < 1 || level > 3) {
-            _qopenhd.show_toast("Invalid");
+            _qopenhd.show_toast(qsTr("Invalid"));
             return;
         }
         model.try_set_param_int_async("TX_PWR_LVL", level);

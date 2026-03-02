@@ -109,10 +109,10 @@ Card {
                     console.log("Try changing ground only to frequency "+m_wanted_frequency)
                     var result = _wbLinkSettingsHelper.change_param_ground_only_frequency(m_wanted_frequency);
                     if(result){
-                        _qopenhd.show_toast("GND set to frequency "+m_wanted_frequency+"Mhz",false);
+                        _qopenhd.show_toast(qsTr("GND set to frequency %1 MHz").arg(m_wanted_frequency),false);
                         dialoqueChangeFrequency.visible=false;
                     }else{
-                        _qopenhd.show_toast("Failed, GND busy,please try again later",true);
+                        _qopenhd.show_toast(qsTr("Failed, GND busy, please try again later"),true);
                     }
                 }
             }

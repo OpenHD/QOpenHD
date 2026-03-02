@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/cursors/arrow_512_transparent.png</file>
+        <file>resources/cursors/arrow_512_green.png</file>
+        <file>resources/cursors/arrow_512_white.png</file>
+        <file>resources/cursors/hand_white.png</file>
+    </qresource>
+</RCC>

@@ -42,8 +42,9 @@ Rectangle {
     onVisibleChanged: {
         if(visible){
             if(!m_instanceCheckIsAvlie.is_alive){
-                var message= m_requires_alive_air ? "AIR not alive" : "GND not alive";
-                message+=", parameters unavailable";
+                var message = m_requires_alive_air
+                    ? qsTr("AIR not alive, parameters unavailable")
+                    : qsTr("GND not alive, parameters unavailable");
                 _qopenhd.show_toast(message);
             }else{
                 if(! m_instanceMavlinkSettingsModel.has_params_fetched){

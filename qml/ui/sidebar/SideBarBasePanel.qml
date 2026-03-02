@@ -66,7 +66,7 @@ Item {
         z: 1
         Text {
             anchors.centerIn: parent
-            text: override_title
+            text: qsTr(override_title)
             font.pixelSize: 18
             font.family: "AvantGarde-Medium"
             color: "#ffffff"

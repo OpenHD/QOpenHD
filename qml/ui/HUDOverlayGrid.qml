@@ -33,9 +33,9 @@ Item {
     property bool m_keyboard_navigation_active: false
     onM_keyboard_navigation_activeChanged: {
         if(m_keyboard_navigation_active){
-            _qopenhd.show_toast("JOYSTICK NAVIGATION ENABLED");
+            _qopenhd.show_toast(qsTr("JOYSTICK NAVIGATION ENABLED"));
         }else{
-            _qopenhd.show_toast("JOYSTICK NAVIGATION DISABLED");
+            _qopenhd.show_toast(qsTr("JOYSTICK NAVIGATION DISABLED"));
         }
     }
 

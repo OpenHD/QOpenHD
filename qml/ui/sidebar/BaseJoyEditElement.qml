@@ -60,14 +60,14 @@ Item{
                            if(m_button_left_activated){
                                 choice_left()
                             }else{
-                                _qopenhd.show_toast("NOT AVAILABLE");
+                                _qopenhd.show_toast(qsTr("NOT AVAILABLE"));
                             }
                             event.accepted=true;
                         }else if(event.key == Qt.Key_Right){
                             if(m_button_right_activated){
                                  choice_right()
                              }else{
-                                 _qopenhd.show_toast("NOT AVAILABLE");
+                                 _qopenhd.show_toast(qsTr("NOT AVAILABLE"));
                              }
                             event.accepted=true;
                         }else if(event.key==Qt.Key_Up){

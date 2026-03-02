@@ -22,12 +22,16 @@ SideBarBasePanel{
 
         ListModel{
             id: scanBandModel
-            ListElement { value: 0; verbose: "OpenHD [1-7]" }
-            ListElement { value: 1; verbose: "2.4G " }
-            ListElement { value: 2; verbose: "5.8G " }
         }
         ListModel{
             id: scanBandwidthModel
+        }
+
+        function rebuildBandModel(){
+            scanBandModel.clear();
+            scanBandModel.append({value: 0, verbose: "OpenHD [1-7]"});
+            scanBandModel.append({value: 1, verbose: "2.4G"});
+            scanBandModel.append({value: 2, verbose: "5.8G"});
         }
 
         function rebuildBandwidthModel(){
@@ -53,6 +57,7 @@ SideBarBasePanel{
         }
 
         Component.onCompleted: {
+            rebuildBandModel();
             rebuildBandwidthModel();
             syncBandwidthIndex();
         }
@@ -179,9 +184,9 @@ Button {
         var channel_width_mhz = settings.scan_channel_width_mhz;
         var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, channel_width_mhz);
         if(result){
-            _qopenhd.show_toast("Channel scan started, please wait", true);
+            _qopenhd.show_toast(qsTr("Channel scan started, please wait"), true);
         } else {
-            _qopenhd.show_toast("Busy, please try again later", true);
+            _qopenhd.show_toast(qsTr("Busy, please try again later"), true);
         }
     }
 

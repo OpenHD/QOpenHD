@@ -112,9 +112,9 @@ ScrollView {
                     onClicked: {
                         var res=_qopenhd.backup_settings_locally();
                         if (res) {
-                            _messageBoxInstance.set_text_and_show("QOpenHD settings backed up to /boot/openhd/QOpenHD.conf")
+                            _messageBoxInstance.set_text_and_show(qsTr("QOpenHD settings backed up to /boot/openhd/QOpenHD.conf"))
                         }else{
-                            _messageBoxInstance.set_text_and_show("Couldn't backup settings")
+                            _messageBoxInstance.set_text_and_show(qsTr("Couldn't backup settings"))
                         }
                     }
                     enabled: _qopenhd.is_linux()
@@ -138,7 +138,7 @@ ScrollView {
                         if (res) {
                             _restartqopenhdmessagebox.show_with_text("Settings file Loaded !");
                         }else{
-                            _messageBoxInstance.set_text_and_show("Couldn't load settings - make sure \"/boot/openhd/QOpenHD.conf\" (a previous pbackup) exists on your SD card")
+                            _messageBoxInstance.set_text_and_show(qsTr("Couldn't load settings - make sure \"/boot/openhd/QOpenHD.conf\" (a previous pbackup) exists on your SD card"))
                         }
                     }
                     enabled: _qopenhd.is_linux()
@@ -237,7 +237,7 @@ ScrollView {
                              _restartqopenhdmessagebox.show_with_text("Settings reset to default,");
                         }
                         else{
-                            _messageBoxInstance.set_text_and_show("couldn't reset the settings")
+                            _messageBoxInstance.set_text_and_show(qsTr("Couldn't reset the settings"))
                         }
                     }
                 }

@@ -40,7 +40,7 @@ Rectangle{
             // to the model containing exactly this value (and a dummy description)
             console.log("Current value not found in model");
             const value=current_value;
-            const verbose="{"+value+"}\n"+"custom";
+            const verbose = "{" + value + "}\n" + qsTr("custom");
             console.log(value+""+verbose)
             availableChociesModel.insert(0,{'value': value,'verbose': verbose});
             current_value_index=0;
@@ -161,7 +161,7 @@ Rectangle{
                 opacity: index==m_initial_index ? 0.95 : 0.7
             }
             Text {
-                text: verbose
+                text: qsTr(verbose)
                 anchors.fill: parent
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter

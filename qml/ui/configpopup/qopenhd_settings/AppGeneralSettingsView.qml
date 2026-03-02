@@ -162,7 +162,7 @@ ScrollView {
                     onValueChanged: {
                         if(value==100 || value==101){
                             // openhd air and ground unit sys id are hard coded, one should never use them
-                            _messageBoxInstance.set_text_and_show("Do not use 100 or 101 for QOpenHD sys id")
+                            _messageBoxInstance.set_text_and_show(qsTr("Do not use 100 or 101 for QOpenHD sys id"))
                         }
                         settings.qopenhd_mavlink_sysid = value
                     }

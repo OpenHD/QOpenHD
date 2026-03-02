@@ -83,11 +83,11 @@ BaseJoyEditElement2{
 
     function open_choices_menu(clickable){
         if(!m_param_exists){
-            _qopenhd.show_toast("N/A");
+            _qopenhd.show_toast(qsTr("N/A"));
             return;
         }
         if(m_settings_model.ui_is_busy){
-            _qopenhd.show_toast("Busy, please try again later");
+            _qopenhd.show_toast(qsTr("Busy, please try again later"));
             return;
         }
         const m_elements_model=mappedMavlinkChoices.get_model(m_param_id);
@@ -133,12 +133,12 @@ BaseJoyEditElement2{
         if(!m_settings_model.system_is_alive()){
             // Do not enable the elements, system is not alive
             m_param_exists=false;
-            populate_display_text="N/A";
+            populate_display_text=qsTr("N/A");
             return;
         }
         if(!m_settings_model.has_params_fetched){
             m_param_exists=false;
-            populate_display_text="N/A";
+            populate_display_text=qsTr("N/A");
             return;
         }
         if(override_takes_string_param){
@@ -148,7 +148,7 @@ BaseJoyEditElement2{
         }
         if(!m_param_exists){
             console.log("Param "+m_param_id+" does not exist");
-            populate_display_text="NOT\nAVAILABLE";
+            populate_display_text=qsTr("NOT\nAVAILABLE");
             return;
         }
         if(override_takes_string_param){
@@ -181,7 +181,7 @@ BaseJoyEditElement2{
             // The current value does not exist inside the model
             var tmp="{";
             tmp+=value;
-            tmp+="}\nCUSTOM";
+            tmp+="}\n"+qsTr("CUSTOM");
             populate_display_text=tmp
         }else{
             populate_display_text=m_elements_model.get(model_index).verbose;
@@ -200,42 +200,42 @@ BaseJoyEditElement2{
                 if(settings.dev_allow_freq_change_when_armed){
                     // okay
                 }else{
-                    _qopenhd.show_toast("ARMED, change not possible");
+                    _qopenhd.show_toast(qsTr("ARMED, change not possible"));
                     return;
                 }
             }
         }
         if(m_param_id==mPARAM_ID_FREQUENCY){
             const new_frequency=value_new;
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING FREQUENCY");
+            _qopenhd.set_busy_for_milliseconds(2000,qsTr("CHANGING FREQUENCY"));
             if(_ohdSystemAir.is_alive){
                 _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
             }else if(_ohdSystemGround.is_alive){
                 _wbLinkSettingsHelper.change_param_ground_only_frequency(value_new)
             }else{
-                _qopenhd.show_toast("No ground connection");
+                _qopenhd.show_toast(qsTr("No ground connection"));
             }
             return;
         }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
             const channel_width_mhz=value_new;
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING BW");
+            _qopenhd.set_busy_for_milliseconds(2000,qsTr("CHANGING BW"));
             if(_ohdSystemAir.is_alive){
                 _wbLinkSettingsHelper.change_param_air_channel_width_async(channel_width_mhz,true);
             }else if(_ohdSystemGround.is_alive){
                 _wbLinkSettingsHelper.change_param_ground_only_channel_width(channel_width_mhz);
             }else{
-                _qopenhd.show_toast("No ground connection");
+                _qopenhd.show_toast(qsTr("No ground connection"));
             }
             return;
         }else if(m_param_id==mPARAM_ID_RATE){
             const mcs_index=value_new;
-            _qopenhd.set_busy_for_milliseconds(2000,"CHANGING RATE");
+            _qopenhd.set_busy_for_milliseconds(2000,qsTr("CHANGING RATE"));
             if(_ohdSystemAir.is_alive){
                 _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
             }else{
                 pendingLinkSettings.pending_mcs_index = mcs_index;
                 update_display_text(mcs_index);
-                _qopenhd.show_toast("Will apply when air connects");
+                _qopenhd.show_toast(qsTr("Will apply when air connects"));
             }
             return;
         }else{
@@ -292,7 +292,7 @@ BaseJoyEditElement2{
                     m_param_exists=true;
                 }else{
                     m_param_exists=false;
-                    populate_display_text="N/A";
+                    populate_display_text=qsTr("N/A");
                 }
                 return;
             }
@@ -315,7 +315,7 @@ BaseJoyEditElement2{
                 m_param_exists=true;
             }else{
                 m_param_exists=false;
-                populate_display_text="N/A";
+                populate_display_text=qsTr("N/A");
             }
             return;
         }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
@@ -327,7 +327,7 @@ BaseJoyEditElement2{
                     m_param_exists=true;
                 }else{
                     m_param_exists=false;
-                    populate_display_text="N/A";
+                    populate_display_text=qsTr("N/A");
                 }
                 return;
             }

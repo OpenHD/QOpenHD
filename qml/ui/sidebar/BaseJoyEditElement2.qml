@@ -88,7 +88,7 @@ Item{
         id:value_string
         width: parent.width/2
         height: parent.height
-        text: m_displayed_value
+        text: qsTr(m_displayed_value)
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
         font.pixelSize: 13

@@ -458,11 +458,11 @@ Rectangle{
                     /*if(res===""){
                         // Update success (no error code)
                         if(instanceMavlinkSettingsModel.get_param_requires_manual_reboot(parameterId)){
-                            _messageBoxInstance.set_text_and_show("Please reboot to apply")
+                            _messageBoxInstance.set_text_and_show(qsTr("Please reboot to apply"))
                         }
                         var argh=paramValueType==0 ? (""+value_int) : (""+value_string);
                         parameterEditor.visible=false
-                        _qopenhd.show_toast("Set "+parameterId+" to ["+argh+"]");
+                        _qopenhd.show_toast(qsTr("Set %1 to [%2]").arg(parameterId).arg(argh));
                     }else{
                         console.log("Update failed")
                         _qopenhd.show_toast(res,true);

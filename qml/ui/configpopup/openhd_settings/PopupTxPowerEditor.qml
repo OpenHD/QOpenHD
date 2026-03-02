@@ -38,7 +38,7 @@ PopupBigGeneric{
 
     function open(){
         if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
-            _qopenhd.show_toast("WARNING: Changing TX power while armed is not recommended !");
+            _qopenhd.show_toast(qsTr("WARNING: Changing TX power while armed is not recommended !"));
         }
         if(m_is_air){
              m_user_selected_card_index = 0; // Air always has one card (index 0)
@@ -453,15 +453,15 @@ model_txpower_for_chip_type_manufacturer_armed.insert(1,{title: qsTr("Snyncronis
                         onClicked: {
                             var tx_power_index_or_mw = combo_box_txpower_disarmed.model.get(combo_box_txpower_disarmed.currentIndex).value;
                             if (tx_power_index_or_mw < 0) {
-                                _qopenhd.show_toast("Please select a valid tx power", false);
+                                _qopenhd.show_toast(qsTr("Please select a valid tx power"), false);
                                 return;
                             }
                             var is_tx_power_index_unit = get_chipset_type() == 0;
                             var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air, is_tx_power_index_unit, false, tx_power_index_or_mw, m_user_selected_card_index)
                             if (success == true) {
-                                _qopenhd.show_toast("SUCCESS");
+                                _qopenhd.show_toast(qsTr("SUCCESS"));
                             } else {
-                                _qopenhd.show_toast("Cannot change TX power, please try again", true);
+                                _qopenhd.show_toast(qsTr("Cannot change TX power, please try again"), true);
                             }
                         }
                         font.pixelSize: 14
@@ -489,15 +489,15 @@ model_txpower_for_chip_type_manufacturer_armed.insert(1,{title: qsTr("Snyncronis
                             isSynced=true;
                             var tx_power_index_or_mw = combo_box_txpower_armed.model.get(combo_box_txpower_armed.currentIndex).value;
                             if (tx_power_index_or_mw < 0) {
-                                _qopenhd.show_toast("Please select a valid tx power", false);
+                                _qopenhd.show_toast(qsTr("Please select a valid tx power"), false);
                                 return;
                             }
                             var is_tx_power_index_unit = get_chipset_type() == 0;
                             var success = _wbLinkSettingsHelper.set_param_tx_power(!m_is_air, is_tx_power_index_unit, true, tx_power_index_or_mw, m_user_selected_card_index)
                             if (success == true) {
-                                _qopenhd.show_toast("SUCCESS");
+                                _qopenhd.show_toast(qsTr("SUCCESS"));
                             } else {
-                                _qopenhd.show_toast("Cannot change TX power, please try again", true);
+                                _qopenhd.show_toast(qsTr("Cannot change TX power, please try again"), true);
                             }
                         }
                         font.pixelSize: 14

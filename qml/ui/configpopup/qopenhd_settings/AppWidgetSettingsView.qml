@@ -162,7 +162,7 @@ ScrollView {
             }*/
 
             SettingsCategory{
-                m_description: "OHD LINK / STREAMING WIDGETS"
+                m_description: qsTr("OHD LINK / STREAMING WIDGETS")
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Widgets")
@@ -210,7 +210,7 @@ ScrollView {
 
             }
             SettingsCategory{
-                m_description: "UAV (FC) WIDGETS"
+                m_description: qsTr("UAV (FC) WIDGETS")
 
 
 
@@ -828,7 +828,7 @@ ScrollView {
             }
 
             SettingsCategory {
-                m_description: "OTHER"
+                m_description: qsTr("OTHER")
 
                 Rectangle {
                     width: parent.width
@@ -1011,7 +1011,7 @@ ScrollView {
             }
 
             SettingsCategory{
-                m_description: "LEGACY"
+                m_description: qsTr("LEGACY")
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Transceiver Temperature Air")

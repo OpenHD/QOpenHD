@@ -76,7 +76,7 @@ BaseJoyEditElement2 {
         m_last_clickable = clickable;
         var model = _ohdSystemAirSettingsModel;
         if (!can_use_model(model, false)) {
-            _qopenhd.show_toast("N/A");
+            _qopenhd.show_toast(qsTr("N/A"));
             return;
         }
         var is_on = false;
@@ -92,7 +92,7 @@ BaseJoyEditElement2 {
     function set_pit_mode(enabled) {
         var model = _ohdSystemAirSettingsModel;
         if (!can_use_model(model, false)) {
-            _qopenhd.show_toast("Not connected");
+            _qopenhd.show_toast(qsTr("Not connected"));
             return;
         }
         model.try_set_param_int_async("WB_PIT_MODE", enabled ? 1 : 0);

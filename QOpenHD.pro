@@ -195,7 +195,10 @@ HEADERS += \
     app/osd/aoagauge.h \
 
 
-RESOURCES += qml/qml.qrc
+RESOURCES += qml/qml.qrc \
+             qml/qml_assets_fonts.qrc \
+             qml/qml_assets_images.qrc \
+             qml/qml_assets_cursors.qrc
 
 
 DISTFILES += \

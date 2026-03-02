@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="round.png">../icons/round.png</file>
+        <file>resources/ic128.png</file>
+        <file>resources/ic.png</file>
+        <file>resources/homemarker.png</file>
+        <file>resources/rapha.png</file>
+        <file>resources/max.png</file>
+        <file>resources/thomas.png</file>
+        <file>resources/pete.png</file>
+        <file>resources/luka.png</file>
+        <file>resources/noconnection.svg</file>
+        <file>resources/cameras/ArduIMX462.png</file>
+        <file>resources/cameras/ArduIMX477.png</file>
+        <file>resources/cameras/ArduIMX519.png</file>
+        <file>resources/cameras/otherHDMI.png</file>
+        <file>resources/cameras/otherIP.png</file>
+        <file>resources/cameras/otherTest.png</file>
+        <file>resources/cameras/raspHq.png</file>
+        <file>resources/cameras/raspOther.png</file>
+        <file>resources/cameras/raspV1.png</file>
+        <file>resources/cameras/raspV2.png</file>
+        <file>resources/cameras/veyeIMX290.png</file>
+        <file>resources/cameras/veyeIMX327.png</file>
+        <file>resources/cameras/veyeIMX462.png</file>
+        <file>resources/cameras/veyeIMX307.png</file>
+        <file>resources/cameras/veyeSC132.png</file>
+        <file>ui/widgets/map/ADSBcautionMarker.png</file>
+        <file>ui/widgets/map/ADSBmarker.png</file>
+        <file>ui/widgets/map/ADSBwarnMarker.png</file>
+    </qresource>
+</RCC>

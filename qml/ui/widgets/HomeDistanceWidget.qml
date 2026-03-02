@@ -138,7 +138,7 @@ BaseWidget {
             /*Item {
                 height: 32
                 Text {
-                    text: "Only For Ardupilot/PX4"
+                    text: qsTr("Only For Ardupilot/PX4")
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels

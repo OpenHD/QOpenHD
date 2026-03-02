@@ -13,6 +13,7 @@ Rectangle {
     id: creditsRectangle
     Layout.fillHeight: true
     color: "#eaeaea"
+    property int devPhotoSize: Math.round(creditsRectangle.width / 5)
 
     GridLayout {
         anchors.fill: parent
@@ -44,9 +45,10 @@ Rectangle {
                 Image {
                     id: ee1
                     visible: true
-                    source: "../../../resources/master2.png"
-                    width: creditsRectangle.width / 5
-                    height: creditsRectangle.width / 5
+                    source: "../../../resources/rapha.png"
+                    width: creditsRectangle.devPhotoSize
+                    height: creditsRectangle.devPhotoSize
+                    fillMode: Image.PreserveAspectFit
                     transform: Rotation {
                         id: rotation1
                         origin.x: ee1.width / 2
@@ -93,9 +95,10 @@ Rectangle {
                 Image {
                     id: ee2
                     visible: true
-                    source: "../../../resources/master3.png"
-                    width: creditsRectangle.width / 5
-                    height: creditsRectangle.width / 5
+                    source: "../../../resources/max.png"
+                    width: creditsRectangle.devPhotoSize
+                    height: creditsRectangle.devPhotoSize
+                    fillMode: Image.PreserveAspectFit
                     transform: Rotation {
                         id: rotation2
                         origin.x: ee2.width / 2
@@ -217,9 +220,10 @@ Rectangle {
                 Image {
                     id: ee4
                     visible: true
-                    source: "../../../resources/master4.png"
-                    width: creditsRectangle.width / 5
-                    height: creditsRectangle.width / 5
+                    source: "../../../resources/thomas.png"
+                    width: creditsRectangle.devPhotoSize
+                    height: creditsRectangle.devPhotoSize
+                    fillMode: Image.PreserveAspectFit
                     transform: Rotation {
                         id: rotation4
                         origin.x: ee4.width / 2
@@ -265,9 +269,10 @@ Rectangle {
                 Image {
                     id: ee5
                     visible: true
-                    source: "../../../resources/master5.png"
-                    width: creditsRectangle.width / 5
-                    height: creditsRectangle.width / 5
+                    source: "../../../resources/pete.png"
+                    width: creditsRectangle.devPhotoSize
+                    height: creditsRectangle.devPhotoSize
+                    fillMode: Image.PreserveAspectFit
                     transform: Rotation {
                         id: rotation5
                         origin.x: ee5.width / 2
@@ -304,11 +309,42 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    text: qsTr("You ?")
+                    text: qsTr("Luka")
                     font.bold: true
                     font.pixelSize: settings.qopenhd_general_font_pixel_size*1.1
                     color: "black"
                     anchors.horizontalCenter: parent.horizontalCenter
+                }
+                Image {
+                    id: ee6
+                    visible: true
+                    source: "../../../resources/luka.png"
+                    width: creditsRectangle.devPhotoSize
+                    height: creditsRectangle.devPhotoSize
+                    fillMode: Image.PreserveAspectFit
+                    transform: Rotation {
+                        id: rotation6
+                        origin.x: ee6.width / 2
+                        origin.y: ee6.height / 2
+                        angle: 0
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            animation6.start()
+                        }
+                    }
+                    SequentialAnimation {
+                        id: animation6
+                        loops: Animation.Infinite
+                        NumberAnimation {
+                            target: rotation6
+                            property: "angle"
+                            from: 0
+                            to: 360
+                            duration: 4000
+                        }
+                    }
                 }
             }
         }
