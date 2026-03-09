@@ -40,7 +40,9 @@ PopupBigGeneric{
         id: model_chann_to_scan
         ListElement {title: qsTr("OpenHD [1-7] only"); value: 0}
         ListElement {title: qsTr("All 2.4G channels"); value: 1}
-        ListElement {title: qsTr("All 5.8G channels"); value: 2}
+        ListElement {title: qsTr("All 5GHz channels"); value: 2}
+        ListElement {title: qsTr("5.2GHz Lower only"); value: 3}
+        ListElement {title: qsTr("5.8GHz Upper only"); value: 4}
     }
 
     ColumnLayout{
