@@ -189,14 +189,14 @@ Column {
         m_left_text: qsTr("SysId:")
         m_right_text: {
             var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
-            if(air_fc_sys_id==-1){
+            if(air_fc_sys_id==-1 || air_fc_sys_id==255){
                 return qsTr("NOT FOUND")
             }
             return qsTr("FOUND: %1").arg(air_fc_sys_id);
         }
         m_error_text: {
             var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
-            if(air_fc_sys_id==-1){
+            if(air_fc_sys_id==-1 || air_fc_sys_id==255){
                 return qsTr("Your AIR Unit cannot find your FC (UART). Please check:\n1) Wiring\n2) Right serial port enabled (OpenHD AIR param set)\n3) MAVLINK selected on your FC uart");
             }
             return qsTr("Please make sure:\n1) ARDUPILOT / PX4: FC sys id needs to be set to 1 (DEFAULT ARDUPILOT SYSID)\n2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0");

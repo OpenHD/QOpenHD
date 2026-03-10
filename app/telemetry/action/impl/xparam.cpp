@@ -431,20 +431,23 @@ void XParam::check_timeout_param_set()
     std::vector<std::pair<RunningParamCmdSet,SetParamResult>> timed_out_commands{};
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
-            RunningParamCmdSet& running_cmd=*it;
-            const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
-            if(elapsed>running_cmd.retransmit_delay){
-                qDebug()<<"Param cmd set timeout";
-                if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
-                    qDebug()<<"Param cmd retransmit "<<running_cmd.n_transmissions;
+        for (auto it = m_running_commands.begin(); it != m_running_commands.end(); ) {
+            RunningParamCmdSet& running_cmd = *it;
+            const auto elapsed = std::chrono::steady_clock::now() - running_cmd.last_transmission;
+            if (elapsed > running_cmd.retransmit_delay) {
+                qDebug() << "Param cmd set timeout";
+                if (running_cmd.n_transmissions < running_cmd.n_wanted_retransmissions) {
+                    qDebug() << "Param cmd retransmit " << running_cmd.n_transmissions;
                     send_next_message_running_set(running_cmd);
-                }else{
-                    qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
-                    SetParamResult result{std::nullopt,running_cmd.n_transmissions};
-                    timed_out_commands.push_back(std::make_pair(running_cmd,result));
-                    it=m_running_commands.erase(it);
+                    ++it;
+                } else {
+                    qDebug() << "Timeout after " << running_cmd.n_transmissions << " transmissions";
+                    SetParamResult result{std::nullopt, running_cmd.n_transmissions};
+                    timed_out_commands.push_back(std::make_pair(running_cmd, result));
+                    it = m_running_commands.erase(it);
                 }
+            } else {
+                ++it;
             }
         }
     }
@@ -458,19 +461,22 @@ void XParam::check_timeout_param_get_all()
     std::vector<std::pair<RunningParamCmdGetAll,GetAllParamResult>> timed_out_commands{};
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        for (auto it=m_running_get_all.begin(); it!=m_running_get_all.end(); ++it){
-            RunningParamCmdGetAll& running_cmd=*it;
-            const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
-            if(elapsed>running_cmd.retransmit_delay){
-                qDebug()<<"Param get all timeout";
-                if(running_cmd.n_transmissions<running_cmd.n_wanted_retransmissions){
+        for (auto it = m_running_get_all.begin(); it != m_running_get_all.end(); ) {
+            RunningParamCmdGetAll& running_cmd = *it;
+            const auto elapsed = std::chrono::steady_clock::now() - running_cmd.last_transmission;
+            if (elapsed > running_cmd.retransmit_delay) {
+                qDebug() << "Param get all timeout";
+                if (running_cmd.n_transmissions < running_cmd.n_wanted_retransmissions) {
                     send_next_message_running_get_all(running_cmd);
-                }else{
-                    qDebug()<<"Timeout after "<<running_cmd.n_transmissions<<" transmissions";
-                    GetAllParamResult result{false,{}};
-                    timed_out_commands.push_back(std::make_pair(running_cmd,result));
-                    it=m_running_get_all.erase(it);
+                    ++it;
+                } else {
+                    qDebug() << "Timeout after " << running_cmd.n_transmissions << " transmissions";
+                    GetAllParamResult result{false, {}};
+                    timed_out_commands.push_back(std::make_pair(running_cmd, result));
+                    it = m_running_get_all.erase(it);
                 }
+            } else {
+                ++it;
             }
         }
     }
