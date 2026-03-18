@@ -285,6 +285,275 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     append_int(ret,"FC_SYS_ID",
                ImprovedIntSetting::createRangeOnly(1,254),
                "MAVLink system ID of the flight controller. Avoid using 100 or 101 (reserved for OpenHD air/ground), and keep it within 1-254.");
+
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------
+    // Artosyn link parameters
+    // -------------------------------------------------------------------------------------------------------------------------------------------------------
+    append_string(ret, openhd::AR_ADDR,
+                  ImprovedStringSetting::createAnyValue(),
+                  "Artosyn daemon address (host/IP). Changing this reconnects to the daemon.");
+    append_int(ret, openhd::AR_PORT,
+               ImprovedIntSetting::createRangeOnly(1,65535),
+               "Artosyn daemon TCP port.");
+    append_int(ret, openhd::AR_SLOT,
+               ImprovedIntSetting::createRangeOnly(0,7),
+               "Artosyn slot index used by the OpenHD link.");
+    append_int(ret, openhd::AR_VPORT,
+               ImprovedIntSetting::createRangeOnly(0,255),
+               "Artosyn video socket port id.");
+    append_int(ret, openhd::AR_TPORT,
+               ImprovedIntSetting::createRangeOnly(0,255),
+               "Artosyn telemetry socket port id.");
+    append_int(ret, openhd::AR_DGRAM,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable Artosyn datagram socket mode.");
+    append_int(ret, openhd::AR_RXBUF,
+               ImprovedIntSetting::createRangeOnly(1,2147483647),
+               "Artosyn socket RX buffer size (bytes).");
+    append_int(ret, openhd::AR_TXBUF,
+               ImprovedIntSetting::createRangeOnly(1,2147483647),
+               "Artosyn socket TX buffer size (bytes).");
+    append_int(ret, openhd::AR_RDTMO,
+               ImprovedIntSetting::createRangeOnly(0,2147483647),
+               "Artosyn socket read timeout (ms).");
+    append_int(ret, openhd::AR_MCS_MD,
+               ImprovedIntSetting::createEnum({"Manual","Auto"}),
+               "MCS mode. Manual uses AR_MCS_VAL; Auto uses internal adaptation.");
+    append_int(ret, openhd::AR_MCS_VAL,
+               ImprovedIntSetting::createRangeOnly(-1,25),
+               "Manual MCS value (bb_phy_mcs_e). Use -1 to keep current.");
+    append_int(ret, openhd::AR_MCS_MIN,
+               ImprovedIntSetting::createRangeOnly(-1,25),
+               "Auto MCS minimum limit (bb_phy_mcs_e). -1 disables the limit.");
+    append_int(ret, openhd::AR_MCS_MAX,
+               ImprovedIntSetting::createRangeOnly(-1,25),
+               "Auto MCS maximum limit (bb_phy_mcs_e). -1 disables the limit.");
+    append_int(ret, openhd::AR_BW_MD,
+               ImprovedIntSetting::createEnum({"Manual","Auto"}),
+               "Bandwidth mode. Manual uses AR_BW_VAL; Auto uses internal adaptation.");
+    {
+        auto bw_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"1.25 MHz",0},
+            {"2.5 MHz",1},
+            {"5 MHz",2},
+            {"10 MHz",3},
+            {"20 MHz",4},
+            {"40 MHz",5},
+        };
+        append_int(ret, openhd::AR_BW_VAL,
+                   ImprovedIntSetting(-1,5,bw_items),
+                   "Manual bandwidth selection (bb_bandwidth_e).");
+    }
+    append_int(ret, openhd::AR_CHN_MD,
+               ImprovedIntSetting::createEnum({"Manual","Auto"}),
+               "Channel mode. Manual uses AR_CHN_IDX; Auto uses internal adaptation.");
+    append_int(ret, openhd::AR_CHN_IDX,
+               ImprovedIntSetting::createRangeOnly(-1,255),
+               "Manual channel index. -1 keeps current.");
+    append_int(ret, openhd::AR_PWR_ATO,
+               ImprovedIntSetting::createEnum({"Manual","Auto"}),
+               "Power control mode. Manual uses AR_PWR_DBM.");
+    append_int(ret, openhd::AR_PWR_DBM,
+               ImprovedIntSetting::createRangeOnly(-1,31),
+               "Manual TX power target (dBm). -1 keeps current.");
+    {
+        auto auto_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"Manual (0)",0},
+            {"Auto (1)",1},
+        };
+        append_int(ret, openhd::AR_BND_MD,
+                   ImprovedIntSetting(-1,1,auto_items),
+                   "Band mode control. -1 keeps current.");
+    }
+    {
+        auto band_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"1G (150-1000 MHz)",0},
+            {"2G (1000-4000 MHz)",1},
+            {"5G (4000-7000 MHz)",2},
+        };
+        append_int(ret, openhd::AR_BND_VAL,
+                   ImprovedIntSetting(-1,2,band_items),
+                   "Manual band selection (bb_band_e). -1 keeps current.");
+    }
+    {
+        auto cmp_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"Disable (0)",0},
+            {"Enable (1)",1},
+        };
+        append_int(ret, openhd::AR_CMP_MD,
+                   ImprovedIntSetting(-1,1,cmp_items),
+                   "Compliance mode control. -1 keeps current.");
+    }
+    {
+        auto pwr_mode_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"Open loop (0)",0},
+            {"Closed loop (1)",1},
+        };
+        append_int(ret, openhd::AR_PWR_MD,
+                   ImprovedIntSetting(-1,1,pwr_mode_items),
+                   "Power mode (bb_phy_pwr_mode_e). -1 keeps current.");
+    }
+    {
+        auto lna_mode_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"Manual (0)",0},
+            {"Auto (1)",1},
+        };
+        append_int(ret, openhd::AR_LNA_MD,
+                   ImprovedIntSetting(-1,1,lna_mode_items),
+                   "LNA mode control. -1 keeps current.");
+    }
+    {
+        auto lna_bp_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"LNA (0)",0},
+            {"Bypass (1)",1},
+        };
+        append_int(ret, openhd::AR_LNA_BP,
+                   ImprovedIntSetting(-1,1,lna_bp_items),
+                   "LNA bypass control. -1 keeps current.");
+    }
+    {
+        auto rf_items=std::vector<ImprovedIntSetting::Item>{
+            {"Ignore (-1)",-1},
+            {"Off (0)",0},
+            {"On (1)",1},
+        };
+        append_int(ret, openhd::AR_RF_ATX,
+                   ImprovedIntSetting(-1,1,rf_items),
+                   "RF path A TX enable. -1 keeps current.");
+        append_int(ret, openhd::AR_RF_ARX,
+                   ImprovedIntSetting(-1,1,rf_items),
+                   "RF path A RX enable. -1 keeps current.");
+        append_int(ret, openhd::AR_RF_BTX,
+                   ImprovedIntSetting(-1,1,rf_items),
+                   "RF path B TX enable. -1 keeps current.");
+        append_int(ret, openhd::AR_RF_BRX,
+                   ImprovedIntSetting(-1,1,rf_items),
+                   "RF path B RX enable. -1 keeps current.");
+    }
+
+    // Read-only Artosyn metrics and status
+    {
+        const std::vector<std::pair<std::string,std::string>> ro_params{
+            {openhd::AR_LK_STATE,"Artosyn link state (bb_link_state_e)."},
+            {openhd::AR_RX_MCS,"RX MCS (bb_phy_mcs_e)."},
+            {openhd::AR_TX_MCS,"TX MCS (bb_phy_mcs_e)."},
+            {openhd::AR_BW,"TX bandwidth (bb_bandwidth_e)."},
+            {openhd::AR_RX_BW,"RX bandwidth (bb_bandwidth_e)."},
+            {openhd::AR_PHY_TP,"PHY throughput estimate (kbps)."},
+            {openhd::AR_REAL_TP,"Measured throughput (kbps)."},
+            {openhd::AR_TX_FREQ,"TX center frequency (kHz)."},
+            {openhd::AR_RX_FREQ,"RX center frequency (kHz)."},
+            {openhd::AR_SNR,"SNR (linear, see bb_api.h for conversion)."},
+            {openhd::AR_LDPC_E,"LDPC error blocks."},
+            {openhd::AR_LDPC_N,"LDPC total blocks."},
+            {openhd::AR_GAIN_A,"RX gain path A."},
+            {openhd::AR_GAIN_B,"RX gain path B."},
+            {openhd::AR_CHN_AUT,"Channel auto mode flag."},
+            {openhd::AR_CHN_CUR,"Current channel index."},
+            {openhd::AR_CHN_FK,"Current channel frequency (kHz)."},
+            {openhd::AR_PWR_CUR,"Current TX power (dBm)."},
+            {openhd::AR_BND_AUT,"Band auto mode flag."},
+            {openhd::AR_BND_CUR,"Current band (bb_band_e)."},
+            {openhd::AR_RF_ATX_R,"RF path A TX state."},
+            {openhd::AR_RF_ARX_R,"RF path A RX state."},
+            {openhd::AR_RF_BTX_R,"RF path B TX state."},
+            {openhd::AR_RF_BRX_R,"RF path B RX state."},
+            {openhd::AR_SW_VER,"Artosyn software version."},
+            {openhd::AR_HW_VER,"Artosyn hardware version."},
+            {openhd::AR_FW_VER,"Artosyn firmware version."},
+            {openhd::AR_CMP_TM,"Artosyn build/compile time."},
+            {openhd::AR_UPTIME,"Artosyn uptime (s)."},
+            {openhd::AR_RUNSYS,"Running system/app id."},
+            {openhd::AR_AP_TIME,"AP time value (device-specific)."},
+            {openhd::AR_TX_TPTH,"TX throughput threshold (kbps)."},
+            {openhd::AR_RX_TPTH,"RX throughput threshold (kbps)."},
+            {openhd::AR_P_SNR,"Peer SNR (linear)."},
+            {openhd::AR_P_LDPC_E,"Peer LDPC error blocks."},
+            {openhd::AR_P_LDPC_N,"Peer LDPC total blocks."},
+            {openhd::AR_P_GAIN_A,"Peer RX gain path A."},
+            {openhd::AR_P_GAIN_B,"Peer RX gain path B."},
+            {openhd::AR_ROLE,"Device role."},
+            {openhd::AR_MODE,"Operating mode (bb_mode_e)."},
+            {openhd::AR_SYNC,"Sync mode."},
+            {openhd::AR_SYNC_M,"Sync master flag."},
+            {openhd::AR_CFG_SBM,"Configured SBMP value."},
+            {openhd::AR_RT_SBM,"Runtime SBMP value."},
+            {openhd::AR_LMAC,"Local MAC (baseband)."},
+            {openhd::AR_PAIR,"Pair state."},
+            {openhd::AR_PMAC,"Peer MAC (baseband)."},
+            {openhd::AR_TX_RFM,"TX RF mode (bb_tx_mode_e)."},
+            {openhd::AR_RX_RFM,"RX RF mode (bb_rx_mode_e)."},
+            {openhd::AR_TX_TEN,"TX time interleaving enable."},
+            {openhd::AR_RX_TEN,"RX time interleaving enable."},
+            {openhd::AR_TX_TNM,"TX time interleaving block count."},
+            {openhd::AR_RX_TNM,"RX time interleaving block count."},
+            {openhd::AR_TX_TLN,"TX time interleaving length."},
+            {openhd::AR_RX_TLN,"RX time interleaving length."},
+            {openhd::AR1_S_SNR,"1v1 self SNR (linear)."},
+            {openhd::AR1_S_LDPT,"1v1 self LDPC TLV error ratio (x10000)."},
+            {openhd::AR1_S_LDPN,"1v1 self LDPC frame error ratio (x10000)."},
+            {openhd::AR1_S_GNA,"1v1 self RX gain A."},
+            {openhd::AR1_S_GNB,"1v1 self RX gain B."},
+            {openhd::AR1_S_MCS,"1v1 self TX MCS."},
+            {openhd::AR1_S_CHN,"1v1 self TX channel."},
+            {openhd::AR1_S_PWR,"1v1 self TX power."},
+            {openhd::AR1_S_LNI,"1v1 self LNA inner bypass."},
+            {openhd::AR1_S_LNF,"1v1 self LNA FEM bypass."},
+            {openhd::AR1_S_1TX,"1v1 self RF 1TX mode flag."},
+            {openhd::AR1_S_TFK,"1v1 self TX frequency (kHz)."},
+            {openhd::AR1_S_LSN,"1v1 self low-band channel SNR."},
+            {openhd::AR1_S_LGA,"1v1 self low-band gain A."},
+            {openhd::AR1_S_LGB,"1v1 self low-band gain B."},
+            {openhd::AR1_S_HSN,"1v1 self high-band channel SNR."},
+            {openhd::AR1_S_HGA,"1v1 self high-band gain A."},
+            {openhd::AR1_S_HGB,"1v1 self high-band gain B."},
+            {openhd::AR1_P_SNR,"1v1 peer SNR (linear)."},
+            {openhd::AR1_P_LDPT,"1v1 peer LDPC TLV error ratio (x10000)."},
+            {openhd::AR1_P_LDPN,"1v1 peer LDPC frame error ratio (x10000)."},
+            {openhd::AR1_P_GNA,"1v1 peer RX gain A."},
+            {openhd::AR1_P_GNB,"1v1 peer RX gain B."},
+            {openhd::AR1_P_MCS,"1v1 peer TX MCS."},
+            {openhd::AR1_P_CHN,"1v1 peer TX channel."},
+            {openhd::AR1_P_PWR,"1v1 peer TX power."},
+            {openhd::AR1_P_LNI,"1v1 peer LNA inner bypass."},
+            {openhd::AR1_P_LNF,"1v1 peer LNA FEM bypass."},
+            {openhd::AR1_P_1TX,"1v1 peer RF 1TX mode flag."},
+            {openhd::AR1_P_TFK,"1v1 peer TX frequency (kHz)."},
+            {openhd::AR1_P_LSN,"1v1 peer low-band channel SNR."},
+            {openhd::AR1_P_LGA,"1v1 peer low-band gain A."},
+            {openhd::AR1_P_LGB,"1v1 peer low-band gain B."},
+            {openhd::AR1_P_HSN,"1v1 peer high-band channel SNR."},
+            {openhd::AR1_P_HGA,"1v1 peer high-band gain A."},
+            {openhd::AR1_P_HGB,"1v1 peer high-band gain B."},
+            {openhd::AR_V_RX_AV,"Video socket RX available flag."},
+            {openhd::AR_V_RX_OV,"Video socket RX overflow count."},
+            {openhd::AR_V_RX_BS,"Video socket RX buffer size (bytes)."},
+            {openhd::AR_V_RX_DS,"Video socket RX buffered data size (bytes)."},
+            {openhd::AR_V_TX_AV,"Video socket TX available flag."},
+            {openhd::AR_V_TX_OV,"Video socket TX overflow count."},
+            {openhd::AR_V_TX_BS,"Video socket TX buffer size (bytes)."},
+            {openhd::AR_V_TX_DS,"Video socket TX buffered data size (bytes)."},
+            {openhd::AR_T_RX_AV,"Telemetry socket RX available flag."},
+            {openhd::AR_T_RX_OV,"Telemetry socket RX overflow count."},
+            {openhd::AR_T_RX_BS,"Telemetry socket RX buffer size (bytes)."},
+            {openhd::AR_T_RX_DS,"Telemetry socket RX buffered data size (bytes)."},
+            {openhd::AR_T_TX_AV,"Telemetry socket TX available flag."},
+            {openhd::AR_T_TX_OV,"Telemetry socket TX overflow count."},
+            {openhd::AR_T_TX_BS,"Telemetry socket TX buffer size (bytes)."},
+            {openhd::AR_T_TX_DS,"Telemetry socket TX buffered data size (bytes)."},
+        };
+        for(const auto& item: ro_params){
+            append_documented_read_only(ret,item.first,item.second);
+        }
+    }
+
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
     // video / camera parameters
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -562,6 +831,12 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "Baud rate for the OpenHD telemetry UART on air and ground. Match this with the connected device's expectation.");
         append_int(ret,"OHD_UART_FLW",ImprovedIntSetting::createEnumEnableDisable(),
                    "Toggle RTS/CTS flow control for the OpenHD telemetry UART.");
+        append_int(ret,openhd::SBUS_EN,ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable SBUS output on the air unit (generated from RC override messages).");
+        append_string(ret,openhd::SBUS_DEV,ImprovedStringSetting::createAnyValue(),
+                      "UART device for SBUS output (e.g. /dev/serial0, /dev/ttyAMA1).");
+        append_int(ret,openhd::SBUS_HZ,ImprovedIntSetting::createRangeOnly(1,1000),
+                   "SBUS output update rate (Hz).");
         append_int(ret,"TRACK_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
                    "Baud rate for the ground side tracker/output UART.");
         append_int(ret,"TRACK_UART_FLOW",ImprovedIntSetting::createEnumEnableDisable(),

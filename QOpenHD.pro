@@ -66,6 +66,37 @@ CONFIG(debug, debug|release) {
     DEFINES += QMLJSDEBUGGER
 }
 
+win32:CONFIG(release, debug|release) {
+    # MinGW 32-bit runs out of memory with LTO on large resource objects.
+    QMAKE_CXXFLAGS_RELEASE -= -flto
+    QMAKE_LFLAGS_RELEASE -= -flto
+    # Further reduce memory pressure on huge QRC compilation units.
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE += -O1
+    QMAKE_CFLAGS_RELEASE += -O1
+}
+
+win32:CONFIG(lowmemrelease, debug|release) {
+    message(Using Win32 low-memory release settings)
+    QMAKE_CXXFLAGS_RELEASE -= -O1
+    QMAKE_CFLAGS_RELEASE -= -O1
+    QMAKE_CXXFLAGS_RELEASE += -O0
+    QMAKE_CFLAGS_RELEASE += -O0
+    QMAKE_CXXFLAGS_RELEASE += -fno-tree-vectorize
+    QMAKE_CFLAGS_RELEASE += -fno-tree-vectorize
+}
+
+win32 {
+    ffmpeg_bin = $$PWD/build-libs-windows/ffmpeg/bin
+    contains(CONFIG, debug) {
+        destdir_win = $$OUT_PWD/debug
+    } else {
+        destdir_win = $$OUT_PWD/release
+    }
+    QMAKE_POST_LINK += $$quote(powershell -NoProfile -ExecutionPolicy Bypass -Command "if (Test-Path '$$ffmpeg_bin/*.dll') { Copy-Item '$$ffmpeg_bin/*.dll' '$$destdir_win' -Force }")
+}
+
 #https://doc.qt.io/qt-6/portingguide.html
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
@@ -135,7 +166,7 @@ LinuxBuild {
 # gst Qt plugins in windows is hard
 WindowsBuild {
     # In future is better to use windows decoding and rendering api
-    #include(app/videostreaming/avcodec/avcodec_video.pri)
+    include(app/videostreaming/avcodec/avcodec_video.pri)
 }
 
 # All Generic files / files that literally have 0!! dependencies other than qt

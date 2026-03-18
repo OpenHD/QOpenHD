@@ -3,7 +3,7 @@ INCLUDEPATH += C:/ffmpeg/include
 
 LIBS += -LC:/ffmpeg/lib -lavcodec -lavutil -lavformat
 # TODO dirty
-LIBS += -lGLESv2 -lEGL
+!win32: LIBS += -lGLESv2 -lEGL
 unix:!android {
     LIBS += -ldrm
     PKGCONFIG += libdrm
@@ -12,8 +12,18 @@ win32 {
     INCLUDEPATH += $$PWD/../../../build-libs-windows/ffmpeg/include
     LIBS += -L$$PWD/../../../build-libs-windows/ffmpeg/lib -lavcodec -lavutil -lavformat
 
-    INCLUDEPATH += $$PWD/../../../build-libs-windows/angle-x64/include
-    LIBS += -L$$PWD/../../../build-libs-windows/angle-x64/bin -lGLESv2 -lEGL
+    angle_x86 = $$PWD/../../../build-libs-windows/angle-x86
+    angle_x64 = $$PWD/../../../build-libs-windows/angle-x64
+    exists($$angle_x86/include) {
+        INCLUDEPATH += $$angle_x86/include
+        LIBS += -L$$angle_x86/bin -lGLESv2 -lEGL
+    } else: exists($$angle_x64/include) {
+        INCLUDEPATH += $$angle_x64/include
+        LIBS += -L$$angle_x64/bin -lGLESv2 -lEGL
+    } else {
+        INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtANGLE
+        LIBS += -L$$[QT_INSTALL_LIBS] -llibGLESv2 -llibEGL
+    }
 
     DEFINES += EGL_EGLEXT_PROTOTYPES
     DEFINES += GL_GLEXT_PROTOTYPES
