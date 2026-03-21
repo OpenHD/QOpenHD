@@ -18,6 +18,8 @@ Item {
     property int cardRadius: 6
     property color cardNameColor: "black"
     property color borderColor: "#3a000000"
+    property color cardBackgroundColor: "white"
+    property color cardFooterColor: "#f6f6f6"
 
     property bool m_style_error: false
 
@@ -25,7 +27,7 @@ Item {
         id: background
         radius: cardRadius
         //color: m_style_error ? "red" : "white"
-        color: "white"
+        color: cardBackgroundColor
         anchors.fill: parent
         border.width: 1
         border.color: borderColor
@@ -108,7 +110,7 @@ Item {
         children: cardFooter
         visible: hasFooter
         height: 52
-        color: "#f6f6f6"
+        color: cardFooterColor
         border.width: 1
         border.color: borderColor
     }

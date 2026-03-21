@@ -20,8 +20,14 @@ BaseWidget {
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
+    widgetActionWidth: 320
 
     hasWidgetDetail: true
+    hasWidgetAction: true
+
+    bw_scale_identifier: "link_overview_widget_scale"
+    bw_background_color_identifier: "link_overview_widget_bg_color"
+    bw_opacity_identifier: "link_overview_widget_opacity"
 
     property string linkFont: "Quicksand"
     property string linkMonoFont: "ShareTechMono"
@@ -35,6 +41,63 @@ BaseWidget {
     property real rcBlockHeight: 8
     property real rcBlockSkew: 4
     property var rcBlockThresholds: [10, 20, 30, 40, 50, 60, 70, 80]
+
+    function sync_shared_style_from_settings() {
+        if (bw_current_scale !== settings.link_overview_widget_scale) {
+            bw_current_scale = settings.link_overview_widget_scale;
+        }
+        if (bw_current_opacity !== settings.link_overview_widget_opacity) {
+            bw_current_opacity = settings.link_overview_widget_opacity;
+        }
+        if (bw_current_background_color !== settings.link_overview_widget_bg_color) {
+            bw_current_background_color = settings.link_overview_widget_bg_color;
+        }
+    }
+
+    function bw_set_current_scale(scale) {
+        if (scale <= 0 || scale >= 500) {
+            console.warn("perhaps invalid widget scale");
+        }
+        if (bw_current_scale !== scale) {
+            bw_current_scale = scale;
+        }
+        if (settings.link_overview_widget_scale !== scale) {
+            settings.link_overview_widget_scale = scale;
+        }
+    }
+
+    function bw_set_current_opacity(opacity) {
+        if (opacity <= 0 || opacity > 1) {
+            console.warn("perhaps invalid widget opacity");
+        }
+        if (bw_current_opacity !== opacity) {
+            bw_current_opacity = opacity;
+        }
+        if (settings.link_overview_widget_opacity !== opacity) {
+            settings.link_overview_widget_opacity = opacity;
+        }
+    }
+
+    Connections {
+        target: settings
+        function onLink_overview_widget_scaleChanged() {
+            if (bw_current_scale !== settings.link_overview_widget_scale) {
+                bw_current_scale = settings.link_overview_widget_scale;
+            }
+        }
+        function onLink_overview_widget_opacityChanged() {
+            if (bw_current_opacity !== settings.link_overview_widget_opacity) {
+                bw_current_opacity = settings.link_overview_widget_opacity;
+            }
+        }
+        function onLink_overview_widget_bg_colorChanged() {
+            if (bw_current_background_color !== settings.link_overview_widget_bg_color) {
+                bw_current_background_color = settings.link_overview_widget_bg_color;
+            }
+        }
+    }
+
+    Component.onCompleted: sync_shared_style_from_settings()
 
     function bitrate_color(curr_set_and_measured_bitrate_mismatch) {
         if (curr_set_and_measured_bitrate_mismatch === 1) {
@@ -143,16 +206,15 @@ BaseWidget {
         return uplink_ok() ? "white" : "grey";
     }
 
-    widgetDetailComponent: ScrollView {
-        contentHeight: idBaseWidgetDefaultUiControlElements.height
+    widgetActionComponent: ScrollView {
+        contentHeight: actionColumn.implicitHeight
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        BaseWidgetDefaultUiControlElements {
-            id: idBaseWidgetDefaultUiControlElements
-            show_transparency: false
-            show_background_color: true
-            background_color_target: linkOverviewWidgetRight
+        Column {
+            id: actionColumn
+            width: parent.width
+            spacing: 2
 
             Item {
                 width: parent.width
@@ -224,6 +286,19 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+        }
+    }
+
+    widgetDetailComponent: ScrollView {
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        BaseWidgetDefaultUiControlElements {
+            id: idBaseWidgetDefaultUiControlElements
+            show_transparency: false
+            show_background_color: true
+            background_color_target: linkOverviewWidgetRight
         }
     }
 

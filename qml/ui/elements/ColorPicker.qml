@@ -12,6 +12,11 @@ Card {
     hasHeader: false
     hasHeaderImage: false
     visible: false
+    cardBackgroundColor: "#cc000000"
+    cardFooterColor: "#b0000000"
+    borderColor: "#444444"
+
+    Material.theme: Material.Dark
 
     property bool stateVisible: visible
 

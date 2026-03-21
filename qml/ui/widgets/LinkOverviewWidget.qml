@@ -20,17 +20,29 @@ BaseWidget {
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
+    widgetActionWidth: 320
 
     hasWidgetDetail: true
+    hasWidgetAction: true
+
+    bw_scale_identifier: "link_overview_widget_scale"
+    bw_background_color_identifier: "link_overview_widget_bg_color"
+    bw_opacity_identifier: "link_overview_widget_opacity"
 
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
     property int m_channel_width_mhz: _ohdSystemAir.curr_channel_width_mhz
     property int m_best_snr_db: get_best_snr_db()
-    property int m_snr_value: snr_db_to_percent(m_best_snr_db)
+    property int m_snr_value: get_quality_percent_value()
     property int snr_min_db: settings.link_snr_min_db
     property int snr_max_db: settings.link_snr_max_db
-    property real m_txc_temp: _ohdSystemGround.curr_txc_temp_degree_1
+    property real m_air_txc_temp1: _ohdSystemAir.curr_txc_temp_degree_1
+    property real m_air_txc_temp2: _ohdSystemAir.curr_txc_temp_degree_2
+    property real m_gnd_txc_temp1: _ohdSystemGround.curr_txc_temp_degree_1
+    property real m_gnd_txc_temp2: _ohdSystemGround.curr_txc_temp_degree_2
     property int m_packet_loss_perc: _ohdSystemGround.curr_rx_packet_loss_perc
+    property bool use_calculated_quality: settings.downlink_calc_quality_enabled
+    property real m_quality_raw: calculate_quality_raw()
+    property real m_quality_smoothed: -1
     property string linkFont: "Quicksand"
     property string linkMonoFont: "ShareTechMono"
     property int snrBlockCount: 8
@@ -39,12 +51,86 @@ BaseWidget {
     property real snrBlockSkew: 4
     property var snrBlockThresholds: {
         var arr = [];
+        if (use_calculated_quality) {
+            for (var i = 0; i < snrBlockCount; i++) {
+                arr.push((i + 1) * 10);
+            }
+            return arr;
+        }
         var span = Math.max(1, snr_max_db - snr_min_db);
         var step = span / snrBlockCount;
-        for (var i = 0; i < snrBlockCount; i++) {
-            arr.push(snr_min_db + step * (i + 1));
+        for (var j = 0; j < snrBlockCount; j++) {
+            arr.push(snr_min_db + step * (j + 1));
         }
         return arr;
+    }
+
+    function sync_shared_style_from_settings() {
+        if (bw_current_scale !== settings.link_overview_widget_scale) {
+            bw_current_scale = settings.link_overview_widget_scale;
+        }
+        if (bw_current_opacity !== settings.link_overview_widget_opacity) {
+            bw_current_opacity = settings.link_overview_widget_opacity;
+        }
+        if (bw_current_background_color !== settings.link_overview_widget_bg_color) {
+            bw_current_background_color = settings.link_overview_widget_bg_color;
+        }
+    }
+
+    function bw_set_current_scale(scale) {
+        if (scale <= 0 || scale >= 500) {
+            console.warn("perhaps invalid widget scale");
+        }
+        if (bw_current_scale !== scale) {
+            bw_current_scale = scale;
+        }
+        if (settings.link_overview_widget_scale !== scale) {
+            settings.link_overview_widget_scale = scale;
+        }
+    }
+
+    function bw_set_current_opacity(opacity) {
+        if (opacity <= 0 || opacity > 1) {
+            console.warn("perhaps invalid widget opacity");
+        }
+        if (bw_current_opacity !== opacity) {
+            bw_current_opacity = opacity;
+        }
+        if (settings.link_overview_widget_opacity !== opacity) {
+            settings.link_overview_widget_opacity = opacity;
+        }
+    }
+
+    Connections {
+        target: settings
+        function onLink_overview_widget_scaleChanged() {
+            if (bw_current_scale !== settings.link_overview_widget_scale) {
+                bw_current_scale = settings.link_overview_widget_scale;
+            }
+        }
+        function onLink_overview_widget_opacityChanged() {
+            if (bw_current_opacity !== settings.link_overview_widget_opacity) {
+                bw_current_opacity = settings.link_overview_widget_opacity;
+            }
+        }
+        function onLink_overview_widget_bg_colorChanged() {
+            if (bw_current_background_color !== settings.link_overview_widget_bg_color) {
+                bw_current_background_color = settings.link_overview_widget_bg_color;
+            }
+        }
+    }
+
+    onM_quality_rawChanged: update_quality_smoothed()
+    onUse_calculated_qualityChanged: {
+        if (!use_calculated_quality) {
+            m_quality_smoothed = -1;
+        } else {
+            update_quality_smoothed();
+        }
+    }
+    Component.onCompleted: {
+        update_quality_smoothed();
+        sync_shared_style_from_settings();
     }
 
     function get_dbm_text() {
@@ -55,11 +141,31 @@ BaseWidget {
         return "" + dbm;
     }
 
-    function get_txc_text() {
-        if (m_txc_temp <= -127) {
+    function is_valid_temp(value) {
+        return value > -127;
+    }
+
+    function format_txc_temp(value) {
+        if (!is_valid_temp(value)) {
             return "N/A";
         }
-        return Math.round(m_txc_temp) + "C";
+        return Math.round(value) + "C";
+    }
+
+    function get_max_air_txc_temp() {
+        var max = -128;
+        var temps = [m_air_txc_temp1, m_air_txc_temp2];
+        for (var i = 0; i < temps.length; i++) {
+            var t = temps[i];
+            if (is_valid_temp(t) && t > max) {
+                max = t;
+            }
+        }
+        return max;
+    }
+
+    function get_txc_text() {
+        return format_txc_temp(get_max_air_txc_temp());
     }
 
     function get_channel_width_index() {
@@ -86,6 +192,129 @@ BaseWidget {
         var span = Math.max(1, snr_max_db - snr_min_db);
         var pct = ((db - snr_min_db) / span) * 100.0;
         return Math.max(0, Math.min(100, Math.round(pct)));
+    }
+
+    function clamp(value, minValue, maxValue) {
+        return Math.max(minValue, Math.min(maxValue, value));
+    }
+
+    function loss_to_score(loss) {
+        if (loss < 0) {
+            return -1;
+        }
+        if (loss >= 5) {
+            return 0;
+        }
+        var t = clamp(loss, 0, 5) / 5.0;
+        return 100.0 * (1.0 - (t * t));
+    }
+
+    function snr_to_score(snr) {
+        if (!snr_is_valid(snr)) {
+            return -1;
+        }
+        var t = (snr - 5.0) / 20.0;
+        t = clamp(t, 0.0, 1.0);
+        return 100.0 * (t * t);
+    }
+
+    function rssi_to_score(rssi) {
+        if (rssi <= -127) {
+            return -1;
+        }
+        var t = (rssi + 92.0) / 47.0;
+        t = clamp(t, 0.0, 1.0);
+        return 100.0 * t;
+    }
+
+    function normalize_weight(value, fallback) {
+        var v = Number(value);
+        if (!isFinite(v)) {
+            return fallback;
+        }
+        return v;
+    }
+
+    function calculate_quality_raw() {
+        if (!use_calculated_quality) {
+            return -1;
+        }
+        var lossScore = loss_to_score(m_packet_loss_perc);
+        var snrScore = snr_to_score(m_best_snr_db);
+        var rssiScore = rssi_to_score(_ohdSystemGround.current_rx_rssi);
+        var anyValid = false;
+        if (lossScore < 0) {
+            lossScore = 0;
+        } else {
+            anyValid = true;
+        }
+        if (snrScore < 0) {
+            snrScore = 0;
+        } else {
+            anyValid = true;
+        }
+        if (rssiScore < 0) {
+            rssiScore = 0;
+        } else {
+            anyValid = true;
+        }
+        if (!anyValid) {
+            return -1;
+        }
+        var lossWeight = normalize_weight(settings.downlink_quality_loss_weight, 0.60);
+        var snrWeight = normalize_weight(settings.downlink_quality_snr_weight, 0.30);
+        var rssiWeight = normalize_weight(settings.downlink_quality_rssi_weight, 0.10);
+        var offset = normalize_weight(settings.downlink_quality_offset, 0.0);
+        var quality = lossWeight * lossScore + snrWeight * snrScore + rssiWeight * rssiScore + offset;
+        return clamp(quality, 0.0, 100.0);
+    }
+
+    function update_quality_smoothed() {
+        if (!use_calculated_quality) {
+            return;
+        }
+        var current = m_quality_raw;
+        if (current < 0) {
+            m_quality_smoothed = -1;
+            return;
+        }
+        if (m_quality_smoothed < 0) {
+            m_quality_smoothed = current;
+            return;
+        }
+        if (current < m_quality_smoothed) {
+            m_quality_smoothed = (m_quality_smoothed * 0.70) + (current * 0.30);
+        } else {
+            m_quality_smoothed = (m_quality_smoothed * 0.90) + (current * 0.10);
+        }
+    }
+
+    function get_quality_display_text() {
+        if (use_calculated_quality) {
+            if (m_quality_smoothed < 0) {
+                return "N/A";
+            }
+            return "" + Math.round(m_quality_smoothed) + "%";
+        }
+        var raw = _ohdSystemGround.current_rx_signal_quality;
+        if (raw < 0) {
+            return "N/A";
+        }
+        return raw + "%";
+    }
+
+    function get_primary_link_text() {
+        return get_dbm_text() + " dBm " + get_txc_text();
+    }
+
+    function get_quality_percent_value() {
+        if (!use_calculated_quality) {
+            return snr_db_to_percent(m_best_snr_db);
+        }
+        if (m_quality_smoothed < 0) {
+            return 0;
+        }
+        return clamp(Math.round(m_quality_smoothed), 0, 100);
     }
 
     function best_snr_for_card(card) {
@@ -191,16 +420,21 @@ BaseWidget {
         return blocks;
     }
 
-    widgetDetailComponent: ScrollView {
-        contentHeight: idBaseWidgetDefaultUiControlElements.height
+    function get_tx_error_text() {
+        return qsTr("TX hint/dropped: %1 %2")
+            .arg(_ohdSystemAir.count_tx_inj_error_hint)
+            .arg(_ohdSystemAir.count_tx_dropped_packets);
+    }
+
+    widgetActionComponent: ScrollView {
+        contentHeight: actionColumn.implicitHeight
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        BaseWidgetDefaultUiControlElements {
-            id: idBaseWidgetDefaultUiControlElements
-            show_transparency: false
-            show_background_color: true
-            background_color_target: linkOverviewWidget
+        Column {
+            id: actionColumn
+            width: parent.width
+            spacing: 2
 
             Item {
                 width: parent.width
@@ -235,9 +469,9 @@ BaseWidget {
             }
             Item {
                 width: parent.width
-                height: 32
+                height: 28
                 Text {
-                    text: qsTr("SNR min: %1 dB").arg(settings.link_snr_min_db)
+                    text: qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -245,69 +479,31 @@ BaseWidget {
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.link_snr_min_db
-                    to: 40
-                    stepSize: 1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 120
-
-                    onValueChanged: {
-                        var v = Math.round(value);
-                        if (settings.link_snr_min_db !== v) {
-                            settings.link_snr_min_db = v;
-                        }
-                        if (settings.link_snr_min_db >= settings.link_snr_max_db) {
-                            settings.link_snr_max_db = settings.link_snr_min_db + 1;
-                        }
-                    }
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("SNR max: %1 dB").arg(settings.link_snr_max_db)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.link_snr_max_db
-                    to: 40
-                    stepSize: 1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 120
-
-                    onValueChanged: {
-                        var v = Math.round(value);
-                        if (v <= settings.link_snr_min_db) {
-                            v = settings.link_snr_min_db + 1;
-                        }
-                        if (settings.link_snr_max_db !== v) {
-                            settings.link_snr_max_db = v;
-                        }
-                    }
                 }
             }
             Item {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
+                    text: qsTr("Air TXC temp: %1 / %2")
+                        .arg(format_txc_temp(m_air_txc_temp1))
+                        .arg(format_txc_temp(m_air_txc_temp2))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                Text {
+                    text: qsTr("GND TXC temp: %1 / %2")
+                        .arg(format_txc_temp(m_gnd_txc_temp1))
+                        .arg(format_txc_temp(m_gnd_txc_temp2))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -349,7 +545,7 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("Quality: %1%").arg(_ohdSystemGround.current_rx_signal_quality)
+                    text: qsTr("Quality: %1").arg(get_quality_display_text())
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -445,6 +641,337 @@ BaseWidget {
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: "#444444"
+                opacity: 0.7
+            }
+
+            Text {
+                text: qsTr("Debug")
+                color: "white"
+                font.bold: true
+                font.family: linkFont
+                font.pixelSize: detailPanelFontPixels
+            }
+
+            Column {
+                width: parent.width
+                spacing: 4
+
+                Text {
+                    text: get_tx_error_text()
+                    color: "white"
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    elide: Text.ElideRight
+                    wrapMode: Text.NoWrap
+                }
+
+                RowLayout {
+                    width: parent.width
+                    spacing: 16
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 4
+                        Text {
+                            text: qsTr("Blocks lost: %1").arg(_cameraStreamModelPrimary.count_blocks_lost)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                        Text {
+                            text: qsTr("Fragments recovered: %1").arg(_cameraStreamModelPrimary.count_fragments_recovered)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                        Text {
+                            text: qsTr("AIR TX tele: %1").arg(_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                        Text {
+                            text: qsTr("AIR RX: %1").arg(_ohdSystemAir.rx_packets_per_second_and_bits_per_second)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 4
+                        Text {
+                            text: qsTr("Blocks recovered: %1").arg(_cameraStreamModelPrimary.count_blocks_recovered)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                        Text {
+                            text: qsTr("AIR TX: %1").arg(_ohdSystemAir.tx_packets_per_second_and_bits_per_second)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                        Text {
+                            text: qsTr("AIR TX video0: %1").arg(_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                        Text {
+                            text: qsTr("TX PWR Air: %1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit)
+                            color: "white"
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    widgetDetailComponent: ScrollView {
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        BaseWidgetDefaultUiControlElements {
+            id: idBaseWidgetDefaultUiControlElements
+            show_transparency: false
+            show_background_color: true
+            background_color_target: linkOverviewWidget
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("SNR min: %1 dB").arg(settings.link_snr_min_db)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.link_snr_min_db
+                    to: 40
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 120
+
+                    onValueChanged: {
+                        var v = Math.round(value);
+                        if (settings.link_snr_min_db !== v) {
+                            settings.link_snr_min_db = v;
+                        }
+                        if (settings.link_snr_min_db >= settings.link_snr_max_db) {
+                            settings.link_snr_max_db = settings.link_snr_min_db + 1;
+                        }
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("SNR max: %1 dB").arg(settings.link_snr_max_db)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.link_snr_max_db
+                    to: 40
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 120
+
+                    onValueChanged: {
+                        var v = Math.round(value);
+                        if (v <= settings.link_snr_min_db) {
+                            v = settings.link_snr_min_db + 1;
+                        }
+                        if (settings.link_snr_max_db !== v) {
+                            settings.link_snr_max_db = v;
+                        }
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Calculated Quality of Link")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_calc_quality_enabled
+                    onCheckedChanged: settings.downlink_calc_quality_enabled = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                visible: settings.downlink_calc_quality_enabled
+                Text {
+                    text: qsTr("Loss Weight: %1").arg(Number(settings.downlink_quality_loss_weight).toFixed(2))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.downlink_quality_loss_weight
+                    to: 1
+                    stepSize: 0.01
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 140
+                    onValueChanged: settings.downlink_quality_loss_weight = value
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                visible: settings.downlink_calc_quality_enabled
+                Text {
+                    text: qsTr("SNR Weight: %1").arg(Number(settings.downlink_quality_snr_weight).toFixed(2))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.downlink_quality_snr_weight
+                    to: 1
+                    stepSize: 0.01
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 140
+                    onValueChanged: settings.downlink_quality_snr_weight = value
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                visible: settings.downlink_calc_quality_enabled
+                Text {
+                    text: qsTr("RSSI Weight: %1").arg(Number(settings.downlink_quality_rssi_weight).toFixed(2))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.downlink_quality_rssi_weight
+                    to: 1
+                    stepSize: 0.01
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 140
+                    onValueChanged: settings.downlink_quality_rssi_weight = value
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                visible: settings.downlink_calc_quality_enabled
+                Text {
+                    text: qsTr("Quality Offset: %1").arg(Number(settings.downlink_quality_offset).toFixed(1))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: -100
+                    value: settings.downlink_quality_offset
+                    to: 100
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 140
+                    onValueChanged: settings.downlink_quality_offset = value
                 }
             }
         }
@@ -550,7 +1077,7 @@ BaseWidget {
             spacing: 6
 
             Text {
-                text: get_dbm_text() + " dBm " + get_txc_text()
+                text: get_primary_link_text()
                 color: settings.color_text
                 font.pixelSize: 16
                 font.family: linkFont
@@ -581,7 +1108,9 @@ BaseWidget {
                     delegate: Shape {
                         width: snrBlockWidth + snrBlockSkew
                         height: snrBlockHeight
-                        property bool isActive: snr_is_valid(m_best_snr_db) && m_best_snr_db >= snrBlockThresholds[index]
+                        property bool isActive: use_calculated_quality
+                            ? (m_snr_value >= snrBlockThresholds[index])
+                            : (snr_is_valid(m_best_snr_db) && m_best_snr_db >= snrBlockThresholds[index])
                         property color shapeColor: settings.color_shape
 
                         ShapePath {

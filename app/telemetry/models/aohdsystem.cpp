@@ -360,6 +360,9 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
 
     set_onboard_cpu_usage_avg(avg_percent_or_unset(m_onboard_cpu_cores));
     set_onboard_gpu_usage_avg(avg_percent_or_unset_4(m_onboard_gpu_cores));
+
+    // Map onboard computer CPU usage to the legacy field used by widgets.
+    set_curr_cpuload_perc(onboard_cpu_usage_avg());
 }
 
 QVariantList AOHDSystem::get_onboard_cpu_cores() const

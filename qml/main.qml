@@ -117,7 +117,8 @@ ApplicationWindow {
             id: colorPicker
             height: 264
             width: 380
-            z: 15.0
+            parent: Overlay.overlay
+            z: 1000
             anchors.centerIn: parent
         }
         //ColorDialoque{

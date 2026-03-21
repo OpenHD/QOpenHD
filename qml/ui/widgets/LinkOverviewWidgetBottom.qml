@@ -22,9 +22,15 @@ BaseWidget {
     defaultYOffset: 0
     defaultHCenter: true
     defaultVCenter: false
+    widgetActionWidth: 320
 
     hasWidgetDetail: true
+    hasWidgetAction: true
     disable_dragging: false
+
+    bw_scale_identifier: "link_overview_widget_scale"
+    bw_background_color_identifier: "link_overview_widget_bg_color"
+    bw_opacity_identifier: "link_overview_widget_opacity"
 
     property string linkFont: "Quicksand"
     property string linkMonoFont: "ShareTechMono"
@@ -66,9 +72,63 @@ BaseWidget {
     ]
     property int slot_update_tick: 0
 
+    function sync_shared_style_from_settings() {
+        if (bw_current_scale !== settings.link_overview_widget_scale) {
+            bw_current_scale = settings.link_overview_widget_scale;
+        }
+        if (bw_current_opacity !== settings.link_overview_widget_opacity) {
+            bw_current_opacity = settings.link_overview_widget_opacity;
+        }
+        if (bw_current_background_color !== settings.link_overview_widget_bg_color) {
+            bw_current_background_color = settings.link_overview_widget_bg_color;
+        }
+    }
+
+    function bw_set_current_scale(scale) {
+        if (scale <= 0 || scale >= 500) {
+            console.warn("perhaps invalid widget scale");
+        }
+        if (bw_current_scale !== scale) {
+            bw_current_scale = scale;
+        }
+        if (settings.link_overview_widget_scale !== scale) {
+            settings.link_overview_widget_scale = scale;
+        }
+    }
+
+    function bw_set_current_opacity(opacity) {
+        if (opacity <= 0 || opacity > 1) {
+            console.warn("perhaps invalid widget opacity");
+        }
+        if (bw_current_opacity !== opacity) {
+            bw_current_opacity = opacity;
+        }
+        if (settings.link_overview_widget_opacity !== opacity) {
+            settings.link_overview_widget_opacity = opacity;
+        }
+    }
+
+    Connections {
+        target: settings
+        function onLink_overview_widget_scaleChanged() {
+            if (bw_current_scale !== settings.link_overview_widget_scale) {
+                bw_current_scale = settings.link_overview_widget_scale;
+            }
+        }
+        function onLink_overview_widget_opacityChanged() {
+            if (bw_current_opacity !== settings.link_overview_widget_opacity) {
+                bw_current_opacity = settings.link_overview_widget_opacity;
+            }
+        }
+        function onLink_overview_widget_bg_colorChanged() {
+            if (bw_current_background_color !== settings.link_overview_widget_bg_color) {
+                bw_current_background_color = settings.link_overview_widget_bg_color;
+            }
+        }
+    }
+
     Component.onCompleted: {
-        bw_set_current_scale(1.0);
-        bw_set_current_opacity(settings.value("link_overview_widget_opacity", 1.0));
+        sync_shared_style_from_settings();
         hide_na = setting_to_bool(settings.value("link_overview_widget_bottom_hide_na", true), true);
         slot1Selection = settings.value("link_overview_widget_bottom_slot_1", slot1Selection);
         slot2Selection = settings.value("link_overview_widget_bottom_slot_2", slot2Selection);
@@ -204,6 +264,15 @@ BaseWidget {
             }
         }
         return 0;
+    }
+
+    function slot_label(selection) {
+        for (var i = 0; i < slotOptions.length; i++) {
+            if (slotOptions[i].value === selection) {
+                return slotOptions[i].label;
+            }
+        }
+        return selection;
     }
 
     function slot_text(selection) {
@@ -434,6 +503,78 @@ BaseWidget {
         return rssi + "%";
     }
 
+    widgetActionComponent: ScrollView {
+        contentHeight: actionColumn.implicitHeight
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout {
+            id: actionColumn
+            width: parent.width
+            spacing: 4
+
+            Item {
+                width: parent.width
+                height: 24
+                Text {
+                    text: qsTr("Mode: %1").arg(format_flight_mode())
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 24
+                Text {
+                    text: qsTr("Time: %1").arg(format_nav_time())
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkMonoFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Repeater {
+                model: 8
+                delegate: Item {
+                    width: parent.width
+                    height: 24
+                    property int slotIndex: index + 1
+                    property string slotSelection: get_slot_selection(slotIndex)
+                    visible: slotSelection !== "none"
+                    Text {
+                        text: slot_label(slotSelection)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Text {
+                        text: slot_text(slotSelection)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkMonoFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.right: parent.right
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+        }
+    }
+
     widgetDetailComponent: ScrollView {
         contentHeight: detailColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -515,7 +656,7 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
         opacity: bw_current_opacity
-        scale: Math.min(1.0, bw_current_scale)
+        scale: bw_current_scale
         clip: false
 
         Shape {

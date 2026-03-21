@@ -100,6 +100,10 @@ BaseWidgetForm {
             bw_current_background_color = normalized;
         }
         settings.setValue(bw_background_color_identifier, normalized);
+        if (bw_background_color_identifier === "link_overview_widget_bg_color"
+                && settings.link_overview_widget_bg_color !== normalized) {
+            settings.link_overview_widget_bg_color = normalized;
+        }
         settings.sync();
         bw_background_color_normalizing = false;
     }

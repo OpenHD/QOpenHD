@@ -133,6 +133,9 @@ Settings {
     property bool show_link_overview_widget_bottom: true
     property int link_snr_min_db: 0
     property int link_snr_max_db: 40
+    property double link_overview_widget_scale: 1.0
+    property double link_overview_widget_opacity: 1.0
+    property string link_overview_widget_bg_color: "#000000"
     //Const10
     property bool downlink_show_dbm_and_packets_per_card: true
     property bool downlink_dbm_per_card_show_multiple_antennas:false
@@ -147,6 +150,11 @@ Settings {
     property bool downlink_dbm_warning: true
     property bool downlink_signal_quality_show: false
     property bool downlink_pollution_show: false
+    property bool downlink_calc_quality_enabled: true
+    property double downlink_quality_loss_weight: 0.60
+    property double downlink_quality_snr_weight: 0.30
+    property double downlink_quality_rssi_weight: 0.10
+    property double downlink_quality_offset: 0.0
 
     property bool show_uplink_rssi: false
     property bool uplink_rssi_declutter: false
