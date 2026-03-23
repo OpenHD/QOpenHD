@@ -41,6 +41,7 @@ BaseWidget {
     property real rcBlockHeight: 8
     property real rcBlockSkew: 4
     property var rcBlockThresholds: [10, 20, 30, 40, 50, 60, 70, 80]
+    property bool useSimpleBlocks: Qt.platform.os === "android"
 
     function sync_shared_style_from_settings() {
         if (bw_current_scale !== settings.link_overview_widget_scale) {
@@ -428,22 +429,37 @@ BaseWidget {
 
                 Repeater {
                     model: rcBlockCount
-                    delegate: Shape {
+                    delegate: Item {
                         width: rcBlockWidth + rcBlockSkew
                         height: rcBlockHeight
                         property bool isActive: rc_rssi_is_valid() && rc_rssi_percentage >= rcBlockThresholds[index]
                         property color shapeColor: settings.color_shape
 
-                        ShapePath {
-                            strokeWidth: 1
-                            strokeColor: shapeColor
-                            fillColor: isActive ? shapeColor : "transparent"
-                            startX: 0
-                            startY: height
-                            PathLine { x: rcBlockSkew; y: 0 }
-                            PathLine { x: rcBlockWidth + rcBlockSkew; y: 0 }
-                            PathLine { x: rcBlockWidth; y: height }
-                            PathLine { x: 0; y: height }
+                        Rectangle {
+                            visible: useSimpleBlocks
+                            width: rcBlockWidth
+                            height: rcBlockHeight
+                            anchors.left: parent.left
+                            anchors.bottom: parent.bottom
+                            color: isActive ? shapeColor : "transparent"
+                            border.width: 1
+                            border.color: shapeColor
+                        }
+
+                        Shape {
+                            visible: !useSimpleBlocks
+                            anchors.fill: parent
+                            ShapePath {
+                                strokeWidth: 1
+                                strokeColor: shapeColor
+                                fillColor: isActive ? shapeColor : "transparent"
+                                startX: 0
+                                startY: height
+                                PathLine { x: rcBlockSkew; y: 0 }
+                                PathLine { x: rcBlockWidth + rcBlockSkew; y: 0 }
+                                PathLine { x: rcBlockWidth; y: height }
+                                PathLine { x: 0; y: height }
+                            }
                         }
                     }
                 }

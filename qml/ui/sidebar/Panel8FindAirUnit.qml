@@ -14,6 +14,7 @@ SideBarBasePanel{
     }
 
     ColumnLayout{
+        id: panelColumn
         anchors.top: parent.top
         anchors.topMargin: 0
         anchors.left: parent.left
@@ -51,14 +52,38 @@ SideBarBasePanel{
                 }
             }
             if(scanBandwidthModel.count>0){
-                bandwidthSelection.currentIndex=0;
-                settings.scan_channel_width_mhz=scanBandwidthModel.get(0).value;
+                var defaultIndex=bandwidth_index_for_value(20);
+                if(defaultIndex<0){
+                    defaultIndex=0;
+                }
+                bandwidthSelection.currentIndex=defaultIndex;
+                settings.scan_channel_width_mhz=scanBandwidthModel.get(defaultIndex).value;
+            }
+        }
+
+        function bandwidth_index_for_value(value){
+            for(var i=0;i<scanBandwidthModel.count;i++){
+                if(scanBandwidthModel.get(i).value===value){
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function syncBandIndex(){
+            if(scanBandModel.count<=0){
+                bandSelection.currentIndex=0;
+                return;
+            }
+            if(bandSelection.currentIndex<0 || bandSelection.currentIndex>=scanBandModel.count){
+                bandSelection.currentIndex=0;
             }
         }
 
         Component.onCompleted: {
             rebuildBandModel();
             rebuildBandwidthModel();
+            syncBandIndex();
             syncBandwidthIndex();
         }
 
@@ -67,9 +92,11 @@ SideBarBasePanel{
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             m_title: "Channels"
 
-            property int currentIndex: 0
+            property int currentIndex: -1
 
-            m_displayed_value: scanBandModel.get(currentIndex).verbose
+            m_displayed_value: (scanBandModel.count>0 && currentIndex>=0 && currentIndex<scanBandModel.count)
+                ? scanBandModel.get(currentIndex).verbose
+                : "OpenHD [1-7]"
 
             Keys.onPressed: (event)=> {
                 if(event.key===Qt.Key_Left){
@@ -98,7 +125,11 @@ SideBarBasePanel{
             }
 
             function open_choices_menu(clickable){
-                choiceSelector.open_choices(scanBandModel, scanBandModel.get(currentIndex).value, bandSelection);
+                var idx=currentIndex;
+                if(idx<0 || idx>=scanBandModel.count){
+                    idx=0;
+                }
+                choiceSelector.open_choices(scanBandModel, scanBandModel.get(idx).value, bandSelection);
                 choiceSelector.set_clickable(clickable);
             }
 
@@ -114,7 +145,9 @@ SideBarBasePanel{
 
             property int currentIndex: 0
 
-            m_displayed_value: scanBandwidthModel.get(currentIndex).verbose
+            m_displayed_value: (scanBandwidthModel.count>0 && currentIndex>=0 && currentIndex<scanBandwidthModel.count)
+                ? scanBandwidthModel.get(currentIndex).verbose
+                : "20 MHz"
 
             Keys.onPressed: (event)=> {
                 if(event.key===Qt.Key_Left){
@@ -143,14 +176,23 @@ SideBarBasePanel{
             }
 
             function open_choices_menu(clickable){
-                choiceSelector.open_choices(scanBandwidthModel, scanBandwidthModel.get(currentIndex).value, bandwidthSelection);
+                var idx=currentIndex;
+                if(idx<0 || idx>=scanBandwidthModel.count){
+                    idx=panelColumn.bandwidth_index_for_value(settings.scan_channel_width_mhz);
+                    if(idx<0){
+                        idx=0;
+                    }
+                }
+                choiceSelector.open_choices(scanBandwidthModel, scanBandwidthModel.get(idx).value, bandwidthSelection);
                 choiceSelector.set_clickable(clickable);
             }
 
             function user_selected_value(value_new){
-                currentIndex=parseInt(value_new);
-                if(scanBandwidthModel.count>0){
-                    settings.scan_channel_width_mhz = scanBandwidthModel.get(currentIndex).value;
+                var value=parseInt(value_new);
+                var idx=panelColumn.bandwidth_index_for_value(value);
+                if(idx>=0){
+                    currentIndex=idx;
+                    settings.scan_channel_width_mhz = scanBandwidthModel.get(idx).value;
                 }
             }
         }

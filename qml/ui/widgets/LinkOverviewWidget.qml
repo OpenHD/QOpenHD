@@ -49,6 +49,7 @@ BaseWidget {
     property real snrBlockWidth: 12
     property real snrBlockHeight: 8
     property real snrBlockSkew: 4
+    property bool useSimpleBlocks: Qt.platform.os === "android"
     property var snrBlockThresholds: {
         var arr = [];
         if (use_calculated_quality) {
@@ -291,16 +292,20 @@ BaseWidget {
 
     function get_quality_display_text() {
         if (use_calculated_quality) {
-            if (m_quality_smoothed < 0) {
-                return "N/A";
+            if (m_quality_smoothed >= 0) {
+                return "" + Math.round(m_quality_smoothed) + "%";
             }
-            return "" + Math.round(m_quality_smoothed) + "%";
-        }
-        var raw = _ohdSystemGround.current_rx_signal_quality;
-        if (raw < 0) {
+            var fallback = _ohdSystemGround.current_rx_signal_quality;
+            if (fallback >= 0) {
+                return clamp(fallback, 0, 100) + "%";
+            }
             return "N/A";
         }
-        return raw + "%";
+        var raw = _ohdSystemGround.current_rx_signal_quality;
+        if (raw >= 0) {
+            return clamp(raw, 0, 100) + "%";
+        }
+        return "N/A";
     }
 
     function get_primary_link_text() {
@@ -308,13 +313,24 @@ BaseWidget {
     }
 
     function get_quality_percent_value() {
-        if (!use_calculated_quality) {
-            return snr_db_to_percent(m_best_snr_db);
-        }
-        if (m_quality_smoothed < 0) {
+        if (use_calculated_quality) {
+            if (m_quality_smoothed >= 0) {
+                return clamp(Math.round(m_quality_smoothed), 0, 100);
+            }
+            var fallback = _ohdSystemGround.current_rx_signal_quality;
+            if (fallback >= 0) {
+                return clamp(fallback, 0, 100);
+            }
+            if (snr_is_valid(m_best_snr_db)) {
+                return snr_db_to_percent(m_best_snr_db);
+            }
             return 0;
         }
-        return clamp(Math.round(m_quality_smoothed), 0, 100);
+        var raw = _ohdSystemGround.current_rx_signal_quality;
+        if (raw >= 0) {
+            return clamp(raw, 0, 100);
+        }
+        return snr_db_to_percent(m_best_snr_db);
     }
 
     function best_snr_for_card(card) {
@@ -1105,7 +1121,7 @@ BaseWidget {
 
                 Repeater {
                     model: snrBlockCount
-                    delegate: Shape {
+                    delegate: Item {
                         width: snrBlockWidth + snrBlockSkew
                         height: snrBlockHeight
                         property bool isActive: use_calculated_quality
@@ -1113,16 +1129,31 @@ BaseWidget {
                             : (snr_is_valid(m_best_snr_db) && m_best_snr_db >= snrBlockThresholds[index])
                         property color shapeColor: settings.color_shape
 
-                        ShapePath {
-                            strokeWidth: 1
-                            strokeColor: shapeColor
-                            fillColor: isActive ? shapeColor : "transparent"
-                            startX: 0
-                            startY: height
-                            PathLine { x: snrBlockSkew; y: 0 }
-                            PathLine { x: snrBlockWidth + snrBlockSkew; y: 0 }
-                            PathLine { x: snrBlockWidth; y: height }
-                            PathLine { x: 0; y: height }
+                        Rectangle {
+                            visible: useSimpleBlocks
+                            width: snrBlockWidth
+                            height: snrBlockHeight
+                            anchors.left: parent.left
+                            anchors.bottom: parent.bottom
+                            color: isActive ? shapeColor : "transparent"
+                            border.width: 1
+                            border.color: shapeColor
+                        }
+
+                        Shape {
+                            visible: !useSimpleBlocks
+                            anchors.fill: parent
+                            ShapePath {
+                                strokeWidth: 1
+                                strokeColor: shapeColor
+                                fillColor: isActive ? shapeColor : "transparent"
+                                startX: 0
+                                startY: height
+                                PathLine { x: snrBlockSkew; y: 0 }
+                                PathLine { x: snrBlockWidth + snrBlockSkew; y: 0 }
+                                PathLine { x: snrBlockWidth; y: height }
+                                PathLine { x: 0; y: height }
+                            }
                         }
                     }
                 }
