@@ -64,7 +64,9 @@ BaseWidget {
         { label: qsTr("Ground mAh"), value: "gnd_mah" },
         { label: qsTr("Air Voltage"), value: "air_voltage" },
         { label: qsTr("Air Current"), value: "air_current" },
+        { label: qsTr("Gas %"), value: "gas_percent" },
         { label: qsTr("Air Speed"), value: "air_speed" },
+        { label: qsTr("Wind Speed"), value: "wind_speed" },
         { label: qsTr("Altitude"), value: "altitude" },
         { label: qsTr("Home Distance"), value: "home_distance" },
         { label: qsTr("Satellites"), value: "satellites" },
@@ -285,8 +287,12 @@ BaseWidget {
             return format_air_voltage();
         } else if (selection === "air_current") {
             return format_air_current();
+        } else if (selection === "gas_percent") {
+            return format_gas_percent();
         } else if (selection === "air_speed") {
             return format_air_speed();
+        } else if (selection === "wind_speed") {
+            return format_wind_speed();
         } else if (selection === "altitude") {
             return format_nav_alt();
         } else if (selection === "home_distance") {
@@ -307,8 +313,12 @@ BaseWidget {
             return "\uf072";
         } else if (selection === "air_current") {
             return "\uf0e7";
+        } else if (selection === "gas_percent") {
+            return "\uf52f";
         } else if (selection === "air_speed") {
             return "\uf3fd";
+        } else if (selection === "wind_speed") {
+            return "\uf72e";
         } else if (selection === "altitude") {
             return "\uf062";
         } else if (selection === "home_distance") {
@@ -348,6 +358,37 @@ BaseWidget {
             return "N/A";
         }
         return Number(a).toLocaleString(Qt.locale(), 'f', 1) + "A";
+    }
+
+    function format_gas_percent() {
+        if (!_fcMavlinkSystem.is_alive) {
+            return "N/A";
+        }
+        var percent = _fcMavlinkSystem.battery_percent;
+        if (percent < 0 || percent > 100) {
+            return "N/A";
+        }
+        return Math.round(percent) + "%";
+    }
+
+    function format_wind_speed() {
+        if (!_fcMavlinkSystem.is_alive) {
+            return "N/A";
+        }
+        var raw = settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed : _fcMavlinkSystem.mav_wind_speed;
+        if (raw < 0) {
+            return "N/A";
+        }
+        var factor = 1.0;
+        var unitLabel = "m/s";
+        if (settings.wind_unit === "km/h") {
+            factor = 3.6;
+            unitLabel = "km/h";
+        } else if (settings.wind_unit === "mph") {
+            factor = 2.237;
+            unitLabel = "mph";
+        }
+        return Number(raw * factor).toLocaleString(Qt.locale(), "f", 0) + " " + unitLabel;
     }
 
     function format_air_mah() {
