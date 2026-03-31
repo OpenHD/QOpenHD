@@ -145,7 +145,12 @@ BaseWidget {
     }
 
     function get_bitrate_text() {
-        return bitrate_to_mbit_text(m_camera_stream_model.curr_received_bitrate_with_fec);
+        var bitrate_text = m_camera_stream_model.curr_received_bitrate_with_fec;
+        if (bitrate_text === "" || bitrate_text === "N/A") {
+            // Air-side debug mode has no ground RX stats, use current injected bitrate (+FEC) instead.
+            bitrate_text = m_camera_stream_model.curr_video_injected_bitrate;
+        }
+        return bitrate_to_mbit_text(bitrate_text);
     }
 
     function rc_rssi_is_valid() {

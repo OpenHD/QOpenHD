@@ -60,6 +60,15 @@ BaseWidget {
         return m_camera_stream_model.total_n_tx_dropped_frames+":"+m_camera_stream_model.count_blocks_lost;
     }
 
+    function get_display_bitrate(){
+        var ground_rx_bitrate = m_camera_stream_model.curr_received_bitrate_with_fec;
+        if (ground_rx_bitrate !== "" && ground_rx_bitrate !== "N/A") {
+            return ground_rx_bitrate;
+        }
+        // Air-side debug mode has no ground RX stats, use current injected bitrate (+FEC) instead.
+        return m_camera_stream_model.curr_video_injected_bitrate;
+    }
+
     // Complicated
     // Set to true if the camera is currently doing recordng (the UI element(s) turn red in this case)
     property bool m_camera_is_currently_recording: m_is_for_primary_camera ? _cameraStreamModelPrimary.air_recording_active :  _cameraStreamModelSecondary.air_recording_active
@@ -345,7 +354,7 @@ BaseWidget {
             width: 84
             height: 32
             color: bitrate_color(m_camera_stream_model.curr_set_and_measured_bitrate_mismatch)
-            text: m_camera_stream_model.curr_received_bitrate_with_fec
+            text: get_display_bitrate()
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6
