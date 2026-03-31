@@ -17,25 +17,29 @@ static std::string wifi_card_type_to_string(const int card_type) {
     case 3:
         return "88X2EU";
     case 4:
-        return "OPENHD_8852BU";
+        return "RTL_88X2AU";
     case 5:
-        return "ERR_88X2AU";
+        return "RTL_88X2BU";
     case 6:
-        return "ERR_88X2BU";
-    case 7:
         return "ATHEROS";
-    case 8:
+    case 7:
         return "MT_7921u";
-    case 9:
+    case 8:
         return "RALINK";
-    case 10:
+    case 9:
         return "INTEL";
-    case 11:
+    case 10:
         return "BROADCOM";
+    case 11:
+        return "OPENHD_8852BU";
     case 12:
-        return "INTERNAL";
+        return "OPENHD_EMULATED";
     case 13:
+        return "AIC";
+    case 14:
         return "QUALCOMM";
+    case 16:
+        return "ARTOSYN";
     default:
         return "UNKNOWN";
     }
@@ -146,7 +150,10 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     set_card_type_as_string(wifi_card_type_to_string(msg.card_type).c_str());
     const int card_type=msg.card_type;
     bool supported = false;
-    if(card_type==0 || card_type==1 || card_type==2 || card_type==3 || card_type==4)supported=true;
+    if(card_type==0 || card_type==1 || card_type==2 || card_type==3 ||
+       card_type==12 || card_type==14 || card_type==16){
+        supported=true;
+    }
     set_card_type_supported(supported);
     set_card_sub_type(msg.dummy2);
 }

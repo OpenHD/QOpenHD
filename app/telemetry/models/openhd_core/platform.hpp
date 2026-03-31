@@ -1,9 +1,8 @@
 #ifndef PLATFORM_HPP
 #define PLATFORM_HPP
 
-
-#include <string>
 #include <sstream>
+#include <string>
 
 // Some things conditionally depend on the platform we are running on
 
@@ -13,30 +12,32 @@ static constexpr int X_PLATFORM_TYPE_UNKNOWN = 0;
 // Generic X86
 static constexpr int X_PLATFORM_TYPE_X86 = 1;
 // Numbers 10..20 are reserved for rpi
-// Right now we are only interested if it is an RPI of the
-// generation RPI 4 / RPI CM4 or the generation before -
-// NOTE: RPI 5 is currently not supported due to the complete lack of suitable
-// HW acceleration
 static constexpr int X_PLATFORM_TYPE_RPI_OLD = 10;
 static constexpr int X_PLATFORM_TYPE_RPI_4 = 11;
 static constexpr int X_PLATFORM_TYPE_RPI_CM4 = 12;
 static constexpr int X_PLATFORM_TYPE_RPI_5 = 12;
 
 // Numbers 20..30 are reserved for rockchip
-static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W =
-    20;  // Zero 3 W
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W = 20;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A = 21;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B = 22;
-static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;  
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1126 = 23;
-static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1106 = 25;
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;
+static constexpr int X_PLATFORM_TYPE_LUCKFOX_RV110X = 25;
+// 26 used to be RV1103, merged into RV110X
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1103 = 26;
 static constexpr int X_PLATFORM_TYPE_LUCKFOX_LYRA = 27;
-    
+
+// Legacy aliases
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1106 =
+    X_PLATFORM_TYPE_LUCKFOX_RV110X;
+
 // Numbers 30..35 are reserved for allwinner
 static constexpr int X_PLATFORM_TYPE_ALWINNER_X20 = 30;
+static constexpr int X_PLATFORM_TYPE_ALWINNER_CUBIE_A7S = 31;
+static constexpr int X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z = 32;
 
-// @Buldo is working on openipc / sigmastar, 36..39
+// 36..39 reserved for openipc / sigmastar
 static constexpr int X_PLATFORM_TYPE_OPENIPC_SIGMASTAR_UNDEFINED = 36;
 
 // Numbers 40..45 are reserved for NVIDIA
@@ -45,61 +46,67 @@ static constexpr int X_PLATFORM_TYPE_NVIDIA_XAVIER = 40;
 // Numbers 46..50 are reserved for QUALCOMM
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QRB5165 = 46;
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QCS405 = 47;
+
+// Numbers 51..60 are reserved for enterprise
+static constexpr int X_PLATFORM_TYPE_ORQA = 51;
+static constexpr int X_PLATFORM_TYPE_UVX_MOD = 52;
+// Legacy alias
+static constexpr int X_PLATFORM_TYPE_UXV_MOD = X_PLATFORM_TYPE_UVX_MOD;
+
 // Numbers 61..65 are reserved for NXP
 static constexpr int X_PLATFORM_TYPE_NXP_IMX8 = 61;
-static constexpr int X_PLATFORM_TYPE_ORQA = 51;  // ORQA Digital
-static constexpr int X_PLATFORM_TYPE_UXV_MOD = 52;
-// Numbers 
+
 static std::string x_platform_type_to_string(int platform_type) {
-    switch (platform_type) {
+  switch (platform_type) {
     case X_PLATFORM_TYPE_UNKNOWN:
-        return "UNKNOWN";
+      return "UNKNOWN";
     case X_PLATFORM_TYPE_X86:
-        return "X86";
+      return "X86";
     case X_PLATFORM_TYPE_RPI_OLD:
-        return "RPI<=3";
+      return "RPI<=3";
     case X_PLATFORM_TYPE_RPI_4:
-        return "RPI 4";
+      return "RPI 4";
     case X_PLATFORM_TYPE_RPI_5:
-        return "RPI 5";
-    // RPI END
+      return "RPI 5";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W:
-        return "RADXA ZERO3W";
+      return "RADXA ZERO3W";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3:
-        return "RADXA CM3";
+      return "RADXA CM3";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A:
-        return "RADXA ROCK5 A";
+      return "RADXA RK3588S";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B:
-        return "RADXA ROCK5 B";
-    // ROCK END
-    case X_PLATFORM_TYPE_LUCKFOX_LYRA:
-        return "Luckfox Lyra";
-    case X_PLATFORM_TYPE_ROCKCHIP_RV1106:
-        return "Luckfox RV1106";
-    case X_PLATFORM_TYPE_ROCKCHIP_RV1103:
-        return "Luckfox RV1103";
-    case X_PLATFORM_TYPE_ALWINNER_X20:
-        return "X20";
+      return "RADXA RK3588";
     case X_PLATFORM_TYPE_ROCKCHIP_RV1126:
-        return "X21";
-    case X_PLATFORM_TYPE_UXV_MOD:
-        return "UXV NAV";
-    case X_PLATFORM_TYPE_OPENIPC_SIGMASTAR_UNDEFINED:
-        return "OPENIPC SIGMASTAR";
-    case X_PLATFORM_TYPE_NVIDIA_XAVIER:
-        return "NVIDIA_XAVIER";
+      return "RV1126";
+    case X_PLATFORM_TYPE_LUCKFOX_RV110X:
+    case X_PLATFORM_TYPE_ROCKCHIP_RV1103:
+      return "RV110X";
+    case X_PLATFORM_TYPE_LUCKFOX_LYRA:
+      return "Luckfox Lyra";
     case X_PLATFORM_TYPE_ORQA:
-        return "ORQA DIGITAL";
+      return "ORQA";
+    case X_PLATFORM_TYPE_UVX_MOD:
+      return "UVX_MOD";
+    case X_PLATFORM_TYPE_ALWINNER_X20:
+      return "X20";
+    case X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z:
+      return "A733";
+    case X_PLATFORM_TYPE_OPENIPC_SIGMASTAR_UNDEFINED:
+      return "OPENIPC SIGMASTAR";
+    case X_PLATFORM_TYPE_NVIDIA_XAVIER:
+      return "NVIDIA_XAVIER";
+    case X_PLATFORM_TYPE_QUALCOMM_QCS405:
+      return "QUALCOMM_QCS405";
+    case X_PLATFORM_TYPE_QUALCOMM_QRB5165:
+      return "QUALCOMM_QRB5165";
     case X_PLATFORM_TYPE_NXP_IMX8:
-        return "NXP_IMX8";
+      return "NXP_IMX8";
     default:
-        break;
-    }
-    std::stringstream ss;
-    ss << "ERR-UNDEFINED{" << platform_type << "}";
-    return ss.str();
+      break;
+  }
+  std::stringstream ss;
+  ss << "ERR-UNDEFINED{" << platform_type << "}";
+  return ss.str();
 }
 
-
-
-#endif // PLATFORM_HPP
+#endif  // PLATFORM_HPP

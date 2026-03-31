@@ -162,7 +162,7 @@ PopupBigGeneric{
             return model_rtl8812bu_manufacturers;
         }else if(chip_type==3){
             return model_rtl8812eu_manufacturers;
-        }else if(chip_type==4){
+        }else if(chip_type==14){
             return model_qualcomm_manufacturers;
         }
         return model_manufacturer_unknown_chipset;
@@ -314,7 +314,7 @@ PopupBigGeneric{
             }else {
                 ret = model_rtl8812eu_manufacturer_generic;
             }
-        }else if(chip_type==4){
+        }else if(chip_type==14){
             // QUALCOMM
             if(manufacturer==0){
                 ret= model_qualcomm_manufacturer_coretronic;
