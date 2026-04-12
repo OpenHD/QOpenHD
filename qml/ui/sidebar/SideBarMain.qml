@@ -14,8 +14,8 @@ import "../elements"
 
 Item {
     id: sidebar
-    width: 64
-    height: 24
+    width: Math.max(64, sidebar_icon_size_px() + 8)
+    height: Math.max(24, sidebar_icon_size_px())
     visible: settings.show_sidebar || m_extra_is_visible
 
     anchors.left: parent.left
@@ -34,6 +34,32 @@ Item {
 
     property bool m_extra_is_visible: false
     property int m_stack_index: -1;
+    property bool m_ui_button_long_press_handled: false
+    property real m_sidebar_icon_scale: settings.value("sidebar_show_icon_scale", 1.0)
+
+    function clamp_sidebar_icon_scale(value){
+        if(value < 0.7){
+            return 0.7;
+        }
+        if(value > 2.5){
+            return 2.5;
+        }
+        return value;
+    }
+
+    function sidebar_icon_size_px(){
+        return Math.round(32 * m_sidebar_icon_scale);
+    }
+
+    onM_sidebar_icon_scaleChanged: {
+        var clamped = clamp_sidebar_icon_scale(m_sidebar_icon_scale);
+        if(clamped !== m_sidebar_icon_scale){
+            m_sidebar_icon_scale = clamped;
+            return;
+        }
+        settings.setValue("sidebar_show_icon_scale", clamped);
+        settings.sync();
+    }
 
 
     // Gives (keyboard / joystick) control to this element
@@ -171,30 +197,143 @@ Item {
     // Item that opens up the sidebar
     Item {
         id: uiButton
-        width: 32
-        height: 32
+        width: sidebar_icon_size_px()
+        height: sidebar_icon_size_px()
         anchors.verticalCenter: parent.verticalCenter
         visible: m_stack_index<0;
         MouseArea {
             id: mouseArea1
             anchors.fill: parent
+            onPressed: {
+                m_ui_button_long_press_handled = false;
+            }
             onClicked: {
+                if(m_ui_button_long_press_handled){
+                    return;
+                }
                 open_and_take_control()
+            }
+            onPressAndHold: {
+                m_ui_button_long_press_handled = true;
+                sidebarIconResizePopup.open();
             }
             Rectangle {
                 width: parent.width
                 height: parent.height
                 color: "transparent"
+                border.width: 1
+                border.color: "#44627a"
+                radius: width * 0.22
                 RowLayout {
                     width: parent.width
                     height: parent.height
 
                     Text {
                         text: "\uf054"
-                        font.pixelSize: 16
+                        font.pixelSize: Math.round(uiButton.height * 0.5)
                         opacity: 1.0
                         font.family: "Font Awesome 5 Free"
                         color: "grey"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: sidebarIconResizePopup
+        parent: Overlay.overlay
+        width: Math.min(260, parent.width - 24)
+        height: resizePopupColumn.implicitHeight + 16
+        modal: false
+        focus: true
+        closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+
+        background: Rectangle {
+            color: "#000000"
+            opacity: 0.92
+            radius: 8
+            border.width: 1
+            border.color: "#335a73"
+        }
+
+        contentItem: Column {
+            id: resizePopupColumn
+            spacing: 8
+            width: sidebarIconResizePopup.width - 16
+            x: 8
+            y: 8
+
+            Text {
+                width: parent.width
+                text: qsTr("Sidebar Icon Size")
+                color: "white"
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Text {
+                width: parent.width
+                text: qsTr("Long press icon to resize")
+                color: "#c7d4dd"
+                font.pixelSize: 12
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            RowLayout {
+                width: parent.width
+                spacing: 8
+
+                Button {
+                    text: "-"
+                    onClicked: {
+                        m_sidebar_icon_scale = clamp_sidebar_icon_scale(m_sidebar_icon_scale - 0.1);
+                    }
+                }
+
+                Slider {
+                    id: sidebarIconSizeSlider
+                    Layout.fillWidth: true
+                    from: 0.7
+                    to: 2.5
+                    stepSize: 0.1
+                    value: m_sidebar_icon_scale
+                    onMoved: {
+                        m_sidebar_icon_scale = value;
+                    }
+                }
+
+                Button {
+                    text: "+"
+                    onClicked: {
+                        m_sidebar_icon_scale = clamp_sidebar_icon_scale(m_sidebar_icon_scale + 0.1);
+                    }
+                }
+            }
+
+            RowLayout {
+                width: parent.width
+                spacing: 8
+
+                Button {
+                    text: qsTr("Reset")
+                    onClicked: {
+                        m_sidebar_icon_scale = 1.0;
+                    }
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                Button {
+                    text: qsTr("Done")
+                    onClicked: {
+                        sidebarIconResizePopup.close();
                     }
                 }
             }

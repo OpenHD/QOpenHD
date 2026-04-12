@@ -65,6 +65,26 @@ Column {
                 .arg(_ohdSystemGround.openhd_version);
         return ret;
     }
+    function get_major_minor(version_string){
+        var s = String(version_string)
+        var match = s.match(/^(\d+)\.(\d+)/)
+        if(!match || match.length < 3){
+            return ""
+        }
+        return match[1] + "." + match[2]
+    }
+    function is_qopenhd_compatible_with_ground_openhd(){
+        if(_ohdSystemGround.openhd_version=="N/A"){
+            return true
+        }
+        var gnd_mm = get_major_minor(_ohdSystemGround.openhd_version)
+        var qohd_mm = get_major_minor(m_qopenhd_version)
+        if(gnd_mm !== "" && qohd_mm !== ""){
+            return gnd_mm === qohd_mm
+        }
+        // Fallback when parsing fails on custom strings
+        return _ohdSystemGround.openhd_version === m_qopenhd_version
+    }
 
     StatusCardRow{
         m_left_text: qsTr("Platform:")
@@ -78,10 +98,7 @@ Column {
         m_has_error: {
             if(m_is_ground){
                 // Show if ground reported version is valid and there is a mismatch OpenHD ground / QOpenHD
-                if(_ohdSystemGround.openhd_version=="N/A"){
-                    return false;
-                }
-                return _ohdSystemGround.openhd_version != m_qopenhd_version;
+                return !is_qopenhd_compatible_with_ground_openhd();
             }else{
                 // Show if ground and air reported version is valid and there is a mismatch
                 if(_ohdSystemGround.openhd_version=="N/A" || _ohdSystemAir.openhd_version=="N/A"){

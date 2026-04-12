@@ -59,6 +59,18 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
     if(param_id.empty()){
         return false;
     }
+    auto starts_with = [&param_id](const std::string& prefix) {
+        return param_id.rfind(prefix, 0) == 0;
+    };
+    // Hide detailed per-card and diagnostic parameters in normal mode.
+    if(starts_with("TX_POWER_I_") || starts_with("TX_POWER_IA_") ||
+       starts_with("TX_POWER_MW_") || starts_with("TX_POWER_MWA_") ||
+       starts_with("CARD_TYPE_")) {
+        return true;
+    }
+    if(param_id == "WB_N_CARDS" || param_id == "WB_N_RX_CARDS"){
+        return true;
+    }
     return DocumentedParam::is_param_whitelisted(param_id);
 }
 

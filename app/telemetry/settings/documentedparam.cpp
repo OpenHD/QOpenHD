@@ -52,6 +52,14 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                "Recommend a matching bitrate to the encoder depending on the selected link parameters,and reduce bitrate on TX errors (failed injections). On by default, but only works on select cameras. On Cameras that"
                "don't support changing the bitrate / are bad at targeting a given bitrate, you have to adjust your link according to your camera needs."
                );
+    append_int(ret,openhd::WB_QP_MAX,
+               ImprovedIntSetting::createRangeOnly(0,51),
+               "Maximum encoder QP. Lower values improve quality but increase required bitrate."
+               );
+    append_int(ret,openhd::WB_QP_MIN,
+               ImprovedIntSetting::createRangeOnly(0,51),
+               "Minimum encoder QP. Higher values reduce bitrate but can reduce image quality."
+               );
     {
         std::vector<std::string> values{};
         values.push_back("Disable");
@@ -86,6 +94,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     append_int(ret,openhd::WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT,
                ImprovedIntSetting::createEnumEnableDisable(),
                "DEV ONLY - DO NOT TOUCH (LEAVE DISABLED). Sets a wifi param that needs to be investigated."
+               );
+    append_int(ret,openhd::WB_ENABLE_REDUNDANT_TX,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Send packets redundantly on all connected TX cards. Increases robustness but also airtime usage."
                );
     append_int(ret,openhd::WB_ENABLE_RETRANSMISSION,
                ImprovedIntSetting::createEnumEnableDisable(),
@@ -176,6 +188,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                                "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! tx power in mW when FC is disarmed and no specific armed tx power value is set. Actual tx power depends on the manufacturer.");
         append_only_documented(ret,openhd::WB_TX_POWER_MILLI_WATT_ARMED,
                                "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! tx power in mW when FC is armed, off by default. Actual tx power depends on the manufacturer.");
+        append_int(ret,openhd::WB_TX_POWER_LEVEL,
+                   ImprovedIntSetting::createEnumSimple({{"DISABLED",-1},{"LOWEST",0},{"LOW",1},{"MID",2},{"HIGH",3}}),
+                   "Abstract TX power level selection. Uses per-card sysutil profiles when available."
+                   );
     }
 // -----------------------------------------------------------------------------------------------------------
     {
@@ -232,15 +248,21 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "!!!Editing this param manually without care will result in a broken link!!!"
                    );
     }
-    append_int(ret,openhd::WB_MCS_INDEX,
-               ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4(not rec)","MCS5(not rec)","MCS6(not rec)","MCS7(not rec)",
-                                               "MCS8 (VHT0+2SS)", "MCS9 (VHT1+2SS)", "MCS10 (VHT2+2SS)", "MCS11 (VHT3+2SS)",
-                                               }),
-               "!!!Editing this param manually without care will result in a broken link!!!"
-               );
     {
-        std::vector<std::string> disable_or_channels{"Disable","Channel 1","CHannel 2","Channel 3","Channel 4","Channel 5",
-                                                          "Channel 6","Channel 7","Channel 8","Channel 9","Channel 10"};
+        std::vector<std::string> mcs_values{};
+        for(int i=0;i<=31;i++){
+            mcs_values.push_back("MCS"+std::to_string(i));
+        }
+        append_int(ret,openhd::WB_MCS_INDEX,
+                   ImprovedIntSetting::createEnum(mcs_values),
+                   "!!!Editing this param manually without care will result in a broken link!!!"
+                   );
+    }
+    {
+        std::vector<std::string> disable_or_channels{"Disable"};
+        for(int i=1;i<=18;i++){
+            disable_or_channels.push_back("Channel "+std::to_string(i));
+        }
         append_int(ret,openhd::WB_MCS_INDEX_VIA_RC_CHANNEL,
                    ImprovedIntSetting::createEnum(disable_or_channels),
                    "Dynamically change the MCS Index (Trade range <-> image quality (bitrate)) during flight using your RC and a specific channel "
@@ -250,12 +272,6 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    ImprovedIntSetting::createEnum(disable_or_channels),
                    "Dynamically change the BW via RC. NOT ALWAYS SAFE TO USE !"
                    );
-        append_int(ret,openhd::WB_POWER_VIA_RC_CHANNEL,
-                   ImprovedIntSetting::createEnum(disable_or_channels),
-                   "Dynamically change the POWER during flight using your RC and a specific channel "
-                   "(similar to how flight modes work)."
-                   );
-
     }
 
     append_only_documented(ret,openhd::WB_FREQUENCY,"!!!Editing this param manually without care will result in a broken link!!!");
@@ -1114,10 +1130,26 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret[openhd::WB_ENABLE_STBC]=nullptr;
     // Whitelisted since normally it should not be changed / has no effect anyways
     ret[openhd::WB_ENABLE_SHORT_GUARD]=nullptr;
+    ret[openhd::WB_ENABLE_REDUNDANT_TX]=nullptr;
+    ret[openhd::WB_MCS_INDEX_VIA_RC_CHANNEL]=nullptr;
+    ret[openhd::WB_BW_VIA_RC_CHANNEL]=nullptr;
+    ret[openhd::WB_QP_MAX]=nullptr;
+    ret[openhd::WB_QP_MIN]=nullptr;
+    ret[openhd::WB_TX_POWER_LEVEL]=nullptr;
+    ret[openhd::WB_PASSIVE_MODE]=nullptr;
+    ret[openhd::WB_PIT_MODE]=nullptr;
+    ret[openhd::WB_ENABLE_RETRANSMISSION]=nullptr;
+    ret[openhd::WB_ENABLE_RETRANSMISSION_VIDEO]=nullptr;
+    ret[openhd::WB_ENABLE_RETRANSMISSION_TELEMETRY]=nullptr;
+    ret[openhd::WB_ENABLE_RETRANSMISSION_RC]=nullptr;
+    ret[openhd::WB_RETRANSMISSION_HISTORY_VIDEO_MS]=nullptr;
+    ret[openhd::WB_RETRANSMISSION_HISTORY_TELEMETRY_MS]=nullptr;
+    ret[openhd::WB_RETRANSMISSION_HISTORY_RC_MS]=nullptr;
+    ret[openhd::WB_RETRANSMISSION_REQUEST_RETRIES]=nullptr;
     //
-    ret["WB_V_FEC_PERC"]=nullptr;
-    ret["WB_V_RATE_PERC"]=nullptr;
-    ret["VARIABLE_BITRATE"]=nullptr;
+    ret[openhd::WB_VIDEO_FEC_PERCENTAGE]=nullptr;
+    ret[openhd::WB_VIDEO_RATE_FOR_MCS_ADJUSTMENT_PERC]=nullptr;
+    ret[openhd::WB_VIDEO_VARIABLE_BITRATE]=nullptr;
     //
     ret["TYPE_CAM0"]=nullptr;
     ret["TYPE_CAM1"]=nullptr;

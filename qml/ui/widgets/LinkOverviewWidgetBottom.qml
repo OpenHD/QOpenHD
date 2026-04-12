@@ -41,6 +41,34 @@ BaseWidget {
     property real notchSafeWidth: notchWidth + (notchSlope * 2)
     property real slotContentYOffset: 4
     property bool hide_na: true
+    property bool flight_mode_long_press_handled: false
+    property string m_ardupilot_mav_type: _fcMavlinkAction.ardupilot_mav_type
+    property var flightModeOptions: [
+        "RTL",
+        "STABILIZE",
+        "LOITER",
+        "CIRCLE",
+        "AUTO",
+        "AUTOTUNE",
+        "MANUAL",
+        "FBWA",
+        "FBWB",
+        "QSTABILIZE",
+        "QHOVER",
+        "QLOITER",
+        "QLAND",
+        "QRTL",
+        "ALT_HOLD",
+        "POSHOLD",
+        "ACRO",
+        "GUIDED",
+        "LAND",
+        "SMART_RTL",
+        "ZIGZAG",
+        "AUTO_RTL",
+        "CRUISE",
+        "TAKEOFF"
+    ]
     property string slot1Selection: "gnd_voltage"
     property string slot2Selection: "gnd_mah"
     property string slot3Selection: "air_voltage"
@@ -752,6 +780,49 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
+        MouseArea {
+            id: flightModeTouchArea
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            width: Math.max(110, notchSafeWidth)
+            height: 36
+            acceptedButtons: Qt.LeftButton
+            preventStealing: true
+
+            onPressed: {
+                flight_mode_long_press_handled = false
+            }
+
+            onClicked: {
+                mouse.accepted = true
+                if (flight_mode_long_press_handled) {
+                    return
+                }
+                if (!_fcMavlinkSystem.is_alive) {
+                    return
+                }
+                if (flightModeQuickPicker.opened) {
+                    flightModeQuickPicker.close()
+                } else {
+                    flightModeQuickPicker.open()
+                }
+            }
+
+            onPressAndHold: {
+                mouse.accepted = true
+                flight_mode_long_press_handled = true
+                if (!_fcMavlinkSystem.is_alive) {
+                    return
+                }
+                if (_fcMavlinkSystem.armed) {
+                    return
+                }
+                _fcMavlinkAction.arm_fc_async(true)
+                _qopenhd.show_toast(qsTr("Arming command sent"))
+                flightModeQuickPicker.close()
+            }
+        }
+
         Text {
             text: format_flight_time_short()
             anchors.horizontalCenter: parent.horizontalCenter
@@ -854,6 +925,75 @@ BaseWidget {
                                 style: Text.Outline
                                 styleColor: settings.color_glow
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: flightModeQuickPicker
+        parent: Overlay.overlay
+        width: Math.min(300, parent.width - 24)
+        height: Math.min(flightModeQuickPickerContent.implicitHeight + 16, parent.height - 24)
+        modal: false
+        focus: true
+        closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+
+        background: Rectangle {
+            color: "#000000"
+            opacity: 0.92
+            radius: 8
+            border.width: 1
+            border.color: "#335a73"
+        }
+
+        contentItem: Flickable {
+            clip: true
+            contentHeight: flightModeQuickPickerContent.implicitHeight
+
+            Column {
+                id: flightModeQuickPickerContent
+                width: flightModeQuickPicker.width - 16
+                x: 8
+                y: 8
+                spacing: 6
+
+                Text {
+                    width: parent.width
+                    text: qsTr("Flight mode")
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Text {
+                    width: parent.width
+                    text: qsTr("Long press current mode to arm")
+                    color: "#c7d4dd"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Repeater {
+                    model: flightModeOptions
+
+                    delegate: Button {
+                        width: parent.width
+                        height: 34
+                        visible: {
+                            var _ = m_ardupilot_mav_type
+                            return _fcMavlinkAction.has_mapping(modelData)
+                        }
+                        text: modelData
+
+                        onClicked: {
+                            _fcMavlinkAction.flight_mode_cmd_async_string(modelData)
+                            flightModeQuickPicker.close()
                         }
                     }
                 }

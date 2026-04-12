@@ -69,6 +69,7 @@ public:
 private:
     static constexpr auto PARAM_ID_WB_FREQ=openhd::WB_FREQUENCY;
     static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;
+    static constexpr auto PARAM_ID_WB_MCS_INDEX=openhd::WB_MCS_INDEX;
     // Returns 0 on success, error code otherwise.
     // Viable error code(s):
     // -1 : air unit reached, but rejected the value (value unsupported)
@@ -94,6 +95,9 @@ public:
     }
     Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
+    }
+    Q_INVOKABLE bool change_param_ground_only_mcs(int value){
+        return change_param_ground_only_blocking(PARAM_ID_WB_MCS_INDEX,value);
     }
     // These params can be changed "on the fly" and are additionally their value(s) are broadcasted
     // so we can update them completely async, log the result to the user

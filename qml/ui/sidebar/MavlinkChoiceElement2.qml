@@ -37,12 +37,6 @@ BaseJoyEditElement2{
     property string mPARAM_ID_FREQUENCY: "FREQUENCY"
     property string mPARAM_ID_RATE: "RATE"
 
-    Settings {
-        id: pendingLinkSettings
-        category: "link_manual"
-        property int pending_mcs_index: -1
-    }
-
 
     signal goto_previous();
     signal goto_next();
@@ -232,10 +226,10 @@ BaseJoyEditElement2{
             _qopenhd.set_busy_for_milliseconds(2000,qsTr("CHANGING RATE"));
             if(_ohdSystemAir.is_alive){
                 _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcs_index)
+            }else if(_ohdSystemGround.is_alive){
+                _wbLinkSettingsHelper.change_param_ground_only_mcs(mcs_index)
             }else{
-                pendingLinkSettings.pending_mcs_index = mcs_index;
-                update_display_text(mcs_index);
-                _qopenhd.show_toast(qsTr("Will apply when air connects"));
+                _qopenhd.show_toast(qsTr("No ground connection"));
             }
             return;
         }else{
@@ -262,6 +256,10 @@ BaseJoyEditElement2{
     onCurr_mcs_indexChanged: {
         extra_populate();
     }
+    property int curr_gnd_mcs_index:_ohdSystemGround.curr_mcs_index;
+    onCurr_gnd_mcs_indexChanged: {
+        extra_populate();
+    }
     property int curr_bandwidth_mhz: _ohdSystemAir.curr_channel_width_mhz
     onCurr_bandwidth_mhzChanged: {
         extra_populate();
@@ -272,10 +270,6 @@ BaseJoyEditElement2{
     }
     property bool m_air_alive: _ohdSystemAir.is_alive
     onM_air_aliveChanged: {
-        if(m_air_alive && m_param_id==mPARAM_ID_RATE && pendingLinkSettings.pending_mcs_index>=0){
-            _wbLinkSettingsHelper.set_param_air_only_mcs_async(pendingLinkSettings.pending_mcs_index);
-            pendingLinkSettings.pending_mcs_index = -1;
-        }
         extra_populate();
     }
 
@@ -299,13 +293,9 @@ BaseJoyEditElement2{
             update_display_text(value);
             m_param_exists=true;
         }else if(m_param_id==mPARAM_ID_RATE){
-            if(_ohdSystemAir.is_alive && curr_mcs_index>=0){
-                update_display_text(curr_mcs_index);
-                m_param_exists=true;
-                return;
-            }
-            if(pendingLinkSettings.pending_mcs_index>=0){
-                update_display_text(pendingLinkSettings.pending_mcs_index);
+            var value = _ohdSystemAir.is_alive ? curr_mcs_index : curr_gnd_mcs_index;
+            if(value>=0){
+                update_display_text(value);
                 m_param_exists=true;
                 return;
             }
