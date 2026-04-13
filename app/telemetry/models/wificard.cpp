@@ -4,41 +4,44 @@
 
 #include "../../logging/hudlogmessagesmodel.h"
 #include "tutil/qopenhdmavlinkhelper.hpp"
+#include "openhd_core/wifi_card_type.h"
 
 
 static std::string wifi_card_type_to_string(const int card_type) {
     switch (card_type) {
-    case 0:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2AU):
         return "88X2AU";
-    case 1:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2BU):
         return "88X2BU";
-    case 2:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2CU):
         return "88X2CU";
-    case 3:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2EU):
         return "88X2EU";
-    case 4:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::RTL_88X2AU):
         return "RTL_88X2AU";
-    case 5:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::RTL_88X2BU):
         return "RTL_88X2BU";
-    case 6:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::ATHEROS):
         return "ATHEROS";
-    case 7:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::MT_7921u):
         return "MT_7921u";
-    case 8:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::RALINK):
         return "RALINK";
-    case 9:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::INTEL):
         return "INTEL";
-    case 10:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::BROADCOM):
         return "BROADCOM";
-    case 11:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_8852BU):
         return "OPENHD_8852BU";
-    case 12:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_EMULATED):
         return "OPENHD_EMULATED";
-    case 13:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::AIC):
         return "AIC";
-    case 14:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::QUALCOMM):
         return "QUALCOMM";
-    case 16:
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::UNKNOWN):
+        return "UNKNOWN";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::ARTOSYN):
         return "ARTOSYN";
     default:
         return "UNKNOWN";
@@ -46,10 +49,11 @@ static std::string wifi_card_type_to_string(const int card_type) {
 }
 static QString tx_power_unit_for_card(const int card_type){
     std::stringstream ss;
-    if(card_type==0){
+    if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2AU)){
         // OpenHD RTL8812AU
         return "TPI";
-    }else if(card_type==1||card_type==3){
+    }else if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2BU) ||
+             card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2EU)){
         return "mW";
     }
     return " ?mW";
@@ -150,8 +154,13 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     set_card_type_as_string(wifi_card_type_to_string(msg.card_type).c_str());
     const int card_type=msg.card_type;
     bool supported = false;
-    if(card_type==0 || card_type==1 || card_type==2 || card_type==3 ||
-       card_type==12 || card_type==14 || card_type==16){
+    if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2AU) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2BU) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2CU) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2EU) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_EMULATED) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::QUALCOMM) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::ARTOSYN)){
         supported=true;
     }
     set_card_type_supported(supported);
