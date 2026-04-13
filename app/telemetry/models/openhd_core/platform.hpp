@@ -24,13 +24,9 @@ static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B = 22;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1126 = 23;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;
 static constexpr int X_PLATFORM_TYPE_LUCKFOX_RV110X = 25;
-// 26 used to be RV1103, merged into RV110X
-static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1103 = 26;
+// 26 used to be X_PLATFORM_TYPE_ROCKCHIP_RV1103, merged with
+// X_PLATFORM_TYPE_LUCKFOX_RV110X now
 static constexpr int X_PLATFORM_TYPE_LUCKFOX_LYRA = 27;
-
-// Legacy aliases
-static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1106 =
-    X_PLATFORM_TYPE_LUCKFOX_RV110X;
 
 // Numbers 30..35 are reserved for allwinner
 static constexpr int X_PLATFORM_TYPE_ALWINNER_X20 = 30;
@@ -43,15 +39,13 @@ static constexpr int X_PLATFORM_TYPE_OPENIPC_SIGMASTAR_UNDEFINED = 36;
 // Numbers 40..45 are reserved for NVIDIA
 static constexpr int X_PLATFORM_TYPE_NVIDIA_XAVIER = 40;
 
-// Numbers 46..50 are reserved for QUALCOMM
+// Numbers 46..47 are reserved for QUALCOMM
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QRB5165 = 46;
 static constexpr int X_PLATFORM_TYPE_QUALCOMM_QCS405 = 47;
 
-// Numbers 51..60 are reserved for enterprise
+// Numbers 51..60 are reserved for Enterprise Customers
 static constexpr int X_PLATFORM_TYPE_ORQA = 51;
 static constexpr int X_PLATFORM_TYPE_UVX_MOD = 52;
-// Legacy alias
-static constexpr int X_PLATFORM_TYPE_UXV_MOD = X_PLATFORM_TYPE_UVX_MOD;
 
 // Numbers 61..65 are reserved for NXP
 static constexpr int X_PLATFORM_TYPE_NXP_IMX8 = 61;
@@ -79,10 +73,7 @@ static std::string x_platform_type_to_string(int platform_type) {
     case X_PLATFORM_TYPE_ROCKCHIP_RV1126:
       return "RV1126";
     case X_PLATFORM_TYPE_LUCKFOX_RV110X:
-    case X_PLATFORM_TYPE_ROCKCHIP_RV1103:
       return "RV110X";
-    case X_PLATFORM_TYPE_LUCKFOX_LYRA:
-      return "Luckfox Lyra";
     case X_PLATFORM_TYPE_ORQA:
       return "ORQA";
     case X_PLATFORM_TYPE_UVX_MOD:
