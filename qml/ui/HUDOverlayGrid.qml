@@ -299,6 +299,9 @@ Item {
         LinkOverviewWidgetRight {
             id: linkOverviewWidgetRight
         }
+        ArtosynDebugWidget {
+            id: artosynDebugWidget
+        }
         LinkOverviewWidgetBottom {
             id: linkOverviewWidgetBottom
         }

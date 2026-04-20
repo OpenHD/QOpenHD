@@ -23,6 +23,7 @@
 #include "../settings/mavlinksettingsmodel.h"
 
 #include "openhd_core/platform.hpp"
+#include "openhd_core/wifi_card_type.h"
 #include <algorithm>
 #include <limits>
 
@@ -47,7 +48,8 @@ struct MonitorModeLinkBitfield {
     unsigned int lpdc:1;
     unsigned int short_guard:1;
     unsigned int curr_rx_last_packet_status_good:1;
-    unsigned int unused:4;
+    unsigned int artosyn_debug_stats_present:1;
+    unsigned int unused:3;
 }
 #ifdef __windows__
 ;
@@ -577,6 +579,15 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
     // TODO: r.n we don't differentiate signal quality per card
     if(msg.card_index==0){
         set_current_rx_signal_quality(msg.rx_signal_quality_adapter);
+        const bool is_artosyn =
+            msg.card_type ==
+            openhd::wifi_card_type_to_int(openhd::WiFiCardType::ARTOSYN);
+        if (is_artosyn) {
+            set_artosyn_link_detected(true);
+        } else if (msg.card_type !=
+                   openhd::wifi_card_type_to_int(openhd::WiFiCardType::UNKNOWN)) {
+            set_artosyn_link_detected(false);
+        }
     }
 }
 
@@ -612,6 +623,21 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_wb_lpdc_enabled(bitfield.lpdc);
     set_wb_short_guard_enabled(bitfield.short_guard);
     set_curr_rx_last_packet_status_good(bitfield.curr_rx_last_packet_status_good);
+    const bool artosyn_debug_stats_present = bitfield.artosyn_debug_stats_present;
+    set_artosyn_debug_stats_available(artosyn_debug_stats_present);
+    if (artosyn_debug_stats_present) {
+        set_artosyn_link_detected(true);
+        set_artosyn_rx_mcs(msg.dummy0);
+        set_artosyn_tx_phy_rate_mbps(msg.dummy1);
+        set_artosyn_rx_rate_kbits(msg.dummy2);
+        // Artosyn uses dummy fields for link debug metrics, not pollution.
+        set_wb_link_curr_foreign_pps(0);
+    } else {
+        set_artosyn_rx_mcs(-1);
+        set_artosyn_tx_phy_rate_mbps(-1);
+        set_artosyn_rx_rate_kbits(-1);
+        set_wb_link_curr_foreign_pps(msg.dummy1);
+    }
 
     // Feature: Warning if dBm falls below minimum threshold for current MCS index on packets that need to be received
     // We need to get the mcs index from the other system (aka from air if we are running on ground) since that's whats being injected
@@ -634,7 +660,6 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
         set_dbm_too_low_warning(0);
     }
     set_wb_link_pollution_perc(msg.pollution_perc);
-    set_wb_link_curr_foreign_pps(msg.dummy1);
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)

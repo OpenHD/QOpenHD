@@ -127,6 +127,12 @@ public: // public for QT
     //
     L_RO_PROP(int,wb_link_pollution_perc,set_wb_link_pollution_perc,-1)
     L_RO_PROP(int,wb_link_curr_foreign_pps,set_wb_link_curr_foreign_pps,-1)
+    // Artosyn-specific link/debug telemetry.
+    L_RO_PROP(bool,artosyn_link_detected,set_artosyn_link_detected,false)
+    L_RO_PROP(bool,artosyn_debug_stats_available,set_artosyn_debug_stats_available,false)
+    L_RO_PROP(int,artosyn_rx_mcs,set_artosyn_rx_mcs,-1)
+    L_RO_PROP(int,artosyn_tx_phy_rate_mbps,set_artosyn_tx_phy_rate_mbps,-1)
+    L_RO_PROP(int,artosyn_rx_rate_kbits,set_artosyn_rx_rate_kbits,-1)
     // ---------- WIFI HOTSPOT ----------------------
     L_RO_PROP(int,wifi_hotspot_state,set_wifi_hotspot_state,-1) // 0 - not available, 1 - off, 2 - on
     L_RO_PROP(int,wifi_hotspot_frequency,set_wifi_hotspot_frequency,-1)

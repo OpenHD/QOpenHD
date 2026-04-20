@@ -129,6 +129,8 @@ private:
 private:
     std::chrono::steady_clock::time_point m_last_tx_frame_drop_calculation=std::chrono::steady_clock::now();
     int m_last_tx_frame_drop_calculation_count=-1;
+    bool m_has_recent_wb_video_air_stats=false;
+    std::chrono::steady_clock::time_point m_last_wb_video_air_stats=std::chrono::steady_clock::now();
 public:
     Q_INVOKABLE QVariantList get_camera_choices(int platform_type);
     Q_INVOKABLE QStringList get_manufacturer_choices(int platform_type);
