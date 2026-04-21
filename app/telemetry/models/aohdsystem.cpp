@@ -48,8 +48,9 @@ struct MonitorModeLinkBitfield {
     unsigned int lpdc:1;
     unsigned int short_guard:1;
     unsigned int curr_rx_last_packet_status_good:1;
+    unsigned int artosyn_link_active:1;
     unsigned int artosyn_debug_stats_present:1;
-    unsigned int unused:3;
+    unsigned int unused:2;
 }
 #ifdef __windows__
 ;
@@ -623,6 +624,9 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_wb_lpdc_enabled(bitfield.lpdc);
     set_wb_short_guard_enabled(bitfield.short_guard);
     set_curr_rx_last_packet_status_good(bitfield.curr_rx_last_packet_status_good);
+    if (bitfield.artosyn_link_active) {
+        set_artosyn_link_detected(true);
+    }
     const bool artosyn_debug_stats_present = bitfield.artosyn_debug_stats_present;
     set_artosyn_debug_stats_available(artosyn_debug_stats_present);
     if (artosyn_debug_stats_present) {
