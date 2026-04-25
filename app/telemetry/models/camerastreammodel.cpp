@@ -113,8 +113,13 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     m_last_wb_video_air_stats=std::chrono::steady_clock::now();
     const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
     set_curr_recommended_bitrate_from_message(curr_recommended_bitrate_kbits);
-    set_curr_video_measured_encoder_bitrate_bps(msg.curr_measured_encoder_bitrate);
-    set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
+    if(msg.curr_measured_encoder_bitrate>0){
+        set_curr_video_measured_encoder_bitrate_bps(msg.curr_measured_encoder_bitrate);
+        set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
+    }else{
+        set_curr_video_measured_encoder_bitrate_bps(0);
+        set_curr_video_measured_encoder_bitrate("N/A");
+    }
     set_curr_video_injected_bitrate_bps(msg.curr_injected_bitrate);
     set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
     if(msg.dummy2>0){
@@ -173,10 +178,9 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     const auto now=std::chrono::steady_clock::now();
     const bool wb_video_air_stale=!m_has_recent_wb_video_air_stats ||
             ((now-m_last_wb_video_air_stats)>kWbVideoAirStaleThreshold);
-    if(wb_video_air_stale && msg.encoding_bitrate_kbits>0){
-        const int64_t measured_bitrate_bps=static_cast<int64_t>(msg.encoding_bitrate_kbits)*1000;
-        set_curr_video_measured_encoder_bitrate_bps(static_cast<int>(measured_bitrate_bps));
-        set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(measured_bitrate_bps));
+    if(wb_video_air_stale){
+        set_curr_video_measured_encoder_bitrate_bps(0);
+        set_curr_video_measured_encoder_bitrate("N/A");
     }
     //qDebug()<<"X:"<<(int)msg.cam_type;
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);

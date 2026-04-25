@@ -65,7 +65,8 @@ BaseWidget {
     }
 
     function sampleBitrates() {
-        measuredHistory = pushSample(measuredHistory, selectedModel.curr_video_measured_encoder_bitrate_bps / 1000000.0);
+        var perfBps = selectedModel.curr_video_measured_encoder_bitrate_bps;
+        measuredHistory = pushSample(measuredHistory, perfBps > 0 ? perfBps / 1000000.0 : 0);
         injectedHistory = pushSample(injectedHistory, selectedModel.curr_video_injected_bitrate_bps / 1000000.0);
         targetHistory = pushSample(targetHistory, selectedModel.curr_recomended_video_bitrate_kbits / 1000.0);
         compactGraph.requestPaint();
@@ -245,7 +246,7 @@ BaseWidget {
                 }
                 Text { text: qsTr("Set target"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_recomended_video_bitrate_string; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
-                Text { text: qsTr("Perf encoder"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text { text: qsTr("Perf encoder"); color: "#05ff00"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_video_measured_encoder_bitrate; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
                 Text { text: qsTr("Injected + FEC"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_video_injected_bitrate; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
@@ -371,7 +372,7 @@ BaseWidget {
                 Text {
                     width: parent.width - 80
                     height: parent.height
-                    text: selectedModel.curr_video_measured_encoder_bitrate
+                    text: qsTr("perf %1").arg(selectedModel.curr_video_measured_encoder_bitrate)
                     color: settings.color_text
                     font.pixelSize: 12
                     verticalAlignment: Text.AlignVCenter
