@@ -20,6 +20,12 @@ static std::string video_codec_to_string(int value){
     return "Unknown";
 }
 
+static QString fps_to_qstring(int fps)
+{
+    if(fps <= 0)return "N/A";
+    return QString("%1 fps").arg(fps);
+}
+
 CameraStreamModel::CameraStreamModel(int m_camera_index,QObject *parent)
     : QObject{parent},
       m_camera_index(m_camera_index)
@@ -178,9 +184,25 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     const auto now=std::chrono::steady_clock::now();
     const bool wb_video_air_stale=!m_has_recent_wb_video_air_stats ||
             ((now-m_last_wb_video_air_stats)>kWbVideoAirStaleThreshold);
-    if(wb_video_air_stale){
+    if(wb_video_air_stale && msg.dummy2 <= 0){
         set_curr_video_measured_encoder_bitrate_bps(0);
         set_curr_video_measured_encoder_bitrate("N/A");
+    }
+    if(msg.encoding_bitrate_kbits > 0){
+        set_curr_recommended_bitrate_from_message(msg.encoding_bitrate_kbits);
+    }
+    if(msg.dummy2 > 0){
+        set_curr_video_measured_encoder_bitrate_bps(msg.dummy2);
+        set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.dummy2));
+    }
+    set_curr_set_video_fps_int(msg.stream_fps);
+    set_curr_set_video_fps(fps_to_qstring(msg.stream_fps));
+    if(msg.dummy1 > 0){
+        set_curr_video_measured_encoder_fps_int(msg.dummy1);
+        set_curr_video_measured_encoder_fps(fps_to_qstring(msg.dummy1));
+    }else{
+        set_curr_video_measured_encoder_fps_int(0);
+        set_curr_video_measured_encoder_fps("N/A");
     }
     //qDebug()<<"X:"<<(int)msg.cam_type;
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);

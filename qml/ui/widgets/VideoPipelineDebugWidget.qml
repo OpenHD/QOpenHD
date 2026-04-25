@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.12
 BaseWidget {
     id: debugWidget
     width: 260
-    height: 118
+    height: 138
     visible: settings.show_video_pipeline_debug_widget && settings.show_widgets
 
     widgetIdentifier: "video_pipeline_debug_widget"
@@ -19,7 +19,7 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetActionWidth: 620
-    widgetActionHeight: 650
+    widgetActionHeight: 690
 
     property int selectedCamera: 0
     property var selectedModel: selectedCamera === 0 ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
@@ -65,8 +65,8 @@ BaseWidget {
     }
 
     function sampleBitrates() {
-        var perfBps = selectedModel.curr_video_measured_encoder_bitrate_bps;
-        measuredHistory = pushSample(measuredHistory, perfBps > 0 ? perfBps / 1000000.0 : 0);
+        var realBps = selectedModel.curr_video_measured_encoder_bitrate_bps;
+        measuredHistory = pushSample(measuredHistory, realBps > 0 ? realBps / 1000000.0 : 0);
         injectedHistory = pushSample(injectedHistory, selectedModel.curr_video_injected_bitrate_bps / 1000000.0);
         targetHistory = pushSample(targetHistory, selectedModel.curr_recomended_video_bitrate_kbits / 1000.0);
         compactGraph.requestPaint();
@@ -125,7 +125,7 @@ BaseWidget {
             ctx.font = "12px sans-serif";
             ctx.fillText(maxValue + " MBit/s", pad, 14);
             ctx.fillStyle = "#05ff00";
-            ctx.fillText("perf", pad, height - 7);
+            ctx.fillText("real", pad, height - 7);
             ctx.fillStyle = "#ffcc00";
             ctx.fillText("injected", pad + 54, height - 7);
             ctx.fillStyle = "#ffffff";
@@ -244,10 +244,14 @@ BaseWidget {
                     Layout.fillWidth: true
                     elide: Text.ElideRight
                 }
-                Text { text: qsTr("Set target"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text { text: qsTr("Set bitrate"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_recomended_video_bitrate_string; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
-                Text { text: qsTr("Perf encoder"); color: "#05ff00"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text { text: qsTr("Real bitrate"); color: "#05ff00"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_video_measured_encoder_bitrate; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
+                Text { text: qsTr("Set FPS"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text { text: selectedModel.curr_set_video_fps; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
+                Text { text: qsTr("Real FPS"); color: "#05ff00"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text { text: selectedModel.curr_video_measured_encoder_fps; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
                 Text { text: qsTr("Injected + FEC"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_video_injected_bitrate; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
                 Text { text: qsTr("Link calculated"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
@@ -372,7 +376,7 @@ BaseWidget {
                 Text {
                     width: parent.width - 80
                     height: parent.height
-                    text: qsTr("perf %1").arg(selectedModel.curr_video_measured_encoder_bitrate)
+                    text: qsTr("real %1").arg(selectedModel.curr_video_measured_encoder_bitrate)
                     color: settings.color_text
                     font.pixelSize: 12
                     verticalAlignment: Text.AlignVCenter
@@ -384,7 +388,7 @@ BaseWidget {
             Canvas {
                 id: compactGraph
                 width: parent.width
-                height: 70
+                height: 62
                 onPaint: debugWidget.paintBitrateGraph(getContext("2d"), width, height, false)
             }
 
@@ -404,8 +408,33 @@ BaseWidget {
                 Text {
                     width: parent.width / 2 - 3
                     height: parent.height
-                    text: qsTr("inj %1").arg(selectedModel.curr_video_injected_bitrate)
-                    color: "#ffffcc00"
+                    text: qsTr("real %1").arg(selectedModel.curr_video_measured_encoder_bitrate)
+                    color: "#ff05ff00"
+                    font.pixelSize: 11
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignRight
+                    elide: Text.ElideRight
+                }
+            }
+
+            Row {
+                width: parent.width
+                height: 17
+                spacing: 6
+                Text {
+                    width: parent.width / 2 - 3
+                    height: parent.height
+                    text: qsTr("set %1").arg(selectedModel.curr_set_video_fps)
+                    color: "white"
+                    font.pixelSize: 11
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                }
+                Text {
+                    width: parent.width / 2 - 3
+                    height: parent.height
+                    text: qsTr("real %1").arg(selectedModel.curr_video_measured_encoder_fps)
+                    color: "#ff05ff00"
                     font.pixelSize: 11
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignRight
