@@ -6,7 +6,7 @@ BaseWidget {
     id: debugWidget
     width: 260
     height: 118
-    visible: settings.show_dev_stats_overlay && !sidebar.m_extra_is_visible && settings.show_widgets
+    visible: settings.show_video_pipeline_debug_widget && settings.show_widgets
 
     widgetIdentifier: "video_pipeline_debug_widget"
     bw_verbose_name: qsTr("VIDEO PIPELINE DEBUG")

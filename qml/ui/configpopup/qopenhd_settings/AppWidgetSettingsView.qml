@@ -39,6 +39,7 @@ ScrollView {
         settings.show_rc_rssi= enable_elements;
         settings.show_bitrate=enable_elements;
         settings.camera_bitrate_widget_show_recording= enable_elements;
+        settings.show_video_pipeline_debug_widget=false;
         settings.show_air_battery= enable_elements;
         settings.show_ground_battery=enable_elements;
         settings.show_gps=enable_elements;
@@ -205,6 +206,21 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_link_overview_widget_bottom
                         onCheckedChanged: settings.show_link_overview_widget_bottom = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Video Debug Widget")
+                    m_long_description: qsTr("Developer video bitrate graph, perf stats, pipeline string, and live bitrate control.")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_video_pipeline_debug_widget
+                        onCheckedChanged: settings.show_video_pipeline_debug_widget = checked
                     }
                 }
 
