@@ -233,7 +233,9 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              mavlink_msg_statustext_decode(&msg,&parsedMsg);
              auto tmp=Telemetryutil::statustext_convert(parsedMsg);
              if(m_is_air){
-                LogMessagesModel::instanceOHDAir().addLogMessage("OHD[A]",tmp.message.c_str(),tmp.level);
+                if(!CameraStreamModel::process_openhd_pipeline_debug_message(tmp.message)){
+                    LogMessagesModel::instanceOHDAir().addLogMessage("OHD[A]",tmp.message.c_str(),tmp.level);
+                }
              }else{
                 LogMessagesModel::instanceGround().addLogMessage("OHD[G]",tmp.message.c_str(),tmp.level);
              }

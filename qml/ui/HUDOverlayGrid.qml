@@ -168,6 +168,7 @@ Item {
         if(index==13)return gps;
         if(index==14)return home_distance;
         if(index==15)return retransmissionStarsWidget;
+        if(index==16)return videoPipelineDebugWidget;
         //if(index==13)return uplink;
         console.log("Invalid index");
         return ret;
@@ -329,6 +330,9 @@ Item {
         }
         VideoBitrateWidgetSecondary {
             id: bitrate2
+        }
+        VideoPipelineDebugWidget{
+            id: videoPipelineDebugWidget
         }
         SOCStatusWidgetAir {
             id: air_status

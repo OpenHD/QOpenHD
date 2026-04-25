@@ -23,6 +23,7 @@
         <file>ui/widgets/AirTemperatureTXC.qml</file>
         <file>ui/widgets/GndTemperatureTXC.qml</file>
         <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
+        <file>ui/widgets/VideoPipelineDebugWidget.qml</file>
         <file>ui/widgets/LinkUpRSSIWidget.qml</file>
         <file>ui/widgets/SOCStatusWidgetGround.qml</file>
         <file>ui/widgets/SOCStatusWidgetAir.qml</file>

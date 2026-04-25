@@ -3,8 +3,11 @@
 #include "../tutil/telemetryutil.hpp"
 #include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
+#include <algorithm>
+#include <array>
 #include <qsettings.h>
 #include <regex>
+#include <vector>
 
 #include <logging/hudlogmessagesmodel.h>
 #include <logging/logmessagesmodel.h>
@@ -110,8 +113,17 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     m_last_wb_video_air_stats=std::chrono::steady_clock::now();
     const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
     set_curr_recommended_bitrate_from_message(curr_recommended_bitrate_kbits);
+    set_curr_video_measured_encoder_bitrate_bps(msg.curr_measured_encoder_bitrate);
     set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
+    set_curr_video_injected_bitrate_bps(msg.curr_injected_bitrate);
     set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
+    if(msg.dummy2>0){
+        set_curr_video_link_calculated_bitrate_bps(msg.dummy2);
+        set_curr_video_link_calculated_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.dummy2));
+    }else{
+        set_curr_video_link_calculated_bitrate_bps(0);
+        set_curr_video_link_calculated_bitrate("N/A");
+    }
     set_curr_video_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
     set_total_n_tx_dropped_frames(msg.curr_dropped_frames);
     if(m_last_tx_frame_drop_calculation_count<0){
@@ -163,6 +175,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
             ((now-m_last_wb_video_air_stats)>kWbVideoAirStaleThreshold);
     if(wb_video_air_stale && msg.encoding_bitrate_kbits>0){
         const int64_t measured_bitrate_bps=static_cast<int64_t>(msg.encoding_bitrate_kbits)*1000;
+        set_curr_video_measured_encoder_bitrate_bps(static_cast<int>(measured_bitrate_bps));
         set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(measured_bitrate_bps));
     }
     //qDebug()<<"X:"<<(int)msg.cam_type;
@@ -170,6 +183,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     set_air_recording_active(msg.air_recording_active);
     set_camera_type(msg.cam_type);
     set_encoding_codec(msg.encoding_format);
+    set_supports_variable_bitrate(msg.supports_variable_bitrate==1);
     {
         std::stringstream ss;
         ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
@@ -209,6 +223,44 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     set_camera_status(msg.cam_status);
 }
 
+bool CameraStreamModel::process_openhd_pipeline_debug_message(const std::string& message)
+{
+    static const std::regex pipeline_chunk_regex(R"(^OHDPIPE([01]) ([0-9]+)/([0-9]+) (.*)$)");
+    std::smatch match;
+    if(!std::regex_match(message,match,pipeline_chunk_regex)){
+        return false;
+    }
+    const int cam_index=std::stoi(match[1].str());
+    const int seq=std::stoi(match[2].str());
+    const int total=std::stoi(match[3].str());
+    if(cam_index<0 || cam_index>1 || seq<0 || total<=0 || seq>=total){
+        return true;
+    }
+    struct PipelineDebugAssembly{
+        int total=0;
+        std::vector<std::string> chunks;
+        std::vector<bool> seen;
+    };
+    static std::array<PipelineDebugAssembly,2> assemblies{};
+    auto& assembly=assemblies[cam_index];
+    if(seq==0 || assembly.total!=total || assembly.chunks.size()!=static_cast<size_t>(total)){
+        assembly.total=total;
+        assembly.chunks.assign(static_cast<size_t>(total),"");
+        assembly.seen.assign(static_cast<size_t>(total),false);
+    }
+    assembly.chunks[static_cast<size_t>(seq)]=match[4].str();
+    assembly.seen[static_cast<size_t>(seq)]=true;
+    if(!std::all_of(assembly.seen.begin(),assembly.seen.end(),[](bool chunk_seen){ return chunk_seen; })){
+        return true;
+    }
+    std::string pipeline;
+    for(const auto& chunk:assembly.chunks){
+        pipeline+=chunk;
+    }
+    CameraStreamModel::instance(cam_index).set_curr_pipeline(pipeline.c_str());
+    return true;
+}
+
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
 {
     set_curr_fec_encode_time_avg_min_max(
@@ -221,6 +273,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
 {
+    set_curr_received_bitrate_with_fec_bps(msg.curr_incoming_bitrate);
     set_curr_received_bitrate_with_fec(Telemetryutil::bitrate_bps_to_qstring(msg.curr_incoming_bitrate));
     set_count_blocks_lost(msg.count_blocks_lost);
     set_count_blocks_recovered(msg.count_blocks_recovered);

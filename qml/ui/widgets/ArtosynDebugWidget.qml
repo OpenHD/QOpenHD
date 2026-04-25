@@ -41,6 +41,11 @@ Item {
         return value_mbits + " Mbit/s";
     }
 
+    function link_connected() {
+        return _ohdSystemAir.curr_rx_last_packet_status_good
+                || _ohdSystemGround.curr_rx_last_packet_status_good;
+    }
+
     Rectangle {
         anchors.fill: parent
         color: "#A0000000"
@@ -59,6 +64,14 @@ Item {
             color: settings.color_text
             font.bold: true
             font.pixelSize: 13
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
+        Text {
+            text: link_connected() ? qsTr("State: CONNECTED") : qsTr("State: WAITING")
+            color: link_connected() ? "#90EE90" : "#FFD580"
+            font.pixelSize: 12
             style: Text.Outline
             styleColor: settings.color_glow
         }
