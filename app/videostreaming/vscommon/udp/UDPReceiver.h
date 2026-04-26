@@ -20,6 +20,14 @@
 #include <optional>
 #include <sstream>
 
+#if defined(_WIN32)
+using UDPReceiverSocket = SOCKET;
+static constexpr UDPReceiverSocket UDP_RECEIVER_INVALID_SOCKET = INVALID_SOCKET;
+#else
+using UDPReceiverSocket = int;
+static constexpr UDPReceiverSocket UDP_RECEIVER_INVALID_SOCKET = -1;
+#endif
+
 //Starts a new thread that continuously checks for new data on UDP port and
 // forward the received data (packet for packet) via a callback
 class UDPReceiver {
@@ -77,11 +85,12 @@ public:
     static constexpr auto MEDIUM_UDP_RECEIVE_BUFFER_SIZE=1024*1024*25;
 private:
     void receiveFromUDPLoop();
+    void closeSocketIfOwned(UDPReceiverSocket socket);
     const std::string m_tag;
     const Configuration m_config;
     const DATA_CALLBACK m_on_data_received_cb=nullptr;
     ///We need this reference to stop the receiving thread
-    int m_socket=0;
+    std::atomic<UDPReceiverSocket> m_socket{UDP_RECEIVER_INVALID_SOCKET};
     std::string m_sender_ip="0.0.0.0";
     std::unique_ptr<std::thread> m_receive_thread;
     std::atomic<bool> m_receiving={false};

@@ -50,15 +50,35 @@ void UDPReceiver::startReceiving() {
 
 void UDPReceiver::stopReceiving() {
     m_receiving = false;
-    // This stops the recvfrom even if in blocking mode
-    shutdown(m_socket, SHUT_RD);
-    if (m_receive_thread->joinable()) {
+    const auto socket = m_socket.exchange(UDP_RECEIVER_INVALID_SOCKET);
+    if (socket != UDP_RECEIVER_INVALID_SOCKET) {
+        // This stops recvfrom even when the receiver is using blocking mode.
+        shutdown(socket, SHUT_RD);
+#if defined(_WIN32)
+        closesocket(socket);
+#else
+        close(socket);
+#endif
+    }
+    if (m_receive_thread && m_receive_thread->joinable()) {
         m_receive_thread->join();
     }
     m_receive_thread.reset();
 }
 
-static void increase_socket_recv_buff_size(int sockfd, const int wanted_rcvbuff_size_bytes) {
+void UDPReceiver::closeSocketIfOwned(UDPReceiverSocket socket) {
+    UDPReceiverSocket expected = socket;
+    if (!m_socket.compare_exchange_strong(expected, UDP_RECEIVER_INVALID_SOCKET)) {
+        return;
+    }
+#if defined(_WIN32)
+    closesocket(socket);
+#else
+    close(socket);
+#endif
+}
+
+static void increase_socket_recv_buff_size(UDPReceiverSocket sockfd, const int wanted_rcvbuff_size_bytes) {
     int recvBufferSize = 0;
     socklen_t len = sizeof(recvBufferSize);
     getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, (char *)&recvBufferSize, &len);
@@ -82,24 +102,25 @@ static void increase_socket_recv_buff_size(int sockfd, const int wanted_rcvbuff_
 }
 
 void UDPReceiver::receiveFromUDPLoop() {
-    m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (m_socket == -1) {
+    const auto socket_handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (socket_handle == UDP_RECEIVER_INVALID_SOCKET) {
         std::cerr << "Error creating socket\n";
         return;
     }
+    m_socket = socket_handle;
     int enable = 1;
-    if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&enable, sizeof(int)) < 0) {
+    if (setsockopt(socket_handle, SOL_SOCKET, SO_REUSEADDR, (char *)&enable, sizeof(int)) < 0) {
         std::cout << "Error setting reuse\n";
     }
 
 #ifndef _WIN32
-    if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0) {
+    if (setsockopt(socket_handle, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0) {
         std::cout << "Error setting SO_REUSEPORT\n";
     }
 #endif
 
     if (m_config.opt_os_receive_buff_size) {
-        increase_socket_recv_buff_size(m_socket, m_config.opt_os_receive_buff_size.value());
+        increase_socket_recv_buff_size(socket_handle, m_config.opt_os_receive_buff_size.value());
     }
 
     struct sockaddr_in myaddr;
@@ -117,13 +138,15 @@ void UDPReceiver::receiveFromUDPLoop() {
     }
 
 #ifdef _WIN32
-    if (bind(m_socket, (struct sockaddr *)&myaddr, sizeof(myaddr)) == SOCKET_ERROR) {
+    if (bind(socket_handle, (struct sockaddr *)&myaddr, sizeof(myaddr)) == SOCKET_ERROR) {
         std::cerr << "Error binding to " << m_config.to_string() << "\n";
+        closeSocketIfOwned(socket_handle);
         return;
     }
 #else
-    if (bind(m_socket, (struct sockaddr *)&myaddr, sizeof(myaddr)) == -1) {
+    if (bind(socket_handle, (struct sockaddr *)&myaddr, sizeof(myaddr)) == -1) {
         std::cerr << "Error binding to " << m_config.to_string() << "\n";
+        closeSocketIfOwned(socket_handle);
         return;
     }
 #endif
@@ -134,13 +157,13 @@ void UDPReceiver::receiveFromUDPLoop() {
 
     while (m_receiving) {
 #ifdef _WIN32
-        auto tmp = recvfrom(m_socket, (char *)buff->data(), UDP_PACKET_MAX_SIZE, 0, (sockaddr *)&source, &sourceLen);
+        auto tmp = recvfrom(socket_handle, (char *)buff->data(), UDP_PACKET_MAX_SIZE, 0, (sockaddr *)&source, &sourceLen);
 #else
         ssize_t tmp;
         if (m_config.enable_nonblocking) {
-            tmp = recvfrom(m_socket, buff->data(), UDP_PACKET_MAX_SIZE, MSG_DONTWAIT, (sockaddr *)&source, &sourceLen);
+            tmp = recvfrom(socket_handle, buff->data(), UDP_PACKET_MAX_SIZE, MSG_DONTWAIT, (sockaddr *)&source, &sourceLen);
         } else {
-            tmp = recvfrom(m_socket, buff->data(), UDP_PACKET_MAX_SIZE, MSG_WAITALL, (sockaddr *)&source, &sourceLen);
+            tmp = recvfrom(socket_handle, buff->data(), UDP_PACKET_MAX_SIZE, MSG_WAITALL, (sockaddr *)&source, &sourceLen);
         }
 #endif
         const ssize_t message_length = tmp;
@@ -154,12 +177,19 @@ void UDPReceiver::receiveFromUDPLoop() {
                 m_sender_ip = s1;
             }
         } else {
+#ifdef _WIN32
+            const auto socket_error = WSAGetLastError();
+            if (socket_error != WSAEWOULDBLOCK && m_receiving) {
+                // Handle error
+            }
+#else
             if (errno != EWOULDBLOCK) {
                 // Handle error
             }
+#endif
         }
     }
-    close(m_socket);
+    closeSocketIfOwned(socket_handle);
 }
 
 int UDPReceiver::getPort() const {
