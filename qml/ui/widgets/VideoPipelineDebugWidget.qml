@@ -270,45 +270,56 @@ BaseWidget {
                 color: "#5533cc66"
             }
 
-            RowLayout {
+            ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 6
+                spacing: 4
 
-                Button {
-                    text: "-"
-                    onClicked: changeRequestedMbits(-1)
-                    Layout.preferredWidth: 42
-                }
-                Slider {
-                    id: bitrateSlider
-                    from: 1
-                    to: 50
-                    stepSize: 1
-                    value: requestedMbits
-                    snapMode: Slider.SnapAlways
-                    onMoved: {
-                        markUserEditing();
-                        requestedMbits = Math.round(value);
-                    }
+                RowLayout {
                     Layout.fillWidth: true
+                    spacing: 6
+
+                    Button {
+                        text: "-"
+                        onClicked: changeRequestedMbits(-1)
+                        Layout.preferredWidth: 42
+                    }
+                    Slider {
+                        id: bitrateSlider
+                        from: 1
+                        to: 50
+                        stepSize: 1
+                        value: requestedMbits
+                        snapMode: Slider.SnapAlways
+                        onMoved: {
+                            markUserEditing();
+                            requestedMbits = Math.round(value);
+                        }
+                        Layout.fillWidth: true
+                    }
+                    Button {
+                        text: "+"
+                        onClicked: changeRequestedMbits(1)
+                        Layout.preferredWidth: 42
+                    }
                 }
-                Button {
-                    text: "+"
-                    onClicked: changeRequestedMbits(1)
-                    Layout.preferredWidth: 42
-                }
-                Text {
-                    text: qsTr("%1 MBit/s").arg(requestedMbits)
-                    color: settings.color_text
-                    font.pixelSize: 13
-                    horizontalAlignment: Text.AlignRight
-                    Layout.preferredWidth: 82
-                }
-                Button {
-                    text: qsTr("APPLY")
-                    enabled: selectedModel.supports_variable_bitrate && !_airCameraSettingsModel.ui_is_busy && !_airCameraSettingsModel2.ui_is_busy
-                    onClicked: applyRequestedBitrate()
-                    Layout.preferredWidth: 78
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: qsTr("Selected bitrate: %1 MBit/s").arg(requestedMbits)
+                        color: settings.color_text
+                        font.pixelSize: 13
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                    }
+                    Button {
+                        text: qsTr("SET")
+                        enabled: !selectedSettingsModel.ui_is_busy
+                        onClicked: applyRequestedBitrate()
+                        Layout.preferredWidth: 96
+                    }
                 }
             }
 
