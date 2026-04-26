@@ -28,6 +28,7 @@ Column {
     property bool m_is_alive: m_model.is_alive
     property string m_qopenhd_version: _qopenhd.version_string
     property int m_ground_settings_update_count: _ohdSystemGroundSettings.update_count
+    property int m_air_settings_update_count: _ohdSystemAirSettingsModel.update_count
 
     //fucking hell qt
     property int m_font_pixel_size: 13
@@ -51,14 +52,28 @@ Column {
         return _ohdSystemAir.artosyn_link_detected
                 || _ohdSystemAir.primary_link_type === 4
                 || _ohdSystemAir.artosyn_debug_stats_available
+                || air_primary_link_is_artosyn()
+                || _ohdSystemGround.primary_link_type === 4
+                || ground_primary_link_is_artosyn()
                 || _wifi_card_air.card_type_as_string === "ARTOSYN";
     }
+    function settings_string_contains_artosyn(model, param_id, update_count){
+        var unused = update_count;
+        if(!model.system_is_alive()) return false;
+        if(!model.has_params_fetched) return false;
+        if(!model.param_string_exists(param_id)) return false;
+        var value = model.get_cached_string(param_id);
+        return value.indexOf("ARTOSYN") >= 0 || value.indexOf("artosyn") >= 0;
+    }
+    function settings_primary_link_is_artosyn(model, update_count){
+        return settings_string_contains_artosyn(model, "PRIMARY_LINK", update_count)
+                || settings_string_contains_artosyn(model, "WIFI_IFACES", update_count);
+    }
     function ground_primary_link_is_artosyn(){
-        var unused = m_ground_settings_update_count;
-        if(!_ohdSystemGroundSettings.system_is_alive()) return false;
-        if(!_ohdSystemGroundSettings.has_params_fetched) return false;
-        if(!_ohdSystemGroundSettings.param_string_exists("PRIMARY_LINK")) return false;
-        return _ohdSystemGroundSettings.get_cached_string("PRIMARY_LINK") === "ARTOSYN";
+        return settings_primary_link_is_artosyn(_ohdSystemGroundSettings, m_ground_settings_update_count);
+    }
+    function air_primary_link_is_artosyn(){
+        return settings_primary_link_is_artosyn(_ohdSystemAirSettingsModel, m_air_settings_update_count);
     }
 
     function gnd_uplink_state(){
@@ -172,10 +187,10 @@ Column {
                     return qsTr("%1x array").arg(alive_count)
                 }
             } else {
+                if (air_artosyn_detected()) {
+                    return qsTr("ARTOSYN")
+                }
                 if (!_wifi_card_air.alive) {
-                    if (air_artosyn_detected()) {
-                        return qsTr("ARTOSYN")
-                    }
                     return qsTr("N/A")
                 }
                 var pingStrAir = pingToMsString(m_model.last_ping_result_openhd)

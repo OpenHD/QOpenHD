@@ -26,30 +26,52 @@ BaseWidget {
     property var rxRateHistory: []
     property var phyRateHistory: []
     property int groundSettingsUpdateCount: _ohdSystemGroundSettings.update_count
+    property int airSettingsUpdateCount: _ohdSystemAirSettingsModel.update_count
+
+    function settings_string_contains_artosyn(model, paramId, updateCount) {
+        var unused = updateCount;
+        if (!model.system_is_alive()) {
+            return false;
+        }
+        if (!model.has_params_fetched) {
+            return false;
+        }
+        if (!model.param_string_exists(paramId)) {
+            return false;
+        }
+        return model.get_cached_string(paramId).indexOf("ARTOSYN") >= 0
+                || model.get_cached_string(paramId).indexOf("artosyn") >= 0;
+    }
+
+    function settings_primary_link_is_artosyn(model, updateCount) {
+        return settings_string_contains_artosyn(model, "PRIMARY_LINK", updateCount)
+                || settings_string_contains_artosyn(model, "WIFI_IFACES", updateCount);
+    }
 
     function ground_primary_link_is_artosyn() {
-        var unused = groundSettingsUpdateCount;
-        if (!_ohdSystemGroundSettings.system_is_alive()) {
-            return false;
-        }
-        if (!_ohdSystemGroundSettings.has_params_fetched) {
-            return false;
-        }
-        if (!_ohdSystemGroundSettings.param_string_exists("PRIMARY_LINK")) {
-            return false;
-        }
-        return _ohdSystemGroundSettings.get_cached_string("PRIMARY_LINK") === "ARTOSYN";
+        return settings_primary_link_is_artosyn(_ohdSystemGroundSettings, groundSettingsUpdateCount);
+    }
+
+    function air_primary_link_is_artosyn() {
+        return settings_primary_link_is_artosyn(_ohdSystemAirSettingsModel, airSettingsUpdateCount);
+    }
+
+    function air_artosyn_detected() {
+        return _ohdSystemAir.artosyn_link_detected
+                || _ohdSystemAir.primary_link_type === 4
+                || _ohdSystemAir.artosyn_debug_stats_available
+                || air_primary_link_is_artosyn()
+                || _ohdSystemGround.primary_link_type === 4
+                || ground_primary_link_is_artosyn()
+                || _wifi_card_air.card_type_as_string === "ARTOSYN";
     }
 
     function is_artosyn_detected() {
-        return _ohdSystemAir.artosyn_link_detected
+        return air_artosyn_detected()
                 || _ohdSystemGround.artosyn_link_detected
-                || _ohdSystemAir.primary_link_type === 4
                 || _ohdSystemGround.primary_link_type === 4
-                || _ohdSystemAir.artosyn_debug_stats_available
                 || _ohdSystemGround.artosyn_debug_stats_available
                 || ground_primary_link_is_artosyn()
-                || _wifi_card_air.card_type_as_string === "ARTOSYN"
                 || _wifi_card_gnd0.card_type_as_string === "ARTOSYN";
     }
 
