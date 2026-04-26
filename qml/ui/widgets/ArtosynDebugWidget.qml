@@ -25,10 +25,28 @@ BaseWidget {
     property var txRateHistory: []
     property var rxRateHistory: []
     property var phyRateHistory: []
+    property int groundSettingsUpdateCount: _ohdSystemGroundSettings.update_count
+
+    function ground_primary_link_is_artosyn() {
+        var unused = groundSettingsUpdateCount;
+        if (!_ohdSystemGroundSettings.system_is_alive()) {
+            return false;
+        }
+        if (!_ohdSystemGroundSettings.has_params_fetched) {
+            return false;
+        }
+        if (!_ohdSystemGroundSettings.param_string_exists("PRIMARY_LINK")) {
+            return false;
+        }
+        return _ohdSystemGroundSettings.get_cached_string("PRIMARY_LINK") === "ARTOSYN";
+    }
 
     function is_artosyn_detected() {
         return _ohdSystemAir.artosyn_link_detected
                 || _ohdSystemGround.artosyn_link_detected
+                || _ohdSystemAir.artosyn_debug_stats_available
+                || _ohdSystemGround.artosyn_debug_stats_available
+                || ground_primary_link_is_artosyn()
                 || _wifi_card_air.card_type_as_string === "ARTOSYN"
                 || _wifi_card_gnd0.card_type_as_string === "ARTOSYN";
     }
@@ -198,7 +216,7 @@ BaseWidget {
 
                 Text { text: qsTr("State"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text {
-                    text: link_connected() ? qsTr("CONNECTED") : qsTr("WAITING")
+                    text: link_connected() ? qsTr("CONNECTED") : qsTr("ARTOSYN / NO LINK")
                     color: link_connected() ? "#ff05ff00" : "#ffcc00"
                     font.pixelSize: 13
                     Layout.fillWidth: true
@@ -266,7 +284,7 @@ BaseWidget {
                 Text {
                     width: parent.width - 96
                     height: parent.height
-                    text: link_connected() ? qsTr("connected") : qsTr("waiting")
+                    text: link_connected() ? qsTr("connected") : qsTr("artosyn")
                     color: link_connected() ? "#ff05ff00" : "#ffcc00"
                     font.pixelSize: 12
                     verticalAlignment: Text.AlignVCenter

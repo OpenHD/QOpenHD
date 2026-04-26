@@ -27,6 +27,7 @@ Column {
     property string m_version: m_model.openhd_version
     property bool m_is_alive: m_model.is_alive
     property string m_qopenhd_version: _qopenhd.version_string
+    property int m_ground_settings_update_count: _ohdSystemGroundSettings.update_count
 
     //fucking hell qt
     property int m_font_pixel_size: 13
@@ -38,6 +39,19 @@ Column {
         if(_wifi_card_gnd2.alive) ret++;
         if(_wifi_card_gnd3.alive) ret++;
         return ret;
+    }
+    function ground_artosyn_detected(){
+        return _ohdSystemGround.artosyn_link_detected
+                || _ohdSystemGround.artosyn_debug_stats_available
+                || ground_primary_link_is_artosyn()
+                || _wifi_card_gnd0.card_type_as_string === "ARTOSYN";
+    }
+    function ground_primary_link_is_artosyn(){
+        var unused = m_ground_settings_update_count;
+        if(!_ohdSystemGroundSettings.system_is_alive()) return false;
+        if(!_ohdSystemGroundSettings.has_params_fetched) return false;
+        if(!_ohdSystemGroundSettings.param_string_exists("PRIMARY_LINK")) return false;
+        return _ohdSystemGroundSettings.get_cached_string("PRIMARY_LINK") === "ARTOSYN";
     }
 
     function gnd_uplink_state(){
@@ -136,6 +150,9 @@ Column {
                 }
                 var alive_count = get_gnd_active_cards()
                 if (alive_count === 0) {
+                    if (ground_artosyn_detected()) {
+                        return qsTr("ARTOSYN")
+                    }
                     return qsTr("waiting")
                 }
                 if (alive_count === 1) {
