@@ -44,6 +44,8 @@ BaseWidget {
     function is_artosyn_detected() {
         return _ohdSystemAir.artosyn_link_detected
                 || _ohdSystemGround.artosyn_link_detected
+                || _ohdSystemAir.primary_link_type === 4
+                || _ohdSystemGround.primary_link_type === 4
                 || _ohdSystemAir.artosyn_debug_stats_available
                 || _ohdSystemGround.artosyn_debug_stats_available
                 || ground_primary_link_is_artosyn()

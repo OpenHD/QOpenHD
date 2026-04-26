@@ -534,7 +534,10 @@ void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &
     const auto platform_as_str=x_platform_type_to_string(ohd_platform);
     set_ohd_platform_type_as_string(platform_as_str.c_str());
     set_air_reported_fc_sys_id(msg.fc_sys_id);
-    // operating_mode unused for now in QOpenHD?
+    set_primary_link_type(msg.operating_mode);
+    if(msg.operating_mode == 4){
+        set_artosyn_link_detected(true);
+    }
 }
 
 void AOHDSystem::process_openhd_power_status(const mavlink_openhd_power_status_t &msg)

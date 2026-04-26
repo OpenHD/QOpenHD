@@ -77,6 +77,7 @@ public: // public for QT
     L_RO_PROP(int,ohd_platform_type,set_ohd_platform,-1)
     L_RO_PROP(QString,ohd_platform_type_as_string,set_ohd_platform_type_as_string,"N/A");
     L_RO_PROP(int,ohd_wifi_type,set_ohd_wifi,0)
+    L_RO_PROP(int,primary_link_type,set_primary_link_type,0)
     L_RO_PROP(int,ohd_cam_type,set_ohd_cam,0)
     L_RO_PROP(int,ohd_sys_type,set_ohd_sys_ident,0)
     // RPI only

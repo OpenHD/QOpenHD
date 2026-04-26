@@ -42,9 +42,16 @@ Column {
     }
     function ground_artosyn_detected(){
         return _ohdSystemGround.artosyn_link_detected
+                || _ohdSystemGround.primary_link_type === 4
                 || _ohdSystemGround.artosyn_debug_stats_available
                 || ground_primary_link_is_artosyn()
                 || _wifi_card_gnd0.card_type_as_string === "ARTOSYN";
+    }
+    function air_artosyn_detected(){
+        return _ohdSystemAir.artosyn_link_detected
+                || _ohdSystemAir.primary_link_type === 4
+                || _ohdSystemAir.artosyn_debug_stats_available
+                || _wifi_card_air.card_type_as_string === "ARTOSYN";
     }
     function ground_primary_link_is_artosyn(){
         var unused = m_ground_settings_update_count;
@@ -166,6 +173,9 @@ Column {
                 }
             } else {
                 if (!_wifi_card_air.alive) {
+                    if (air_artosyn_detected()) {
+                        return qsTr("ARTOSYN")
+                    }
                     return qsTr("N/A")
                 }
                 var pingStrAir = pingToMsString(m_model.last_ping_result_openhd)
