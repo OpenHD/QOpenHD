@@ -18,7 +18,7 @@ on:
       - 'LICENSE'
 
 env:
-  QT_VERSION: 6.6.3
+  QT_VERSION: 5.15.2
   BUILD_TYPE: Release
 
 jobs:
@@ -42,53 +42,55 @@ jobs:
           version: ${{ env.QT_VERSION }}
           host: windows
           target: desktop
-          arch: win64_msvc2019_64
+          arch: win32_mingw81
           modules: qtcharts
+          tools: tools_mingw,qt.tools.win32_mingw810
           setup-python: true
 
       - name: Install build tools
         run: choco install nsis -y --no-progress
 
-      - name: Set up MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Configure
-        run: >
-          cmake -S . -B build
-          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-          -DCMAKE_PREFIX_PATH="${{ steps.install-qt.outputs.qtPath }}"
-
-      - name: Build
-        run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
-
-      - name: Stage Windows deployment
+      - name: Add MinGW to PATH
         run: |
-          $buildDir = Join-Path $env:GITHUB_WORKSPACE "build"
-          $deployDir = Join-Path $buildDir "deploy"
-          $releaseDir = Join-Path $buildDir "${{ env.BUILD_TYPE }}"
-          $sourceExe = Join-Path $releaseDir "QOpenHDApp.exe"
-          $targetExe = Join-Path $deployDir "QOpenHD.exe"
-          $windeployqt = Join-Path "${{ steps.install-qt.outputs.qtPath }}" "bin\windeployqt.exe"
+          $qtPath = "${{ steps.install-qt.outputs.qtPath }}"
+          $qtRoot = Split-Path -Parent (Split-Path -Parent $qtPath)
+          $mingwMake = Get-ChildItem -Path $qtRoot -Filter mingw32-make.exe -Recurse -File |
+            Select-Object -First 1
 
-          if (!(Test-Path -LiteralPath $sourceExe -PathType Leaf)) {
-            throw "Missing built executable: $sourceExe"
+          if (!$mingwMake) {
+            throw "Could not find mingw32-make.exe below $qtRoot"
           }
 
-          New-Item -ItemType Directory -Path $deployDir -Force | Out-Null
-          Copy-Item -LiteralPath $sourceExe -Destination $targetExe -Force
+          $mingwBin = Split-Path -Parent $mingwMake.FullName
+          $qtBin = Join-Path $qtPath "bin"
+          Add-Content -Path $env:GITHUB_PATH -Value $mingwBin
+          Add-Content -Path $env:GITHUB_PATH -Value $qtBin
+          "MINGW_BIN=$mingwBin" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-          & $windeployqt `
-            --release `
-            --qmldir (Join-Path $env:GITHUB_WORKSPACE "qml") `
-            $targetExe
+      - name: Configure
+        run: |
+          New-Item -ItemType Directory -Path build -Force | Out-Null
+          Push-Location build
+          qmake `
+            CONFIG+=release `
+            CONFIG+=lowmemrelease `
+            ..\QOpenHD.pro
+          Pop-Location
+
+      - name: Build and deploy
+        run: mingw32-make -C build -j2
 
       - name: Build NSIS installer
         run: |
           $buildDir = Join-Path $env:GITHUB_WORKSPACE "build"
-          $deployDir = Join-Path $buildDir "deploy"
+          $deployDir = Join-Path $buildDir "release"
           $installer = Join-Path $buildDir "QOpenHD-Windows-Installer.exe"
           $script = Join-Path $env:GITHUB_WORKSPACE "tools\qopenhd_installer.nsi"
           $makensis = Join-Path ${env:ProgramFiles(x86)} "NSIS\makensis.exe"
+
+          if (!(Test-Path -LiteralPath (Join-Path $deployDir "QOpenHD.exe") -PathType Leaf)) {
+            throw "Missing deployed executable: $(Join-Path $deployDir "QOpenHD.exe")"
+          }
 
           if (!(Test-Path -LiteralPath $makensis -PathType Leaf)) {
             $makensis = "makensis"
