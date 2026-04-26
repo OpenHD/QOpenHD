@@ -168,6 +168,7 @@ Settings {
 
     property bool show_bitrate: false
     property bool show_video_pipeline_debug_widget: false
+    property bool show_artosyn_debug_widget: true
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
     property double bitrate_caution: 0

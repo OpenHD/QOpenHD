@@ -40,6 +40,7 @@ ScrollView {
         settings.show_bitrate=enable_elements;
         settings.camera_bitrate_widget_show_recording= enable_elements;
         settings.show_video_pipeline_debug_widget=false;
+        settings.show_artosyn_debug_widget=false;
         settings.show_air_battery= enable_elements;
         settings.show_ground_battery=enable_elements;
         settings.show_gps=enable_elements;
@@ -221,6 +222,21 @@ ScrollView {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_video_pipeline_debug_widget
                         onCheckedChanged: settings.show_video_pipeline_debug_widget = checked
+                    }
+                }
+
+                SettingBaseElement{
+                    m_short_description: qsTr("Show Artosyn Debug Widget")
+                    m_long_description: qsTr("Artosyn link rate graph, MCS, PHY rate, and traffic stats.")
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_artosyn_debug_widget
+                        onCheckedChanged: settings.show_artosyn_debug_widget = checked
                     }
                 }
 
