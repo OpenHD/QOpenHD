@@ -53,8 +53,7 @@ Column {
                 || _ohdSystemAir.primary_link_type === 4
                 || _ohdSystemAir.artosyn_debug_stats_available
                 || air_primary_link_is_artosyn()
-                || _ohdSystemGround.primary_link_type === 4
-                || ground_primary_link_is_artosyn()
+                || ground_artosyn_detected()
                 || _wifi_card_air.card_type_as_string === "ARTOSYN";
     }
     function settings_string_contains_artosyn(model, param_id, update_count){

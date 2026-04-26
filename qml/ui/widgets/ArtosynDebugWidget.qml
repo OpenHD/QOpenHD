@@ -56,23 +56,26 @@ BaseWidget {
         return settings_primary_link_is_artosyn(_ohdSystemAirSettingsModel, airSettingsUpdateCount);
     }
 
+    function ground_artosyn_detected() {
+        return _ohdSystemGround.artosyn_link_detected
+                || _ohdSystemGround.primary_link_type === 4
+                || _ohdSystemGround.artosyn_debug_stats_available
+                || ground_primary_link_is_artosyn()
+                || _wifi_card_gnd0.card_type_as_string === "ARTOSYN";
+    }
+
     function air_artosyn_detected() {
         return _ohdSystemAir.artosyn_link_detected
                 || _ohdSystemAir.primary_link_type === 4
                 || _ohdSystemAir.artosyn_debug_stats_available
                 || air_primary_link_is_artosyn()
-                || _ohdSystemGround.primary_link_type === 4
-                || ground_primary_link_is_artosyn()
+                || ground_artosyn_detected()
                 || _wifi_card_air.card_type_as_string === "ARTOSYN";
     }
 
     function is_artosyn_detected() {
         return air_artosyn_detected()
-                || _ohdSystemGround.artosyn_link_detected
-                || _ohdSystemGround.primary_link_type === 4
-                || _ohdSystemGround.artosyn_debug_stats_available
-                || ground_primary_link_is_artosyn()
-                || _wifi_card_gnd0.card_type_as_string === "ARTOSYN";
+                || ground_artosyn_detected();
     }
 
     function active_system() {
