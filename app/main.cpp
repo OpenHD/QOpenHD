@@ -336,9 +336,11 @@ int main(int argc, char *argv[]) {
     qInstallMessageHandler(rate_limited_message_handler);
 #endif
 
-#if defined(__windows__)
+#if defined(__windows__) && !defined(QT_NO_DEBUG)
     QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     attachConsole();
+#elif defined(__windows__)
+    QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 #endif
 
     QCoreApplication::setOrganizationName("OpenHD");

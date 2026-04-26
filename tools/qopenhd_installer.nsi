@@ -4,20 +4,46 @@
 !include Win\Propkey.nsh
 !include "FileFunc.nsh"
 
+!ifndef APPNAME
+!define APPNAME "QOpenHD"
+!endif
+
+!ifndef EXENAME
+!define EXENAME "QOpenHD"
+!endif
+
+!ifndef ORGNAME
+!define ORGNAME "OpenHD"
+!endif
+
+!ifndef DESTDIR
+!define DESTDIR "..\..\..\..\QOpenHD\build\Desktop_Qt_5_15_19_MinGW_32_bit-Release\release"
+!endif
+
+!ifndef OUTFILE
+!define OUTFILE "..\..\..\..\QOpenHD\build\Desktop_Qt_5_15_19_MinGW_32_bit-Release\${APPNAME}-Installer.exe"
+!endif
+
 
 Name "${APPNAME}"
+OutFile "${OUTFILE}"
 Var StartMenuFolder
 
 RequestExecutionLevel admin
 
-InstallDir "$PROGRAMFILES\${APPNAME}"
+InstallDir "$PROGRAMFILES32\${APPNAME}"
 
 SetCompressor /SOLID /FINAL lzma
 
+!ifdef HEADER_BITMAP
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "${HEADER_BITMAP}";
-!define MUI_ICON "${INSTALLER_ICON}";
-!define MUI_UNICON "${INSTALLER_ICON}";
+!define MUI_HEADERIMAGE_BITMAP "${HEADER_BITMAP}"
+!endif
+
+!ifdef INSTALLER_ICON
+!define MUI_ICON "${INSTALLER_ICON}"
+!define MUI_UNICON "${INSTALLER_ICON}"
+!endif
 
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
 !insertmacro MUI_PAGE_DIRECTORY
@@ -46,13 +72,18 @@ doinstall:
   SetOutPath $INSTDIR
 
   File /r /x ${EXENAME}.pdb /x ${EXENAME}.lib /x ${EXENAME}.exp ${DESTDIR}\*.*
-  
-  ExecWait '$INSTDIR\vc_redist.x86.exe /passive /norestart'
-  Delete "$INSTDIR\vc_redist.x86.exe"
+
+  IfFileExists "$INSTDIR\vc_redist.x86.exe" 0 no_redist
+    ExecWait '"$INSTDIR\vc_redist.x86.exe" /passive /norestart'
+    Delete "$INSTDIR\vc_redist.x86.exe"
+  no_redist:
 
   WriteUninstaller $INSTDIR\${EXENAME}-Uninstall.exe
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$\"$INSTDIR\${EXENAME}-Uninstall.exe$\""
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "Publisher" "${ORGNAME}"
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayIcon" "$INSTDIR\${EXENAME}.exe"
   SetRegView 64
   WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\${EXENAME}.exe" "DumpCount" 5 
   WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\${EXENAME}.exe" "DumpType" 1
@@ -82,4 +113,5 @@ Section "create Start Menu Shortcuts"
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\${APPNAME}.lnk" "$INSTDIR\${EXENAME}.exe" "" "$INSTDIR\${EXENAME}.exe" 0
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall ${APPNAME}.lnk" "$INSTDIR\${EXENAME}-Uninstall.exe"
 SectionEnd

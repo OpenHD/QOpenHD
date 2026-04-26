@@ -67,9 +67,13 @@ CONFIG(debug, debug|release) {
 }
 
 win32:CONFIG(release, debug|release) {
+    CONFIG -= console
+    CONFIG += windows
     # MinGW 32-bit runs out of memory with LTO on large resource objects.
+    CONFIG -= ltcg
     QMAKE_CXXFLAGS_RELEASE -= -flto
     QMAKE_LFLAGS_RELEASE -= -flto
+    QMAKE_LFLAGS_RELEASE += -Wl,--allow-multiple-definition
     # Further reduce memory pressure on huge QRC compilation units.
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CFLAGS_RELEASE -= -O2
@@ -89,12 +93,18 @@ win32:CONFIG(lowmemrelease, debug|release) {
 
 win32 {
     ffmpeg_bin = $$PWD/build-libs-windows/ffmpeg/bin
+    windows_deploy_script = $$PWD/tools/deploy_windows.ps1
+    qt_install_prefix = $$[QT_INSTALL_PREFIX]
+    mingw_bin = $$dirname(QMAKE_CXX)
+    isEmpty(mingw_bin)|equals(mingw_bin, .) {
+        mingw_bin = C:/Qt/Tools/mingw810_32/bin
+    }
     contains(CONFIG, debug) {
         destdir_win = $$OUT_PWD/debug
     } else {
         destdir_win = $$OUT_PWD/release
     }
-    QMAKE_POST_LINK += $$quote(powershell -NoProfile -ExecutionPolicy Bypass -Command "if (Test-Path '$$ffmpeg_bin/*.dll') { Copy-Item '$$ffmpeg_bin/*.dll' '$$destdir_win' -Force }")
+    QMAKE_POST_LINK += $$quote(powershell -NoProfile -ExecutionPolicy Bypass -File "$$windows_deploy_script" -TargetDir "$$destdir_win" -QtDir "$$qt_install_prefix" -MingwBin "$$mingw_bin" -QmlDir "$$PWD/qml" -FfmpegBin "$$ffmpeg_bin")
 }
 
 #https://doc.qt.io/qt-6/portingguide.html
@@ -229,6 +239,7 @@ HEADERS += \
 RESOURCES += qml/qml.qrc \
              qml/qml_assets_fonts.qrc \
              qml/qml_assets_images.qrc \
+             qml/qml_assets_credits.qrc \
              qml/qml_assets_cursors.qrc
 
 
