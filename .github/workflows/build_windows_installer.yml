@@ -1,0 +1,106 @@
+name: build_windows_installer
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '**.asciidoc'
+      - '**.adoc'
+      - '.gitignore'
+      - 'LICENSE'
+  push:
+    paths-ignore:
+      - '**.md'
+      - '**.asciidoc'
+      - '**.adoc'
+      - '.gitignore'
+      - 'LICENSE'
+
+env:
+  QT_VERSION: 6.6.3
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        id: install-qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          modules: qtcharts
+          setup-python: true
+
+      - name: Install build tools
+        run: choco install nsis -y --no-progress
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+          -DCMAKE_PREFIX_PATH="${{ steps.install-qt.outputs.qtPath }}"
+
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+      - name: Stage Windows deployment
+        run: |
+          $buildDir = Join-Path $env:GITHUB_WORKSPACE "build"
+          $deployDir = Join-Path $buildDir "deploy"
+          $releaseDir = Join-Path $buildDir "${{ env.BUILD_TYPE }}"
+          $sourceExe = Join-Path $releaseDir "QOpenHDApp.exe"
+          $targetExe = Join-Path $deployDir "QOpenHD.exe"
+          $windeployqt = Join-Path "${{ steps.install-qt.outputs.qtPath }}" "bin\windeployqt.exe"
+
+          if (!(Test-Path -LiteralPath $sourceExe -PathType Leaf)) {
+            throw "Missing built executable: $sourceExe"
+          }
+
+          New-Item -ItemType Directory -Path $deployDir -Force | Out-Null
+          Copy-Item -LiteralPath $sourceExe -Destination $targetExe -Force
+
+          & $windeployqt `
+            --release `
+            --qmldir (Join-Path $env:GITHUB_WORKSPACE "qml") `
+            $targetExe
+
+      - name: Build NSIS installer
+        run: |
+          $buildDir = Join-Path $env:GITHUB_WORKSPACE "build"
+          $deployDir = Join-Path $buildDir "deploy"
+          $installer = Join-Path $buildDir "QOpenHD-Windows-Installer.exe"
+          $script = Join-Path $env:GITHUB_WORKSPACE "tools\qopenhd_installer.nsi"
+          $makensis = Join-Path ${env:ProgramFiles(x86)} "NSIS\makensis.exe"
+
+          if (!(Test-Path -LiteralPath $makensis -PathType Leaf)) {
+            $makensis = "makensis"
+          }
+
+          & $makensis `
+            "/DDESTDIR=$deployDir" `
+            "/DOUTFILE=$installer" `
+            $script
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: QOpenHD-Windows-Installer
+          path: build/QOpenHD-Windows-Installer.exe
