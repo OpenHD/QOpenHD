@@ -19,13 +19,17 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetActionWidth: 620
-    widgetActionHeight: 690
+    widgetActionHeight: 760
 
     property int selectedCamera: 0
     property var selectedModel: selectedCamera === 0 ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
     property var selectedSettingsModel: selectedCamera === 0 ? _airCameraSettingsModel : _airCameraSettingsModel2
     property int requestedMbits: 10
+    property int requestedQpMin: 5
+    property int requestedQpMax: 51
     property double userEditingUntilMs: 0
+    property double qpEditingUntilMs: 0
+    property int selectedSettingsUpdateCount: selectedSettingsModel.update_count
     property int maxSamples: 90
     property var measuredHistory: []
     property var injectedHistory: []
@@ -43,8 +47,38 @@ BaseWidget {
         requestedMbits = currentSetMbits();
     }
 
+    function qpControlsAvailable() {
+        return selectedSettingsModel.param_int_exists("QP_MIN") && selectedSettingsModel.param_int_exists("QP_MAX");
+    }
+
+    function currentQpMin() {
+        if (!qpControlsAvailable()) {
+            return requestedQpMin;
+        }
+        return Math.max(0, Math.min(51, selectedSettingsModel.get_cached_int("QP_MIN")));
+    }
+
+    function currentQpMax() {
+        if (!qpControlsAvailable()) {
+            return requestedQpMax;
+        }
+        return Math.max(0, Math.min(51, selectedSettingsModel.get_cached_int("QP_MAX")));
+    }
+
+    function syncRequestedQp() {
+        if (!qpControlsAvailable()) {
+            return;
+        }
+        requestedQpMin = currentQpMin();
+        requestedQpMax = Math.max(requestedQpMin, currentQpMax());
+    }
+
     function markUserEditing() {
         userEditingUntilMs = Date.now() + 5000;
+    }
+
+    function markQpEditing() {
+        qpEditingUntilMs = Date.now() + 5000;
     }
 
     function resetGraph() {
@@ -138,6 +172,16 @@ BaseWidget {
         requestedMbits = Math.max(1, Math.min(50, requestedMbits + delta));
     }
 
+    function changeRequestedQpMin(delta) {
+        markQpEditing();
+        requestedQpMin = Math.max(0, Math.min(requestedQpMax, requestedQpMin + delta));
+    }
+
+    function changeRequestedQpMax(delta) {
+        markQpEditing();
+        requestedQpMax = Math.max(requestedQpMin, Math.min(51, requestedQpMax + delta));
+    }
+
     function applyRequestedBitrate() {
         var camName = selectedCamera === 0 ? qsTr("CAM1") : qsTr("CAM2");
         if (!_ohdSystemAir.is_alive) {
@@ -153,14 +197,54 @@ BaseWidget {
         }
     }
 
+    function applyRequestedQp() {
+        var camName = selectedCamera === 0 ? qsTr("CAM1") : qsTr("CAM2");
+        if (!_ohdSystemAir.is_alive) {
+            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("Air unit not alive, cannot set %1 QP").arg(camName));
+            return;
+        }
+        if (!qpControlsAvailable()) {
+            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("%1 QP parameters not available").arg(camName));
+            return;
+        }
+        if (requestedQpMin > requestedQpMax) {
+            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("QP min must be <= QP max"));
+            return;
+        }
+        var currentMin = currentQpMin();
+        var firstParam = requestedQpMax < currentMin ? "QP_MIN" : "QP_MAX";
+        var secondParam = firstParam === "QP_MIN" ? "QP_MAX" : "QP_MIN";
+        var firstValue = firstParam === "QP_MIN" ? requestedQpMin : requestedQpMax;
+        var secondValue = secondParam === "QP_MIN" ? requestedQpMin : requestedQpMax;
+        var result = selectedSettingsModel.try_update_parameter_int(firstParam, firstValue);
+        if (result === "") {
+            result = selectedSettingsModel.try_update_parameter_int(secondParam, secondValue);
+        }
+        if (result === "") {
+            _hudLogMessagesModel.signalAddLogMessage(6, qsTr("%1 QP set to %2-%3").arg(camName).arg(requestedQpMin).arg(requestedQpMax));
+            qpEditingUntilMs = 0;
+        } else {
+            _hudLogMessagesModel.signalAddLogMessage(4, result);
+        }
+    }
+
     onSelectedCameraChanged: {
         userEditingUntilMs = 0;
+        qpEditingUntilMs = 0;
         syncRequestedMbits();
+        syncRequestedQp();
         resetGraph();
+    }
+
+    onSelectedSettingsUpdateCountChanged: {
+        if (Date.now() > qpEditingUntilMs) {
+            syncRequestedQp();
+        }
     }
 
     Component.onCompleted: {
         syncRequestedMbits();
+        syncRequestedQp();
         sampleBitrates();
     }
 
@@ -172,6 +256,9 @@ BaseWidget {
             sampleBitrates();
             if (!bitrateSlider.pressed && Date.now() > userEditingUntilMs) {
                 syncRequestedMbits();
+            }
+            if (!qpMinSlider.pressed && !qpMaxSlider.pressed && Date.now() > qpEditingUntilMs) {
+                syncRequestedQp();
             }
         }
     }
@@ -240,6 +327,14 @@ BaseWidget {
                 Text {
                     text: selectedModel.supports_variable_bitrate ? qsTr("yes") : qsTr("no")
                     color: selectedModel.supports_variable_bitrate ? "#ff05ff00" : "yellow"
+                    font.pixelSize: 13
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                }
+                Text { text: qsTr("QP limits"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text {
+                    text: qpControlsAvailable() ? qsTr("%1-%2").arg(currentQpMin()).arg(currentQpMax()) : qsTr("N/A")
+                    color: settings.color_text
                     font.pixelSize: 13
                     Layout.fillWidth: true
                     elide: Text.ElideRight
@@ -318,6 +413,109 @@ BaseWidget {
                         text: qsTr("SET")
                         enabled: !selectedSettingsModel.ui_is_busy
                         onClicked: applyRequestedBitrate()
+                        Layout.preferredWidth: 96
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: "#5533cc66"
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 4
+                enabled: qpControlsAvailable()
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: qsTr("QP min")
+                        color: settings.color_text
+                        font.pixelSize: 13
+                        Layout.preferredWidth: 58
+                        elide: Text.ElideRight
+                    }
+                    Button {
+                        text: "-"
+                        onClicked: changeRequestedQpMin(-1)
+                        Layout.preferredWidth: 42
+                    }
+                    Slider {
+                        id: qpMinSlider
+                        from: 0
+                        to: requestedQpMax
+                        stepSize: 1
+                        value: requestedQpMin
+                        snapMode: Slider.SnapAlways
+                        onMoved: {
+                            markQpEditing();
+                            requestedQpMin = Math.max(0, Math.min(requestedQpMax, Math.round(value)));
+                        }
+                        Layout.fillWidth: true
+                    }
+                    Button {
+                        text: "+"
+                        onClicked: changeRequestedQpMin(1)
+                        Layout.preferredWidth: 42
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: qsTr("QP max")
+                        color: settings.color_text
+                        font.pixelSize: 13
+                        Layout.preferredWidth: 58
+                        elide: Text.ElideRight
+                    }
+                    Button {
+                        text: "-"
+                        onClicked: changeRequestedQpMax(-1)
+                        Layout.preferredWidth: 42
+                    }
+                    Slider {
+                        id: qpMaxSlider
+                        from: requestedQpMin
+                        to: 51
+                        stepSize: 1
+                        value: requestedQpMax
+                        snapMode: Slider.SnapAlways
+                        onMoved: {
+                            markQpEditing();
+                            requestedQpMax = Math.max(requestedQpMin, Math.min(51, Math.round(value)));
+                        }
+                        Layout.fillWidth: true
+                    }
+                    Button {
+                        text: "+"
+                        onClicked: changeRequestedQpMax(1)
+                        Layout.preferredWidth: 42
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    Text {
+                        text: qpControlsAvailable() ? qsTr("Selected QP: %1-%2").arg(requestedQpMin).arg(requestedQpMax) : qsTr("QP params unavailable")
+                        color: settings.color_text
+                        font.pixelSize: 13
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                    }
+                    Button {
+                        text: qsTr("SET")
+                        enabled: qpControlsAvailable() && !selectedSettingsModel.ui_is_busy
+                        onClicked: applyRequestedQp()
                         Layout.preferredWidth: 96
                     }
                 }
