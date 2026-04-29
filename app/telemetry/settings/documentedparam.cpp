@@ -640,6 +640,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                        "Keyframe / instantaneous decode refresh interval, in frames. E.g. if set to 15, every 15th frame will be a key frame. Higher values result in better image compression, but increase the likeliness of microfreezes."
                        );
         }
+        append_int(ret,"QP_PID_ENABLE",
+                   ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable experimental runtime QP limit control. When enabled, OpenHD compares measured encoder bitrate against the current target bitrate and adjusts live QP min/max to reduce bitrate over/undershoot. Off by default."
+                   );
         append_int(ret,"FORCE_SW_ENC",
                    ImprovedIntSetting::createEnumEnableDisable(),
                    "Force SW encode for the given camera, only enable if your camera supports outputting an appropriate raw format."

@@ -30,6 +30,10 @@ BaseWidget {
     property double userEditingUntilMs: 0
     property double qpEditingUntilMs: 0
     property int selectedSettingsUpdateCount: selectedSettingsModel.update_count
+    property bool selectedSettingsHasParamsFetched: selectedSettingsModel.has_params_fetched
+    property bool qpParamsAvailable: false
+    property int qpParamsAvailabilityUpdateCount: -1
+    property int qpParamsAvailabilityCamera: -1
     property int maxSamples: 90
     property var measuredHistory: []
     property var injectedHistory: []
@@ -48,7 +52,21 @@ BaseWidget {
     }
 
     function qpControlsAvailable() {
-        return selectedSettingsModel.param_int_exists("QP_MIN") && selectedSettingsModel.param_int_exists("QP_MAX");
+        return qpParamsAvailable;
+    }
+
+    function refreshQpControlsAvailable(force) {
+        var updateCount = selectedSettingsModel.update_count;
+        if (!force && qpParamsAvailabilityCamera === selectedCamera && qpParamsAvailabilityUpdateCount === updateCount) {
+            return;
+        }
+        qpParamsAvailabilityCamera = selectedCamera;
+        qpParamsAvailabilityUpdateCount = updateCount;
+        if (!selectedSettingsModel.has_params_fetched) {
+            qpParamsAvailable = false;
+            return;
+        }
+        qpParamsAvailable = selectedSettingsModel.param_int_exists("QP_MIN") && selectedSettingsModel.param_int_exists("QP_MAX");
     }
 
     function currentQpMin() {
@@ -231,18 +249,28 @@ BaseWidget {
     onSelectedCameraChanged: {
         userEditingUntilMs = 0;
         qpEditingUntilMs = 0;
+        refreshQpControlsAvailable(true);
         syncRequestedMbits();
         syncRequestedQp();
         resetGraph();
     }
 
     onSelectedSettingsUpdateCountChanged: {
+        refreshQpControlsAvailable(false);
+        if (Date.now() > qpEditingUntilMs) {
+            syncRequestedQp();
+        }
+    }
+
+    onSelectedSettingsHasParamsFetchedChanged: {
+        refreshQpControlsAvailable(true);
         if (Date.now() > qpEditingUntilMs) {
             syncRequestedQp();
         }
     }
 
     Component.onCompleted: {
+        refreshQpControlsAvailable(true);
         syncRequestedMbits();
         syncRequestedQp();
         sampleBitrates();
