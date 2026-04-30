@@ -7,6 +7,7 @@ on:
       - "dev-release"
       - "release"
       - "rapha-dev"
+      - "openhd-3.0"
 
 jobs:
   build:
@@ -14,6 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      OPENHD_SUBMODULE_TOKEN: ${{ secrets.OPENHD_SUBMODULE_TOKEN }}
     steps:
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
@@ -29,16 +31,33 @@ jobs:
           echo "DT=$(date +'%Y-%m-%d_%H%M')" >> $GITHUB_ENV
           echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV    
              
-      - name: Checkout repository and submodules
+      - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          submodules: recursive
+          fetch-depth: 0
+          submodules: false
+          persist-credentials: false
+          token: ${{ secrets.OPENHD_SUBMODULE_TOKEN }}
+      - name: Download submodules with private token
+        run: |
+          if [ -z "${OPENHD_SUBMODULE_TOKEN}" ]; then
+            echo "OPENHD_SUBMODULE_TOKEN is required for recursive submodules"
+            exit 1
+          fi
+          cleanup_git_auth() {
+            git config --global --unset-all url."https://x-access-token:${OPENHD_SUBMODULE_TOKEN}@github.com/".insteadOf || true
+          }
+          trap cleanup_git_auth EXIT
+          git config --global url."https://x-access-token:${OPENHD_SUBMODULE_TOKEN}@github.com/".insteadOf "https://github.com/"
+          git submodule sync --recursive
+          git submodule update --init --recursive
+          git submodule status --recursive
       - name: Building QOpenHD in CHROOT
         run: |
           git clone https://github.com/OpenHD/OpenHD-ChrootCompiler /opt/OpenHD-ChrootCompiler
           mkdir -p /opt/OpenHD-ChrootCompiler/additionalFiles
-          git clone https://github.com/OpenHD/QOpenHD -b ${{ github.ref_name }} /opt/OpenHD-ChrootCompiler/additionalFiles/ --recursive
-          echo $CLOUDSMITH_API_KEY > /opt/OpenHD-ChrootCompiler/additionalFiles/cloudsmith_api_key.txt
+          cp -a "$GITHUB_WORKSPACE/." /opt/OpenHD-ChrootCompiler/additionalFiles/
+          printf '%s\n' "$CLOUDSMITH_API_KEY" > /opt/OpenHD-ChrootCompiler/additionalFiles/cloudsmith_api_key.txt
           echo "standard" > /opt/OpenHD-ChrootCompiler/additionalFiles/custom.txt
           echo "arm64" > /opt/OpenHD-ChrootCompiler/additionalFiles/arch.txt
           echo "debian" > /opt/OpenHD-ChrootCompiler/additionalFiles/distro.txt
@@ -48,6 +67,22 @@ jobs:
           cd /opt/OpenHD-ChrootCompiler/
           sudo apt update
           sudo bash install_dep.sh
+          python3 - <<'PY'
+          from pathlib import Path
+
+          build_sh = Path("/opt/OpenHD-ChrootCompiler/build.sh")
+          text = build_sh.read_text()
+          needle = "mv OpenHD-ImageBuilder/stages/01-Baseimage stages/\n"
+          patch = (
+              needle
+              + "sed -i 's/WANTEDSIZE=\"6800000000\"/WANTEDSIZE=\"15000000000\"/' stages/01-Baseimage/01-run.sh\n"
+          )
+          if "WANTEDSIZE=\"15000000000\"" not in text:
+              if needle not in text:
+                  raise SystemExit("Could not find ImageBuilder stage import in build.sh")
+              text = text.replace(needle, patch, 1)
+              build_sh.write_text(text)
+          PY
           sudo bash build.sh rock5b $API_KEY debian bullseye
     
       - name: debug
