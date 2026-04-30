@@ -642,7 +642,11 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         }
         append_int(ret,"QP_PID_ENABLE",
                    ImprovedIntSetting::createEnumEnableDisable(),
-                   "Enable experimental runtime QP limit control. When enabled, OpenHD compares measured encoder bitrate against the current target bitrate and adjusts live QP min/max to reduce bitrate over/undershoot. Off by default."
+                   "Enable experimental runtime QP limit PID control. OpenHD compares measured encoder bitrate against the current target bitrate and adjusts live QP min/max to reduce bitrate over/undershoot. Off by default."
+                   );
+        append_int(ret,"RK_BITRATE_PID",
+                   ImprovedIntSetting::createEnumEnableDisable(),
+                   "Enable experimental RK3566/RK3588 MPP VBR bitrate PID control. OpenHD compares measured encoder bitrate against the current target bitrate and adjusts live encoder bps/bps-min/bps-max. On by default for RK3566/RK3588 testing."
                    );
         append_int(ret,"FORCE_SW_ENC",
                    ImprovedIntSetting::createEnumEnableDisable(),

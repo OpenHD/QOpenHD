@@ -32,6 +32,8 @@ BaseWidget {
     property int selectedSettingsUpdateCount: selectedSettingsModel.update_count
     property bool selectedSettingsHasParamsFetched: selectedSettingsModel.has_params_fetched
     property bool qpParamsAvailable: false
+    property bool qpPidParamAvailable: false
+    property bool rkBitratePidParamAvailable: false
     property int qpParamsAvailabilityUpdateCount: -1
     property int qpParamsAvailabilityCamera: -1
     property int maxSamples: 90
@@ -64,9 +66,13 @@ BaseWidget {
         qpParamsAvailabilityUpdateCount = updateCount;
         if (!selectedSettingsModel.has_params_fetched) {
             qpParamsAvailable = false;
+            qpPidParamAvailable = false;
+            rkBitratePidParamAvailable = false;
             return;
         }
         qpParamsAvailable = selectedSettingsModel.param_int_exists("QP_MIN") && selectedSettingsModel.param_int_exists("QP_MAX");
+        qpPidParamAvailable = selectedSettingsModel.param_int_exists("QP_PID_ENABLE");
+        rkBitratePidParamAvailable = selectedSettingsModel.param_int_exists("RK_BITRATE_PID");
     }
 
     function currentQpMin() {
@@ -241,6 +247,29 @@ BaseWidget {
         if (result === "") {
             _hudLogMessagesModel.signalAddLogMessage(6, qsTr("%1 QP set to %2-%3").arg(camName).arg(requestedQpMin).arg(requestedQpMax));
             qpEditingUntilMs = 0;
+        } else {
+            _hudLogMessagesModel.signalAddLogMessage(4, result);
+        }
+    }
+
+    function intParamEnabled(paramName, available) {
+        return available && selectedSettingsModel.get_cached_int(paramName) !== 0;
+    }
+
+    function toggleIntParam(paramName, available, label) {
+        var camName = selectedCamera === 0 ? qsTr("CAM1") : qsTr("CAM2");
+        if (!_ohdSystemAir.is_alive) {
+            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("Air unit not alive, cannot set %1 %2").arg(camName).arg(label));
+            return;
+        }
+        if (!available) {
+            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("%1 %2 parameter not available").arg(camName).arg(label));
+            return;
+        }
+        var newValue = intParamEnabled(paramName, available) ? 0 : 1;
+        var result = selectedSettingsModel.try_update_parameter_int(paramName, newValue);
+        if (result === "") {
+            _hudLogMessagesModel.signalAddLogMessage(6, qsTr("%1 %2 %3").arg(camName).arg(label).arg(newValue === 0 ? qsTr("disabled") : qsTr("enabled")));
         } else {
             _hudLogMessagesModel.signalAddLogMessage(4, result);
         }
@@ -546,6 +575,37 @@ BaseWidget {
                         onClicked: applyRequestedQp()
                         Layout.preferredWidth: 96
                     }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 6
+                visible: qpPidParamAvailable || rkBitratePidParamAvailable
+
+                Text {
+                    text: qsTr("PID")
+                    color: settings.color_text
+                    font.pixelSize: 13
+                    Layout.preferredWidth: 58
+                    elide: Text.ElideRight
+                }
+                Button {
+                    visible: qpPidParamAvailable
+                    text: intParamEnabled("QP_PID_ENABLE", qpPidParamAvailable) ? qsTr("QP PID ON") : qsTr("QP PID OFF")
+                    enabled: !selectedSettingsModel.ui_is_busy
+                    onClicked: toggleIntParam("QP_PID_ENABLE", qpPidParamAvailable, qsTr("QP PID"))
+                    Layout.preferredWidth: visible ? 118 : 0
+                }
+                Button {
+                    visible: rkBitratePidParamAvailable
+                    text: intParamEnabled("RK_BITRATE_PID", rkBitratePidParamAvailable) ? qsTr("RK PID ON") : qsTr("RK PID OFF")
+                    enabled: !selectedSettingsModel.ui_is_busy
+                    onClicked: toggleIntParam("RK_BITRATE_PID", rkBitratePidParamAvailable, qsTr("RK PID"))
+                    Layout.preferredWidth: visible ? 118 : 0
+                }
+                Item {
+                    Layout.fillWidth: true
                 }
             }
 
