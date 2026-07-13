@@ -218,114 +218,114 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="80"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="84"/>
         <source>Restart local OHD service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="87"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="91"/>
         <source>Show local IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="95"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="99"/>
         <source>Write GND log to SD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="103"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="107"/>
         <source>Write AIR log to SD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="105"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="109"/>
         <source>Not implemented yet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="110"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="114"/>
         <source>Set Tele rates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="117"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="121"/>
         <source>Start OpenHD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="124"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="128"/>
         <source>Stop OpenHD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="131"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="135"/>
         <source>Enable OpenHD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="138"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="142"/>
         <source>Disable OpenHD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="145"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="149"/>
         <source>Self Destruct</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="147"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="151"/>
         <source>just kidding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="152"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="156"/>
         <source>Restart QOpenHD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="159"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="163"/>
         <source>Cancel QOpenHD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="196"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="200"/>
         <source>Show Air Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="198"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="202"/>
         <source>Air</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="203"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="207"/>
         <source>Show Ground Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="205"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="209"/>
         <source>Ground</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="210"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="214"/>
         <source>Show Mavlink Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="212"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="216"/>
         <source>Mavlink</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="228"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="232"/>
         <source>%1 System Information:
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="235"/>
+        <location filename="../qml/ui/configpopup/dev/AppDeveloperStatsPanel.qml" line="239"/>
         <source>%1 System Information unavailable.
 </source>
         <translation type="unfinished"></translation>
@@ -342,57 +342,82 @@
 <context>
     <name>AppScreenSettingsView</name>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="144"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="181"/>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="207"/>
         <source>0°</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="145"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="208"/>
         <source>90° (WARNING)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="146"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="209"/>
         <source>180°</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="147"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="210"/>
         <source>270° (WARNING)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="252"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="281"/>
+        <source>0 (uncapped)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="282"/>
+        <source>30 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="283"/>
+        <source>60 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="284"/>
+        <source>120 fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="350"/>
         <source>-1 Disable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="253"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="351"/>
         <source>0 Auto (Recommended)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="254"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="352"/>
         <source>50 (ultra small)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="255"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="353"/>
         <source>72 (smaller)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="256"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="354"/>
         <source>100</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="257"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="355"/>
         <source>120 (bigger)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="258"/>
+        <location filename="../qml/ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml" line="356"/>
         <source>150 (ultra big)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3128,26 +3153,36 @@ IF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW</source>
     </message>
     <message>
         <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="43"/>
-        <source>All 5.8G channels</source>
+        <source>All 5GHz channels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="60"/>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="44"/>
+        <source>5.2GHz Lower only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="45"/>
+        <source>5.8GHz Upper only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="62"/>
         <source>START</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="68"/>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="70"/>
         <source>Channel scan started, please wait</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="71"/>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="73"/>
         <source>Busy,please try again later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="92"/>
+        <location filename="../qml/ui/configpopup/openhd_settings/PopupScanChannels.qml" line="94"/>
         <source>Initiate Channel Scan (Find a running air unit). Similar to analogue TX / RX, this listens on each channel for a short time to find a running openhd air unit. Quick if you are only using the 5 OpenHD recommended channels, otherwise please specify the generic band and give it some time (There are a ton of possible channels, especially in 5.8G)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3675,77 +3710,97 @@ IF YOU ENABLE STBC / LDPC ON UNSUPPORTED HW</source>
 <context>
     <name>QRenderStatsWidget</name>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="62"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="63"/>
         <source>QT FT:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="85"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="86"/>
         <source>QT RP:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="108"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="109"/>
         <source>D:R:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="130"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="131"/>
         <source>Parse&amp;EnqT:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="152"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="153"/>
         <source>DecT:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="174"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="175"/>
         <source>DecRT:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="196"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="197"/>
         <source>Doing wait_for_frame_decode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="218"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="219"/>
         <source>Format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="240"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="241"/>
         <source>Decoding type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="262"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="263"/>
         <source>Rtp parse n gaps:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="284"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="285"/>
         <source>RTP QOHD measured:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="306"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="307"/>
         <source>estimate fps:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="328"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="329"/>
         <source>estimate keyframe i:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="350"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="351"/>
         <source>decode dropped:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="383"/>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="378"/>
+        <source>Screen:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="400"/>
+        <source>Display:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="422"/>
+        <source>Screen FPS:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="444"/>
+        <source>Video FPS:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/QRenderStatsWidget.qml" line="477"/>
         <source>QRS</source>
         <translation type="unfinished"></translation>
     </message>

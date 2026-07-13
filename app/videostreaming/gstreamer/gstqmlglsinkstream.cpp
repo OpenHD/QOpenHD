@@ -109,11 +109,19 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
 
     //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
     if(false){
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        ss<<"nvvidconv ! glupload  ! qml6glsink name=qmlglsink sync=false";
+#else
         ss<<"nvvidconv ! glupload  ! qmlglsink name=qmlglsink sync=false";
+#endif
     }else{
         ss << " queue ! ";
         ss << " glupload ! glcolorconvert !";
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        ss << " qml6glsink name=qmlglsink sync=false";
+#else
         ss << " qmlglsink name=qmlglsink sync=false";
+#endif
     }
     return ss.str();
 }

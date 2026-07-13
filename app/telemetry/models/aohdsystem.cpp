@@ -85,7 +85,11 @@ AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
 {
     m_alive_timer = std::make_unique<QTimer>(this);
     QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &AOHDSystem::update_alive);
-    m_alive_timer->start(1000);
+    if (QCoreApplication::instance()) {
+        m_alive_timer->start(1000);
+    } else {
+        qDebug() << "AOHDSystem: No QCoreApplication instance, deferring timer start";
+    }
 }
 
 AOHDSystem &AOHDSystem::instanceAir()
@@ -108,6 +112,10 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
     }
     autofech_params_if_apropriate();
     m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    if (!m_is_alive) {
+        // If we were not alive, update status immediately to make UI responsive
+        update_alive();
+    }
     bool consumed=false;
     switch(msg.msgid){
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{

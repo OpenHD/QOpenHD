@@ -17,7 +17,7 @@ static std::string wifi_card_type_to_string(const int card_type) {
     case 3:
         return "88X2EU";
     case 4:
-        return "OPENHD_8852BU";
+        return "OPENHD_8814AU";
     case 5:
         return "ERR_88X2AU";
     case 6:
@@ -33,8 +33,12 @@ static std::string wifi_card_type_to_string(const int card_type) {
     case 11:
         return "BROADCOM";
     case 12:
-        return "INTERNAL";
+        return "OPENHD_8852BU";
     case 13:
+        return "OPENHD_EMULATED";
+    case 14:
+        return "AIC";
+    case 15:
         return "QUALCOMM";
     default:
         return "UNKNOWN";
