@@ -15,7 +15,9 @@ static constexpr int X_PLATFORM_TYPE_X86 = 1;
 static constexpr int X_PLATFORM_TYPE_RPI_OLD = 10;
 static constexpr int X_PLATFORM_TYPE_RPI_4 = 11;
 static constexpr int X_PLATFORM_TYPE_RPI_CM4 = 12;
-static constexpr int X_PLATFORM_TYPE_RPI_5 = 12;
+static constexpr int X_PLATFORM_TYPE_RPI_5 = 13;
+static_assert(X_PLATFORM_TYPE_RPI_CM4 != X_PLATFORM_TYPE_RPI_5,
+              "Raspberry Pi platform ids must be unique");
 
 // Numbers 20..30 are reserved for rockchip
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W = 20;
@@ -27,6 +29,7 @@ static constexpr int X_PLATFORM_TYPE_LUCKFOX_RV110X = 25;
 // 26 used to be X_PLATFORM_TYPE_ROCKCHIP_RV1103, merged with
 // X_PLATFORM_TYPE_LUCKFOX_RV110X now
 static constexpr int X_PLATFORM_TYPE_LUCKFOX_LYRA = 27;
+static constexpr int X_PLATFORM_TYPE_OPENHD_X21 = 28;
 
 // Numbers 30..35 are reserved for allwinner
 static constexpr int X_PLATFORM_TYPE_ALWINNER_X20 = 30;
@@ -60,6 +63,8 @@ static std::string x_platform_type_to_string(int platform_type) {
       return "RPI<=3";
     case X_PLATFORM_TYPE_RPI_4:
       return "RPI 4";
+    case X_PLATFORM_TYPE_RPI_CM4:
+      return "RPI CM4";
     case X_PLATFORM_TYPE_RPI_5:
       return "RPI 5";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W:
@@ -74,6 +79,8 @@ static std::string x_platform_type_to_string(int platform_type) {
       return "RV1126";
     case X_PLATFORM_TYPE_LUCKFOX_RV110X:
       return "RV110X";
+    case X_PLATFORM_TYPE_OPENHD_X21:
+      return "X21/RV1126(B)";
     case X_PLATFORM_TYPE_ORQA:
       return "ORQA";
     case X_PLATFORM_TYPE_UVX_MOD:

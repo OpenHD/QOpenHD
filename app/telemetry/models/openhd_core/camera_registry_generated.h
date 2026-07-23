@@ -75,6 +75,8 @@ static constexpr int X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2 = 125;
 static constexpr int X_CAM_TYPE_NXP_IMX8_V4L2 = 130;
 static constexpr int X_CAM_TYPE_NXP_IMX8_OS08A20 = 131;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV110X = 140;
+static constexpr int X_CAM_TYPE_ROCKCHIP_RV1126_CSI = 141;
+static constexpr int X_CAM_TYPE_ROCKCHIP_RV1126_TEST = 142;
 static constexpr int X_CAM_TYPE_DISABLED = 255;
 
 struct CameraTypeNameEntry {
@@ -149,6 +151,8 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {130, "NXP_IMX8_V4L2"},
   {131, "NXP_IMX8_OS08A20"},
   {140, "LUCKFOX_MIS5001"},
+  {141, "RV1126B_CSI"},
+  {142, "RV1126B_TEST"},
   {255, "DISABLED"},
 };
 
@@ -531,6 +535,19 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X[]
   {1280, 720, 60},
 };
 
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI[] = {
+  {1280, 720, 60},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST[] = {
+  {3840, 2160, 30},
+  {1920, 1080, 120},
+  {1920, 1080, 60},
+  {1280, 720, 240},
+  {1280, 720, 120},
+  {1280, 720, 60},
+};
+
 inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_DUMMY_SW, kCameraResolutions_X_CAM_TYPE_DUMMY_SW, sizeof(kCameraResolutions_X_CAM_TYPE_DUMMY_SW) / sizeof(kCameraResolutions_X_CAM_TYPE_DUMMY_SW[0])},
   {X_CAM_TYPE_DEVELOPMENT_FILESRC, kCameraResolutions_X_CAM_TYPE_DEVELOPMENT_FILESRC, sizeof(kCameraResolutions_X_CAM_TYPE_DEVELOPMENT_FILESRC) / sizeof(kCameraResolutions_X_CAM_TYPE_DEVELOPMENT_FILESRC[0])},
@@ -593,6 +610,8 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_NXP_IMX8_V4L2, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2[0])},
   {X_CAM_TYPE_NXP_IMX8_OS08A20, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20[0])},
   {X_CAM_TYPE_ROCKCHIP_RV110X, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X[0])},
+  {X_CAM_TYPE_ROCKCHIP_RV1126_CSI, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI[0])},
+  {X_CAM_TYPE_ROCKCHIP_RV1126_TEST, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST[0])},
 };
 
 inline const CameraResolutionEntry* find_camera_resolutions(int camera_type) {
@@ -755,6 +774,18 @@ inline constexpr CameraUiEntry kManufacturer_LUCKFOX_Cameras[] = {
 
 inline constexpr ManufacturerEntry kManufacturer_LUCKFOX = {"LUCKFOX", kManufacturer_LUCKFOX_Cameras, sizeof(kManufacturer_LUCKFOX_Cameras) / sizeof(kManufacturer_LUCKFOX_Cameras[0])};
 
+inline constexpr CameraUiEntry kManufacturer_ROCKCHIP_RV1126_CSI_Cameras[] = {
+  {X_CAM_TYPE_ROCKCHIP_RV1126_CSI, "RV1126B CSI"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_ROCKCHIP_RV1126_CSI = {"ROCKCHIP_RV1126_CSI", kManufacturer_ROCKCHIP_RV1126_CSI_Cameras, sizeof(kManufacturer_ROCKCHIP_RV1126_CSI_Cameras) / sizeof(kManufacturer_ROCKCHIP_RV1126_CSI_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_ROCKCHIP_RV1126_TEST_Cameras[] = {
+  {X_CAM_TYPE_ROCKCHIP_RV1126_TEST, "RV1126B TEST"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_ROCKCHIP_RV1126_TEST = {"ROCKCHIP_RV1126_TEST", kManufacturer_ROCKCHIP_RV1126_TEST_Cameras, sizeof(kManufacturer_ROCKCHIP_RV1126_TEST_Cameras) / sizeof(kManufacturer_ROCKCHIP_RV1126_TEST_Cameras[0])};
+
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_OLD_Manufacturers[] = {
   kManufacturer_RPI_ARDUCAM,
   kManufacturer_RPI_VEYE,
@@ -778,6 +809,14 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_CM4_Manufacture
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
   kManufacturer_RPI_HDMI,
+  kManufacturer_USB,
+  kManufacturer_DEBUG,
+};
+
+inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_5_Manufacturers[] = {
+  kManufacturer_RPI_ARDUCAM,
+  kManufacturer_RPI_VEYE,
+  kManufacturer_RPI_RPIF,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
@@ -844,10 +883,16 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manu
   kManufacturer_LUCKFOX,
 };
 
+inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers[] = {
+  kManufacturer_ROCKCHIP_RV1126_CSI,
+  kManufacturer_ROCKCHIP_RV1126_TEST,
+};
+
 inline constexpr PlatformCameraChoicesEntry kPlatformCameraChoices[] = {
   {X_PLATFORM_TYPE_RPI_OLD, kPlatform_X_PLATFORM_TYPE_RPI_OLD_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_RPI_OLD_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_RPI_OLD_Manufacturers[0])},
   {X_PLATFORM_TYPE_RPI_4, kPlatform_X_PLATFORM_TYPE_RPI_4_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_RPI_4_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_RPI_4_Manufacturers[0])},
   {X_PLATFORM_TYPE_RPI_CM4, kPlatform_X_PLATFORM_TYPE_RPI_CM4_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_RPI_CM4_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_RPI_CM4_Manufacturers[0])},
+  {X_PLATFORM_TYPE_RPI_5, kPlatform_X_PLATFORM_TYPE_RPI_5_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_RPI_5_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_RPI_5_Manufacturers[0])},
   {X_PLATFORM_TYPE_ALWINNER_X20, kPlatform_X_PLATFORM_TYPE_ALWINNER_X20_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_X20_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_X20_Manufacturers[0])},
   {X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z, kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_Manufacturers[0])},
   {X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W, kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers[0])},
@@ -859,6 +904,7 @@ inline constexpr PlatformCameraChoicesEntry kPlatformCameraChoices[] = {
   {X_PLATFORM_TYPE_ORQA, kPlatform_X_PLATFORM_TYPE_ORQA_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ORQA_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ORQA_Manufacturers[0])},
   {X_PLATFORM_TYPE_NXP_IMX8, kPlatform_X_PLATFORM_TYPE_NXP_IMX8_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_NXP_IMX8_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_NXP_IMX8_Manufacturers[0])},
   {X_PLATFORM_TYPE_LUCKFOX_RV110X, kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manufacturers[0])},
+  {X_PLATFORM_TYPE_OPENHD_X21, kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers[0])},
 };
 
 inline constexpr ManufacturerEntry kSecondaryManufacturers[] = {
@@ -953,4 +999,6 @@ using openhd::camera_registry::X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2;
 using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_V4L2;
 using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_OS08A20;
 using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV110X;
+using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV1126_CSI;
+using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV1126_TEST;
 using openhd::camera_registry::X_CAM_TYPE_DISABLED;
