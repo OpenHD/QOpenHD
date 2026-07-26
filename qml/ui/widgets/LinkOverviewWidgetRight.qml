@@ -35,6 +35,8 @@ BaseWidget {
     property var m_camera_stream_model: _cameraStreamModelPrimary
     property bool m_camera_is_currently_recording: _cameraStreamModelPrimary.air_recording_active
     property int rc_rssi_percentage: _fcMavlinkSystem.rc_rssi_percentage
+    property bool airTemperatureWarningActive: _ohdSystemAir.is_alive
+                                               && _ohdSystemAir.curr_soc_temp_degree > 80
 
     property int rcBlockCount: 8
     property real rcBlockWidth: 12
@@ -396,6 +398,17 @@ BaseWidget {
             anchors.topMargin: 10
             height: 24
             spacing: 8
+
+            Text {
+                visible: airTemperatureWarningActive
+                text: "\uf071"
+                color: "#ffb000"
+                font.pixelSize: 16
+                font.family: "Font Awesome 5 Free"
+                verticalAlignment: Text.AlignVCenter
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
 
             Text {
                 text: get_frequency_text()
