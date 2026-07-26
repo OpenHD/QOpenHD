@@ -390,6 +390,21 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
+        Text {
+            visible: airTemperatureWarningActive
+            text: "\uf071"
+            color: "#ffb000"
+            font.pixelSize: 16
+            font.family: "Font Awesome 5 Free"
+            anchors.left: uplinkIcon.right
+            anchors.leftMargin: 4
+            anchors.top: uplinkIcon.top
+            height: uplinkIcon.height
+            verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
         Row {
             id: topRow
             anchors.right: infoArea.right
@@ -398,17 +413,6 @@ BaseWidget {
             anchors.topMargin: 10
             height: 24
             spacing: 8
-
-            Text {
-                visible: airTemperatureWarningActive
-                text: "\uf071"
-                color: "#ffb000"
-                font.pixelSize: 16
-                font.family: "Font Awesome 5 Free"
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }
 
             Text {
                 text: get_frequency_text()
