@@ -1,0 +1,59 @@
+name: build_package_rpi5_bookworm
+
+on:
+  push:
+    branches:
+      - "dev-release"
+      - "release"
+      - "openhd-3.0"
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Build arm64 Bookworm package
+        uses: pguyot/arm-runner-action@e1773de1ed6eb61848f5693de824d836f0b0ea25
+        with:
+          base_image: https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2025-05-13/2025-05-13-raspios-bookworm-arm64-lite.img.xz
+          cpu: cortex-a76
+          image_additional_mb: 5000
+          copy_repository_path: /opt
+          copy_artifact_path: QOpenHD
+          import_github_env: true
+          commands: |
+            cd /opt/QOpenHD
+            chown -R root:root /opt/QOpenHD
+            ./install_build_dep.sh rpi
+            ./package.sh standard arm64 raspbian bookworm
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: QOpenHD-RPi5-Bookworm-arm64
+          path: QOpenHD/qopenhd_*_arm64.deb
+          if-no-files-found: error
+
+      - name: Push package
+        if: github.ref_name == 'release' || github.ref_name == 'dev-release'
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: push
+          format: deb
+          owner: openhd
+          repo: ${{ github.ref_name }}
+          distro: raspbian
+          release: bookworm
+          republish: "true"
+          file: QOpenHD/qopenhd_*_arm64.deb

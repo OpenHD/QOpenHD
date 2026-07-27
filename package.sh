@@ -61,7 +61,8 @@ cp systemd/h264_decode.service /tmp/qopenhd/etc/systemd/system/ || exit 1
 cp systemd/h265_decode.service /tmp/qopenhd/etc/systemd/system/ || exit 1
 
 # copying services
-if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
+if [[ "${PACKAGE_ARCH}" = "armhf" ]] || \
+   [[ "${PACKAGE_ARCH}" = "arm64" && "${OS}" = "raspbian" ]]; then
 PACKAGE_NAME=qopenhd
 cp systemd/rpi_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
@@ -76,7 +77,8 @@ fi
 # The qt_eglfs_kms_config.json file makes sure that qopenhd runs at the res
 # specified in the config.txt if the user did so
 mkdir -p /tmp/qopenhd/usr/local/share/qopenhd/
-if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
+if [[ "${PACKAGE_ARCH}" = "armhf" ]] || \
+   [[ "${PACKAGE_ARCH}" = "arm64" && "${OS}" = "raspbian" ]]; then
 cp rpi_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
 cp rock_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
@@ -88,7 +90,8 @@ ls -a ${TMPDIR}/usr/local/bin
 echo "going into packaging stage"
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
-if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
+if [[ "${PACKAGE_ARCH}" = "armhf" ]] || \
+   [[ "${PACKAGE_ARCH}" = "arm64" && "${OS}" = "raspbian" ]]; then
     echo "raspberry pi"
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_VERSION_ARCH.deb \
