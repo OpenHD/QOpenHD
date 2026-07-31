@@ -9,6 +9,7 @@
 #include "action/fcmissionhandler.h"
 #include "action/impl/cmdsender.h"
 #include "action/fcmsgintervalhandler.h"
+#include "action/ohdaction.h"
 #include "action/impl/xparam.h"
 #include "util/qopenhd.h"
 
@@ -174,6 +175,9 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
     }
     if(CmdSender::instance().process_message(msg)){
         // Consumed, no further processing needed
+        return;
+    }
+    if(OHDAction::instance().process_message(msg)){
         return;
     }
     if(XParam::instance().process_message(msg)){

@@ -10,6 +10,32 @@ This note summarizes how third-party tools can re-use the same MAVLink profile Q
 ## F1 – Find AirUnit / Channel scan
 - Start a spectrum analyze pass by sending `OPENHD_CMD_INITIATE_CHANNEL_ANALYZE` to system 100 / component 191 with `param1` set to the frequency bands bitmask you want to inspect.【F:app/telemetry/action/ohdaction.cpp†L35-L44】
 - Start a channel search (auto-find the air unit) by sending `OPENHD_CMD_INITIATE_CHANNEL_SEARCH` with `param1` = frequency bands bitmask and `param2` = allowed channel widths bitmask.【F:app/telemetry/action/ohdaction.cpp†L46-L55】
+- Format a listed air-unit partition with the standard
+  `MAV_CMD_STORAGE_FORMAT` command, targeted at
+  `OHD_SYS_ID_AIR:MAV_COMP_ID_ONBOARD_COMPUTER`. Set `param1` (storage ID) to
+  the ID returned in `STORAGE_INFORMATION` and `param2` (format) to `1`.
+  Storage ID `1` remains reserved for the legacy `RECORDINGS`/`/Video`
+  partition when one exists. The air unit responds with
+  `COMMAND_ACK/MAV_RESULT_IN_PROGRESS`, then a terminal `COMMAND_ACK`; after
+  success it emits a refreshed storage inventory. Retransmissions
+  must retain the same source system/component IDs and should increment the
+  MAVLink `confirmation` field. OpenHD caches the terminal result briefly so a
+  lost acknowledgement cannot immediately start another format.
+- Refresh the safe air-storage inventory with `OPENHD_CMD_STORAGE_MANAGE`
+  (`11202`), setting `param1=1`. OpenHD responds with one
+  `STORAGE_INFORMATION` per sysutils-approved item. Names beginning with `D `
+  are whole disks and names beginning with `P ` are partitions. Capacity and
+  available space are in the standard MAVLink fields; the
+  `STORAGE_USAGE_FLAG_VIDEO` flag identifies the partition mounted at
+  `/Video`.
+- Repartition a listed whole disk with `OPENHD_CMD_STORAGE_MANAGE`,
+  `param1=2`, `param2=storage_id`, `param3=1`. Mount a listed formatted
+  partition for recording with `param1=3`, `param2=storage_id`, `param3=1`.
+  Both operations use progress and terminal `COMMAND_ACK` replies.
+
+Storage IDs are short-lived inventory handles. Refresh immediately before an
+operation. Sysutils revalidates every handle and never includes the disk
+containing the root filesystem.
 - Progress and results are streamed through the `openhd_wifbroadcast_*` messages (supported channels, analyze progress, scan progress). These are consumed in `WBLinkSettingsHelper` to rebuild UI state; external tools should watch the same messages to render progress and discovered channels.【F:app/telemetry/settings/wblinksettingshelper.cpp†L89-L181】
 
 ## F2 – Link
@@ -34,7 +60,9 @@ Most camera ISP controls are exposed as extended parameters. Values depend on th
 ## F5 – Recording
 - `AIR_RECORDING_E` controls air-side recording with enum values `DISABLE`, `ENABLE`, and `AUTO(armed)` to mirror the On/Off/Auto UI states.【F:app/telemetry/settings/documentedparam.cpp†L269-L273】
 - TODO: Expose a dedicated target selector that distinguishes Air vs. Goggles vs. Both. The current implementation only offers the air-unit flag above.
-- TODO: Surface a telemetry message for remaining recording space; QOpenHD does not currently export a volume indicator.
+- Remaining space for each safe air partition is carried in
+  `STORAGE_INFORMATION.available_capacity` and shown by QOpenHD's storage
+  manager.
 
 ## F6 – Stats (O)
 - TODO: Add a verbosity/diagnostic level parameter or message; no dedicated stats-verbosity field is published in the current tree.

@@ -107,6 +107,21 @@ CmdSender::Result CmdSender::send_command_long_blocking(const mavlink_command_lo
 
 bool CmdSender::handle_cmd_ack(const mavlink_command_ack_t &ack)
 {
+    if(ack.result==MAV_RESULT_IN_PROGRESS){
+        std::lock_guard<std::mutex> lock(m_mutex);
+        for(auto& running_command:m_running_commands){
+            if(running_command.cmd.command==ack.command){
+                // A progress ACK confirms that the remote side is still
+                // working. Keep polling, but do not exhaust retransmissions.
+                running_command.last_transmission=std::chrono::steady_clock::now();
+                running_command.n_transmissions=0;
+                qDebug()<<"Command in progress:"<<(int)ack.command
+                        <<"progress:"<<(int)ack.progress;
+                return true;
+            }
+        }
+        return false;
+    }
     // Optmization: Hold lock only when neccessary
     // We don't need to hold it while we call the result cb
     auto opt_running_command=find_remove_running_command_threadsafe(ack.command);
