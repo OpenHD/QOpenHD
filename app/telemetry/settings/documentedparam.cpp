@@ -590,6 +590,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
             append_string(ret,"RESOLUTION_FPS",ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate),
                           "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop");
         }
+        append_string(ret,"IP_CAM_PIPELINE",ImprovedStringSetting::createAnyValue(),
+                      "GStreamer source pipeline for an External IP camera. Use {IP} for IP_CAM_ADDRESS. It must output elementary H264/H265 matching VIDEO_CODEC; limited to 127 characters.");
+        append_string(ret,"IP_CAM_ADDRESS",ImprovedStringSetting::createAnyValue(),
+                      "IPv4 address of this IP camera. OpenHD adds a secondary local /24 address when required without replacing the normal Ethernet configuration.");
         append_int(ret,"VIDEO_CODEC",
                    //NOTE: MJPEG has been removed intentionally, since we are going to eventually remove support for it in
                    //favour of h264
@@ -658,6 +662,14 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_only_documented(ret,"V_PRIMARY_PERC",
                                "If Variable bitrate is enabled,your primary camera is given that much percentage of the total available link bandwidth. "
                                "The rest is given to the secondary camera. Default to 60% (60:40 split).");
+        append_int(ret,"V_IP_CAM_MBITS",
+                   ImprovedIntSetting(1,20,{
+                       ImprovedIntSetting::Item{"1 MBit/s",1},
+                       ImprovedIntSetting::Item{"2 MBit/s (default)",2},
+                       ImprovedIntSetting::Item{"3 MBit/s",3},
+                       ImprovedIntSetting::Item{"4 MBit/s",4}
+                   }),
+                   "Fixed link bitrate reserved for an IP camera in either slot. OpenHD cannot adjust the IP camera encoder: configure its own WebUI to stay at or below this value and keep it low.");
 
         append_int(ret,"ROTATION_FLIP",
                     ImprovedIntSetting(-1,2130706433,{
