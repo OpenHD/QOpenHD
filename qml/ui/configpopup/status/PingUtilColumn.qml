@@ -159,9 +159,9 @@ Item {
         contentItem: Label {
             width: 430
             wrapMode: Text.WordWrap
-            text: action === "mount"
-                  ? qsTr("Unmount the current recording partition and mount %1 at /Video? Stop recording first.").arg(storageDevice)
-                  : qsTr("This permanently deletes data on %1. Stop recording and verify the selected device carefully.").arg(storageDevice)
+            text: storageConfirmDialog.action === "mount"
+                  ? qsTr("Unmount the current recording partition and mount %1 at /Video? Stop recording first.").arg(storageConfirmDialog.storageDevice)
+                  : qsTr("This permanently deletes data on %1. Stop recording and verify the selected device carefully.").arg(storageConfirmDialog.storageDevice)
         }
     }
 

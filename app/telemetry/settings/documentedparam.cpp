@@ -591,7 +591,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                           "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop");
         }
         append_string(ret,"IP_CAM_PIPELINE",ImprovedStringSetting::createAnyValue(),
-                      "GStreamer source pipeline for an External IP camera. Use {IP} for IP_CAM_ADDRESS. It must output elementary H264/H265 matching VIDEO_CODEC; limited to 127 characters.");
+                      "GStreamer source pipeline for an IP camera. Use {IP} for IP_CAM_ADDRESS. It must output elementary H264/H265 matching VIDEO_CODEC; limited to 127 characters.");
         append_string(ret,"IP_CAM_ADDRESS",ImprovedStringSetting::createAnyValue(),
                       "IPv4 address of this IP camera. OpenHD adds a secondary local /24 address when required without replacing the normal Ethernet configuration.");
         append_int(ret,"VIDEO_CODEC",

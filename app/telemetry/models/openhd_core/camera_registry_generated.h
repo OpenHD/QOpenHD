@@ -87,7 +87,7 @@ struct CameraTypeNameEntry {
 inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {0, "DUMMY"},
   {2, "EXTERNAL"},
-  {3, "EXTERNAL_IP"},
+  {3, "IP_CAMERA"},
   {4, "DEV_FILESRC"},
   {10, "USB"},
   {11, "INFIRAY"},
@@ -623,6 +623,12 @@ inline const CameraResolutionEntry* find_camera_resolutions(int camera_type) {
   return nullptr;
 }
 
+inline constexpr CameraUiEntry kManufacturer_IP_CAMERA_Cameras[] = {
+  {X_CAM_TYPE_EXTERNAL_IP, "IP Camera"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_IP_CAMERA = {"IP CAMERA", kManufacturer_IP_CAMERA_Cameras, sizeof(kManufacturer_IP_CAMERA_Cameras) / sizeof(kManufacturer_IP_CAMERA_Cameras[0])};
+
 inline constexpr CameraUiEntry kManufacturer_USB_Cameras[] = {
   {X_CAM_TYPE_USB_INFIRAY, "INFIRAY USB"},
   {X_CAM_TYPE_USB_INFIRAY_T2, "INFIRAY USB T2"},
@@ -791,6 +797,7 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_OLD_Manufacture
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
   kManufacturer_RPI_HDMI,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
@@ -800,6 +807,7 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_4_Manufacturers
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
   kManufacturer_RPI_HDMI,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
@@ -809,6 +817,7 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_CM4_Manufacture
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
   kManufacturer_RPI_HDMI,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
@@ -817,6 +826,7 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_5_Manufacturers
   kManufacturer_RPI_ARDUCAM,
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
@@ -824,68 +834,80 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_5_Manufacturers
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ALWINNER_X20_Manufacturers[] = {
   kManufacturer_X20_HDZERO,
   kManufacturer_X20_RUNCAM,
+  kManufacturer_IP_CAMERA,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_Manufacturers[] = {
   kManufacturer_A733_ALLWINNER,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers[] = {
   kManufacturer_ROCK3_ARDUCAM,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3_Manufacturers[] = {
   kManufacturer_ROCK3_ARDUCAM,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A_Manufacturers[] = {
   kManufacturer_ROCK5_A_GENERIC,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B_Manufacturers[] = {
   kManufacturer_ROCK5_B_GENERIC,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_X86_Manufacturers[] = {
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_NVIDIA_XAVIER_Manufacturers[] = {
   kManufacturer_NVIDIA_LEOPARD,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ORQA_Manufacturers[] = {
   kManufacturer_ORQA,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_NXP_IMX8_Manufacturers[] = {
   kManufacturer_NXP,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manufacturers[] = {
   kManufacturer_LUCKFOX,
+  kManufacturer_IP_CAMERA,
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers[] = {
   kManufacturer_ROCKCHIP_RV1126_CSI,
   kManufacturer_ROCKCHIP_RV1126_TEST,
+  kManufacturer_IP_CAMERA,
 };
 
 inline constexpr PlatformCameraChoicesEntry kPlatformCameraChoices[] = {
@@ -909,6 +931,7 @@ inline constexpr PlatformCameraChoicesEntry kPlatformCameraChoices[] = {
 
 inline constexpr ManufacturerEntry kSecondaryManufacturers[] = {
   kManufacturer_DISABLE,
+  kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
 };
@@ -916,6 +939,7 @@ inline constexpr ManufacturerEntry kSecondaryManufacturers[] = {
 inline constexpr std::size_t kSecondaryManufacturerCount = sizeof(kSecondaryManufacturers) / sizeof(kSecondaryManufacturers[0]);
 
 inline constexpr ManufacturerEntry kFallbackManufacturers[] = {
+  kManufacturer_IP_CAMERA,
   kManufacturer_DEBUG,
 };
 
