@@ -95,11 +95,14 @@ win32 {
     ffmpeg_bin = $$PWD/build-libs-windows/ffmpeg/bin
     windows_deploy_script = $$PWD/tools/deploy_windows.ps1
     qt_install_prefix = $$[QT_INSTALL_PREFIX]
-    mingw_bin = $$dirname(QMAKE_CXX)
+    mingw_bin = $$(QT_MINGW_BIN)
+    isEmpty(mingw_bin) {
+        mingw_bin = $$dirname(QMAKE_CXX)
+    }
     isEmpty(mingw_bin)|equals(mingw_bin, .) {
         mingw_bin = C:/Qt/Tools/mingw810_32/bin
     }
-    contains(CONFIG, debug) {
+    CONFIG(debug, debug|release) {
         destdir_win = $$OUT_PWD/debug
     } else {
         destdir_win = $$OUT_PWD/release
