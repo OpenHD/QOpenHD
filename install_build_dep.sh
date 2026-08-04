@@ -5,18 +5,20 @@ PLATFORM="$1"
 QTTYPE="$2"
 
 
-BASE_PACKAGES="libdrm-dev gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libsdl2-dev libsdl1.2-dev"
+BASE_PACKAGES="libdrm-dev gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libsdl2-dev libsdl1.2-dev"
 VIDEO_PACKAGES="libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good libavcodec-dev libavformat-dev"
 BUILD_PACKAGES="ruby-dev meson build-essential cmake git ruby-dev python3-pip python3-future qttools5-dev-tools"
 
 
 function install_pi_packages {
-PLATFORM_PACKAGES=""
+PLATFORM_PACKAGES="libgbm-dev"
 }
 function install_x86_packages {
-PLATFORM_PACKAGES="qml-module-qt-labs-platform qtbase5-private-dev"
+PLATFORM_PACKAGES="qml-module-qt-labs-platform qtbase5-private-dev libgbm-dev"
 }
 function install_rock_packages {
+# QOpenHD does not use GBM directly. Avoid pulling libgbm-dev into the old
+# Radxa Bullseye image, where its security update conflicts with libegl-mesa0.
 PLATFORM_PACKAGES="qml-module-qt-labs-platform qtbase5-private-dev"
 }
 
