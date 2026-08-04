@@ -52,11 +52,21 @@ jobs:
 
       - name: Verify Qt and MinGW toolchain
         run: |
+          $mingwMake = Get-ChildItem -LiteralPath $env:IQTA_TOOLS -Filter mingw32-make.exe -Recurse -File |
+            Select-Object -First 1
+          if (!$mingwMake) {
+            throw "Could not find the Qt MinGW toolchain below $env:IQTA_TOOLS"
+          }
+
+          $mingwBin = Split-Path -Parent $mingwMake.FullName
+          Add-Content -Path $env:GITHUB_PATH -Value $mingwBin
+          "QT_MINGW_BIN=$mingwBin" | Out-File -FilePath $env:GITHUB_ENV -Append
           qmake -v
-          mingw32-make --version
+          & $mingwMake.FullName --version
 
       - name: Configure
         run: |
+          $env:Path = "$env:QT_MINGW_BIN;$env:Path"
           New-Item -ItemType Directory -Path build -Force | Out-Null
           Push-Location build
           qmake `
@@ -66,7 +76,9 @@ jobs:
           Pop-Location
 
       - name: Build and deploy
-        run: mingw32-make -C build -j2
+        run: |
+          $env:Path = "$env:QT_MINGW_BIN;$env:Path"
+          & (Join-Path $env:QT_MINGW_BIN "mingw32-make.exe") -C build -j2
 
       - name: Build NSIS installer
         run: |
