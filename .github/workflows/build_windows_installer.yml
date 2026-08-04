@@ -50,22 +50,10 @@ jobs:
       - name: Install build tools
         run: choco install nsis -y --no-progress
 
-      - name: Add MinGW to PATH
+      - name: Verify Qt and MinGW toolchain
         run: |
-          $qtPath = "${{ steps.install-qt.outputs.qtPath }}"
-          $qtRoot = Split-Path -Parent (Split-Path -Parent $qtPath)
-          $mingwMake = Get-ChildItem -Path $qtRoot -Filter mingw32-make.exe -Recurse -File |
-            Select-Object -First 1
-
-          if (!$mingwMake) {
-            throw "Could not find mingw32-make.exe below $qtRoot"
-          }
-
-          $mingwBin = Split-Path -Parent $mingwMake.FullName
-          $qtBin = Join-Path $qtPath "bin"
-          Add-Content -Path $env:GITHUB_PATH -Value $mingwBin
-          Add-Content -Path $env:GITHUB_PATH -Value $qtBin
-          "MINGW_BIN=$mingwBin" | Out-File -FilePath $env:GITHUB_ENV -Append
+          qmake -v
+          mingw32-make --version
 
       - name: Configure
         run: |
