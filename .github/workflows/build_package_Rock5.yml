@@ -22,7 +22,6 @@ jobs:
     env:
       CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
       API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
-      OPENHD_SUBMODULE_TOKEN: ${{ secrets.OPENHD_SUBMODULE_TOKEN }}
     steps:
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
@@ -38,27 +37,10 @@ jobs:
           echo "DT=$(date +'%Y-%m-%d_%H%M')" >> $GITHUB_ENV
           echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV    
              
-      - name: Checkout repository
+      - name: Checkout repository and submodules
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0
-          submodules: false
-          persist-credentials: false
-          token: ${{ secrets.OPENHD_SUBMODULE_TOKEN }}
-      - name: Download submodules with private token
-        run: |
-          if [ -z "${OPENHD_SUBMODULE_TOKEN}" ]; then
-            echo "OPENHD_SUBMODULE_TOKEN is required for recursive submodules"
-            exit 1
-          fi
-          cleanup_git_auth() {
-            git config --global --unset-all url."https://x-access-token:${OPENHD_SUBMODULE_TOKEN}@github.com/".insteadOf || true
-          }
-          trap cleanup_git_auth EXIT
-          git config --global url."https://x-access-token:${OPENHD_SUBMODULE_TOKEN}@github.com/".insteadOf "https://github.com/"
-          git submodule sync --recursive
-          git submodule update --init --recursive
-          git submodule status --recursive
+          submodules: recursive
       - name: Building QOpenHD in CHROOT
         run: |
           git clone https://github.com/OpenHD/OpenHD-ChrootCompiler /opt/OpenHD-ChrootCompiler
