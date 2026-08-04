@@ -67,6 +67,7 @@ jobs:
       - name: Configure
         run: |
           $env:Path = "$env:QT_MINGW_BIN;$env:Path"
+          $env:SHELL = "cmd.exe"
           New-Item -ItemType Directory -Path build -Force | Out-Null
           Push-Location build
           qmake `
@@ -78,7 +79,8 @@ jobs:
       - name: Build and deploy
         run: |
           $env:Path = "$env:QT_MINGW_BIN;$env:Path"
-          & (Join-Path $env:QT_MINGW_BIN "mingw32-make.exe") -C build -j2
+          $env:SHELL = "cmd.exe"
+          & (Join-Path $env:QT_MINGW_BIN "mingw32-make.exe") -C build -j2 "SHELL=cmd.exe"
 
       - name: Build NSIS installer
         run: |
