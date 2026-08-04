@@ -20,8 +20,8 @@ on:
 env:
   QT_VERSION: 5.15.2
   BUILD_TYPE: Release
-  FFMPEG_ARCHIVE: ffmpeg-n7.1.5-12-g1fdbca85aa-win64-lgpl-shared-7.1.zip
-  FFMPEG_SHA256: ab60b79e723ebb4d73d2ff3629715de1f0979511109d01811b036c3eaab6f495
+  FFMPEG_ARCHIVE: ffmpeg-n5.1-latest-win32-lgpl-shared-5.1.zip
+  FFMPEG_SHA256: ef966e53e5bbae6e2e8a4d313fac0ae93b2b42a0ddec978e6131df98dfa345d0
 
 jobs:
   build:
@@ -44,9 +44,9 @@ jobs:
           version: ${{ env.QT_VERSION }}
           host: windows
           target: desktop
-          arch: win64_mingw81_64
+          arch: win32_mingw81
           modules: qtcharts
-          tools: tools_mingw,qt.tools.win64_mingw810
+          tools: tools_mingw,qt.tools.win32_mingw810
           setup-python: true
 
       - name: Install build tools
@@ -54,7 +54,7 @@ jobs:
 
       - name: Install FFmpeg SDK
         run: |
-          $downloadUrl = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-03-14-02/$env:FFMPEG_ARCHIVE"
+          $downloadUrl = "https://github.com/sudo-nautilus/FFmpeg-Builds-Win32/releases/download/latest/$env:FFMPEG_ARCHIVE"
           $archive = Join-Path $env:RUNNER_TEMP $env:FFMPEG_ARCHIVE
           $extractDir = Join-Path $env:RUNNER_TEMP "ffmpeg-sdk"
           $destination = Join-Path $env:GITHUB_WORKSPACE "build-libs-windows\ffmpeg"

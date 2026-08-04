@@ -93,7 +93,7 @@ foreach ($dll in @("libEGL.dll", "libGLESv2.dll", "d3dcompiler_47.dll", "opengl3
     Copy-ExistingFile (Join-Path $qtBin $dll) (Join-Path $TargetDir $dll)
 }
 
-foreach ($dll in @("libgcc_s_dw2-1.dll", "libgcc_s_seh-1.dll", "libstdc++-6.dll", "libwinpthread-1.dll")) {
+foreach ($dll in @("libgcc_s_dw2-1.dll", "libstdc++-6.dll", "libwinpthread-1.dll")) {
     Copy-ExistingFile (Join-Path $MingwBin $dll) (Join-Path $TargetDir $dll)
 }
 
