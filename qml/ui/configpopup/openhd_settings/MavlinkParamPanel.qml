@@ -41,6 +41,45 @@ Rectangle {
     property bool m_any_param_busy: _ohdSystemGroundSettings.ui_is_busy || _ohdSystemAirSettingsModel.ui_is_busy || _airCameraSettingsModel.ui_is_busy ||
                                     _airCameraSettingsModel2.ui_is_busy;
 
+    function ipCameraPortFromPipeline(pipeline) {
+        var match = pipeline.match(/rtsp:\/\/\{IP\}:(\d+)/)
+        return match ? match[1] : "554"
+    }
+
+    function ipCameraPathFromPipeline(pipeline) {
+        var match = pipeline.match(/rtsp:\/\/\{IP\}:\d+([^\s]+)/)
+        return match ? match[1] : "/stream=0"
+    }
+
+    function generatedIpCameraPipeline() {
+        var port = ipCameraPortField.text.trim()
+        var path = ipCameraPathField.text.trim()
+        if(path.length === 0) path = "/"
+        if(path.charAt(0) !== "/") path = "/" + path
+        return "rtspsrc location=rtsp://{IP}:" + port + path +
+               " protocols=tcp latency=0 ! rtp{CODEC}depay"
+    }
+
+    function saveIpCameraConnection() {
+        var port = parseInt(ipCameraPortField.text)
+        if(ipCameraAddressField.text.length === 0 || isNaN(port) || port < 1 || port > 65535) {
+            _qopenhd.show_toast(qsTr("Please enter a valid camera IP and RTSP port"))
+            return
+        }
+        var pipeline = expertPipelineCheck.checked ? expertPipelineField.text : generatedIpCameraPipeline()
+        if(pipeline.length === 0 || pipeline.length > 127) {
+            _qopenhd.show_toast(qsTr("The generated pipeline is too long"))
+            return
+        }
+        var error = m_instanceMavlinkSettingsModel.try_update_parameter_string("IP_CAM_ADDRESS", ipCameraAddressField.text)
+        if(error !== "") {
+            _qopenhd.show_toast(error)
+            return
+        }
+        error = m_instanceMavlinkSettingsModel.try_update_parameter_string("IP_CAM_PIPELINE", pipeline)
+        _qopenhd.show_toast(error === "" ? qsTr("IP camera connection saved") : error)
+    }
+
     onVisibleChanged: {
         if(visible){
             if(!m_instanceCheckIsAvlie.is_alive){
@@ -266,108 +305,122 @@ Rectangle {
                 visible: !please_fetch_item.visible && m_instanceCheckIsAvlie.is_alive
                 header: Rectangle {
                     width: listView.width - 12
-                    height: m_ip_camera_settings_available ? 290 : 0
+                    height: m_ip_camera_settings_available ? (expertPipelineCheck.checked ? 570 : 510) : 0
                     visible: m_ip_camera_settings_available
                     color: settings.screen_settings_openhd_parameters_transparent ? "#aa102131" : "#e8f3f8"
                     radius: 6
+                    property string storedPipeline: m_instanceMavlinkSettingsModel.get_cached_string("IP_CAM_PIPELINE")
 
-                    Text {
-                        text: qsTr("IP CAMERA SETUP")
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.top: parent.top
-                        anchors.topMargin: 8
-                        font.bold: true
-                        color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
-                    }
-                    TextField {
-                        id: ipCameraAddressField
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.right: saveIpAddressButton.left
-                        anchors.rightMargin: 8
-                        anchors.top: parent.top
-                        anchors.topMargin: 38
-                        placeholderText: qsTr("Camera IPv4 address")
-                        text: m_instanceMavlinkSettingsModel.get_cached_string("IP_CAM_ADDRESS")
-                        maximumLength: 15
-                    }
-                    Button {
-                        id: saveIpAddressButton
-                        text: qsTr("Save IP")
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-                        anchors.verticalCenter: ipCameraAddressField.verticalCenter
-                        enabled: !m_any_param_busy && ipCameraAddressField.text.length > 0
-                        onClicked: m_instanceMavlinkSettingsModel.try_set_param_string_async("IP_CAM_ADDRESS", ipCameraAddressField.text, true)
-                    }
-                    TextField {
-                        id: ipCameraPipelineField
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.right: savePipelineButton.left
-                        anchors.rightMargin: 8
-                        anchors.top: ipCameraAddressField.bottom
-                        anchors.topMargin: 8
-                        placeholderText: qsTr("GStreamer source pipeline")
-                        text: m_instanceMavlinkSettingsModel.get_cached_string("IP_CAM_PIPELINE")
-                        maximumLength: 127
-                    }
-                    Button {
-                        id: savePipelineButton
-                        text: qsTr("Save pipeline")
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-                        anchors.verticalCenter: ipCameraPipelineField.verticalCenter
-                        enabled: !m_any_param_busy && ipCameraPipelineField.text.length > 0
-                        onClicked: m_instanceMavlinkSettingsModel.try_set_param_string_async("IP_CAM_PIPELINE", ipCameraPipelineField.text, true)
-                    }
-                    Button {
-                        id: saveIpBitrateButton
-                        text: qsTr("Save reserve")
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-                        anchors.top: ipCameraPipelineField.bottom
-                        anchors.topMargin: 8
-                        enabled: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") && !m_any_param_busy
-                        onClicked: _ohdSystemAirSettingsModel.try_set_param_int_async("V_IP_CAM_MBITS", ipCameraBitrateField.value, true)
-                    }
-                    SpinBox {
-                        id: ipCameraBitrateField
-                        from: 1
-                        to: 20
-                        value: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") ? _ohdSystemAirSettingsModel.get_cached_int("V_IP_CAM_MBITS") : 2
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.right: saveIpBitrateButton.left
-                        anchors.rightMargin: 8
-                        anchors.verticalCenter: saveIpBitrateButton.verticalCenter
-                        editable: true
-                    }
-                    Text {
-                        text: qsTr("Fixed IP-camera reservation (Mbit/s); OpenHD cannot change the camera encoder.")
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.top: ipCameraBitrateField.bottom
-                        anchors.topMargin: 2
-                        color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#b35a00"
-                    }
-                    Button {
-                        text: qsTr("Open Camera WebUI")
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.top: ipCameraBitrateField.bottom
-                        anchors.topMargin: 28
-                        enabled: ipCameraAddressField.text.length > 0
-                        onClicked: Qt.openUrlExternally("http://" + ipCameraAddressField.text)
-                    }
-                    Text {
-                        text: qsTr("Settings are sent directly to %1 via MAVLink.").arg(m_name)
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: 10
-                        color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#455a64"
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 5
+
+                        Text {
+                            text: qsTr("IP CAMERA SETUP")
+                            font.bold: true
+                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                        }
+                        ComboBox {
+                            id: ipCameraProfileField
+                            Layout.fillWidth: true
+                            model: [qsTr("SIYI camera"), qsTr("Generic RTSP camera"), qsTr("Custom")]
+                            currentIndex: storedPipeline.indexOf(":8554/main.264") >= 0 ? 0 : 1
+                            onActivated: {
+                                if(index === 0) {
+                                    ipCameraPortField.text = "8554"
+                                    ipCameraPathField.text = "/main.264"
+                                } else if(index === 1) {
+                                    ipCameraPortField.text = "554"
+                                    ipCameraPathField.text = "/stream=0"
+                                }
+                            }
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text { text: qsTr("Camera IP"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            TextField {
+                                id: ipCameraAddressField
+                                Layout.fillWidth: true
+                                placeholderText: "192.168.1.12"
+                                text: m_instanceMavlinkSettingsModel.get_cached_string("IP_CAM_ADDRESS")
+                                maximumLength: 15
+                            }
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text { text: qsTr("RTSP port"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            TextField {
+                                id: ipCameraPortField
+                                Layout.preferredWidth: 100
+                                text: ipCameraPortFromPipeline(storedPipeline)
+                                inputMethodHints: Qt.ImhDigitsOnly
+                                maximumLength: 5
+                            }
+                            Text { text: qsTr("Stream path"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            TextField {
+                                id: ipCameraPathField
+                                Layout.fillWidth: true
+                                text: ipCameraPathFromPipeline(storedPipeline)
+                                placeholderText: "/main.264"
+                                maximumLength: 48
+                            }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: qsTr("Generated RTSP link: rtsp://%1:%2%3").arg(ipCameraAddressField.text).arg(ipCameraPortField.text).arg(ipCameraPathField.text)
+                            elide: Text.ElideMiddle
+                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#455a64"
+                        }
+                        Button {
+                            Layout.fillWidth: true
+                            text: qsTr("SAVE CAMERA CONNECTION")
+                            enabled: !m_any_param_busy
+                            onClicked: saveIpCameraConnection()
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text { text: qsTr("Link reservation"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            SpinBox {
+                                id: ipCameraBitrateField
+                                from: 1
+                                to: 20
+                                value: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") ? _ohdSystemAirSettingsModel.get_cached_int("V_IP_CAM_MBITS") : 2
+                                editable: true
+                            }
+                            Button {
+                                text: qsTr("Save Mbit/s")
+                                enabled: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") && !m_any_param_busy
+                                onClicked: _ohdSystemAirSettingsModel.try_set_param_int_async("V_IP_CAM_MBITS", ipCameraBitrateField.value, true)
+                            }
+                            Button {
+                                text: qsTr("Open WebUI")
+                                enabled: ipCameraAddressField.text.length > 0
+                                onClicked: Qt.openUrlExternally("http://" + ipCameraAddressField.text)
+                            }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: qsTr("VIDEO_CODEC, RESOLUTION_FPS and BITRATE_MBITS below also configure a supported camera plugin.")
+                            wrapMode: Text.WordWrap
+                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#b35a00"
+                        }
+                        CheckBox {
+                            id: expertPipelineCheck
+                            text: qsTr("Expert: edit GStreamer pipeline")
+                        }
+                        TextField {
+                            id: expertPipelineField
+                            Layout.fillWidth: true
+                            visible: expertPipelineCheck.checked
+                            text: storedPipeline
+                            maximumLength: 127
+                        }
+                        Text {
+                            Layout.alignment: Qt.AlignRight
+                            text: qsTr("Settings are sent directly to %1 via MAVLink.").arg(m_name)
+                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#455a64"
+                        }
                     }
                 }
             }
