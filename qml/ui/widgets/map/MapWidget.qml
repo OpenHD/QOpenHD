@@ -22,6 +22,7 @@ MapWidgetForm {
 
     property variant map
     property bool apiKeyMissing: false
+    property string activeProviderName: ""
 
     Component.onCompleted: {
         // TODO: Figure out how we can get better (terrain) maps
@@ -44,6 +45,7 @@ MapWidgetForm {
             settings.selected_map_provider=0;
         }
         var provider = pluginModel.get(settings.selected_map_provider)
+        activeProviderName = provider.name
         switch (provider.name) {
         case "mapboxgl":{
             createMap(widgetInnerMap, "mapboxgl")
@@ -51,6 +53,10 @@ MapWidgetForm {
         }
         case "osm":{
             createMap(widgetInnerMap, "osm")
+            break
+        }
+        case "openhd_offline":{
+            createMap(widgetInnerMap, "openhd_offline")
             break
         }
         default:{
@@ -84,6 +90,17 @@ MapWidgetForm {
                                         PluginParameter { name: "mapbox.access_token"; value: "` + settings.map_api_key + `" }
                                         }
                                         `, mapWidget);
+        } else if (provider === "openhd_offline") {
+            plugin = Qt.createQmlObject(`
+                                        import QtLocation 5.15
+                                        Plugin {
+                                        name: "osm"
+                                        PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
+                                        PluginParameter { name: "osm.mapping.custom.host"; value: "` + _offlineMapTiles.baseUrl + `" }
+                                        PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "OpenStreetMap contributors" }
+                                        PluginParameter { name: "osm.mapping.custom.datacopyright"; value: "OpenStreetMap contributors" }
+                                        }
+                                        `, mapWidget);
         } else {
             plugin = Qt.createQmlObject(`
                                         import QtLocation 5.15
@@ -107,7 +124,7 @@ MapWidgetForm {
             }
             var component = Qt.createComponent("qrc:///ui/widgets/map/MapComponent.qml");
             if (component.status === Component.Ready) {
-                map = component.createObject(parent, {"anchors.fill": parent});
+                map = component.createObject(parent, {"anchors.fill": parent, "forceCustomMapType": provider === "openhd_offline"});
                 map.plugin = plugin;
 
                 map.gesture.enabled = true;
@@ -126,9 +143,24 @@ MapWidgetForm {
     function setup_map_variant(){
         if (map) {
             variantDropdown.model = map.supportedMapTypes
-            variantDropdown.currentIndex = settings.selected_map_variant
+            variantDropdown.currentIndex = activeProviderName === "openhd_offline" ? Math.max(0, map.supportedMapTypes.length - 1) : settings.selected_map_variant
             console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
             map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
+        }
+    }
+
+    Rectangle {
+        anchors.fill: widgetInnerMap
+        visible: activeProviderName === "openhd_offline" && !_offlineMapTiles.available
+        color: "#d0090e0f"
+        z: 20
+        Text {
+            anchors.centerIn: parent
+            width: parent.width - 20
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            color: "white"
+            text: qsTr("No offline map package installed")
         }
     }
 

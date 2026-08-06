@@ -61,6 +61,7 @@
 // Video end
 
 #include "util/qrenderstats.h"
+#include "map/offlinemaptileprovider.h"
 
 #if defined(__ios__)
 #include "platform/appleplatform.h"
@@ -451,7 +452,9 @@ int main(int argc, char *argv[]) {
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     QQmlApplicationEngine engine;
+    OfflineMapTileProvider offlineMapTiles;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
+    engine.rootContext()->setContextProperty("_offlineMapTiles", &offlineMapTiles);
     QOpenHD::instance().setEngine(&engine);
     write_platform_context_properties(engine);
 

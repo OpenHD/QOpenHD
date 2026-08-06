@@ -144,7 +144,7 @@ LinuxBuild {
 # In general, parts of QOpenHD that need additional libraries should have their code in a subdirectory with a .pri where those
 # dependencies are added such that you can easily compile the project even on systems that might lack some of those qt functionalities
 QT +=core quick qml gui \
-    widgets
+    widgets network
 QT += opengl
 QT += charts
 #QT += gui-private
@@ -189,6 +189,7 @@ SOURCES += \
     app/adsb/qmlobjectlistmodel.cpp \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
+    app/map/offlinemaptileprovider.cpp \
     app/util/mousehelper.cpp \
     app/util/qopenhd.cpp \
     app/util/WorkaroundMessageBox.cpp \
@@ -208,6 +209,7 @@ HEADERS += \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
+    app/map/offlinemaptileprovider.h \
     app/util/mousehelper.h \
     app/util/qopenhd.h \
     app/util/WorkaroundMessageBox.h \

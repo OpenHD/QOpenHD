@@ -54,6 +54,10 @@ BaseWidget {
             name: "mapboxgl"
             description: "Mapbox (API key)"
         }
+        ListElement {
+            name: "openhd_offline"
+            description: "OpenHD Offline"
+        }
     }
 
 

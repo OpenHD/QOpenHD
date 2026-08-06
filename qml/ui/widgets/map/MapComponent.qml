@@ -21,11 +21,14 @@ Map {
 
     bearing: settings.map_orientation ? _fcMavlinkSystem.hdg : 360
 
-    readonly property var defaultCoordinate: QtPositioning.coordinate(38.897676, -77.03653)
-    property bool hasValidDroneCoordinate: !(_fcMavlinkSystem.lat === 0.0 && _fcMavlinkSystem.lon === 0.0)
+    // TMDT / W-tec, Wuppertal. Keep the map useful before the first GPS fix.
+    readonly property var defaultCoordinate: QtPositioning.coordinate(51.2373245, 7.1616353)
+    property bool hasValidDroneCoordinate: _fcMavlinkSystem.gps_fix_type >= 2
+                                            && !(_fcMavlinkSystem.lat === 0.0 && _fcMavlinkSystem.lon === 0.0)
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
     property var center_coord
+    property bool forceCustomMapType: false
 
     property int track_limit: 200; //max number of drone track points before it starts averaging
     // We start with a minimum distance of 3m, each time we perform a track reduction, the minimum distance is increased
@@ -43,9 +46,25 @@ Map {
             //console.log("Map type "+i+" "+map.supportedMapTypes[i]+" "+map.supportedMapTypes[i].description)
         }
         variantDropdown.model = map.supportedMapTypes
-        variantDropdown.currentIndex = settings.selected_map_variant
+        variantDropdown.currentIndex = forceCustomMapType ? Math.max(0, map.supportedMapTypes.length - 1) : settings.selected_map_variant
         //console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
         map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
+    }
+
+    Connections {
+        target: _fcMavlinkSystem
+        function onLatChanged() { map.updateOfflinePosition() }
+        function onLonChanged() { map.updateOfflinePosition() }
+        function onGps_fix_typeChanged() { map.updateOfflinePosition() }
+    }
+
+    Component.onCompleted: updateOfflinePosition()
+
+    function updateOfflinePosition() {
+        var coordinate = hasValidDroneCoordinate
+                ? QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+                : defaultCoordinate
+        _offlineMapTiles.setPosition(coordinate.latitude, coordinate.longitude)
     }
 
     onActiveMapTypeChanged: {
