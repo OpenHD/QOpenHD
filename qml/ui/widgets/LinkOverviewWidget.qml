@@ -41,6 +41,7 @@ BaseWidget {
     property real m_gnd_txc_temp2: _ohdSystemGround.curr_txc_temp_degree_2
     property int m_packet_loss_perc: _ohdSystemGround.curr_rx_packet_loss_perc
     property bool use_calculated_quality: settings.downlink_calc_quality_enabled
+    property bool use_artosyn_quality: _ohdSystemGround.artosyn_link_detected
     property real m_quality_raw: calculate_quality_raw()
     property real m_quality_smoothed: -1
     property string linkFont: "Quicksand"
@@ -129,6 +130,7 @@ BaseWidget {
             update_quality_smoothed();
         }
     }
+    onUse_artosyn_qualityChanged: update_quality_smoothed()
     Component.onCompleted: {
         update_quality_smoothed();
         sync_shared_style_from_settings();
@@ -240,6 +242,13 @@ BaseWidget {
         if (!use_calculated_quality) {
             return -1;
         }
+        // OpenHD already combines Artosyn SNR and decoder errors into a
+        // conservative link-margin percentage. The generic Wi-Fi weighting
+        // would otherwise overstate the remaining margin when loss is zero.
+        if (use_artosyn_quality) {
+            var artosynQuality = _ohdSystemGround.current_rx_signal_quality;
+            return artosynQuality >= 0 ? clamp(artosynQuality, 0, 100) : -1;
+        }
         var lossScore = loss_to_score(m_packet_loss_perc);
         var snrScore = snr_to_score(m_best_snr_db);
         var rssiScore = rssi_to_score(_ohdSystemGround.current_rx_rssi);
@@ -280,6 +289,12 @@ BaseWidget {
             return;
         }
         if (m_quality_smoothed < 0) {
+            m_quality_smoothed = current;
+            return;
+        }
+        if (use_artosyn_quality) {
+            // The producer is already fast-down/slow-up; another EMA here
+            // would delay a safety-relevant falling indication.
             m_quality_smoothed = current;
             return;
         }
