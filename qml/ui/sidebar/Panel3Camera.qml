@@ -14,6 +14,14 @@ import "../elements"
 SideBarBasePanel{
     override_title: "Camera"
 
+    property int air_settings_update_count: _ohdSystemAirSettingsModel.update_count
+    property bool siyi_active: {
+        var unused = air_settings_update_count
+        return _ohdSystemAirSettingsModel.has_params_fetched
+                && _ohdSystemAirSettingsModel.param_int_exists("SIYI_ACTIVE")
+                && _ohdSystemAirSettingsModel.get_cached_int("SIYI_ACTIVE") === 1
+    }
+
     function takeover_control(){
         brightness.takeover_control();
     }
@@ -68,6 +76,113 @@ SideBarBasePanel{
             }
             onGoto_next: {
                 sidebar.regain_control_on_sidebar_stack()
+            }
+        }
+
+        ColumnLayout {
+            visible: siyi_active
+            width: secondaryUiWidth
+            spacing: 4
+
+            Label {
+                Layout.fillWidth: true
+                text: qsTr("SIYI controls")
+                color: "white"
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+                topPadding: 8
+            }
+
+            GridLayout {
+                Layout.alignment: Qt.AlignHCenter
+                columns: 3
+                rowSpacing: 3
+                columnSpacing: 3
+
+                Item { width: 72; height: 36 }
+                Button {
+                    text: "Up"
+                    onPressed: _ohdAction.siyi_gimbal_rate(45, 0)
+                    onReleased: _ohdAction.siyi_gimbal_rate(0, 0)
+                    onCanceled: _ohdAction.siyi_gimbal_rate(0, 0)
+                }
+                Item { width: 72; height: 36 }
+                Button {
+                    text: "Left"
+                    onPressed: _ohdAction.siyi_gimbal_rate(0, -45)
+                    onReleased: _ohdAction.siyi_gimbal_rate(0, 0)
+                    onCanceled: _ohdAction.siyi_gimbal_rate(0, 0)
+                }
+                Button {
+                    text: qsTr("Center")
+                    onClicked: _ohdAction.siyi_gimbal_center()
+                }
+                Button {
+                    text: "Right"
+                    onPressed: _ohdAction.siyi_gimbal_rate(0, 45)
+                    onReleased: _ohdAction.siyi_gimbal_rate(0, 0)
+                    onCanceled: _ohdAction.siyi_gimbal_rate(0, 0)
+                }
+                Item { width: 72; height: 36 }
+                Button {
+                    text: "Down"
+                    onPressed: _ohdAction.siyi_gimbal_rate(-45, 0)
+                    onReleased: _ohdAction.siyi_gimbal_rate(0, 0)
+                    onCanceled: _ohdAction.siyi_gimbal_rate(0, 0)
+                }
+                Item { width: 72; height: 36 }
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                Button {
+                    text: qsTr("Zoom -")
+                    onPressed: _ohdAction.siyi_zoom(-1)
+                    onReleased: _ohdAction.siyi_zoom(0)
+                    onCanceled: _ohdAction.siyi_zoom(0)
+                }
+                Button {
+                    text: qsTr("Zoom +")
+                    onPressed: _ohdAction.siyi_zoom(1)
+                    onReleased: _ohdAction.siyi_zoom(0)
+                    onCanceled: _ohdAction.siyi_zoom(0)
+                }
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                Button {
+                    text: qsTr("Focus -")
+                    onPressed: _ohdAction.siyi_focus(-1)
+                    onReleased: _ohdAction.siyi_focus(0)
+                    onCanceled: _ohdAction.siyi_focus(0)
+                }
+                Button {
+                    text: qsTr("AF")
+                    onClicked: _ohdAction.siyi_autofocus()
+                }
+                Button {
+                    text: qsTr("Focus +")
+                    onPressed: _ohdAction.siyi_focus(1)
+                    onReleased: _ohdAction.siyi_focus(0)
+                    onCanceled: _ohdAction.siyi_focus(0)
+                }
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                Button {
+                    text: qsTr("Photo")
+                    onClicked: _ohdAction.siyi_take_photo()
+                }
+                Button {
+                    text: qsTr("Rec")
+                    onClicked: _ohdAction.siyi_set_recording(true)
+                }
+                Button {
+                    text: qsTr("Stop")
+                    onClicked: _ohdAction.siyi_set_recording(false)
+                }
             }
         }
 

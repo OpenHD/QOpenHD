@@ -5,6 +5,7 @@
 #include "impl/cmdsender.h"
 #include <QMetaObject>
 #include <cstring>
+#include <limits>
 
 //#include "../models/aohdsystem.h"
 
@@ -134,6 +135,69 @@ bool OHDAction::repartition_air_storage(int storageId)
 bool OHDAction::mount_air_storage_for_recording(int storageId)
 {
     return send_storage_action(3,storageId,"Mounting partition at /Video");
+}
+
+bool OHDAction::send_siyi_command(uint16_t command, float param1,
+                                  float param2, float param3, float param4,
+                                  float param5, float param6, float param7)
+{
+    mavlink_command_long_t cmd{};
+    cmd.target_system=OHD_SYS_ID_AIR;
+    cmd.target_component=MAV_COMP_ID_CAMERA;
+    cmd.command=command;
+    cmd.param1=param1;
+    cmd.param2=param2;
+    cmd.param3=param3;
+    cmd.param4=param4;
+    cmd.param5=param5;
+    cmd.param6=param6;
+    cmd.param7=param7;
+    return CmdSender::instance().send_command_long_async(
+        cmd,[](CmdSender::RunCommandResult){},std::chrono::milliseconds(250),2);
+}
+
+bool OHDAction::siyi_gimbal_rate(float pitchRate, float yawRate)
+{
+    const auto unset=std::numeric_limits<float>::quiet_NaN();
+    return send_siyi_command(MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW,
+                             unset,unset,pitchRate,yawRate);
+}
+
+bool OHDAction::siyi_gimbal_center()
+{
+    const auto unset=std::numeric_limits<float>::quiet_NaN();
+    return send_siyi_command(MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW,
+                             unset,unset,0.0F,0.0F,
+                             GIMBAL_MANAGER_FLAGS_NEUTRAL);
+}
+
+bool OHDAction::siyi_zoom(float rate)
+{
+    return send_siyi_command(MAV_CMD_SET_CAMERA_ZOOM,
+                             ZOOM_TYPE_CONTINUOUS,rate);
+}
+
+bool OHDAction::siyi_focus(float rate)
+{
+    return send_siyi_command(MAV_CMD_SET_CAMERA_FOCUS,
+                             FOCUS_TYPE_CONTINUOUS,rate);
+}
+
+bool OHDAction::siyi_autofocus()
+{
+    return send_siyi_command(MAV_CMD_SET_CAMERA_FOCUS,
+                             FOCUS_TYPE_AUTO_SINGLE);
+}
+
+bool OHDAction::siyi_take_photo()
+{
+    return send_siyi_command(MAV_CMD_IMAGE_START_CAPTURE,0.0F,0.0F,1.0F);
+}
+
+bool OHDAction::siyi_set_recording(bool recording)
+{
+    return send_siyi_command(recording ? MAV_CMD_VIDEO_START_CAPTURE
+                                       : MAV_CMD_VIDEO_STOP_CAPTURE);
 }
 
 bool OHDAction::process_message(const mavlink_message_t &message)

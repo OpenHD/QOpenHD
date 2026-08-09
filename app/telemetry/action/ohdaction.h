@@ -36,6 +36,13 @@ public:
     Q_INVOKABLE bool format_air_storage(int storageId);
     Q_INVOKABLE bool repartition_air_storage(int storageId);
     Q_INVOKABLE bool mount_air_storage_for_recording(int storageId);
+    Q_INVOKABLE bool siyi_gimbal_rate(float pitchRate, float yawRate);
+    Q_INVOKABLE bool siyi_gimbal_center();
+    Q_INVOKABLE bool siyi_zoom(float rate);
+    Q_INVOKABLE bool siyi_focus(float rate);
+    Q_INVOKABLE bool siyi_autofocus();
+    Q_INVOKABLE bool siyi_take_photo();
+    Q_INVOKABLE bool siyi_set_recording(bool recording);
     bool process_message(const mavlink_message_t& message);
     bool formatAirSdCardBusy() const { return m_format_air_sd_card_busy; }
     QString formatAirSdCardStatus() const { return m_format_air_sd_card_status; }
@@ -48,6 +55,10 @@ signals:
     void formatAirSdCardStatusChanged();
     void airStorageDevicesChanged();
 private:
+    bool send_siyi_command(uint16_t command, float param1=0.0F,
+                           float param2=0.0F, float param3=0.0F,
+                           float param4=0.0F, float param5=0.0F,
+                           float param6=0.0F, float param7=0.0F);
     bool send_storage_action(int action, int storageId,
                              const QString& runningText);
     bool m_format_air_sd_card_busy=false;
