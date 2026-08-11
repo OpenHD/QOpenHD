@@ -102,9 +102,11 @@ ApplicationWindow {
             //onSettingsButtonClicked: {
             //    settings_panel.openSettings();
             //}
-            // Performance seems to be better on embedded devices like
-            // rpi with layers disabled (aka default) but this is not exact science
-            layer.enabled: false
+            // Keep the debug overlay in a separate composited layer. Some video
+            // renderers submit frames outside normal QML item stacking and can
+            // otherwise cover widgets after their first frame arrives.
+            // Avoid the extra layer during normal flight use.
+            layer.enabled: settings.show_video_pipeline_debug_widget
         }
 
         ConfigPopup {

@@ -19,7 +19,7 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetActionWidth: 620
-    widgetActionHeight: 760
+    widgetActionHeight: 900
 
     property int selectedCamera: 0
     property var selectedModel: selectedCamera === 0 ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
@@ -34,6 +34,18 @@ BaseWidget {
     property bool qpParamsAvailable: false
     property bool qpPidParamAvailable: false
     property bool rkBitratePidParamAvailable: false
+    property bool impairmentParamsAvailable: false
+    property int requestedNoisePercent: 0
+    property int requestedPacketLossPercent: 0
+    property bool requestedBitrateSweep: false
+    property int requestedSweepMinMbits: 2
+    property int requestedSweepMaxMbits: 12
+    property int requestedSweepPeriodSeconds: 10
+    property bool requestedRoiEnabled: true
+    property bool requestedIntraRefreshEnabled: true
+    property int requestedIntraRefreshMode: 0
+    property int requestedIntraRefreshNum: 1
+    property double impairmentEditingUntilMs: 0
     property int qpParamsAvailabilityUpdateCount: -1
     property int qpParamsAvailabilityCamera: -1
     property int maxSamples: 90
@@ -68,11 +80,18 @@ BaseWidget {
             qpParamsAvailable = false;
             qpPidParamAvailable = false;
             rkBitratePidParamAvailable = false;
+            impairmentParamsAvailable = false;
             return;
         }
         qpParamsAvailable = selectedSettingsModel.param_int_exists("QP_MIN") && selectedSettingsModel.param_int_exists("QP_MAX");
         qpPidParamAvailable = selectedSettingsModel.param_int_exists("QP_PID_ENABLE");
         rkBitratePidParamAvailable = selectedSettingsModel.param_int_exists("RK_BITRATE_PID");
+        impairmentParamsAvailable = selectedSettingsModel.param_int_exists("DBG_NOISE")
+                && selectedSettingsModel.param_int_exists("DBG_PKT_LOSS")
+                && selectedSettingsModel.param_int_exists("DBG_BR_SWEEP")
+                && selectedSettingsModel.param_int_exists("DBG_BR_MIN")
+                && selectedSettingsModel.param_int_exists("DBG_BR_MAX")
+                && selectedSettingsModel.param_int_exists("DBG_BR_PERIOD");
     }
 
     function currentQpMin() {
@@ -95,6 +114,75 @@ BaseWidget {
         }
         requestedQpMin = currentQpMin();
         requestedQpMax = Math.max(requestedQpMin, currentQpMax());
+    }
+
+    function syncImpairmentControls() {
+        if (impairmentParamsAvailable) {
+            requestedNoisePercent = selectedSettingsModel.get_cached_int("DBG_NOISE");
+            requestedPacketLossPercent = selectedSettingsModel.get_cached_int("DBG_PKT_LOSS");
+            requestedBitrateSweep = selectedSettingsModel.get_cached_int("DBG_BR_SWEEP") !== 0;
+            requestedSweepMinMbits = selectedSettingsModel.get_cached_int("DBG_BR_MIN");
+            requestedSweepMaxMbits = selectedSettingsModel.get_cached_int("DBG_BR_MAX");
+            requestedSweepPeriodSeconds = selectedSettingsModel.get_cached_int("DBG_BR_PERIOD");
+        }
+        // MPP resilience features are intentionally always-on in this widget.
+        requestedRoiEnabled = true;
+        requestedIntraRefreshEnabled = true;
+        if (selectedSettingsModel.param_int_exists("MPP_IR_MODE"))
+            requestedIntraRefreshMode = selectedSettingsModel.get_cached_int("MPP_IR_MODE");
+        if (selectedSettingsModel.param_int_exists("MPP_IR_NUM"))
+            requestedIntraRefreshNum = selectedSettingsModel.get_cached_int("MPP_IR_NUM");
+    }
+
+    function markImpairmentEditing() {
+        impairmentEditingUntilMs = Date.now() + 10000;
+    }
+
+    function setDebugParameter(name, value) {
+        var result = selectedSettingsModel.try_update_parameter_int(name, value);
+        if (result !== "") {
+            _hudLogMessagesModel.signalAddLogMessage(4, result);
+            return false;
+        }
+        return true;
+    }
+
+    function applyImpairmentControls() {
+        var camName = selectedCamera === 0 ? qsTr("CAM1") : qsTr("CAM2");
+        if (!_ohdSystemAir.is_alive) {
+            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("Air unit not alive, cannot update %1 MPP test mode").arg(camName));
+            return;
+        }
+        if (requestedSweepMinMbits > requestedSweepMaxMbits) {
+            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("Sweep minimum must be <= maximum"));
+            return;
+        }
+        var currentMax = selectedSettingsModel.get_cached_int("DBG_BR_MAX");
+        var rangeOk;
+        if (requestedSweepMinMbits > currentMax) {
+            rangeOk = setDebugParameter("DBG_BR_MAX", requestedSweepMaxMbits)
+                    && setDebugParameter("DBG_BR_MIN", requestedSweepMinMbits);
+        } else {
+            rangeOk = setDebugParameter("DBG_BR_MIN", requestedSweepMinMbits)
+                    && setDebugParameter("DBG_BR_MAX", requestedSweepMaxMbits);
+        }
+        var ok = rangeOk
+                && setDebugParameter("DBG_BR_PERIOD", requestedSweepPeriodSeconds)
+                && setDebugParameter("DBG_NOISE", requestedNoisePercent)
+                && setDebugParameter("DBG_PKT_LOSS", requestedPacketLossPercent)
+                && setDebugParameter("DBG_BR_SWEEP", requestedBitrateSweep ? 1 : 0);
+        if (ok) {
+            _hudLogMessagesModel.signalAddLogMessage(6, qsTr("%1 MPP video test mode updated").arg(camName));
+            impairmentEditingUntilMs = 0;
+        }
+    }
+
+    function disableImpairments() {
+        requestedNoisePercent = 0;
+        requestedPacketLossPercent = 0;
+        requestedBitrateSweep = false;
+        markImpairmentEditing();
+        applyImpairmentControls();
     }
 
     function markUserEditing() {
@@ -281,6 +369,7 @@ BaseWidget {
         refreshQpControlsAvailable(true);
         syncRequestedMbits();
         syncRequestedQp();
+        syncImpairmentControls();
         resetGraph();
     }
 
@@ -289,6 +378,7 @@ BaseWidget {
         if (Date.now() > qpEditingUntilMs) {
             syncRequestedQp();
         }
+        if (Date.now() > impairmentEditingUntilMs) syncImpairmentControls();
     }
 
     onSelectedSettingsHasParamsFetchedChanged: {
@@ -296,12 +386,14 @@ BaseWidget {
         if (Date.now() > qpEditingUntilMs) {
             syncRequestedQp();
         }
+        if (Date.now() > impairmentEditingUntilMs) syncImpairmentControls();
     }
 
     Component.onCompleted: {
         refreshQpControlsAvailable(true);
         syncRequestedMbits();
         syncRequestedQp();
+        syncImpairmentControls();
         sampleBitrates();
     }
 
@@ -317,6 +409,7 @@ BaseWidget {
             if (!qpMinSlider.pressed && !qpMaxSlider.pressed && Date.now() > qpEditingUntilMs) {
                 syncRequestedQp();
             }
+            if (Date.now() > impairmentEditingUntilMs) syncImpairmentControls();
         }
     }
 
@@ -472,6 +565,17 @@ BaseWidget {
                         onClicked: applyRequestedBitrate()
                         Layout.preferredWidth: 96
                     }
+                    SpinBox {
+                        from: 1
+                        to: 50
+                        editable: true
+                        value: requestedMbits
+                        onValueModified: {
+                            markUserEditing();
+                            requestedMbits = value;
+                        }
+                        Layout.preferredWidth: 110
+                    }
                 }
             }
 
@@ -606,6 +710,162 @@ BaseWidget {
                 }
                 Item {
                     Layout.fillWidth: true
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: "#55ff8800"
+                visible: true
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 5
+                visible: true
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text {
+                        text: qsTr("MPP LINK-DEGRADATION TEST")
+                        color: "#ffff9900"
+                        font.bold: true
+                        font.pixelSize: 13
+                        Layout.fillWidth: true
+                    }
+                    Button {
+                        text: qsTr("RESET")
+                        onClicked: disableImpairments()
+                        Layout.preferredWidth: 96
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: qsTr("Input noise %"); color: settings.color_text; Layout.preferredWidth: 122 }
+                    Slider {
+                        from: 0; to: 100; stepSize: 1
+                        value: requestedNoisePercent
+                        onMoved: { markImpairmentEditing(); requestedNoisePercent = Math.round(value); }
+                        Layout.fillWidth: true
+                    }
+                    Text { text: requestedNoisePercent; color: "white"; Layout.preferredWidth: 30; horizontalAlignment: Text.AlignRight }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: qsTr("RTP packet loss %"); color: settings.color_text; Layout.preferredWidth: 122 }
+                    Slider {
+                        from: 0; to: 95; stepSize: 1
+                        value: requestedPacketLossPercent
+                        onMoved: { markImpairmentEditing(); requestedPacketLossPercent = Math.round(value); }
+                        Layout.fillWidth: true
+                    }
+                    Text { text: requestedPacketLossPercent; color: "white"; Layout.preferredWidth: 30; horizontalAlignment: Text.AlignRight }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    CheckBox {
+                        text: qsTr("Triangle bitrate sweep")
+                        checked: requestedBitrateSweep
+                        onToggled: { markImpairmentEditing(); requestedBitrateSweep = checked; }
+                        Layout.preferredWidth: 190
+                    }
+                    Text { text: qsTr("Min"); color: settings.color_text }
+                    SpinBox {
+                        from: 1; to: 200; editable: true
+                        value: requestedSweepMinMbits
+                        onValueModified: { markImpairmentEditing(); requestedSweepMinMbits = value; }
+                        Layout.preferredWidth: 82
+                    }
+                    Text { text: qsTr("Max"); color: settings.color_text }
+                    SpinBox {
+                        from: 1; to: 200; editable: true
+                        value: requestedSweepMaxMbits
+                        onValueModified: { markImpairmentEditing(); requestedSweepMaxMbits = value; }
+                        Layout.preferredWidth: 82
+                    }
+                    Text { text: qsTr("Mbit/s"); color: settings.color_text }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: qsTr("Full sweep period"); color: settings.color_text; Layout.fillWidth: true }
+                    SpinBox {
+                        from: 2; to: 120; editable: true
+                        value: requestedSweepPeriodSeconds
+                        onValueModified: { markImpairmentEditing(); requestedSweepPeriodSeconds = value; }
+                        Layout.preferredWidth: 92
+                    }
+                    Text { text: qsTr("seconds"); color: settings.color_text; Layout.preferredWidth: 58 }
+                    Button {
+                        text: qsTr("APPLY")
+                        enabled: !selectedSettingsModel.ui_is_busy
+                        onClicked: applyImpairmentControls()
+                        Layout.preferredWidth: 96
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: qsTr("ROI (native MPP)"); color: settings.color_text; Layout.preferredWidth: 122 }
+                    CheckBox {
+                        text: qsTr("enabled")
+                        checked: true
+                        enabled: false
+                        Layout.fillWidth: true
+                    }
+                    Text { text: qsTr("always on by default"); color: "#ff99dd99"; font.pixelSize: 10 }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: qsTr("Cyclic intra-refresh"); color: settings.color_text; Layout.preferredWidth: 122 }
+                    CheckBox {
+                        text: qsTr("enabled")
+                        checked: true
+                        enabled: false
+                        Layout.fillWidth: true
+                    }
+                    Text { text: qsTr("rows"); color: settings.color_text }
+                    SpinBox {
+                        from: 1; to: 32; editable: true
+                        value: requestedIntraRefreshNum
+                        onValueModified: { requestedIntraRefreshNum = value; setDebugParameter("MPP_IR_NUM", value); }
+                        Layout.preferredWidth: 68
+                    }
+                    Button {
+                        text: qsTr("APPLY")
+                        onClicked: {
+                            setDebugParameter("MPP_ROI_ENABLE", requestedRoiEnabled ? 1 : 0);
+                            setDebugParameter("MPP_IR_ENABLE", requestedIntraRefreshEnabled ? 1 : 0);
+                            setDebugParameter("MPP_IR_MODE", requestedIntraRefreshMode);
+                            setDebugParameter("MPP_IR_NUM", requestedIntraRefreshNum);
+                        }
+                        Layout.preferredWidth: 80
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: qsTr("Refresh mode"); color: settings.color_text; Layout.preferredWidth: 122 }
+                    ComboBox {
+                        model: [qsTr("rows"), qsTr("columns")]
+                        currentIndex: requestedIntraRefreshMode
+                        onActivated: { requestedIntraRefreshMode = currentIndex; setDebugParameter("MPP_IR_MODE", currentIndex); }
+                        Layout.preferredWidth: 120
+                    }
+                    Text { text: qsTr("ROI + cyclic refresh are MPP-native"); color: "#ff99dd99"; font.pixelSize: 10 }
+                }
+
+                Text {
+                    text: qsTr("Affects video only. RTP loss never drops telemetry or control traffic.")
+                    color: "#ffffbb66"
+                    font.pixelSize: 11
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
                 }
             }
 
