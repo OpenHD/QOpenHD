@@ -35,16 +35,13 @@ BaseWidget {
     property bool qpPidParamAvailable: false
     property bool rkBitratePidParamAvailable: false
     property bool impairmentParamsAvailable: false
-    property int requestedNoisePercent: 0
+    property bool intraRefreshParamsAvailable: false
+    property bool forceKeyframeAvailable: false
     property int requestedPacketLossPercent: 0
-    property bool requestedBitrateSweep: false
-    property int requestedSweepMinMbits: 2
-    property int requestedSweepMaxMbits: 12
-    property int requestedSweepPeriodSeconds: 10
-    property bool requestedRoiEnabled: true
+    property int requestedKeyframeLossPercent: 0
     property bool requestedIntraRefreshEnabled: true
-    property int requestedIntraRefreshMode: 0
-    property int requestedIntraRefreshNum: 1
+    property int requestedIntraRefreshMode: 2
+    property int requestedIntraRefreshNum: 8
     property double impairmentEditingUntilMs: 0
     property int qpParamsAvailabilityUpdateCount: -1
     property int qpParamsAvailabilityCamera: -1
@@ -81,17 +78,19 @@ BaseWidget {
             qpPidParamAvailable = false;
             rkBitratePidParamAvailable = false;
             impairmentParamsAvailable = false;
+            intraRefreshParamsAvailable = false;
+            forceKeyframeAvailable = false;
             return;
         }
         qpParamsAvailable = selectedSettingsModel.param_int_exists("QP_MIN") && selectedSettingsModel.param_int_exists("QP_MAX");
         qpPidParamAvailable = selectedSettingsModel.param_int_exists("QP_PID_ENABLE");
         rkBitratePidParamAvailable = selectedSettingsModel.param_int_exists("RK_BITRATE_PID");
-        impairmentParamsAvailable = selectedSettingsModel.param_int_exists("DBG_NOISE")
-                && selectedSettingsModel.param_int_exists("DBG_PKT_LOSS")
-                && selectedSettingsModel.param_int_exists("DBG_BR_SWEEP")
-                && selectedSettingsModel.param_int_exists("DBG_BR_MIN")
-                && selectedSettingsModel.param_int_exists("DBG_BR_MAX")
-                && selectedSettingsModel.param_int_exists("DBG_BR_PERIOD");
+        impairmentParamsAvailable = selectedSettingsModel.param_int_exists("DBG_PKT_LOSS")
+                && selectedSettingsModel.param_int_exists("DBG_KEY_LOSS");
+        intraRefreshParamsAvailable = selectedSettingsModel.param_int_exists("MPP_IR_ENABLE")
+                && selectedSettingsModel.param_int_exists("MPP_IR_MODE")
+                && selectedSettingsModel.param_int_exists("MPP_IR_NUM");
+        forceKeyframeAvailable = selectedSettingsModel.param_int_exists("MPP_FORCE_IDR");
     }
 
     function currentQpMin() {
@@ -118,20 +117,14 @@ BaseWidget {
 
     function syncImpairmentControls() {
         if (impairmentParamsAvailable) {
-            requestedNoisePercent = selectedSettingsModel.get_cached_int("DBG_NOISE");
             requestedPacketLossPercent = selectedSettingsModel.get_cached_int("DBG_PKT_LOSS");
-            requestedBitrateSweep = selectedSettingsModel.get_cached_int("DBG_BR_SWEEP") !== 0;
-            requestedSweepMinMbits = selectedSettingsModel.get_cached_int("DBG_BR_MIN");
-            requestedSweepMaxMbits = selectedSettingsModel.get_cached_int("DBG_BR_MAX");
-            requestedSweepPeriodSeconds = selectedSettingsModel.get_cached_int("DBG_BR_PERIOD");
+            requestedKeyframeLossPercent = selectedSettingsModel.get_cached_int("DBG_KEY_LOSS");
         }
-        // MPP resilience features are intentionally always-on in this widget.
-        requestedRoiEnabled = true;
-        requestedIntraRefreshEnabled = true;
-        if (selectedSettingsModel.param_int_exists("MPP_IR_MODE"))
+        if (intraRefreshParamsAvailable) {
+            requestedIntraRefreshEnabled = selectedSettingsModel.get_cached_int("MPP_IR_ENABLE") !== 0;
             requestedIntraRefreshMode = selectedSettingsModel.get_cached_int("MPP_IR_MODE");
-        if (selectedSettingsModel.param_int_exists("MPP_IR_NUM"))
             requestedIntraRefreshNum = selectedSettingsModel.get_cached_int("MPP_IR_NUM");
+        }
     }
 
     function markImpairmentEditing() {
@@ -153,24 +146,8 @@ BaseWidget {
             _hudLogMessagesModel.signalAddLogMessage(4, qsTr("Air unit not alive, cannot update %1 MPP test mode").arg(camName));
             return;
         }
-        if (requestedSweepMinMbits > requestedSweepMaxMbits) {
-            _hudLogMessagesModel.signalAddLogMessage(4, qsTr("Sweep minimum must be <= maximum"));
-            return;
-        }
-        var currentMax = selectedSettingsModel.get_cached_int("DBG_BR_MAX");
-        var rangeOk;
-        if (requestedSweepMinMbits > currentMax) {
-            rangeOk = setDebugParameter("DBG_BR_MAX", requestedSweepMaxMbits)
-                    && setDebugParameter("DBG_BR_MIN", requestedSweepMinMbits);
-        } else {
-            rangeOk = setDebugParameter("DBG_BR_MIN", requestedSweepMinMbits)
-                    && setDebugParameter("DBG_BR_MAX", requestedSweepMaxMbits);
-        }
-        var ok = rangeOk
-                && setDebugParameter("DBG_BR_PERIOD", requestedSweepPeriodSeconds)
-                && setDebugParameter("DBG_NOISE", requestedNoisePercent)
-                && setDebugParameter("DBG_PKT_LOSS", requestedPacketLossPercent)
-                && setDebugParameter("DBG_BR_SWEEP", requestedBitrateSweep ? 1 : 0);
+        var ok = setDebugParameter("DBG_PKT_LOSS", requestedPacketLossPercent)
+                && setDebugParameter("DBG_KEY_LOSS", requestedKeyframeLossPercent);
         if (ok) {
             _hudLogMessagesModel.signalAddLogMessage(6, qsTr("%1 MPP video test mode updated").arg(camName));
             impairmentEditingUntilMs = 0;
@@ -178,11 +155,18 @@ BaseWidget {
     }
 
     function disableImpairments() {
-        requestedNoisePercent = 0;
         requestedPacketLossPercent = 0;
-        requestedBitrateSweep = false;
+        requestedKeyframeLossPercent = 0;
         markImpairmentEditing();
         applyImpairmentControls();
+    }
+
+    function applyIntraRefreshControls() {
+        var ok = setDebugParameter("MPP_IR_ENABLE", requestedIntraRefreshEnabled ? 1 : 0)
+                && setDebugParameter("MPP_IR_MODE", requestedIntraRefreshMode)
+                && setDebugParameter("MPP_IR_NUM", requestedIntraRefreshNum);
+        if (ok)
+            _hudLogMessagesModel.signalAddLogMessage(6, qsTr("MPP intra-refresh updated"));
     }
 
     function markUserEditing() {
@@ -728,7 +712,7 @@ BaseWidget {
                 RowLayout {
                     Layout.fillWidth: true
                     Text {
-                        text: qsTr("MPP LINK-DEGRADATION TEST")
+                        text: qsTr("VIDEO LOSS TEST")
                         color: "#ffff9900"
                         font.bold: true
                         font.pixelSize: 13
@@ -743,19 +727,7 @@ BaseWidget {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Text { text: qsTr("Input noise %"); color: settings.color_text; Layout.preferredWidth: 122 }
-                    Slider {
-                        from: 0; to: 100; stepSize: 1
-                        value: requestedNoisePercent
-                        onMoved: { markImpairmentEditing(); requestedNoisePercent = Math.round(value); }
-                        Layout.fillWidth: true
-                    }
-                    Text { text: requestedNoisePercent; color: "white"; Layout.preferredWidth: 30; horizontalAlignment: Text.AlignRight }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Text { text: qsTr("RTP packet loss %"); color: settings.color_text; Layout.preferredWidth: 122 }
+                    Text { text: qsTr("All RTP packets %"); color: settings.color_text; Layout.preferredWidth: 145 }
                     Slider {
                         from: 0; to: 95; stepSize: 1
                         value: requestedPacketLossPercent
@@ -767,42 +739,28 @@ BaseWidget {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    CheckBox {
-                        text: qsTr("Triangle bitrate sweep")
-                        checked: requestedBitrateSweep
-                        onToggled: { markImpairmentEditing(); requestedBitrateSweep = checked; }
-                        Layout.preferredWidth: 190
+                    Text { text: qsTr("Keyframe RTP packets %"); color: settings.color_text; Layout.preferredWidth: 145 }
+                    Slider {
+                        from: 0; to: 95; stepSize: 1
+                        value: requestedKeyframeLossPercent
+                        onMoved: { markImpairmentEditing(); requestedKeyframeLossPercent = Math.round(value); }
+                        Layout.fillWidth: true
                     }
-                    Text { text: qsTr("Min"); color: settings.color_text }
-                    SpinBox {
-                        from: 1; to: 200; editable: true
-                        value: requestedSweepMinMbits
-                        onValueModified: { markImpairmentEditing(); requestedSweepMinMbits = value; }
-                        Layout.preferredWidth: 82
-                    }
-                    Text { text: qsTr("Max"); color: settings.color_text }
-                    SpinBox {
-                        from: 1; to: 200; editable: true
-                        value: requestedSweepMaxMbits
-                        onValueModified: { markImpairmentEditing(); requestedSweepMaxMbits = value; }
-                        Layout.preferredWidth: 82
-                    }
-                    Text { text: qsTr("Mbit/s"); color: settings.color_text }
+                    Text { text: requestedKeyframeLossPercent; color: "white"; Layout.preferredWidth: 30; horizontalAlignment: Text.AlignRight }
                 }
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Text { text: qsTr("Full sweep period"); color: settings.color_text; Layout.fillWidth: true }
-                    SpinBox {
-                        from: 2; to: 120; editable: true
-                        value: requestedSweepPeriodSeconds
-                        onValueModified: { markImpairmentEditing(); requestedSweepPeriodSeconds = value; }
-                        Layout.preferredWidth: 92
+                    Button {
+                        text: qsTr("FORCE KEYFRAME")
+                        enabled: forceKeyframeAvailable && !selectedSettingsModel.ui_is_busy
+                        onClicked: setDebugParameter("MPP_FORCE_IDR", 1)
+                        Layout.preferredWidth: 150
                     }
-                    Text { text: qsTr("seconds"); color: settings.color_text; Layout.preferredWidth: 58 }
+                    Item { Layout.fillWidth: true }
                     Button {
                         text: qsTr("APPLY")
-                        enabled: !selectedSettingsModel.ui_is_busy
+                        enabled: impairmentParamsAvailable && !selectedSettingsModel.ui_is_busy
                         onClicked: applyImpairmentControls()
                         Layout.preferredWidth: 96
                     }
@@ -810,40 +768,26 @@ BaseWidget {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Text { text: qsTr("ROI (native MPP)"); color: settings.color_text; Layout.preferredWidth: 122 }
+                    Text { text: qsTr("Cyclic intra-refresh"); color: settings.color_text; Layout.preferredWidth: 145 }
                     CheckBox {
                         text: qsTr("enabled")
-                        checked: true
-                        enabled: false
+                        checked: requestedIntraRefreshEnabled
+                        enabled: intraRefreshParamsAvailable
+                        onToggled: { markImpairmentEditing(); requestedIntraRefreshEnabled = checked; }
                         Layout.fillWidth: true
                     }
-                    Text { text: qsTr("always on by default"); color: "#ff99dd99"; font.pixelSize: 10 }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Text { text: qsTr("Cyclic intra-refresh"); color: settings.color_text; Layout.preferredWidth: 122 }
-                    CheckBox {
-                        text: qsTr("enabled")
-                        checked: true
-                        enabled: false
-                        Layout.fillWidth: true
-                    }
-                    Text { text: qsTr("rows"); color: settings.color_text }
+                    Text { text: qsTr("units/frame"); color: settings.color_text }
                     SpinBox {
                         from: 1; to: 32; editable: true
                         value: requestedIntraRefreshNum
-                        onValueModified: { requestedIntraRefreshNum = value; setDebugParameter("MPP_IR_NUM", value); }
+                        enabled: intraRefreshParamsAvailable
+                        onValueModified: { markImpairmentEditing(); requestedIntraRefreshNum = value; }
                         Layout.preferredWidth: 68
                     }
                     Button {
                         text: qsTr("APPLY")
-                        onClicked: {
-                            setDebugParameter("MPP_ROI_ENABLE", requestedRoiEnabled ? 1 : 0);
-                            setDebugParameter("MPP_IR_ENABLE", requestedIntraRefreshEnabled ? 1 : 0);
-                            setDebugParameter("MPP_IR_MODE", requestedIntraRefreshMode);
-                            setDebugParameter("MPP_IR_NUM", requestedIntraRefreshNum);
-                        }
+                        enabled: intraRefreshParamsAvailable && !selectedSettingsModel.ui_is_busy
+                        onClicked: applyIntraRefreshControls()
                         Layout.preferredWidth: 80
                     }
                 }
@@ -852,12 +796,13 @@ BaseWidget {
                     Layout.fillWidth: true
                     Text { text: qsTr("Refresh mode"); color: settings.color_text; Layout.preferredWidth: 122 }
                     ComboBox {
-                        model: [qsTr("rows"), qsTr("columns")]
+                        model: [qsTr("rows"), qsTr("columns"), qsTr("sparse blocks")]
                         currentIndex: requestedIntraRefreshMode
-                        onActivated: { requestedIntraRefreshMode = currentIndex; setDebugParameter("MPP_IR_MODE", currentIndex); }
-                        Layout.preferredWidth: 120
+                        enabled: intraRefreshParamsAvailable
+                        onActivated: { markImpairmentEditing(); requestedIntraRefreshMode = currentIndex; }
+                        Layout.preferredWidth: 135
                     }
-                    Text { text: qsTr("ROI + cyclic refresh are MPP-native"); color: "#ff99dd99"; font.pixelSize: 10 }
+                    Text { text: qsTr("native MPP control"); color: "#ff99dd99"; font.pixelSize: 10 }
                 }
 
                 Text {
