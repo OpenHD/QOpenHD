@@ -12,6 +12,8 @@
 #include <QMutexLocker>
 #include <atomic>
 #include <cstdio>
+#include <exception>
+#include <new>
 #if defined(__android__)
 #include <QtAndroid>
 #endif
@@ -103,6 +105,7 @@ RESOLVEFUNC(EVP_PKEY_get_base_id);
 
 // Load all the fonts we use ?!
 static void load_fonts(){
+    try {
     QFontDatabase::addApplicationFont(":/resources/Font Awesome 5 Free-Solid-900.otf");
     QFontDatabase::addApplicationFont(":/resources/osdicons.ttf");
     QFontDatabase::addApplicationFont(":/resources/materialdesignicons-webfont.ttf");
@@ -149,7 +152,7 @@ static void load_fonts(){
     QFontDatabase::addApplicationFont(":/osdfonts/Rationale-Regular.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/Righteous-Regular.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/RobotoMono-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/RobotoMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/RobotoMono-Medium.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/RussoOne-Regular.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/ShareTech-Regular.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/ShareTechMono-Regular.ttf");
@@ -159,6 +162,14 @@ static void load_fonts(){
     QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-BoldItalic.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/Visitor.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
+    } catch (const std::bad_alloc&) {
+        // A malformed or partially packaged font must not prevent QOpenHD from
+        // starting. Qt's Windows font backend can throw while parsing it.
+        qCritical() << "A bundled font exhausted the Qt font parser; continuing with system fallbacks";
+    } catch (const std::exception& error) {
+        qCritical() << "Unable to load bundled fonts; continuing with system fallbacks:"
+                    << error.what();
+    }
 }
 
 static void setup_font_substitutions(){
