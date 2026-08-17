@@ -40,7 +40,7 @@ BaseWidget {
     property int requestedPacketLossPercent: 0
     property int requestedKeyframeLossPercent: 0
     property bool requestedIntraRefreshEnabled: true
-    property int requestedIntraRefreshMode: 2
+    property int requestedIntraRefreshMode: 1
     property int requestedIntraRefreshNum: 8
     property double impairmentEditingUntilMs: 0
     property int qpParamsAvailabilityUpdateCount: -1
@@ -796,7 +796,7 @@ BaseWidget {
                     Layout.fillWidth: true
                     Text { text: qsTr("Refresh mode"); color: settings.color_text; Layout.preferredWidth: 122 }
                     ComboBox {
-                        model: [qsTr("rows"), qsTr("columns"), qsTr("sparse blocks")]
+                        model: [qsTr("rows"), qsTr("columns")]
                         currentIndex: requestedIntraRefreshMode
                         enabled: intraRefreshParamsAvailable
                         onActivated: { markImpairmentEditing(); requestedIntraRefreshMode = currentIndex; }
