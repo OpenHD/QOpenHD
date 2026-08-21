@@ -43,6 +43,21 @@ public:
     Q_INVOKABLE bool siyi_autofocus();
     Q_INVOKABLE bool siyi_take_photo();
     Q_INVOKABLE bool siyi_set_recording(bool recording);
+    Q_INVOKABLE bool camera_gimbal_rate(float pitchRate, float yawRate,
+                                        int cameraIndex=0);
+    Q_INVOKABLE bool camera_gimbal_roll_rate(float rollRate,
+                                             int cameraIndex=0);
+    Q_INVOKABLE bool camera_gimbal_center(int cameraIndex=0);
+    Q_INVOKABLE bool camera_gimbal_calibrate(int cameraIndex=0);
+    Q_INVOKABLE bool camera_gimbal_mode(int mode, int cameraIndex=0);
+    Q_INVOKABLE bool camera_zoom(float rate, int cameraIndex=0);
+    Q_INVOKABLE bool camera_focus(float rate, int cameraIndex=0);
+    Q_INVOKABLE bool camera_autofocus(int cameraIndex=0);
+    Q_INVOKABLE bool camera_take_photo(int cameraIndex=0);
+    Q_INVOKABLE bool camera_set_recording(bool recording, int cameraIndex=0);
+    Q_INVOKABLE bool camera_set_image_type(int imageType, int cameraIndex=0);
+    Q_INVOKABLE bool camera_set_thermal_palette(int palette,
+                                                int cameraIndex=0);
     bool process_message(const mavlink_message_t& message);
     bool formatAirSdCardBusy() const { return m_format_air_sd_card_busy; }
     QString formatAirSdCardStatus() const { return m_format_air_sd_card_status; }
@@ -55,7 +70,8 @@ signals:
     void formatAirSdCardStatusChanged();
     void airStorageDevicesChanged();
 private:
-    bool send_siyi_command(uint16_t command, float param1=0.0F,
+    bool send_camera_command(uint16_t command, int cameraIndex=0,
+                           float param1=0.0F,
                            float param2=0.0F, float param3=0.0F,
                            float param4=0.0F, float param5=0.0F,
                            float param6=0.0F, float param7=0.0F);

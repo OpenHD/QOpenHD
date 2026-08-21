@@ -4,7 +4,7 @@
 
 extern "C" {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0) || defined(__macos__)) || defined(Q_OS_WIN)
-#include "lib/geographiclib-c-2.0/src/geodesic.h"
+#include "geographiclib-c-2.0/src/geodesic.h"
 #else
 #include "geodesic.h"
 #endif

@@ -659,6 +659,11 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
         MavlinkSettingsModel::SettingData data{param_id,param_value};
         addData(data);
     }
+    // QML helpers such as param_int_exists() are functions, so bindings cannot
+    // observe the row insertions themselves. Notify them after a full fetch has
+    // populated the cache. Without this, plugin-status bindings can remain at
+    // the value calculated while the model was still empty.
+    set_update_count(m_update_count+1);
 }
 
 void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result)

@@ -306,9 +306,9 @@ Rectangle {
             id: appDeveloperStatsPanel
         }
 
-        MavlinkDebugPanel {
-            id: mavlinkDebugPanel
-        }
+        // The legacy Qt Quick Controls 1 MAVLink table is intentionally not
+        // instantiated in Qt 6 builds. It otherwise prevents the whole HUD
+        // (including camera controls) from loading.
 
     }
 }

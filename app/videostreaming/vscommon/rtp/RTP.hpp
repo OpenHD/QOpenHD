@@ -5,7 +5,7 @@
 #ifndef LIVEVIDEO10MS_RTP_HPP
 #define LIVEVIDEO10MS_RTP_HPP
 
-#if defined(__windows__)
+#if defined(_WIN32)
 #include <winsock2.h>
 #else
 #include <arpa/inet.h>
@@ -18,7 +18,7 @@
 // This code is written for little endian (aka ARM,x86) byte order
 #if defined(__macos__)
 static_assert(__BYTE_ORDER__==LITTLE_ENDIAN);
-#elif defined(__windows__)
+#elif defined(_WIN32)
 static_assert(__BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__);
 #else
 static_assert(__BYTE_ORDER__==__LITTLE_ENDIAN);

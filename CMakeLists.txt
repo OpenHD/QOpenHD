@@ -58,6 +58,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/telemetry/models/fcmapmodel.cpp
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp
     app/telemetry/models/fcmavlinksystem.cpp
+    app/telemetry/models/mavlinkmessagestatsmodel.cpp
     app/telemetry/models/markermodel.cpp
     app/telemetry/models/rcchannelsmodel.cpp
     app/telemetry/models/wificard.cpp
@@ -88,6 +89,10 @@ qt_add_executable(QOpenHDApp
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
     qml/qml.qrc
+    qml/qml_assets_credits.qrc
+    qml/qml_assets_cursors.qrc
+    qml/qml_assets_fonts.qrc
+    qml/qml_assets_images.qrc
     ##
     androidqt6/AndroidManifest.xml
 )

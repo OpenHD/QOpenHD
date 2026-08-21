@@ -44,27 +44,21 @@ static int get_required_dbm_for_rate(int channel_width,int mcs_index){
 }
 // Bit field for boolean only value(s)
 struct MonitorModeLinkBitfield {
-    unsigned int stbc:1;
-    unsigned int lpdc:1;
-    unsigned int short_guard:1;
-    unsigned int curr_rx_last_packet_status_good:1;
-    unsigned int artosyn_link_active:1;
-    unsigned int artosyn_debug_stats_present:1;
-    unsigned int unused:2;
-}
-#ifdef __windows__
-;
-#else
-__attribute__ ((packed));
-static_assert(sizeof(MonitorModeLinkBitfield)==1);
-#endif
+    bool stbc;
+    bool lpdc;
+    bool short_guard;
+    bool curr_rx_last_packet_status_good;
+    bool artosyn_link_active;
+    bool artosyn_debug_stats_present;
+};
 static MonitorModeLinkBitfield parse_monitor_link_bitfield(uint8_t bitfield){
-    MonitorModeLinkBitfield ret{};
-#ifdef __windows__
-#else
-    std::memcpy((uint8_t*)&ret,&bitfield,1);
-#endif
-    return ret;
+    return MonitorModeLinkBitfield{
+        (bitfield & (1U << 0U)) != 0,
+        (bitfield & (1U << 1U)) != 0,
+        (bitfield & (1U << 2U)) != 0,
+        (bitfield & (1U << 3U)) != 0,
+        (bitfield & (1U << 4U)) != 0,
+        (bitfield & (1U << 5U)) != 0};
 }
 
 static std::string ohd_version_as_string(uint8_t major, uint8_t minor,

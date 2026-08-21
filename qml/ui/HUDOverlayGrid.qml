@@ -524,6 +524,10 @@ Item {
             id: exampleWidget
         }
 
+        IPCameraControlWidget {
+            id: ipCameraControlWidget
+        }
+
         DistanceSensorWidget{
             id: distancesensorwidget
         }

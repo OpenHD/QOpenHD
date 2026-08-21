@@ -15,11 +15,15 @@ SideBarBasePanel{
     override_title: "Camera"
 
     property int air_settings_update_count: _ohdSystemAirSettingsModel.update_count
-    property bool siyi_active: {
+    property bool camera_plugin_active: {
         var unused = air_settings_update_count
-        return _ohdSystemAirSettingsModel.has_params_fetched
-                && _ohdSystemAirSettingsModel.param_int_exists("SIYI_ACTIVE")
-                && _ohdSystemAirSettingsModel.get_cached_int("SIYI_ACTIVE") === 1
+        if (!_ohdSystemAirSettingsModel.has_params_fetched) return false
+        return (_ohdSystemAirSettingsModel.param_int_exists("CAM_CTRL_ACTIVE")
+                && _ohdSystemAirSettingsModel.get_cached_int("CAM_CTRL_ACTIVE") === 1)
+                || (_ohdSystemAirSettingsModel.param_int_exists("TOPOTEK_ACTIVE")
+                    && _ohdSystemAirSettingsModel.get_cached_int("TOPOTEK_ACTIVE") === 1)
+                || (_ohdSystemAirSettingsModel.param_int_exists("SIYI_ACTIVE")
+                    && _ohdSystemAirSettingsModel.get_cached_int("SIYI_ACTIVE") === 1)
     }
 
     function takeover_control(){
@@ -80,13 +84,13 @@ SideBarBasePanel{
         }
 
         ColumnLayout {
-            visible: siyi_active
+            visible: camera_plugin_active
             width: secondaryUiWidth
             spacing: 4
 
             Label {
                 Layout.fillWidth: true
-                text: qsTr("SIYI controls")
+                text: qsTr("IP camera controls")
                 color: "white"
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter

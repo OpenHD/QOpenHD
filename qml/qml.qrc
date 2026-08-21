@@ -56,6 +56,7 @@
         <file>ui/widgets/VerticalSpeedSimpleWidget.qml</file>
         <file>ui/widgets/WindWidget.qml</file>
         <file>ui/widgets/ExampleWidget.qml</file>
+        <file>ui/widgets/IPCameraControlWidget.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
         <file>ui/elements/LanguageSelect.qml</file>
         <file>ui/elements/LanguageSelectForm.ui.qml</file>
