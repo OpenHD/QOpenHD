@@ -174,11 +174,7 @@ Item {
     }
     ListModel{
         id: elements_model_channel_width
-        ListElement {value: 10; verbose:"10Mhz"}
-        ListElement {value: 20; verbose:"20Mhz"}
-    }
-    ListModel{
-        id: elements_model_channel_width_with_40
+        ListElement {value: 5; verbose:"5Mhz"}
         ListElement {value: 10; verbose:"10Mhz"}
         ListElement {value: 20; verbose:"20Mhz"}
         ListElement {value: 40; verbose:"40Mhz\n(HIGH BW)"}
@@ -225,9 +221,6 @@ Item {
             }
             return frequencies_model;
         }else if(param_id=="CHANNEL_WIDTH"){
-            if(settings.dev_allow_40mhz){
-                return elements_model_channel_width_with_40;
-            }
             return elements_model_channel_width;
         }else if(param_id=="RATE"){
             return elements_model_rate;

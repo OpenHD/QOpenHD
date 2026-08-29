@@ -16,20 +16,36 @@ BaseJoyEditElement{
 
     property int m_model_index: -1;
 
+    property var m_valid_widths: [5, 10, 20, 40]
+
+    function get_current_width_index() {
+        var w = _ohdSystemAir.curr_channel_width_mhz;
+        for (var i = 0; i < m_valid_widths.length; i++) {
+            if (m_valid_widths[i] === w) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     m_button_left_activated: {
         if(!_ohdSystemAir.is_alive)return false;
-        return _ohdSystemAir.curr_channel_width_mhz==40;
+        return get_current_width_index() > 0;
     }
 
     m_button_right_activated: {
         if(!_ohdSystemAir.is_alive)return false;
-        return _ohdSystemAir.curr_channel_width_mhz==20;
+        return get_current_width_index() < (m_valid_widths.length - 1) && get_current_width_index() !== -1;
     }
 
     m_displayed_value: {
         if(!_ohdSystemAir.is_alive)return "N/A";
         var channel_width=_ohdSystemAir.curr_channel_width_mhz
-        if(channel_width==20){
+        if(channel_width==5){
+            return "5Mhz"
+        }else if(channel_width==10){
+            return "10Mhz"
+        }else if(channel_width==20){
             return "20Mhz"
         }else if(channel_width==40){
             return "40Mhz\n(HIGH BW)"
@@ -47,11 +63,17 @@ BaseJoyEditElement{
     }
 
     onChoice_left: {
-        set_channel_width_async(20);
+        var idx = get_current_width_index();
+        if (idx > 0) {
+            set_channel_width_async(m_valid_widths[idx - 1]);
+        }
     }
 
     onChoice_right: {
-        set_channel_width_async(40);
+        var idx = get_current_width_index();
+        if (idx < (m_valid_widths.length - 1) && idx !== -1) {
+            set_channel_width_async(m_valid_widths[idx + 1]);
+        }
     }
 
 

@@ -85,6 +85,10 @@ BaseWidget {
             ret+= " " + qsTr("40 MHz");
         }else if(_ohdSystemGround.curr_channel_width_mhz==20){
             ret+= " " + qsTr("20 MHz");
+        }else if(_ohdSystemGround.curr_channel_width_mhz==10){
+            ret+= " " + qsTr("10 MHz");
+        }else if(_ohdSystemGround.curr_channel_width_mhz==5){
+            ret+= " " + qsTr("5 MHz");
         }else{
             ret += " " + qsTr("N/A");
         }
@@ -318,6 +322,22 @@ BaseWidget {
             width: parent.width
             height: m_row_height
             spacing: 20
+            Button{
+                text: qsTr("5 MHz")
+                onClicked: {
+                    set_channel_width_async(5)
+                }
+                highlighted: m_curr_channel_width==5
+                //enabled: _ohdSystemAir.is_alive;
+            }
+            Button{
+                text: qsTr("10 MHz")
+                onClicked: {
+                    set_channel_width_async(10)
+                }
+                highlighted: m_curr_channel_width==10
+                //enabled: _ohdSystemAir.is_alive;
+            }
             Button{
                 text: qsTr("20 MHz")
                 onClicked: {

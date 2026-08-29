@@ -71,19 +71,6 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: qsTr("Allow 40 MHz channel width")
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_allow_40mhz
-                    onCheckedChanged: settings.dev_allow_40mhz = checked
-                }
-            }
-            SettingBaseElement{
                 m_short_description: qsTr("Disable auto fetch")
                 Switch {
                     width: 32
