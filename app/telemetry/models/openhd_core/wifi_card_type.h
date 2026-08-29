@@ -20,8 +20,24 @@ enum class WiFiCardType : int {
     AIC = 13,
     QUALCOMM = 14,
     UNKNOWN = 15,
-    ARTOSYN = 16
+    ARTOSYN = 16,
+    DEVOURER_RTL8812A = 17,
+    DEVOURER_RTL8821A = 18,
+    DEVOURER_RTL8814A = 19,
+    DEVOURER_RTL8821C = 20,
+    DEVOURER_RTL8822B = 21,
+    DEVOURER_RTL8822C = 22,
+    DEVOURER_RTL8822E = 23,
+    DEVOURER_RTL8733B = 24,
+    DEVOURER_RTL8852B = 25,
+    DEVOURER_RTL8852C = 26,
+    DEVOURER_RTL8811A = 27
 };
+
+static_assert(static_cast<int>(WiFiCardType::OPENHD_RTL_88X2AU) == 0);
+static_assert(static_cast<int>(WiFiCardType::ARTOSYN) == 16);
+static_assert(static_cast<int>(WiFiCardType::DEVOURER_RTL8812A) == 17);
+static_assert(static_cast<int>(WiFiCardType::DEVOURER_RTL8811A) == 27);
 
 constexpr int wifi_card_type_to_int(const WiFiCardType card_type) {
     return static_cast<int>(card_type);

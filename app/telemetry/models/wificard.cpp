@@ -43,13 +43,29 @@ static std::string wifi_card_type_to_string(const int card_type) {
         return "UNKNOWN";
     case openhd::wifi_card_type_to_int(openhd::WiFiCardType::ARTOSYN):
         return "ARTOSYN";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8812A): return "Devourer RTL8812A";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8821A): return "Devourer RTL8821A (1T1R)";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8814A): return "Devourer RTL8814A";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8821C): return "Devourer RTL8821C (1T1R)";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8822B): return "Devourer RTL8822B";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8822C): return "Devourer RTL8822C";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8822E): return "Devourer RTL8822E";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8733B): return "Devourer RTL8733B (1T1R)";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8852B): return "Devourer RTL8852B";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8852C): return "Devourer RTL8852C";
+    case openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8811A): return "Devourer RTL8811A (1T1R)";
     default:
         return "UNKNOWN";
     }
 }
+static bool is_devourer_card_type(const int card_type) {
+    return card_type >= openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8812A) &&
+           card_type <= openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8811A);
+}
 static QString tx_power_unit_for_card(const int card_type){
     std::stringstream ss;
-    if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2AU)){
+    if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2AU) ||
+       is_devourer_card_type(card_type)){
         // OpenHD RTL8812AU
         return "TPI";
     }else if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2BU) ||
@@ -105,6 +121,18 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     set_rx_snr_antenna1(msg.rx_snr_antenna1);
     set_rx_snr_antenna2(msg.rx_snr_antenna2);
     set_card_temperature(msg.card_temperature);
+    const bool devourer_card = is_devourer_card_type(msg.card_type);
+    if(devourer_card){
+        switch(msg.card_temperature){
+        case 1: set_card_temperature_status("COOL"); break;
+        case 2: set_card_temperature_status("WARM"); break;
+        case 3: set_card_temperature_status("HOT"); break;
+        case 4: set_card_temperature_status("CRITICAL"); break;
+        default: set_card_temperature_status("UNKNOWN"); break;
+        }
+    }else{
+        set_card_temperature_status("N/A");
+    }
 
     set_n_received_packets(msg.count_p_received);
     set_packet_loss_perc(msg.curr_rx_packet_loss_perc);
@@ -159,8 +187,16 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
        card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2CU) ||
        card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2EU) ||
        card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_EMULATED) ||
-       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::QUALCOMM) ||
        card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::ARTOSYN)){
+        supported=true;
+    }
+    if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8812A) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8814A) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8822B) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8822C) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8822E) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8852B) ||
+       card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8852C)){
         supported=true;
     }
     set_card_type_supported(supported);
