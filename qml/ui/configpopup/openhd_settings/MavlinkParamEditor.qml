@@ -168,9 +168,6 @@ Rectangle{
                 for (var i = 0; i < keys.length; i++) {
                     var key=keys[i];
                     var value=values[i];
-                    if(parameterId==="WB_CHANNEL_W" && !settings.dev_allow_40mhz && value===40){
-                        continue;
-                    }
                     //console.log(key,value);
                     intEnumDynamicListModel.append({title: key, value: value})
                     list_index=intEnumDynamicListModel.count-1
@@ -439,10 +436,6 @@ Rectangle{
                         value_int=intEnumDynamicListModel.get(intEnumDynamicComboBox.currentIndex).value
                     }else{
                         value_int=spinBoxInputParamtypeInt.value
-                    }
-                    if(parameterId==="WB_CHANNEL_W" && value_int===40 && !settings.dev_allow_40mhz){
-                        _qopenhd.show_toast(qsTr("40 MHz is disabled (enable in Advanced Settings)"),true);
-                        return;
                     }
                     //var value_int_as_string=spinBoxInputParamtypeInt.text
                     //var value_int = parseInt(value_int_as_string)

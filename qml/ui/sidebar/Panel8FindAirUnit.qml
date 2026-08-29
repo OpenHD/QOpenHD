@@ -37,11 +37,10 @@ SideBarBasePanel{
 
         function rebuildBandwidthModel(){
             scanBandwidthModel.clear();
+            scanBandwidthModel.append({value: 5, verbose: "5 MHz"});
             scanBandwidthModel.append({value: 10, verbose: "10 MHz"});
             scanBandwidthModel.append({value: 20, verbose: "20 MHz"});
-            if(settings.dev_allow_40mhz){
-                scanBandwidthModel.append({value: 40, verbose: "40 MHz"});
-            }
+            scanBandwidthModel.append({value: 40, verbose: "40 MHz"});
         }
 
         function syncBandwidthIndex(){

@@ -48,11 +48,10 @@ PopupBigGeneric{
 
     function rebuild_bandwidth_model(){
         model_bandwidth_to_scan.clear();
+        model_bandwidth_to_scan.append({title: qsTr("5 MHz"), value: 5});
         model_bandwidth_to_scan.append({title: qsTr("10 MHz"), value: 10});
         model_bandwidth_to_scan.append({title: qsTr("20 MHz"), value: 20});
-        if(settings.dev_allow_40mhz){
-            model_bandwidth_to_scan.append({title: qsTr("40 MHz"), value: 40});
-        }
+        model_bandwidth_to_scan.append({title: qsTr("40 MHz"), value: 40});
     }
 
     function sync_bandwidth_selection(){
