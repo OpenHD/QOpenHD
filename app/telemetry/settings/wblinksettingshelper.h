@@ -33,10 +33,10 @@ public:
     // (until successfully requested)
     // Then we know the current frequency, channel width and which channels the ground is capable of -
     // and are ready to populate the choices for the user.
-    // Whenever we want to change one of those params, we first try changing it on the air unit
-    // (Air unit will reject if it is not capable of the given frequency)
-    // and on success, we change the ground unit frequency. Since one can only select frequencies the ground unit supports,
-    // this should nevver fail.
+    // Frequency changes arm the target on ground first, then send the request
+    // to air. Air reports RECEIVED(new frequency, width) five times. Ground
+    // switches once on the first copy, or follows the armed target when the old
+    // link disappears before a copy arrives.
 
 
     // These are also in aohdsystem, their usage (and correct setting of them) is required here, too
@@ -73,8 +73,8 @@ private:
     // Returns 0 on success, error code otherwise.
     // Viable error code(s):
     // -1 : air unit reached, but rejected the value (value unsupported)
-    // -2 : air unit not reached
-    // -3 : really bad, we changed the value on air, but ground rejected
+    // -2 : air unit not reached; ground remains armed and retries
+    // -3 : ground could not arm the requested fallback target
     int change_param_air_and_ground_blocking(QString param_id,int value);
     bool change_param_ground_only_blocking(QString param_id,int value);
     void change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag);

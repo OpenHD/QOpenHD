@@ -183,7 +183,19 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
 int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,int value)
 {
     qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;
-    // First change it on the air and wait for ack - if failed, return. We do a lot of retransmissions to make it unlikely that fails
+    // Arm ground first. If the link disappears while the request is travelling
+    // to air (or while air changes channel), ground still knows which channel
+    // it must follow.
+    const auto command_gnd=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
+    const bool ground_success=XParam::instance().try_set_param_blocking(command_gnd,std::chrono::milliseconds(200),5);
+    if(!ground_success){
+        std::stringstream ss;
+        ss<<"Cannot arm ground frequency fallback for "<<param_id.toStdString()<<"="<<value;
+        qWarning("%s", ss.str().c_str());
+        return -3;
+    }
+    // Send it to air and wait for its parameter ack. Retransmit enough times
+    // that a lossy uplink normally still delivers the request.
     const auto command_air=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
     const bool air_success=XParam::instance().try_set_param_blocking(command_air,std::chrono::milliseconds(100),20);
     if(!air_success){
@@ -193,17 +205,6 @@ int WBLinkSettingsHelper::change_param_air_and_ground_blocking(QString param_id,
          // TODO handle ack, but rejected
         return -2;
     }
-    // we have changed the value on air, now change the ground
-    // It is highly unlikely that fauls - if it does, we have an issue !
-    // But since qopenhd <-> openhd ground is either localhost or tcp, that should never be an issue
-    /*const auto command_gnd=XParam::create_cmd_set_int(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
-    const bool ground_success=XParam::instance().try_set_param_blocking(command_gnd,std::chrono::milliseconds(200),5);
-    if(!ground_success){
-        std::stringstream ss;
-        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" (gnd failed)";
-        qWarning("%s", ss.str().c_str());
-        return -3;
-    }*/
     std::stringstream ss;
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
     qDebug()<<ss.str().c_str();
