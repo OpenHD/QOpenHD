@@ -82,7 +82,9 @@ public:
         // Default false, only if a parameter is in the read-only whitelist it is marked as read-only
         ReadOnlyRole,
         // Weather this parameter is whitelisted
-        WhitelistedRole
+        WhitelistedRole,
+        // Compact UI section derived from the parameter namespace.
+        GroupRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;

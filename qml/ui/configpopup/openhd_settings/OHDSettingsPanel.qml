@@ -41,10 +41,17 @@ Rectangle {
         }
         TabButton {
             text: qsTr("AIR CAM 1")
+            visible: _airCameraSettingsModel.has_params_fetched &&
+                     (_airCameraSettingsModel.param_int_exists("CAMERA_TYPE") ||
+                      _airCameraSettingsModel.param_string_exists("IP_CAM_PIPELINE"))
+            width: visible ? implicitWidth : 0
         }
         TabButton {
             text: qsTr("AIR CAM 2")
-            enabled: settings.dev_qopenhd_n_cameras>1
+            visible: _airCameraSettingsModel2.has_params_fetched &&
+                     (_airCameraSettingsModel2.param_int_exists("CAMERA_TYPE") ||
+                      _airCameraSettingsModel2.param_string_exists("IP_CAM_PIPELINE"))
+            width: visible ? implicitWidth : 0
         }
         TabButton {
             text: qsTr("AIR")

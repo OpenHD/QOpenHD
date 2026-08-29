@@ -40,6 +40,19 @@ Rectangle {
     property bool m_any_param_eitor_opened: parameterEditor.visible || dialoque_choose_camera.visible || dialoque_choose_resolution.visible;
     property bool m_any_param_busy: _ohdSystemGroundSettings.ui_is_busy || _ohdSystemAirSettingsModel.ui_is_busy || _airCameraSettingsModel.ui_is_busy ||
                                     _airCameraSettingsModel2.ui_is_busy;
+    property var collapsedGroups: ({})
+
+    function groupIsCollapsed(groupName) {
+        if(collapsedGroups[groupName] !== undefined) return collapsedGroups[groupName]
+        return groupName !== "GENERAL"
+    }
+
+    function toggleGroup(groupName) {
+        var updated = {}
+        for(var key in collapsedGroups) updated[key] = collapsedGroups[key]
+        updated[groupName] = !groupIsCollapsed(groupName)
+        collapsedGroups = updated
+    }
 
     function ipCameraPortFromPipeline(pipeline) {
         var match = pipeline.match(/rtsp:\/\/\{IP\}:(\d+)/)
@@ -194,9 +207,10 @@ Rectangle {
             //color: "transparent"
             color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : ((index % 2 == 0) ? "#8cbfd7f3" : "#00000000")
             property bool isIpCameraQuickSetting: model.unique_id === "IP_CAM_ADDRESS" || model.unique_id === "IP_CAM_PIPELINE"
-            height: isIpCameraQuickSetting ? 0 : 64
+            property bool groupCollapsed: groupIsCollapsed(model.group)
+            height: (isIpCameraQuickSetting || groupCollapsed) ? 0 : 64
             width: listView.width-12
-            visible: !isIpCameraQuickSetting
+            visible: !isIpCameraQuickSetting && !groupCollapsed
             Row {
                 spacing: 30
                 height: parent.height
@@ -302,6 +316,26 @@ Rectangle {
                 width: parent.width
                 model: m_instanceMavlinkSettingsModel
                 delegate: delegateMavlinkSettingsValue
+                section.property: "group"
+                section.criteria: ViewSection.FullString
+                section.delegate: Rectangle {
+                    width: listView.width - 12
+                    height: 42
+                    color: settings.screen_settings_openhd_parameters_transparent ? "#aa263648" : "#d7e5ec"
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: (groupIsCollapsed(section) ? "\uf0da  " : "\uf0d7  ") + section
+                        font.family: "Font Awesome 5 Free"
+                        font.bold: true
+                        color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: toggleGroup(section)
+                    }
+                }
                 visible: !please_fetch_item.visible && m_instanceCheckIsAvlie.is_alive
                 header: Rectangle {
                     width: listView.width - 12

@@ -9,12 +9,28 @@
 
 #include <QSettings>
 #include <QVariant>
+#include <algorithm>
 
 #include "../action/impl/xparam.h"
 // Dirty
 #include "../models/openhd_core/camera.hpp"
 #include "../models/aohdsystem.h"
 #include "../util/WorkaroundMessageBox.h"
+
+namespace {
+QString parameter_group(const QString& id)
+{
+    if(id.startsWith("DEV_")) return QStringLiteral("DEVOURER");
+    if(id.startsWith("AR_")) return QStringLiteral("ARTOSYN");
+    if(id.startsWith("MICROHARD_") || id.startsWith("MH_")) return QStringLiteral("MICROHARD");
+    if(id.startsWith("TX_POWER") || id.startsWith("TX_PWR")) return QStringLiteral("TX POWER");
+    if(id.startsWith("WB_RTX_") || id == QStringLiteral("WB_ENABLE_RETRA")) return QStringLiteral("RETRANSMISSION");
+    if(id.startsWith("WIFI_") || id.startsWith("ETHERNET") || id.startsWith("HOTSPOT_") ||
+       id.startsWith("NW_")) return QStringLiteral("NETWORK");
+    if(id.startsWith("V_")) return QStringLiteral("VIDEO");
+    return QStringLiteral("GENERAL");
+}
+}
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {
@@ -332,6 +348,8 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         return DocumentedParam::read_only(data.unique_id.toStdString());
     }else if(role == WhitelistedRole){
         return DocumentedParam::is_param_whitelisted(data.unique_id.toStdString());
+    }else if(role == GroupRole){
+        return parameter_group(data.unique_id);
     }
     else
         return QVariant();
@@ -346,7 +364,8 @@ QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
         {ValueTypeRole,"valueType"},
         {ShortDescriptionRole,"shortDescription"},
         {ReadOnlyRole,"read_only"},
-        {WhitelistedRole,"whitelisted"}
+        {WhitelistedRole,"whitelisted"},
+        {GroupRole,"group"}
     };
     return mapping;
 }
@@ -645,8 +664,15 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
         removeData(rowCount()-1);
     }
     qDebug()<<"Done removing old params";
-    for(int i=0;i<qt_param_set.param_set.size();i++){
-        const auto param=qt_param_set.param_set[i];
+    auto sorted_params=qt_param_set.param_set;
+    std::stable_sort(sorted_params.begin(), sorted_params.end(), [](const auto& lhs,const auto& rhs){
+        const auto lhs_group=parameter_group(lhs.param_id);
+        const auto rhs_group=parameter_group(rhs.param_id);
+        if(lhs_group==rhs_group) return lhs.param_id<rhs.param_id;
+        return lhs_group<rhs_group;
+    });
+    for(int i=0;i<sorted_params.size();i++){
+        const auto param=sorted_params[i];
         const QString param_id=param.param_id;
         std::variant<int32_t,std::string> param_value;
         if(param.type==0){
