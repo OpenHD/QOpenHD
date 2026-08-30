@@ -10,7 +10,7 @@ import "../elements"
 
 //
 // Pit mode selector (Air only): Off/On
-// On  = disarmed uses LOWEST level when TX power levels are active
+// On  = disarmed uses the 20% target
 // Off = disarmed uses the same level as armed
 //
 BaseJoyEditElement2 {

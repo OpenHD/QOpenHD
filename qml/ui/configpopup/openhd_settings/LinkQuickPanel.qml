@@ -35,6 +35,41 @@ Rectangle{
     property int m_retrans_history_rc_ms: 10
     property int m_retrans_request_retries: 1
     property int m_retrans_update_count: _ohdSystemGroundSettings.update_count + _ohdSystemAirSettingsModel.update_count
+    property bool m_block_adaptive_update: false
+    property bool m_adaptive_available: false
+    property bool m_adaptive_enabled: false
+    property bool m_fhss_available: false
+    property bool m_fhss_enabled: false
+    property int m_fhss_slot_ms: 50
+    property bool m_block_fhss_update: false
+
+    ListModel {
+        id: fhss_slot_model
+        ListElement { title: "25 ms"; value: 25 }
+        ListElement { title: "50 ms"; value: 50 }
+        ListElement { title: "100 ms"; value: 100 }
+    }
+    Timer {
+        id: fhssSecondEndpointTimer
+        interval: 700
+        repeat: false
+        property bool enabling: false
+        onTriggered: {
+            if (enabling)
+                _ohdSystemAirSettingsModel.try_set_param_int_async("WB_FHSS", 1);
+            else
+                _ohdSystemGroundSettings.try_set_param_int_async("WB_FHSS", 0);
+        }
+    }
+
+    ListModel {
+        id: power_target_model
+        ListElement { title: "20%"; value: 20 }
+        ListElement { title: "40%"; value: 40 }
+        ListElement { title: "60%"; value: 60 }
+        ListElement { title: "80%"; value: 80 }
+        ListElement { title: "100%"; value: 100 }
+    }
 
     function user_quidance_animate_channel_scan(){
         console.log("User guidance animate channel scan");
@@ -98,6 +133,77 @@ Rectangle{
         }
     }
 
+    function power_model_ready(model) {
+        return model !== undefined && model.system_is_alive() &&
+                model.has_params_fetched && model.param_int_exists("TX_PWR_LVL");
+    }
+
+    function power_target_index(model) {
+        if (!power_model_ready(model)) return -1;
+        return find_index(power_target_model, model.get_cached_int("TX_PWR_LVL"));
+    }
+
+    function update_power_comboboxes() {
+        comboBoxPowerAir.currentIndex = power_target_index(_ohdSystemAirSettingsModel);
+        comboBoxPowerGround.currentIndex = power_target_index(_ohdSystemGroundSettings);
+    }
+
+    function set_power_target(model, index) {
+        if (!power_model_ready(model) || index < 0 || index >= power_target_model.count) {
+            _qopenhd.show_toast(qsTr("Power control is not ready"));
+            update_power_comboboxes();
+            return;
+        }
+        model.try_set_param_int_async("TX_PWR_LVL", power_target_model.get(index).value);
+    }
+
+    function ensure_power_params_fetched(model) {
+        if (model === undefined || !model.system_is_alive() ||
+                model.has_params_fetched || model.ui_is_busy) return;
+        model.try_refetch_all_parameters_async(false);
+    }
+
+    function update_adaptive_channel_control() {
+        m_block_adaptive_update = true;
+        var value = read_param_int(_ohdSystemAirSettingsModel, "WB_ADAPT_CH");
+        m_adaptive_available = value !== null;
+        m_adaptive_enabled = value !== null && value > 0;
+        m_block_adaptive_update = false;
+    }
+
+    function update_fhss_control() {
+        m_block_fhss_update = true;
+        var air = read_param_int(_ohdSystemAirSettingsModel, "WB_FHSS");
+        var ground = read_param_int(_ohdSystemGroundSettings, "WB_FHSS");
+        var slot = read_param_int(_ohdSystemAirSettingsModel, "WB_FHSS_SLOT");
+        if (slot === null) slot = read_param_int(_ohdSystemGroundSettings, "WB_FHSS_SLOT");
+        m_fhss_available = air !== null && ground !== null;
+        m_fhss_enabled = m_fhss_available && air > 0 && ground > 0;
+        m_fhss_slot_ms = slot !== null ? slot : 50;
+        comboBoxFhssSlot.currentIndex = find_index(fhss_slot_model, m_fhss_slot_ms);
+        m_block_fhss_update = false;
+    }
+
+    function set_fhss_enabled(enabled) {
+        if (!m_fhss_available) return;
+        // Arm the follower before the authority starts hopping. On shutdown,
+        // stop the authority first so Ground can still hear the last channel.
+        if (enabled) {
+            _ohdSystemGroundSettings.try_set_param_int_async("WB_FHSS", 1);
+            fhssSecondEndpointTimer.enabling = true;
+            fhssSecondEndpointTimer.restart();
+        } else {
+            _ohdSystemAirSettingsModel.try_set_param_int_async("WB_FHSS", 0);
+            fhssSecondEndpointTimer.enabling = false;
+            fhssSecondEndpointTimer.restart();
+        }
+    }
+
+    function set_fhss_slot(value) {
+        _ohdSystemGroundSettings.try_set_param_int_async("WB_FHSS_SLOT", value);
+        _ohdSystemAirSettingsModel.try_set_param_int_async("WB_FHSS_SLOT", value);
+    }
+
     // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
     // For the models above (model with value) try to find the index of the first  item where model[i].value===value
     function find_index(model,value){
@@ -157,13 +263,17 @@ Rectangle{
 
     onM_retrans_update_countChanged: {
         update_retransmission_switches();
+        ensure_power_params_fetched(_ohdSystemAirSettingsModel);
+        ensure_power_params_fetched(_ohdSystemGroundSettings);
+        update_power_comboboxes();
+        update_adaptive_channel_control();
+        update_fhss_control();
     }
 
     //
     function close_all_dialoques(){
         popup_analyze_channels.close()
         popup_scan_channels.close();
-        popup_change_tx_power.close();
         dialoqueFreqChangeGndOnly.close();
         dialoqueFreqChangeAirGnd.close();
         popup_enable_stbc_ldpc.close();
@@ -187,15 +297,20 @@ Rectangle{
         create_list_models_frequency();
         update_frequency_combobox();
         update_retransmission_switches();
+        ensure_power_params_fetched(_ohdSystemAirSettingsModel);
+        ensure_power_params_fetched(_ohdSystemGroundSettings);
+        update_power_comboboxes();
+        update_adaptive_channel_control();
+        update_fhss_control();
     }
 
-    function get_text_wifi_tx_power(air){
-        if(air){
-            if(!_wifi_card_air.alive) return qsTr("N/A");
-            return qsTr("%1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit);
-        }
-        if(!_wifi_card_gnd0.alive) return qsTr("N/A");
-        return qsTr("%1 %2").arg(_wifi_card_gnd0.tx_power).arg(_wifi_card_gnd0.tx_power_unit);
+    onVisibleChanged: {
+        if (!visible) return;
+        ensure_power_params_fetched(_ohdSystemAirSettingsModel);
+        ensure_power_params_fetched(_ohdSystemGroundSettings);
+        update_power_comboboxes();
+        update_adaptive_channel_control();
+        update_fhss_control();
     }
 
     ScrollView {
@@ -207,7 +322,7 @@ Rectangle{
         //contentWidth: main_column_layout.width
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         ScrollBar.vertical.interactive: true
-        visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_change_tx_power.visible && !popup_scan_channels.visible)
+        visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_scan_channels.visible)
         clip: true
 
         Item {
@@ -433,6 +548,70 @@ Rectangle{
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }*/
                     }
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 12
+                        Text {
+                            height: m_small_height
+                            text: qsTr("ADAPTIVE CHANNEL")
+                            verticalAlignment: Qt.AlignVCenter
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Switch {
+                            checked: m_adaptive_enabled
+                            enabled: m_adaptive_available && !m_fhss_enabled &&
+                                     !m_block_adaptive_update &&
+                                     _ohdSystemAir.is_alive
+                            onClicked: {
+                                if (!m_adaptive_available) return;
+                                _ohdSystemAirSettingsModel.try_set_param_int_async(
+                                            "WB_ADAPT_CH", checked ? 1 : 0);
+                            }
+                        }
+                        Text {
+                            height: m_small_height
+                            text: m_adaptive_available
+                                  ? qsTr("Air radio 2 surveys for cleaner channels")
+                                  : qsTr("Requires two Devourer radios on Air")
+                            color: m_adaptive_available ? "black" : "#707070"
+                            verticalAlignment: Qt.AlignVCenter
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                    }
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 12
+                        Text {
+                            height: m_small_height
+                            text: qsTr("DEVOURER FHSS")
+                            verticalAlignment: Qt.AlignVCenter
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                        Switch {
+                            checked: m_fhss_enabled
+                            enabled: m_fhss_available && !m_block_fhss_update &&
+                                     _ohdSystemAir.is_alive && _ohdSystemGround.is_alive
+                            onClicked: set_fhss_enabled(checked)
+                        }
+                        ComboBox {
+                            id: comboBoxFhssSlot
+                            width: 120
+                            height: m_small_height
+                            model: fhss_slot_model
+                            textRole: "title"
+                            enabled: m_fhss_available && !m_fhss_enabled
+                            onActivated: set_fhss_slot(fhss_slot_model.get(currentIndex).value)
+                        }
+                        Text {
+                            height: m_small_height
+                            text: m_fhss_available
+                                  ? qsTr("mLRS/secondary telemetry uplink required")
+                                  : qsTr("Requires Devourer on Air and Ground")
+                            color: m_fhss_available ? "black" : "#707070"
+                            verticalAlignment: Qt.AlignVCenter
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        }
+                    }
                 }
 
                 SettingsCategory{
@@ -440,43 +619,50 @@ Rectangle{
                     m_hide_elements: false;
                     Row{
                         anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 24
                         Text{
-                            width:  m_small_width
+                            width:  55
                             height: m_small_height
-                            text: qsTr("AIR:\n %1").arg(get_text_wifi_tx_power(true))
+                            text: qsTr("AIR:")
                             verticalAlignment: Qt.AlignVCenter
-                            horizontalAlignment: Qt.AlignHCenter
+                            horizontalAlignment: Qt.AlignRight
                             font.bold: false
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }
-                        Button{
-                            text: qsTr("EDIT")
-                            enabled: _ohdSystemAir.is_alive
-                            //enabled: true
-                            onClicked: {
-                                close_all_dialoques();
-                                popup_change_tx_power.m_is_air=true;
-                                popup_change_tx_power.open()
-                            }
+                        ComboBox {
+                            id: comboBoxPowerAir
+                            width: 180
+                            height: m_small_height
+                            model: power_target_model
+                            textRole: "title"
+                            currentIndex: -1
+                            displayText: currentIndex >= 0 ? currentText : qsTr("N/A")
+                            enabled: m_retrans_update_count >= 0 &&
+                                     power_model_ready(_ohdSystemAirSettingsModel)
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                            onActivated: set_power_target(_ohdSystemAirSettingsModel, currentIndex)
                         }
                         Text{
-                            width:  m_small_width
+                            width:  75
                             height: m_small_height
-                            text: qsTr("GND:\n%1").arg(get_text_wifi_tx_power(false))
+                            text: qsTr("GROUND:")
                             verticalAlignment: Qt.AlignVCenter
-                            horizontalAlignment: Qt.AlignHCenter
+                            horizontalAlignment: Qt.AlignRight
                             font.bold: false
                             font.pixelSize: settings.qopenhd_general_font_pixel_size
                         }
-                        Button{
-                            text: qsTr("EDIT")
-                            enabled: _ohdSystemGround.is_alive
-                            //enabled: true
-                            onClicked: {
-                                close_all_dialoques();
-                                popup_change_tx_power.m_is_air=false;
-                                popup_change_tx_power.open()
-                            }
+                        ComboBox {
+                            id: comboBoxPowerGround
+                            width: 180
+                            height: m_small_height
+                            model: power_target_model
+                            textRole: "title"
+                            currentIndex: -1
+                            displayText: currentIndex >= 0 ? currentText : qsTr("N/A")
+                            enabled: m_retrans_update_count >= 0 &&
+                                     power_model_ready(_ohdSystemGroundSettings)
+                            font.pixelSize: settings.qopenhd_general_font_pixel_size
+                            onActivated: set_power_target(_ohdSystemGroundSettings, currentIndex)
                         }
 
                     }
@@ -688,9 +874,6 @@ Rectangle{
         id: popup_scan_channels
     }
 
-    PopupTxPowerEditor{
-        id: popup_change_tx_power
-    }
     PopupEnableSTBCLDPC{
         id: popup_enable_stbc_ldpc
     }

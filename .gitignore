@@ -88,3 +88,4 @@ qopenhd_qmltyperegistrations.cpp
 
 CMakeLists.txt.user
 /1op
+/android/.gradle

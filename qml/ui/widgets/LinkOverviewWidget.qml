@@ -145,7 +145,9 @@ BaseWidget {
     }
 
     function is_valid_temp(value) {
-        return value > -127;
+        // OpenHD's legacy core-status packet uses zero when a driver cannot
+        // provide a calibrated Celsius value.
+        return value > 5;
     }
 
     function format_txc_temp(value) {
@@ -397,6 +399,28 @@ BaseWidget {
         return db + " dB";
     }
 
+    function metric_db_text(value) {
+        return value > -127 ? value + " dB" : "N/A";
+    }
+
+    function metric_dbm_text(value) {
+        return value > -127 ? value + " dBm" : "N/A";
+    }
+
+    function devourer_paths_text(card) {
+        if (!card.rx_paths_valid) return "N/A";
+        return card.rx_active_path_count + " active (0x" +
+            Number(card.rx_active_path_mask).toString(16).toUpperCase() + ")";
+    }
+
+    function devourer_thermal_text(card) {
+        if (!card.thermal_valid) return "N/A";
+        return "raw " + card.thermal_raw + ", baseline " +
+            card.thermal_baseline + ", delta " +
+            (card.thermal_delta >= 0 ? "+" : "") + card.thermal_delta +
+            " (" + card.card_temperature_status + ")";
+    }
+
     function int_to_string_N_chars_wide(value, n_chars) {
         var ret = "" + value;
         for (var i = ret.length; i < n_chars; i++) {
@@ -489,6 +513,124 @@ BaseWidget {
                 height: 28
                 Text {
                     text: qsTr("SNR best: %1").arg(snr_text(m_best_snr_db))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: get_best_card().devourer_quality_valid
+                Text {
+                    text: qsTr("Health: %1 | RX paths: %2")
+                        .arg(get_best_card().devourer_link_health)
+                        .arg(devourer_paths_text(get_best_card()))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: get_best_card().devourer_quality_valid
+                Text {
+                    text: qsTr("EVM: %1 | Noise: %2")
+                        .arg(metric_db_text(get_best_card().rx_evm_db))
+                        .arg(metric_dbm_text(get_best_card().rx_noise_dbm))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: get_best_card().rx_paths_valid
+                Text {
+                    text: qsTr("RSSI A1/A2: %1 / %2")
+                        .arg(metric_dbm_text(get_best_card().curr_rx_rssi_dbm_antenna1))
+                        .arg(metric_dbm_text(get_best_card().curr_rx_rssi_dbm_antenna2))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: get_best_card().thermal_valid
+                Text {
+                    text: qsTr("GND radio thermal: %1")
+                        .arg(devourer_thermal_text(get_best_card()))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: _wifi_card_air.thermal_valid
+                Text {
+                    text: qsTr("AIR radio thermal: %1")
+                        .arg(devourer_thermal_text(_wifi_card_air))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: _wifi_card_air.devourer_quality_valid
+                Text {
+                    text: qsTr("AIR health: %1 | RX paths: %2")
+                        .arg(_wifi_card_air.devourer_link_health)
+                        .arg(devourer_paths_text(_wifi_card_air))
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.family: linkFont
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 28
+                visible: _wifi_card_air.devourer_quality_valid
+                Text {
+                    text: qsTr("AIR SNR A1/A2: %1 / %2 | EVM: %3")
+                        .arg(snr_text(_wifi_card_air.rx_snr_antenna1))
+                        .arg(snr_text(_wifi_card_air.rx_snr_antenna2))
+                        .arg(metric_db_text(_wifi_card_air.rx_evm_db))
                     color: "white"
                     height: parent.height
                     font.bold: true

@@ -94,10 +94,11 @@ Item {
     }
     ListModel{
         id: elements_model_tx_power_level
-        ListElement {value: 0; verbose:"LOWEST"}
-        ListElement {value: 1; verbose:"LOW"}
-        ListElement {value: 2; verbose:"MID"}
-        ListElement {value: 3; verbose:"HIGH"}
+        ListElement {value: 20; verbose:"20%"}
+        ListElement {value: 40; verbose:"40%"}
+        ListElement {value: 60; verbose:"60%"}
+        ListElement {value: 80; verbose:"80%"}
+        ListElement {value: 100; verbose:"100%"}
     }
     ListModel{
         id: elements_model_camera_rotation_degree

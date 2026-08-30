@@ -18,6 +18,9 @@ static constexpr auto WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM="WB_MAX_D_BZ";
 static constexpr auto WB_TX_POWER_MILLI_WATT="TX_POWER_MW";
 static constexpr auto WB_TX_POWER_MILLI_WATT_ARMED="TX_POWER_MW_ARM";
 static constexpr auto WB_TX_POWER_LEVEL="TX_PWR_LVL";
+static constexpr auto WB_ENABLE_ADAPTIVE_CHANNEL="WB_ADAPT_CH";
+static constexpr auto WB_ENABLE_FHSS="WB_FHSS";
+static constexpr auto WB_FHSS_SLOT_MS="WB_FHSS_SLOT";
 static constexpr auto WB_QP_MAX="QP_MAX";
 static constexpr auto WB_QP_MIN="QP_MIN";
 // annoying 16 char settings limit

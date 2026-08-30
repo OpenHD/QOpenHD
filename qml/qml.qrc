@@ -114,6 +114,7 @@
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/openhd_settings/OHDSettingsPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/MLRSSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
         <file>ui/configpopup/rc/RcInfoScreen.qml</file>
@@ -156,7 +157,6 @@
         <file>ui/configpopup/log/LogMessagesView.qml</file>
         <file>ui/configpopup/openhd_settings/LinkQuickPanel.qml</file>
         <file>ui/configpopup/openhd_settings/PopupScanChannels.qml</file>
-        <file>ui/configpopup/openhd_settings/PopupTxPowerEditor.qml</file>
         <file>ui/elements/TextOrWarningButton.qml</file>
         <file>ui/configpopup/status/StatusCardRow.qml</file>
         <file>ui/configpopup/connect/PaneConnectionMode.qml</file>

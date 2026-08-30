@@ -14,6 +14,7 @@ SOURCES += \
     $$PWD/settings/documentedparam.cpp \
     $$PWD/settings/frequencyhelper.cpp \
     $$PWD/settings/pollutionhelper.cpp \
+    $$PWD/settings/mlrscontroller.cpp \
     $$PWD/settings/wblinksettingshelper.cpp \
     $$PWD/action/impl/xparam.cpp \
     $$PWD/tutil/geodesi_helper.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     $$PWD/action/impl/xparam.h \
     $$PWD/settings/frequencyhelper.h \
     $$PWD/settings/pollutionhelper.h \
+    $$PWD/settings/mlrscontroller.h \
     $$PWD/settings/wifi_channel.h \
     $$PWD/tutil/geodesi_helper.h \
     $$PWD/tutil/mavlink_enum_to_string.h \

@@ -62,6 +62,25 @@ static bool is_devourer_card_type(const int card_type) {
     return card_type >= openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8812A) &&
            card_type <= openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8811A);
 }
+
+static QString devourer_verdict_to_string(const int verdict) {
+    switch (verdict) {
+    case 1: return "SATURATED";
+    case 2: return "INTERFERENCE";
+    case 3: return "WEAK";
+    case 4: return "MARGINAL";
+    case 5: return "HEALTHY";
+    default: return "NO SIGNAL";
+    }
+}
+
+static QString thermal_status_from_delta(const bool valid, const int delta) {
+    if (!valid) return "UNKNOWN";
+    if (delta < 8) return "COOL";
+    if (delta < 15) return "WARM";
+    if (delta < 25) return "HOT";
+    return "CRITICAL";
+}
 static QString tx_power_unit_for_card(const int card_type){
     std::stringstream ss;
     if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2AU) ||
@@ -120,18 +139,44 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
     set_curr_rx_rssi_dbm_antenna2(msg.rx_rssi_2);
     set_rx_snr_antenna1(msg.rx_snr_antenna1);
     set_rx_snr_antenna2(msg.rx_snr_antenna2);
-    set_card_temperature(msg.card_temperature);
+    set_rx_noise_dbm(msg.rx_noise_adapter);
+    set_rx_noise_dbm_antenna1(msg.rx_noise_antenna1);
+    set_rx_noise_dbm_antenna2(msg.rx_noise_antenna2);
     const bool devourer_card = is_devourer_card_type(msg.card_type);
     if(devourer_card){
-        switch(msg.card_temperature){
-        case 1: set_card_temperature_status("COOL"); break;
-        case 2: set_card_temperature_status("WARM"); break;
-        case 3: set_card_temperature_status("HOT"); break;
-        case 4: set_card_temperature_status("CRITICAL"); break;
-        default: set_card_temperature_status("UNKNOWN"); break;
-        }
+        const quint32 metadata = static_cast<quint32>(msg.dummy2);
+        const bool qualityValid = (metadata & (1u << 19)) != 0;
+        const bool pathsValid = (metadata & (1u << 20)) != 0;
+        const bool thermalValid = (metadata & (1u << 21)) != 0;
+        const bool evmValid = (metadata & (1u << 23)) != 0;
+        const quint16 thermalPacked = static_cast<quint16>(msg.dummy1);
+        const int thermalDelta = static_cast<qint8>((thermalPacked >> 8) & 0xff);
+        set_card_temperature(-128); // Devourer raw units are not degrees C.
+        set_thermal_valid(thermalValid);
+        set_thermal_raw(msg.card_temperature >= 0 ? msg.card_temperature : -1);
+        set_thermal_baseline(thermalPacked & 0xff);
+        set_thermal_delta(thermalDelta);
+        set_card_temperature_status(thermal_status_from_delta(thermalValid, thermalDelta));
+        set_devourer_quality_valid(qualityValid);
+        set_devourer_link_health(qualityValid
+            ? devourer_verdict_to_string((metadata >> 16) & 0x7) : "N/A");
+        set_rx_paths_valid(pathsValid);
+        set_rx_active_path_mask((metadata >> 8) & 0xf);
+        set_rx_active_path_count((metadata >> 12) & 0x7);
+        set_rx_evm_db(evmValid ? msg.dummy0 : -128);
     }else{
+        set_card_temperature(msg.card_temperature);
+        set_thermal_valid(false);
+        set_thermal_raw(-1);
+        set_thermal_baseline(-1);
+        set_thermal_delta(0);
         set_card_temperature_status("N/A");
+        set_devourer_quality_valid(false);
+        set_devourer_link_health("N/A");
+        set_rx_paths_valid(false);
+        set_rx_active_path_mask(0);
+        set_rx_active_path_count(0);
+        set_rx_evm_db(-128);
     }
 
     set_n_received_packets(msg.count_p_received);
@@ -200,7 +245,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         supported=true;
     }
     set_card_type_supported(supported);
-    set_card_sub_type(msg.dummy2);
+    set_card_sub_type(static_cast<quint32>(msg.dummy2) & 0xff);
 }
 
 int WiFiCard::helper_get_gnd_curr_best_rssi()

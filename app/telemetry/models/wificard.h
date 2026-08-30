@@ -30,9 +30,20 @@ class WiFiCard : public QObject
     L_RO_PROP(int,curr_rx_rssi_dbm_antenna2,set_curr_rx_rssi_dbm_antenna2,-128)
     L_RO_PROP(int,rx_snr_antenna1,set_rx_snr_antenna1,-128)
     L_RO_PROP(int,rx_snr_antenna2,set_rx_snr_antenna2,-128)
+    L_RO_PROP(int,rx_noise_dbm,set_rx_noise_dbm,-128)
+    L_RO_PROP(int,rx_noise_dbm_antenna1,set_rx_noise_dbm_antenna1,-128)
+    L_RO_PROP(int,rx_noise_dbm_antenna2,set_rx_noise_dbm_antenna2,-128)
+    L_RO_PROP(int,rx_evm_db,set_rx_evm_db,-128)
+    L_RO_PROP(bool,devourer_quality_valid,set_devourer_quality_valid,false)
+    L_RO_PROP(QString,devourer_link_health,set_devourer_link_health,"N/A")
+    L_RO_PROP(bool,rx_paths_valid,set_rx_paths_valid,false)
+    L_RO_PROP(int,rx_active_path_mask,set_rx_active_path_mask,0)
+    L_RO_PROP(int,rx_active_path_count,set_rx_active_path_count,0)
     L_RO_PROP(int,card_temperature,set_card_temperature,-128)
-    // Devourer: unknown/cool/warm/hot/critical; legacy cards retain their
-    // existing numeric temperature behavior.
+    L_RO_PROP(bool,thermal_valid,set_thermal_valid,false)
+    L_RO_PROP(int,thermal_raw,set_thermal_raw,-1)
+    L_RO_PROP(int,thermal_baseline,set_thermal_baseline,-1)
+    L_RO_PROP(int,thermal_delta,set_thermal_delta,0)
     L_RO_PROP(QString,card_temperature_status,set_card_temperature_status,"N/A")
     //
     L_RO_PROP(int,card_type,set_card_type,-1) // -1 = no info available yet, otherwise, openhd card type (0..?)

@@ -67,6 +67,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/telemetry/settings/improvedintsetting.cpp
     app/telemetry/settings/improvedstringsetting.cpp
     app/telemetry/settings/mavlinksettingsmodel.cpp
+    app/telemetry/settings/mlrscontroller.cpp
     app/telemetry/settings/pollutionhelper.cpp
     app/telemetry/settings/wblinksettingshelper.cpp
     app/telemetry/tutil/geodesi_helper.cpp

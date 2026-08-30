@@ -4,6 +4,7 @@
 #include "models/fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
+#include "settings/mlrscontroller.h"
 #include "tutil/qopenhdmavlinkhelper.hpp"
 
 #include "action/fcmissionhandler.h"
@@ -126,6 +127,11 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
     //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
     const int source_sysid=msg.sysid;
     const int source_compid=msg.compid;
+    // mLRS is its own MAVLink system, not a flight controller. Consume its
+    // radio component before the generic FC discovery/routing below.
+    if (MLRSController::instance().process_message(msg)) {
+        return;
+    }
     if(source_sysid ==OHD_SYS_ID_AIR){
         //qDebug()<<"Found OHD AIR station";
         MavlinkSettingsModel::instanceAir().set_ready();

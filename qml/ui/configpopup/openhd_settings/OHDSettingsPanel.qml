@@ -59,6 +59,9 @@ Rectangle {
         TabButton {
             text: qsTr("GROUND")
         }
+        TabButton {
+            text: qsTr("mLRS")
+        }
     }
 
     // placed right below the top bar
@@ -103,6 +106,7 @@ Rectangle {
             m_instanceCheckIsAvlie: _ohdSystemGround
             m_requires_alive_air: false
         }
+        MLRSSettingsPanel{}
     }
 
 }

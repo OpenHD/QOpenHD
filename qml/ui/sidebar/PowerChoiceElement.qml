@@ -11,7 +11,7 @@ import "../../ui" as Ui
 import "../elements"
 
 //
-// Power selector: Air/Ground -> Low/Mid/High (TX_PWR_LVL)
+// Power selector: Air/Ground -> one of five user-facing targets (TX_PWR_LVL)
 //
 BaseJoyEditElement2 {
     id: powerChoiceElement
@@ -35,18 +35,22 @@ BaseJoyEditElement2 {
 
     ListModel {
         id: levelModel
-        ListElement { value: 1; verbose: "LOW" }
-        ListElement { value: 2; verbose: "MID" }
-        ListElement { value: 3; verbose: "HIGH" }
+        ListElement { value: 20; verbose: "20%" }
+        ListElement { value: 40; verbose: "40%" }
+        ListElement { value: 60; verbose: "60%" }
+        ListElement { value: 80; verbose: "80%" }
+        ListElement { value: 100; verbose: "100%" }
     }
 
     function level_to_label(level) {
-        if (level === 0) return qsTr("Lowest");
-        if (level === 1) return qsTr("Low");
-        if (level === 2) return qsTr("Mid");
-        if (level === 3) return qsTr("High");
-        if (level === -1) return qsTr("Per-card");
+        if (level === 20 || level === 40 || level === 60 ||
+                level === 80 || level === 100) return level + "%";
         return qsTr("N/A");
+    }
+
+    function is_valid_level(level) {
+        return level === 20 || level === 40 || level === 60 ||
+                level === 80 || level === 100;
     }
 
     function get_model_for_target() {
@@ -168,8 +172,8 @@ BaseJoyEditElement2 {
             return;
         }
         var level = read_current_level();
-        if (level === null || level < 1 || level > 3) {
-            level = 1;
+        if (level === null || !is_valid_level(level)) {
+            level = 20;
         }
         choiceSelector.open_choices(levelModel, level, powerChoiceElement);
         choiceSelector.set_clickable(clickable);
@@ -182,7 +186,7 @@ BaseJoyEditElement2 {
             _qopenhd.show_toast(qsTr("Not connected"));
             return;
         }
-        if (level < 1 || level > 3) {
+        if (!is_valid_level(level)) {
             _qopenhd.show_toast(qsTr("Invalid"));
             return;
         }

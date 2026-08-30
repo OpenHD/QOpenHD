@@ -89,7 +89,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                );
     append_int(ret,openhd::WB_PIT_MODE,
                ImprovedIntSetting::createEnumEnableDisable(),
-               "Pit mode for TX power levels: when enabled and TX power level mode is active, disarmed uses LOWEST and armed uses the selected level."
+               "Pit mode: when enabled, disarmed uses the 20% TX power target and armed uses the selected target."
                );
     append_int(ret,openhd::WB_DEV_AIR_SET_HIGH_RETRANSMIT_COUNT,
                ImprovedIntSetting::createEnumEnableDisable(),
@@ -98,6 +98,19 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
     append_int(ret,openhd::WB_ENABLE_REDUNDANT_TX,
                ImprovedIntSetting::createEnumEnableDisable(),
                "Send packets redundantly on all connected TX cards. Increases robustness but also airtime usage."
+               );
+    append_int(ret,openhd::WB_ENABLE_ADAPTIVE_CHANNEL,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Use the second Devourer radio on Air to survey channels and automatically move the link when a persistently cleaner channel is found. Redundant TX is disabled while active."
+               );
+    append_int(ret,openhd::WB_ENABLE_FHSS,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Devourer frequency hopping. Devourer handles synchronization and its Wi-Fi control channel; mLRS UART or another live independent telemetry link is required as the OpenHD uplink/recovery path."
+               );
+    append_int(ret,openhd::WB_FHSS_SLOT_MS,
+               ImprovedIntSetting::createEnumSimple(
+                   {{"25 ms",25},{"50 ms",50},{"100 ms",100}}),
+               "Devourer FHSS dwell time. 50 ms is recommended."
                );
     append_int(ret,openhd::WB_ENABLE_RETRANSMISSION,
                ImprovedIntSetting::createEnumEnableDisable(),
@@ -189,8 +202,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_only_documented(ret,openhd::WB_TX_POWER_MILLI_WATT_ARMED,
                                "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! tx power in mW when FC is armed, off by default. Actual tx power depends on the manufacturer.");
         append_int(ret,openhd::WB_TX_POWER_LEVEL,
-                   ImprovedIntSetting::createEnumSimple({{"DISABLED",-1},{"LOWEST",0},{"LOW",1},{"MID",2},{"HIGH",3}}),
-                   "Abstract TX power level selection. Uses per-card sysutil profiles when available."
+                   ImprovedIntSetting::createEnumSimple({{"20%",20},{"40%",40},{"60%",60},{"80%",80},{"100%",100}}),
+                   "TX power target. OpenHD maps these five simple choices to each radio's calibrated power control."
                    );
     }
 // -----------------------------------------------------------------------------------------------------------
@@ -863,9 +876,9 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_int(ret,"FC_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
                    "RPI HW UART baud rate, needs to match the UART baud rate set on your FC");
         append_int(ret,"OHD_UART_EN",ImprovedIntSetting::createEnumEnableDisable(),
-                   "Enable or disable the dedicated OpenHD telemetry UART. Turn this off to stop forwarding MAVLink over the selected port.");
+                   "Enable the full bidirectional Air-to-Ground OpenHD telemetry UART link. Configure the matching UART and baud rate on both units.");
         append_int(ret,"OHD_UART_BAUD",ImprovedIntSetting(0,1000000,baud_rate_items),
-                   "Baud rate for the OpenHD telemetry UART on air and ground. Match this with the connected device's expectation.");
+                   "Baud rate for the Air-to-Ground OpenHD UART telemetry link. It must match on both units and on any serial radio or bridge between them.");
         append_int(ret,"OHD_UART_FLW",ImprovedIntSetting::createEnumEnableDisable(),
                    "Toggle RTS/CTS flow control for the OpenHD telemetry UART.");
         append_int(ret,openhd::SBUS_EN,ImprovedIntSetting::createEnumEnableDisable(),
@@ -958,7 +971,7 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
             append_string(ret,"TRACKER_UART_OUT",ImprovedStringSetting{fc_uart_conn_values},
                           "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.");
             append_string(ret,"OHD_UART_TLM",ImprovedStringSetting{fc_uart_conn_values},
-                          "OpenHD UART telemetry bridge for air and ground units. Configure the second UART device exactly like the tracker or FC UART ports.");
+                          "UART device used as the full bidirectional OpenHD telemetry link between Air and Ground. Configure the corresponding device on both units.");
         }
         // Channel mapping presets for device(s)
         {
