@@ -13,6 +13,10 @@ import "../../elements"
 Item {
     id: root
 
+    implicitHeight: (width < 650 ? 118 : 75) + (_ohdAction.formatAirSdCardStatus !== "Idle" ? 20 : 0)
+
+    function actionButtons() { return [infoButton, pingButton, autoPingSwitch, storageButton] }
+
     Dialog {
         id: storageManagerDialog
         parent: Overlay.overlay
@@ -132,6 +136,7 @@ Item {
         parent: Overlay.overlay
         anchors.centerIn: parent
         modal: true
+        width: 480
         title: action === "mount" ? qsTr("Change recording storage?")
                                      : qsTr("Confirm destructive operation")
         standardButtons: Dialog.Ok | Dialog.Cancel
@@ -175,49 +180,64 @@ Item {
         }
     }
 
-    ColumnLayout {
-        // 2 Rows
-        anchors.left: parent.left
-        anchors.leftMargin: 12
+    Rectangle {
+        anchors.fill: parent
+        radius: 17
+        color: settings_form.panelBackground
+        border.color: settings_form.lineColor
+        border.width: 1
+    }
 
-        RowLayout {
-            id: actions_1
-            width: parent.width
-            ButtonIconInfo {
-                onClicked: {
-                    _messageBoxInstance.set_text_and_show(qsTr("Ping all systems, aka check if they respond to the mavlink ping command. Both OpenHD air and ground support this command, FC only ardupilot / px4 support this command. The command is lossy, aka you might need to use it more than once to get a response from all systems. No response after >10 tries is a hint that one of your systems is not functioning properly."))
-                }
-            }
-            Button {
-                text: qsTr("Ping all systems")
-                onClicked: _mavlinkTelemetry.ping_all_systems()
-            }
-            Switch {
-                text: qsTr("Auto-ping")
-                onCheckedChanged: {
-                    if (checked) {
-                        autopingTimer.start()
-                    } else {
-                        autopingTimer.stop()
-                    }
-                }
-            }
-            Button {
-                text: _ohdAction.formatAirSdCardBusy
-                      ? qsTr("Storage operation running...")
-                      : qsTr("Manage air storage")
-                enabled: !_ohdAction.formatAirSdCardBusy && _ohdSystemAir.is_alive
-                Material.accent: Material.Red
-                onClicked: storageManagerDialog.open()
-            }
-            Label {
-                visible: _ohdAction.formatAirSdCardStatus !== "Idle"
-                text: _ohdAction.formatAirSdCardStatus
-            }
-            // Padding
-            Item {
-                // Padding
-            }
+    Flow {
+        id: actionFlow
+        anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+        anchors.margins: 16
+        spacing: 10
+        height: childrenRect.height
+
+        Button {
+            id: infoButton
+            width: 47; height: 43
+            text: "\uf05a"
+            font.family: "Font Awesome 5 Free"; font.pixelSize: 18
+            onClicked: _messageBoxInstance.set_text_and_show(qsTr("Ping all systems checks whether OpenHD air, ground and the flight controller respond to MAVLink ping. The command is lossy, so repeat it before diagnosing a failure."))
+            background: Rectangle { radius: 10; color: parent.hovered ? "#176fc7" : "#125ca8"; border.color: parent.activeFocus ? "white" : "transparent"; border.width: 2 }
+            contentItem: Text { text: parent.text; font: parent.font; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+        }
+        Button {
+            id: pingButton
+            width: Math.min(176, Math.max(150, actionFlow.width * 0.25)); height: 43
+            text: "\uf140  " + qsTr("PING ALL SYSTEMS")
+            font.family: "Font Awesome 5 Free"; font.pixelSize: 11
+            onClicked: _mavlinkTelemetry.ping_all_systems()
+            background: Rectangle { radius: 10; color: parent.hovered ? "#20384f" : settings_form.panelBackgroundRaised; border.color: parent.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: parent.activeFocus ? 2 : 1 }
+            contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+        }
+        Switch {
+            id: autoPingSwitch
+            width: 132; height: 43
+            text: qsTr("Auto-ping")
+            onToggled: autopingTimer.running = checked
+            contentItem: Text { leftPadding: autoPingSwitch.indicator.width + autoPingSwitch.spacing; text: autoPingSwitch.text; color: settings_form.secondaryText; font.pixelSize: 11; verticalAlignment: Text.AlignVCenter }
+        }
+        Button {
+            id: storageButton
+            width: Math.min(212, Math.max(180, actionFlow.width * 0.27)); height: 43
+            text: "\uf51f  " + (_ohdAction.formatAirSdCardBusy ? qsTr("STORAGE BUSY...") : qsTr("MANAGE AIR STORAGE"))
+            enabled: !_ohdAction.formatAirSdCardBusy && _ohdSystemAir.is_alive
+            font.family: "Font Awesome 5 Free"; font.pixelSize: 11
+            onClicked: storageManagerDialog.open()
+            background: Rectangle { radius: 10; color: parent.hovered ? "#20384f" : settings_form.panelBackgroundRaised; opacity: parent.enabled ? 1 : 0.45; border.color: parent.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: parent.activeFocus ? 2 : 1 }
+            contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; opacity: parent.enabled ? 1 : 0.45; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+        }
+        Text {
+            width: actionFlow.width
+            height: visible ? 20 : 0
+            visible: _ohdAction.formatAirSdCardStatus !== "Idle"
+            text: _ohdAction.formatAirSdCardStatus
+            color: settings_form.secondaryText
+            font.pixelSize: 11
+            elide: Text.ElideRight
         }
     }
 }

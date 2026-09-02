@@ -21,8 +21,7 @@ Column {
         return m_is_alive ? qsTr("Yes") : qsTr("No")
     }
     function get_alive_text_color(){
-        //return m_is_alive ? "green" : "red"
-        return m_is_alive ? "green" : "black"
+        return m_is_alive ? settings_form.goodColor : settings_form.primaryText
     }
 
     StatusCardRow{

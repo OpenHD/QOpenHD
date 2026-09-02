@@ -159,6 +159,7 @@
         <file>ui/configpopup/openhd_settings/PopupScanChannels.qml</file>
         <file>ui/elements/TextOrWarningButton.qml</file>
         <file>ui/configpopup/status/StatusCardRow.qml</file>
+        <file>ui/configpopup/status/StatusCard.qml</file>
         <file>ui/configpopup/connect/PaneConnectionMode.qml</file>
         <file>ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget2.qml</file>

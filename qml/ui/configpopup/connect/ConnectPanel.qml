@@ -1,47 +1,42 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-
-import QtQuick.Controls.Material 2.12
-
-import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../../../ui" as Ui
-import "../../elements"
+Rectangle {
+    id: root
+    color: settings_form.pageBackground
+    focus: false
 
-// This panel is only for users that run QOpenHD on an external device,e.g. android not on the ground station itself
-Item {
-    Layout.fillHeight: true
-    Layout.fillWidth: true
+    function gainFocus() { connectionPane.gainFocus() }
 
-    property int rowHeight: 64
-    property int elementHeight: 48
-    property int elementComboBoxWidth: 300
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.leftMargin: settings_form.compactSidebar ? 13 : Math.max(16, Math.min(32, width * 0.025))
+        anchors.rightMargin: settings_form.compactSidebar ? 13 : Math.max(16, Math.min(32, width * 0.025))
+        spacing: 13
 
-    property bool m_is_connected_gnd: _ohdSystemGround.is_alive
-
-    // Tab bar for selecting items in stack layout
-    TabBar {
-        id: selectItemInStackLayoutBar
-        width: parent.width
-        TabButton {
-            text: qsTr("CONNECT TO OPENHD GND / AIR UNIT")
+        Item { Layout.fillWidth: true; Layout.preferredHeight: 14 }
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.rightMargin: root.width > 420 ? 150 : 0
+            spacing: 13
+            Text {
+                text: "\uf6ff"
+                color: settings_form.accentColor
+                font.family: "Font Awesome 5 Free"
+                font.pixelSize: 27
+            }
+            ColumnLayout {
+                spacing: 1
+                Text { text: qsTr("CONNECT"); color: settings_form.primaryText; font.pixelSize: Math.max(17, Math.min(22, root.width / 45)); font.bold: true }
+                Text { text: qsTr("Choose how QOpenHD reaches your OpenHD system"); color: settings_form.secondaryText; font.pixelSize: 12 }
+            }
         }
-    }
-
-    // placed right below the top bar
-    StackLayout {
-        width: parent.width
-        height: parent.height-selectItemInStackLayoutBar.height
-        anchors.top: selectItemInStackLayoutBar.bottom
-        anchors.left: selectItemInStackLayoutBar.left
-        anchors.bottom: parent.bottom
-        currentIndex: selectItemInStackLayoutBar.currentIndex
-
-        PaneConnectionMode{
-
+        PaneConnectionMode {
+            id: connectionPane
+            Layout.fillWidth: true
+            Layout.fillHeight: true
         }
     }
 }

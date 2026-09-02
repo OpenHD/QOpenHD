@@ -1,66 +1,77 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
 
-
-//
-// Similar behvaiour to android Toast
-// See c++ QOpenHD instance for more info
-//
+// Compact, theme-neutral HUD notification. Visibility and message queue timing
+// continue to be owned by QOpenHD in C++.
 Item {
-    id: card_toast
-    z: 22.0
+    id: toast
+    z: 22
 
     property string m_text: qsTr("FILL ME TEXT")
 
     width: parent.width
     height: parent.height
 
-    function get_width(){
-        var parent_width= parent.width
-        if(parent_width>500){
-            return 500;
-        }
-        return parent.width
-    }
-    function get_bottom_margin(){
-        //return 50;
-        var parent_height=parent.height
-        return parent_height * 0.15;
-    }
-
     Rectangle {
-        id: background
-        radius: 8
-        //color: "green"
-        //color: "white"
-        color: "black"
-        opacity: 0.7
-        border.width: 3
-        border.color: "white"
-
-        width: get_width()
-        height: 100
-
-        //anchors.centerIn: parent
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: get_bottom_margin()
+        id: surface
+        width: Math.min(430, Math.max(240, toast.width - 32))
+        height: Math.min(104, Math.max(48, message.implicitHeight + 20))
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Math.max(22, parent.height * 0.075)
+        radius: 12
+        color: "#f2172738"
+        border.width: 1
+        border.color: "#526b83"
+        opacity: toast.visible ? 1 : 0
+        scale: toast.visible ? 1 : 0.96
 
-        Text{
-            text: m_text
+        Behavior on opacity { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutBack } }
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            width: 3
+            height: parent.height - 18
+            radius: 2
+            color: "#3b9cff"
+        }
+
+        Rectangle {
+            id: iconBackground
+            anchors.left: parent.left
+            anchors.leftMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
+            width: 28
+            height: 28
+            radius: 8
+            color: "#263b9cff"
+
+            Text {
+                anchors.centerIn: parent
+                text: "\uf05a"
+                color: "#67b2ff"
+                font.family: "Font Awesome 5 Free"
+                font.pixelSize: 14
+            }
+        }
+
+        Text {
+            id: message
+            anchors.left: iconBackground.right
+            anchors.leftMargin: 12
+            anchors.right: parent.right
+            anchors.rightMargin: 16
+            anchors.verticalCenter: parent.verticalCenter
+            text: toast.m_text
+            color: "#f5f8fc"
+            font.pixelSize: 13
+            font.weight: Font.Medium
             wrapMode: Text.WordWrap
-            anchors.fill: parent
-            horizontalAlignment: Text.AlignHCenter
+            maximumLineCount: 4
+            elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
-            color: "white"
-            font.pointSize: 17
-            minimumPointSize: 10
-            fontSizeMode: Text.Fit
         }
     }
-
-
-
-
 }

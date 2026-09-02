@@ -144,7 +144,7 @@ PopupBigGeneric{
             Layout.fillWidth: true
             Layout.fillHeight: true
             contentWidth: pollution_chart.width
-            ScrollBar.horizontal.interactive: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             clip: true
 
             ChartView {

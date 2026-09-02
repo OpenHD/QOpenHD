@@ -1,74 +1,51 @@
-//import QtQuick 2.12
-import QtQuick 2.15
+import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-import QtQuick.Controls.Material 2.12
-
-import Qt.labs.settings 1.0
-
 import OpenHD 1.0
 
-import "../../../ui" as Ui
-import "../../elements"
+Rectangle {
+    id: root
+    color: "transparent"
+    focus: false
 
-Rectangle{
-    id: background
-    width: parent.width
-    height: parent.height
-    color: "#f5f7fb"
-    border.color: "#dfe3e8"
-
-    property bool m_is_air_or_ground_connected: _ohdSystemAir.is_alive || _ohdSystemGround.is_alive
-
-    property int m_prefered_width: 230
-
+    property bool connected: _ohdSystemAir.is_alive || _ohdSystemGround.is_alive
     property bool isScanning: false
     property bool showConnectionModeInfo: false
     property int scanProgress: 0
     property int scanIndex: 1
     property int scanMax: 254
+    property int keyboardIndex: 0
     property string scanPrefix: "192.168.0"
 
-    ListModel {
-        id: scanResultsModel
-    }
+    ListModel { id: scanResultsModel }
 
     Timer {
         id: scanTimer
         interval: 120
         repeat: true
-        running: false
         onTriggered: {
-            if (scanIndex > scanMax) {
-                isScanning = false
-                scanProgress = 100
+            if (root.scanIndex > root.scanMax) {
+                root.isScanning = false
+                root.scanProgress = 100
                 stop()
                 return
             }
-            var candidateIp = scanPrefix + "." + scanIndex
-            var reachable = _qopenhd.ping_ip(candidateIp)
-            scanProgress = Math.min(100, Math.round((scanIndex / scanMax) * 100))
-            if (reachable) {
+            var candidateIp = root.scanPrefix + "." + root.scanIndex
+            if (_qopenhd.ping_ip(candidateIp))
                 scanResultsModel.append({ ip: candidateIp })
-            }
-            scanIndex++
+            root.scanProgress = Math.min(100, Math.round((root.scanIndex / root.scanMax) * 100))
+            root.scanIndex++
         }
     }
 
     function derivePrefix() {
-        var currentIp = settings.qopenhd_mavlink_connection_manual_tcp_ip
-        var parts = currentIp.split(".")
-        if (parts.length === 4) {
-            return parts[0] + "." + parts[1] + "." + parts[2]
-        }
-        return "192.168.0"
+        var parts = settings.qopenhd_mavlink_connection_manual_tcp_ip.split(".")
+        return parts.length === 4 ? parts[0] + "." + parts[1] + "." + parts[2] : "192.168.0"
     }
-
     function startScan() {
-        if (isScanning) {
+        if (isScanning)
             return
-        }
         scanPrefix = derivePrefix()
         scanResultsModel.clear()
         scanIndex = 1
@@ -76,404 +53,354 @@ Rectangle{
         isScanning = true
         scanTimer.start()
     }
-
+    function setMode(mode) {
+        if (settings.qopenhd_mavlink_connection_mode !== mode) {
+            _mavlinkTelemetry.change_telemetry_connection_mode(mode)
+            settings.qopenhd_mavlink_connection_mode = mode
+        }
+        if (mode !== 2 && isScanning) {
+            scanTimer.stop()
+            isScanning = false
+            scanProgress = 0
+        }
+    }
     function applyTcpTarget(ip) {
         if (!_qopenhd.is_valid_ip(ip)) {
-            _qopenhd.show_toast(qsTr("Please enter a valid ip"))
+            _qopenhd.show_toast(qsTr("Please enter a valid IP address"))
             return
         }
-        textFieldip.text = ip
+        ipField.text = ip
         settings.qopenhd_mavlink_connection_manual_tcp_ip = ip
         _mavlinkTelemetry.change_manual_tcp_ip(ip)
-        if (connection_mode_dropdown.currentIndex !== 2) {
-            _mavlinkTelemetry.change_telemetry_connection_mode(2)
-            settings.qopenhd_mavlink_connection_mode = 2
-            connection_mode_dropdown.currentIndex = 2
+        setMode(2)
+    }
+    function controls() {
+        var all = [autoMode, udpMode, tcpMode, infoButton]
+        if (settings.qopenhd_mavlink_connection_mode === 0 && showConnectionModeInfo)
+            all = all.concat([androidButton, ethernetForwardButton, ethernetHotspotButton])
+        if (settings.qopenhd_mavlink_connection_mode === 2)
+            all = all.concat([ipField, saveButton, scanButton])
+        for (var i = 0; i < resultsRepeater.count; ++i)
+            all.push(resultsRepeater.itemAt(i))
+        var available = []
+        for (var j = 0; j < all.length; ++j) {
+            if (all[j] && all[j].visible && all[j].enabled)
+                available.push(all[j])
+        }
+        return available
+    }
+    function syncFocus(control) {
+        var list = controls()
+        for (var i = 0; i < list.length; ++i) {
+            if (list[i] === control) {
+                keyboardIndex = i
+                return
+            }
+        }
+    }
+    function gainFocus() {
+        var list = controls()
+        if (list.length === 0)
+            return
+        keyboardIndex = Math.max(0, Math.min(keyboardIndex, list.length - 1))
+        list[keyboardIndex].forceActiveFocus()
+        scroller.ensureVisible(list[keyboardIndex])
+    }
+    function moveFocus(step) {
+        var list = controls()
+        if (list.length === 0)
+            return
+        keyboardIndex = (keyboardIndex + step + list.length) % list.length
+        list[keyboardIndex].forceActiveFocus()
+        scroller.ensureVisible(list[keyboardIndex])
+    }
+    function handleButtonKey(event) {
+        if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
+            moveFocus(1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            moveFocus(-1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Escape) {
+            settings_form.side_bar_regain_focus()
+            event.accepted = true
         }
     }
 
-    ScrollView {
-        id: main_item
-        width: parent.width
-        height: parent.height
-        contentHeight: main_layout.height
-        contentWidth: main_layout.width
+    Flickable {
+        id: scroller
+        anchors.fill: parent
         clip: true
-        ScrollBar.vertical.interactive: true
-        ScrollBar.horizontal.interactive: true
+        contentWidth: width
+        contentHeight: contentColumn.implicitHeight + 20
+        boundsBehavior: Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
+
+        function ensureVisible(item) {
+            var point = item.mapToItem(scroller.contentItem, 0, 0)
+            if (point.y < contentY + 6)
+                contentY = Math.max(0, point.y - 6)
+            else if (point.y + item.height > contentY + height - 6)
+                contentY = Math.max(0, Math.min(contentHeight - height, point.y + item.height - height + 6))
+        }
 
         ColumnLayout {
-            id: main_layout
-            width: main_item.width
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.right: parent.right
-            anchors.rightMargin: 12
+            id: contentColumn
+            width: scroller.width
             spacing: 12
 
-            Text {
+            Rectangle {
                 Layout.fillWidth: true
-                id: info_text
-                text: ""
-                wrapMode: Text.WordWrap
-                color: m_is_air_or_ground_connected ? "#c0392b" : "#2c3e50"
-                verticalAlignment: Qt.AlignVCenter
-                horizontalAlignment: Qt.AlignLeft
-                font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
-                font.bold: true
-            }
-
-            CardBasic {
-                Layout.fillWidth: true
-                radius: 10
-                color: "white"
-                border.color: "#dde2e6"
-
-                ColumnLayout {
+                Layout.preferredHeight: 58
+                radius: 12
+                color: settings_form.panelBackground
+                border.color: settings_form.lineColor
+                RowLayout {
                     anchors.fill: parent
-                    anchors.margins: 14
-                    spacing: 10
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-                        Text {
-                            text: qsTr("Connection mode")
-                            font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
-                            font.bold: true
-                            color: "#2d3436"
-                        }
-                        Rectangle {
-                            height: 18
-                            width: 18
-                            radius: 9
-                            color: m_is_air_or_ground_connected ? "#2ecc71" : "#e67e22"
-                        }
-                        Text {
-                            text: _mavlinkTelemetry.telemetry_connection_status
-                            font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            color: "#576574"
-                            Layout.fillWidth: true
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 6
-                        ComboBox {
-                            Layout.fillWidth: true
-                            id: connection_mode_dropdown
-                            model: ListModel {
-                                id: font_text
-                                ListElement { text: qsTr("AUTO") }
-                                ListElement { text: qsTr("MANUAL UDP") }
-                                ListElement { text: qsTr("MANUAL TCP") }
-                            }
-                            onActivated: {
-                                if (currentIndex === 0 || currentIndex === 1 || currentIndex === 2) {
-                                    if (settings.qopenhd_mavlink_connection_mode !== currentIndex) {
-                                        _mavlinkTelemetry.change_telemetry_connection_mode(currentIndex)
-                                        settings.qopenhd_mavlink_connection_mode = currentIndex
-                                        if (currentIndex !== 2 && isScanning) {
-                                            scanTimer.stop()
-                                            isScanning = false
-                                            scanProgress = 0
-                                        }
-                                    }
-                                }
-                            }
-                            currentIndex: settings.qopenhd_mavlink_connection_mode
-                        }
-                        ButtonIconInfo {
-                            Layout.alignment: Qt.AlignVCenter
-                            onClicked: showConnectionModeInfo = !showConnectionModeInfo
-                        }
-                    }
-
-                    Text {
-                        Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        text: connection_mode_dropdown.currentIndex === 0 ?
-                                  "" :
-                                  (connection_mode_dropdown.currentIndex === 1 ?
-                                       " " :
-                                       " ")
-                        color: "#7f8c8d"
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size
-                    }
-                }
-            }
-
-            CardBasic {
-                Layout.fillWidth: true
-                visible: connection_mode_dropdown.currentIndex === 0
-                radius: 10
-                color: "white"
-                border.color: "#dde2e6"
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    spacing: 10
-
-                    Text {
-                        text: " "
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
-                        font.bold: true
-                        color: "#2d3436"
-                    }
-
-                    Text {
-                        Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        text: ""
-                        color: "#7f8c8d"
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-                        visible: showConnectionModeInfo
-                        Button {
-                            text: qsTr("Android Tethering")
-                            Layout.preferredWidth: m_prefered_width
-                            Layout.alignment: Qt.AlignCenter
-                            onClicked: {
-                                if (_qopenhd.is_android()) {
-                                    _qopenhd.android_open_tethering_settings()
-                                } else {
-                                    _messageBoxInstance.set_text_and_show(qsTr("This feature is only available on android"))
-                                }
-                            }
-                        }
-                        ButtonIconInfoText {
-                            m_info_text: qsTr("1) Connect via USB to ground station\n2) Enable tethering on your phone\n3) Open this app and start your ground station")
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-                        visible: showConnectionModeInfo
-                        Button {
-                            text: qsTr("ETHERNET FORWARD+INTERNET")
-                            Layout.preferredWidth: m_prefered_width
-                            Layout.alignment: Qt.AlignCenter
-                            onClicked: {
-                                _qopenhd.show_toast(qsTr("Please read info"))
-                            }
-                        }
-                        ButtonIconInfoText {
-                            m_info_text: qsTr("1) Set ETHERNET to FORWARD+INTERNET\n2) Reboot ground\n3) Connect your external device (phone) to your ground station via ethernet.\n\n4) Select 'share my internet with ...' when the (android) connection setup pops up\n\nVideo and telemetry forwarding is started automatically, internet will be forwarded from your phone.")
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-                        visible: showConnectionModeInfo
-                        Button {
-                            text: qsTr("ETHERNET HOTSPOT")
-                            Layout.preferredWidth: m_prefered_width
-                            Layout.alignment: Qt.AlignCenter
-                            onClicked: {
-                                _qopenhd.show_toast(qsTr("Please read info"))
-                            }
-                        }
-                        ButtonIconInfoText {
-                            m_info_text: qsTr("1) Set ETHERNET to HOTSPOT\n2) Reboot ground\n3) Connect your external device to your ground station via ethernet.\n\nYou might need to disable wifi and cellular on your phone\n\nVideo and telemetry forwarding should start automatically, internet will not be available.")
-                        }
-                    }
-                }
-            }
-
-            CardBasic {
-                Layout.fillWidth: true
-                visible: connection_mode_dropdown.currentIndex === 1
-                radius: 10
-                color: "white"
-                border.color: "#dde2e6"
-
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    spacing: 8
-
-                    Text {
-                        text: " "
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
-                        font.bold: true
-                        color: "#2d3436"
-                    }
-                    
-                    Text {
-                        Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        text: ""
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size
-                        color: "#7f8c8d"
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-                        Text {
-                            Layout.fillWidth: true
-                            wrapMode: Text.WordWrap
-                            text: ""
-                            font.pixelSize: settings.qopenhd_general_font_pixel_size
-                            color: "#7f8c8d"
-                        }
-                    }
-
-                    Text {
-                        Layout.fillWidth: true
-                        text: qsTr("UDP PORT: %1").arg(5600)
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size
-                        color: "#576574"
-                    }
+                    anchors.leftMargin: 16; anchors.rightMargin: 16
+                    spacing: 11
                     Rectangle {
+                        width: 34; height: 34; radius: 9
+                        color: root.connected ? Qt.rgba(0.03, 0.5, 0.25, 0.12) : Qt.rgba(0.75, 0.35, 0.05, 0.12)
+                        Text { anchors.centerIn: parent; text: "\uf1eb"; color: root.connected ? settings_form.goodColor : "#d97706"; font.family: "Font Awesome 5 Free"; font.pixelSize: 16 }
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true; spacing: 0
+                        Text { text: root.connected ? qsTr("OpenHD connected") : qsTr("Waiting for OpenHD"); color: settings_form.primaryText; font.pixelSize: 14; font.bold: true }
+                        Text { text: _mavlinkTelemetry.telemetry_connection_status; color: settings_form.secondaryText; font.pixelSize: 11; elide: Text.ElideRight; Layout.fillWidth: true }
+                    }
+                    Rectangle { width: 9; height: 9; radius: 5; color: root.connected ? settings_form.goodColor : "#d97706" }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: modeColumn.implicitHeight + 26
+                radius: 12
+                color: settings_form.panelBackground
+                border.color: settings_form.lineColor
+                ColumnLayout {
+                    id: modeColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 13
+                    spacing: 10
+                    RowLayout {
                         Layout.fillWidth: true
-                        height: 1
-                        color: "#ecf0f1"
+                        Text { text: qsTr("CONNECTION MODE"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
+                        Button {
+                            id: infoButton
+                            width: 34; height: 30
+                            text: "\uf05a"
+                            font.family: "Font Awesome 5 Free"; font.pixelSize: 13
+                            onClicked: root.showConnectionModeInfo = !root.showConnectionModeInfo
+                            onActiveFocusChanged: if (activeFocus) root.syncFocus(infoButton)
+                            Keys.onPressed: root.handleButtonKey(event)
+                            background: Rectangle { radius: 8; color: infoButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: infoButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: infoButton.activeFocus ? 2 : 1 }
+                            contentItem: Text { text: infoButton.text; font: infoButton.font; color: settings_form.secondaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        }
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true; spacing: 8
+                        Button {
+                            id: autoMode
+                            Layout.fillWidth: true; height: 40
+                            text: qsTr("AUTO")
+                            highlighted: settings.qopenhd_mavlink_connection_mode === 0
+                            onClicked: root.setMode(0)
+                            onActiveFocusChanged: if (activeFocus) root.syncFocus(autoMode)
+                            Keys.onPressed: root.handleButtonKey(event)
+                            background: Rectangle { radius: 9; color: autoMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: autoMode.activeFocus ? (autoMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: autoMode.activeFocus ? 2 : 1 }
+                            contentItem: Text { text: autoMode.text; color: autoMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        }
+                        Button {
+                            id: udpMode
+                            Layout.fillWidth: true; height: 40
+                            text: qsTr("MANUAL UDP")
+                            highlighted: settings.qopenhd_mavlink_connection_mode === 1
+                            onClicked: root.setMode(1)
+                            onActiveFocusChanged: if (activeFocus) root.syncFocus(udpMode)
+                            Keys.onPressed: root.handleButtonKey(event)
+                            background: Rectangle { radius: 9; color: udpMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: udpMode.activeFocus ? (udpMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: udpMode.activeFocus ? 2 : 1 }
+                            contentItem: Text { text: udpMode.text; color: udpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        }
+                        Button {
+                            id: tcpMode
+                            Layout.fillWidth: true; height: 40
+                            text: qsTr("MANUAL TCP")
+                            highlighted: settings.qopenhd_mavlink_connection_mode === 2
+                            onClicked: root.setMode(2)
+                            onActiveFocusChanged: if (activeFocus) root.syncFocus(tcpMode)
+                            Keys.onPressed: root.handleButtonKey(event)
+                            background: Rectangle { radius: 9; color: tcpMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: tcpMode.activeFocus ? (tcpMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: tcpMode.activeFocus ? 2 : 1 }
+                            contentItem: Text { text: tcpMode.text; color: tcpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        }
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        text: settings.qopenhd_mavlink_connection_mode === 0
+                              ? qsTr("Automatically detects USB tethering, Ethernet and hotspot connections.")
+                              : (settings.qopenhd_mavlink_connection_mode === 1
+                                 ? qsTr("Receives forwarded MAVLink telemetry on UDP port 5600.")
+                                 : qsTr("Connects directly to a selected OpenHD TCP address on port 5760."))
+                        color: settings_form.secondaryText; font.pixelSize: 11; wrapMode: Text.WordWrap
                     }
                 }
             }
 
-            CardBasic {
+            Rectangle {
                 Layout.fillWidth: true
-                visible: connection_mode_dropdown.currentIndex === 2
-                radius: 10
-                color: "white"
-                border.color: "#dde2e6"
-
+                Layout.preferredHeight: autoColumn.implicitHeight + 26
+                visible: settings.qopenhd_mavlink_connection_mode === 0 && root.showConnectionModeInfo
+                radius: 12; color: settings_form.panelBackground; border.color: settings_form.lineColor
                 ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 14
+                    id: autoColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 13
+                    spacing: 8
+                    Text { text: qsTr("AUTOMATIC CONNECTION OPTIONS"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
+                    Button {
+                        id: androidButton
+                        Layout.fillWidth: true; height: 40
+                        text: qsTr("Open Android tethering settings")
+                        onClicked: _qopenhd.is_android() ? _qopenhd.android_open_tethering_settings() : _messageBoxInstance.set_text_and_show(qsTr("This feature is only available on Android"))
+                        onActiveFocusChanged: if (activeFocus) root.syncFocus(androidButton)
+                        Keys.onPressed: root.handleButtonKey(event)
+                        background: Rectangle { radius: 9; color: androidButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: androidButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: androidButton.activeFocus ? 2 : 1 }
+                        contentItem: Text { text: androidButton.text; color: settings_form.primaryText; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                    }
+                    Button {
+                        id: ethernetForwardButton
+                        Layout.fillWidth: true; height: 40
+                        text: qsTr("Ethernet forward + internet instructions")
+                        onClicked: _messageBoxInstance.set_text_and_show(qsTr("Set Ethernet to FORWARD+INTERNET, reboot the ground unit, then connect this device by Ethernet. Video and telemetry forwarding start automatically."))
+                        onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetForwardButton)
+                        Keys.onPressed: root.handleButtonKey(event)
+                        background: Rectangle { radius: 9; color: ethernetForwardButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: ethernetForwardButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ethernetForwardButton.activeFocus ? 2 : 1 }
+                        contentItem: Text { text: ethernetForwardButton.text; color: settings_form.primaryText; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                    }
+                    Button {
+                        id: ethernetHotspotButton
+                        Layout.fillWidth: true; height: 40
+                        text: qsTr("Ethernet hotspot instructions")
+                        onClicked: _messageBoxInstance.set_text_and_show(qsTr("Set Ethernet to HOTSPOT, reboot the ground unit, then connect this device by Ethernet. You may need to disable Wi-Fi and cellular data."))
+                        onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetHotspotButton)
+                        Keys.onPressed: root.handleButtonKey(event)
+                        background: Rectangle { radius: 9; color: ethernetHotspotButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: ethernetHotspotButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ethernetHotspotButton.activeFocus ? 2 : 1 }
+                        contentItem: Text { text: ethernetHotspotButton.text; color: settings_form.primaryText; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: tcpColumn.implicitHeight + 26
+                visible: settings.qopenhd_mavlink_connection_mode === 2
+                radius: 12; color: settings_form.panelBackground; border.color: settings_form.lineColor
+                ColumnLayout {
+                    id: tcpColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 13
                     spacing: 10
-
-                    Text {
-                        text: " "
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size + 2
-                        font.bold: true
-                        color: "#2d3436"
-                    }
-
-                    Text {
-                        Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        text: ""
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size
-                        color: "#7f8c8d"
-                    }
-
+                    Text { text: qsTr("TCP TARGET"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
                     RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
+                        Layout.fillWidth: true; spacing: 8
                         TextField {
+                            id: ipField
                             Layout.fillWidth: true
-                            id: textFieldip
-                            validator: RegularExpressionValidator{
-                                regularExpression: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/
-                            }
-                            inputMethodHints: Qt.ImhFormattedNumbersOnly
+                            Layout.preferredHeight: 40
+                            Layout.minimumHeight: 40
+                            Layout.maximumHeight: 40
                             text: settings.qopenhd_mavlink_connection_manual_tcp_ip
                             placeholderText: qsTr("192.168.x.x")
+                            color: settings_form.primaryText
+                            font.pixelSize: 12
+                            leftPadding: 12
+                            rightPadding: 12
+                            topPadding: 0
+                            bottomPadding: 0
+                            verticalAlignment: TextInput.AlignVCenter
+                            selectByMouse: true
+                            validator: RegExpValidator { regExp: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/ }
+                            inputMethodHints: Qt.ImhFormattedNumbersOnly
+                            onAccepted: root.applyTcpTarget(text)
+                            onActiveFocusChanged: if (activeFocus) root.syncFocus(ipField)
+                            Keys.onUpPressed: root.moveFocus(-1)
+                            Keys.onDownPressed: root.moveFocus(1)
+                            Keys.onEscapePressed: settings_form.side_bar_regain_focus()
+                            background: Rectangle { radius: 9; color: settings_form.panelBackgroundRaised; border.color: ipField.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ipField.activeFocus ? 2 : 1 }
                         }
                         Button {
-                            text: qsTr("Save")
-                            onClicked: applyTcpTarget(textFieldip.text)
+                            id: saveButton
+                            Layout.preferredWidth: 90
+                            Layout.minimumWidth: 90
+                            Layout.maximumWidth: 90
+                            Layout.preferredHeight: 40
+                            Layout.minimumHeight: 40
+                            Layout.maximumHeight: 40
+                            text: qsTr("SAVE")
+                            onClicked: root.applyTcpTarget(ipField.text)
+                            onActiveFocusChanged: if (activeFocus) root.syncFocus(saveButton)
+                            Keys.onPressed: root.handleButtonKey(event)
+                            background: Rectangle { radius: 9; color: saveButton.hovered ? "#176fc7" : settings_form.accentColor; border.color: saveButton.activeFocus ? "white" : "transparent"; border.width: 2 }
+                            contentItem: Text { text: saveButton.text; color: "white"; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
                     }
-
-                    Text {
-                        Layout.fillWidth: true
-                        text: qsTr("TCP PORT: %1").arg(5760)
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size
-                        color: "#576574"
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        height: 1
-                        color: "#ecf0f1"
-                    }
-
                     RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
+                        Layout.fillWidth: true; spacing: 8
                         Button {
-                            text: isScanning ? qsTr("Scanning...") : qsTr("Scan Ethernet for devices")
-                            enabled: !isScanning
-                            Layout.preferredWidth: m_prefered_width + 40
-                            onClicked: startScan()
+                            id: scanButton
+                            Layout.fillWidth: true; height: 40
+                            text: root.isScanning ? qsTr("SCANNING %1%").arg(root.scanProgress) : qsTr("SCAN ETHERNET FOR OPENHD")
+                            enabled: !root.isScanning
+                            onClicked: root.startScan()
+                            onActiveFocusChanged: if (activeFocus) root.syncFocus(scanButton)
+                            Keys.onPressed: root.handleButtonKey(event)
+                            background: Rectangle { radius: 9; color: scanButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; opacity: scanButton.enabled ? 1 : 0.5; border.color: scanButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: scanButton.activeFocus ? 2 : 1 }
+                            contentItem: Text { text: scanButton.text; color: settings_form.primaryText; opacity: scanButton.enabled ? 1 : 0.5; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                         }
-                        Text {
-                            text: qsTr("Subnet: %1.x").arg(scanPrefix)
-                            color: "#7f8c8d"
-                            font.pixelSize: settings.qopenhd_general_font_pixel_size
-                        }
+                        Text { text: root.scanPrefix + ".x"; color: settings_form.secondaryText; font.pixelSize: 11 }
                     }
-
-                    Item {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 12
-                        SimpleProgressBar {
-                            anchors.fill: parent
-                            impl_curr_progress_perc: scanProgress
-                            impl_curr_color: "#39a2f7"
-                            impl_show_progress_text: false
-                            visible: isScanning || scanProgress > 0
-                        }
+                    Rectangle {
+                        Layout.fillWidth: true; height: 5; radius: 3
+                        visible: root.isScanning || root.scanProgress > 0
+                        color: settings_form.lineColor
+                        Rectangle { width: parent.width * root.scanProgress / 100; height: parent.height; radius: parent.radius; color: settings_form.accentColor }
                     }
-
                     Text {
                         Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        text: scanResultsModel.count === 0 ?
-                                  (isScanning ? qsTr("Scanning for responsive hosts...") : qsTr("No devices discovered yet. Start a scan to look for ground stations.")) :
-                                  qsTr("Tap an IP below to connect via TCP.")
-                        color: "#7f8c8d"
-                        font.pixelSize: settings.qopenhd_general_font_pixel_size
+                        text: scanResultsModel.count === 0
+                              ? (root.isScanning ? qsTr("Searching for responsive hosts…") : qsTr("No devices discovered yet."))
+                              : qsTr("Discovered devices")
+                        color: settings_form.secondaryText; font.pixelSize: 11
                     }
-
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 200
-                        clip: true
-                        model: scanResultsModel
-                        delegate: Rectangle {
-                            width: ListView.view.width
-                            height: 48
-                            color: index % 2 === 0 ? "#f8f9fb" : "#ffffff"
-                            radius: 6
-                            border.color: "#e0e3e8"
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 10
-                                Text {
-                                    text: ip
-                                    font.pixelSize: settings.qopenhd_general_font_pixel_size + 1
-                                    color: "#2d3436"
-                                    Layout.fillWidth: true
-                                }
-                                Button {
-                                    text: qsTr("Connect")
-                                    onClicked: applyTcpTarget(ip)
-                                }
+                    ColumnLayout {
+                        Layout.fillWidth: true; spacing: 6
+                        Repeater {
+                            id: resultsRepeater
+                            model: scanResultsModel
+                            delegate: Button {
+                                id: resultButton
+                                Layout.fillWidth: true; height: 40
+                                text: ip + "    " + qsTr("CONNECT")
+                                onClicked: root.applyTcpTarget(ip)
+                                onActiveFocusChanged: if (activeFocus) root.syncFocus(resultButton)
+                                Keys.onPressed: root.handleButtonKey(event)
+                                background: Rectangle { radius: 9; color: resultButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: resultButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: resultButton.activeFocus ? 2 : 1 }
+                                contentItem: Text { text: resultButton.text; color: settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                             }
                         }
-                        visible: scanResultsModel.count > 0
                     }
                 }
             }
 
-            Item {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-            }
+            Item { Layout.fillWidth: true; Layout.preferredHeight: 8 }
         }
     }
 }

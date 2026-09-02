@@ -308,8 +308,7 @@ Rectangle {
             clip: true
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             // Always show the scroll bar (sometimes the interactive might not work) but allow interactive also
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-            ScrollBar.vertical.interactive: true
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
             ListView {
                 id: listView

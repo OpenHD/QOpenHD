@@ -31,7 +31,7 @@ Rectangle{
         contentWidth: baseLogMessagesView.width
         clip: true
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        ScrollBar.vertical.interactive: true
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
         ListView {
             id: baseLogMessagesView

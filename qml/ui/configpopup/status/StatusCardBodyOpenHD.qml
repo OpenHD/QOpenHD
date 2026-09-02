@@ -284,11 +284,11 @@ Column {
         }
         m_right_text_color: {
             if(m_right_text=="DISABLED" || m_right_text=="ENABLED"){
-                return "green"
+                return settings_form.goodColor
             }
-            return "black";
+            return settings_form.primaryText;
         }
-        m_right_text_color_error: "black";
+        m_right_text_color_error: settings_form.primaryText;
         m_error_text: {
             if(m_model.wifi_hotspot_state==0){
                 var message=qsTr("To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module.")

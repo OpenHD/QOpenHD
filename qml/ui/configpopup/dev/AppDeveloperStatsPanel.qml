@@ -174,8 +174,7 @@ Rectangle {
                 ScrollView {
                     id: terminalScrollView
                     anchors.fill: parent
-                    ScrollBar.vertical.interactive: true
-                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
                     TextArea {
                         id: terminalTextArea

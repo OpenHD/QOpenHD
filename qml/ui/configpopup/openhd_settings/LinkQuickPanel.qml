@@ -321,7 +321,7 @@ Rectangle{
         contentHeight: main_column_layout.height
         //contentWidth: main_column_layout.width
         //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        ScrollBar.vertical.interactive: true
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
         visible: (!popup_analyze_channels.visible && !popup_enable_stbc_ldpc.visible && !popup_scan_channels.visible)
         clip: true
 
