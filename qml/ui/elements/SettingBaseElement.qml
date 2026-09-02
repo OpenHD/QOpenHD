@@ -20,9 +20,10 @@ import QtQuick.Controls.Material 2.12
 Rectangle {
     width: parent.width
     height: rowHeight
-    // Item needs to be placed in a Column, in which case columns are colored alternating white - light blue
-    // This increases readability
-    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+    radius: 7
+    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+    border.color: settings_form.lineColor
+    border.width: Positioner.index % 2 === 0 ? 1 : 0
 
     // Set this to the setting(s) short description.
     // This value is always shown inside a text view on the left
@@ -44,25 +45,14 @@ Rectangle {
         text: qsTr(m_short_description)
         font.weight: Font.Bold
         font.pixelSize: 13
-        anchors.leftMargin: 8
+        anchors.leftMargin: 12
         verticalAlignment: Text.AlignVCenter
         anchors.verticalCenter: parent.verticalCenter
-        width: 224
+        width: Math.max(150, Math.min(260, parent.width * 0.45))
         height: elementHeight
         anchors.left: parent.left
-    }
-
-    Button {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: description.right
-        //text: "INFO"
-        text: "\uf05a"
-        font.family: "Font Awesome 5 Free"
-        Material.background:Material.LightBlue
-        visible: has_valid_long_description()
-        onClicked: {
-            _messageBoxInstance.set_text_and_show(m_long_description)
-        }
+        color: settings_form.primaryText
+        elide: Text.ElideRight
     }
 
 }

@@ -83,6 +83,10 @@
         <file>ui/widgets/QRenderStatsWidget.qml</file>
         <file>ui/widgets/map/MapComponent.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
+        <file>ui/configpopup/AdvancedPage.qml</file>
+        <file>ui/configpopup/AdvancedCard.qml</file>
+        <file>ui/configpopup/AdvancedActionButton.qml</file>
+        <file>ui/configpopup/AdvancedTabButton.qml</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>
@@ -108,12 +112,21 @@
         <file>ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVehicleSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppSettingsPanel.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppSettingsPageFrame.qml</file>
+        <file>ui/configpopup/qopenhd_settings/StyledText.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/openhd_settings/OHDSettingsPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/OpenHDSettingsCategory.qml</file>
+        <file>ui/configpopup/openhd_settings/DynamicLinkSetting.qml</file>
+        <file>ui/configpopup/openhd_settings/CompactLinkComboBox.qml</file>
+        <file>ui/configpopup/openhd_settings/WifiBroadcastLinkCard.qml</file>
+        <file>ui/configpopup/openhd_settings/MicrohardLinkCard.qml</file>
+        <file>ui/configpopup/openhd_settings/ArtosynLinkCard.qml</file>
+        <file>ui/configpopup/openhd_settings/MLRSLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/MLRSSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/DialoqueFreqChangeGndOnly.qml</file>
         <file>ui/configpopup/ConfigPopupSidebarButton.qml</file>
@@ -121,6 +134,7 @@
         <file>ui/configpopup/rc/RcInfoPanel.qml</file>
         <file>ui/configpopup/rc/RcDebugScreenOpenHD.qml</file>
         <file>ui/configpopup/rc/RcDebugScreenFC.qml</file>
+        <file>ui/configpopup/rc/RcChannelsView.qml</file>
         <file>ui/configpopup/status/StatusCardBodyOpenHD.qml</file>
         <file>ui/configpopup/status/PowerActionDialoque.qml</file>
         <file>ui/configpopup/status/PanelStatus.qml</file>
@@ -161,7 +175,6 @@
         <file>ui/configpopup/status/StatusCardRow.qml</file>
         <file>ui/configpopup/status/StatusCard.qml</file>
         <file>ui/configpopup/connect/PaneConnectionMode.qml</file>
-        <file>ui/configpopup/openhd_settings/PopupEnableSTBCLDPC.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget2.qml</file>
         <file>ui/configpopup/status/StatusCardsColumn.qml</file>
         <file>ui/elements/SimpleLeftRightText.qml</file>
@@ -183,6 +196,7 @@
         <file>ui/widgets/SOCStatusWidgetGeneric.qml</file>
         <file>ui/elements/BigClickableText.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamValueEditElement.qml</file>
+        <file>ui/configpopup/openhd_settings/InlineMavlinkParamControl.qml</file>
         <file>ui/elements/ButtonIconGear.qml</file>
         <file>ui/widgets/DevStreamingInfo.qml</file>
         <file>ui/widgets/DevStreamingInfoText.qml</file>

@@ -15,7 +15,7 @@ Item {
 
     implicitHeight: (width < 650 ? 118 : 75) + (_ohdAction.formatAirSdCardStatus !== "Idle" ? 20 : 0)
 
-    function actionButtons() { return [infoButton, pingButton, autoPingSwitch, storageButton] }
+    function actionButtons() { return [pingButton, autoPingSwitch, storageButton] }
 
     Dialog {
         id: storageManagerDialog
@@ -195,15 +195,6 @@ Item {
         spacing: 10
         height: childrenRect.height
 
-        Button {
-            id: infoButton
-            width: 47; height: 43
-            text: "\uf05a"
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 18
-            onClicked: _messageBoxInstance.set_text_and_show(qsTr("Ping all systems checks whether OpenHD air, ground and the flight controller respond to MAVLink ping. The command is lossy, so repeat it before diagnosing a failure."))
-            background: Rectangle { radius: 10; color: parent.hovered ? "#176fc7" : "#125ca8"; border.color: parent.activeFocus ? "white" : "transparent"; border.width: 2 }
-            contentItem: Text { text: parent.text; font: parent.font; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-        }
         Button {
             id: pingButton
             width: Math.min(176, Math.max(150, actionFlow.width * 0.25)); height: 43

@@ -1,262 +1,305 @@
-import QtQuick 2.0
-
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-
 import QtQuick.Controls.Material 2.12
- 
-
-import Qt.labs.settings 1.0
+import QtCharts 2.15
 
 import OpenHD 1.0
 
-import "../../../ui" as Ui
-import "../../elements"
+PopupBigGeneric {
+    id: root
+    m_title: qsTr("ANALYZE CHANNELS")
+    m_modern_style: true
+    focus: visible
 
-import QtCharts 2.15
+    property bool normalized: false
+    property int chartMinimumWidth: 1080
+    property bool analyzing: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 2
+    property int analyzeProgress: Math.max(0, Math.min(100, _wbLinkSettingsHelper.analyze_progress_perc))
 
-PopupBigGeneric{
-    // Overwritten from parent
-    m_title: qsTr("Scan for clean Channels")
-    onCloseButtonClicked: {
-        if (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode == 2) {
-            _qopenhd.show_toast(qsTr("STILL ANALYZING, PLEASE WAIT ..."));
-            return;
+    Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
+    Material.accent: settings_form.accentColor
+    Material.foreground: settings_form.primaryText
+    Material.background: settings_form.panelBackgroundRaised
+
+    function open() {
+        visible = true
+        enabled = true
+        pollutionChart.updatePollutionGraph()
+        Qt.callLater(function() { filterCombo.forceActiveFocus() })
+    }
+
+    function close() {
+        visible = false
+        enabled = false
+    }
+
+    function requestClose() {
+        if (analyzing) {
+            _qopenhd.show_toast(qsTr("Channel analysis is still running"))
+            return
         }
         close()
     }
-    // Actual implementation
-    property bool m_normalize_data: false;
-    property int m_chart_view_minimum_width: 1280;
-    property bool m_chart_enlarged: false;
 
-    function open(){
-        visible=true
+    function update() { pollutionChart.updatePollutionGraph() }
+
+    function startAnalysis() {
+        var accepted = _wbLinkSettingsHelper.start_analyze_channels(filterCombo.currentIndex)
+        if (accepted)
+            _qopenhd.show_toast(qsTr("Channel analysis started"))
+        else
+            _qopenhd.show_toast(qsTr("The radio is busy. Please try again."))
     }
 
-    function close(){
-        visible=false;
+    function controls() { return [filterCombo, normalizeSwitch, startButton] }
+
+    function moveFocus(control, step) {
+        var list = controls()
+        var current = list.indexOf(control)
+        list[(current + step + list.length) % list.length].forceActiveFocus()
     }
 
-    function update(){
-        pollution_chart.update_pollution_graph();
+    function handleKey(control, event) {
+        if (event.key === Qt.Key_Left) {
+            moveFocus(control, -1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Right) {
+            moveFocus(control, 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Escape) {
+            requestClose()
+            event.accepted = true
+        }
     }
 
+    onCloseButtonClicked: requestClose()
+    Keys.onEscapePressed: requestClose()
 
-    ListModel{
-        id: model_filter
-        ListElement {title: qsTr("OHD [1-7]"); value: 0}
-        ListElement {title: qsTr("All 2.4G"); value: 1}
-        ListElement {title: qsTr("All 5.8G"); value: 2}
+    ListModel {
+        id: filterModel
+        ListElement { title: qsTr("OpenHD channels 1–7"); value: 0 }
+        ListElement { title: qsTr("All 2.4 GHz channels"); value: 1 }
+        ListElement { title: qsTr("All 5.8 GHz channels"); value: 2 }
     }
 
-    property string m_info_string: qsTr("Analyze channels for pollution by wifi access points.\nNOTE: This only gives a hint at free channels, using a proper channel analyzer (e.g. on the phone) is recommended !\nIn short: Any frequency with red bars (small or big) should not be used, unless there are no options / other reasons to do so.")
-
-    ColumnLayout{
-        id: main_layout
+    ColumnLayout {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        anchors.topMargin: dirty_top_margin_for_implementation
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
+        anchors.bottomMargin: 12
+        anchors.topMargin: root.dirty_top_margin_for_implementation + 10
+        spacing: 9
 
-        RowLayout{
-            visible:true
-            Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            ButtonIconInfo{
-                Layout.alignment: Qt.AlignLeft
-                onClicked: {
-                    _messageBoxInstance.set_text_and_show(m_info_string)
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: root.width >= 700 ? 68 : 116
+            radius: 11
+            color: settings_form.panelBackgroundRaised
+            border.color: settings_form.lineColor
+
+            GridLayout {
+                anchors.fill: parent
+                anchors.margins: 10
+                columns: root.width >= 700 ? 4 : 2
+                columnSpacing: 9
+                rowSpacing: 7
+
+                ComboBox {
+                    id: filterCombo
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    model: filterModel
+                    textRole: "title"
+                    enabled: !root.analyzing
+                    onCurrentIndexChanged: pollutionChart.updatePollutionGraph()
+                    Keys.onPressed: root.handleKey(filterCombo, event)
                 }
-            }
-        }
-        RowLayout{
-            Layout.alignment: Qt.AlignHCenter
-            Button{
-                id:startButton
-                text: qsTr("START")
-                onClicked: {
-                    var how_many_freq_bands=comboBoxWhichFrequencyToAnalyze.currentIndex
-                    var result=_wbLinkSettingsHelper.start_analyze_channels(how_many_freq_bands)
-                    if(result!==true){
-                        _qopenhd.show_toast(qsTr("Busy,please try again later"),true);
-                    }else{
-                        _qopenhd.show_toast(qsTr("STARTED, THIS MIGHT TAKE A WHILE !"));
+
+                RowLayout {
+                    Layout.preferredWidth: 142
+                    spacing: 5
+                    Switch {
+                        id: normalizeSwitch
+                        checked: root.normalized
+                        enabled: !root.analyzing
+                        onClicked: {
+                            root.normalized = checked
+                            pollutionChart.updatePollutionGraph()
+                            if (root.normalized)
+                                _qopenhd.show_toast(qsTr("Relative scaling can exaggerate small differences"))
+                        }
+                        Keys.onPressed: root.handleKey(normalizeSwitch, event)
+                    }
+                    Text {
+                        text: root.normalized ? qsTr("RELATIVE") : qsTr("ABSOLUTE")
+                        color: settings_form.secondaryText
+                        font.pixelSize: 10
+                        font.bold: true
                     }
                 }
-                enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-            }
-            ComboBox {
-                Layout.preferredWidth: 150
-                Layout.minimumWidth: 50
-                id: comboBoxWhichFrequencyToAnalyze
-                model: model_filter
-                textRole: "title"
-                onCurrentIndexChanged: {
-                    pollution_chart.update_pollution_graph();
-                }
-            }
-            Switch{
-                id:normalize_sw
-                checked: m_normalize_data
-                onCheckedChanged: {
-                    m_normalize_data=checked
-                    pollution_chart.update_pollution_graph();
-                    if(m_normalize_data){
-                        _qopenhd.show_toast(qsTr("WARNING: THIS VIEW CAN BE DECEIVING !"));
+
+                Button {
+                    id: startButton
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    text: root.analyzing ? qsTr("ANALYZING…") : qsTr("START ANALYSIS")
+                    enabled: _ohdSystemGround.is_alive && !root.analyzing &&
+                             _ohdSystemGround.wb_gnd_operating_mode === 0
+                    onClicked: root.startAnalysis()
+                    Keys.onPressed: root.handleKey(startButton, event)
+                    background: Rectangle {
+                        radius: 9
+                        color: startButton.enabled
+                               ? (startButton.hovered ? "#176fc7" : settings_form.accentColor)
+                               : settings_form.lineColor
+                        border.color: startButton.activeFocus ? "#ffffff" : "transparent"
+                        border.width: startButton.activeFocus ? 2 : 0
+                    }
+                    contentItem: Text {
+                        text: startButton.text
+                        color: startButton.enabled ? "#ffffff" : settings_form.secondaryText
+                        font.pixelSize: 11
+                        font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
-            }
-            Text{
-                text: m_normalize_data ? qsTr("Relative") : qsTr("Absolute")
-                color: "#fff"
-                font.pixelSize: 18
-                verticalAlignment: Qt.AlignVCenter
-                Layout.leftMargin: -10
+
             }
         }
-        SimpleProgressBar{
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.preferredWidth: 400
-            Layout.minimumWidth: 100
-            Layout.preferredHeight: 40
-            impl_curr_progress_perc: _wbLinkSettingsHelper.analyze_progress_perc
-            impl_show_progress_text: true
-        }
-        Text{
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            Layout.preferredWidth: 200
-            Layout.minimumWidth: 100
-            Layout.preferredHeight: 25
-            color: "#fff"
-            text: {
-                if(_wbLinkSettingsHelper.current_analyze_frequency<=0){
-                    return "";
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 10
+            Text {
+                text: root.analyzing ? qsTr("Analyzing") : (root.analyzeProgress >= 100 ? qsTr("Analysis complete") : qsTr("Ready"))
+                color: settings_form.primaryText
+                font.pixelSize: 11
+                font.bold: true
+            }
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 5
+                radius: 3
+                color: settings_form.lineColor
+                Rectangle {
+                    width: parent.width * root.analyzeProgress / 100
+                    height: parent.height
+                    radius: parent.radius
+                    color: settings_form.accentColor
+                    Behavior on width { NumberAnimation { duration: 180 } }
                 }
-                return qsTr("Analyzed %1 MHz ...").arg(_wbLinkSettingsHelper.current_analyze_frequency);
+            }
+            Text {
+                text: root.analyzeProgress + "%"
+                color: settings_form.accentColor
+                font.pixelSize: 11
+                font.bold: true
             }
         }
-        ScrollView{
-            id: chart_scroll_view
+
+        Text {
+            Layout.fillWidth: true
+            Layout.preferredHeight: visible ? 18 : 0
+            visible: _wbLinkSettingsHelper.current_analyze_frequency > 0
+            text: qsTr("Analyzing %1 MHz").arg(_wbLinkSettingsHelper.current_analyze_frequency)
+            color: settings_form.secondaryText
+            font.pixelSize: 10
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            contentWidth: pollution_chart.width
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            radius: 11
+            color: settings_form.panelBackgroundRaised
+            border.color: settings_form.lineColor
             clip: true
 
-            ChartView {
-                id: pollution_chart
+            ScrollView {
+                id: chartScroller
+                anchors.fill: parent
+                anchors.margins: 5
+                contentWidth: pollutionChart.width
+                contentHeight: height
                 clip: true
-                //width: main_background.width>m_chart_view_minimum_width ? main_background.width : m_chart_view_minimum_width;
-                width: {
-                    const screen_width = main_background.width-10;
-                    // 2.4G and OHD 1-7 should always fit into screen size
-                    const filter=comboBoxWhichFrequencyToAnalyze.currentIndex;
-                    if(filter==0 || filter==1){
-                         return screen_width;
-                    }
-                    // All the 5.8G frequencies together do not!
-                    return screen_width>m_chart_view_minimum_width ? screen_width : m_chart_view_minimum_width;
-                }
-                //width: m_chart_enlarged ? 1280 : main_background.width
-                height: parent.height
-                legend.alignment: Qt.AlignBottom
-                antialiasing: true
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
-                function update_pollution_graph(){
-                    //const frequencies_list = _wbLinkSettingsHelper.get_pollution_qstringlist();
-                    //bar_axis_x.categories=frequencies_list;
-                    //const supported_frequencies = _wbLinkSettingsHelper.get_supported_frequencies();
-                    const channels_to_analyze=comboBoxWhichFrequencyToAnalyze.currentIndex;
-                    var frequencies_to_analyze=_frequencyHelper.get_frequencies(0);
-                    if(channels_to_analyze==0){
-                       frequencies_to_analyze=_frequencyHelper.get_frequencies(0);
-                    }else if(channels_to_analyze==1){
-                        frequencies_to_analyze=_frequencyHelper.get_frequencies(1);
-                    }else{
-                        frequencies_to_analyze=_frequencyHelper.get_frequencies(2);
-                        frequencies_to_analyze=_frequencyHelper.filter_frequencies_40mhz_ht40plus_only(frequencies_to_analyze);
+                ChartView {
+                    id: pollutionChart
+                    width: filterCombo.currentIndex === 2
+                           ? Math.max(chartScroller.width, root.chartMinimumWidth)
+                           : chartScroller.width
+                    height: chartScroller.height
+                    antialiasing: true
+                    animationOptions: ChartView.SeriesAnimations
+                    animationDuration: 180
+                    backgroundColor: "transparent"
+                    plotAreaColor: "transparent"
+                    legend.visible: false
+                    margins.top: 8
+                    margins.bottom: 8
+                    margins.left: 8
+                    margins.right: 8
+
+                    function updatePollutionGraph() {
+                        var filter = filterCombo.currentIndex
+                        if (filter < 0) filter = 0
+                        var frequencies = _frequencyHelper.get_frequencies(filter)
+                        if (filter === 2)
+                            frequencies = _frequencyHelper.filter_frequencies_40mhz_ht40plus_only(frequencies)
+                        categoryAxis.categories = _pollutionHelper.pollution_frequencies_int_to_qstringlist(frequencies)
+                        pollutionBars.values = _pollutionHelper.pollution_frequencies_int_get_pollution(frequencies, root.normalized)
+                        qualityAxis.labelsVisible = !root.normalized
+                        qualityAxis.min = 0
+                        qualityAxis.max = root.normalized ? 100 : 30
                     }
-                    var categories = _pollutionHelper.pollution_frequencies_int_to_qstringlist(frequencies_to_analyze);
-                    var values = _pollutionHelper.pollution_frequencies_int_get_pollution(frequencies_to_analyze,m_normalize_data);
-                    bar_axis_x.categories=categories;
-                    bar_set.values=values;
-                    if(m_normalize_data){
-                        element_x_axis.labelsVisible=false;
-                        element_x_axis.min=0;
-                        element_x_axis.max=100;
-                    }else{
-                        element_x_axis.labelsVisible=true;
-                        element_x_axis.min=0;
-                        element_x_axis.max=30;
-                    }
-                }
-                BarSeries {
-                    id: hm_bar_series
-                    axisX: BarCategoryAxis {
-                        id: bar_axis_x
-                        categories: ["DUMMY0", "DUMMY1", "DUMMY3", "DUMMY4" ]
-                        //min: "0"
-                        //max: "500"
-                    }
-                    /*axisY: ValueAxis {
+
+                    BarSeries {
+                        axisX: BarCategoryAxis {
+                            id: categoryAxis
+                            labelsColor: settings_form.secondaryText
+                            gridVisible: false
+                            lineVisible: false
+                        }
+                        axisY: CategoryAxis {
+                            id: qualityAxis
+                            min: 0
+                            max: 30
+                            labelsColor: settings_form.secondaryText
+                            gridLineColor: settings_form.lineColor
+                            lineVisible: false
+                            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
+                            CategoryRange { label: qsTr("perfect"); endValue: 0 }
+                            CategoryRange { label: qsTr("good"); endValue: 10 }
+                            CategoryRange { label: qsTr("medium"); endValue: 20 }
+                            CategoryRange { label: qsTr("bad"); endValue: 30 }
+                        }
+                        BarSet {
+                            id: pollutionBars
+                            label: qsTr("Wi-Fi pollution estimate")
+                            values: [0, 0, 0, 0]
+                            color: settings_form.errorColor
+                            borderColor: settings_form.errorColor
+                        }
                         labelsVisible: false
-                        gridVisible:false
-                    }*/
-                    axisY: CategoryAxis{
-                        id: element_x_axis
-                        min: 0
-                        max: 30
-                        labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
-                        CategoryRange {
-                            label: qsTr("perfect")
-                            endValue: 0
-
-                        }
-                        CategoryRange {
-                            label: qsTr("good")
-                            endValue: 10
-
-                        }
-                        CategoryRange {
-                            label: qsTr("medium")
-                            endValue: 20
-                        }
-                        CategoryRange {
-                            label: qsTr("bad")
-                            endValue: 30
-                        }
                     }
-                    BarSet {
-                        id: bar_set
-                        //label: m_normalize_data ? "Pollution estimate %" : "WiFiPollution estimate (pps)";
-                        label: qsTr("WiFi pollution estimate")
-                        values: [5,10,3,100]
-                        //values: [0,0,0,0]
-                        color: "red"
-                    }
-                    /*BarSet{
-                        id: bar_set2
-                        label: qsTr("GOOD")
-                        color: "green"
-                        values: [5,10,3,100]
-                    }*/
-                    labelsPosition: AbstractBarSeries.LabelsInsideEnd
                 }
             }
         }
-        // Filler
-        //Item{
-        //    Layout.fillWidth: true
-        //    Layout.fillHeight: true
-        //}
+
+        Text {
+            Layout.fillWidth: true
+            text: qsTr("Lower bars indicate cleaner channels. Swipe horizontally to inspect the full 5.8 GHz range.")
+            color: settings_form.secondaryText
+            font.pixelSize: 9
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+        }
     }
-
-
-
-
 }
-

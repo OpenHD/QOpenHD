@@ -1,77 +1,66 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
 
-import QtQuick.Controls.Material 2.12
+FocusScope {
+    id: root
+    property var m_log_model: _logQOpenHD
+    signal backRequested()
+    function gainFocus() { logList.forceActiveFocus() }
 
-import Qt.labs.settings 1.0
-
-import OpenHD 1.0
-
-import "../../../ui" as Ui
-import "../../elements"
-
-// Uses the c++ logmessagemodel under app/logging/logmessagesmodel
-Rectangle{
-    id: main_item
-    width: parent.width
-    height: parent.height
-    //color: Qt.rgba(0.2, 0.2, 0.2, 1.0)
-    color: "#eaeaea"
-    //color: "transparent"
-
-    // Overwritten in implementation
-    property var m_log_model : _logQOpenHD
-
-    ScrollView{
-        width: parent.width
-        height: parent.height
-        anchors.top: parent.top
-        contentHeight: baseLogMessagesView.height
-        contentWidth: baseLogMessagesView.width
+    ListView {
+        id: logList
+        anchors.fill: parent
+        anchors.margins: 8
+        model: root.m_log_model
         clip: true
-        //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+        spacing: 2
+        focus: true
+        keyNavigationWraps: false
+        highlightMoveDuration: 100
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
 
-        ListView {
-            id: baseLogMessagesView
-            width: main_item.width
-            //height: parent.height
-            model: m_log_model
-
-            delegate:
-                Rectangle {
-                //color: Qt.rgba(0.2, 0.2, 0.2, 1.0)
-                //color: "#808080"
-                //opacity: 0.3
-                //color: "#eaeaea"
-                //color: "#FF0000"
-                //color: "#D0A197"
-                //color: "#808080"
-                color: "#333c4c"
-
-                height: 28
-                width: baseLogMessagesView.width //parent.width for some reason we cannot just use parent.width here
-
+        delegate: Rectangle {
+            width: logList.width
+            height: Math.max(34, messageText.implicitHeight + 14)
+            radius: 6
+            color: ListView.isCurrentItem ? (settings_form.darkMode ? "#193d60" : "#e1effd")
+                                               : (index % 2 ? settings_form.panelBackgroundRaised : "transparent")
+            border.width: ListView.isCurrentItem && logList.activeFocus ? 1 : 0
+            border.color: settings_form.accentColor
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 11
+                anchors.rightMargin: 11
+                spacing: 10
                 Text {
-                    id: tagViewFC
+                    width: 72
+                    anchors.verticalCenter: parent.verticalCenter
                     text: model.tag
                     color: model.severity_color
-                    anchors { left:parent.left }
-                    verticalAlignment: Text.AlignVCenter
-                    height: parent.height
-                    opacity: 1.0
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                    font.pixelSize: 11
+                    font.bold: true
+                    elide: Text.ElideRight
                 }
                 Text {
+                    id: messageText
+                    width: parent.width - 82
+                    anchors.verticalCenter: parent.verticalCenter
                     text: model.message
-                    anchors { left:tagViewFC.right; verticalCenter: tagViewFC.verticalCenter; leftMargin: 5 }
-                    verticalAlignment: Text.AlignVCenter
-                    height: parent.height
-                    opacity: 1.0
-                    color:"white"
-                    font.pixelSize: settings.qopenhd_general_font_pixel_size
+                    color: settings_form.primaryText
+                    font.pixelSize: 12
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
+            }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { logList.currentIndex = index; logList.forceActiveFocus() }
+            }
+        }
+
+        Keys.onPressed: function(event) {
+            if (event.key === Qt.Key_Left || event.key === Qt.Key_Escape) {
+                root.backRequested()
+                event.accepted = true
             }
         }
     }

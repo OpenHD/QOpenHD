@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
@@ -22,7 +23,7 @@ Rectangle {
     color: pageBackground
     focus: visible
 
-    property bool darkMode: true
+    property bool darkMode: advancedThemeSettings.darkMode
     property color pageBackground: darkMode ? "#091827" : "#eef4fa"
     property color panelBackground: darkMode ? "#102235" : "#ffffff"
     property color panelBackgroundRaised: darkMode ? "#15283b" : "#f7faff"
@@ -36,6 +37,12 @@ Rectangle {
     // displays while retaining the labelled sidebar on desktop.
     property bool compactSidebar: width < 1050
     property int sidebarWidth: compactSidebar ? 72 : Math.max(160, Math.min(210, width * 0.17))
+
+    Settings {
+        id: advancedThemeSettings
+        category: "AdvancedMenu"
+        property bool darkMode: true
+    }
 
     function openSettings() {
         visible = true
@@ -52,6 +59,12 @@ Rectangle {
         openSettings()
         mainStackLayout.currentIndex = 5
         navigation.currentIndex = 5
+    }
+    function openDeveloperTools() {
+        openSettings()
+        mainStackLayout.currentIndex = 8
+        navigation.currentIndex = -1
+        appDeveloperStatsPanel.gainFocus()
     }
     function user_guidance_open_openhd_settings_find_air_unit_location() {
         openSettings()
@@ -84,12 +97,11 @@ Rectangle {
         id: navigationModel
         ListElement { title: qsTr("Status"); icon: "\uf21e" }
         ListElement { title: qsTr("OpenHD"); icon: "\uf085" }
-        ListElement { title: qsTr("OSD"); icon: "\uf013" }
+        ListElement { title: qsTr("OSD"); icon: "\uf108" }
         ListElement { title: qsTr("Log"); icon: "\uf03a" }
         ListElement { title: qsTr("RC"); icon: "\uf11b" }
         ListElement { title: qsTr("Connect"); icon: "\uf6ff" }
         ListElement { title: qsTr("Credits"); icon: "\uf005" }
-        ListElement { title: qsTr("Dev"); icon: "\uf0ad" }
         ListElement { title: qsTr("MAV Debug"); icon: "\uf188" }
     }
 
@@ -137,35 +149,34 @@ Rectangle {
                 activeFocusOnTab: true
                 padding: 5
                 onClicked: settings_form.close_all()
-                background: Rectangle {
-                    radius: 26
-                    color: compactBackButton.hovered ? settings_form.panelBackgroundRaised : "transparent"
-                    border.color: compactBackButton.activeFocus ? settings_form.accentColor : "transparent"
-                    border.width: 2
-                }
+                background: Item { }
                 contentItem: Canvas {
                     id: openHdMark
+                    property bool inverted: compactBackButton.hovered || compactBackButton.activeFocus || compactBackButton.down
                     antialiasing: true
                     renderTarget: Canvas.FramebufferObject
+                    onInvertedChanged: requestPaint()
                     onPaint: {
                         var ctx = getContext("2d")
                         var side = Math.min(width, height)
                         var scale = side / 42
                         var center = side / 2
+                        var primaryMarkColor = settings_form.darkMode ? "#f3f7fb" : "#163d62"
+                        var accentMarkColor = "#08a5df"
                         ctx.setTransform(1, 0, 0, 1, 0, 0)
                         ctx.clearRect(0, 0, width, height)
                         ctx.translate((width - side) / 2, (height - side) / 2)
                         ctx.lineWidth = 3.2 * scale
                         ctx.lineCap = "round"
 
-                        ctx.strokeStyle = settings_form.darkMode ? "#f3f7fb" : "#163d62"
+                        ctx.strokeStyle = inverted ? accentMarkColor : primaryMarkColor
                         for (var upper = 0; upper < 3; ++upper) {
                             ctx.beginPath()
                             ctx.arc(center, center, (7 + upper * 5) * scale, Math.PI, Math.PI * 1.5, false)
                             ctx.stroke()
                         }
 
-                        ctx.strokeStyle = "#08a5df"
+                        ctx.strokeStyle = inverted ? primaryMarkColor : accentMarkColor
                         for (var lower = 0; lower < 3; ++lower) {
                             ctx.beginPath()
                             ctx.arc(center, center, (7 + lower * 5) * scale, 0, Math.PI * 0.5, false)
@@ -256,10 +267,17 @@ Rectangle {
                 } else if (event.key === Qt.Key_Right) {
                     if (currentIndex === 0)
                         statusPanel.gainFocus()
-                    else if (currentIndex === 5)
-                        connectPanel.gainFocus()
-                    else
-                        mainStackLayout.itemAt(currentIndex).forceActiveFocus()
+                    else if (currentIndex === 1)
+                        ohdSettingsPanel.gainFocus()
+                    else if (currentIndex === 2)
+                        appSettingsPanel.gainFocus()
+                    else {
+                        var page = mainStackLayout.itemAt(currentIndex)
+                        if (page && page.gainFocus)
+                            page.gainFocus()
+                        else if (page)
+                            page.forceActiveFocus()
+                    }
                     event.accepted = true
                 } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Escape) {
                     close_all()
@@ -286,10 +304,19 @@ Rectangle {
             }
             MouseArea {
                 id: versionHit
+                property bool longPressTriggered: false
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: settings_form.user_quidance_open_connect_screen()
+                onPressed: longPressTriggered = false
+                onPressAndHold: {
+                    longPressTriggered = true
+                    settings_form.openDeveloperTools()
+                }
+                onClicked: {
+                    if (!longPressTriggered)
+                        settings_form.user_quidance_open_connect_screen()
+                }
             }
         }
     }
@@ -339,7 +366,10 @@ Rectangle {
             width: 62; height: 40
             text: darkMode ? "\uf185" : "\uf186"
             font.family: "Font Awesome 5 Free"; font.pixelSize: 15
-            onClicked: darkMode = !darkMode
+            onClicked: {
+                darkMode = !darkMode
+                advancedThemeSettings.darkMode = darkMode
+            }
             onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0) statusPanel.syncFocus(themeButton)
             Keys.onPressed: function(event) {
                 if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
@@ -374,14 +404,8 @@ Rectangle {
             RcInfoPanel { id: rcInfoPanel }
             ConnectPanel { id: connectPanel }
             Credits { id: creditspanel }
+            MavlinkDebugPanel { id: mavlinkDebugPanel }
             AppDeveloperStatsPanel { id: appDeveloperStatsPanel }
-            Item {
-                Column {
-                    anchors.centerIn: parent; spacing: 12
-                    Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\uf188"; color: accentColor; font.family: "Font Awesome 5 Free"; font.pixelSize: 42 }
-                    Text { text: qsTr("MAV Debug is unavailable in this build"); color: primaryText; font.pixelSize: 18 }
-                }
-            }
         }
     }
 }

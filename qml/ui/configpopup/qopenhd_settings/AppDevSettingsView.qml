@@ -18,13 +18,15 @@ ScrollView {
     contentHeight: manageColumn.height
 
     clip: true
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
     Item {
         anchors.fill: parent
 
         Column {
             id: manageColumn
-            spacing: 0
+            spacing: 5
             anchors.left: parent.left
             anchors.right: parent.right
             //
@@ -191,7 +193,7 @@ ScrollView {
             cardBody: Column {
                 height: 200
                 width: parent.width
-                Text {
+                StyledText {
                     id: simplePopupHackText
                     text: qsTr("Do you really want to erase all your QOpenHD settings?")
                     width: parent.width-24

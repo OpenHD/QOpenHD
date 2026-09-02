@@ -8,6 +8,7 @@
 #include <thread>
 #include <mutex>
 #include <QJSValue>
+#include <QVariantMap>
 
 #include "../tutil/mavlink_include.h"
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
@@ -158,6 +159,11 @@ public:
     // just too be sure he understands the risks
     // When there is no need for a warning, this method just returns an empty string
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
+
+    // Describes how a parameter should be represented by compact settings UIs.
+    // The result is derived from the existing documented enum/range metadata;
+    // it does not create or advertise parameters that were not fetched.
+    Q_INVOKABLE QVariantMap get_ui_metadata(QString param_id) const;
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
 public:

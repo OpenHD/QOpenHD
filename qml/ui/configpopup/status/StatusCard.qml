@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.12
 
 Item {
     id: card
-    implicitHeight: 352
+    implicitHeight: 319
     Layout.minimumWidth: 170
 
     property string title: ""
@@ -14,7 +14,7 @@ Item {
     property int systemType: 0 // 0 ground, 1 air, 2 flight controller
     property Component bodyComponent
 
-    function actionButtons() { return [rebootButton, shutdownButton, calibrationButton, offlineButton] }
+    function actionButtons() { return [rebootButton, shutdownButton, calibrationButton] }
     function showPowerActions() { return alive }
     function handleNavigation(event) {
         if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
@@ -95,15 +95,19 @@ Item {
         id: bodyLoader
         anchors.top: header.bottom; anchors.topMargin: 8
         anchors.left: parent.left; anchors.right: parent.right
-        anchors.bottom: footer.top; anchors.bottomMargin: 8
+        height: 204
         sourceComponent: card.bodyComponent
     }
 
     Rectangle {
         id: footer
-        anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-        anchors.margins: card.width < 260 ? 10 : 16
+        anchors.left: parent.left; anchors.right: parent.right
+        anchors.leftMargin: card.width < 260 ? 10 : 16
+        anchors.rightMargin: card.width < 260 ? 10 : 16
+        anchors.top: bodyLoader.bottom
+        anchors.topMargin: 8
         height: 38
+        visible: card.showPowerActions()
         radius: 9
         color: "transparent"
         border.color: "transparent"
@@ -149,18 +153,6 @@ Item {
                 Keys.onPressed: card.handleNavigation(event)
                 background: Rectangle { radius: 8; color: parent.hovered ? "#263b50" : "transparent"; border.color: parent.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: parent.activeFocus ? 2 : 1 }
                 contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-            }
-            Button {
-                id: offlineButton
-                Layout.fillWidth: true; Layout.fillHeight: true
-                visible: !card.showPowerActions()
-                text: "\uf1eb"
-                font.family: "Font Awesome 5 Free"; font.pixelSize: 18
-                onClicked: card.openWarning()
-                onActiveFocusChanged: if (activeFocus) statusPanel.syncFocus(offlineButton)
-                Keys.onPressed: card.handleNavigation(event)
-                background: Rectangle { radius: 8; color: parent.hovered ? "#203448" : "transparent"; border.color: parent.activeFocus ? settings_form.accentColor : "transparent"; border.width: 2 }
-                contentItem: Text { text: parent.text; font: parent.font; color: settings_form.secondaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
         }
     }

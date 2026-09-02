@@ -18,19 +18,21 @@ ScrollView {
     contentHeight: screenColumn.height
 
     clip: true
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
     Item {
         anchors.fill: parent
 
         Column {
             id: screenColumn
-            spacing: 0
+            spacing: 5
             anchors.left: parent.left
             anchors.right: parent.right
 
             SettingBaseElement{
                 m_short_description: qsTr("Screen Scale")
-                Text {
+                StyledText {
                     text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
                     font.pixelSize: 16
                     anchors.right: screenScaleSpinBox.left

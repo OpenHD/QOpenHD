@@ -18,13 +18,15 @@ ScrollView {
     contentHeight: vehicleColumn.height
 
     clip: true
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
     Item {
         anchors.fill: parent
 
         Column {
             id: vehicleColumn
-            spacing: 0
+            spacing: 5
             anchors.left: parent.left
             anchors.right: parent.right
 

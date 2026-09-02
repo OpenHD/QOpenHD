@@ -6,7 +6,7 @@ GridLayout {
     columns: width >= 680 ? 3 : (width >= 440 ? 2 : 1)
     columnSpacing: width < 800 ? 8 : 14
     rowSpacing: columnSpacing
-    implicitHeight: Math.ceil(3 / columns) * 352 + (Math.ceil(3 / columns) - 1) * rowSpacing
+    implicitHeight: Math.ceil(3 / columns) * 319 + (Math.ceil(3 / columns) - 1) * rowSpacing
 
     function actionButtons() {
         return groundCard.actionButtons().concat(airCard.actionButtons()).concat(fcCard.actionButtons())

@@ -1,65 +1,74 @@
 import QtQuick 2.12
-import QtQuick.Window 2.0
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import ".."
 
+FocusScope {
+    id: root
+    signal backRequested()
+    function gainFocus() { instructions.forceActiveFocus() }
 
-import Qt.labs.settings 1.0
-
-import OpenHD 1.0
-
-import "../../../ui" as Ui
-import "../../elements"
-
-ScrollView {
-    clip:true
-    //contentHeight: 850
-    width: parent.width
-    height: parent.height
-    background: Rectangle { color: "#eaeaea" }
-
-    ColumnLayout{
-        width: parent.width
-        Layout.minimumHeight: 30
-        spacing: 6
-        Layout.topMargin: 15
-
-        Card {
-            id: infoBox
-            height: 200
-            Layout.topMargin: 15
-            Layout.leftMargin: 15
-            Layout.rightMargin: 15
-            Layout.fillWidth: true
-            width:parent.width
-            cardName: qsTr("Info")
-            cardBody:
-                Text {
-                text: qsTr("Enable OpenHD-RC: \n\n1. OpenHD GND: Set 'ENABLE_JOY_RC' to 'ENABLED',\n2.Connect a joystick via USB to GND Station\n3.Optionally reboot\n\nYou can use the other screens to validate/debug your setup.\n"+
-                           "NOTE: Using a seperate RC link (e.g. ExpressLRS) is recommended !\n"
-                           )
-                height: 24
-                font.pixelSize: 14
-                leftPadding: 12
+    Flickable {
+        id: view
+        anchors.fill: parent
+        contentWidth: width
+        contentHeight: cards.implicitHeight
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
+        ColumnLayout {
+            id: cards
+            width: view.width
+            spacing: 10
+            AdvancedCard {
+                id: instructions
+                Layout.fillWidth: true
+                Layout.preferredHeight: 200
+                activeFocusOnTab: true
+                border.color: activeFocus ? settings_form.accentColor : settings_form.lineColor
+                border.width: activeFocus ? 2 : 1
+                Column {
+                    anchors.fill: parent
+                    spacing: 10
+                    Text { text: qsTr("GETTING STARTED"); color: settings_form.accentColor; font.pixelSize: 12; font.bold: true }
+                    Text {
+                        width: parent.width
+                        text: qsTr("1. Enable ENABLE_JOY_RC in the OpenHD Ground settings.\n2. Connect a USB joystick to the ground station.\n3. Reboot when requested, then verify the live channels in the OpenHD RC tab.")
+                        color: settings_form.primaryText
+                        font.pixelSize: 14
+                        lineHeight: 1.35
+                        wrapMode: Text.WordWrap
+                    }
+                    Text {
+                        width: parent.width
+                        text: qsTr("A dedicated RC link such as ExpressLRS is recommended for primary flight control.")
+                        color: settings_form.secondaryText
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Keys.onPressed: function(event) {
+                    if (event.key === Qt.Key_Left || event.key === Qt.Key_Escape || event.key === Qt.Key_Up) {
+                        root.backRequested(); event.accepted = true
+                    }
+                }
+            }
+            AdvancedCard {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 130
+                Column {
+                    anchors.fill: parent
+                    spacing: 9
+                    Text { text: qsTr("CHANNEL MAPPING"); color: settings_form.accentColor; font.pixelSize: 12; font.bold: true }
+                    Text {
+                        width: parent.width
+                        text: qsTr("Use the live channel screens to validate assignments and their 1000–2000 PWM range. Advanced transmitters can perform channel mapping before the joystick data reaches QOpenHD.")
+                        color: settings_form.primaryText
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+                }
             }
         }
-        Card {
-            id: infoBox2
-            height: 100
-            Layout.topMargin: 15
-            Layout.leftMargin: 15
-            Layout.rightMargin: 15
-            Layout.fillWidth: true
-            width:parent.width
-            cardName: qsTr("Channel mapping")
-            cardBody:
-                Text {
-                text: qsTr("Channel mapping is not intuitive, but it works when done correctly.\nIf you cannot make it work, any proper RC controller (e.g. running EdgeTX / OpenTX)\nsupports more advanced channel mapping and works via USB !")
-                height: 24
-                font.pixelSize: 14
-                leftPadding: 12
-            }
-        }
-
     }
 }

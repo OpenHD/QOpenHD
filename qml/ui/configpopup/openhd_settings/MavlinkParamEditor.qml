@@ -29,7 +29,9 @@ Rectangle{
     anchors.top: parent.top
     //anchors.centerIn: parent
     //anchors.topMargin: -15
-    color: "#333c4c"
+    color: settings_form.panelBackground
+    border.color: settings_form.lineColor
+    border.width: 1
 
     //Layout.alignment: Qt.AlignRight || Qt.AlignTop
     // by default, invisble. Element becomes visible when user clicks on edit for a specific param
@@ -254,7 +256,7 @@ Rectangle{
             text: exit_button.text
             font: exit_button.font
             opacity: enabled ? 1.0 : 0.3
-            color: exit_button.down ? "#222425" : "#fff"
+            color: settings_form.primaryText
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
@@ -262,8 +264,10 @@ Rectangle{
         background: Rectangle {
             implicitWidth: 100
             implicitHeight: 100
-            opacity: enabled ? 0.1 : 1
-            color: exit_button.down ? "#14181f" : "#333c4c"
+            color: exit_button.hovered ? settings_form.panelBackgroundRaised : "transparent"
+            border.color: exit_button.activeFocus ? settings_form.accentColor : settings_form.lineColor
+            border.width: exit_button.activeFocus ? 2 : 1
+            radius: 7
         }
         onClicked: {
             console.log("Closing param editor")
@@ -283,7 +287,7 @@ Rectangle{
         Label{
             height: customHeight
             text: qsTr("Parameter editor")
-            color: "white"
+            color: settings_form.primaryText
             font.bold: true
             font.pixelSize: 18
             horizontalAlignment: Qt.AlignHCenter
@@ -295,7 +299,7 @@ Rectangle{
             anchors.topMargin: 30
             font.pixelSize: 12
             text: qsTr(parameterId+" "+get_param_type_readable())
-            color: "white"
+            color: settings_form.secondaryText
             // dafuq https://stackoverflow.com/questions/35799944/text-type-alignment
             horizontalAlignment: Qt.AlignHCenter
             Layout.alignment: Qt.AlignCenter
@@ -304,7 +308,7 @@ Rectangle{
             width: 300
             height:customHeight
             Layout.alignment: Qt.AlignCenter
-            color: "white"
+            color: settings_form.secondaryText
             text: qsTr("Description not availble")
             visible: !m_has_param_description
         }
@@ -330,8 +334,10 @@ Rectangle{
             background: Rectangle {
                 implicitWidth: 200
                 implicitHeight: 20
-                border.color: "gray"
-                radius: 2
+                color: settings_form.panelBackgroundRaised
+                border.color: spinBoxInputParamtypeInt.activeFocus ? settings_form.accentColor : settings_form.lineColor
+                border.width: spinBoxInputParamtypeInt.activeFocus ? 2 : 1
+                radius: 7
             }
         }
         // And for int values that do have an enum mapping we use a more verbose combo box and a dynamically updated model
@@ -391,7 +397,7 @@ Rectangle{
             visible: false
             Layout.alignment: Qt.AlignCenter
             // Not the best design style wise, but since the param editor is dark blue, otherwise the spin
-            color: "white"
+            color: settings_form.primaryText
         }
         // Type string only end --------------------------
         /*CheckBox{

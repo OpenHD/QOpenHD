@@ -14,6 +14,8 @@ import "../../elements"
 // Contains a list of all the settings on the left, and opens up a parameter editor instance on
 // the right if the user wants to edit any mavlink settings
 Rectangle {
+    id: root
+    signal backRequested()
     width: parent.width
     height: parent.height
     property int paramEditorWidth: 300
@@ -33,11 +35,16 @@ Rectangle {
 
     //color: "red"
     //color: "transparent"
-    color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
+    color: "transparent"
+    Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
+    Material.accent: settings_form.accentColor
+    Material.foreground: settings_form.primaryText
+    Material.background: settings_form.panelBackgroundRaised
+
+    function gainFocus() { listView.forceActiveFocus() }
 
     property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
 
-    property bool m_any_param_eitor_opened: parameterEditor.visible || dialoque_choose_camera.visible || dialoque_choose_resolution.visible;
     property bool m_any_param_busy: _ohdSystemGroundSettings.ui_is_busy || _ohdSystemAirSettingsModel.ui_is_busy || _airCameraSettingsModel.ui_is_busy ||
                                     _airCameraSettingsModel2.ui_is_busy;
     property var collapsedGroups: ({})
@@ -108,177 +115,68 @@ Rectangle {
         }
     }
 
-    function open_apropiate_param_editor(model){
-        // For a few params we have extra ui elements, otherwise, use the generic param editor
-        var init_special_ui_element_success=false;
-        if(model.unique_id==="CAMERA_TYPE"){
-            dialoque_choose_camera.m_is_for_secondary_camera=m_is_secondary_cam;
-            if(dialoque_choose_camera.set_ohd_platform_type()){
-                dialoque_choose_camera.initialize_and_show()
-                init_special_ui_element_success=true;
-            }
-        }else if(model.unique_id==="RESOLUTION_FPS"){
-            dialoque_choose_resolution.m_current_resolution_fps=model.value;
-            dialoque_choose_resolution.m_is_for_secondary=m_is_secondary_cam;
-            dialoque_choose_resolution.initialize_and_show();
-            init_special_ui_element_success=true;
-        }
-        if(!init_special_ui_element_success){
-            // generic editor
-            parameterEditor.setup_for_parameter(model.unique_id,model)
-        }
-    }
-
-    Rectangle{
-        id: upper_action_row
-        width: parent.width
-        height: rowHeight;//*2 / 3;
-        color: "#8cbfd7f3"
-        Button {
-            text: m_instanceCheckIsAvlie.is_alive ?  qsTr("\uf2f1") : qsTr("\uf127");
-            font.family: "Font Awesome 5 Free"
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            onClicked: {
-                parameterEditor.visible=false
-                m_instanceMavlinkSettingsModel.try_refetch_all_parameters_async()
-            }
-            anchors.verticalCenter: parent.verticalCenter
-            enabled: m_instanceCheckIsAvlie.is_alive && (!m_any_param_busy)
-        }
-        Text{
-            text: qsTr("FULL %1 PARAM SET").arg(m_name)
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.bold: true
-            font.pixelSize: 13
-        }
-        CheckBox{
-            anchors.right: down_button.left
-            anchors.rightMargin: 3
-            checked: settings.screen_settings_openhd_parameters_transparent
-            onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
-            anchors.verticalCenter: parent.verticalCenter
-        }
-        Button{
-            id: up_button
-            anchors.right: down_button.left
-            anchors.leftMargin: 3
-            text: "\uf0d8" //UP
-            font.family: "Font Awesome 5 Free";
-            anchors.verticalCenter: parent.verticalCenter
-            onClicked: {
-                paramListScrollView.ScrollBar.vertical.position -= 0.1
-            }
-        }
-        Button{
-            id: down_button
-            font.family: "Font Awesome 5 Free";
-            text: "\uf0d7" //DOWN
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            onClicked: {
-                paramListScrollView.ScrollBar.vertical.position += 0.1
-            }
-        }
-        Rectangle{
-            width: parent.width
-            height: 2
-            color: "black"
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-        }
-        SimpleProgressBar{
-            width: parent.width
-            height: 15
-            anchors.top: parent.top
-            visible: m_progress_perc>=0 && m_progress_perc<100
-            impl_curr_progress_perc: m_progress_perc
-            impl_curr_color: "#333c4c"
-        }
-    }
-
     Component {
         id: delegateMavlinkSettingsValue
 
         Rectangle{
             //color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
             //color: "transparent"
-            color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : ((index % 2 == 0) ? "#8cbfd7f3" : "#00000000")
+            color: ListView.isCurrentItem && listView.activeFocus
+                   ? (settings_form.darkMode ? "#174d82" : "#dcecff")
+                   : (index % 2 === 0 ? settings_form.panelBackgroundRaised : "transparent")
             property bool isIpCameraQuickSetting: model.unique_id === "IP_CAM_ADDRESS" || model.unique_id === "IP_CAM_PIPELINE"
             property bool groupCollapsed: groupIsCollapsed(model.group)
-            height: (isIpCameraQuickSetting || groupCollapsed) ? 0 : 64
-            width: listView.width-12
+            function activate() {
+                inlineEditor.gainFocus()
+            }
+            height: (isIpCameraQuickSetting || groupCollapsed) ? 0 : rowHeight
+            width: listView.width
             visible: !isIpCameraQuickSetting && !groupCollapsed
-            Row {
-                spacing: 30
-                height: parent.height
-                width: parent.width
-                anchors.left: parent.left
+            radius: 7
+            border.color: ListView.isCurrentItem && listView.activeFocus
+                          ? settings_form.accentColor : settings_form.lineColor
+            border.width: ListView.isCurrentItem && listView.activeFocus ? 2 : (index % 2 === 0 ? 1 : 0)
+            RowLayout {
+                anchors.fill: parent
                 anchors.leftMargin: 12
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width:180
-                    text: model.unique_id
-                    font.bold: true
-                    font.pixelSize: 14
-                    color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
-                    style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
-                    styleColor: settings.color_glow
-                }
-                /*Text {
-                    width:180
-                    text: model.extraValue
-                    font.bold: true
-                    font.pixelSize: 14
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
-                    style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
-                    styleColor: settings.color_glow
-                }*/
-                //Button {
-                ButtonIconInfo{
-                    anchors.verticalCenter: parent.verticalCenter
-                    //text: "INFO"
-                    //Material.background: Material.LightBlue
-                    onClicked: {
-                        var text = model.shortDescription
-                        if(text==="TODO"){
-                            text = qsTr("This parameter is not documented yet");
-                         }
-                        if(model.read_only){
-                            text = qsTr("This parameter is read-only (cannot be edited)\n%1").arg(text);
-                        }
-                        _messageBoxInstance.set_text_and_show(text)
+                anchors.rightMargin: 12
+                spacing: 12
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: parent.width * 0.58
+                    spacing: 2
+                    Text {
+                        Layout.fillWidth: true
+                        text: model.unique_id
+                        font.bold: true
+                        font.pixelSize: 13
+                        color: settings_form.primaryText
+                        elide: Text.ElideRight
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        visible: model.shortDescription !== "TODO" && model.shortDescription.length > 0
+                        text: model.shortDescription
+                        font.pixelSize: 10
+                        color: settings_form.secondaryText
+                        elide: Text.ElideRight
                     }
                 }
-                BigClickableText{
-                    text: model.extraValue
-                    anchors.verticalCenter: parent.verticalCenter
-                    onClicked: {
-                       open_apropiate_param_editor(model);
-                    }
-                    // gray out the button for read-only params
-                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened) && (!m_any_param_busy)
-                }
-                /*MavlinkParamValueEditElement{
-                    m_display_text: model.extraValue
-                    m_is_int: model.valueType===0
-                    anchors.verticalCenter: parent.verticalCenter
-                }*/
-                ButtonIconGear {
-                    anchors.verticalCenter: parent.verticalCenter
-                    //text: "EDIT"
-                    onClicked: {
-                        open_apropiate_param_editor(model);
-                    }
-                    // gray out the button for read-only params
-                    enabled: !model.read_only && m_instanceCheckIsAvlie.is_alive && (!m_any_param_eitor_opened) && (!m_any_param_busy)
+                InlineMavlinkParamControl {
+                    id: inlineEditor
+                    Layout.preferredWidth: Math.max(150, Math.min(280, root.width * 0.34))
+                    Layout.preferredHeight: elementHeight
+                    settingsModel: m_instanceMavlinkSettingsModel
+                    paramId: model.unique_id
+                    valueType: model.valueType
+                    paramValue: model.value
+                    displayValue: model.extraValue
+                    readOnly: model.read_only
+                    busy: m_any_param_busy || !m_instanceCheckIsAvlie.is_alive
                 }
                 ButtonIconWarning{
                     id: warning_whitelisted
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.alignment: Qt.AlignVCenter
                     onClicked: {
                         _messageBoxInstance.set_text_and_show(qsTr("This param is whitelisted (You should not edit it from here / editing can break things))"))
                     }
@@ -292,14 +190,14 @@ Rectangle {
     Rectangle{
         id: scrollViewRectangle
         width: parent.width
-        height: parent.height - upper_action_row.height
-        anchors.top: upper_action_row.bottom
+        height: parent.height
+        anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         //color: "green"
         //opacity: 0.5
-        color: settings.screen_settings_openhd_parameters_transparent ? "transparent" :  "white"
+        color: "transparent"
 
         ScrollView{
             id: paramListScrollView
@@ -315,20 +213,47 @@ Rectangle {
                 width: parent.width
                 model: m_instanceMavlinkSettingsModel
                 delegate: delegateMavlinkSettingsValue
+                keyNavigationWraps: false
+                highlightMoveDuration: 100
+                Keys.onReturnPressed: if (currentItem) currentItem.activate()
+                Keys.onEnterPressed: if (currentItem) currentItem.activate()
+                Keys.onLeftPressed: root.backRequested()
+                Keys.onEscapePressed: root.backRequested()
+                Keys.onUpPressed: {
+                    if (currentIndex <= 0) {
+                        root.backRequested()
+                        event.accepted = true
+                    }
+                }
                 section.property: "group"
                 section.criteria: ViewSection.FullString
                 section.delegate: Rectangle {
-                    width: listView.width - 12
-                    height: 42
-                    color: settings.screen_settings_openhd_parameters_transparent ? "#aa263648" : "#d7e5ec"
+                    width: listView.width
+                    height: rowHeight * 2 / 3
+                    color: settings_form.panelBackgroundRaised
+                    radius: 8
+                    border.color: settings_form.lineColor
+                    border.width: 1
                     Text {
                         anchors.left: parent.left
-                        anchors.leftMargin: 12
+                        anchors.leftMargin: 14
+                        anchors.right: parent.right
+                        anchors.rightMargin: 42
                         anchors.verticalCenter: parent.verticalCenter
-                        text: (groupIsCollapsed(section) ? "\uf0da  " : "\uf0d7  ") + section
-                        font.family: "Font Awesome 5 Free"
+                        text: section
                         font.bold: true
-                        color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                        font.pixelSize: 13
+                        color: settings_form.primaryText
+                        elide: Text.ElideRight
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 14
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: groupIsCollapsed(section) ? "\uf0d7" : "\uf0d8"
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 13
+                        color: settings_form.accentColor
                     }
                     MouseArea {
                         anchors.fill: parent
@@ -340,7 +265,7 @@ Rectangle {
                     width: listView.width - 12
                     height: m_ip_camera_settings_available ? (expertPipelineCheck.checked ? 570 : 510) : 0
                     visible: m_ip_camera_settings_available
-                    color: settings.screen_settings_openhd_parameters_transparent ? "#aa102131" : "#e8f3f8"
+                    color: settings_form.panelBackgroundRaised
                     radius: 6
                     property string storedPipeline: m_instanceMavlinkSettingsModel.get_cached_string("IP_CAM_PIPELINE")
 
@@ -352,7 +277,7 @@ Rectangle {
                         Text {
                             text: qsTr("IP CAMERA SETUP")
                             font.bold: true
-                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                            color: settings_form.primaryText
                         }
                         ComboBox {
                             id: ipCameraProfileField
@@ -371,7 +296,7 @@ Rectangle {
                         }
                         RowLayout {
                             Layout.fillWidth: true
-                            Text { text: qsTr("Camera IP"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            Text { text: qsTr("Camera IP"); color: settings_form.primaryText }
                             TextField {
                                 id: ipCameraAddressField
                                 Layout.fillWidth: true
@@ -382,7 +307,7 @@ Rectangle {
                         }
                         RowLayout {
                             Layout.fillWidth: true
-                            Text { text: qsTr("RTSP port"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            Text { text: qsTr("RTSP port"); color: settings_form.primaryText }
                             TextField {
                                 id: ipCameraPortField
                                 Layout.preferredWidth: 100
@@ -390,7 +315,7 @@ Rectangle {
                                 inputMethodHints: Qt.ImhDigitsOnly
                                 maximumLength: 5
                             }
-                            Text { text: qsTr("Stream path"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            Text { text: qsTr("Stream path"); color: settings_form.primaryText }
                             TextField {
                                 id: ipCameraPathField
                                 Layout.fillWidth: true
@@ -403,7 +328,7 @@ Rectangle {
                             Layout.fillWidth: true
                             text: qsTr("Generated RTSP link: rtsp://%1:%2%3").arg(ipCameraAddressField.text).arg(ipCameraPortField.text).arg(ipCameraPathField.text)
                             elide: Text.ElideMiddle
-                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#455a64"
+                            color: settings_form.secondaryText
                         }
                         Button {
                             Layout.fillWidth: true
@@ -413,7 +338,7 @@ Rectangle {
                         }
                         RowLayout {
                             Layout.fillWidth: true
-                            Text { text: qsTr("Link reservation"); color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black" }
+                            Text { text: qsTr("Link reservation"); color: settings_form.primaryText }
                             SpinBox {
                                 id: ipCameraBitrateField
                                 from: 1
@@ -436,7 +361,7 @@ Rectangle {
                             Layout.fillWidth: true
                             text: qsTr("VIDEO_CODEC, RESOLUTION_FPS and BITRATE_MBITS below also configure a supported camera plugin.")
                             wrapMode: Text.WordWrap
-                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#b35a00"
+                            color: settings_form.darkMode ? "#ffbf69" : "#9a4d00"
                         }
                         CheckBox {
                             id: expertPipelineCheck
@@ -452,7 +377,7 @@ Rectangle {
                         Text {
                             Layout.alignment: Qt.AlignRight
                             text: qsTr("Settings are sent directly to %1 via MAVLink.").arg(m_name)
-                            color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "#455a64"
+                            color: settings_form.secondaryText
                         }
                     }
                 }
@@ -483,7 +408,7 @@ Rectangle {
                 anchors.fill: parent
                 text: qsTr("\uf127");
                 font.family: "Font Awesome 5 Free";
-                color: "black"
+                color: settings_form.secondaryText
                 //fontSizeMode: Text.Fit
                 //font.pointSize: 100000
                 font.pixelSize: 100
@@ -494,20 +419,4 @@ Rectangle {
         }
     }
 
-    // Right part: the parameter edit element.
-    // Drawn over the parameters list if needed
-    MavlinkParamEditor{
-        id: parameterEditor
-        total_width: paramEditorWidth
-        instanceMavlinkSettingsModel: m_instanceMavlinkSettingsModel
-    }
-
-    // For (as of now, 2) Settings we have their own custom UI elements to change them
-    // (Since they do not really fit into a 'generic fits all' type
-    ChooseCameraDialoque{
-        id: dialoque_choose_camera
-    }
-    ChooseResolutionDialoque{
-        id: dialoque_choose_resolution
-    }
 }

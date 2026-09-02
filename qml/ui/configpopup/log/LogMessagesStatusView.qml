@@ -1,56 +1,55 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import ".."
 
-import QtQuick.Controls.Material 2.12
+AdvancedPage {
+    id: root
+    pageIcon: "\uf03a"
+    pageTitle: qsTr("SYSTEM LOGS")
+    pageSubtitle: qsTr("Live messages from Ground, Air and the flight controller")
+    initialFocusItem: groundTab
+    onBackRequested: settings_form.side_bar_regain_focus()
 
-import Qt.labs.settings 1.0
+    function focusLog() { logStack.itemAt(logTabs.currentIndex).gainFocus() }
 
-import OpenHD 1.0
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 10
 
-import "../../../ui" as Ui
-import "../../elements"
+        TabBar {
+            id: logTabs
+            Layout.fillWidth: true
+            Layout.maximumWidth: 470
+            spacing: 7
+            background: Item {}
+            AdvancedTabButton { id: groundTab; text: qsTr("GROUND") }
+            AdvancedTabButton { text: qsTr("AIR") }
+            AdvancedTabButton { text: qsTr("FLIGHT CONTROLLER") }
 
-Item {
-    Layout.fillHeight: true
-    Layout.fillWidth: true
-
-    property int rowHeight: 64
-    property int elementHeight: 48
-    // Tab bar for selecting items in stack layout
-    TabBar {
-        id: selectItemInStackLayoutBar
-        width: parent.width
-        TabButton {
-            text: qsTr("LOG GND")
-        }
-        TabButton {
-            text: qsTr("LOG OpenHD AIR")
-        }
-        TabButton {
-            text: qsTr("LOG FC")
-        }
-    }
-
-    // placed right below the top bar
-    StackLayout {
-        width: parent.width
-        height: parent.height-selectItemInStackLayoutBar.height
-        anchors.top: selectItemInStackLayoutBar.bottom
-        anchors.left: selectItemInStackLayoutBar.left
-        anchors.bottom: parent.bottom
-        currentIndex: selectItemInStackLayoutBar.currentIndex
-
-        LogMessagesView{
-            m_log_model: _logGround
+            Keys.onPressed: function(event) {
+                if (event.key === Qt.Key_Down || event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
+                    root.focusLog()
+                    event.accepted = true
+                } else if ((event.key === Qt.Key_Left && currentIndex === 0) || event.key === Qt.Key_Escape || event.key === Qt.Key_Up) {
+                    settings_form.side_bar_regain_focus()
+                    event.accepted = true
+                }
+            }
         }
 
-        LogMessagesView{
-            m_log_model: _logOpenhdAir
-        }
-
-        LogMessagesView{
-            m_log_model: _logFC
+        AdvancedCard {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            contentMargin: 1
+            StackLayout {
+                id: logStack
+                anchors.fill: parent
+                currentIndex: logTabs.currentIndex
+                LogMessagesView { m_log_model: _logGround; onBackRequested: groundTab.forceActiveFocus() }
+                LogMessagesView { m_log_model: _logOpenhdAir; onBackRequested: logTabs.itemAt(1).forceActiveFocus() }
+                LogMessagesView { m_log_model: _logFC; onBackRequested: logTabs.itemAt(2).forceActiveFocus() }
+            }
         }
     }
 }

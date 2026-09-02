@@ -18,13 +18,15 @@ ScrollView {
     contentHeight: generalColumn.height
 
     clip: true
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
     Item {
         anchors.fill: parent
 
         Column {
             id: generalColumn
-            spacing: 0
+            spacing: 5
             anchors.left: parent.left
             anchors.right: parent.right
 
@@ -60,9 +62,11 @@ ScrollView {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
+                radius: 7
+                color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                border.color: settings_form.lineColor
+                border.width: Positioner.index % 2 === 0 ? 1 : 0
+                StyledText {
                     text: qsTr("Animation Smoothing")
                     font.weight: Font.Bold
                     font.pixelSize: 13
@@ -74,7 +78,7 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                Text {
+                StyledText {
                     text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "ms";
                     font.pixelSize: 16
                     anchors.right: smoothing_Slider.left

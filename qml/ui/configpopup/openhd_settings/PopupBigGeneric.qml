@@ -27,53 +27,74 @@ Rectangle{
     anchors.rightMargin: 10
     anchors.topMargin: 10
     anchors.bottomMargin: 10
-    color: "#333c4c"
+    color: m_modern_style ? settings_form.panelBackground : "#333c4c"
+    radius: m_modern_style ? 14 : 0
+    border.color: m_modern_style ? settings_form.lineColor : "transparent"
+    border.width: m_modern_style ? 1 : 0
 
     // These should be overridden by implementation !
     property string m_title: qsTr("FILL ME")
+    property bool m_modern_style: false
+    property alias closeButtonControl: closeButton
     signal closeButtonClicked();
 
-    property int dirty_top_margin_for_implementation: 40
+    property int dirty_top_margin_for_implementation: m_modern_style ? 48 : 40
 
     // The Header / title
     // (Description and close button)
     Item {
         id: header_item
         width: parent.width
-        height: rowHeight*2 / 3;
+        height: m_modern_style ? 48 : rowHeight*2 / 3;
 
         Rectangle{
             anchors.fill: parent
-            color: "#8cbfd7f3"
+            color: m_modern_style ? "transparent" : "#8cbfd7f3"
         }
 
         Rectangle{
             width: parent.width
             height: 2
-            color: "black"
+            color: m_modern_style ? settings_form.lineColor : "black"
             anchors.bottom: parent.bottom
         }
 
         Text{
             text: m_title
             font.weight: Font.Bold
-            font.pixelSize: 13
             anchors.fill: parent
+            anchors.leftMargin: m_modern_style ? 15 : 0
+            anchors.rightMargin: m_modern_style ? 50 : 0
             verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+            horizontalAlignment: m_modern_style ? Text.AlignLeft : Text.AlignHCenter
+            color: m_modern_style ? settings_form.primaryText : "black"
+            font.pixelSize: m_modern_style ? 13 : 13
         }
         Button {
-            anchors.top: parent.top
+            anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            anchors.rightMargin: 2
+            anchors.rightMargin: m_modern_style ? 9 : 2
             id:closeButton
             text: qsTr("X")
-            height: parent.height
-            width: parent.height
+            height: m_modern_style ? 30 : parent.height
+            width: m_modern_style ? 30 : parent.height
+            font.pixelSize: m_modern_style ? 11 : 13
             background: Rectangle {
-                Layout.fillHeight: parent
-                Layout.fillWidth: parent
-                color: closeButton.hovered ? "darkgrey" : "lightgrey"
+                radius: m_modern_style ? 9 : 0
+                color: m_modern_style
+                       ? (closeButton.hovered ? settings_form.panelBackgroundRaised : "transparent")
+                       : (closeButton.hovered ? "darkgrey" : "lightgrey")
+                border.color: m_modern_style
+                              ? (closeButton.activeFocus ? settings_form.accentColor : settings_form.lineColor)
+                              : "transparent"
+                border.width: m_modern_style ? (closeButton.activeFocus ? 2 : 1) : 0
+            }
+            contentItem: Text {
+                text: closeButton.text
+                color: m_modern_style ? settings_form.secondaryText : "black"
+                font: closeButton.font
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
             onClicked: {
                 closeButtonClicked();

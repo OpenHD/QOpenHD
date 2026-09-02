@@ -458,9 +458,7 @@ int MavlinkSettingsModel::int_param_get_min_value(QString param_id)const
 {
     const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
-        if(improved_opt->has_enum_mapping()){
-            return improved_opt->max_value_int;
-        }
+        return improved_opt->min_value_int;
     }
     return 2147483647;
 }
@@ -469,9 +467,7 @@ int MavlinkSettingsModel::int_param_get_max_value(QString param_id)const
 {
     const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
-        if(improved_opt->has_enum_mapping()){
-            return improved_opt->min_value_int;
-        }
+        return improved_opt->max_value_int;
     }
     return -2147483648;
 }
@@ -601,7 +597,8 @@ bool MavlinkSettingsModel::param_int_exists(QString param_id)
             return true;
         }
     }
-    qDebug()<<"int Param:"+param_id<<" does not exist";
+    // This is a feature probe used by dynamic QML. Missing optional parameters
+    // are expected and must not flood the runtime log.
     return false;
 }
 
@@ -612,7 +609,8 @@ bool MavlinkSettingsModel::param_string_exists(QString param_id)
             return true;
         }
     }
-    qDebug()<<"string Param:"+param_id<<" does not exist";
+    // This is a feature probe used by dynamic QML. Missing optional parameters
+    // are expected and must not flood the runtime log.
     return false;
 }
 
@@ -690,6 +688,65 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
     // populated the cache. Without this, plugin-status bindings can remain at
     // the value calculated while the model was still empty.
     set_update_count(m_update_count+1);
+}
+
+QVariantMap MavlinkSettingsModel::get_ui_metadata(QString param_id) const
+{
+    QVariantMap result;
+    const auto documented = DocumentedParam::find_param(param_id.toStdString());
+    if (!documented.has_value()) {
+        result.insert(QStringLiteral("control"), QStringLiteral("unsupported"));
+        return result;
+    }
+
+    result.insert(QStringLiteral("description"),
+                  QString::fromStdString(documented->description));
+    result.insert(QStringLiteral("readOnly"), documented->is_read_only);
+    result.insert(QStringLiteral("requiresReboot"), documented->requires_reboot);
+
+    if (documented->is_read_only) {
+        result.insert(QStringLiteral("control"), QStringLiteral("readonly"));
+        return result;
+    }
+
+    if (documented->improved_int.has_value()) {
+        const auto &setting = documented->improved_int.value();
+        result.insert(QStringLiteral("minimum"), setting.min_value_int);
+        result.insert(QStringLiteral("maximum"), setting.max_value_int);
+        if (setting.has_enum_mapping()) {
+            const auto keys = setting.int_enum_keys();
+            const auto values = setting.int_enum_values();
+            result.insert(QStringLiteral("keys"), keys);
+            result.insert(QStringLiteral("values"), QVariant::fromValue(values));
+            const bool binary = values.size() == 2 && values.contains(0) && values.contains(1);
+            result.insert(QStringLiteral("control"), binary ? QStringLiteral("toggle")
+                                                            : QStringLiteral("dropdown"));
+        } else {
+            const qint64 span = static_cast<qint64>(setting.max_value_int) -
+                                static_cast<qint64>(setting.min_value_int);
+            result.insert(QStringLiteral("control"), span >= 1 && span <= 256
+                                                        ? QStringLiteral("slider")
+                                                        : QStringLiteral("number"));
+        }
+        return result;
+    }
+
+    if (documented->improved_string.has_value()) {
+        const auto &setting = documented->improved_string.value();
+        const auto keys = setting.enum_keys();
+        const auto values = setting.enum_values();
+        if (!keys.isEmpty()) {
+            result.insert(QStringLiteral("keys"), keys);
+            result.insert(QStringLiteral("values"), values);
+            result.insert(QStringLiteral("control"), QStringLiteral("dropdown"));
+        } else {
+            result.insert(QStringLiteral("control"), QStringLiteral("text"));
+        }
+        return result;
+    }
+
+    result.insert(QStringLiteral("control"), QStringLiteral("unsupported"));
+    return result;
 }
 
 void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result)

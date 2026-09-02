@@ -11,7 +11,6 @@ Rectangle {
 
     property bool connected: _ohdSystemAir.is_alive || _ohdSystemGround.is_alive
     property bool isScanning: false
-    property bool showConnectionModeInfo: false
     property int scanProgress: 0
     property int scanIndex: 1
     property int scanMax: 254
@@ -75,8 +74,8 @@ Rectangle {
         setMode(2)
     }
     function controls() {
-        var all = [autoMode, udpMode, tcpMode, infoButton]
-        if (settings.qopenhd_mavlink_connection_mode === 0 && showConnectionModeInfo)
+        var all = [autoMode, udpMode, tcpMode]
+        if (settings.qopenhd_mavlink_connection_mode === 0)
             all = all.concat([androidButton, ethernetForwardButton, ethernetHotspotButton])
         if (settings.qopenhd_mavlink_connection_mode === 2)
             all = all.concat([ipField, saveButton, scanButton])
@@ -176,7 +175,7 @@ Rectangle {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: modeColumn.implicitHeight + 26
+                Layout.preferredHeight: 148
                 radius: 12
                 color: settings_form.panelBackground
                 border.color: settings_form.lineColor
@@ -190,17 +189,6 @@ Rectangle {
                     RowLayout {
                         Layout.fillWidth: true
                         Text { text: qsTr("CONNECTION MODE"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
-                        Button {
-                            id: infoButton
-                            width: 34; height: 30
-                            text: "\uf05a"
-                            font.family: "Font Awesome 5 Free"; font.pixelSize: 13
-                            onClicked: root.showConnectionModeInfo = !root.showConnectionModeInfo
-                            onActiveFocusChanged: if (activeFocus) root.syncFocus(infoButton)
-                            Keys.onPressed: root.handleButtonKey(event)
-                            background: Rectangle { radius: 8; color: infoButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: infoButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: infoButton.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: infoButton.text; font: infoButton.font; color: settings_form.secondaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                        }
                     }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 8
@@ -252,8 +240,8 @@ Rectangle {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: autoColumn.implicitHeight + 26
-                visible: settings.qopenhd_mavlink_connection_mode === 0 && root.showConnectionModeInfo
+                Layout.preferredHeight: 185
+                visible: settings.qopenhd_mavlink_connection_mode === 0
                 radius: 12; color: settings_form.panelBackground; border.color: settings_form.lineColor
                 ColumnLayout {
                     id: autoColumn
@@ -298,7 +286,8 @@ Rectangle {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: tcpColumn.implicitHeight + 26
+                Layout.preferredHeight: 184 + resultsRepeater.count * 46 +
+                                        ((root.isScanning || root.scanProgress > 0) ? 15 : 0)
                 visible: settings.qopenhd_mavlink_connection_mode === 2
                 radius: 12; color: settings_form.panelBackground; border.color: settings_form.lineColor
                 ColumnLayout {

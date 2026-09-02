@@ -18,6 +18,8 @@ ScrollView {
     contentHeight: widgetColumn.height
 
     clip: true
+    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
     function close_after_preset(){
         settings_form.close_all();
@@ -125,7 +127,7 @@ ScrollView {
         anchors.fill: parent
         Column {
             id: widgetColumn
-            spacing: 0
+            spacing: 5
             anchors.left: parent.left
             anchors.right: parent.right
 
@@ -249,9 +251,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Flight Mode")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -278,9 +282,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show IMU Sensor Temperature")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -307,9 +313,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Pressure Sensor Temperature")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -336,9 +344,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Pressure Sensor 2 Temperature")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -364,9 +374,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Pressure Sensor 3 Temperature")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -392,9 +404,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Airspeed Sensor Temperature")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -421,9 +435,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Esc Temperature")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -450,9 +466,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Battery Temperature")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -478,9 +496,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Horizon")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -507,9 +527,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show performance horizon")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -537,9 +559,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Flight Path Vector")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -566,9 +590,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Altitude")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -595,9 +621,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Speed")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -624,9 +652,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Heading")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -653,9 +683,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Bank Angle Indicator")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -682,9 +714,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Home Arrow")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -711,9 +745,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Control Inputs")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -742,9 +778,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Vibration")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -771,9 +809,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Vertical Speed Gauge")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -799,9 +839,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Angle of Attack")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -865,9 +907,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show Map")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -900,9 +944,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show ADSB")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -928,9 +974,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show log messages on-screen")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -956,9 +1004,12 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
                     enabled: true//false // Not yet functional
-                    Text {
+                    StyledText {
                         text: qsTr("Show Sidebar")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -984,9 +1035,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show QT Render stats")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -1014,9 +1067,11 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
+                    StyledText {
                         text: qsTr("Show IP Camera Control")
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -1041,10 +1096,13 @@ ScrollView {
                 Rectangle {
                     width: parent.width
                     height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    radius: 7
+                    color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
+                    border.color: settings_form.lineColor
+                    border.width: Positioner.index % 2 === 0 ? 1 : 0
                     enabled: false // Not yet functional
 
-                    Text {
+                    StyledText {
                         text: qsTr("Show GPIO")
                         font.weight: Font.Bold
                         font.pixelSize: 13

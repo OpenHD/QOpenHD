@@ -144,12 +144,6 @@ Card {
             Item {
                 width: 10
             }
-            ButtonIconInfo{
-                visible: text_input_cameras.visible
-                onClicked: {
-                    _messageBoxInstance.set_text_and_show(qsTr("You can enter any (UNCHECKED !) resolution@fps you like here."))
-                }
-            }
         }
         // Toggles between text and drop down input
         CheckBox{
