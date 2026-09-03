@@ -133,9 +133,10 @@ Rectangle {
                         id: tabButton
                         property bool selected: root.currentPage === index
                         checked: selected
-                        width: Math.max(92, tabContent.implicitWidth + 26)
+                        width: implicitWidth
                         height: 34
-                        padding: 0
+                        text: model.title
+                        iconText: model.icon
                         hoverEnabled: true
                         onClicked: root.currentPage = index
                         Keys.onPressed: function(event) {
@@ -150,31 +151,6 @@ Rectangle {
                             } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Escape) {
                                 settings_form.side_bar_regain_focus()
                                 event.accepted = true
-                            }
-                        }
-                        contentItem: Item {
-                            Row {
-                                id: tabContent
-                                anchors.centerIn: parent
-                                spacing: 8
-                                Text {
-                                    width: 18
-                                    height: Math.max(18, tabTitle.implicitHeight)
-                                    text: model.icon
-                                    color: tabButton.selected ? "#ffffff" : settings_form.secondaryText
-                                    font.family: "Font Awesome 5 Free"
-                                    font.pixelSize: 10
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                                Text {
-                                    id: tabTitle
-                                    text: model.title
-                                    color: tabButton.selected ? "#ffffff" : settings_form.primaryText
-                                    font.pixelSize: 10
-                                    font.bold: true
-                                    verticalAlignment: Text.AlignVCenter
-                                }
                             }
                         }
                     }

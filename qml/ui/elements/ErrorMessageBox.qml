@@ -36,6 +36,7 @@ Card {
             leftPadding: 12
             rightPadding: 12
             font.pixelSize: 14
+            color: _theme.primaryText
             wrapMode: Text.WordWrap
         }
     }

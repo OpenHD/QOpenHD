@@ -36,6 +36,7 @@ Card {
             leftPadding: 12
             rightPadding: 12
             font.pixelSize: 14
+            color: _theme.primaryText
             wrapMode: Text.WordWrap
         }
     }
@@ -53,6 +54,7 @@ Card {
             font.capitalization: Font.MixedCase
             Material.accent: Material.Green
             highlighted: true
+            Material.theme: _theme.darkMode ? Material.Dark : Material.Light
             text:  qsTr("Okay")
             onPressed: {
                 _messageBoxInstance.okay_button_clicked()

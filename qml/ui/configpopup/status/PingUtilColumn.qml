@@ -9,6 +9,7 @@ import OpenHD 1.0
 
 import "../../../ui" as Ui
 import "../../elements"
+import ".."
 
 Item {
     id: root
@@ -17,7 +18,7 @@ Item {
 
     function actionButtons() { return [pingButton, autoPingSwitch, storageButton] }
 
-    Dialog {
+    AdvancedDialog {
         id: storageManagerDialog
         parent: Overlay.overlay
         anchors.centerIn: parent
@@ -131,7 +132,7 @@ Item {
         }
     }
 
-    Dialog {
+    AdvancedDialog {
         id: storageConfirmDialog
         parent: Overlay.overlay
         anchors.centerIn: parent

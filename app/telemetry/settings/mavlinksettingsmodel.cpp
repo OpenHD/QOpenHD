@@ -463,6 +463,14 @@ int MavlinkSettingsModel::int_param_get_min_value(QString param_id)const
     return 2147483647;
 }
 
+QStringList MavlinkSettingsModel::param_ids() const
+{
+    QStringList result;
+    result.reserve(m_data.size());
+    for(const auto& item : m_data) result.push_back(item.unique_id);
+    return result;
+}
+
 int MavlinkSettingsModel::int_param_get_max_value(QString param_id)const
 {
     const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());

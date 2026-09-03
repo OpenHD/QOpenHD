@@ -90,8 +90,10 @@ void AVCodecDecoder::init(bool primaryStream)
 void AVCodecDecoder::terminate()
 {
     // Stop the timer, which can be done (almost) immediately (it's runnable doesn't block)
-    timer_check_settings_changed->stop();
-    timer_check_settings_changed=nullptr;
+    if(timer_check_settings_changed){
+        timer_check_settings_changed->stop();
+        timer_check_settings_changed=nullptr;
+    }
     // This will stop the constant_decode as soon as the current running decode_until_error loop returns
     m_should_terminate=true;
     // This will break out of a running "decode until error" loop if there is one currently running
@@ -119,7 +121,7 @@ void AVCodecDecoder::constant_decode()
     while(!m_should_terminate){
         qDebug()<<"Start decode";
         const auto settings = QOpenHDVideoHelper::read_config_from_settings();
-        // this is always for primary video, unless switching is enabled
+        // This renderer is always for primary video, unless switching is enabled.
         auto stream_config=settings.primary_stream_config;
         if(settings.generic.qopenhd_switch_primary_secondary){
             stream_config=settings.secondary_stream_config;
@@ -388,7 +390,7 @@ void AVCodecDecoder::reset_before_decode_start()
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
-    // this is always for primary video, unless switching is enabled
+    // This renderer is always for primary video, unless switching is enabled.
     auto stream_config=settings.primary_stream_config;
     if(settings.generic.qopenhd_switch_primary_secondary){
         stream_config=settings.secondary_stream_config;
@@ -688,7 +690,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 // https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
-    // this is always for primary video, unless switching is enabled
+    // This renderer is always for primary video, unless switching is enabled.
     auto stream_config=settings.primary_stream_config;
     if(settings.generic.qopenhd_switch_primary_secondary){
         stream_config=settings.secondary_stream_config;

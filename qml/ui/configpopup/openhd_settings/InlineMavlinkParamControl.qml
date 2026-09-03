@@ -10,19 +10,35 @@ FocusScope {
     property string displayValue: ""
     property bool readOnly: false
     property bool busy: false
+    // Values which are documented globally but unsupported by the active hardware.
+    property var blockedEnumValues: []
 
     readonly property bool isInteger: valueType === 0
     readonly property bool hasEnum: isInteger
                                     ? settingsModel.int_param_has_enum_keys_values(paramId)
                                     : settingsModel.string_param_has_enum(paramId)
-    readonly property var enumKeys: hasEnum
-                                    ? (isInteger ? settingsModel.int_param_get_enum_keys(paramId)
-                                                 : settingsModel.string_param_get_enum_keys(paramId))
-                                    : []
-    readonly property var enumValues: hasEnum
-                                      ? (isInteger ? settingsModel.int_param_get_enum_values(paramId)
-                                                   : settingsModel.string_param_get_enum_values(paramId))
-                                      : []
+    readonly property var rawEnumKeys: hasEnum
+                                       ? (isInteger ? settingsModel.int_param_get_enum_keys(paramId)
+                                                    : settingsModel.string_param_get_enum_keys(paramId)) : []
+    readonly property var rawEnumValues: hasEnum
+                                         ? (isInteger ? settingsModel.int_param_get_enum_values(paramId)
+                                                      : settingsModel.string_param_get_enum_values(paramId)) : []
+    readonly property var enumKeys: filteredEnumPart(true)
+    readonly property var enumValues: filteredEnumPart(false)
+
+    function valueBlocked(value) {
+        for (var i = 0; i < blockedEnumValues.length; ++i)
+            if (String(blockedEnumValues[i]) === String(value)) return true
+        return false
+    }
+    function filteredEnumPart(keys) {
+        var result = []
+        for (var i = 0; i < rawEnumValues.length; ++i) {
+            if (!valueBlocked(rawEnumValues[i]))
+                result.push(keys ? rawEnumKeys[i] : rawEnumValues[i])
+        }
+        return result
+    }
 
     function valueIndex() {
         for (var i = 0; i < enumValues.length; ++i) {

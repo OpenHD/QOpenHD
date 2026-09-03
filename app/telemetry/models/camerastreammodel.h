@@ -151,6 +151,8 @@ public:
     Q_INVOKABLE QStringList get_manufacturer_choices(int platform_type);
     Q_INVOKABLE QList<int> get_manufacturer_cameras_type(int platform_type,int index);
     Q_INVOKABLE QStringList get_manufacturer_cameras_names(int platform_type,int index);
+    Q_INVOKABLE QStringList get_supported_camera_names(int platform_type);
+    Q_INVOKABLE QList<int> get_supported_camera_types(int platform_type);
 };
 
 #endif // AIRCAMERAMODEL_H

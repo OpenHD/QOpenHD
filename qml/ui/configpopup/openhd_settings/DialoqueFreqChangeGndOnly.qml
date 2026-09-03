@@ -70,6 +70,7 @@ Card {
             wrapMode: Text.WordWrap
 
             text: get_card_body_string();
+            color: settings_form.primaryText
         }
     }
     hasFooter: true

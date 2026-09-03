@@ -13,11 +13,12 @@ QSGVideoTextureItem::QSGVideoTextureItem():
     m_renderer(nullptr)
 {
     connect(this, &QQuickItem::windowChanged, this, &QSGVideoTextureItem::handleWindowChanged);
-    //
+    // The AVCodec/QSG backend owns the primary stream. Secondary video keeps
+    // using its dedicated platform backend; two external GL renderers cannot
+    // safely draw into the same Qt Quick render pass.
     m_av_codec_decoder=std::make_unique<AVCodecDecoder>(nullptr);
     m_av_codec_decoder->init(true);
 }
-
 
 void QSGVideoTextureItem::handleWindowChanged(QQuickWindow *win)
 {

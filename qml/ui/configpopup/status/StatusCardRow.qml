@@ -60,10 +60,4 @@ Item {
         horizontalAlignment: Text.AlignRight
         elide: Text.ElideRight
     }
-    MouseArea {
-        anchors.fill: parent
-        enabled: m_has_error
-        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-        onClicked: _messageBoxInstance.set_text_and_show(m_error_text)
-    }
 }

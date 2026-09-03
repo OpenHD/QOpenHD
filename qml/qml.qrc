@@ -87,6 +87,7 @@
         <file>ui/configpopup/AdvancedCard.qml</file>
         <file>ui/configpopup/AdvancedActionButton.qml</file>
         <file>ui/configpopup/AdvancedTabButton.qml</file>
+        <file>ui/configpopup/AdvancedDialog.qml</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>
@@ -197,6 +198,9 @@
         <file>ui/elements/BigClickableText.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamValueEditElement.qml</file>
         <file>ui/configpopup/openhd_settings/InlineMavlinkParamControl.qml</file>
+        <file>ui/configpopup/openhd_settings/CameraSettingRow.qml</file>
+        <file>ui/configpopup/openhd_settings/CameraConnectionPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/CameraSettingsPanel.qml</file>
         <file>ui/elements/ButtonIconGear.qml</file>
         <file>ui/widgets/DevStreamingInfo.qml</file>
         <file>ui/widgets/DevStreamingInfoText.qml</file>

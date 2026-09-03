@@ -109,7 +109,7 @@ AdvancedPage {
         }
     }
 
-    Dialog {
+    AdvancedDialog {
         id: decodeDialog
         modal: true
         closePolicy: Popup.CloseOnEscape

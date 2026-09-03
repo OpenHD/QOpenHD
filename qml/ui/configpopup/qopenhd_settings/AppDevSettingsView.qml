@@ -9,6 +9,7 @@ import OpenHD 1.0
 
 import "../../../ui" as Ui
 import "../../elements"
+import ".."
 
 
 ScrollView {
@@ -180,12 +181,9 @@ ScrollView {
         }
         Card {
             id: simplePopupHack
-            width: 360
-            height: 340
-            anchors.top: parent.top
-            anchors.topMargin: 20
-            anchors.left: parent.left
-            anchors.leftMargin: mainStackLayout.width/2-180
+            width: Math.min(430, appDevSettingsView.width - 28)
+            height: 220
+            anchors.centerIn: parent
             z: 5.0
             cardName: qsTr("WARNING")
             cardNameColor: "red"
@@ -197,27 +195,26 @@ ScrollView {
                     id: simplePopupHackText
                     text: qsTr("Do you really want to erase all your QOpenHD settings?")
                     width: parent.width-24
-                    height:parent.height
+                    height: parent.height
                     leftPadding: 12
                     rightPadding: 12
-                    font.pixelSize: 20
+                    font.pixelSize: 15
+                    color: settings_form.primaryText
                     wrapMode: Text.WordWrap
                 }
             }
             hasFooter: true
             cardFooter: Item {
                 anchors.fill: parent
-                Button {
-                    width: 150
-                    height: 48
+                AdvancedActionButton {
+                    width: 160
+                    height: 40
                     anchors.left: parent.left
                     anchors.leftMargin: 12
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 6
-                    font.pixelSize: 14
-                    font.capitalization: Font.MixedCase
-                    Material.accent: Material.Red
-                    highlighted: true
+                    destructive: true
+                    iconText: "\uf071"
                     text:  qsTr("Continue")
                     onPressed: {
                         simplePopupHack.visible=false
@@ -230,17 +227,14 @@ ScrollView {
                         }
                     }
                 }
-                Button {
-                    width: 150
-                    height: 48
+                AdvancedActionButton {
+                    width: 130
+                    height: 40
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 6
-                    font.pixelSize: 14
-                    font.capitalization: Font.MixedCase
-                    Material.accent: Material.Grey
-                    highlighted: true
+                    iconText: "\uf00d"
                     text:  qsTr("Cancel")
                     onPressed: {
                         simplePopupHack.visible=false

@@ -3,10 +3,17 @@ import QtQuick.Layouts 1.12
 
 GridLayout {
     id: cards
-    columns: width >= 680 ? 3 : (width >= 440 ? 2 : 1)
+    readonly property int onlineCount: (_ohdSystemGround.is_alive ? 1 : 0)
+                                       + (_ohdSystemAir.is_alive ? 1 : 0)
+                                       + (_fcMavlinkSystem.is_alive ? 1 : 0)
+    readonly property int responsiveColumns: width >= 680 ? 3 : (width >= 440 ? 2 : 1)
+    columns: Math.max(1, Math.min(onlineCount, responsiveColumns))
     columnSpacing: width < 800 ? 8 : 14
     rowSpacing: columnSpacing
-    implicitHeight: Math.ceil(3 / columns) * 319 + (Math.ceil(3 / columns) - 1) * rowSpacing
+    implicitHeight: onlineCount > 0
+                    ? Math.ceil(onlineCount / columns) * 319
+                      + (Math.ceil(onlineCount / columns) - 1) * rowSpacing
+                    : 120
 
     function actionButtons() {
         return groundCard.actionButtons().concat(airCard.actionButtons()).concat(fcCard.actionButtons())
@@ -14,6 +21,7 @@ GridLayout {
 
     StatusCard {
         id: groundCard
+        visible: alive
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
         title: qsTr("Ground station")
@@ -25,6 +33,7 @@ GridLayout {
     }
     StatusCard {
         id: airCard
+        visible: alive
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
         title: qsTr("Air unit")
@@ -36,6 +45,7 @@ GridLayout {
     }
     StatusCard {
         id: fcCard
+        visible: alive
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
         title: qsTr("Flight controller")
@@ -44,5 +54,32 @@ GridLayout {
         alive: _fcMavlinkSystem.is_alive
         systemType: 2
         bodyComponent: Component { StatusCardBodyFC {} }
+    }
+
+    Rectangle {
+        visible: cards.onlineCount === 0
+        Layout.fillWidth: true
+        Layout.preferredHeight: 120
+        radius: 12
+        color: settings_form.panelBackground
+        border.color: settings_form.lineColor
+        Column {
+            anchors.centerIn: parent
+            spacing: 7
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "\uf1eb"
+                color: settings_form.secondaryText
+                font.family: "Font Awesome 5 Free"
+                font.pixelSize: 22
+            }
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Waiting for systems")
+                color: settings_form.primaryText
+                font.pixelSize: 13
+                font.bold: true
+            }
+        }
     }
 }

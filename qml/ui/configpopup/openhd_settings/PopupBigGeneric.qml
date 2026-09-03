@@ -34,7 +34,7 @@ Rectangle{
 
     // These should be overridden by implementation !
     property string m_title: qsTr("FILL ME")
-    property bool m_modern_style: false
+    property bool m_modern_style: true
     property alias closeButtonControl: closeButton
     signal closeButtonClicked();
 

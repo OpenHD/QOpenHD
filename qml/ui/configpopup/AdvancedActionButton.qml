@@ -12,15 +12,29 @@ Button {
     activeFocusOnTab: true
     font.capitalization: Font.MixedCase
 
+    readonly property var _sf: { try { return settings_form } catch(e) { return null } }
+    QtObject {
+        id: _fallback
+        readonly property bool darkMode: true
+        readonly property color primaryText: "#f2f6fb"
+        readonly property color secondaryText: "#aebdcb"
+        readonly property color lineColor: "#26394c"
+        readonly property color panelBackground: "#102235"
+        readonly property color panelBackgroundRaised: "#15283b"
+        readonly property color accentColor: "#278cff"
+        readonly property color errorColor: "#ff4e5d"
+    }
+    readonly property var _theme: _sf ? _sf : _fallback
+
     background: Rectangle {
         radius: 8
-        color: control.primary ? settings_form.accentColor
+        color: control.primary ? _theme.accentColor
                                : (control.down || control.hovered
-                                  ? settings_form.panelBackgroundRaised
-                                  : settings_form.panelBackground)
+                                  ? _theme.panelBackgroundRaised
+                                  : _theme.panelBackground)
         border.width: control.activeFocus ? 2 : 1
-        border.color: control.activeFocus ? settings_form.accentColor
-                                         : (control.destructive ? settings_form.errorColor : settings_form.lineColor)
+        border.color: control.activeFocus ? _theme.accentColor
+                                         : (control.destructive ? _theme.errorColor : _theme.lineColor)
     }
     contentItem: Row {
         id: contentRow
@@ -29,13 +43,13 @@ Button {
         Text {
             visible: control.iconText.length > 0
             text: control.iconText
-            color: control.primary ? "white" : (control.destructive ? settings_form.errorColor : settings_form.primaryText)
+            color: control.primary ? "white" : (control.destructive ? _theme.errorColor : _theme.primaryText)
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 14
         }
         Text {
             text: control.text
-            color: control.primary ? "white" : (control.destructive ? settings_form.errorColor : settings_form.primaryText)
+            color: control.primary ? "white" : (control.destructive ? _theme.errorColor : _theme.primaryText)
             font.pixelSize: 13
             font.bold: true
         }

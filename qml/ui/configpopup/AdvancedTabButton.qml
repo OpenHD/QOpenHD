@@ -3,21 +3,41 @@ import QtQuick.Controls 2.12
 
 TabButton {
     id: control
+    property string iconText: ""
     implicitHeight: 34
-    implicitWidth: Math.max(105, label.implicitWidth + 28)
+    implicitWidth: Math.max(92, tabContent.implicitWidth + 26)
     hoverEnabled: true
     activeFocusOnTab: true
     padding: 0
 
-    contentItem: Text {
-        id: label
-        text: control.text
-        color: control.checked ? "white" : settings_form.primaryText
-        font.pixelSize: 12
-        font.bold: true
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
+    contentItem: Item {
+        Row {
+            id: tabContent
+            anchors.centerIn: parent
+            spacing: control.iconText.length > 0 ? 8 : 0
+
+            Text {
+                visible: control.iconText.length > 0
+                width: visible ? 18 : 0
+                height: Math.max(18, label.implicitHeight)
+                text: control.iconText
+                color: control.checked ? "white" : settings_form.secondaryText
+                font.family: "Font Awesome 5 Free"
+                font.pixelSize: 11
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Text {
+                id: label
+                height: Math.max(18, implicitHeight)
+                text: control.text
+                color: control.checked ? "white" : settings_form.primaryText
+                font.pixelSize: 11
+                font.bold: true
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
     }
     background: Rectangle {
         radius: 7

@@ -383,3 +383,26 @@ QStringList CameraStreamModel::get_manufacturer_cameras_names(int platform_type,
     }
     return ret;
 }
+
+QStringList CameraStreamModel::get_supported_camera_names(int platform_type)
+{
+    const auto choices=get_camera_choices_for_platform(platform_type,m_camera_index!=0);
+    QStringList result;
+    for(const auto& manufacturer: choices){
+        for(const auto& camera: manufacturer.cameras){
+            result.push_back(QString::fromStdString(manufacturer.manufacturer_name) + QStringLiteral(" · ") +
+                             QString::fromStdString(camera.name));
+        }
+    }
+    return result;
+}
+
+QList<int> CameraStreamModel::get_supported_camera_types(int platform_type)
+{
+    const auto choices=get_camera_choices_for_platform(platform_type,m_camera_index!=0);
+    QList<int> result;
+    for(const auto& manufacturer: choices){
+        for(const auto& camera: manufacturer.cameras) result.push_back(camera.type);
+    }
+    return result;
+}

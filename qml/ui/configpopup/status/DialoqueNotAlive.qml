@@ -49,6 +49,7 @@ Card {
             leftPadding: 12
             rightPadding: 12
             wrapMode: Text.WordWrap
+            color: settings_form.primaryText
         }
     }
     hasFooter: true

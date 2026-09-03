@@ -15,11 +15,18 @@ Rectangle {
     property int elementHeight: 40
     property int elementComboBoxWidth: Math.max(220, Math.min(300, root.width * 0.36))
 
+    ListModel {
+        id: pageModel
+        ListElement { title: qsTr("LINK / QUICK"); icon: "\uf1eb" }
+        ListElement { title: qsTr("AIR CAM 1"); icon: "\uf030" }
+        ListElement { title: qsTr("AIR CAM 2"); icon: "\uf030" }
+        ListElement { title: qsTr("AIR"); icon: "\uf1d8" }
+        ListElement { title: qsTr("GROUND"); icon: "\uf519" }
+    }
+
     function tabIsAvailable(index) {
         if (index === 1)
-            return _airCameraSettingsModel.has_params_fetched &&
-                    (_airCameraSettingsModel.param_int_exists("CAMERA_TYPE") ||
-                     _airCameraSettingsModel.param_string_exists("IP_CAM_PIPELINE"))
+            return true
         if (index === 2)
             return _airCameraSettingsModel2.has_params_fetched &&
                     (_airCameraSettingsModel2.param_int_exists("CAMERA_TYPE") ||
@@ -47,7 +54,10 @@ Rectangle {
 
     function focusTab(index) {
         var item = tabRepeater.itemAt(index)
-        if (item && item.visible) item.forceActiveFocus()
+        if (item && item.visible) {
+            item.forceActiveFocus()
+            tabScroller.ensureVisible(item)
+        }
     }
 
     function moveTab(index, step) {
@@ -93,7 +103,9 @@ Rectangle {
             Layout.rightMargin: root.width > 420 ? 150 : 0
             spacing: 13
             Rectangle {
-                width: 44; height: 44; radius: 11
+                Layout.preferredWidth: 44
+                Layout.preferredHeight: 44
+                radius: 11
                 color: settings_form.darkMode ? "#173b61" : "#dcecff"
                 Text {
                     anchors.centerIn: parent
@@ -132,22 +144,29 @@ Rectangle {
             clip: true
             ScrollBar.horizontal: ScrollBar { policy: ScrollBar.AlwaysOff }
 
+            function ensureVisible(item) {
+                if (!item) return
+                if (item.x < contentX) contentX = item.x
+                else if (item.x + item.width > contentX + width)
+                    contentX = item.x + item.width - width
+            }
+
             Row {
                 id: tabRow
                 height: parent.height
                 spacing: 7
                 Repeater {
                     id: tabRepeater
-                    model: 5
+                    model: pageModel
                     delegate: AdvancedTabButton {
                         id: tabButton
                         property bool selected: root.currentPage === index
                         checked: selected
                         visible: root.tabIsAvailable(index)
-                        width: visible ? Math.max(88, tabLabel.implicitWidth + 28) : 0
+                        width: visible ? implicitWidth : 0
                         height: 34
-                        padding: 0
-                        text: root.tabTitle(index)
+                        text: model.title
+                        iconText: model.icon
                         hoverEnabled: true
                         onClicked: root.currentPage = index
                         Keys.onPressed: function(event) {
@@ -165,15 +184,6 @@ Rectangle {
                                 settings_form.side_bar_regain_focus()
                                 event.accepted = true
                             }
-                        }
-                        contentItem: Text {
-                            id: tabLabel
-                            text: tabButton.text
-                            color: tabButton.selected ? "#ffffff" : settings_form.primaryText
-                            font.pixelSize: 11
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
                         }
                     }
                 }
@@ -194,22 +204,18 @@ Rectangle {
                 currentIndex: root.currentPage
 
                 LinkQuickPanel { id: quickPanel; onBackRequested: root.focusTab(0) }
-                MavlinkParamPanel {
+                CameraSettingsPanel {
                     id: cameraOnePanel
-                    m_name: "CAMERA1"
-                    m_instanceMavlinkSettingsModel: _airCameraSettingsModel
-                    m_instanceCheckIsAvlie: _ohdSystemAir
-                    m_is_secondary_cam: false
-                    m_requires_alive_air: true
+                    settingsModel: _airCameraSettingsModel
+                    streamModel: _cameraStreamModelPrimary
+                    secondary: false
                     onBackRequested: root.focusTab(1)
                 }
-                MavlinkParamPanel {
+                CameraSettingsPanel {
                     id: cameraTwoPanel
-                    m_name: "CAMERA2"
-                    m_instanceMavlinkSettingsModel: _airCameraSettingsModel2
-                    m_instanceCheckIsAvlie: _ohdSystemAir
-                    m_is_secondary_cam: true
-                    m_requires_alive_air: true
+                    settingsModel: _airCameraSettingsModel2
+                    streamModel: _cameraStreamModelSecondary
+                    secondary: true
                     onBackRequested: root.focusTab(2)
                 }
                 MavlinkParamPanel {

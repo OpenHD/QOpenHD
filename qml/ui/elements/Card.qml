@@ -1,8 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-
-
+import QtQuick.Controls.Material 2.12
 
 Item {
     id: card
@@ -15,13 +14,37 @@ Item {
     property bool hasHeader: true
     property bool hasHeaderImage: false
 
-    property int cardRadius: 6
-    property color cardNameColor: "black"
-    property color borderColor: "#3a000000"
-    property color cardBackgroundColor: "white"
-    property color cardFooterColor: "#f6f6f6"
+    property int cardRadius: 14
+    property color cardNameColor: _theme.primaryText
+    property color borderColor: _theme.lineColor
+    property color cardBackgroundColor: _theme.panelBackgroundRaised
+    property color cardFooterColor: _theme.panelBackground
+    readonly property bool dangerTitle: cardNameColor === "#ff0000" || cardNameColor === "red"
 
     property bool m_style_error: false
+
+    // Resolve settings_form from the parent tree; fall back to built-in
+    // defaults when Card is used outside ConfigPopup (e.g. message boxes).
+    readonly property var _sf: {
+        try { return settings_form } catch(e) { return null }
+    }
+    QtObject {
+        id: _fallback
+        readonly property bool darkMode: true
+        readonly property color primaryText: "#f2f6fb"
+        readonly property color secondaryText: "#aebdcb"
+        readonly property color lineColor: "#26394c"
+        readonly property color panelBackground: "#102235"
+        readonly property color panelBackgroundRaised: "#15283b"
+        readonly property color accentColor: "#278cff"
+        readonly property color errorColor: "#ff4e5d"
+    }
+    readonly property var _theme: _sf ? _sf : _fallback
+
+    Material.theme: _theme.darkMode ? Material.Dark : Material.Light
+    Material.accent: _theme.accentColor
+    Material.foreground: _theme.primaryText
+    Material.background: _theme.panelBackgroundRaised
 
     Rectangle {
         id: background
@@ -38,7 +61,7 @@ Item {
     Item {
         id: cardID
         width: parent.width
-        height: hasHeader ? 32 : 0
+        height: hasHeader ? 48 : 0
         visible: hasHeader
 
         anchors.left: parent.left
@@ -53,42 +76,44 @@ Item {
             width: hasHeaderImage ? 24 : 0
             height: hasHeaderImage ? 24 : 0
             visible: hasHeaderImage
-            color: "orange"
+            color: _theme.darkMode ? "#ffbf69" : "#a85b00"
             font.bold: true
-            font.pixelSize: 16
+            font.pixelSize: 15
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             anchors.top: parent.top
             text: "\uf071"
             font.family: "Font Awesome 5 Free"
-            topPadding: 5
-            leftPadding: 12
+            leftPadding: 14
         }
 
         Text {
             id: cardHeader
             width: parent.width
-            height: 24
-            color: cardNameColor
+            height: parent.height
+            color: dangerTitle ? (_theme.darkMode ? "#ff6577" : "#c6283e") : _theme.primaryText
             font.bold: true
-            font.pixelSize: 16
+            font.pixelSize: 15
             verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+            horizontalAlignment: Text.AlignLeft
             anchors.top: parent.top
             anchors.left: cardHeaderImage.right
-            leftPadding: 12
-            topPadding: 3
+            leftPadding: hasHeaderImage ? 14 : 18
         }
     }
 
     Item {
         id: cardBodyHolder
         anchors.top: cardID.bottom
-        anchors.topMargin: 6
-        anchors.leftMargin: 12
+        anchors.topMargin: 2
+        anchors.leftMargin: 18
+        anchors.right: parent.right
+        anchors.rightMargin: 18
+        anchors.bottom: hasFooter ? cardFooterInner.top : parent.bottom
+        anchors.bottomMargin: 10
         //anchors.bottom: cardFooterInner.top
         //anchors.bottomMargin: 3
-        width: parent.width
+        clip: true
         children: cardBody
     }
 
@@ -109,10 +134,10 @@ Item {
 
         children: cardFooter
         visible: hasFooter
-        height: 52
+        height: 62
         color: cardFooterColor
-        border.width: 1
-        border.color: borderColor
+        border.width: 0
+        Rectangle { anchors.top: parent ? parent.top : undefined; width: parent ? parent.width : 0; height: 1; color: card.borderColor }
     }
 
     /*Rectangle{
