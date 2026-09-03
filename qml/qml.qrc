@@ -94,6 +94,7 @@
         <file>video/MainVideoGStreamer.qml</file>
         <file>video/SecondaryVideoGStreamer.qml</file>
         <file>video/SecondaryVideoAndroid.qml</file>
+        <file>video/SecondaryVideoQSG.qml</file>
         <file>video/MainVideoQSG.qml</file>
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
         <file>ui/widgets/RCRssiWidget.qml</file>

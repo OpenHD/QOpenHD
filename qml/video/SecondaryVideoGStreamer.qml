@@ -78,7 +78,7 @@ Item {
     Text{
         anchors.fill: video_holder
         text: {
-            if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
+            if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK || QOPENHD_ENABLE_VIDEO_VIA_AVCODEC){
                 return qsTr("WAITING FOR\nSECONDARY VIDEO");
             }
             return qsTr("SECONDARY VIDEO\nNOT AVAILABLE\nON THIS PLATFORM");
@@ -100,9 +100,10 @@ Item {
                 // R.N the only implementation for secondary video
                 if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
                     return "SecondaryVideoGstreamerPane.qml";
-                }else{
-                    console.warn("No secondary video implementation")
                 }
+                if (QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)
+                    return "SecondaryVideoQSG.qml";
+                console.warn("No secondary video implementation")
             }else{
                 console.debug("Scondary video disabled");
             }

@@ -28,7 +28,10 @@ static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     return err;
 }
 
-static enum AVPixelFormat wanted_hw_pix_fmt;
+// FFmpeg invokes get_format on the decoder thread. Keep this per thread so two
+// simultaneous streams with different codecs cannot overwrite each other's
+// requested pixel format.
+static thread_local enum AVPixelFormat wanted_hw_pix_fmt;
 static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,const enum AVPixelFormat *pix_fmts){
     const enum AVPixelFormat *p;
     AVPixelFormat ret=AV_PIX_FMT_NONE;
@@ -79,7 +82,8 @@ AVCodecDecoder::~AVCodecDecoder()
 
 void AVCodecDecoder::init(bool primaryStream)
 {
-    qDebug() << "AVCodecDecoder::init()";
+    m_primary_stream=primaryStream;
+    qDebug() << "AVCodecDecoder::init()" << (m_primary_stream ? "primary" : "secondary");
     m_last_video_settings=QOpenHDVideoHelper::read_config_from_settings();
     decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
     timer_check_settings_changed=std::make_unique<QTimer>();
@@ -121,10 +125,9 @@ void AVCodecDecoder::constant_decode()
     while(!m_should_terminate){
         qDebug()<<"Start decode";
         const auto settings = QOpenHDVideoHelper::read_config_from_settings();
-        // This renderer is always for primary video, unless switching is enabled.
-        auto stream_config=settings.primary_stream_config;
+        auto stream_config=m_primary_stream ? settings.primary_stream_config : settings.secondary_stream_config;
         if(settings.generic.qopenhd_switch_primary_secondary){
-            stream_config=settings.secondary_stream_config;
+            stream_config=m_primary_stream ? settings.secondary_stream_config : settings.primary_stream_config;
         }
          bool do_custom_rtp=settings.generic.dev_use_low_latency_parser_when_possible;
          if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG){
@@ -354,13 +357,15 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
     {
         std::stringstream ss;
         ss<<safe_av_get_pix_fmt_name((AVPixelFormat)frame->format)<<" "<<frame->width<<"x"<<frame->height;
-        DecodingStatistcs::instance().set_primary_stream_frame_format(QString(ss.str().c_str()));
+        if(m_primary_stream){
+            DecodingStatistcs::instance().set_primary_stream_frame_format(QString(ss.str().c_str()));
+        }
         //qDebug()<<"Got frame:"<<ss.str().c_str();
     }
     // Once we got the first frame, reduce the log level
     av_log_set_level(AV_LOG_WARNING);
     //qDebug()<<debug_frame(frame).c_str();
-    TextureRenderer::instance().queue_new_frame_for_display(frame);
+    TextureRenderer::instance().queue_new_frame_for_display(frame, m_primary_stream);
     if(last_frame_width==-1 || last_frame_height==-1){
         last_frame_width=frame->width;
         last_frame_height=frame->height;
@@ -382,7 +387,9 @@ void AVCodecDecoder::reset_before_decode_start()
     last_frame_height=-1;
     avg_decode_time.reset();
     avg_parse_time.reset();
-    DecodingStatistcs::instance().reset_all_to_default();
+    if(m_primary_stream){
+        DecodingStatistcs::instance().reset_all_to_default();
+    }
     last_frame_width=-1;
     last_frame_height=-1;
     m_fed_timestamps_queue.clear();
@@ -390,10 +397,9 @@ void AVCodecDecoder::reset_before_decode_start()
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
-    // This renderer is always for primary video, unless switching is enabled.
-    auto stream_config=settings.primary_stream_config;
+    auto stream_config=m_primary_stream ? settings.primary_stream_config : settings.secondary_stream_config;
     if(settings.generic.qopenhd_switch_primary_secondary){
-        stream_config=settings.secondary_stream_config;
+        stream_config=m_primary_stream ? settings.secondary_stream_config : settings.primary_stream_config;
     }
     std::string in_filename="";
     if(settings.generic.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
@@ -690,10 +696,9 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 // https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
-    // This renderer is always for primary video, unless switching is enabled.
-    auto stream_config=settings.primary_stream_config;
+    auto stream_config=m_primary_stream ? settings.primary_stream_config : settings.secondary_stream_config;
     if(settings.generic.qopenhd_switch_primary_secondary){
-        stream_config=settings.secondary_stream_config;
+        stream_config=m_primary_stream ? settings.secondary_stream_config : settings.primary_stream_config;
     }
 
     // This thread pulls frame(s) from the rtp decoder and therefore should have high priority

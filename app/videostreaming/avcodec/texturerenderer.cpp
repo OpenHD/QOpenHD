@@ -20,6 +20,12 @@ TextureRenderer &TextureRenderer::instance(){
     return renderer;
 }
 
+void TextureRenderer::setSecondaryViewport(const QRect &viewport)
+{
+    std::lock_guard<std::mutex> lock(m_secondary_viewport_mutex);
+    m_secondaryViewport=viewport;
+}
+
 void TextureRenderer::initGL(QQuickWindow *window)
 {
     if (!initialized) {
@@ -30,6 +36,8 @@ void TextureRenderer::initGL(QQuickWindow *window)
         gl_video_renderer=std::make_unique<GL_VideoRenderer>();
         qDebug()<<gl_video_renderer->debug_info().c_str();
         gl_video_renderer->init_gl();
+        m_secondary_gl_video_renderer=std::make_unique<GL_VideoRenderer>();
+        m_secondary_gl_video_renderer->init_gl();
         dev_draw_alternating_rgb_dummy_frames=get_dev_draw_alternating_rgb_dummy_frames();
     }
 }
@@ -50,7 +58,7 @@ void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
        window->beginExternalCommands();
    }
    if(m_clear_all_video_textures_next_frame){
-       remove_queued_frame_if_avalable();
+       remove_queued_frame_if_avalable(true);
        gl_video_renderer->clean_video_textures_gl();
        DecodingStatistcs::instance().set_n_renderer_dropped_frames(-1);
        DecodingStatistcs::instance().set_n_rendered_frames(-1);
@@ -88,6 +96,34 @@ void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
    glDisable(GL_DEPTH_TEST);
 
    gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames,rotation_degree);
+
+   // Composite secondary video in the same external-command block. Keeping one
+   // scene-graph hook avoids the GL-state corruption caused by two renderers.
+   QRect secondary_viewport;
+   {
+       std::lock_guard<std::mutex> lock(m_secondary_viewport_mutex);
+       secondary_viewport=m_secondaryViewport;
+   }
+   if(secondary_viewport.width()>0 && secondary_viewport.height()>0){
+       AVFrame* secondary_frame=fetch_latest_decoded_frame(false);
+       if(secondary_frame!=nullptr){
+           m_secondary_gl_video_renderer->update_texture_gl(secondary_frame);
+       }
+       auto secondary_width=m_secondary_gl_video_renderer->curr_video_width;
+       auto secondary_height=m_secondary_gl_video_renderer->curr_video_height;
+       if(rotation_degree==90 || rotation_degree==270){
+           std::swap(secondary_width,secondary_height);
+       }
+       if(secondary_width>0 && secondary_height>0){
+           const auto relative_viewport=helper::ratio::calculate_viewport(
+               secondary_viewport.width(),secondary_viewport.height(),
+               secondary_width,secondary_height,false);
+           glViewport(secondary_viewport.x()+relative_viewport.x,
+                      secondary_viewport.y()+relative_viewport.y,
+                      relative_viewport.width,relative_viewport.height);
+           m_secondary_gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames,rotation_degree);
+       }
+   }
    // make sure we leave how we started / such that Qt rendering works normally
    glEnable(GL_DEPTH_TEST);
    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
@@ -97,7 +133,7 @@ void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
    }
 }
 
-int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
+int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame, bool primaryStream)
 {
     assert(src_frame);
     //std::cout<<"DRMPrimeOut::drmprime_out_display "<<src_frame->width<<"x"<<src_frame->height<<"\n";
@@ -107,14 +143,18 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
       //qDebug()<<"Frame corrupt, but forwarding anyways";
       //return 0;
     }
-    latest_frame_mutex.lock();
+    std::mutex& frame_mutex=primaryStream ? latest_frame_mutex : m_secondary_latest_frame_mutex;
+    AVFrame*& latest_frame=primaryStream ? m_latest_frame : m_secondary_latest_frame;
+    frame_mutex.lock();
     // We drop a frame that has (not yet) been consumed by the render thread to whatever is the newest available.
-    if(m_latest_frame!= nullptr){
-      av_frame_free(&m_latest_frame);
-      m_latest_frame=nullptr;
+    if(latest_frame!= nullptr){
+      av_frame_free(&latest_frame);
+      latest_frame=nullptr;
       //qDebug()<<"Dropping frame";
-      m_display_stats.n_frames_dropped++;
-      DecodingStatistcs::instance().set_n_renderer_dropped_frames(m_display_stats.n_frames_dropped);
+      if(primaryStream){
+        m_display_stats.n_frames_dropped++;
+        DecodingStatistcs::instance().set_n_renderer_dropped_frames(m_display_stats.n_frames_dropped);
+      }
     }
     AVFrame *frame = av_frame_alloc();
     assert(frame);
@@ -122,32 +162,36 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
       fprintf(stderr, "av_frame_ref error\n");
       av_frame_free(&frame);
       // don't forget to give up the lock
-      latest_frame_mutex.unlock();
+      frame_mutex.unlock();
       return AVERROR(EINVAL);
     }
-    m_latest_frame=frame;
-    latest_frame_mutex.unlock();
+    latest_frame=frame;
+    frame_mutex.unlock();
     return 0;
 }
 
-void TextureRenderer::remove_queued_frame_if_avalable()
+void TextureRenderer::remove_queued_frame_if_avalable(bool primaryStream)
 {
-    std::lock_guard<std::mutex> lock(latest_frame_mutex);
-    if(m_latest_frame!= nullptr) {
-      av_frame_free(&m_latest_frame);
-      m_latest_frame = nullptr;
+    std::mutex& frame_mutex=primaryStream ? latest_frame_mutex : m_secondary_latest_frame_mutex;
+    AVFrame*& latest_frame=primaryStream ? m_latest_frame : m_secondary_latest_frame;
+    std::lock_guard<std::mutex> lock(frame_mutex);
+    if(latest_frame!= nullptr) {
+      av_frame_free(&latest_frame);
+      latest_frame = nullptr;
     }
 }
 
 
-AVFrame *TextureRenderer::fetch_latest_decoded_frame()
+AVFrame *TextureRenderer::fetch_latest_decoded_frame(bool primaryStream)
 {
-    std::lock_guard<std::mutex> lock(latest_frame_mutex);
-    if(m_latest_frame!= nullptr) {
+    std::mutex& frame_mutex=primaryStream ? latest_frame_mutex : m_secondary_latest_frame_mutex;
+    AVFrame*& latest_frame=primaryStream ? m_latest_frame : m_secondary_latest_frame;
+    std::lock_guard<std::mutex> lock(frame_mutex);
+    if(latest_frame!= nullptr) {
       // Make a copy and write nullptr to the thread-shared variable such that
       // it is not freed by the providing thread.
-      AVFrame* new_frame = m_latest_frame;
-      m_latest_frame = nullptr;
+      AVFrame* new_frame = latest_frame;
+      latest_frame = nullptr;
       return new_frame;
     }
     return nullptr;

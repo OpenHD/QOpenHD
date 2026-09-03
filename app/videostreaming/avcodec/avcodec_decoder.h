@@ -41,6 +41,7 @@ public:
     // called when app terminates
     void terminate();
 private:
+    bool m_primary_stream=true;
     AVCodecContext *decoder_ctx = nullptr;
     const AVCodec *decoder = nullptr;
     std::unique_ptr<std::thread> decode_thread=nullptr;

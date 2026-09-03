@@ -2,6 +2,7 @@
 #define QOPENHDVIDEOHELPER_H
 
 #include <QSettings>
+#include <QDir>
 #include <qqmlapplicationengine.h>
 #include <qquickitem.h>
 #include <qquickwindow.h>
@@ -143,13 +144,13 @@ static VideoStreamConfigXX read_from_settingsXX(bool is_primary){
         _videoStreamConfig.udp_rtp_input_ip_address=settings.value("qopenhd_primary_video_rtp_input_ip",kDefault_udp_rtp_input_ip_address).toString().toStdString();
         const int tmp_video_codec = settings.value("qopenhd_primary_video_codec", 0).toInt();
         _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
-        _videoStreamConfig.enable_software_video_decoder=settings.value(" qopenhd_primary_video_force_sw", 0).toBool();
+        _videoStreamConfig.enable_software_video_decoder=settings.value("qopenhd_primary_video_force_sw", 0).toBool();
     }else{
         _videoStreamConfig.udp_rtp_input_port=settings.value("qopenhd_secondary_video_rtp_input_port", kDefault_udp_rtp_input_port_secondary).toInt();
         _videoStreamConfig.udp_rtp_input_ip_address=settings.value("qopenhd_secondary_video_rtp_input_ip",kDefault_udp_rtp_input_ip_address).toString().toStdString();
         const int tmp_video_codec = settings.value("qopenhd_secondary_video_codec", 0).toInt();
         _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
-        _videoStreamConfig.enable_software_video_decoder=settings.value(" qopenhd_secondary_video_force_sw", 0).toBool();
+        _videoStreamConfig.enable_software_video_decoder=settings.value("qopenhd_secondary_video_force_sw", 0).toBool();
     }
     return _videoStreamConfig;
 }
@@ -252,14 +253,13 @@ static void write_file_to_tmp(const std::string filename,const std::string conte
     _t << content;
     _t.close();
 }
-static constexpr auto kRTP_FILENAME="/tmp/rtp_custom.sdp";
-
-static void write_udp_rtp_sdp_file_to_tmp(const VideoStreamConfigXX& video_stream_config){
-    write_file_to_tmp(kRTP_FILENAME,create_udp_rtp_sdp_file(video_stream_config));
-}
 static std::string get_udp_rtp_sdp_filename(const VideoStreamConfigXX& video_stream_config){
-    write_udp_rtp_sdp_file_to_tmp(video_stream_config);
-    return kRTP_FILENAME;
+    // Primary and secondary decoders run concurrently. A shared SDP file lets
+    // one stream overwrite the other's port during startup, so key it by port.
+    const auto filename=QDir::temp().filePath(
+        QStringLiteral("qopenhd_rtp_%1.sdp").arg(video_stream_config.udp_rtp_input_port)).toStdString();
+    write_file_to_tmp(filename,create_udp_rtp_sdp_file(video_stream_config));
+    return filename;
 }
 
 static int get_qopenhd_n_cameras(){

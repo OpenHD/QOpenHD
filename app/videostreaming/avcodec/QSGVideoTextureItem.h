@@ -19,8 +19,16 @@ class QSGVideoTextureItem : public QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
+    Q_PROPERTY(bool primaryStream READ primaryStream WRITE setPrimaryStream NOTIFY primaryStreamChanged)
 public:
     QSGVideoTextureItem();
+    ~QSGVideoTextureItem() override;
+
+    bool primaryStream() const { return m_primary_stream; }
+    void setPrimaryStream(bool primaryStream);
+
+signals:
+    void primaryStreamChanged();
 
 public slots:
     void sync();
@@ -29,6 +37,7 @@ private slots:
     void handleWindowChanged(QQuickWindow *win);
 
 private:
+    void componentComplete() override;
     void releaseResources() override;
 
     TextureRenderer* m_renderer=nullptr;
@@ -37,6 +46,8 @@ public slots:
     void m_QQuickWindow_beforeRenderPassRecording();
 private:
     std::unique_ptr<AVCodecDecoder> m_av_codec_decoder=nullptr;
+    bool m_primary_stream=true;
+    bool m_decoder_started=false;
 };
 
 #endif // QSGVideoTextureItem_H

@@ -5,6 +5,7 @@
 
 #include <QtQuick/qquickwindow.h>
 #include <QtCore/QRunnable>
+#include <QtCore/qmath.h>
 
 #include "util/qrenderstats.h"
 
@@ -13,11 +14,30 @@ QSGVideoTextureItem::QSGVideoTextureItem():
     m_renderer(nullptr)
 {
     connect(this, &QQuickItem::windowChanged, this, &QSGVideoTextureItem::handleWindowChanged);
-    // The AVCodec/QSG backend owns the primary stream. Secondary video keeps
-    // using its dedicated platform backend; two external GL renderers cannot
-    // safely draw into the same Qt Quick render pass.
+}
+
+QSGVideoTextureItem::~QSGVideoTextureItem()
+{
+    if (!m_primary_stream) {
+        TextureRenderer::instance().setSecondaryViewport(QRect());
+    }
+}
+
+void QSGVideoTextureItem::setPrimaryStream(bool primaryStream)
+{
+    if (m_decoder_started || m_primary_stream == primaryStream) {
+        return;
+    }
+    m_primary_stream = primaryStream;
+    emit primaryStreamChanged();
+}
+
+void QSGVideoTextureItem::componentComplete()
+{
+    QQuickItem::componentComplete();
     m_av_codec_decoder=std::make_unique<AVCodecDecoder>(nullptr);
-    m_av_codec_decoder->init(true);
+    m_av_codec_decoder->init(m_primary_stream);
+    m_decoder_started=true;
 }
 
 void QSGVideoTextureItem::handleWindowChanged(QQuickWindow *win)
@@ -49,12 +69,26 @@ void QSGVideoTextureItem::sync()
 {
     if (!m_renderer) {
         m_renderer = &TextureRenderer::instance();
-        connect(window(), &QQuickWindow::beforeRendering, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
-        connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
+        // Only the primary item owns the scene-graph hook. The renderer composites
+        // both streams in one external-command block so their GL state cannot race.
+        if (m_primary_stream) {
+            connect(window(), &QQuickWindow::beforeRendering, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
+            connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
+        }
         //X
         //QRenderStats::instance().registerOnWindow(window());
     }
-    m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
+    const qreal dpr=window()->devicePixelRatio();
+    if (m_primary_stream) {
+        m_renderer->setViewportSize(window()->size() * dpr);
+    } else {
+        const QPointF top_left=mapToScene(QPointF(0, 0));
+        const int viewport_x=qRound(top_left.x() * dpr);
+        const int viewport_y=qRound((window()->height() - top_left.y() - height()) * dpr);
+        const int viewport_width=qRound(width() * dpr);
+        const int viewport_height=qRound(height() * dpr);
+        m_renderer->setSecondaryViewport(QRect(viewport_x, viewport_y, viewport_width, viewport_height));
+    }
 }
 
 void QSGVideoTextureItem::m_QQuickWindow_beforeRendering()
