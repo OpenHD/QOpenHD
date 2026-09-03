@@ -69,12 +69,13 @@ void QSGVideoTextureItem::sync()
 {
     if (!m_renderer) {
         m_renderer = &TextureRenderer::instance();
-        // Only the primary item owns the scene-graph hook. The renderer composites
-        // both streams in one external-command block so their GL state cannot race.
+        // Both items render on Qt's scene-graph thread. Keeping a hook per item
+        // preserves QML stacking and prevents the secondary pass from replacing
+        // the full-screen primary pass.
         if (m_primary_stream) {
             connect(window(), &QQuickWindow::beforeRendering, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
-            connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
         }
+        connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
         //X
         //QRenderStats::instance().registerOnWindow(window());
     }
@@ -103,7 +104,7 @@ void QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording()
     if(m_renderer){
         //qDebug()<<"Rotation:"<<QQuickItem::rotation();
         const auto screen_rotation=QOpenHDVideoHelper::get_display_rotation();
-        m_renderer->paint(window(),screen_rotation);
+        m_renderer->paint(window(),screen_rotation,m_primary_stream);
     }
     // always trigger a repaint, otherwise QT "thinks" nothing has changed since it doesn't
     // know about the OpenGL commands we do here

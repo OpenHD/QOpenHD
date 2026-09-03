@@ -42,7 +42,7 @@ void TextureRenderer::initGL(QQuickWindow *window)
     }
 }
 
-void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
+void TextureRenderer::paint(QQuickWindow *window,int rotation_degree,bool primaryStream)
 {
     const auto delta=std::chrono::steady_clock::now()-last_frame;
     last_frame=std::chrono::steady_clock::now();
@@ -57,73 +57,55 @@ void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
    if(window){
        window->beginExternalCommands();
    }
-   if(m_clear_all_video_textures_next_frame){
+   GL_VideoRenderer* renderer=primaryStream ? gl_video_renderer.get() : m_secondary_gl_video_renderer.get();
+   QRect target_viewport(0,0,m_viewportSize.width(),m_viewportSize.height());
+   if(!primaryStream){
+       std::lock_guard<std::mutex> lock(m_secondary_viewport_mutex);
+       target_viewport=m_secondaryViewport;
+   }
+   if(primaryStream && m_clear_all_video_textures_next_frame){
        remove_queued_frame_if_avalable(true);
-       gl_video_renderer->clean_video_textures_gl();
+       renderer->clean_video_textures_gl();
        DecodingStatistcs::instance().set_n_renderer_dropped_frames(-1);
        DecodingStatistcs::instance().set_n_rendered_frames(-1);
        DecodingStatistcs::instance().set_decode_and_render_time("-1");
        m_clear_all_video_textures_next_frame=false;
    }
    //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
-   AVFrame* new_frame=fetch_latest_decoded_frame();
+   AVFrame* new_frame=target_viewport.isEmpty() ? nullptr : fetch_latest_decoded_frame(primaryStream);
    if(new_frame!= nullptr){
      // Note : the update might free the frame, so we gotta store the timestamp before !
      const auto frame_pts=new_frame->pts;
      // update the texture with this frame
-     gl_video_renderer->update_texture_gl(new_frame);
-     m_display_stats.n_frames_rendered++;
-     DecodingStatistcs::instance().set_n_rendered_frames(m_display_stats.n_frames_rendered);
-     const auto now_us=getTimeUs();
-     const auto delay_us=now_us-frame_pts;
-     m_display_stats.decode_and_render.add(std::chrono::microseconds(delay_us));
-     if(m_display_stats.decode_and_render.time_since_last_log()>std::chrono::seconds(3)){
-         DecodingStatistcs::instance().set_decode_and_render_time(m_display_stats.decode_and_render.getAvgReadable().c_str());
-         m_display_stats.decode_and_render.set_last_log();
-         m_display_stats.decode_and_render.reset();
+     renderer->update_texture_gl(new_frame);
+     if(primaryStream){
+       m_display_stats.n_frames_rendered++;
+       DecodingStatistcs::instance().set_n_rendered_frames(m_display_stats.n_frames_rendered);
+       const auto now_us=getTimeUs();
+       const auto delay_us=now_us-frame_pts;
+       m_display_stats.decode_and_render.add(std::chrono::microseconds(delay_us));
+       if(m_display_stats.decode_and_render.time_since_last_log()>std::chrono::seconds(3)){
+           DecodingStatistcs::instance().set_decode_and_render_time(m_display_stats.decode_and_render.getAvgReadable().c_str());
+           m_display_stats.decode_and_render.set_last_log();
+           m_display_stats.decode_and_render.reset();
+       }
      }
    }
-   auto video_tex_width=gl_video_renderer->curr_video_width;
-   auto video_tex_height=gl_video_renderer->curr_video_height;
+   auto video_tex_width=renderer->curr_video_width;
+   auto video_tex_height=renderer->curr_video_height;
    if(rotation_degree==90 || rotation_degree==270){
      // just swap them around when rotated to get the right viewport
      std::swap(video_tex_width,video_tex_height);
    }
-   if(video_tex_width >0 && video_tex_height>0){
-       const auto viewport=helper::ratio::calculate_viewport(m_viewportSize.width(), m_viewportSize.height(),video_tex_width,video_tex_height,QOpenHDVideoHelper::get_primary_video_scale_to_fit());
-       glViewport(viewport.x,viewport.y,viewport.width,viewport.height);
+   if(video_tex_width >0 && video_tex_height>0 && !target_viewport.isEmpty()){
+       const auto viewport=helper::ratio::calculate_viewport(target_viewport.width(),target_viewport.height(),video_tex_width,video_tex_height,primaryStream && QOpenHDVideoHelper::get_primary_video_scale_to_fit());
+       glViewport(target_viewport.x()+viewport.x,target_viewport.y()+viewport.y,viewport.width,viewport.height);
    }
    glDisable(GL_DEPTH_TEST);
 
-   gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames,rotation_degree);
+   if(!target_viewport.isEmpty())
+       renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames,rotation_degree);
 
-   // Composite secondary video in the same external-command block. Keeping one
-   // scene-graph hook avoids the GL-state corruption caused by two renderers.
-   QRect secondary_viewport;
-   {
-       std::lock_guard<std::mutex> lock(m_secondary_viewport_mutex);
-       secondary_viewport=m_secondaryViewport;
-   }
-   if(secondary_viewport.width()>0 && secondary_viewport.height()>0){
-       AVFrame* secondary_frame=fetch_latest_decoded_frame(false);
-       if(secondary_frame!=nullptr){
-           m_secondary_gl_video_renderer->update_texture_gl(secondary_frame);
-       }
-       auto secondary_width=m_secondary_gl_video_renderer->curr_video_width;
-       auto secondary_height=m_secondary_gl_video_renderer->curr_video_height;
-       if(rotation_degree==90 || rotation_degree==270){
-           std::swap(secondary_width,secondary_height);
-       }
-       if(secondary_width>0 && secondary_height>0){
-           const auto relative_viewport=helper::ratio::calculate_viewport(
-               secondary_viewport.width(),secondary_viewport.height(),
-               secondary_width,secondary_height,false);
-           glViewport(secondary_viewport.x()+relative_viewport.x,
-                      secondary_viewport.y()+relative_viewport.y,
-                      relative_viewport.width,relative_viewport.height);
-           m_secondary_gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames,rotation_degree);
-       }
-   }
    // make sure we leave how we started / such that Qt rendering works normally
    glEnable(GL_DEPTH_TEST);
    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());

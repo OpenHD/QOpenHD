@@ -105,6 +105,11 @@ public: // public for QT
     L_RO_PROP(int,curr_mcs_index,set_curr_mcs_index,-1)
     L_RO_PROP(int,curr_bitrate_kbits,set_curr_bitrate_kbits,-1)
     L_RO_PROP(int,curr_n_rate_adjustments,set_curr_n_rate_adjustments,-1)
+    // Air-only FleetControl LTE status, relayed by OpenHD telemetry.
+    L_RO_PROP(bool,fleetcontrol_lte_active,set_fleetcontrol_lte_active,false)
+    L_RO_PROP(int,fleetcontrol_lte_upload_kbit,set_fleetcontrol_lte_upload_kbit,0)
+    L_RO_PROP(int,fleetcontrol_lte_download_kbit,set_fleetcontrol_lte_download_kbit,0)
+    L_RO_PROP(int,fleetcontrol_lte_max_kbit,set_fleetcontrol_lte_max_kbit,0)
 
     // similar for channel / channel width
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)

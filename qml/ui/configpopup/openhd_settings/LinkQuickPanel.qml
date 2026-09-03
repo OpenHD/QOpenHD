@@ -15,6 +15,9 @@ Rectangle {
     property int cardColumns: Math.max(1, Math.min(activeLinks.count, availableCardColumns))
     property int collapsedCardWidth: Math.floor((cardsFlow.width - (cardColumns - 1) * cardsFlow.spacing) / cardColumns)
     property int expandedCardIndex: -1
+    property bool fleetConfigured: _fleetControlLte.configured ||
+                                   _ohdSystemAir.fleetcontrol_lte_active ||
+                                   _ohdSystemAir.fleetcontrol_lte_max_kbit > 0
     property int linkRevision: _ohdSystemGround.primary_link_type + _ohdSystemAir.primary_link_type +
                                _ohdSystemGround.microhard_enabled + _ohdSystemAir.microhard_enabled +
                                (_ohdSystemGround.artosyn_link_detected ? 10 : 0) +
@@ -60,6 +63,7 @@ Rectangle {
         if (microhardActive()) activeLinks.append({kind: "microhard"})
         if (artosynActive()) activeLinks.append({kind: "artosyn"})
         if (_mlrsController.alive) activeLinks.append({kind: "mlrs"})
+        if (fleetConfigured) activeLinks.append({kind: "fleetcontrol"})
     }
     function rebuildFrequencies() {
         frequencyChoices.clear()
@@ -165,6 +169,7 @@ Rectangle {
     }
 
     onLinkRevisionChanged: rebuildLinks()
+    onFleetConfiguredChanged: rebuildLinks()
     property int frequencyRevision: _wbLinkSettingsHelper.ui_rebuild_models
     onFrequencyRevisionChanged: rebuildFrequencies()
     property int frequencyFilterRevision: settings.qopenhd_frequency_filter_selection
@@ -175,17 +180,22 @@ Rectangle {
     onReportedFrequencyRevisionChanged: rebuildFrequencies()
     Component.onCompleted: { rebuildFrequencies(); rebuildLinks(); close_all_dialoques() }
 
-    Flickable {
-        id: linksFlickable
-        anchors.fill: parent; anchors.margins: 8
-        contentWidth: width; contentHeight: Math.max(height, cardsFlow.height)
-        clip: true; boundsBehavior: Flickable.StopAtBounds
-        Behavior on contentY { NumberAnimation { duration: 130; easing.type: Easing.OutCubic } }
-        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
-        Flow {
-            id: cardsFlow
-            width: parent.width; spacing: 10
-            Repeater {
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: 8
+        spacing: 9
+
+        Flickable {
+            id: linksFlickable
+            Layout.fillWidth: true; Layout.fillHeight: true
+            contentWidth: width; contentHeight: Math.max(height, cardsFlow.height)
+            clip: true; boundsBehavior: Flickable.StopAtBounds
+            Behavior on contentY { NumberAnimation { duration: 130; easing.type: Easing.OutCubic } }
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
+            Flow {
+                id: cardsFlow
+                width: parent.width; spacing: 10
+                Repeater {
                 id: cards
                 model: activeLinks
                 delegate: FocusScope {
@@ -197,7 +207,10 @@ Rectangle {
                     Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Loader {
                         id: loader; anchors.fill: parent
-                        sourceComponent: kind === "wifi" ? wifiCard : (kind === "microhard" ? microhardCard : (kind === "artosyn" ? artosynCard : mlrsCard))
+                        sourceComponent: kind === "wifi" ? wifiCard
+                                         : (kind === "microhard" ? microhardCard
+                                         : (kind === "artosyn" ? artosynCard
+                                         : (kind === "fleetcontrol" ? fleetControlCard : mlrsCard)))
                         onLoaded: {
                             item.host = root
                             item.cardIndex = index
@@ -221,10 +234,16 @@ Rectangle {
                     }
                 }
             }
-            Rectangle {
-                visible: activeLinks.count === 0; width: cardsFlow.width; height: 110; radius: 10
-                color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor
-                Text { anchors.centerIn: parent; text: qsTr("No active OpenHD link detected"); color: settings_form.secondaryText; font.pixelSize: 11 }
+                Rectangle {
+                    visible: activeLinks.count === 0; width: cardsFlow.width; height: 150; radius: 10
+                    color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor
+                    Column {
+                        anchors.centerIn: parent; spacing: 8
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: 22; color: settings_form.secondaryText }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("No active links yet"); color: settings_form.primaryText; font.pixelSize: 11; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Connect an OpenHD unit or add an optional Air link above."); color: settings_form.secondaryText; font.pixelSize: 9 }
+                    }
+                }
             }
         }
     }
@@ -233,6 +252,8 @@ Rectangle {
     Component { id: microhardCard; MicrohardLinkCard {} }
     Component { id: artosynCard; ArtosynLinkCard {} }
     Component { id: mlrsCard; MLRSLinkCard {} }
+    Component { id: fleetControlCard; FleetControlLinkCard {} }
+
     PopupScanChannels { id: scanPopup }
     PopupAnalyzeChannels { id: analyzePopup }
     DialoqueFreqChangeGndOnly { id: groundFrequencyDialog }

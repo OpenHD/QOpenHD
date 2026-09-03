@@ -27,7 +27,7 @@ public:
     void initGL(QQuickWindow *window);
     // draw function
     // @param window: just needed to call the begin/end-externalCommands on it
-    void paint(QQuickWindow *window,int rotation_degree);
+    void paint(QQuickWindow *window,int rotation_degree,bool primaryStream=true);
     // adds a new frame to be picked up by the GL thread
     int queue_new_frame_for_display(AVFrame * src_frame, bool primaryStream=true);
     // remoe the currently queued frame if there is one (be carefull to not forget that the

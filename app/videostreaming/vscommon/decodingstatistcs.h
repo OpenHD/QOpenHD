@@ -26,6 +26,7 @@ class DecodingStatistcs : public QObject
     L_RO_PROP(int, udp_rx_bitrate, set_udp_rx_bitrate, -1)
     L_RO_PROP(QString, doing_wait_for_frame_decode, set_doing_wait_for_frame_decode, "?")
     L_RO_PROP(QString, primary_stream_frame_format, set_primary_stream_frame_format, "?")
+    L_RO_PROP(bool, secondary_video_active, set_secondary_video_active, false)
     // SW or HW decode
     L_RO_PROP(QString, decoding_type, set_decoding_type, "?")
     L_RO_PROP(int, n_missing_rtp_video_packets, set_n_missing_rtp_video_packets, -1)

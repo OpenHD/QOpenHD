@@ -17,12 +17,25 @@ Item {
     property bool overrideSliderRange: false
     property real preferredMinimum: 0
     property real preferredMaximum: 100
-    property var metadata: settingsModel ? settingsModel.get_ui_metadata(paramId) : ({control: "unsupported"})
+    property var metadata: {
+        // QML cannot infer that the return value of these invokables changes
+        // when the MAVLink parameter cache is replaced. Keep an explicit
+        // dependency on update_count so controls are rebuilt with the fetched
+        // metadata instead of remaining at their initial "unsupported" state.
+        var unusedRevision = modelUpdate
+        return settingsModel ? settingsModel.get_ui_metadata(paramId) : ({control: "unsupported"})
+    }
     property string controlType: preferSlider && metadata.control === "dropdown"
                                  ? "slider" : (metadata.control || "unsupported")
     property int modelUpdate: settingsModel ? settingsModel.update_count : 0
-    property int cachedValue: settingsModel && settingsModel.param_int_exists(paramId)
-                              ? settingsModel.get_cached_int(paramId) : 0
+    property int cachedValue: {
+        // See metadata above: get_cached_int() is invokable, not a notifying
+        // QML property. update_count makes the displayed value follow both a
+        // full fetch and successful parameter writes.
+        var unusedRevision = modelUpdate
+        return settingsModel && settingsModel.param_int_exists(paramId)
+                ? settingsModel.get_cached_int(paramId) : 0
+    }
     property real previewValue: cachedValue
     property bool available: controlType !== "unsupported"
     property Item focusControl: controlType === "slider"

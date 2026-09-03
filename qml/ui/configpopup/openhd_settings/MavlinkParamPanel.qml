@@ -30,6 +30,7 @@ Rectangle {
 
     property string m_name: "undefined"
     property bool m_requires_alive_air: false
+    property bool m_show_link_status: false
     property bool m_ip_camera_settings_available: m_instanceMavlinkSettingsModel.has_params_fetched &&
                                                    m_instanceMavlinkSettingsModel.param_string_exists("IP_CAM_PIPELINE")
 
@@ -43,7 +44,52 @@ Rectangle {
 
     function gainFocus() { listView.forceActiveFocus() }
 
+    function readableLinkName(name) {
+        var key = String(name).trim().toUpperCase()
+        if (key === "WIFIBROADCAST") return qsTr("WiFiBroadcast")
+        // Older Air builds truncate the MAVLink string after the first letter.
+        if (key === "E" || key === "ETH" || key === "ETHERNET") return qsTr("Ethernet")
+        if (key === "MICROHARD") return qsTr("Microhard")
+        if (key === "ARTOSYN") return qsTr("Artosyn")
+        if (key === "MLRS") return qsTr("mLRS")
+        if (key === "LTE" || key === "FLEETCONTROL" || key === "FLEETCONTROL LTE")
+            return qsTr("FleetControl LTE")
+        return name
+    }
+
+    function activeAirLinks() {
+        // ACTIVE_LINKS is authoritative and also contains secondary transports
+        // such as Ethernet. update_count keeps this binding live after a fetch.
+        var unusedRevision = m_instanceMavlinkSettingsModel.update_count
+        var links = []
+        if (m_instanceMavlinkSettingsModel.param_string_exists("ACTIVE_LINKS")) {
+            var raw = m_instanceMavlinkSettingsModel.get_cached_string("ACTIVE_LINKS")
+            var values = raw.split("+")
+            for (var i = 0; i < values.length; ++i) {
+                var key = values[i].trim().toUpperCase()
+                if (key.length > 0 && key !== "NONE")
+                    links.push(readableLinkName(values[i]))
+            }
+        }
+
+        // Older Air versions do not expose ACTIVE_LINKS yet.
+        if (links.length === 0) {
+            var artosyn = _ohdSystemAir.artosyn_link_detected || _ohdSystemAir.primary_link_type === 4
+            var microhard = _ohdSystemAir.microhard_enabled > 0
+            var wifi = (_wifi_card_air.alive && _wifi_card_air.card_type_as_string !== "ARTOSYN") ||
+                       (_ohdSystemAir.is_alive && !artosyn && !microhard)
+            if (wifi) links.push(qsTr("WiFiBroadcast"))
+            if (microhard) links.push(qsTr("Microhard"))
+            if (artosyn) links.push(qsTr("Artosyn"))
+        }
+
+        if (_ohdSystemAir.fleetcontrol_lte_active && links.indexOf(qsTr("FleetControl LTE")) < 0)
+            links.push(qsTr("FleetControl LTE"))
+        return links
+    }
+
     property int m_progress_perc : m_instanceMavlinkSettingsModel.curr_get_all_progress_perc;
+    property var activeLinkNames: activeAirLinks()
 
     property bool m_any_param_busy: _ohdSystemGroundSettings.ui_is_busy || _ohdSystemAirSettingsModel.ui_is_busy || _airCameraSettingsModel.ui_is_busy ||
                                     _airCameraSettingsModel2.ui_is_busy;
@@ -125,13 +171,14 @@ Rectangle {
                    ? (settings_form.darkMode ? "#174d82" : "#dcecff")
                    : (index % 2 === 0 ? settings_form.panelBackgroundRaised : "transparent")
             property bool isIpCameraQuickSetting: model.unique_id === "IP_CAM_ADDRESS" || model.unique_id === "IP_CAM_PIPELINE"
+            property bool isRawActiveLinks: root.m_show_link_status && model.unique_id === "ACTIVE_LINKS"
             property bool groupCollapsed: groupIsCollapsed(model.group)
             function activate() {
                 inlineEditor.gainFocus()
             }
-            height: (isIpCameraQuickSetting || groupCollapsed) ? 0 : rowHeight
+            height: (isIpCameraQuickSetting || isRawActiveLinks || groupCollapsed) ? 0 : rowHeight
             width: listView.width
-            visible: !isIpCameraQuickSetting && !groupCollapsed
+            visible: !isIpCameraQuickSetting && !isRawActiveLinks && !groupCollapsed
             radius: 7
             border.color: ListView.isCurrentItem && listView.activeFocus
                           ? settings_form.accentColor : settings_form.lineColor
@@ -199,10 +246,91 @@ Rectangle {
         //opacity: 0.5
         color: "transparent"
 
+        Item {
+            id: linkStatusPanel
+            visible: root.m_show_link_status
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.margins: 8
+            width: parent.width - 16
+            height: visible ? Math.max(30, statusFlow.childrenRect.height) : 0
+
+            Flow {
+                id: statusFlow
+                width: parent.width
+                spacing: 8
+
+                Item {
+                    width: statusTitle.implicitWidth
+                    height: 30
+                    Row {
+                        id: statusTitle
+                        height: parent.height
+                        spacing: 8
+                        Rectangle {
+                            width: 30; height: 30; radius: 9
+                            color: root.activeLinkNames.length > 0
+                                   ? Qt.rgba(0.1, 0.8, 0.35, 0.13)
+                                   : Qt.rgba(1.0, 0.65, 0.1, 0.13)
+                            Text {
+                                anchors.centerIn: parent
+                                text: "\uf1eb"
+                                font.family: "Font Awesome 5 Free"
+                                font.pixelSize: 13
+                                color: root.activeLinkNames.length > 0 ? settings_form.goodColor : "#f0a43c"
+                            }
+                        }
+                        Text {
+                            height: 30
+                            text: qsTr("Active links")
+                            color: settings_form.primaryText
+                            font.pixelSize: 10
+                            font.bold: true
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+                }
+
+                Repeater {
+                    model: root.activeLinkNames.length > 0
+                           ? root.activeLinkNames : [qsTr("No active Air link")]
+                    delegate: Rectangle {
+                        width: linkName.implicitWidth + 30
+                        height: 30
+                        radius: 9
+                        color: settings_form.panelBackgroundRaised
+                        border.width: 1
+                        border.color: root.activeLinkNames.length > 0
+                                      ? Qt.rgba(0.25, 0.65, 1.0, 0.55) : settings_form.lineColor
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 7
+                            Rectangle {
+                                width: 6; height: 6; radius: 3
+                                anchors.verticalCenter: parent.verticalCenter
+                                color: root.activeLinkNames.length > 0 ? settings_form.goodColor : "#f0a43c"
+                            }
+                            Text {
+                                id: linkName
+                                text: modelData
+                                color: root.activeLinkNames.length > 0
+                                       ? settings_form.primaryText : settings_form.secondaryText
+                                font.pixelSize: 9
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         ScrollView{
             id: paramListScrollView
             width: parent.width
-            height: parent.height
+            y: linkStatusPanel.visible
+               ? linkStatusPanel.y + linkStatusPanel.height + 12
+               : 0
+            height: parent.height - y
             clip: true
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             // Always show the scroll bar (sometimes the interactive might not work) but allow interactive also

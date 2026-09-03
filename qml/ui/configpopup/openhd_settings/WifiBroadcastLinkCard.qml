@@ -37,8 +37,21 @@ Rectangle {
     property bool pitModeAvailable: settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_PIT_MODE")
     property bool airPowerAvailable: settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("TX_PWR_LVL")
     property bool groundPowerAvailable: settingsRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("TX_PWR_LVL")
-    property bool showAirPower: _ohdSystemAir.is_alive || airPowerAvailable
-    property bool showGroundPower: _ohdSystemGround.is_alive || groundPowerAvailable
+    property bool showAirPower: airPowerAvailable
+    property bool showGroundPower: groundPowerAvailable
+    property bool airSystemAlive: _ohdSystemAir.is_alive
+    property bool groundSystemAlive: _ohdSystemGround.is_alive
+
+    function ensureLinkParametersFetched() {
+        if (_ohdSystemAirSettingsModel.system_is_alive()
+                && !_ohdSystemAirSettingsModel.has_params_fetched
+                && !_ohdSystemAirSettingsModel.ui_is_busy)
+            _ohdSystemAirSettingsModel.try_refetch_all_parameters_async(false)
+        if (_ohdSystemGroundSettings.system_is_alive()
+                && !_ohdSystemGroundSettings.has_params_fetched
+                && !_ohdSystemGroundSettings.ui_is_busy)
+            _ohdSystemGroundSettings.try_refetch_all_parameters_async(false)
+    }
 
     function modelIndex(model, value) {
         for (var i = 0; i < model.count; ++i) if (model.get(i).value === value) return i
@@ -104,9 +117,14 @@ Rectangle {
     property string radioRevision: currentFrequency + ":" + currentBandwidth + ":" + currentMcs
     onRadioRevisionChanged: syncRadio()
     onHostChanged: syncRadio()
+    onAirSystemAliveChanged: if (airSystemAlive) ensureLinkParametersFetched()
+    onGroundSystemAliveChanged: if (groundSystemAlive) ensureLinkParametersFetched()
     property int parameterRevision: _ohdSystemAirSettingsModel.update_count
     onParameterRevisionChanged: rebuildRadioModels()
-    Component.onCompleted: rebuildRadioModels()
+    Component.onCompleted: {
+        rebuildRadioModels()
+        ensureLinkParametersFetched()
+    }
 
     ColumnLayout {
         anchors.fill: parent; anchors.margins: 8; spacing: 5
@@ -208,7 +226,7 @@ Rectangle {
                     id: pitMode
                     Layout.preferredWidth: Math.min(220, parent.width * 0.24)
                     Layout.fillHeight: true
-                    visible: _ohdSystemAir.is_alive || root.pitModeAvailable
+                    visible: root.pitModeAvailable
                     editorEnabled: root.pitModeAvailable
                     settingsModel: _ohdSystemAirSettingsModel
                     paramId: "WB_PIT_MODE"
@@ -225,8 +243,8 @@ Rectangle {
                     Layout.fillWidth: true; Layout.fillHeight: true; spacing: 1
                     Text { text: qsTr("TX POWER"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
                     RowLayout { Layout.fillWidth: true; spacing: 14
-                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 1; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 1; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 20; overrideSliderRange: true; preferredMinimum: 20; preferredMaximum: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 20; overrideSliderRange: true; preferredMinimum: 20; preferredMaximum: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                     }
                 }
             }

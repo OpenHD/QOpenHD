@@ -22,6 +22,7 @@ Rectangle {
         ListElement { title: qsTr("AIR CAM 2"); icon: "\uf030" }
         ListElement { title: qsTr("AIR"); icon: "\uf1d8" }
         ListElement { title: qsTr("GROUND"); icon: "\uf519" }
+        ListElement { title: qsTr("FLEETCONTROL"); icon: "\uf0c0" }
     }
 
     function tabIsAvailable(index) {
@@ -40,12 +41,12 @@ Rectangle {
         if (index === 2) return qsTr("AIR CAM 2")
         if (index === 3) return qsTr("AIR")
         if (index === 4) return qsTr("GROUND")
-        return qsTr("mLRS")
+        return qsTr("FLEETCONTROL")
     }
 
     function firstAvailableTab(from, step) {
         var index = from
-        while (index >= 0 && index < 5) {
+        while (index >= 0 && index < pageModel.count) {
             if (tabIsAvailable(index)) return index
             index += step
         }
@@ -83,6 +84,7 @@ Rectangle {
         else if (currentPage === 2) cameraTwoPanel.gainFocus()
         else if (currentPage === 3) airPanel.gainFocus()
         else if (currentPage === 4) groundPanel.gainFocus()
+        else if (currentPage === 5) fleetControlPanel.gainFocus()
     }
 
     function user_quidance_animate_channel_scan() {
@@ -221,6 +223,7 @@ Rectangle {
                 MavlinkParamPanel {
                     id: airPanel
                     m_name: "AIR"
+                    m_show_link_status: true
                     m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
                     m_instanceCheckIsAvlie: _ohdSystemAir
                     m_requires_alive_air: true
@@ -233,6 +236,10 @@ Rectangle {
                     m_instanceCheckIsAvlie: _ohdSystemGround
                     m_requires_alive_air: false
                     onBackRequested: root.focusTab(4)
+                }
+                FleetControlSettingsPanel {
+                    id: fleetControlPanel
+                    onBackRequested: root.focusTab(5)
                 }
             }
         }

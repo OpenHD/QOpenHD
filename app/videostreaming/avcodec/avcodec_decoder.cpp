@@ -359,6 +359,8 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         ss<<safe_av_get_pix_fmt_name((AVPixelFormat)frame->format)<<" "<<frame->width<<"x"<<frame->height;
         if(m_primary_stream){
             DecodingStatistcs::instance().set_primary_stream_frame_format(QString(ss.str().c_str()));
+        }else{
+            DecodingStatistcs::instance().set_secondary_video_active(true);
         }
         //qDebug()<<"Got frame:"<<ss.str().c_str();
     }
@@ -389,6 +391,8 @@ void AVCodecDecoder::reset_before_decode_start()
     avg_parse_time.reset();
     if(m_primary_stream){
         DecodingStatistcs::instance().reset_all_to_default();
+    }else{
+        DecodingStatistcs::instance().set_secondary_video_active(false);
     }
     last_frame_width=-1;
     last_frame_height=-1;

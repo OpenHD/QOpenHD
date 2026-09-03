@@ -65,6 +65,7 @@
 
 #include "util/qrenderstats.h"
 #include "map/offlinemaptileprovider.h"
+#include "fleetcontrol/fleetcontrollte.h"
 
 #if defined(__ios__)
 #include "platform/appleplatform.h"
@@ -465,8 +466,10 @@ int main(int argc, char *argv[]) {
 
     QQmlApplicationEngine engine;
     OfflineMapTileProvider offlineMapTiles;
+    FleetControlLte fleetControlLte;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     engine.rootContext()->setContextProperty("_offlineMapTiles", &offlineMapTiles);
+    engine.rootContext()->setContextProperty("_fleetControlLte", &fleetControlLte);
     QOpenHD::instance().setEngine(&engine);
     write_platform_context_properties(engine);
 

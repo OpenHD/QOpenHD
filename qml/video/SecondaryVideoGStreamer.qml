@@ -77,6 +77,7 @@ Item {
 
     Text{
         anchors.fill: video_holder
+        visible: !QOPENHD_ENABLE_VIDEO_VIA_AVCODEC || !_decodingStatistics.secondary_video_active
         text: {
             if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK || QOPENHD_ENABLE_VIDEO_VIA_AVCODEC){
                 return qsTr("WAITING FOR\nSECONDARY VIDEO");

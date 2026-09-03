@@ -25,6 +25,7 @@
 #include "openhd_core/platform.hpp"
 #include "openhd_core/wifi_card_type.h"
 #include <algorithm>
+#include <cstring>
 #include <limits>
 
 // From https://netbeez.net/blog/what-is-mcs-index/
@@ -160,6 +161,18 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             mavlink_openhd_stats_wb_video_air_fec_performance_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_air_fec_performance_decode(&msg,&parsedMsg);
             process_x3b(parsedMsg);
+            consumed=true;
+        }break;
+        case MAVLINK_MSG_ID_NAMED_VALUE_INT:{
+            if(!m_is_air) break;
+            mavlink_named_value_int_t parsedMsg{};
+            mavlink_msg_named_value_int_decode(&msg,&parsedMsg);
+            const std::string name(parsedMsg.name, strnlen(parsedMsg.name, sizeof(parsedMsg.name)));
+            if(name=="LTE_ACTIVE") set_fleetcontrol_lte_active(parsedMsg.value != 0);
+            else if(name=="LTE_UP_KB") set_fleetcontrol_lte_upload_kbit(std::max(0, parsedMsg.value));
+            else if(name=="LTE_DN_KB") set_fleetcontrol_lte_download_kbit(std::max(0, parsedMsg.value));
+            else if(name=="LTE_MAX_KB") set_fleetcontrol_lte_max_kbit(std::max(0, parsedMsg.value));
+            else break;
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_CAMERA_STATUS_AIR:{
