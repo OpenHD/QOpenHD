@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QVariantList>
 #include <functional>
+class FleetControlLte;
 
 class FleetControlConnection : public QObject {
   Q_OBJECT
@@ -17,23 +18,17 @@ class FleetControlConnection : public QObject {
   Q_PROPERTY(int configuredMaxKbit READ configuredMaxKbit NOTIFY statusChanged)
   Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
   Q_PROPERTY(bool busy READ busy NOTIFY statusChanged)
-  Q_PROPERTY(bool authenticated READ authenticated NOTIFY statusChanged)
-  Q_PROPERTY(QVariantList crafts READ crafts NOTIFY statusChanged)
   Q_PROPERTY(QString deviceStatus READ deviceStatus NOTIFY statusChanged)
 
  public:
   explicit FleetControlConnection(QObject* parent = nullptr);
   Q_INVOKABLE void importProfile(const QUrl& fileUrl);
   Q_INVOKABLE void refresh();
-  Q_INVOKABLE void login(const QString& server, const QString& username, const QString& password);
-  Q_INVOKABLE void createCraft(const QString& name);
-  Q_INVOKABLE void loadCrafts();
+  void setAccount(FleetControlLte* account);
   Q_INVOKABLE void connectCraft(const QString& craftId, const QString& role, const QString& host, const QString& password);
   Q_INVOKABLE void installOnDevice(const QString& host, const QString& password);
   Q_INVOKABLE void trustDevice(bool trusted);
   bool busy() const { return m_busy; }
-  bool authenticated() const { return m_authenticated; }
-  QVariantList crafts() const { return m_crafts; }
   QString deviceStatus() const { return m_device_status; }
   bool active() const { return m_active; }
   int uploadKbit() const { return m_upload_kbit; }
@@ -59,9 +54,8 @@ class FleetControlConnection : public QObject {
   void setBusy(bool value);
   void uploadProfile(const QString& host, const QString& password);
   bool m_busy = false;
-  bool m_authenticated = false;
-  QVariantList m_crafts;
-  QString m_server;
+  FleetControlLte* m_account = nullptr;
+  const QString m_server = QStringLiteral("https://openhd.tech");
   QByteArray m_profile;
   QString m_profile_craft;
   QString m_profile_role;

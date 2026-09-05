@@ -68,6 +68,7 @@ class FleetControlLte : public QObject {
   void statusChanged();
 
  private:
+  friend class FleetControlConnection;
   using ReplyHandler =
       std::function<void(const QJsonObject&, int, const QString&)>;
 

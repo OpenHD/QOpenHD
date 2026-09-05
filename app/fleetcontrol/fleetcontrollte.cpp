@@ -86,6 +86,8 @@ QString FleetControlLte::responseError(const QJsonObject& object,
 void FleetControlLte::request(const QByteArray& method, const QString& path,
                               const QJsonObject& body, ReplyHandler handler) {
   QNetworkRequest networkRequest(QUrl(m_endpoint + path));
+  networkRequest.setTransferTimeout(30000);
+  networkRequest.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
   networkRequest.setHeader(QNetworkRequest::ContentTypeHeader,
                            QStringLiteral("application/json"));
   networkRequest.setRawHeader("Accept", "application/json");
@@ -189,20 +191,6 @@ void FleetControlLte::refreshAccount() {
       setBusy(false);
       setStatusText(QStringLiteral("FleetControl account ready"));
       emit statusChanged();
-      QVariantList eligible;
-      for (const QVariant& value : m_licenses) {
-        const QVariantMap license = value.toMap();
-        if (!license.value(QStringLiteral("craftId")).toString().isEmpty() &&
-            license.value(QStringLiteral("status")).toString() !=
-                QStringLiteral("expired") &&
-            license.value(QStringLiteral("video1Allowed")).toBool()) {
-          eligible.append(value);
-        }
-      }
-      if (eligible.size() == 1) {
-        requestVideoCertificate(
-            eligible.first().toMap().value(QStringLiteral("id")).toString());
-      }
     });
   });
 }

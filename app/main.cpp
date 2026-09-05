@@ -470,6 +470,7 @@ int main(int argc, char *argv[]) {
     FleetControlConnection fleetControlConnection;
     engine.rootContext()->setContextProperty("_fleetControlConnection", &fleetControlConnection);
     FleetControlLte fleetControlLte;
+    fleetControlConnection.setAccount(&fleetControlLte);
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     engine.rootContext()->setContextProperty("_offlineMapTiles", &offlineMapTiles);
     engine.rootContext()->setContextProperty("_fleetControlLte", &fleetControlLte);

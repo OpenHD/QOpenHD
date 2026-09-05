@@ -1,4 +1,5 @@
 #include "fleetcontrolconnection.h"
+#include "fleetcontrollte.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -88,6 +89,15 @@ void FleetControlConnection::setBusy(bool value) {
 void FleetControlConnection::request(const QUrl& url, const QByteArray& method,
                               const QByteArray& data, Reply callback,
                               const QByteArray& authorization) {
+  if (url.host() == "openhd.tech" && url.port(443) == 443) {
+    if (!m_account || !m_account->authenticated()) {
+      callback({}, QStringLiteral("Sign in to FleetControl first"));
+      return;
+    }
+    m_account->request(method, url.path(), QJsonDocument::fromJson(data).object(),
+        [callback](const QJsonObject& object, int, const QString& error) { callback(object, error); });
+    return;
+  }
   QNetworkRequest req(url);
   req.setTransferTimeout(method == "GET" ? 5000 : 120000);
   req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
@@ -156,53 +166,19 @@ void FleetControlConnection::trustDevice(bool trusted) {
   }
 }
 
-void FleetControlConnection::login(const QString& server, const QString& username, const QString& password) {
-  if (m_busy) return;
-  const QUrl url(server.trimmed());
-  if (url.scheme() != "https" || url.host().isEmpty() || !url.userInfo().isEmpty() || url.hasQuery() || url.hasFragment() || (url.path() != "" && url.path() != "/")) {
-    setStatusText(QStringLiteral("Enter the FleetControl HTTPS address, for example https://openhd.tech")); return;
-  }
-  m_server = url.adjusted(QUrl::RemovePath).toString();
-  m_authenticated = false;
-  m_crafts.clear();
-  setBusy(true); setStatusText(QStringLiteral("Signing in to FleetControl…"));
-  request(QUrl(m_server + "/api/login"), "POST", QJsonDocument(QJsonObject{{"username", username}, {"password", password}}).toJson(),
-          [this](const QJsonObject& object, const QString& error) {
-    setBusy(false);
-    if (!error.isEmpty() || !object.value("ok").toBool()) { setStatusText(error.isEmpty() ? QStringLiteral("Sign-in failed") : error); return; }
-    m_authenticated = true;
-    emit statusChanged();
-    loadCrafts();
-  });
-}
-
-void FleetControlConnection::loadCrafts() {
-  if (!m_authenticated || m_busy) return;
-  setBusy(true);
-  request(QUrl(m_server + "/api/vehicles/bindable"), "GET", {}, [this](const QJsonObject& object, const QString& error) {
-    setBusy(false);
-    if (!error.isEmpty()) { setStatusText(error); return; }
-    m_crafts.clear();
-    for (const auto& craft : object.value("systems").toArray()) m_crafts.append(craft.toObject().toVariantMap());
-    setStatusText(m_crafts.isEmpty() ? QStringLiteral("Create your first craft below") : QStringLiteral("Choose a craft and connect its Air unit. Ground is optional."));
-    emit statusChanged();
-  });
-}
-
-void FleetControlConnection::createCraft(const QString& name) {
-  if (m_busy || !m_authenticated || name.trimmed().size() < 2) return;
-  setBusy(true);
-  request(QUrl(m_server + "/api/vehicles"), "POST", QJsonDocument(QJsonObject{{"name", name.trimmed()}}).toJson(),
-          [this](const QJsonObject&, const QString& error) {
-    setBusy(false);
-    if (!error.isEmpty()) { setStatusText(error); return; }
-    loadCrafts();
+void FleetControlConnection::setAccount(FleetControlLte* account) {
+  m_account = account;
+  connect(account, &FleetControlLte::statusChanged, this, [this]() {
+    if (!m_account->authenticated()) {
+      m_profile.fill('\0'); m_profile.clear(); m_profile_craft.clear(); m_profile_role.clear();
+      m_retry = {};
+    }
   });
 }
 
 void FleetControlConnection::connectCraft(const QString& craftId, const QString& role,
                                    const QString& host, const QString& password) {
-  if (m_busy || !m_authenticated || craftId.isEmpty() || (role != "air" && role != "ground")) return;
+  if (m_busy || !m_account || !m_account->authenticated() || craftId.isEmpty() || (role != "air" && role != "ground")) return;
   if (!QRegularExpression(QStringLiteral("^[A-Za-z0-9.-]{1,253}$")).match(host).hasMatch() || password.isEmpty()) {
     setStatusText(QStringLiteral("Enter the OpenHD device address and its password")); return;
   }
