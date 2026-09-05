@@ -114,6 +114,7 @@
         <file>ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml</file>
         <file>ui/configpopup/openhd_settings/FleetControlLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/FleetControlSettingsPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/FleetControlConnectionView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVehicleSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppSettingsPanel.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppSettingsPageFrame.qml</file>

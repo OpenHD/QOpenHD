@@ -13,6 +13,18 @@ Rectangle {
     property var selectedLicense: licenseBox.currentIndex >= 0 && licenseBox.currentIndex < _fleetControlLte.licenses.length
                                   ? _fleetControlLte.licenses[licenseBox.currentIndex] : null
     property bool syncingStreams: false
+    property bool connectingDevice: true
+    FleetControlConnectionView {
+        anchors.fill: parent
+        anchors.topMargin: 38
+        visible: root.connectingDevice
+    }
+    Button {
+        anchors.top: parent.top
+        anchors.right: parent.right
+        text: root.connectingDevice ? qsTr("Licenses & certificates") : qsTr("Connect Air / Ground")
+        onClicked: root.connectingDevice = !root.connectingDevice
+    }
 
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
     Material.accent: settings_form.accentColor
@@ -55,7 +67,9 @@ Rectangle {
     }
 
     Flickable {
+        visible: !root.connectingDevice
         anchors.fill: parent
+        anchors.topMargin: 38
         anchors.margins: 8
         contentWidth: width
         contentHeight: contentColumn.implicitHeight + 8

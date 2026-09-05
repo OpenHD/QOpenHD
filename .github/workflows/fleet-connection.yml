@@ -1,0 +1,14 @@
+name: Fleet connection
+on:
+  push:
+    branches: [dev-release]
+  pull_request:
+    branches: [dev-release]
+jobs:
+  connection:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y qt6-base-dev qt6-declarative-dev qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qml6-module-qtquick-templates qml6-module-qtqml-workerscript qml6-module-qt-labs-platform
+      - run: cmake -S tests/fleetcontrol -B build-fleet-connection && cmake --build build-fleet-connection -j2
+      - run: ctest --test-dir build-fleet-connection --output-on-failure
