@@ -122,26 +122,8 @@ Rectangle {
             anchors.right: parent.right
             anchors.margins: settings_form.compactSidebar ? 10 : 20
             spacing: 3
-            Row {
-                visible: !settings_form.compactSidebar
-                spacing: 8
-                Text {
-                    text: "QOpenHD"
-                    color: primaryText
-                    font.pixelSize: Math.max(16, Math.min(19, sidebar.width / 10))
-                    font.bold: true
-                }
-                Rectangle {
-                    visible: !settings_form.compactSidebar
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 43; height: 25; radius: 5; color: "#12579d"
-                    Text { anchors.centerIn: parent; text: "EVO"; color: "#5eb3ff"; font.pixelSize: 13; font.bold: true }
-                }
-            }
-            Text { visible: !settings_form.compactSidebar; text: qsTr("ADVANCED MENU"); color: secondaryText; font.pixelSize: 10; font.letterSpacing: 1.4 }
             Button {
-                id: compactBackButton
-                visible: settings_form.compactSidebar
+                id: logoBackButton
                 width: 52
                 height: 52
                 x: Math.round((brand.width - width) / 2)
@@ -152,7 +134,7 @@ Rectangle {
                 background: Item { }
                 contentItem: Canvas {
                     id: openHdMark
-                    property bool inverted: compactBackButton.hovered || compactBackButton.activeFocus || compactBackButton.down
+                    property bool inverted: logoBackButton.hovered || logoBackButton.activeFocus || logoBackButton.down
                     antialiasing: true
                     renderTarget: Canvas.FramebufferObject
                     onInvertedChanged: requestPaint()
