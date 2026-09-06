@@ -326,21 +326,51 @@ void FleetControlLte::requestVideoCertificate(const QString& licenseId) {
   });
 }
 
+void FleetControlLte::setTransmission(const QString& craftId, bool enabled) {
+  if (!m_authenticated || m_busy || craftId.isEmpty()) return;
+  for (const auto& value : m_crafts) {
+    const auto craft = value.toMap();
+    if (craft.value("id").toString() != craftId) continue;
+    if (!enabled) { saveStreams(craftId, false, false, false); return; }
+    for (const auto& entry : m_licenses) {
+      const auto license = entry.toMap();
+      if (license.value("craftId").toString() != craftId || license.value("status").toString() == "expired") continue;
+      const bool telemetry = license.value("mavlinkAllowed").toBool();
+      const bool video = license.value("video1Allowed").toBool();
+      if (telemetry || video) { saveStreams(craftId, telemetry, video, false); return; }
+    }
+    setStatusText(QStringLiteral("An active streaming certificate is required"));
+    return;
+  }
+  setStatusText(QStringLiteral("Select an assigned craft first"));
+}
+
 void FleetControlLte::saveStreams(const QString& craftId, bool mavlink,
                                   bool video1, bool video2) {
   if (!m_authenticated || m_busy || craftId.isEmpty()) return;
-  setBusy(true); setStatusText(QStringLiteral("Updating Air uplink streams…"));
+  setBusy(true); setStatusText(QStringLiteral("Updating transmission…"));
   request("PATCH", QStringLiteral("/api/vehicles/%1/streams").arg(QString::fromUtf8(QUrl::toPercentEncoding(craftId))),
           {{QStringLiteral("mavlink"), mavlink},
            {QStringLiteral("video1"), video1},
            {QStringLiteral("video2"), video2}},
-          [this](const QJsonObject& object, int, const QString& error) {
-    setBusy(false);
+          [this, craftId, mavlink, video1, video2](const QJsonObject& object, int, const QString& error) {
     if (!error.isEmpty() || !object.value(QStringLiteral("ok")).toBool()) {
+      setBusy(false);
       setStatusText(error.isEmpty() ? QStringLiteral("Stream update failed") : error); return;
     }
-    setStatusText(QStringLiteral("Streaming selection saved"));
-    refreshAccount();
+    // Update only after the server accepts the change. A subsequent failed
+    // account refresh must not leave the button showing the opposite action.
+    for (auto& value : m_crafts) {
+      auto craft = value.toMap();
+      if (craft.value("id").toString() != craftId) continue;
+      craft.insert("mavlink", mavlink);
+      craft.insert("video1", video1);
+      craft.insert("video2", video2);
+      value = craft;
+    }
+    setBusy(false);
+    setStatusText(mavlink || video1 || video2 ? QStringLiteral("Transmission enabled") : QStringLiteral("Transmission stopped"));
+    emit statusChanged();
   });
 }
 

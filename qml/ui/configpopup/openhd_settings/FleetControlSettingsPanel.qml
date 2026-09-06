@@ -32,6 +32,9 @@ ScrollView {
         return result
     }
     readonly property var selectedCraft: craftBox.currentIndex >= 0 && craftBox.currentIndex < availableCrafts.length ? availableCrafts[craftBox.currentIndex] : null
+    readonly property bool craftAssigned: !!(selectedLicense && selectedCraft && selectedLicense.craftId === selectedCraft.id)
+    readonly property bool transmissionEnabled: craftAssigned && !!(selectedCraft.mavlink || selectedCraft.video1 || selectedCraft.video2)
+    readonly property bool canStartTransmission: craftAssigned && selectedLicense.status !== "expired" && !!(selectedLicense.mavlinkAllowed || selectedLicense.video1Allowed)
     property bool encryptionAvailable: false
     property bool encryptionEnabled: false
     property string pendingEncryptionLicense: ""
@@ -148,6 +151,25 @@ ScrollView {
                 background: Rectangle { radius: 8; color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor }
                 contentItem: ColumnLayout {
                     spacing: 10
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Text { text: qsTr("Transmission"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                        AdvancedActionButton {
+                            objectName: "fleetTransmission"
+                            text: root.transmissionEnabled ? qsTr("Stop transmission") : qsTr("Start transmission")
+                            primary: !root.transmissionEnabled
+                            enabled: !root.working && (root.transmissionEnabled || root.canStartTransmission)
+                            opacity: enabled ? 1 : 0.5
+                            onClicked: _fleetControlLte.setTransmission(root.selectedCraft.id, !root.transmissionEnabled)
+                        }
+                    }
+                    Text {
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
+                        text: !root.craftAssigned ? qsTr("Assign a craft to start transmission.")
+                              : root.transmissionEnabled ? qsTr("Transmission to openhd.tech is enabled.")
+                              : qsTr("Transmission to openhd.tech is stopped.")
+                    }
+                    Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
                     RowLayout {
                         Layout.fillWidth: true
                         Text { text: qsTr("Video quality"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }

@@ -64,6 +64,23 @@ QtObject {
     property var crafts: [{id: "bench", name: "Bench craft", licenseId: "lic-bench"}]
     property var licenses: [{id: "lic-bench", craftId: "bench", plan: "Professional", status: "active", expiresAt: "2027-09-05", daysRemaining: 364, video1Allowed: true}]
     property string lastAssignment: ""
+    property string transmissionCraft: ""
+    property bool transmissionRequested: false
+    function setTransmission(craftId, enabled) {
+        transmissionCraft = craftId
+        transmissionRequested = enabled
+        busy = true
+    }
+    function finishTransmission(success) {
+        if (success) crafts = crafts.map(function(c) { return {id: c.id, name: c.name, licenseId: c.licenseId,
+            mavlink: c.id === transmissionCraft ? transmissionRequested : c.mavlink,
+            video1: c.id === transmissionCraft ? transmissionRequested : c.video1, video2: false} })
+        busy = false
+    }
+    function expireLicense(expired) {
+        licenses = licenses.map(function(l) { return {id: l.id, craftId: l.craftId, plan: l.plan,
+            status: expired ? "expired" : "active", expiresAt: l.expiresAt, daysRemaining: l.daysRemaining, video1Allowed: l.video1Allowed} })
+    }
     function assignmentFixture() {
         crafts = [{id: "bench", name: "Bench craft", licenseId: "lic-bench"},
                   {id: "survey", name: "Survey craft"}, {id: "rescue", name: "Rescue craft"}]
@@ -108,6 +125,22 @@ QtObject {
       app.processEvents();
       if (!item->findChild<QObject*>("fleetLicenceExpiry")->property("text").toString().contains("364")) return 10;
       if (signedIn) {
+        auto* transmission = item->findChild<QQuickItem*>("fleetTransmission");
+        if (!transmission->isEnabled() || transmission->property("text").toString() != "Start transmission") return 30;
+        QMetaObject::invokeMethod(transmission, "clicked");
+        if (transmission->isEnabled() || mockAccount->property("transmissionCraft").toString() != "bench" || !mockAccount->property("transmissionRequested").toBool()) return 31;
+        QMetaObject::invokeMethod(mockAccount, "finishTransmission", Q_ARG(QVariant, false));
+        if (transmission->property("text").toString() != "Start transmission" || !transmission->isEnabled()) return 32;
+        QMetaObject::invokeMethod(transmission, "clicked");
+        QMetaObject::invokeMethod(mockAccount, "finishTransmission", Q_ARG(QVariant, true));
+        if (transmission->property("text").toString() != "Stop transmission") return 33;
+        QMetaObject::invokeMethod(mockAccount, "expireLicense", Q_ARG(QVariant, true));
+        if (!transmission->isEnabled()) return 34; // Stop must work after licence expiry.
+        QMetaObject::invokeMethod(transmission, "clicked");
+        if (mockAccount->property("transmissionRequested").toBool()) return 35;
+        QMetaObject::invokeMethod(mockAccount, "finishTransmission", Q_ARG(QVariant, true));
+        if (transmission->isEnabled() || transmission->property("text").toString() != "Start transmission") return 36;
+        QMetaObject::invokeMethod(mockAccount, "expireLicense", Q_ARG(QVariant, false));
         cameraModel->setProperty("available", true);
         QMetaObject::invokeMethod(item, "syncEncryption");
         if (!encryptionItem->isEnabled()) return 11;
@@ -155,6 +188,7 @@ QtObject {
     auto* certificateBox = item->findChild<QQuickItem*>("fleetCertificate");
     auto* assign = item->findChild<QQuickItem*>("fleetAssign");
     if (craftBox->property("count").toInt() != 2 || !assign->isEnabled()) return 22;
+    if (item->findChild<QQuickItem*>("fleetTransmission")->isEnabled()) return 37;
     for (auto* box : {certificateBox, craftBox}) {
       QMetaObject::invokeMethod(box, "openForKeyboard");
       auto* popup = box->property("popup").value<QObject*>();

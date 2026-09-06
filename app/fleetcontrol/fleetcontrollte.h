@@ -45,6 +45,7 @@ class FleetControlLte : public QObject {
   Q_INVOKABLE void requestVideoCertificate(const QString& licenseId);
   Q_INVOKABLE void saveStreams(const QString& craftId, bool mavlink,
                                bool video1, bool video2);
+  Q_INVOKABLE void setTransmission(const QString& craftId, bool enabled);
 
   bool configured() const { return m_configured; }
   bool active() const { return m_active; }
