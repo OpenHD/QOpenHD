@@ -1,108 +1,177 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import ".."
 
 ScrollView {
     id: root
     clip: true
-    font.pixelSize: 12
     contentWidth: availableWidth
     signal backRequested()
-    Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
-    Material.accent: settings_form.accentColor
-    Material.foreground: settings_form.primaryText
-    Material.background: settings_form.panelBackgroundRaised
-    property var selectedCraft: craftBox.currentIndex >= 0 && craftBox.currentIndex < _fleetControlLte.crafts.length ? _fleetControlLte.crafts[craftBox.currentIndex] : null
-    property var selectedLicense: {
-        if (!selectedCraft) return null
+    property string selectedLicenseId: ""
+    readonly property int licenseIndex: {
         for (var i = 0; i < _fleetControlLte.licenses.length; ++i)
-            if (_fleetControlLte.licenses[i].id === selectedCraft.licenseId) return _fleetControlLte.licenses[i]
-        return null
+            if (_fleetControlLte.licenses[i].id === selectedLicenseId) return i
+        return _fleetControlLte.licenses.length ? 0 : -1
     }
+    readonly property var selectedLicense: licenseIndex >= 0 ? _fleetControlLte.licenses[licenseIndex] : null
+    readonly property var availableCrafts: {
+        var result = []
+        if (!selectedLicense) return result
+        for (var i = 0; i < _fleetControlLte.crafts.length; ++i) {
+            var craft = _fleetControlLte.crafts[i]
+            if (selectedLicense.craftId) {
+                if (craft.id === selectedLicense.craftId) result.push(craft)
+            } else {
+                var assigned = !!craft.licenseId
+                for (var j = 0; j < _fleetControlLte.licenses.length; ++j)
+                    if (_fleetControlLte.licenses[j].craftId === craft.id) assigned = true
+                if (!assigned) result.push(craft)
+            }
+        }
+        return result
+    }
+    readonly property var selectedCraft: craftBox.currentIndex >= 0 && craftBox.currentIndex < availableCrafts.length ? availableCrafts[craftBox.currentIndex] : null
     property bool encryptionAvailable: false
     property bool encryptionEnabled: false
-    property bool pendingEncryption: false
-    readonly property bool working: _fleetControlLte.busy || _fleetControlConnection.busy
-    function gainFocus() { (_fleetControlLte.authenticated ? craftBox : username).forceActiveFocus() }
+    property string pendingEncryptionLicense: ""
+    readonly property bool working: _fleetControlLte.busy
+    function gainFocus() { (_fleetControlLte.authenticated ? certificateBox : username).forceActiveFocus() }
     function syncEncryption() {
         encryptionAvailable = _airCameraSettingsModel.param_int_exists("HIGH_ENCRYPTION")
         encryptionEnabled = encryptionAvailable && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
+    }
+    function dateText(value) {
+        var date = new Date(value)
+        return isNaN(date.getTime()) ? value : Qt.formatDate(date, Qt.DefaultLocaleShortDate)
     }
     Component.onCompleted: syncEncryption()
     Connections {
         target: _fleetControlLte
         function onStatusChanged() {
-            if (root.pendingEncryption && !_fleetControlLte.busy) {
-                root.pendingEncryption = false
-                if (_fleetControlLte.certificateInstalled)
+            if (root.pendingEncryptionLicense && !_fleetControlLte.busy) {
+                var requested = root.pendingEncryptionLicense
+                root.pendingEncryptionLicense = ""
+                if (_fleetControlLte.authenticated && root.selectedLicense && root.selectedLicense.id === requested
+                        && _fleetControlLte.certificateInstalled && _fleetControlLte.certificateLicenseId === requested)
                     _airCameraSettingsModel.try_set_param_int_async("HIGH_ENCRYPTION", 1, true)
             }
         }
     }
     Timer { interval: 1500; running: root.visible && _fleetControlLte.authenticated; repeat: true; onTriggered: root.syncEncryption() }
     Keys.onEscapePressed: root.backRequested()
+
     ColumnLayout {
         width: root.availableWidth
         spacing: 12
-        Label { text: qsTr("FleetControl"); font.pixelSize: 18; font.bold: true; Layout.topMargin: 12; Layout.leftMargin: 12 }
+        RowLayout {
+            Layout.fillWidth: true; Layout.margins: 12
+            ColumnLayout {
+                Layout.fillWidth: true; spacing: 4
+                Text { Layout.fillWidth: true; text: qsTr("FleetControl"); color: settings_form.primaryText; font.pixelSize: 18; font.bold: true }
+                Text { Layout.fillWidth: true; text: "openhd.tech"; color: settings_form.secondaryText; font.pixelSize: 12 }
+            }
+            AdvancedActionButton { visible: _fleetControlLte.authenticated; text: qsTr("Sign out"); enabled: !root.working; opacity: enabled ? 1 : 0.5; onClicked: _fleetControlLte.logout() }
+        }
         ColumnLayout {
             visible: !_fleetControlLte.authenticated
             Layout.fillWidth: true; Layout.margins: 12; spacing: 10
-            Label { text: qsTr("Sign in to your FleetControl account"); color: settings_form.secondaryText; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            TextField { id: username; objectName: "fleetUsername"; Layout.fillWidth: true; placeholderText: qsTr("Username or email"); selectByMouse: true; enabled: !root.working; onAccepted: password.forceActiveFocus() }
-            TextField { id: password; objectName: "fleetPassword"; Layout.fillWidth: true; placeholderText: qsTr("Password"); echoMode: TextInput.Password; enabled: !root.working; onAccepted: { if (signIn.enabled) signIn.clicked() } }
-            Button {
-                id: signIn; objectName: "fleetSignIn"; text: qsTr("Sign in"); Layout.alignment: Qt.AlignRight
-                enabled: !root.working && username.text.trim().length > 0 && password.text.length > 0
+            Text { text: qsTr("Sign in to assign your craft to a certificate."); color: settings_form.secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            TextField {
+                id: username; objectName: "fleetUsername"; Layout.fillWidth: true; Layout.preferredHeight: 40
+                placeholderText: qsTr("Username or email"); selectByMouse: true; enabled: !root.working; onAccepted: password.forceActiveFocus()
+                font.pixelSize: 13; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
+                leftPadding: 12; rightPadding: 12
+                background: Rectangle { radius: 8; color: settings_form.panelBackground; border.color: username.activeFocus ? settings_form.accentColor : settings_form.lineColor }
+            }
+            TextField {
+                id: password; objectName: "fleetPassword"; Layout.fillWidth: true; Layout.preferredHeight: 40
+                placeholderText: qsTr("Password"); echoMode: TextInput.Password; enabled: !root.working; onAccepted: { if (signIn.enabled) signIn.clicked() }
+                font.pixelSize: 13; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
+                leftPadding: 12; rightPadding: 12
+                background: Rectangle { radius: 8; color: settings_form.panelBackground; border.color: password.activeFocus ? settings_form.accentColor : settings_form.lineColor }
+            }
+            AdvancedActionButton {
+                id: signIn; objectName: "fleetSignIn"; text: qsTr("Sign in"); primary: true; Layout.alignment: Qt.AlignRight
+                enabled: !root.working && username.text.trim().length > 0 && password.text.length > 0; opacity: enabled ? 1 : 0.5
                 onClicked: { _fleetControlLte.login(username.text, password.text); password.clear() }
             }
         }
         ColumnLayout {
             visible: _fleetControlLte.authenticated
             Layout.fillWidth: true; Layout.margins: 12; spacing: 12
-            RowLayout {
-                Layout.fillWidth: true
-                Label { Layout.fillWidth: true; text: _fleetControlLte.accountName; elide: Text.ElideRight; color: settings_form.secondaryText }
-                Button { text: qsTr("Sign out"); enabled: !root.working; onClicked: _fleetControlLte.logout() }
-            }
-            GroupBox {
-                title: qsTr("Connection"); Layout.fillWidth: true
-                ColumnLayout {
-                    anchors.fill: parent
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Label { text: qsTr("Craft") }
-                        ComboBox { id: craftBox; objectName: "fleetCraft"; Layout.fillWidth: true; model: _fleetControlLte.crafts; textRole: "name"; enabled: !root.working }
-                        Button { text: qsTr("Add"); enabled: !root.working; onClicked: newCraft.open() }
+            Text { Layout.fillWidth: true; text: _fleetControlLte.accountName; color: settings_form.secondaryText; font.pixelSize: 12; elide: Text.ElideRight }
+            Pane {
+                Layout.fillWidth: true; padding: 12
+                background: Rectangle { radius: 8; color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor }
+                contentItem: ColumnLayout {
+                    spacing: 10
+                    Text { text: qsTr("Certificate"); color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                    CompactLinkComboBox {
+                        id: certificateBox; objectName: "fleetCertificate"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 13
+                        model: _fleetControlLte.licenses.map(function(license) { return license.plan + " · " + license.id.slice(-6) })
+                        currentIndex: root.licenseIndex; enabled: !root.working && count > 1
+                        displayText: root.selectedLicense ? model[root.licenseIndex] : qsTr("No certificates in this account")
+                        onActivated: root.selectedLicenseId = _fleetControlLte.licenses[currentIndex].id
                     }
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Label { Layout.fillWidth: true; text: _fleetControlConnection.deviceStatus || (_fleetControlLte.active ? qsTr("Connected") : qsTr("Connect Air or Ground to this craft")); color: settings_form.secondaryText; wrapMode: Text.WordWrap }
-                        Button { text: qsTr("Connect device"); enabled: !root.working && root.selectedCraft !== null; onClicked: deviceDialog.open() }
+                    Text {
+                        objectName: "fleetLicenceExpiry"; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
+                        text: !root.selectedLicense ? qsTr("Your licences will appear here after they are added to your account.")
+                              : root.selectedLicense.status === "expired" ? qsTr("Expired %1").arg(root.dateText(root.selectedLicense.expiresAt))
+                              : qsTr("Active until %1 · %2 days left").arg(root.dateText(root.selectedLicense.expiresAt)).arg(Math.max(0, root.selectedLicense.daysRemaining))
+                    }
+                    Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
+                    Text { text: qsTr("Craft"); color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                    CompactLinkComboBox {
+                        id: craftBox; objectName: "fleetCraft"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 13
+                        model: root.availableCrafts.map(function(craft) { return craft.name })
+                        enabled: !root.working && root.selectedLicense && !root.selectedLicense.craftId && count > 0
+                        displayText: root.selectedCraft ? root.selectedCraft.name : qsTr("No available craft")
+                    }
+                    Text {
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
+                        text: root.selectedLicense && root.selectedLicense.craftId ? qsTr("Assigned to this certificate")
+                              : root.availableCrafts.length ? qsTr("Each certificate is permanently assigned to one craft.")
+                              : !_fleetControlLte.crafts.length ? qsTr("No craft in this account yet.") : qsTr("All your craft already have a certificate.")
+                    }
+                    AdvancedActionButton {
+                        objectName: "fleetAssign"; text: qsTr("Assign craft"); primary: true; Layout.alignment: Qt.AlignRight
+                        visible: root.selectedLicense && !root.selectedLicense.craftId
+                        enabled: !root.working && root.selectedCraft && root.selectedLicense && root.selectedLicense.status !== "expired"
+                        opacity: enabled ? 1 : 0.5
+                        onClicked: _fleetControlLte.bindLicense(root.selectedLicense.id, root.selectedCraft.id)
                     }
                 }
             }
-            GroupBox {
-                title: qsTr("Video"); Layout.fillWidth: true
-                ColumnLayout {
-                    anchors.fill: parent
+            Pane {
+                Layout.fillWidth: true; padding: 12
+                background: Rectangle { radius: 8; color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor }
+                contentItem: ColumnLayout {
+                    spacing: 10
                     RowLayout {
                         Layout.fillWidth: true
-                        Label { text: qsTr("Quality"); Layout.fillWidth: true }
-                        Label { text: qsTr("480p / 15 fps / 1 Mbit/s"); color: settings_form.secondaryText }
+                        Text { text: qsTr("Video quality"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                        Text { text: "480p · 15 fps · 1 Mbit/s"; color: settings_form.secondaryText; font.pixelSize: 12 }
                     }
-                    Label { text: qsTr("Standard FleetControl quality"); font.pixelSize: 11; color: settings_form.secondaryText }
+                    Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
                     RowLayout {
                         Layout.fillWidth: true
-                        Label { text: qsTr("Video encryption"); Layout.fillWidth: true }
+                        Text { text: qsTr("Video encryption"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: 13 }
                         Switch {
-                            id: encryption; objectName: "fleetEncryption"
+                            id: encryption; objectName: "fleetEncryption"; implicitWidth: 48; implicitHeight: 30; padding: 0
                             checked: root.encryptionEnabled
-                            enabled: root.encryptionAvailable && !root.working && (root.encryptionEnabled || (root.selectedLicense && root.selectedLicense.status !== "expired" && root.selectedLicense.video1Allowed))
+                            enabled: root.encryptionAvailable && !root.working && (root.encryptionEnabled || (root.selectedLicense && root.selectedLicense.craftId && root.selectedLicense.status !== "expired" && root.selectedLicense.video1Allowed))
+                            opacity: enabled ? 1 : 0.5
+                            indicator: Rectangle {
+                                width: 44; height: 24; radius: 12; anchors.centerIn: parent
+                                color: encryption.checked ? settings_form.accentColor : settings_form.panelBackground
+                                border.color: encryption.activeFocus ? settings_form.accentColor : settings_form.lineColor
+                                border.width: encryption.activeFocus ? 2 : 1
+                                Rectangle { x: encryption.checked ? 23 : 3; y: 3; width: 18; height: 18; radius: 9; color: encryption.checked ? "white" : settings_form.secondaryText }
+                            }
                             onClicked: {
-                                if (checked && !_fleetControlLte.certificateInstalled) {
-                                    root.pendingEncryption = true
+                                if (checked && (!_fleetControlLte.certificateInstalled || _fleetControlLte.certificateLicenseId !== root.selectedLicense.id)) {
+                                    root.pendingEncryptionLicense = root.selectedLicense.id
                                     _fleetControlLte.requestVideoCertificate(root.selectedLicense.id)
                                 } else {
                                     _airCameraSettingsModel.try_set_param_int_async("HIGH_ENCRYPTION", checked ? 1 : 0, true)
@@ -111,50 +180,16 @@ ScrollView {
                             }
                         }
                     }
-                    Label {
-                        Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 11; color: settings_form.secondaryText
-                        text: !root.encryptionAvailable ? qsTr("Connect Air to change video encryption.") : qsTr("Additional Air video encryption. The FleetControl connection is always encrypted.")
+                    Text {
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 12; color: settings_form.secondaryText
+                        text: !root.encryptionAvailable ? qsTr("Connect Air to change video encryption.") : qsTr("Encrypt the Air video link. Streaming to openhd.tech is always encrypted.")
                     }
                 }
             }
-            GroupBox {
-                title: qsTr("Licence"); Layout.fillWidth: true
-                ColumnLayout {
-                    anchors.fill: parent
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Label { text: root.selectedLicense ? root.selectedLicense.plan : qsTr("No licence assigned"); Layout.fillWidth: true; wrapMode: Text.WordWrap }
-                        Label { text: root.selectedLicense ? root.selectedLicense.status : ""; color: settings_form.secondaryText }
-                    }
-                    Label {
-                        objectName: "fleetLicenceExpiry"; Layout.fillWidth: true; wrapMode: Text.WordWrap
-                        text: root.selectedLicense ? (root.selectedLicense.status === "expired" ? qsTr("Expired on %1").arg(root.selectedLicense.expiresAt) : qsTr("Active until %1 (%2 days remaining)").arg(root.selectedLicense.expiresAt).arg(Math.max(0, root.selectedLicense.daysRemaining))) : qsTr("Choose a licence for this craft.")
-                        color: settings_form.secondaryText
-                    }
-                    RowLayout {
-                        visible: !root.selectedLicense; Layout.fillWidth: true
-                        ComboBox { id: licenceBox; Layout.fillWidth: true; model: _fleetControlLte.licenses; textRole: "plan" }
-                        Button { text: qsTr("Assign"); enabled: !root.working && root.selectedCraft && licenceBox.currentIndex >= 0 && !_fleetControlLte.licenses[licenceBox.currentIndex].craftId; onClicked: _fleetControlLte.bindLicense(_fleetControlLte.licenses[licenceBox.currentIndex].id, root.selectedCraft.id) }
-                    }
-                    Label { visible: _fleetControlLte.certificateExpiresAt.length > 0; text: qsTr("Video certificate valid until %1").arg(_fleetControlLte.certificateExpiresAt); Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 11 }
-                }
-            }
         }
-        RowLayout {
-            Layout.fillWidth: true; Layout.margins: 12
-            BusyIndicator { running: root.working; visible: running; Layout.preferredWidth: 24; Layout.preferredHeight: 24 }
-            Label { Layout.fillWidth: true; text: _fleetControlLte.statusText; color: settings_form.secondaryText; wrapMode: Text.WordWrap; font.pixelSize: 11 }
+        Text {
+            Layout.fillWidth: true; Layout.margins: 12; text: _fleetControlLte.statusText
+            color: settings_form.secondaryText; wrapMode: Text.WordWrap; font.pixelSize: 12
         }
-    }
-    Dialog {
-        id: newCraft; title: qsTr("Add craft"); modal: true; anchors.centerIn: parent; width: Math.min(root.width - 24, 380)
-        standardButtons: Dialog.Ok | Dialog.Cancel
-        TextField { id: craftName; width: parent.width; placeholderText: qsTr("Craft name"); maximumLength: 60 }
-        onAccepted: { _fleetControlLte.createCraft(craftName.text); craftName.clear() }
-    }
-    Dialog {
-        id: deviceDialog; title: qsTr("Connect device"); modal: true; anchors.centerIn: parent
-        width: Math.min(root.width - 24, 480); height: Math.min(root.height - 24, 440); standardButtons: Dialog.Close
-        FleetControlConnectionView { anchors.fill: parent; craftId: root.selectedCraft ? root.selectedCraft.id : "" }
     }
 }

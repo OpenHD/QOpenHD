@@ -28,6 +28,7 @@ class FleetControlLte : public QObject {
   Q_PROPERTY(bool licenseValid READ licenseValid NOTIFY statusChanged)
   Q_PROPERTY(QString licenseVerification READ licenseVerification NOTIFY statusChanged)
   Q_PROPERTY(bool certificateInstalled READ certificateInstalled NOTIFY statusChanged)
+  Q_PROPERTY(QString certificateLicenseId READ certificateLicenseId NOTIFY statusChanged)
   Q_PROPERTY(QString certificateStatus READ certificateStatus NOTIFY statusChanged)
   Q_PROPERTY(QString certificateExpiresAt READ certificateExpiresAt NOTIFY statusChanged)
 
@@ -61,6 +62,7 @@ class FleetControlLte : public QObject {
   bool licenseValid() const { return m_license_valid; }
   QString licenseVerification() const { return m_license_verification; }
   bool certificateInstalled() const { return m_certificate_installed; }
+  QString certificateLicenseId() const { return m_certificate_license_id; }
   QString certificateStatus() const { return m_certificate_status; }
   QString certificateExpiresAt() const { return m_certificate_expires_at; }
 
@@ -68,7 +70,6 @@ class FleetControlLte : public QObject {
   void statusChanged();
 
  private:
-  friend class FleetControlConnection;
   using ReplyHandler =
       std::function<void(const QJsonObject&, int, const QString&)>;
 
@@ -91,7 +92,7 @@ class FleetControlLte : public QObject {
   QString m_status_text = QStringLiteral("Sign in to FleetControl");
   bool m_authenticated = false;
   bool m_busy = false;
-  QString m_endpoint = QStringLiteral("https://openhd.tech");
+  const QString m_endpoint = QStringLiteral("https://openhd.tech");
   QString m_account_name;
   QVariantList m_licenses;
   QVariantList m_crafts;
@@ -99,6 +100,7 @@ class FleetControlLte : public QObject {
   bool m_license_valid = false;
   QString m_license_verification;
   bool m_certificate_installed = false;
+  QString m_certificate_license_id;
   QString m_certificate_status = QStringLiteral("No video certificate installed");
   QString m_certificate_expires_at;
   QTimer m_timer;

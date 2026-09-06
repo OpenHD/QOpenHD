@@ -1,42 +1,37 @@
-#include "../app/fleetcontrol/fleetcontrolconnection.h"
 #include "../app/fleetcontrol/fleetcontrollte.h"
 #include <QGuiApplication>
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
-#include <QTemporaryFile>
 #include <QDebug>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QElapsedTimer>
 #include <QDir>
 #include <QFontDatabase>
+#include <QFileInfo>
+#include <QTest>
 
 int main(int argc, char** argv) {
+  qInstallMessageHandler([](QtMsgType, const QMessageLogContext&, const QString& message) { fprintf(stderr, "%s\n", qPrintable(message)); });
   QGuiApplication app(argc, argv);
 #ifdef Q_OS_WIN
   const int fontId = QFontDatabase::addApplicationFont("C:/Windows/Fonts/segoeui.ttf");
   if (fontId >= 0) app.setFont(QFont(QFontDatabase::applicationFontFamilies(fontId).first(), 10));
 #endif
-  FleetControlConnection fleet;
+  QFontDatabase::addApplicationFont(QFileInfo(QString::fromLocal8Bit(argv[1])).dir().filePath("../../../resources/Font Awesome 5 Free-Solid-900.otf"));
   FleetControlLte account;
-  fleet.setAccount(&account);
   if (account.endpoint() != "https://openhd.tech") return 1;
-  fleet.connectCraft("craft", "air", "bad/address", "password");
-  if (fleet.busy()) return 2;
-  QTemporaryFile profile;
-  if (!profile.open()) return 3;
-  profile.write("# OpenHD-Profile-Version=1\r\n# OpenHD-Interface=openhd-lte\r\nPrivateKey = example\r\n");
-  profile.flush();
-  fleet.importProfile(QUrl::fromLocalFile(profile.fileName()));
-  if (!fleet.statusText().contains("Profile loaded")) return 4;
-  fleet.refresh();
-  if (!fleet.statusText().contains("Profile loaded")) return 5;
+  account.bindLicense("lic-bench", "bench");
+  if (account.busy()) return 2;
   QQmlEngine engine;
-  engine.rootContext()->setContextProperty("_fleetControlConnection", &fleet);
+  QStringList warnings;
+  QObject::connect(&engine, &QQmlEngine::warnings, [&warnings](const QList<QQmlError>& errors) {
+    for (const auto& error : errors) warnings.append(error.toString());
+  });
   engine.rootContext()->setContextProperty("_fleetControlLte", &account);
   QQmlComponent theme(&engine);
-  theme.setData("import QtQuick 2.12\nQtObject { property bool darkMode: true; property color accentColor: '#00a6f2'; property color primaryText: '#eeeeee'; property color secondaryText: '#aaaaaa'; property color panelBackgroundRaised: '#20262c'; }", QUrl());
+  theme.setData("import QtQuick 2.12\nQtObject { property bool darkMode: true; property color accentColor: '#278cff'; property color primaryText: '#eeeeee'; property color secondaryText: '#aaaaaa'; property color panelBackgroundRaised: '#20262c'; property color panelBackground: '#171c21'; property color lineColor: '#394653'; }", QUrl());
   auto* settings = theme.create();
   engine.rootContext()->setContextProperty("settings_form", settings);
   QQmlComponent camera(&engine);
@@ -65,8 +60,20 @@ QtObject {
     property string statusText: ""
     property string certificateExpiresAt: ""
     property bool certificateInstalled: false
+    property string certificateLicenseId: ""
     property var crafts: [{id: "bench", name: "Bench craft", licenseId: "lic-bench"}]
-    property var licenses: [{id: "lic-bench", plan: "Professional", status: "active", expiresAt: "2027-09-05", daysRemaining: 364, video1Allowed: true}]
+    property var licenses: [{id: "lic-bench", craftId: "bench", plan: "Professional", status: "active", expiresAt: "2027-09-05", daysRemaining: 364, video1Allowed: true}]
+    property string lastAssignment: ""
+    function assignmentFixture() {
+        crafts = [{id: "bench", name: "Bench craft", licenseId: "lic-bench"},
+                  {id: "survey", name: "Survey craft"}, {id: "rescue", name: "Rescue craft"}]
+        licenses = [{id: "lic-bench", craftId: "bench", plan: "Professional", status: "active", expiresAt: "2027-09-05", daysRemaining: 364, video1Allowed: true},
+                    {id: "lic-spare", plan: "Professional", status: "active", expiresAt: "2027-09-05", daysRemaining: 364, video1Allowed: true}]
+    }
+    function bindLicense(id, craftId) {
+        lastAssignment = id + ":" + craftId
+        licenses = licenses.map(function(l) { return {id: l.id, craftId: l.id === id ? craftId : l.craftId, plan: l.plan, status: l.status, expiresAt: l.expiresAt, daysRemaining: l.daysRemaining, video1Allowed: l.video1Allowed} })
+    }
     signal statusChanged()
     function requestVideoCertificate(id) { busy = true; }
 })", QUrl());
@@ -81,6 +88,8 @@ QtObject {
     settings->setProperty("primaryText", QColor(dark ? "#eeeeee" : "#202020"));
     settings->setProperty("secondaryText", QColor(dark ? "#aaaaaa" : "#606060"));
     settings->setProperty("panelBackgroundRaised", QColor(dark ? "#20262c" : "#f4f4f4"));
+    settings->setProperty("panelBackground", QColor(dark ? "#171c21" : "#ffffff"));
+    settings->setProperty("lineColor", QColor(dark ? "#394653" : "#bfc8d0"));
     window.setColor(QColor(dark ? "#171c21" : "#ffffff"));
     for (const bool signedIn : {false, true}) {
       mockAccount->setProperty("authenticated", signedIn);
@@ -102,10 +111,14 @@ QtObject {
         cameraModel->setProperty("available", true);
         QMetaObject::invokeMethod(item, "syncEncryption");
         if (!encryptionItem->isEnabled()) return 11;
+        // A certificate for a different craft cannot satisfy this request.
+        mockAccount->setProperty("certificateInstalled", true);
+        mockAccount->setProperty("certificateLicenseId", "lic-another-craft");
         encryptionItem->setProperty("checked", true);
         QMetaObject::invokeMethod(encryptionItem, "clicked");
         if (!mockAccount->property("busy").toBool() || cameraModel->property("encryption").toInt() != 0) return 15; // Wait for certificate before enabling.
         mockAccount->setProperty("certificateInstalled", true);
+        mockAccount->setProperty("certificateLicenseId", "lic-bench");
         mockAccount->setProperty("busy", false);
         QMetaObject::invokeMethod(mockAccount, "statusChanged");
         if (!encryptionItem->isEnabled()) return 12;
@@ -121,7 +134,65 @@ QtObject {
       delete item;
     }
   }
+  // Actual popup keyboard selection, in both themes. Assigned craft must never
+  // be offered for a second certificate, and assignment must survive a refresh.
+  for (const bool dark : {true, false}) {
+    settings->setProperty("darkMode", dark);
+    settings->setProperty("primaryText", QColor(dark ? "#eeeeee" : "#202020"));
+    settings->setProperty("secondaryText", QColor(dark ? "#aaaaaa" : "#606060"));
+    settings->setProperty("panelBackgroundRaised", QColor(dark ? "#20262c" : "#f4f4f4"));
+    settings->setProperty("panelBackground", QColor(dark ? "#171c21" : "#ffffff"));
+    settings->setProperty("lineColor", QColor(dark ? "#394653" : "#bfc8d0"));
+    window.setColor(QColor(dark ? "#171c21" : "#ffffff"));
+    QMetaObject::invokeMethod(mockAccount, "assignmentFixture");
+    auto* item = qobject_cast<QQuickItem*>(component.create());
+    if (!item) return 21;
+    item->setParentItem(window.contentItem()); item->setSize(QSizeF(600, 640));
+    window.resize(600, 640); window.show(); window.requestActivate();
+    item->setProperty("selectedLicenseId", "lic-spare");
+    QTest::qWait(50);
+    auto* craftBox = item->findChild<QQuickItem*>("fleetCraft");
+    auto* certificateBox = item->findChild<QQuickItem*>("fleetCertificate");
+    auto* assign = item->findChild<QQuickItem*>("fleetAssign");
+    if (craftBox->property("count").toInt() != 2 || !assign->isEnabled()) return 22;
+    for (auto* box : {certificateBox, craftBox}) {
+      QMetaObject::invokeMethod(box, "openForKeyboard");
+      auto* popup = box->property("popup").value<QObject*>();
+      if (!QTest::qWaitFor([popup]() { return popup->property("opened").toBool(); }, 1000)) return 28;
+      auto* background = popup->property("background").value<QObject*>();
+      if (!popup->property("visible").toBool() || popup->property("height").toDouble() > 280 ||
+          background->property("color").value<QColor>() != settings->property("panelBackgroundRaised").value<QColor>()) return 23;
+      if (!imageDir.isEmpty()) window.grabWindow().save(imageDir + (dark ? "/dark-" : "/light-") + box->objectName() + ".png");
+      auto* keyWindow = QGuiApplication::focusWindow() ? QGuiApplication::focusWindow() : &window;
+      if (box == certificateBox) QTest::keyClick(keyWindow, Qt::Key_Escape);
+      else {
+        QTest::keyClick(keyWindow, Qt::Key_Down);
+        QTest::qWait(50);
+        QTest::keyClick(keyWindow, Qt::Key_Return);
+      }
+      QTest::qWait(250);
+      if (popup->property("visible").toBool()) {
+        auto* focus = QGuiApplication::focusObject();
+        fprintf(stderr, "Popup did not close: %s; focus: %s; window: %s\n", qPrintable(box->objectName()), focus ? focus->metaObject()->className() : "none", keyWindow->metaObject()->className());
+        return 24;
+      }
+    }
+    if (craftBox->property("displayText").toString() != "Rescue craft") return 25;
+    QMetaObject::invokeMethod(assign, "clicked");
+    QTest::qWait(50);
+    if (mockAccount->property("lastAssignment").toString() != "lic-spare:rescue" ||
+        craftBox->isEnabled() || assign->isVisible() || craftBox->property("displayText").toString() != "Rescue craft") return 26;
+    item->setSize(QSizeF(420, 400)); window.resize(420, 400);
+    QTest::qWait(50);
+    if (!imageDir.isEmpty()) window.grabWindow().save(imageDir + (dark ? "/dark-" : "/light-") + "narrow.png");
+    mockAccount->setProperty("licenses", QVariantList{});
+    mockAccount->setProperty("crafts", QVariantList{});
+    QTest::qWait(50);
+    if (assign->isVisible() || craftBox->isEnabled() || certificateBox->property("displayText").toString().isEmpty()) return 27;
+    delete item;
+  }
   delete mockAccount;
+  if (!warnings.isEmpty()) { qWarning() << warnings; return 20; }
   delete cameraModel;
   delete settings;
   qInfo() << "FleetControl input handling and QML creation passed";

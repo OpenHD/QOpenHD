@@ -7,8 +7,14 @@ on:
 jobs:
   connection:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        qt: [5, 6]
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y qt6-base-dev qt6-declarative-dev qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qml6-module-qtquick-templates qml6-module-qtqml-workerscript qml6-module-qt-labs-platform
+      - if: matrix.qt == 6
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev qt6-base-dev qt6-declarative-dev qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qml6-module-qtquick-templates qml6-module-qtqml-workerscript
+      - if: matrix.qt == 5
+        run: sudo apt-get update && sudo apt-get install -y qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev qml-module-qtquick2 qml-module-qtquick-controls2 qml-module-qtquick-layouts qml-module-qtquick-window2
       - run: cmake -S tests/fleetcontrol -B build-fleet-connection && cmake --build build-fleet-connection -j2
       - run: ctest --test-dir build-fleet-connection --output-on-failure

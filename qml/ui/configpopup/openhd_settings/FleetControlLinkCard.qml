@@ -58,7 +58,7 @@ Rectangle {
                 Text { text: qsTr("FleetControl LTE"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
                 Text {
                     Layout.fillWidth: true
-                    text: qsTr("Air-only encrypted uplink")
+                    text: qsTr("Encrypted streaming to openhd.tech")
                     color: settings_form.secondaryText; font.pixelSize: 8; elide: Text.ElideRight
                 }
             }
@@ -128,7 +128,7 @@ Rectangle {
                 Text { text: qsTr("MANAGED BY FLEETCONTROL"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
                 Text {
                     Layout.fillWidth: true
-                    text: qsTr("Sign in under OpenHD → FleetControl to bind this craft, verify its license and select MAVLink, Video 1 and Video 2 independently.")
+                    text: qsTr("Sign in under OpenHD → FleetControl and assign your craft to a certificate.")
                     color: settings_form.secondaryText; font.pixelSize: 9; wrapMode: Text.WordWrap
                 }
             }
@@ -136,7 +136,7 @@ Rectangle {
 
         Text {
             Layout.fillWidth: true
-            text: qsTr("Encoder ceiling: Air Camera → BITRATE_MBITS. Keep VARIABLE_BITRATE enabled.")
+            text: qsTr("FleetControl video: 480p · 15 fps · 1 Mbit/s. Air is preferred; Ground uploads when Air is unavailable.")
             color: settings_form.secondaryText; font.pixelSize: 8; wrapMode: Text.WordWrap
         }
         Item { Layout.fillHeight: true }

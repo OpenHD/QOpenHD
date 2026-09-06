@@ -147,6 +147,7 @@ void FleetControlLte::clearSession() {
   m_license_valid = false;
   m_license_verification.clear();
   m_certificate_installed = false;
+  m_certificate_license_id.clear();
   m_certificate_status = QStringLiteral("No video certificate installed");
   m_certificate_expires_at.clear();
   emit statusChanged();
@@ -280,7 +281,7 @@ void FleetControlLte::requestVideoCertificate(const QString& licenseId) {
   setStatusText(QStringLiteral("Issuing 30-day craft certificate..."));
   request("POST", QStringLiteral("/api/licenses/%1/video-certificate")
                       .arg(QString::fromUtf8(QUrl::toPercentEncoding(licenseId))),
-          {}, [this](const QJsonObject& object, int, const QString& error) {
+          {}, [this, licenseId](const QJsonObject& object, int, const QString& error) {
     if (!error.isEmpty() || !object.value(QStringLiteral("ok")).toBool()) {
       m_certificate_installed = false;
       m_certificate_status = error.isEmpty()
@@ -293,6 +294,7 @@ void FleetControlLte::requestVideoCertificate(const QString& licenseId) {
     QString path;
     QString installError;
     m_certificate_installed = installCertificate(certificate, path, installError);
+    m_certificate_license_id = m_certificate_installed ? licenseId : QString{};
     if (m_certificate_installed) {
       const qint64 serverTime = QDateTime::fromString(
           object.value(QStringLiteral("serverTime")).toString(),

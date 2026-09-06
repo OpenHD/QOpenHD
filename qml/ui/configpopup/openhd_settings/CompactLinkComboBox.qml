@@ -70,7 +70,7 @@ ComboBox {
         contentItem: Text {
             text: control.textRole.length > 0 ? model[control.textRole] : modelData
             color: highlighted ? control.focusColor : control.textColor
-            font.pixelSize: 10
+            font.pixelSize: control.font.pixelSize
             font.bold: control.currentIndex === index
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
