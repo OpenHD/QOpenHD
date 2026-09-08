@@ -385,6 +385,12 @@ void MavlinkSettingsModel::removeData(int row)
 void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData new_data)
 {
     perform_dirty_actions(new_data);
+    for (auto& hidden : m_hidden_data) {
+        if (hidden.unique_id == new_data.unique_id) {
+            hidden = new_data;
+            return;
+        }
+    }
     int row=-1;
     if(row_opt.has_value()){
         row=row_opt.value();
@@ -414,7 +420,8 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     perform_dirty_actions(data);
     if(is_param_whitelisted(data.unique_id.toStdString())){
-        // never add whitelisted params to the simple model, they need synchronization
+        // Hide generic rows without discarding values used by Link controls.
+        m_hidden_data.push_back(data);
         return;
     }
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
@@ -598,6 +605,8 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 
 bool MavlinkSettingsModel::param_int_exists(QString param_id)
 {
+    for (const auto& tmp : m_hidden_data)
+        if (tmp.unique_id == param_id && std::holds_alternative<int>(tmp.value)) return true;
     //qDebug()<<"Size:"<<m_data.size();
     for(const auto& tmp:m_data){
         //qDebug()<<tmp.unique_id;
@@ -612,6 +621,8 @@ bool MavlinkSettingsModel::param_int_exists(QString param_id)
 
 bool MavlinkSettingsModel::param_string_exists(QString param_id)
 {
+    for (const auto& tmp : m_hidden_data)
+        if (tmp.unique_id == param_id && std::holds_alternative<std::string>(tmp.value)) return true;
     for(const auto& tmp:m_data){
         if(tmp.unique_id==param_id && std::holds_alternative<std::string>(tmp.value)){
             return true;
@@ -624,6 +635,8 @@ bool MavlinkSettingsModel::param_string_exists(QString param_id)
 
 int MavlinkSettingsModel::get_cached_int(QString param_id)
 {
+    for (const auto& tmp : m_hidden_data)
+        if (tmp.unique_id == param_id && std::holds_alternative<int>(tmp.value)) return std::get<int>(tmp.value);
     for(const auto& tmp:m_data){
         if(tmp.unique_id.compare(param_id)==0 && std::holds_alternative<int>(tmp.value)){
             return std::get<int>(tmp.value);
@@ -635,6 +648,8 @@ int MavlinkSettingsModel::get_cached_int(QString param_id)
 
 QString MavlinkSettingsModel::get_cached_string(QString param_id)
 {
+    for (const auto& tmp : m_hidden_data)
+        if (tmp.unique_id == param_id && std::holds_alternative<std::string>(tmp.value)) return QString::fromStdString(std::get<std::string>(tmp.value));
     for(const auto& tmp:m_data){
         if(tmp.unique_id.compare(param_id)==0 && std::holds_alternative<std::string>(tmp.value)){
             return std::get<std::string>(tmp.value).c_str();
@@ -664,6 +679,7 @@ void MavlinkSettingsModel::remove_and_replace_param_set(const std::vector<mavlin
 
 void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
 {
+    m_hidden_data.clear();
     qDebug()<<"Replacing full param set, previous size:"<<rowCount()<<" new size:"<<qt_param_set.param_set.size();
     // first, remove anything the QT model has cached
     while(rowCount()>0){

@@ -103,6 +103,8 @@ public slots:
     void addData(MavlinkSettingsModel::SettingData data);
 private:
     QVector<MavlinkSettingsModel::SettingData> m_data;
+    // Dedicated Link controls need parameters hidden from the generic list.
+    QVector<MavlinkSettingsModel::SettingData> m_hidden_data;
     const uint8_t m_sys_id;
     const uint8_t m_comp_id;
     bool is_param_whitelisted(const std::string param_id)const;
