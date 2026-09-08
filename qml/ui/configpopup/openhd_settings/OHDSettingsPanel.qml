@@ -17,7 +17,8 @@ Rectangle {
 
     ListModel {
         id: pageModel
-        ListElement { title: qsTr("LINK / QUICK"); icon: "\uf1eb" }
+        ListElement { title: qsTr("LINK"); icon: "\uf1eb" }
+        ListElement { title: qsTr("STORAGE"); icon: "\uf51f" }
         ListElement { title: qsTr("AIR CAM 1"); icon: "\uf030" }
         ListElement { title: qsTr("AIR CAM 2"); icon: "\uf030" }
         ListElement { title: qsTr("AIR"); icon: "\uf1d8" }
@@ -26,9 +27,9 @@ Rectangle {
     }
 
     function tabIsAvailable(index) {
-        if (index === 1)
-            return true
         if (index === 2)
+            return true
+        if (index === 3)
             return _airCameraSettingsModel2.has_params_fetched &&
                     (_airCameraSettingsModel2.param_int_exists("CAMERA_TYPE") ||
                      _airCameraSettingsModel2.param_string_exists("IP_CAM_PIPELINE"))
@@ -36,11 +37,12 @@ Rectangle {
     }
 
     function tabTitle(index) {
-        if (index === 0) return qsTr("LINK / QUICK")
-        if (index === 1) return qsTr("AIR CAM 1")
-        if (index === 2) return qsTr("AIR CAM 2")
-        if (index === 3) return qsTr("AIR")
-        if (index === 4) return qsTr("GROUND")
+        if (index === 0) return qsTr("LINK")
+        if (index === 1) return qsTr("STORAGE")
+        if (index === 2) return qsTr("AIR CAM 1")
+        if (index === 3) return qsTr("AIR CAM 2")
+        if (index === 4) return qsTr("AIR")
+        if (index === 5) return qsTr("GROUND")
         return qsTr("FLEETCONTROL")
     }
 
@@ -80,11 +82,12 @@ Rectangle {
 
     function focusCurrentPage() {
         if (currentPage === 0) quickPanel.gainFocus()
-        else if (currentPage === 1) cameraOnePanel.gainFocus()
-        else if (currentPage === 2) cameraTwoPanel.gainFocus()
-        else if (currentPage === 3) airPanel.gainFocus()
-        else if (currentPage === 4) groundPanel.gainFocus()
-        else if (currentPage === 5) fleetControlPanel.gainFocus()
+        else if (currentPage === 1) storagePanel.gainFocus()
+        else if (currentPage === 2) cameraOnePanel.gainFocus()
+        else if (currentPage === 3) cameraTwoPanel.gainFocus()
+        else if (currentPage === 4) airPanel.gainFocus()
+        else if (currentPage === 5) groundPanel.gainFocus()
+        else if (currentPage === 6) fleetControlPanel.gainFocus()
     }
 
     function user_quidance_animate_channel_scan() {
@@ -126,7 +129,7 @@ Rectangle {
                     font.bold: true
                 }
                 Text {
-                    text: qsTr("Configure the video link, cameras and OpenHD systems")
+                    text: qsTr("Configure the video link, recording storage, cameras and OpenHD systems")
                     color: settings_form.secondaryText
                     font.pixelSize: 12
                     elide: Text.ElideRight
@@ -206,19 +209,20 @@ Rectangle {
                 currentIndex: root.currentPage
 
                 LinkQuickPanel { id: quickPanel; onBackRequested: root.focusTab(0) }
+                StorageSettingsPanel { id: storagePanel; onBackRequested: root.focusTab(1) }
                 CameraSettingsPanel {
                     id: cameraOnePanel
                     settingsModel: _airCameraSettingsModel
                     streamModel: _cameraStreamModelPrimary
                     secondary: false
-                    onBackRequested: root.focusTab(1)
+                    onBackRequested: root.focusTab(2)
                 }
                 CameraSettingsPanel {
                     id: cameraTwoPanel
                     settingsModel: _airCameraSettingsModel2
                     streamModel: _cameraStreamModelSecondary
                     secondary: true
-                    onBackRequested: root.focusTab(2)
+                    onBackRequested: root.focusTab(3)
                 }
                 MavlinkParamPanel {
                     id: airPanel
@@ -227,7 +231,7 @@ Rectangle {
                     m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
                     m_instanceCheckIsAvlie: _ohdSystemAir
                     m_requires_alive_air: true
-                    onBackRequested: root.focusTab(3)
+                    onBackRequested: root.focusTab(4)
                 }
                 MavlinkParamPanel {
                     id: groundPanel
@@ -235,11 +239,11 @@ Rectangle {
                     m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
                     m_instanceCheckIsAvlie: _ohdSystemGround
                     m_requires_alive_air: false
-                    onBackRequested: root.focusTab(4)
+                    onBackRequested: root.focusTab(5)
                 }
                 FleetControlSettingsPanel {
                     id: fleetControlPanel
-                    onBackRequested: root.focusTab(5)
+                    onBackRequested: root.focusTab(6)
                 }
             }
         }
