@@ -35,12 +35,18 @@ void QRenderStats::registerOnWindow(QQuickWindow *window)
 {
     QSettings settings;
 #if defined(__linux__) && !defined(__android__)
+#if defined(IS_PLATFORM_ROCK)
+    // Rock 5 displays FPVUE's DMA-BUF frames through the KMS overlay.
+    // This is the release renderer and must not depend on a user setting.
+    KmsRenderer::instance().ensure_started();
+#else
     const bool enable_kms_renderer = settings.value("enable_kms_renderer", false).toBool();
     const bool use_rpi_external = settings.value("dev_rpi_use_external_omx_decode_service", true).toBool();
     const bool use_generic_external = settings.value("dev_always_use_generic_external_decode_service", false).toBool();
     if (enable_kms_renderer && !use_rpi_external && !use_generic_external) {
         KmsRenderer::instance().ensure_started();
     }
+#endif
 #endif
     m_stats_enabled = settings.value("qrenderstats_show", false).toBool();
 

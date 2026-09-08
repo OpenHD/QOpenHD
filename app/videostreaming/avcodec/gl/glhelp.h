@@ -13,6 +13,13 @@ extern "C" {
 //#include <GLES3/gl32.h>
 //#include <GLES3/gl3ext.h>
 }
+
+// EGL/X11 may define Bool as a macro. Do not let it corrupt Qt MOC's
+// generated QMetaType::Bool references in headers that include this file.
+#ifdef Bool
+#undef Bool
+#endif
+
 #include <cassert>
 
 /// Some gl extensions that don't seem to be part of raspberry gl. 
