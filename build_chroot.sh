@@ -5,6 +5,7 @@
 # The downloaded base images can have expired package indexes. Refresh them
 # before the first package installation, otherwise security-package versions
 # referenced by the image may no longer exist on the Debian mirrors.
+echo 'Acquire::Check-Valid-Until "false";' | sudo tee /etc/apt/apt.conf.d/99openhd-ci >/dev/null
 sudo apt-get update
 
 sudo apt install -y python3-pip git

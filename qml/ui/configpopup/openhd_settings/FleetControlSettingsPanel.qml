@@ -45,11 +45,9 @@ ScrollView {
         encryptionEnabled = encryptionAvailable && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
     }
     function dateText(value) {
-        var parts = String(value).split("-")
-        if (parts.length !== 3)
-            return value
-        var date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
-        return isNaN(date.getTime()) ? value : Qt.formatDate(date, Qt.DefaultLocaleShortDate)
+        // The backend supplies an ISO 8601 date. Keeping that representation
+        // avoids Qt 6.2's incompatible JavaScript-Date conversion in formatDate.
+        return String(value)
     }
     Component.onCompleted: syncEncryption()
     Connections {
