@@ -16,12 +16,24 @@ BaseWidget {
     width: 50
     height: 50
 
-    visible: _ohdSystemGround.curr_txc_temp_degree_1 > 5 && settings.show_widgets && settings.show_txc_temp_gnd
+    function maxDevourerThermalDelta() {
+        var cards = [_wifi_card_gnd0, _wifi_card_gnd1, _wifi_card_gnd2, _wifi_card_gnd3]
+        var maximum = -1
+        for (var i = 0; i < cards.length; ++i)
+            if (cards[i].thermal_valid)
+                maximum = Math.max(maximum, cards[i].thermal_delta)
+        return maximum
+    }
+    property int devourerThermalDelta: maxDevourerThermalDelta()
+    property bool usesDevourerThermal: devourerThermalDelta >= 0
+    visible: (usesDevourerThermal || _ohdSystemGround.curr_txc_temp_degree_1 > 5)
+             && settings.show_widgets && settings.show_txc_temp_gnd
 
     widgetIdentifier: "Ground Transceiver Temperature"
     bw_verbose_name: qsTr("GND_RCX_TEMP")
-    property real gndTemp1: _ohdSystemGround.curr_txc_temp_degree_1 
-    property real gndTemp2: _ohdSystemGround.curr_txc_temp_degree_2
+    property real gndTemp1: usesDevourerThermal ? devourerThermalDelta : _ohdSystemGround.curr_txc_temp_degree_1
+    property real gndTemp2: usesDevourerThermal ? 0 : _ohdSystemGround.curr_txc_temp_degree_2
+    property real gaugeTemp: usesDevourerThermal ? Math.max(0, Math.min(100, gndTemp1 * 4)) : gndTemp1
 
     defaultAlignment: 0
     defaultXOffset: 175
@@ -127,7 +139,7 @@ BaseWidget {
                     anchors.centerIn: gaugeCanvas
 
                     // Apply rotation to this whole group
-                    rotation: (gndTemp1 / 100.0) * 270 + 20
+                    rotation: (gaugeTemp / 100.0) * 270 + 20
 
                     Rectangle {
                         width: tempGauge.normalizedSize * 0.08
@@ -178,7 +190,9 @@ BaseWidget {
 
                 Text {
                     id: gndTemp1_text
-                    text: qsTr("%1\u00B0C").arg(gndTemp1.toFixed(1))
+                    text: usesDevourerThermal
+                          ? qsTr("Δ%1").arg((gndTemp1 >= 0 ? "+" : "") + gndTemp1)
+                          : qsTr("%1\u00B0C").arg(gndTemp1.toFixed(1))
                     font.pixelSize: tempGauge.normalizedSize * 0.3
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: gaugeCanvas.bottom
@@ -188,7 +202,7 @@ BaseWidget {
                 Text {
                     id: gndTemp2_text
                     text: qsTr("[%1] %2\u00B0C").arg(2).arg(gndTemp2.toFixed(1))
-                    visible: gndTemp2!=0
+                    visible: !usesDevourerThermal && gndTemp2!=0
                     font.pixelSize: tempGauge.normalizedSize * 0.2
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: gndTemp1_text.bottom

@@ -35,8 +35,10 @@ BaseWidget {
     property var m_camera_stream_model: _cameraStreamModelPrimary
     property bool m_camera_is_currently_recording: _cameraStreamModelPrimary.air_recording_active
     property int rc_rssi_percentage: _fcMavlinkSystem.rc_rssi_percentage
-    property bool airTemperatureWarningActive: _ohdSystemAir.is_alive
-                                               && _ohdSystemAir.curr_soc_temp_degree > 80
+    property bool airTemperatureWarningActive: (_ohdSystemAir.is_alive
+                                                && _ohdSystemAir.curr_soc_temp_degree > 80)
+                                               || (_wifi_card_air.thermal_valid
+                                                   && _wifi_card_air.thermal_delta >= 15)
 
     property int rcBlockCount: 8
     property real rcBlockWidth: 12
@@ -377,7 +379,7 @@ BaseWidget {
         Text {
             id: uplinkIcon
             text: "\uf519"
-            color: uplink_color()
+            color: airTemperatureWarningActive ? "red" : uplink_color()
             font.pixelSize: 16
             font.family: "Font Awesome 5 Free"
             verticalAlignment: Text.AlignVCenter
@@ -392,10 +394,11 @@ BaseWidget {
 
         Text {
             visible: airTemperatureWarningActive
-            text: "\uf071"
-            color: "#ffb000"
-            font.pixelSize: 16
-            font.family: "Font Awesome 5 Free"
+            text: "!"
+            color: "red"
+            font.pixelSize: 20
+            font.bold: true
+            font.family: linkFont
             anchors.left: uplinkIcon.right
             anchors.leftMargin: 4
             anchors.top: uplinkIcon.top
