@@ -133,6 +133,16 @@ bool OHDAction::repartition_air_storage(int storageId)
     return send_storage_action(2,storageId,"Repartitioning storage device");
 }
 
+bool OHDAction::create_air_storage_partition(int storageId)
+{
+    return send_storage_action(5,storageId,"Creating recording partition");
+}
+
+bool OHDAction::resize_air_storage_partition(int storageId)
+{
+    return send_storage_action(6,storageId,"Preparing recording space");
+}
+
 bool OHDAction::mount_air_storage_for_recording(int storageId)
 {
     return send_storage_action(3,storageId,"Selecting recording destination");
@@ -266,22 +276,42 @@ bool OHDAction::process_message(const mavlink_message_t &message)
         return false;
     }
     const bool isDisk=encodedName.startsWith("D ");
+    QString deviceName=encodedName.mid(2);
+    bool internal=false;
+    if(deviceName.startsWith("I ")){
+        internal=true;
+        deviceName=deviceName.mid(2);
+    }else if(deviceName.startsWith("U ")){
+        deviceName=deviceName.mid(2);
+    }else{
+        internal=deviceName.contains("mmcblk") || deviceName.contains("nvme");
+    }
     const bool mountedAtVideo=
         (storage.storage_usage & STORAGE_USAGE_FLAG_VIDEO)!=0;
     QVariantMap item;
     item["id"]=static_cast<int>(storage.storage_id);
-    item["device"]=encodedName.mid(2);
+    item["device"]=deviceName;
     item["kind"]=isDisk ? "disk" : "partition";
     item["filesystem"]=storage.status==STORAGE_STATUS_UNFORMATTED
                             ? QString()
                             : QStringLiteral("ready");
     item["totalMiB"]=storage.total_capacity;
+    item["usedMiB"]=storage.used_capacity;
     item["freeMiB"]=storage.available_capacity;
+    item["internal"]=internal;
     item["mountedAtVideo"]=mountedAtVideo;
     item["formatted"]=storage.status!=STORAGE_STATUS_UNFORMATTED;
-    item["canFormat"]=!isDisk;
-    item["canRepartition"]=isDisk;
-    item["canMount"]=!isDisk && storage.status!=STORAGE_STATUS_UNFORMATTED;
+    const int capabilityFlags=static_cast<int>(storage.read_speed);
+    const bool hasCapabilityFlags=capabilityFlags!=0;
+    item["canFormat"]=hasCapabilityFlags ? (capabilityFlags & 4)!=0
+                                          : (!isDisk && !internal);
+    item["canRepartition"]=hasCapabilityFlags ? (capabilityFlags & 16)!=0
+                                               : (isDisk && !internal);
+    item["canCreatePartition"]=isDisk && (capabilityFlags & 1)!=0;
+    item["canResizePartition"]=isDisk && (capabilityFlags & 2)!=0;
+    item["canMount"]=(hasCapabilityFlags ? (capabilityFlags & 8)!=0
+                                          : (!isDisk && !internal)) &&
+                       storage.status!=STORAGE_STATUS_UNFORMATTED;
 
     bool replaced=false;
     for(int i=0;i<m_air_storage_devices.size();++i){
