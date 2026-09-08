@@ -45,7 +45,10 @@ ScrollView {
         encryptionEnabled = encryptionAvailable && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
     }
     function dateText(value) {
-        var date = new Date(value)
+        var parts = String(value).split("-")
+        if (parts.length !== 3)
+            return value
+        var date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
         return isNaN(date.getTime()) ? value : Qt.formatDate(date, Qt.DefaultLocaleShortDate)
     }
     Component.onCompleted: syncEncryption()

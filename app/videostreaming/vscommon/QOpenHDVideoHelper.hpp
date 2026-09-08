@@ -2,6 +2,9 @@
 #define QOPENHDVIDEOHELPER_H
 
 #include <QSettings>
+#ifdef Unsorted
+#undef Unsorted
+#endif
 #include <QDir>
 #include <qqmlapplicationengine.h>
 #include <qquickitem.h>

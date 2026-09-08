@@ -2,6 +2,11 @@
 # This file is the install instruction for the CHROOT build
 # We're using cloudsmith-cli to upload the file in CHROOT
 
+# The downloaded base images can have expired package indexes. Refresh them
+# before the first package installation, otherwise security-package versions
+# referenced by the image may no longer exist on the Debian mirrors.
+sudo apt-get update
+
 sudo apt install -y python3-pip git
 DISTRO=$(cat distro.txt)
 FLAVOR=$(cat flavor.txt)
