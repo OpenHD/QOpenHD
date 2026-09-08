@@ -36,6 +36,7 @@ public:
     Q_INVOKABLE bool format_air_storage(int storageId);
     Q_INVOKABLE bool repartition_air_storage(int storageId);
     Q_INVOKABLE bool mount_air_storage_for_recording(int storageId);
+    Q_INVOKABLE bool migrate_air_recordings(int storageId);
     Q_INVOKABLE bool siyi_gimbal_rate(float pitchRate, float yawRate);
     Q_INVOKABLE bool siyi_gimbal_center();
     Q_INVOKABLE bool siyi_zoom(float rate);

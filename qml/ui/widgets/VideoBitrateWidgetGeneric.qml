@@ -89,6 +89,12 @@ BaseWidget {
             _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Air unit not alive, cannot set recording for %1").arg(camString))
             return;
         }
+        if(mode!==0 && _ohdSystemAir.curr_space_left_mb < 300){
+            _hudLogMessagesModel.signalAddLogMessage(
+                        6,
+                        qsTr("Recording %1 unavailable: select storage with at least 300 MB free in Manage Air Storage").arg(camString))
+            return;
+        }
         if(mode===0){ //mode off
             var result=camModel.try_update_parameter_int("AIR_RECORDING_E",0)===""
             if(result){

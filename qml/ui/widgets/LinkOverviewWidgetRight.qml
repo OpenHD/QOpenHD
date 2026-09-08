@@ -166,6 +166,12 @@ BaseWidget {
             _hudLogMessagesModel.signalAddLogMessage(6, qsTr("Air unit not alive, cannot set recording for CAM1"));
             return;
         }
+        if (mode !== 0 && _ohdSystemAir.curr_space_left_mb < 300) {
+            _hudLogMessagesModel.signalAddLogMessage(
+                        6,
+                        qsTr("Air recording unavailable: select storage with at least 300 MB free in Manage Air Storage"));
+            return;
+        }
         var result = _airCameraSettingsModel.try_update_parameter_int("AIR_RECORDING_E", mode) === "";
         if (result) {
             _hudLogMessagesModel.signalAddLogMessage(6, mode === 1 ? qsTr("Recording CAM1 enabled") : qsTr("Recording CAM1 disabled"));

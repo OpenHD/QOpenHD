@@ -135,7 +135,12 @@ bool OHDAction::repartition_air_storage(int storageId)
 
 bool OHDAction::mount_air_storage_for_recording(int storageId)
 {
-    return send_storage_action(3,storageId,"Mounting partition at /Video");
+    return send_storage_action(3,storageId,"Selecting recording destination");
+}
+
+bool OHDAction::migrate_air_recordings(int storageId)
+{
+    return send_storage_action(4,storageId,"Moving recordings to selected storage");
 }
 
 bool OHDAction::send_camera_command(uint16_t command, int cameraIndex,
@@ -267,6 +272,9 @@ bool OHDAction::process_message(const mavlink_message_t &message)
     item["id"]=static_cast<int>(storage.storage_id);
     item["device"]=encodedName.mid(2);
     item["kind"]=isDisk ? "disk" : "partition";
+    item["filesystem"]=storage.status==STORAGE_STATUS_UNFORMATTED
+                            ? QString()
+                            : QStringLiteral("ready");
     item["totalMiB"]=storage.total_capacity;
     item["freeMiB"]=storage.available_capacity;
     item["mountedAtVideo"]=mountedAtVideo;

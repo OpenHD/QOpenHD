@@ -23,7 +23,7 @@ Item {
         parent: Overlay.overlay
         anchors.centerIn: parent
         width: 620
-        height: 390
+        height: 500
         modal: true
         title: qsTr("Air recording storage")
         standardButtons: Dialog.Close
@@ -44,10 +44,31 @@ Item {
         contentItem: ColumnLayout {
             spacing: 12
 
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 64
+                radius: 12
+                color: settings_form.panelBackgroundRaised
+                border.color: settings_form.lineColor
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    Label { text: qsTr("Recording destination"); font.bold: true }
+                    Label {
+                        text: _ohdSystemAir.curr_space_left_mb >= 300
+                              ? qsTr("Ready - %1 available").arg(storageManagerDialog.sizeText(_ohdSystemAir.curr_space_left_mb))
+                              : qsTr("Not ready - select storage with at least 300 MiB free")
+                        color: _ohdSystemAir.curr_space_left_mb >= 300
+                               ? Material.color(Material.Green)
+                               : Material.color(Material.Red)
+                    }
+                }
+            }
             Label {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
-                text: qsTr("Only removable/non-root storage is shown. The disk containing the OpenHD root filesystem is excluded by sysutils.")
+                color: settings_form.secondaryText
+                text: qsTr("Select an Air storage partition. The OpenHD system disk is protected and cannot be formatted here.")
             }
             RowLayout {
                 Layout.fillWidth: true
@@ -71,16 +92,31 @@ Item {
                     if (!item)
                         return qsTr("No safe storage devices found")
                     var kind = item.kind === "disk" ? qsTr("Disk") : qsTr("Partition")
-                    var mounted = item.mountedAtVideo ? qsTr(" — mounted at /Video") : ""
+                    var mounted = item.mountedAtVideo
+                            ? qsTr(" - active recording destination") : ""
                     if (item.kind === "disk")
-                        return kind + " — " +
+                        return kind + " - " +
                                storageManagerDialog.sizeText(item.totalMiB) +
                                " total"
-                    return kind + " — " +
+                    return kind + " - " +
                            storageManagerDialog.sizeText(item.totalMiB) +
                            " total, " +
                            storageManagerDialog.sizeText(item.freeMiB) +
                            " free" + mounted
+                }
+            }
+            ProgressBar {
+                Layout.fillWidth: true
+                visible: storageManagerDialog.selectedStorage !== null &&
+                         storageManagerDialog.selectedStorage.kind !== "disk" &&
+                         storageManagerDialog.selectedStorage.totalMiB > 0
+                from: 0
+                to: 1
+                value: {
+                    var item = storageManagerDialog.selectedStorage
+                    return item && item.totalMiB > 0
+                           ? Math.max(0, Math.min(1, 1 - item.freeMiB / item.totalMiB))
+                           : 0
                 }
             }
             Label {
@@ -89,8 +125,9 @@ Item {
                 color: Material.color(Material.Red)
                 text: qsTr("Formatting deletes one partition. Repartitioning deletes the entire selected disk and creates one FAT32 RECORDINGS partition.")
             }
-            RowLayout {
+            Flow {
                 Layout.fillWidth: true
+                spacing: 8
                 Button {
                     text: qsTr("Format partition")
                     enabled: {
@@ -111,7 +148,7 @@ Item {
                     onClicked: storageConfirmDialog.prepare("repartition")
                 }
                 Button {
-                    text: qsTr("Use for recording")
+                    text: qsTr("Record here")
                     enabled: {
                         var item = storageManagerDialog.selectedStorage
                         return item && item.canMount &&
@@ -119,6 +156,16 @@ Item {
                                !_ohdAction.formatAirSdCardBusy
                     }
                     onClicked: storageConfirmDialog.prepare("mount")
+                }
+                Button {
+                    text: qsTr("Move media here")
+                    enabled: {
+                        var item = storageManagerDialog.selectedStorage
+                        return item && item.canMount &&
+                               !item.mountedAtVideo &&
+                               !_ohdAction.formatAirSdCardBusy
+                    }
+                    onClicked: storageConfirmDialog.prepare("migrate")
                 }
             }
             BusyIndicator {
@@ -138,8 +185,9 @@ Item {
         anchors.centerIn: parent
         modal: true
         width: 480
-        title: action === "mount" ? qsTr("Change recording storage?")
-                                     : qsTr("Confirm destructive operation")
+        title: action === "mount" ? qsTr("Change recording destination?")
+               : action === "migrate" ? qsTr("Move Air recordings?")
+                                      : qsTr("Confirm destructive operation")
         standardButtons: Dialog.Ok | Dialog.Cancel
         property string action: ""
         property int storageId: 0
@@ -161,13 +209,17 @@ Item {
                 _ohdAction.repartition_air_storage(storageId)
             else if (action === "mount")
                 _ohdAction.mount_air_storage_for_recording(storageId)
+            else if (action === "migrate")
+                _ohdAction.migrate_air_recordings(storageId)
         }
         contentItem: Label {
             width: 430
             wrapMode: Text.WordWrap
             text: storageConfirmDialog.action === "mount"
-                  ? qsTr("Unmount the current recording partition and mount %1 at /Video? Stop recording first.").arg(storageConfirmDialog.storageDevice)
-                  : qsTr("This permanently deletes data on %1. Stop recording and verify the selected device carefully.").arg(storageConfirmDialog.storageDevice)
+                  ? qsTr("Use %1 for all new Air recordings? Recording must be stopped while the destination changes.").arg(storageConfirmDialog.storageDevice)
+                  : storageConfirmDialog.action === "migrate"
+                    ? qsTr("Move existing Air recordings to %1? Recording must be stopped. Source files are removed only after they were copied successfully.").arg(storageConfirmDialog.storageDevice)
+                    : qsTr("This permanently deletes data on %1. Stop recording and verify the selected device carefully.").arg(storageConfirmDialog.storageDevice)
         }
     }
 

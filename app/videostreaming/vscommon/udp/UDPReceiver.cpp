@@ -102,9 +102,27 @@ static void increase_socket_recv_buff_size(UDPReceiverSocket sockfd, const int w
 }
 
 void UDPReceiver::receiveFromUDPLoop() {
+#ifdef _WIN32
+    WSADATA winsock_data{};
+    const int winsock_result = WSAStartup(MAKEWORD(2, 2), &winsock_data);
+    if (winsock_result != 0) {
+        qWarning() << "UDPReceiver" << m_tag.c_str()
+                   << "cannot initialize Winsock, error" << winsock_result;
+        return;
+    }
+#endif
+
     const auto socket_handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (socket_handle == UDP_RECEIVER_INVALID_SOCKET) {
-        std::cerr << "Error creating socket\n";
+        qWarning() << "UDPReceiver" << m_tag.c_str()
+                   << "cannot create socket"
+#ifdef _WIN32
+                   << "error" << WSAGetLastError()
+#endif
+                   ;
+#ifdef _WIN32
+        WSACleanup();
+#endif
         return;
     }
     m_socket = socket_handle;
@@ -139,8 +157,10 @@ void UDPReceiver::receiveFromUDPLoop() {
 
 #ifdef _WIN32
     if (bind(socket_handle, (struct sockaddr *)&myaddr, sizeof(myaddr)) == SOCKET_ERROR) {
-        std::cerr << "Error binding to " << m_config.to_string() << "\n";
+        qWarning() << "UDPReceiver" << m_tag.c_str() << "cannot bind to"
+                   << m_config.to_string().c_str() << "error" << WSAGetLastError();
         closeSocketIfOwned(socket_handle);
+        WSACleanup();
         return;
     }
 #else
@@ -190,6 +210,9 @@ void UDPReceiver::receiveFromUDPLoop() {
         }
     }
     closeSocketIfOwned(socket_handle);
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 int UDPReceiver::getPort() const {
