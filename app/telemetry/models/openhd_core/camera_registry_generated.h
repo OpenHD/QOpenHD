@@ -77,6 +77,14 @@ static constexpr int X_CAM_TYPE_NXP_IMX8_OS08A20 = 131;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV110X = 140;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV1126_CSI = 141;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV1126_TEST = 142;
+static constexpr int X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90 = 143;
+static constexpr int X_CAM_TYPE_X21_ARDUCAM_IMX462 = 144;
+static constexpr int X_CAM_TYPE_X21_ARDUCAM_IMX519 = 145;
+static constexpr int X_CAM_TYPE_X21_ARDUCAM_IMX708 = 146;
+static constexpr int X_CAM_TYPE_LUCKFOX_AURA_IMX415 = 147;
+static constexpr int X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307 = 148;
+static constexpr int X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132 = 149;
+static constexpr int X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP = 150;
 static constexpr int X_CAM_TYPE_DISABLED = 255;
 
 struct CameraTypeNameEntry {
@@ -153,6 +161,14 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {140, "LUCKFOX_MIS5001"},
   {141, "RV1126B_CSI"},
   {142, "RV1126B_TEST"},
+  {143, "X21_HDZERO_RUNCAM_NANO_90"},
+  {144, "X21_ARDUCAM_IMX462"},
+  {145, "X21_ARDUCAM_IMX519"},
+  {146, "X21_ARDUCAM_IMX708"},
+  {147, "LUCKFOX_AURA_IMX415"},
+  {148, "LUCKFOX_AURA_VEYE_CSIMX307"},
+  {149, "LUCKFOX_AURA_VEYE_CSSC132"},
+  {150, "LUCKFOX_AURA_VEYE_2MP"},
   {255, "DISABLED"},
 };
 
@@ -362,6 +378,9 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X20_OHD_Jaguar[] 
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X21_OHD_Jaguar[] = {
   {1280, 720, 60},
+  {1280, 720, 120},
+  {1920, 1080, 60},
+  {1920, 1080, 100},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_A733_IMX415[] = {
@@ -502,7 +521,7 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_QC_OV9282[] = {
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ORQA_HORNET[] = {
-  {1280, 720, 120},
+  {960, 720, 120},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ORQA_JAGUAR[] = {
@@ -510,7 +529,7 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ORQA_JAGUAR[] = {
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ORQA_REKINDLE[] = {
-  {1280, 720, 60},
+  {960, 720, 60},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2[] = {
@@ -537,6 +556,7 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X[]
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI[] = {
   {1280, 720, 60},
+  {720, 540, 90},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST[] = {
@@ -545,6 +565,58 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_T
   {1920, 1080, 60},
   {1280, 720, 240},
   {1280, 720, 120},
+  {1280, 720, 60},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90[] = {
+  {1280, 720, 60},
+  {720, 540, 90},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX462[] = {
+  {1280, 720, 60},
+  {1280, 720, 30},
+  {1920, 1080, 60},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX519[] = {
+  {1280, 720, 60},
+  {1280, 720, 30},
+  {1920, 1080, 60},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX708[] = {
+  {1280, 720, 60},
+  {1280, 720, 30},
+  {1920, 1080, 60},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX415[] = {
+  {3840, 2160, 30},
+  {1920, 1080, 90},
+  {1920, 1080, 60},
+  {1920, 1080, 30},
+  {1280, 720, 120},
+  {1280, 720, 90},
+  {1280, 720, 60},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307[] = {
+  {1920, 1080, 60},
+  {1920, 1080, 30},
+  {1280, 720, 60},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132[] = {
+  {1280, 720, 60},
+  {1280, 720, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP[] = {
+  {1920, 1080, 60},
+  {1920, 1080, 30},
   {1280, 720, 60},
 };
 
@@ -612,6 +684,14 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_ROCKCHIP_RV110X, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X[0])},
   {X_CAM_TYPE_ROCKCHIP_RV1126_CSI, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI[0])},
   {X_CAM_TYPE_ROCKCHIP_RV1126_TEST, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST[0])},
+  {X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90, kCameraResolutions_X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90, sizeof(kCameraResolutions_X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90[0])},
+  {X_CAM_TYPE_X21_ARDUCAM_IMX462, kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX462, sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX462) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX462[0])},
+  {X_CAM_TYPE_X21_ARDUCAM_IMX519, kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX519, sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX519) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX519[0])},
+  {X_CAM_TYPE_X21_ARDUCAM_IMX708, kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX708, sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX708) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX708[0])},
+  {X_CAM_TYPE_LUCKFOX_AURA_IMX415, kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX415, sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX415) / sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX415[0])},
+  {X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307, kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307, sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307) / sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307[0])},
+  {X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132, kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132, sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132) / sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132[0])},
+  {X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP, kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP, sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP) / sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP[0])},
 };
 
 inline const CameraResolutionEntry* find_camera_resolutions(int camera_type) {
@@ -781,10 +861,40 @@ inline constexpr CameraUiEntry kManufacturer_LUCKFOX_Cameras[] = {
 inline constexpr ManufacturerEntry kManufacturer_LUCKFOX = {"LUCKFOX", kManufacturer_LUCKFOX_Cameras, sizeof(kManufacturer_LUCKFOX_Cameras) / sizeof(kManufacturer_LUCKFOX_Cameras[0])};
 
 inline constexpr CameraUiEntry kManufacturer_ROCKCHIP_RV1126_CSI_Cameras[] = {
-  {X_CAM_TYPE_ROCKCHIP_RV1126_CSI, "RV1126B CSI"},
+  {X_CAM_TYPE_ROCKCHIP_RV1126_CSI, "HDZero Generic"},
 };
 
 inline constexpr ManufacturerEntry kManufacturer_ROCKCHIP_RV1126_CSI = {"ROCKCHIP_RV1126_CSI", kManufacturer_ROCKCHIP_RV1126_CSI_Cameras, sizeof(kManufacturer_ROCKCHIP_RV1126_CSI_Cameras) / sizeof(kManufacturer_ROCKCHIP_RV1126_CSI_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_X21_HDZERO_Cameras[] = {
+  {X_CAM_TYPE_ROCKCHIP_RV1126_CSI, "HDZero Generic"},
+  {X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90, "RunCam Nano 90"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_X21_HDZERO = {"HDZERO", kManufacturer_X21_HDZERO_Cameras, sizeof(kManufacturer_X21_HDZERO_Cameras) / sizeof(kManufacturer_X21_HDZERO_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_X21_ARDUCAM_Cameras[] = {
+  {X_CAM_TYPE_X21_ARDUCAM_IMX462, "IMX462"},
+  {X_CAM_TYPE_X21_ARDUCAM_IMX519, "IMX519"},
+  {X_CAM_TYPE_X21_ARDUCAM_IMX708, "IMX708"},
+  {X_CAM_TYPE_X21_OHD_Jaguar, "OpenHD Jaguar"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_X21_ARDUCAM = {"ARDUCAM", kManufacturer_X21_ARDUCAM_Cameras, sizeof(kManufacturer_X21_ARDUCAM_Cameras) / sizeof(kManufacturer_X21_ARDUCAM_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_LUCKFOX_AURA_IMX415_Cameras[] = {
+  {X_CAM_TYPE_LUCKFOX_AURA_IMX415, "IMX415"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_LUCKFOX_AURA_IMX415 = {"IMX415", kManufacturer_LUCKFOX_AURA_IMX415_Cameras, sizeof(kManufacturer_LUCKFOX_AURA_IMX415_Cameras) / sizeof(kManufacturer_LUCKFOX_AURA_IMX415_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_LUCKFOX_AURA_VEYE_Cameras[] = {
+  {X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307, "CS-MIPI-IMX307"},
+  {X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132, "CS-MIPI-SC132"},
+  {X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP, "VEYE-MIPI-2MP"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_LUCKFOX_AURA_VEYE = {"VEYE", kManufacturer_LUCKFOX_AURA_VEYE_Cameras, sizeof(kManufacturer_LUCKFOX_AURA_VEYE_Cameras) / sizeof(kManufacturer_LUCKFOX_AURA_VEYE_Cameras[0])};
 
 inline constexpr CameraUiEntry kManufacturer_ROCKCHIP_RV1126_TEST_Cameras[] = {
   {X_CAM_TYPE_ROCKCHIP_RV1126_TEST, "RV1126B TEST"},
@@ -904,10 +1014,25 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manu
   kManufacturer_IP_CAMERA,
 };
 
+inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_LUCKFOX_LYRA_Manufacturers[] = {
+  kManufacturer_IP_CAMERA,
+  kManufacturer_DEBUG,
+};
+
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers[] = {
-  kManufacturer_ROCKCHIP_RV1126_CSI,
+  kManufacturer_X21_HDZERO,
+  kManufacturer_X21_ARDUCAM,
   kManufacturer_ROCKCHIP_RV1126_TEST,
   kManufacturer_IP_CAMERA,
+  kManufacturer_USB,
+};
+
+inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_LUCKFOX_AURA_Manufacturers[] = {
+  kManufacturer_LUCKFOX_AURA_IMX415,
+  kManufacturer_LUCKFOX_AURA_VEYE,
+  kManufacturer_ROCKCHIP_RV1126_TEST,
+  kManufacturer_IP_CAMERA,
+  kManufacturer_USB,
 };
 
 inline constexpr PlatformCameraChoicesEntry kPlatformCameraChoices[] = {
@@ -926,7 +1051,9 @@ inline constexpr PlatformCameraChoicesEntry kPlatformCameraChoices[] = {
   {X_PLATFORM_TYPE_ORQA, kPlatform_X_PLATFORM_TYPE_ORQA_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ORQA_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ORQA_Manufacturers[0])},
   {X_PLATFORM_TYPE_NXP_IMX8, kPlatform_X_PLATFORM_TYPE_NXP_IMX8_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_NXP_IMX8_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_NXP_IMX8_Manufacturers[0])},
   {X_PLATFORM_TYPE_LUCKFOX_RV110X, kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_RV110X_Manufacturers[0])},
+  {X_PLATFORM_TYPE_LUCKFOX_LYRA, kPlatform_X_PLATFORM_TYPE_LUCKFOX_LYRA_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_LYRA_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_LYRA_Manufacturers[0])},
   {X_PLATFORM_TYPE_OPENHD_X21, kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_OPENHD_X21_Manufacturers[0])},
+  {X_PLATFORM_TYPE_LUCKFOX_AURA, kPlatform_X_PLATFORM_TYPE_LUCKFOX_AURA_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_AURA_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_LUCKFOX_AURA_Manufacturers[0])},
 };
 
 inline constexpr ManufacturerEntry kSecondaryManufacturers[] = {
@@ -1025,4 +1152,12 @@ using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_OS08A20;
 using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV110X;
 using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV1126_CSI;
 using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV1126_TEST;
+using openhd::camera_registry::X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90;
+using openhd::camera_registry::X_CAM_TYPE_X21_ARDUCAM_IMX462;
+using openhd::camera_registry::X_CAM_TYPE_X21_ARDUCAM_IMX519;
+using openhd::camera_registry::X_CAM_TYPE_X21_ARDUCAM_IMX708;
+using openhd::camera_registry::X_CAM_TYPE_LUCKFOX_AURA_IMX415;
+using openhd::camera_registry::X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307;
+using openhd::camera_registry::X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSSC132;
+using openhd::camera_registry::X_CAM_TYPE_LUCKFOX_AURA_VEYE_2MP;
 using openhd::camera_registry::X_CAM_TYPE_DISABLED;

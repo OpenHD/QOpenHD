@@ -54,6 +54,9 @@ struct ResolutionFramerate {
 };
 
 struct XCamera {
+  static constexpr int DEFAULT_MAX_VIDEO_BITRATE_KBITS = 20000;
+  static constexpr int RPI5_IMX708_MAX_VIDEO_BITRATE_KBITS = 30000;
+
   int camera_type = X_CAM_TYPE_DUMMY_SW;
   // 0 for primary camera, 1 for secondary camera
   int index;
@@ -68,7 +71,7 @@ struct XCamera {
     return camera_type >= 30 && camera_type < 60;
   }
   bool requires_x20_cedar_pipeline() const {
-    return camera_type >= 70 && camera_type < 77;
+    return camera_type >= 70 && camera_type < 76;
   }
   bool requires_a733_pipeline() const {
     return camera_type >= 77 && camera_type < 80;
@@ -94,10 +97,23 @@ struct XCamera {
   }
   bool requires_rockchip_rv_pipeline() const { return camera_type == 140; }
   bool requires_rockchip1126_mpp_csi_pipeline() const {
-    return camera_type == X_CAM_TYPE_ROCKCHIP_RV1126_CSI;
+    return camera_type == X_CAM_TYPE_ROCKCHIP_RV1126_CSI ||
+           camera_type == X_CAM_TYPE_X21_OHD_Jaguar ||
+           (camera_type >= 143 && camera_type <= 150);
   }
   bool requires_rockchip1126_mpp_testsrc_pipeline() const {
     return camera_type == X_CAM_TYPE_ROCKCHIP_RV1126_TEST;
+  }
+  // Platform/camera-stream capability limit. Keep the selection here, next to
+  // the other immutable camera capabilities, so individual platforms, camera
+  // types, or primary/secondary streams can receive different budgets later.
+  [[nodiscard]] int get_max_video_bitrate_kbits(int platform_type) const {
+    if (platform_type == X_PLATFORM_TYPE_RPI_5 &&
+        camera_type == X_CAM_TYPE_RPI_LIBCAMERA_RPIF_V3_IMX708 &&
+        index == 0) {
+      return RPI5_IMX708_MAX_VIDEO_BITRATE_KBITS;
+    }
+    return DEFAULT_MAX_VIDEO_BITRATE_KBITS;
   }
   std::string cam_type_as_verbose_string() const {
     return x_cam_type_to_string(camera_type);
