@@ -124,6 +124,8 @@ Settings {
     property int smoothing: 33
 
     property bool show_widgets: true
+    // Legacy setting keys retained so existing layouts keep working.
+    // The widgets now expose normalized TX/RX temperature states.
     property bool show_txc_temp_air: false
     property bool show_txc_temp_gnd: false
     property bool show_retransmission_stats: false

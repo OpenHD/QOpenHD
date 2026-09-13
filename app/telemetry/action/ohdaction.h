@@ -61,6 +61,16 @@ public:
     Q_INVOKABLE bool camera_set_image_type(int imageType, int cameraIndex=0);
     Q_INVOKABLE bool camera_set_thermal_palette(int palette,
                                                 int cameraIndex=0);
+    // Apply the consolidated RC-driven radio controls introduced with
+    // OPENHD_WIFBROADCAST_RADIO_SETTINGS. targetSystem is 100 (ground) or
+    // 101 (air); channel values are 0 (disabled) or 1..18.
+    Q_INVOKABLE bool send_radio_settings(int targetSystem, bool enabled,
+                                         int mcsChannel, int bandwidthChannel,
+                                         int txModeChannel);
+    Q_INVOKABLE bool send_radio_settings_air_and_ground(bool enabled,
+                                                        int mcsChannel,
+                                                        int bandwidthChannel,
+                                                        int txModeChannel);
     bool process_message(const mavlink_message_t& message);
     bool formatAirSdCardBusy() const { return m_format_air_sd_card_busy; }
     QString formatAirSdCardStatus() const { return m_format_air_sd_card_status; }

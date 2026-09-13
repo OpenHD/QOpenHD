@@ -66,6 +66,10 @@ public: // public for QT
     L_RO_PROP(int,curr_soc_temp_degree,set_curr_soc_temp_degree,0)
     L_RO_PROP(int,curr_txc_temp_degree_1,set_curr_txc_temp_degree_1,0)
     L_RO_PROP(int,curr_txc_temp_degree_2,set_curr_txc_temp_degree_2,0)
+    // One normalized radio temperature per endpoint. Air is the video TX,
+    // ground is the video RX. Raw legacy values remain above for compatibility.
+    L_RO_PROP(int,radio_temperature_state,set_radio_temperature_state,-1)
+    L_RO_PROP(QString,radio_temperature_state_text,set_radio_temperature_state_text,"N/A")
     L_RO_PROP(int,curr_cpu_freq_mhz,set_curr_cpu_freq_mhz,0)
     L_RO_PROP(int,curr_isp_freq_mhz,set_curr_isp_freq_mhz,0)
     L_RO_PROP(int,curr_h264_freq_mhz,set_curr_h264_freq_mhz,0)
@@ -235,6 +239,7 @@ private:
     std::array<uint8_t, 4> m_onboard_gpu_cores{};
     std::array<uint8_t, 10> m_onboard_gpu_combined{};
     std::array<int8_t, 8> m_onboard_temperature_core{};
+    bool m_has_per_card_temperature=false;
 };
 
 

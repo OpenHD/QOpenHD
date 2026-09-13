@@ -35,10 +35,10 @@ BaseWidget {
     property int m_snr_value: get_quality_percent_value()
     property int snr_min_db: settings.link_snr_min_db
     property int snr_max_db: settings.link_snr_max_db
-    property real m_air_txc_temp1: _ohdSystemAir.curr_txc_temp_degree_1
-    property real m_air_txc_temp2: _ohdSystemAir.curr_txc_temp_degree_2
-    property real m_gnd_txc_temp1: _ohdSystemGround.curr_txc_temp_degree_1
-    property real m_gnd_txc_temp2: _ohdSystemGround.curr_txc_temp_degree_2
+    property int m_tx_temperature_state: _ohdSystemAir.radio_temperature_state
+    property string m_tx_temperature_text: _ohdSystemAir.radio_temperature_state_text
+    property int m_rx_temperature_state: _ohdSystemGround.radio_temperature_state
+    property string m_rx_temperature_text: _ohdSystemGround.radio_temperature_state_text
     property int m_packet_loss_perc: _ohdSystemGround.curr_rx_packet_loss_perc
     property bool use_calculated_quality: settings.downlink_calc_quality_enabled
     property bool use_artosyn_quality: _ohdSystemGround.artosyn_link_detected
@@ -144,33 +144,8 @@ BaseWidget {
         return "" + dbm;
     }
 
-    function is_valid_temp(value) {
-        // OpenHD's legacy core-status packet uses zero when a driver cannot
-        // provide a calibrated Celsius value.
-        return value > 5;
-    }
-
-    function format_txc_temp(value) {
-        if (!is_valid_temp(value)) {
-            return "N/A";
-        }
-        return Math.round(value) + "C";
-    }
-
-    function get_max_air_txc_temp() {
-        var max = -128;
-        var temps = [m_air_txc_temp1, m_air_txc_temp2];
-        for (var i = 0; i < temps.length; i++) {
-            var t = temps[i];
-            if (is_valid_temp(t) && t > max) {
-                max = t;
-            }
-        }
-        return max;
-    }
-
     function get_txc_text() {
-        return format_txc_temp(get_max_air_txc_temp());
+        return m_tx_temperature_text;
     }
 
     function get_channel_width_index() {
@@ -413,14 +388,6 @@ BaseWidget {
             Number(card.rx_active_path_mask).toString(16).toUpperCase() + ")";
     }
 
-    function devourer_thermal_text(card) {
-        if (!card.thermal_valid) return "N/A";
-        return "raw " + card.thermal_raw + ", baseline " +
-            card.thermal_baseline + ", delta " +
-            (card.thermal_delta >= 0 ? "+" : "") + card.thermal_delta +
-            " (" + card.card_temperature_status + ")";
-    }
-
     function int_to_string_N_chars_wide(value, n_chars) {
         var ret = "" + value;
         for (var i = ret.length; i < n_chars; i++) {
@@ -576,10 +543,9 @@ BaseWidget {
             Item {
                 width: parent.width
                 height: 28
-                visible: get_best_card().thermal_valid
+                visible: m_rx_temperature_state >= 0
                 Text {
-                    text: qsTr("GND radio thermal: %1")
-                        .arg(devourer_thermal_text(get_best_card()))
+                    text: qsTr("RX temperature: %1").arg(m_rx_temperature_text)
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -592,10 +558,9 @@ BaseWidget {
             Item {
                 width: parent.width
                 height: 28
-                visible: _wifi_card_air.thermal_valid
+                visible: m_tx_temperature_state >= 0
                 Text {
-                    text: qsTr("AIR radio thermal: %1")
-                        .arg(devourer_thermal_text(_wifi_card_air))
+                    text: qsTr("TX temperature: %1").arg(m_tx_temperature_text)
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -645,38 +610,6 @@ BaseWidget {
                 height: 28
                 Text {
                     text: qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("Air TXC temp: %1 / %2")
-                        .arg(format_txc_temp(m_air_txc_temp1))
-                        .arg(format_txc_temp(m_air_txc_temp2))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("GND TXC temp: %1 / %2")
-                        .arg(format_txc_temp(m_gnd_txc_temp1))
-                        .arg(format_txc_temp(m_gnd_txc_temp2))
                     color: "white"
                     height: parent.height
                     font.bold: true

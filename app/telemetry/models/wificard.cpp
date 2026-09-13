@@ -5,6 +5,7 @@
 #include "../../logging/hudlogmessagesmodel.h"
 #include "tutil/qopenhdmavlinkhelper.hpp"
 #include "openhd_core/wifi_card_type.h"
+#include "temperaturestate.h"
 
 
 static std::string wifi_card_type_to_string(const int card_type) {
@@ -74,13 +75,6 @@ static QString devourer_verdict_to_string(const int verdict) {
     }
 }
 
-static QString thermal_status_from_delta(const bool valid, const int delta) {
-    if (!valid) return "UNKNOWN";
-    if (delta < 8) return "COOL";
-    if (delta < 15) return "WARM";
-    if (delta < 25) return "HOT";
-    return "CRITICAL";
-}
 static QString tx_power_unit_for_card(const int card_type){
     std::stringstream ss;
     if(card_type==openhd::wifi_card_type_to_int(openhd::WiFiCardType::OPENHD_RTL_88X2AU) ||
@@ -156,7 +150,10 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         set_thermal_raw(msg.card_temperature >= 0 ? msg.card_temperature : -1);
         set_thermal_baseline(thermalPacked & 0xff);
         set_thermal_delta(thermalDelta);
-        set_card_temperature_status(thermal_status_from_delta(thermalValid, thermalDelta));
+        const int temperatureState = TemperatureTelemetry::fromDevourerDelta(thermalValid, thermalDelta);
+        set_temperature_state(temperatureState);
+        set_temperature_state_text(TemperatureTelemetry::toString(temperatureState));
+        set_card_temperature_status(TemperatureTelemetry::toString(temperatureState));
         set_devourer_quality_valid(qualityValid);
         set_devourer_link_health(qualityValid
             ? devourer_verdict_to_string((metadata >> 16) & 0x7) : "N/A");
@@ -166,11 +163,14 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         set_rx_evm_db(evmValid ? msg.dummy0 : -128);
     }else{
         set_card_temperature(msg.card_temperature);
+        const int temperatureState = TemperatureTelemetry::fromLegacyCelsius(msg.card_temperature);
+        set_temperature_state(temperatureState);
+        set_temperature_state_text(TemperatureTelemetry::toString(temperatureState));
+        set_card_temperature_status(TemperatureTelemetry::toString(temperatureState));
         set_thermal_valid(false);
         set_thermal_raw(-1);
         set_thermal_baseline(-1);
         set_thermal_delta(0);
-        set_card_temperature_status("N/A");
         set_devourer_quality_valid(false);
         set_devourer_link_health("N/A");
         set_rx_paths_valid(false);
@@ -259,6 +259,18 @@ int WiFiCard::helper_get_gnd_curr_best_rssi()
         }
     }
     return best_rssi;
+}
+
+int WiFiCard::helper_get_gnd_worst_temperature_state()
+{
+    int result = TemperatureTelemetry::Unknown;
+    for(int i=0;i<N_CARDS;i++){
+        const auto& card=instance_gnd(i);
+        if(card.alive()){
+            result=TemperatureTelemetry::worst(result,card.temperature_state());
+        }
+    }
+    return result;
 }
 
 void WiFiCard::update_alive()

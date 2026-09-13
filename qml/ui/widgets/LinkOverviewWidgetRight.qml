@@ -37,8 +37,7 @@ BaseWidget {
     property int rc_rssi_percentage: _fcMavlinkSystem.rc_rssi_percentage
     property bool airTemperatureWarningActive: (_ohdSystemAir.is_alive
                                                 && _ohdSystemAir.curr_soc_temp_degree > 80)
-                                               || (_wifi_card_air.thermal_valid
-                                                   && _wifi_card_air.thermal_delta >= 15)
+                                               || _ohdSystemAir.radio_temperature_state >= 2
 
     property int rcBlockCount: 8
     property real rcBlockWidth: 12

@@ -40,6 +40,10 @@ class WiFiCard : public QObject
     L_RO_PROP(int,rx_active_path_mask,set_rx_active_path_mask,0)
     L_RO_PROP(int,rx_active_path_count,set_rx_active_path_count,0)
     L_RO_PROP(int,card_temperature,set_card_temperature,-128)
+    // Canonical temperature exposed to the UI, regardless of whether the
+    // radio reports degrees Celsius or Devourer's relative thermal value.
+    L_RO_PROP(int,temperature_state,set_temperature_state,-1)
+    L_RO_PROP(QString,temperature_state_text,set_temperature_state_text,"N/A")
     L_RO_PROP(bool,thermal_valid,set_thermal_valid,false)
     L_RO_PROP(int,thermal_raw,set_thermal_raw,-1)
     L_RO_PROP(int,thermal_baseline,set_thermal_baseline,-1)
@@ -65,6 +69,7 @@ public:
     void process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg);
 
     static int helper_get_gnd_curr_best_rssi();
+    static int helper_get_gnd_worst_temperature_state();
 private:
     std::chrono::steady_clock::time_point m_last_disconnected_warning=std::chrono::steady_clock::now();
     static constexpr auto CARD_DISCONNECTED_WARNING_INTERVAL=std::chrono::seconds(3);

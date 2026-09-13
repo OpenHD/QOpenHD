@@ -1131,7 +1131,7 @@ ScrollView {
                 m_description: qsTr("LEGACY")
 
                 SettingBaseElement{
-                    m_short_description: qsTr("Show Transceiver Temperature Air")
+                    m_short_description: qsTr("Show TX Temperature")
                     Switch {
                         width: 32
                         height: elementHeight
@@ -1145,7 +1145,7 @@ ScrollView {
                 }
 
                 SettingBaseElement{
-                    m_short_description: qsTr("Show Transceiver Temperature Ground")
+                    m_short_description: qsTr("Show RX Temperature")
                     Switch {
                         width: 32
                         height: elementHeight

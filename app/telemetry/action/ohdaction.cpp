@@ -1,7 +1,9 @@
 #include "ohdaction.h"
 
 #include "create_cmd_helper.hpp"
+#include "../MavlinkTelemetry.h"
 #include "../tutil/openhd_defines.hpp"
+#include "../tutil/qopenhdmavlinkhelper.hpp"
 #include "impl/cmdsender.h"
 #include <QMetaObject>
 #include <algorithm>
@@ -260,6 +262,48 @@ bool OHDAction::camera_set_image_type(int imageType, int cameraIndex)
 
 bool OHDAction::camera_set_thermal_palette(int palette, int cameraIndex)
 { return send_camera_command(MAV_CMD_USER_1,cameraIndex,2.0F,palette); }
+
+bool OHDAction::send_radio_settings(int targetSystem, bool enabled,
+                                    int mcsChannel, int bandwidthChannel,
+                                    int txModeChannel)
+{
+    const bool validTarget=targetSystem==OHD_SYS_ID_GROUND ||
+                           targetSystem==OHD_SYS_ID_AIR;
+    const auto validChannel=[](int channel){
+        return channel>=0 && channel<=18;
+    };
+    if(!validTarget || !validChannel(mcsChannel) ||
+       !validChannel(bandwidthChannel) || !validChannel(txModeChannel)){
+        return false;
+    }
+
+    mavlink_message_t message{};
+    mavlink_msg_openhd_wifbroadcast_radio_settings_pack(
+        QOpenHDMavlinkHelper::get_own_sys_id(),
+        QOpenHDMavlinkHelper::get_own_comp_id(),
+        &message,
+        static_cast<uint8_t>(targetSystem),
+        MAV_COMP_ID_ONBOARD_COMPUTER,
+        enabled ? 1 : 0,
+        static_cast<uint8_t>(mcsChannel),
+        static_cast<uint8_t>(bandwidthChannel),
+        static_cast<uint8_t>(txModeChannel));
+    return MavlinkTelemetry::instance().sendMessage(message);
+}
+
+bool OHDAction::send_radio_settings_air_and_ground(bool enabled,
+                                                   int mcsChannel,
+                                                   int bandwidthChannel,
+                                                   int txModeChannel)
+{
+    const bool groundSent=send_radio_settings(OHD_SYS_ID_GROUND,enabled,
+                                              mcsChannel,bandwidthChannel,
+                                              txModeChannel);
+    const bool airSent=send_radio_settings(OHD_SYS_ID_AIR,enabled,
+                                           mcsChannel,bandwidthChannel,
+                                           txModeChannel);
+    return groundSent && airSent;
+}
 
 bool OHDAction::process_message(const mavlink_message_t &message)
 {

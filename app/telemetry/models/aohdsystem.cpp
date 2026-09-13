@@ -24,6 +24,7 @@
 
 #include "openhd_core/platform.hpp"
 #include "openhd_core/wifi_card_type.h"
+#include "temperaturestate.h"
 #include <algorithm>
 #include <cstring>
 #include <limits>
@@ -373,7 +374,9 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_onboard_cpu_usage_avg(avg_percent_or_unset(m_onboard_cpu_cores));
     set_onboard_gpu_usage_avg(avg_percent_or_unset_4(m_onboard_gpu_cores));
 
-    // Map onboard computer CPU usage to the legacy field used by widgets.
+    // OpenHD historically overloaded several fields in this common MAVLink
+    // message. Only CPU usage has compatible semantics. The typed OpenHD core,
+    // power and storage messages are the authoritative sources for the rest.
     set_curr_cpuload_perc(onboard_cpu_usage_avg());
 }
 
@@ -522,6 +525,15 @@ void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &
     set_curr_soc_temp_degree(msg.cpu_temp);
     set_curr_txc_temp_degree_1(msg.wifi0_temp);
     set_curr_txc_temp_degree_2(msg.wifi1_temp);
+    // Compatibility adapter for old senders. Per-card telemetry is preferred
+    // because it also carries the normalized Devourer thermal state.
+    if(!m_has_per_card_temperature){
+        const int radioTemperatureState = TemperatureTelemetry::worst(
+            TemperatureTelemetry::fromLegacyCelsius(msg.wifi0_temp),
+            TemperatureTelemetry::fromLegacyCelsius(msg.wifi1_temp));
+        set_radio_temperature_state(radioTemperatureState);
+        set_radio_temperature_state_text(TemperatureTelemetry::toString(radioTemperatureState));
+    }
     set_curr_cpu_freq_mhz(msg.cpu_clock);
     set_curr_isp_freq_mhz(msg.isp_clock);
     set_curr_h264_freq_mhz(msg.h264_clock);
@@ -580,6 +592,11 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         auto& card=WiFiCard::instance_air();
         card.process_mavlink(msg);
         set_current_rx_rssi(card.curr_rx_rssi_dbm());
+        if(card.temperature_state()!=TemperatureTelemetry::Unknown){
+            m_has_per_card_temperature=true;
+            set_radio_temperature_state(card.temperature_state());
+            set_radio_temperature_state_text(card.temperature_state_text());
+        }
     }else{
         if(msg.card_index<0 || msg.card_index>=4){
             qDebug()<<"Gnd invalid card index"<<msg.card_index;
@@ -588,6 +605,12 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         auto& card=WiFiCard::instance_gnd(msg.card_index);
         card.process_mavlink(msg);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
+        const int temperatureState=WiFiCard::helper_get_gnd_worst_temperature_state();
+        if(temperatureState!=TemperatureTelemetry::Unknown){
+            m_has_per_card_temperature=true;
+            set_radio_temperature_state(temperatureState);
+            set_radio_temperature_state_text(TemperatureTelemetry::toString(temperatureState));
+        }
     }
     // TODO: r.n we don't differentiate signal quality per card
     if(msg.card_index==0){

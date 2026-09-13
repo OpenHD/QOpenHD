@@ -16,16 +16,16 @@ BaseWidget {
     width: 50
     height: 50
     
-    property bool usesDevourerThermal: _wifi_card_air.thermal_valid
-    visible: (usesDevourerThermal || _ohdSystemAir.curr_txc_temp_degree_1 > 5)
-             && settings.show_widgets && settings.show_txc_temp_air
+    property int temperatureState: _ohdSystemAir.radio_temperature_state
+    property string temperatureText: _ohdSystemAir.radio_temperature_state_text
+    property color temperatureColor: temperatureState >= 3 ? settings.color_warn
+                                                           : temperatureState === 2 ? settings.color_caution
+                                                                                    : temperatureState === 0 ? "#62b5ff"
+                                                                                                             : settings.color_text
+    visible: temperatureState >= 0 && settings.show_widgets && settings.show_txc_temp_air
 
-    widgetIdentifier: "Air Transceiver Temperature"
-    bw_verbose_name: qsTr("AIR_RCX_TEMP")
-    property real airTemp: usesDevourerThermal ? _wifi_card_air.thermal_delta
-                                                : _ohdSystemAir.curr_txc_temp_degree_1
-    property real gaugeTemp: usesDevourerThermal ? Math.max(0, Math.min(100, airTemp * 4)) : airTemp
-    property bool temperatureWarning: usesDevourerThermal && airTemp >= 15
+    widgetIdentifier: "TX Temperature"
+    bw_verbose_name: qsTr("TX TEMPERATURE")
 
     defaultAlignment: 1
     defaultXOffset: 350
@@ -95,7 +95,7 @@ BaseWidget {
                     }
                     ShapePath {
                         fillColor: "transparent"
-                        strokeColor: settings.color_text
+                        strokeColor: temperatureColor
                         strokeWidth: gaugeCanvas.strokeW
                         capStyle: ShapePath.FlatCap
                         PathAngleArc {
@@ -131,7 +131,7 @@ BaseWidget {
                     anchors.centerIn: gaugeCanvas
 
                     // Apply rotation to this whole group
-                    rotation: (gaugeTemp / 100.0) * 270 + 20
+                    rotation: (temperatureState / 3.0) * 270 + 20
 
                     Rectangle {
                         width: tempGauge.normalizedSize * 0.08
@@ -139,14 +139,14 @@ BaseWidget {
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.top: parent.top
                         radius: width / 2
-                        color: settings.color_text
+                        color: temperatureColor
                     }
                 }
                 Rectangle {
                     width: tempGauge.normalizedSize * 0.06
                     height: tempGauge.normalizedSize * 0.06
                     radius: width / 2
-                    color: settings.color_text
+                    color: temperatureColor
                     anchors.centerIn: needleGroup
                 }
 
@@ -161,14 +161,12 @@ BaseWidget {
 
                 Text {
                     id: airTemp_text
-                    text: usesDevourerThermal
-                          ? qsTr("Δ%1").arg((airTemp >= 0 ? "+" : "") + airTemp)
-                          : airTemp.toFixed(1) + "°C"
+                    text: temperatureText
                     font.pixelSize: tempGauge.normalizedSize * 0.3
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: gaugeCanvas.bottom
                     anchors.topMargin: 4
-                    color: settings.color_text
+                    color: temperatureColor
                 }
             }
 
