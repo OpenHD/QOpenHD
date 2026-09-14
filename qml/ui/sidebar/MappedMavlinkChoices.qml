@@ -75,6 +75,11 @@ Item {
         ListElement {value: 1; verbose:"ON"}
     }
     ListModel{
+        id: elements_model_libcamera_impl
+        ListElement {value: 0; verbose:"libcamerasrc\n(GStreamer)"}
+        ListElement {value: 1; verbose:"libcamera\n(native)"}
+    }
+    ListModel{
         id: elements_model_air_recording
         ListElement {value: 0; verbose:"ALWAYS\nOFF"}
         ListElement {value: 1; verbose:"ALWAYS\nON"}
@@ -214,6 +219,10 @@ Item {
             return elements_model_tx_power_level
         }else if(param_id=="ROTATION_FLIP"){
             return elements_model_camera_rotation_flip
+        }else if(param_id=="LIBCAMERA_IMPL"){
+            return elements_model_libcamera_impl
+        }else if(param_id=="SENSOR_MODE"){
+            return get_camera_resolution_model();
         }else if(param_id=="RESOLUTION_FPS"){
             return get_camera_resolution_model();
         }else if(param_id=="FREQUENCY"){

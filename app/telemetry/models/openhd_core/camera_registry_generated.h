@@ -328,6 +328,7 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARD
   {1280, 720, 30},
   {1280, 720, 60},
   {1920, 1080, 30},
+  {1920, 1080, 60},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662[] = {

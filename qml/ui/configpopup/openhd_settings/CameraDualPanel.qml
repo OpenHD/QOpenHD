@@ -62,7 +62,8 @@ FocusScope {
                 id.indexOf("SATURATION") >= 0 || id.indexOf("SHARPNESS") >= 0 ||
                 id.indexOf("DENOISE") >= 0)
             return "IMAGE"
-        if (["CAMERA_TYPE", "ROTATION_FLIP", "ROTATION_DEG"].indexOf(id) >= 0)
+        if (["CAMERA_TYPE", "LIBCAMERA_IMPL", "ROCKCHIP_IMPL",
+             "ROTATION_FLIP", "ROTATION_DEG"].indexOf(id) >= 0)
             return "CAMERA"
         return "ADVANCED"
     }
@@ -81,8 +82,10 @@ FocusScope {
         var revision = paramRevision
         var count = 0
         var ids = settingsModel ? settingsModel.param_ids() : []
-        for (var i = 0; i < ids.length; ++i)
+        for (var i = 0; i < ids.length; ++i) {
+            if (ids[i] === "SENSOR_MODE") continue
             if (categoryFor(ids[i]) === category) ++count
+        }
         return count
     }
 
@@ -655,7 +658,8 @@ FocusScope {
                                 delegate: CameraSettingRow {
                                     width: settingsColumn.width
                                     visible: root.categoryFor(model.unique_id) === root.activeCategory &&
-                                             root.activeCategory !== "CONNECTION"
+                                             root.activeCategory !== "CONNECTION" &&
+                                             model.unique_id !== "SENSOR_MODE"
                                     settingsModel: root.settingsModel
                                     categoryKey: root.activeCategory
                                     modelIndex: index
@@ -757,4 +761,3 @@ FocusScope {
         }
     }
 }
-

@@ -25,7 +25,7 @@ SideBarBasePanel{
 
         MavlinkChoiceElement2{
             id: edit_resolution_element
-            m_title: "Resolution"
+            m_title: "Output resolution"
             m_param_id: "RESOLUTION_FPS"
             m_settings_model: _airCameraSettingsModel
             override_takes_string_param: true;

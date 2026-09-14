@@ -616,6 +616,22 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    "Video codec. If your camera/ground station does not support HW accelerated encoding/decoding of the selected codec,it'l default to SW encode/decode. "
                    "A reboot (air&ground) is recommended after changing this parameter."
                    );
+        append_int(ret,"LIBCAMERA_IMPL",
+                   ImprovedIntSetting::createEnumSimple(
+                       std::vector<std::pair<std::string,int>>{
+                           {"GStreamer (libcamerasrc)",0},
+                           {"libcamera direct (rpicam-vid)",1},
+                       }),
+                   "Select the Raspberry Pi camera backend. Changing it restarts the camera stream."
+                   );
+        append_int(ret,"ROCKCHIP_IMPL",
+                   ImprovedIntSetting::createEnumSimple(
+                       std::vector<std::pair<std::string,int>>{
+                           {"GStreamer (MPP elements)",0},
+                           {"MPP direct (native)",1},
+                       }),
+                   "Select the supported Rockchip camera backend. Changing it restarts OpenHD and the camera stream."
+                   );
         append_int(ret,"AIR_RECORDING_E",
                    ImprovedIntSetting::createEnum( std::vector<std::string>{"DISABLE","ENABLE","AUTO(armed)"}),
                    "Record video data locally on your air unit. You can find the files under /home/openhd/Videos on the SD card and/or download them via the web ui."

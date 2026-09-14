@@ -27,6 +27,14 @@ FocusScope {
     property int modelUpdate: settingsModel ? settingsModel.update_count : 0
     property var uiMetadata: settingsModel && paramId.length > 0
                              ? settingsModel.get_ui_metadata(paramId) : ({})
+    readonly property bool hasSensorMode: {
+        var revision = modelUpdate
+        return settingsModel && settingsModel.param_string_exists("SENSOR_MODE")
+    }
+    readonly property string sensorModeValue: {
+        var revision = modelUpdate
+        return hasSensorMode ? String(settingsModel.get_cached_string("SENSOR_MODE")) : ""
+    }
 
     readonly property bool compact: width < 650
     readonly property string controlKind: uiMetadata && uiMetadata.control
@@ -49,6 +57,8 @@ FocusScope {
             "KEYFRAME_I": qsTr("Keyframe interval"),
             "RESOLUTION_FPS": qsTr("Resolution and frame rate"),
             "CAMERA_TYPE": qsTr("Camera model"),
+            "LIBCAMERA_IMPL": qsTr("Camera backend"),
+            "ROCKCHIP_IMPL": qsTr("Camera backend"),
             "AWB_MODE": qsTr("White balance"),
             "AWB_MODE_LC": qsTr("White balance"),
             "EXP_MODE": qsTr("Exposure preset"),
@@ -97,6 +107,8 @@ FocusScope {
             "KEYFRAME_I": qsTr("Shorter intervals recover faster after signal loss; longer intervals compress more efficiently."),
             "RESOLUTION_FPS": qsTr("Choose a format supported by this camera. The stream restarts after a change."),
             "CAMERA_TYPE": qsTr("Select the camera connected to this air-unit slot."),
+            "LIBCAMERA_IMPL": qsTr("Switch between the GStreamer libcamerasrc pipeline and the direct libcamera camera application. The stream restarts after a change."),
+            "ROCKCHIP_IMPL": qsTr("Switch between GStreamer with Rockchip MPP elements and OpenHD's direct MPP implementation. OpenHD restarts after a change."),
             "AWB_MODE": qsTr("Adapt image colors to the lighting conditions."),
             "AWB_MODE_LC": qsTr("Adapt image colors to the lighting conditions."),
             "EXP_MODE": qsTr("Choose how the camera adapts exposure to the scene."),
@@ -206,6 +218,20 @@ FocusScope {
         for (var i = 0; i < source.length; ++i)
             if (resolutionPart(source[i]) === resolution) result.push(fpsPart(source[i]))
         return result
+    }
+    function sensorModes() {
+        var source = streamModel ? streamModel.get_supported_resolutions() : []
+        var result = []
+        for (var i = 0; i < source.length; ++i) {
+            var value = String(source[i])
+            if (result.indexOf(value) < 0) result.push(value)
+        }
+        return result
+    }
+    function readableMode(value) {
+        var parts = String(value).split("@")
+        var resolution = parts[0].replace("x", " \u00d7 ")
+        return parts.length > 1 ? resolution + " @ " + parts[1] + qsTr(" fps") : resolution
     }
 
     function handleNavigation(event) {
@@ -349,7 +375,8 @@ FocusScope {
             id: controlLoader
             Layout.fillWidth: true
             Layout.preferredWidth: root.compact ? -1 : Math.max(270, contentGrid.width * 0.42)
-            Layout.preferredHeight: root.useSlider && !root.readOnly ? 54 : 38
+            Layout.preferredHeight: root.paramId === "RESOLUTION_FPS" && root.hasSensorMode
+                                    ? 84 : (root.useSlider && !root.readOnly ? 54 : 38)
             enabled: !root.busy
             opacity: enabled ? 1.0 : 0.52
             sourceComponent: root.readOnly ? inlineControl
@@ -362,103 +389,187 @@ FocusScope {
 
     Component {
         id: resolutionControl
-        RowLayout {
+        ColumnLayout {
             id: formatEditor
-            spacing: 8
+            spacing: 7
             property Item focusControl: resolutionBox
             property string selectedResolution: root.resolutionPart(root.paramValue)
             property string selectedFps: root.fpsPart(root.paramValue)
+            property string selectedSensorMode: root.sensorModeValue
             property bool dirty: selectedResolution + "@" + selectedFps !== String(root.paramValue)
+            property bool sensorModeDirty: selectedSensorMode !== root.sensorModeValue
             property int observedRevision: root.modelUpdate
             onObservedRevisionChanged: {
                 selectedResolution = root.resolutionPart(root.paramValue)
                 selectedFps = root.fpsPart(root.paramValue)
+                selectedSensorMode = root.sensorModeValue
             }
-            CompactLinkComboBox {
-                id: resolutionBox
+
+            RowLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 38
-                model: root.uniqueResolutions()
-                currentIndex: model.indexOf(formatEditor.selectedResolution)
-                displayText: currentIndex >= 0
-                             ? String(model[currentIndex]).replace("x", " \u00d7 ")
-                             : formatEditor.selectedResolution
-                enabled: !root.busy && !root.readOnly && model.length > 0
-                popupWidth: Math.max(width, 210)
-                Keys.priority: Keys.BeforeItem
-                Keys.onPressed: function(event) {
-                    if (event.key === Qt.Key_Right) {
-                        fpsBox.forceActiveFocus()
-                        event.accepted = true
-                    } else if (event.key === Qt.Key_Left) {
-                        root.categoryRequested()
-                        event.accepted = true
-                    } else {
-                        root.handleNavigation(event)
+                spacing: 8
+                CompactLinkComboBox {
+                    id: resolutionBox
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    model: root.uniqueResolutions()
+                    currentIndex: model.indexOf(formatEditor.selectedResolution)
+                    displayText: currentIndex >= 0
+                                 ? String(model[currentIndex]).replace("x", " \u00d7 ")
+                                 : formatEditor.selectedResolution
+                    enabled: !root.busy && !root.readOnly && model.length > 0
+                    popupWidth: Math.max(width, 210)
+                    Keys.priority: Keys.BeforeItem
+                    Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Right) {
+                            fpsBox.forceActiveFocus()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Left) {
+                            root.categoryRequested()
+                            event.accepted = true
+                        } else {
+                            root.handleNavigation(event)
+                        }
+                    }
+                    onActivated: {
+                        formatEditor.selectedResolution = String(model[currentIndex])
+                        var fpsValues = root.fpsForResolution(formatEditor.selectedResolution)
+                        if (fpsValues.indexOf(formatEditor.selectedFps) < 0 && fpsValues.length > 0)
+                            formatEditor.selectedFps = String(fpsValues[0])
                     }
                 }
-                onActivated: {
-                    formatEditor.selectedResolution = String(model[currentIndex])
-                    var fpsValues = root.fpsForResolution(formatEditor.selectedResolution)
-                    if (fpsValues.indexOf(formatEditor.selectedFps) < 0 && fpsValues.length > 0)
-                        formatEditor.selectedFps = String(fpsValues[0])
+                CompactLinkComboBox {
+                    id: fpsBox
+                    Layout.preferredWidth: 96
+                    Layout.preferredHeight: 38
+                    model: root.fpsForResolution(formatEditor.selectedResolution)
+                    currentIndex: model.indexOf(formatEditor.selectedFps)
+                    displayText: (currentIndex >= 0 ? model[currentIndex] : formatEditor.selectedFps) + qsTr(" fps")
+                    enabled: !root.busy && !root.readOnly && model.length > 0
+                    popupWidth: Math.max(width, 130)
+                    Keys.priority: Keys.BeforeItem
+                    Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Left) {
+                            resolutionBox.forceActiveFocus()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Right) {
+                            formatApplyButton.forceActiveFocus()
+                            event.accepted = true
+                        } else {
+                            root.handleNavigation(event)
+                        }
+                    }
+                    onActivated: formatEditor.selectedFps = String(model[currentIndex])
+                }
+                Button {
+                    id: formatApplyButton
+                    Layout.preferredWidth: 68
+                    Layout.preferredHeight: 38
+                    text: qsTr("Apply")
+                    enabled: formatEditor.dirty && !root.busy && !root.readOnly
+                    hoverEnabled: true
+                    font.pixelSize: 10
+                    font.bold: true
+                    contentItem: Text {
+                        text: formatApplyButton.text
+                        color: formatApplyButton.enabled ? "white" : settings_form.secondaryText
+                        font: formatApplyButton.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    background: Rectangle {
+                        radius: 8
+                        color: formatApplyButton.enabled ? settings_form.accentColor : settings_form.panelBackground
+                        border.width: formatApplyButton.activeFocus ? 2 : 1
+                        border.color: formatApplyButton.activeFocus ? "white" : settings_form.lineColor
+                    }
+                    Keys.priority: Keys.BeforeItem
+                    Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Left) {
+                            fpsBox.forceActiveFocus()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Right && root.hasSensorMode) {
+                            sensorModeBox.forceActiveFocus()
+                            event.accepted = true
+                        } else {
+                            root.handleNavigation(event)
+                        }
+                    }
+                    onClicked: root.commitString(formatEditor.selectedResolution + "@" + formatEditor.selectedFps)
                 }
             }
-            CompactLinkComboBox {
-                id: fpsBox
-                Layout.preferredWidth: 96
-                Layout.preferredHeight: 38
-                model: root.fpsForResolution(formatEditor.selectedResolution)
-                currentIndex: model.indexOf(formatEditor.selectedFps)
-                displayText: (currentIndex >= 0 ? model[currentIndex] : formatEditor.selectedFps) + qsTr(" fps")
-                enabled: !root.busy && !root.readOnly && model.length > 0
-                popupWidth: Math.max(width, 130)
-                Keys.priority: Keys.BeforeItem
-                Keys.onPressed: function(event) {
-                    if (event.key === Qt.Key_Left) {
-                        resolutionBox.forceActiveFocus()
-                        event.accepted = true
-                    } else if (event.key === Qt.Key_Right) {
-                        formatApplyButton.forceActiveFocus()
-                        event.accepted = true
-                    } else {
-                        root.handleNavigation(event)
+
+            RowLayout {
+                Layout.fillWidth: true
+                visible: root.hasSensorMode
+                spacing: 8
+                Text {
+                    text: qsTr("Advanced sensor mode")
+                    color: settings_form.secondaryText
+                    font.pixelSize: 9
+                    font.bold: true
+                    Layout.preferredWidth: root.compact ? 118 : 132
+                    elide: Text.ElideRight
+                }
+                CompactLinkComboBox {
+                    id: sensorModeBox
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    model: root.sensorModes()
+                    currentIndex: model.indexOf(formatEditor.selectedSensorMode)
+                    displayText: root.readableMode(currentIndex >= 0
+                                                   ? model[currentIndex]
+                                                   : formatEditor.selectedSensorMode)
+                    enabled: !root.busy && !root.readOnly && model.length > 0
+                    popupWidth: Math.max(width, 250)
+                    Keys.priority: Keys.BeforeItem
+                    Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Left) {
+                            formatApplyButton.forceActiveFocus()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Right) {
+                            sensorModeApplyButton.forceActiveFocus()
+                            event.accepted = true
+                        } else {
+                            root.handleNavigation(event)
+                        }
                     }
+                    onActivated: formatEditor.selectedSensorMode = String(model[currentIndex])
                 }
-                onActivated: formatEditor.selectedFps = String(model[currentIndex])
-            }
-            Button {
-                id: formatApplyButton
-                Layout.preferredWidth: 68
-                Layout.preferredHeight: 38
-                text: qsTr("Apply")
-                enabled: formatEditor.dirty && !root.busy && !root.readOnly
-                hoverEnabled: true
-                font.pixelSize: 10
-                font.bold: true
-                contentItem: Text {
-                    text: formatApplyButton.text
-                    color: formatApplyButton.enabled ? "white" : settings_form.secondaryText
-                    font: formatApplyButton.font
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                background: Rectangle {
-                    radius: 8
-                    color: formatApplyButton.enabled ? settings_form.accentColor : settings_form.panelBackground
-                    border.width: formatApplyButton.activeFocus ? 2 : 1
-                    border.color: formatApplyButton.activeFocus ? "white" : settings_form.lineColor
-                }
-                Keys.priority: Keys.BeforeItem
-                Keys.onPressed: function(event) {
-                    if (event.key === Qt.Key_Left) {
-                        fpsBox.forceActiveFocus()
-                        event.accepted = true
-                    } else {
-                        root.handleNavigation(event)
+                Button {
+                    id: sensorModeApplyButton
+                    Layout.preferredWidth: 68
+                    Layout.preferredHeight: 38
+                    text: qsTr("Apply")
+                    enabled: formatEditor.sensorModeDirty && !root.busy && !root.readOnly
+                    hoverEnabled: true
+                    font.pixelSize: 10
+                    font.bold: true
+                    contentItem: Text {
+                        text: sensorModeApplyButton.text
+                        color: sensorModeApplyButton.enabled ? "white" : settings_form.secondaryText
+                        font: sensorModeApplyButton.font
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
+                    background: Rectangle {
+                        radius: 8
+                        color: sensorModeApplyButton.enabled ? settings_form.accentColor : settings_form.panelBackground
+                        border.width: sensorModeApplyButton.activeFocus ? 2 : 1
+                        border.color: sensorModeApplyButton.activeFocus ? "white" : settings_form.lineColor
+                    }
+                    Keys.priority: Keys.BeforeItem
+                    Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Left) {
+                            sensorModeBox.forceActiveFocus()
+                            event.accepted = true
+                        } else {
+                            root.handleNavigation(event)
+                        }
+                    }
+                    onClicked: root.settingsModel.try_set_param_string_async(
+                                   "SENSOR_MODE", formatEditor.selectedSensorMode, true)
                 }
-                onClicked: root.commitString(formatEditor.selectedResolution + "@" + formatEditor.selectedFps)
             }
         }
     }
