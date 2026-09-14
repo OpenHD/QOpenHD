@@ -99,12 +99,34 @@ Rectangle {
     function chooseFrequency(index) {
         if (index < 0 || index >= frequencyChoices.count) return
         var value = frequencyChoices.get(index).value
-        if (value === _wbLinkSettingsHelper.curr_channel_mhz) return
-        if (!_frequencyHelper.hw_supports_frequency_threadsafe(value)) {
+        var airAlive = _ohdSystemAir.is_alive
+        var groundAlive = _ohdSystemGround.is_alive
+        var airCurrent = _ohdSystemAir.curr_channel_mhz
+        var groundCurrent = _ohdSystemGround.curr_channel_mhz > 0
+                          ? _ohdSystemGround.curr_channel_mhz
+                          : _wbLinkSettingsHelper.curr_channel_mhz
+        if ((airAlive && groundAlive && airCurrent === value && groundCurrent === value) ||
+                (airAlive && !groundAlive && airCurrent === value) ||
+                (groundAlive && !airAlive && groundCurrent === value)) return
+        // No capability announcement means "unknown", not "unsupported".
+        // This is expected while either the air or ground unit is offline;
+        // let the connected unit's backend validate the actual request.
+        if (groundAlive &&
+                _frequencyHelper.has_valid_supported_frequencies_data() &&
+                !_frequencyHelper.hw_supports_frequency_threadsafe(value)) {
             _qopenhd.show_toast(qsTr("Your hardware does not support %1 MHz").arg(value)); return
         }
-        if (_ohdSystemAir.is_alive) frequencyDialog.initialize_and_show_frequency(value)
-        else groundFrequencyDialog.initialize_and_show_frequency(value, qsTr("Air unit is offline"))
+        if (airAlive && groundAlive) {
+            frequencyDialog.initialize_and_show_frequency(value)
+        } else if (airAlive) {
+            singleUnitFrequencyDialog.initialize_and_show_frequency(
+                        value, qsTr("Ground unit is offline"), true)
+        } else if (groundAlive) {
+            singleUnitFrequencyDialog.initialize_and_show_frequency(
+                        value, qsTr("Air unit is offline"), false)
+        } else {
+            _qopenhd.show_toast(qsTr("No OpenHD unit is connected"))
+        }
     }
     function setFhss(enabled) {
         if (enabled) {
@@ -122,7 +144,7 @@ Rectangle {
     function openAnalyze() { close_all_dialoques(); analyzePopup.open() }
     function close_all_dialoques() {
         scanPopup.close(); analyzePopup.close()
-        groundFrequencyDialog.close(); frequencyDialog.close()
+        singleUnitFrequencyDialog.close(); frequencyDialog.close()
     }
     function focusCard(index) {
         if (activeLinks.count < 1) return
@@ -256,6 +278,6 @@ Rectangle {
 
     PopupScanChannels { id: scanPopup }
     PopupAnalyzeChannels { id: analyzePopup }
-    DialoqueFreqChangeGndOnly { id: groundFrequencyDialog }
+    DialoqueFreqChangeGndOnly { id: singleUnitFrequencyDialog }
     DialoqueFreqChangeAirGnd { id: frequencyDialog }
 }

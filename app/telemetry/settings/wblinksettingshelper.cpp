@@ -223,6 +223,18 @@ bool WBLinkSettingsHelper::change_param_ground_only_blocking(QString param_id, i
     return false;
 }
 
+bool WBLinkSettingsHelper::change_param_air_only_blocking(QString param_id, int value)
+{
+    const auto command_air=XParam::create_cmd_set_int(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM,param_id.toStdString(),value);
+    const bool air_success=XParam::instance().try_set_param_blocking(command_air,std::chrono::milliseconds(200),5);
+    if(air_success){
+        qDebug()<<"change_param_air_only success "<<param_id<<":"<<value;
+        return true;
+    }
+    qDebug()<<"change_param_air_only failure "<<param_id<<":"<<value;
+    return false;
+}
+
 void WBLinkSettingsHelper::set_param_keyframe_interval_async(int keyframe_interval)
 {
     change_param_air_async(OHD_COMP_ID_AIR_CAMERA_PRIMARY,"KEYFRAME_I",static_cast<int32_t>(keyframe_interval),"KEYFRAME");

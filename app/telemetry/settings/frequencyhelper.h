@@ -32,7 +32,7 @@ public:
     Q_INVOKABLE QList<int> filter_frequencies(QList<int> frequencies,int filter_level);
 public:
     bool set_hw_supported_frequencies_threadsafe(const std::vector<uint16_t> supported_channels);
-    bool has_valid_supported_frequencies_data();
+    Q_INVOKABLE bool has_valid_supported_frequencies_data();
 private:
     // Written by telemetry, read by UI
     std::mutex m_supported_channels_mutex;

@@ -19,6 +19,7 @@ Card {
     visible: false
 
     property int m_wanted_frequency: -1
+    property bool m_target_air: false
 
     // Set to 1 to show the final warning message after which channel frequency or channel width are applied
     property int m_index: 0
@@ -30,21 +31,22 @@ Card {
         enabled=false;
     }
 
-    function initialize_and_show_frequency(frequency,error_message){
+    function initialize_and_show_frequency(frequency,error_message,target_air){
         m_wanted_frequency=frequency
+        m_target_air=target_air
         m_index=0
         m_original_error_message=error_message;
         visible=true;
         enabled=true;
     }
 
-    property string m_info_string_frequency: "Please use the channel scan to find your air unit, then change frequency."+
-"Otherwise, you can manually change your ground station frequency,"+
-"leaving your air unit untouched - this can be quicker than a channel scan if you know your air unit frequency."
+    property string m_info_string_frequency: m_target_air
+        ? qsTr("Change the connected air unit to this frequency so it can be matched with a ground unit later.")
+        : qsTr("Use channel scan to find your air unit, or change the connected ground unit manually if you already know the air frequency.")
 
-    property string m_info_ground_only: "WARNING: This changes your ground unit frequency without changing your air unit frequency !"
-
-    property string m_last_warning_frequency: "WARNING: This changes your ground unit frequency without changing your air unit frequency !"
+    property string m_last_warning_frequency: m_target_air
+        ? qsTr("WARNING: This changes only the air unit frequency!")
+        : qsTr("WARNING: This changes only the ground unit frequency!")
 
     function get_card_title_string(){
         return "Frequency "+m_wanted_frequency+"Mhz"
@@ -83,7 +85,7 @@ Card {
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignLeft
                 Layout.leftMargin: 12
-                text:  qsTr("GND Only")
+                text: m_target_air ? qsTr("AIR Only") : qsTr("GND Only")
                 onPressed: {
                     m_index=1
                 }
@@ -105,15 +107,18 @@ Card {
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignLeft
                 Layout.leftMargin: 12
-                text:  qsTr("YES,GND ONLY")
+                text: m_target_air ? qsTr("YES, AIR ONLY") : qsTr("YES, GND ONLY")
                 onPressed: {
-                    console.log("Try changing ground only to frequency "+m_wanted_frequency)
-                    var result = _wbLinkSettingsHelper.change_param_ground_only_frequency(m_wanted_frequency);
+                    console.log("Try changing single unit to frequency "+m_wanted_frequency)
+                    var result = m_target_air
+                               ? _wbLinkSettingsHelper.change_param_air_only_frequency(m_wanted_frequency)
+                               : _wbLinkSettingsHelper.change_param_ground_only_frequency(m_wanted_frequency);
                     if(result){
-                        _qopenhd.show_toast(qsTr("GND set to frequency %1 MHz").arg(m_wanted_frequency),false);
+                        var unit = m_target_air ? qsTr("AIR") : qsTr("GND")
+                        _qopenhd.show_toast(qsTr("%1 set to frequency %2 MHz").arg(unit).arg(m_wanted_frequency),false);
                         dialoqueChangeFrequency.visible=false;
                     }else{
-                        _qopenhd.show_toast(qsTr("Failed, GND busy, please try again later"),true);
+                        _qopenhd.show_toast(qsTr("Failed, unit busy or unavailable; please try again"),true);
                     }
                 }
             }

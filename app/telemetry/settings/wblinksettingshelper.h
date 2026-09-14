@@ -77,6 +77,7 @@ private:
     // -3 : ground could not arm the requested fallback target
     int change_param_air_and_ground_blocking(QString param_id,int value);
     bool change_param_ground_only_blocking(QString param_id,int value);
+    bool change_param_air_only_blocking(QString param_id,int value);
     void change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag);
 public:
     Q_INVOKABLE int change_param_air_and_ground_frequency(int value){
@@ -92,6 +93,9 @@ public:
 
     Q_INVOKABLE bool change_param_ground_only_frequency(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_FREQ,value);
+    }
+    Q_INVOKABLE bool change_param_air_only_frequency(int value){
+        return change_param_air_only_blocking(PARAM_ID_WB_FREQ,value);
     }
     Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
         return change_param_ground_only_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
