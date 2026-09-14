@@ -11,7 +11,7 @@ import "../../ui" as Ui
 import "../elements"
 
 //
-// Power selector: Air/Ground -> one of five user-facing targets (TX_PWR_LVL)
+// Power selector: Air/Ground -> normalized TX power (TX_PWR_LVL).
 //
 BaseJoyEditElement2 {
     id: powerChoiceElement
@@ -35,6 +35,7 @@ BaseJoyEditElement2 {
 
     ListModel {
         id: levelModel
+        ListElement { value: 0; verbose: "0%" }
         ListElement { value: 20; verbose: "20%" }
         ListElement { value: 40; verbose: "40%" }
         ListElement { value: 60; verbose: "60%" }
@@ -42,15 +43,28 @@ BaseJoyEditElement2 {
         ListElement { value: 100; verbose: "100%" }
     }
 
+    ListModel {
+        id: levelModelAdvanced
+        ListElement { value: 0; verbose: "0%" }
+        ListElement { value: 20; verbose: "20%" }
+        ListElement { value: 40; verbose: "40%" }
+        ListElement { value: 60; verbose: "60%" }
+        ListElement { value: 80; verbose: "80%" }
+        ListElement { value: 100; verbose: "100%" }
+        ListElement { value: 110; verbose: "110%  OVERDRIVE" }
+        ListElement { value: 120; verbose: "120%  OVERDRIVE" }
+        ListElement { value: 130; verbose: "130%  OVERDRIVE" }
+        ListElement { value: 140; verbose: "140%  OVERDRIVE" }
+        ListElement { value: 150; verbose: "150%  MAX" }
+    }
+
     function level_to_label(level) {
-        if (level === 20 || level === 40 || level === 60 ||
-                level === 80 || level === 100) return level + "%";
+        if (is_valid_level(level)) return level + "%";
         return qsTr("N/A");
     }
 
     function is_valid_level(level) {
-        return level === 20 || level === 40 || level === 60 ||
-                level === 80 || level === 100;
+        return level >= 0 && level <= 150 && level % 10 === 0;
     }
 
     function get_model_for_target() {
@@ -175,7 +189,9 @@ BaseJoyEditElement2 {
         if (level === null || !is_valid_level(level)) {
             level = 20;
         }
-        choiceSelector.open_choices(levelModel, level, powerChoiceElement);
+        choiceSelector.open_choices(settings.dev_show_advanced_button
+                                    ? levelModelAdvanced : levelModel,
+                                    level, powerChoiceElement);
         choiceSelector.set_clickable(clickable);
         choiceSelector.set_force_callback(false);
     }

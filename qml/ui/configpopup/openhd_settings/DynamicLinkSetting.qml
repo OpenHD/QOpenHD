@@ -17,6 +17,10 @@ Item {
     property bool overrideSliderRange: false
     property real preferredMinimum: 0
     property real preferredMaximum: 100
+    property bool dangerAboveEnabled: false
+    property real dangerAbove: 100
+    property bool detentEnabled: false
+    property real detentValue: 100
     property var metadata: {
         // QML cannot infer that the return value of these invokables changes
         // when the MAVLink parameter cache is replaced. Keep an explicit
@@ -250,7 +254,8 @@ Item {
         id: sliderValue
         Text {
             text: Math.round(root.previewValue) + root.valueSuffix
-            color: settings_form.accentColor
+            color: root.dangerAboveEnabled && root.previewValue > root.dangerAbove
+                   ? settings_form.errorColor : settings_form.accentColor
             font.pixelSize: 11
             font.bold: true
             horizontalAlignment: Text.AlignRight
@@ -263,11 +268,15 @@ Item {
         Slider {
             id: slider
             property bool locallyEdited: false
+            property bool detentBlocking: false
             property int observedRevision: root.modelUpdate
+            property real dangerPosition: Math.max(0, Math.min(1,
+                (root.dangerAbove - from) / Math.max(1, to - from)))
             hoverEnabled: true
             from: root.overrideSliderRange ? root.preferredMinimum : Number(root.metadata.minimum)
             to: root.overrideSliderRange ? root.preferredMaximum : Number(root.metadata.maximum)
             stepSize: root.preferredStepSize
+            snapMode: Slider.SnapAlways
 
             background: Item {
                 x: slider.leftPadding
@@ -282,9 +291,26 @@ Item {
                            : settings_form.lineColor
                     Behavior on height { NumberAnimation { duration: 100 } }
                     Rectangle {
-                        width: slider.visualPosition * parent.width
+                        width: Math.min(slider.visualPosition,
+                                        slider.dangerPosition) * parent.width
                         height: parent.height; radius: parent.radius
                         color: settings_form.accentColor
+                    }
+                    Rectangle {
+                        visible: root.dangerAboveEnabled && slider.to > root.dangerAbove
+                        x: slider.dangerPosition * parent.width
+                        width: (1.0 - slider.dangerPosition) * parent.width
+                        height: parent.height; radius: parent.radius
+                        color: settings_form.errorColor
+                        opacity: 0.28
+                    }
+                    Rectangle {
+                        visible: root.dangerAboveEnabled &&
+                                 slider.visualPosition > slider.dangerPosition
+                        x: slider.dangerPosition * parent.width
+                        width: (slider.visualPosition - slider.dangerPosition) * parent.width
+                        height: parent.height; radius: parent.radius
+                        color: settings_form.errorColor
                     }
                 }
             }
@@ -299,7 +325,8 @@ Item {
                     anchors.centerIn: parent
                     width: slider.pressed ? 14 : 12
                     height: width; radius: width / 2
-                    color: settings_form.accentColor
+                    color: root.dangerAboveEnabled && slider.value > root.dangerAbove
+                           ? settings_form.errorColor : settings_form.accentColor
                     border.width: 2
                     border.color: settings_form.panelBackgroundRaised
                     Behavior on width { NumberAnimation { duration: 90 } }
@@ -316,11 +343,18 @@ Item {
                     root.previewValue = value
                 }
             }
-            onMoved: locallyEdited = true
+            onMoved: {
+                locallyEdited = true
+                if (detentBlocking && value > root.detentValue)
+                    value = root.detentValue
+            }
             onPressedChanged: {
-                if (!pressed && locallyEdited) {
+                if (pressed) {
+                    detentBlocking = root.detentEnabled && value < root.detentValue
+                } else if (locallyEdited) {
                     root.commitInt(Math.round(value))
                     locallyEdited = false
+                    detentBlocking = false
                 }
             }
             Keys.onLeftPressed: {

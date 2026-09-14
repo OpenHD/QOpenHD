@@ -202,8 +202,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_only_documented(ret,openhd::WB_TX_POWER_MILLI_WATT_ARMED,
                                "Please use the TX POWER wizzard from WB Link to avoid destroying your card ! tx power in mW when FC is armed, off by default. Actual tx power depends on the manufacturer.");
         append_int(ret,openhd::WB_TX_POWER_LEVEL,
-                   ImprovedIntSetting::createEnumSimple({{"20%",20},{"40%",40},{"60%",60},{"80%",80},{"100%",100}}),
-                   "TX power target. OpenHD maps these five simple choices to each radio's calibrated power control."
+                   ImprovedIntSetting(0,150,{{"0%",0},{"20%",20},{"40%",40},{"60%",60},{"80%",80},{"100%",100},{"110% (OVERDRIVE)",110},{"120% (OVERDRIVE)",120},{"130% (OVERDRIVE)",130},{"140% (OVERDRIVE)",140},{"150% (MAX OVERDRIVE)",150}}),
+                   "Normalized TX power target. Values through 100% use the normal calibrated range. Values above 100% are hardware-stressing Devourer overdrive and require Advanced Settings in the link control."
                    );
     }
 // -----------------------------------------------------------------------------------------------------------
