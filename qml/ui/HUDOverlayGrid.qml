@@ -315,6 +315,9 @@ Item {
         WBLinkRateControlWidget{
             id: wBLinkRateControlWidget
         }
+        UDPDataLinkDebugWidget{
+            id: udpDataLinkDebugWidget
+        }
         RetransmissionStarsWidget{
             id: retransmissionStarsWidget
         }

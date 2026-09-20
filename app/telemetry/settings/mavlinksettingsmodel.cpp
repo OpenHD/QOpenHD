@@ -25,6 +25,7 @@ QString parameter_group(const QString& id)
     if(id.startsWith("MICROHARD_") || id.startsWith("MH_")) return QStringLiteral("MICROHARD");
     if(id.startsWith("TX_POWER") || id.startsWith("TX_PWR")) return QStringLiteral("TX POWER");
     if(id.startsWith("WB_RTX_") || id == QStringLiteral("WB_ENABLE_RETRA")) return QStringLiteral("RETRANSMISSION");
+    if(id.startsWith("WB_UDP_")) return QStringLiteral("UDP DATALINK");
     if(id.startsWith("WIFI_") || id.startsWith("ETHERNET") || id.startsWith("HOTSPOT_") ||
        id.startsWith("NW_")) return QStringLiteral("NETWORK");
     if(id.startsWith("V_")) return QStringLiteral("VIDEO");
