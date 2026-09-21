@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Shapes 1.12
 
 import OpenHD 1.0
+import "../elements"
 
 BaseWidget {
     id: linkOverviewWidgetBottom
@@ -92,9 +93,11 @@ BaseWidget {
         { label: qsTr("Ground mAh"), value: "gnd_mah" },
         { label: qsTr("Air Voltage"), value: "air_voltage" },
         { label: qsTr("Air Current"), value: "air_current" },
-        { label: qsTr("Gas %"), value: "gas_percent" },
+        // Keep the legacy value so existing saved bottom-bar layouts remain valid.
+        { label: qsTr("Battery Percent"), value: "gas_percent" },
         { label: qsTr("Air Speed"), value: "air_speed" },
-        { label: qsTr("Wind Speed"), value: "wind_speed" },
+        { label: qsTr("GPS Speed"), value: "gps_speed" },
+        { label: qsTr("Wind Speed & Direction"), value: "wind_speed" },
         { label: qsTr("Altitude"), value: "altitude" },
         { label: qsTr("Home Distance"), value: "home_distance" },
         { label: qsTr("Satellites"), value: "satellites" },
@@ -316,9 +319,11 @@ BaseWidget {
         } else if (selection === "air_current") {
             return format_air_current();
         } else if (selection === "gas_percent") {
-            return format_gas_percent();
+            return format_battery_percent();
         } else if (selection === "air_speed") {
             return format_air_speed();
+        } else if (selection === "gps_speed") {
+            return format_gps_speed();
         } else if (selection === "wind_speed") {
             return format_wind_speed();
         } else if (selection === "altitude") {
@@ -342,9 +347,11 @@ BaseWidget {
         } else if (selection === "air_current") {
             return "\uf0e7";
         } else if (selection === "gas_percent") {
-            return "\uf52f";
+            return battery_percent_icon();
         } else if (selection === "air_speed") {
             return "\uf3fd";
+        } else if (selection === "gps_speed") {
+            return "\uf5a0";
         } else if (selection === "wind_speed") {
             return "\uf72e";
         } else if (selection === "altitude") {
@@ -388,7 +395,7 @@ BaseWidget {
         return Number(a).toLocaleString(Qt.locale(), 'f', 1) + "A";
     }
 
-    function format_gas_percent() {
+    function format_battery_percent() {
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
@@ -399,11 +406,24 @@ BaseWidget {
         return Math.round(percent) + "%";
     }
 
+    function battery_percent_icon() {
+        var percent = _fcMavlinkSystem.battery_percent;
+        if (!_fcMavlinkSystem.is_alive || percent < 0 || percent > 100) {
+            return "\uf240";
+        }
+        if (percent <= 10) return "\uf244";
+        if (percent <= 35) return "\uf243";
+        if (percent <= 60) return "\uf242";
+        if (percent <= 85) return "\uf241";
+        return "\uf240";
+    }
+
     function format_wind_speed() {
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
         var raw = settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed : _fcMavlinkSystem.mav_wind_speed;
+        var direction = settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction;
         if (raw < 0) {
             return "N/A";
         }
@@ -416,7 +436,9 @@ BaseWidget {
             factor = 2.237;
             unitLabel = "mph";
         }
-        return Number(raw * factor).toLocaleString(Qt.locale(), "f", 0) + " " + unitLabel;
+        direction = ((direction % 360) + 360) % 360;
+        return Number(raw * factor).toLocaleString(Qt.locale(), "f", 0) + " " + unitLabel
+            + " " + Math.round(direction) + "°";
     }
 
     function format_air_mah() {
@@ -521,10 +543,17 @@ BaseWidget {
     }
 
     function format_air_speed() {
+        return format_speed(_fcMavlinkSystem.air_speed_meter_per_second);
+    }
+
+    function format_gps_speed() {
+        return format_speed(_fcMavlinkSystem.ground_speed_meter_per_second);
+    }
+
+    function format_speed(speed_mps) {
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
-        var speed_mps = _fcMavlinkSystem.air_speed_meter_per_second;
         if (speed_mps < 0) {
             return "N/A";
         }
@@ -698,7 +727,7 @@ BaseWidget {
                         anchors.left: parent.left
                         verticalAlignment: Text.AlignVCenter
                     }
-                    ComboBox {
+                    DarkComboBox {
                         id: slotCombo
                         model: slotOptions
                         textRole: "label"

@@ -147,7 +147,7 @@ Card {
             width: 300
             text: qsTr("Your AIR Platform: %1").arg(get_platform_name());
         }
-        ComboBox {
+        CompactLinkComboBox {
             width: 300
             id: comboBoxManufacturers
             model: model_manufacturers
@@ -158,7 +158,7 @@ Card {
                 populate_main_camera_selector();
             }
         }
-        ComboBox {
+        CompactLinkComboBox {
             width: 300
             id: combobox_cameras
             model: model_cameras_for_this_manufacturer

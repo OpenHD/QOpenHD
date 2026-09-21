@@ -108,7 +108,7 @@ PopupBigGeneric {
                 columnSpacing: 9
                 rowSpacing: 7
 
-                ComboBox {
+                CompactLinkComboBox {
                     id: filterCombo
                     Layout.fillWidth: true
                     Layout.preferredHeight: 38

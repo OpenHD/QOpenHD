@@ -4,6 +4,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
 import OpenHD 1.0
+import "../elements"
 
 BaseWidget {
     id: root
@@ -118,7 +119,7 @@ BaseWidget {
                 }
             }
 
-            ComboBox {
+            DarkComboBox {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 26
                 font.pixelSize: 9
@@ -219,7 +220,7 @@ BaseWidget {
                     onReleased: controlPanel.stopRoll()
                     onCanceled: controlPanel.stopRoll()
                 }
-                ComboBox {
+                DarkComboBox {
                     Layout.preferredWidth: 112
                     Layout.fillHeight: true
                     font.pixelSize: 9
@@ -233,7 +234,7 @@ BaseWidget {
             RowLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 26
-                ComboBox {
+                DarkComboBox {
                     id: viewMode
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -255,7 +256,7 @@ BaseWidget {
             RowLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 26
-                ComboBox {
+                DarkComboBox {
                     id: palette
                     Layout.fillWidth: true
                     Layout.fillHeight: true

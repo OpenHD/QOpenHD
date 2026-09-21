@@ -45,6 +45,7 @@
         <file>ui/widgets/ArrowWidget.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
+        <file>ui/elements/DarkComboBox.qml</file>
         <file>ui/widgets/GroundPowerWidget.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>

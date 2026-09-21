@@ -8,6 +8,7 @@ Rectangle {
     id: root
     color: "transparent"
     signal backRequested()
+    readonly property var fleetBackend: (typeof _fleetControlLte !== "undefined") ? _fleetControlLte : null
     property alias frequencyModel: frequencyChoices
     property int availableCardColumns: width >= 1050 ? 3 : (width >= 700 ? 2 : 1)
     // A single active link owns the complete content width. Additional active
@@ -15,7 +16,7 @@ Rectangle {
     property int cardColumns: Math.max(1, Math.min(activeLinks.count, availableCardColumns))
     property int collapsedCardWidth: Math.floor((cardsFlow.width - (cardColumns - 1) * cardsFlow.spacing) / cardColumns)
     property int expandedCardIndex: -1
-    property bool fleetConfigured: _fleetControlLte.configured ||
+    property bool fleetConfigured: (fleetBackend && fleetBackend.configured) ||
                                    _ohdSystemAir.fleetcontrol_lte_active ||
                                    _ohdSystemAir.fleetcontrol_lte_max_kbit > 0
     property int linkRevision: _ohdSystemGround.primary_link_type + _ohdSystemAir.primary_link_type +

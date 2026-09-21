@@ -1217,6 +1217,12 @@ static std::map<std::string, void *> get_whitelisted_params()
 
     ret["STREAMING_E"]=nullptr;
     ret["AUDIO_ENABLE"]=nullptr;
+    ret["AUDIO_DEVICE"]=nullptr;
+    ret["AUDIO_GAIN"]=nullptr;
+    ret["AUDIO_DEV_COUNT"]=nullptr;
+    for (int i = 0; i < 8; ++i) {
+        ret["AUD_DEV_" + std::to_string(i)]=nullptr;
+    }
 
 
     ret[""]=nullptr;

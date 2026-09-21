@@ -8,24 +8,28 @@ ScrollView {
     clip: true
     contentWidth: availableWidth
     signal backRequested()
+    readonly property var fleetBackend: (typeof _fleetControlLte !== "undefined") ? _fleetControlLte : null
     property string selectedLicenseId: ""
     readonly property int licenseIndex: {
-        for (var i = 0; i < _fleetControlLte.licenses.length; ++i)
-            if (_fleetControlLte.licenses[i].id === selectedLicenseId) return i
-        return _fleetControlLte.licenses.length ? 0 : -1
+        var licenses = fleetBackend ? fleetBackend.licenses : []
+        for (var i = 0; i < licenses.length; ++i)
+            if (licenses[i].id === selectedLicenseId) return i
+        return licenses.length ? 0 : -1
     }
-    readonly property var selectedLicense: licenseIndex >= 0 ? _fleetControlLte.licenses[licenseIndex] : null
+    readonly property var selectedLicense: licenseIndex >= 0 && fleetBackend ? fleetBackend.licenses[licenseIndex] : null
     readonly property var availableCrafts: {
         var result = []
         if (!selectedLicense) return result
-        for (var i = 0; i < _fleetControlLte.crafts.length; ++i) {
-            var craft = _fleetControlLte.crafts[i]
+        var crafts = fleetBackend ? fleetBackend.crafts : []
+        var licenses = fleetBackend ? fleetBackend.licenses : []
+        for (var i = 0; i < crafts.length; ++i) {
+            var craft = crafts[i]
             if (selectedLicense.craftId) {
                 if (craft.id === selectedLicense.craftId) result.push(craft)
             } else {
                 var assigned = !!craft.licenseId
-                for (var j = 0; j < _fleetControlLte.licenses.length; ++j)
-                    if (_fleetControlLte.licenses[j].craftId === craft.id) assigned = true
+                for (var j = 0; j < licenses.length; ++j)
+                    if (licenses[j].craftId === craft.id) assigned = true
                 if (!assigned) result.push(craft)
             }
         }
@@ -38,8 +42,8 @@ ScrollView {
     property bool encryptionAvailable: false
     property bool encryptionEnabled: false
     property string pendingEncryptionLicense: ""
-    readonly property bool working: _fleetControlLte.busy
-    function gainFocus() { (_fleetControlLte.authenticated ? certificateBox : username).forceActiveFocus() }
+    readonly property bool working: fleetBackend ? fleetBackend.busy : false
+    function gainFocus() { (fleetBackend && fleetBackend.authenticated ? certificateBox : username).forceActiveFocus() }
     function syncEncryption() {
         encryptionAvailable = _airCameraSettingsModel.param_int_exists("HIGH_ENCRYPTION")
         encryptionEnabled = encryptionAvailable && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
@@ -51,18 +55,18 @@ ScrollView {
     }
     Component.onCompleted: syncEncryption()
     Connections {
-        target: _fleetControlLte
+        target: root.fleetBackend
         function onStatusChanged() {
-            if (root.pendingEncryptionLicense && !_fleetControlLte.busy) {
+            if (root.pendingEncryptionLicense && root.fleetBackend && !root.fleetBackend.busy) {
                 var requested = root.pendingEncryptionLicense
                 root.pendingEncryptionLicense = ""
-                if (_fleetControlLte.authenticated && root.selectedLicense && root.selectedLicense.id === requested
-                        && _fleetControlLte.certificateInstalled && _fleetControlLte.certificateLicenseId === requested)
+                if (root.fleetBackend.authenticated && root.selectedLicense && root.selectedLicense.id === requested
+                        && root.fleetBackend.certificateInstalled && root.fleetBackend.certificateLicenseId === requested)
                     _airCameraSettingsModel.try_set_param_int_async("HIGH_ENCRYPTION", 1, true)
             }
         }
     }
-    Timer { interval: 1500; running: root.visible && _fleetControlLte.authenticated; repeat: true; onTriggered: root.syncEncryption() }
+    Timer { interval: 1500; running: root.visible && root.fleetBackend && root.fleetBackend.authenticated; repeat: true; onTriggered: root.syncEncryption() }
     Keys.onEscapePressed: root.backRequested()
 
     ColumnLayout {
@@ -75,10 +79,10 @@ ScrollView {
                 Text { Layout.fillWidth: true; text: qsTr("FleetControl"); color: settings_form.primaryText; font.pixelSize: 18; font.bold: true }
                 Text { Layout.fillWidth: true; text: "openhd.tech"; color: settings_form.secondaryText; font.pixelSize: 12 }
             }
-            AdvancedActionButton { visible: _fleetControlLte.authenticated; text: qsTr("Sign out"); enabled: !root.working; opacity: enabled ? 1 : 0.5; onClicked: _fleetControlLte.logout() }
+            AdvancedActionButton { visible: root.fleetBackend && root.fleetBackend.authenticated; text: qsTr("Sign out"); enabled: !root.working; opacity: enabled ? 1 : 0.5; onClicked: { if (root.fleetBackend) root.fleetBackend.logout() } }
         }
         ColumnLayout {
-            visible: !_fleetControlLte.authenticated
+            visible: !root.fleetBackend || !root.fleetBackend.authenticated
             Layout.fillWidth: true; Layout.margins: 12; spacing: 10
             Text { text: qsTr("Sign in to assign your craft to a certificate."); color: settings_form.secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             TextField {
@@ -98,13 +102,13 @@ ScrollView {
             AdvancedActionButton {
                 id: signIn; objectName: "fleetSignIn"; text: qsTr("Sign in"); primary: true; Layout.alignment: Qt.AlignRight
                 enabled: !root.working && username.text.trim().length > 0 && password.text.length > 0; opacity: enabled ? 1 : 0.5
-                onClicked: { _fleetControlLte.login(username.text, password.text); password.clear() }
+                onClicked: { if (root.fleetBackend) root.fleetBackend.login(username.text, password.text); password.clear() }
             }
         }
         ColumnLayout {
-            visible: _fleetControlLte.authenticated
+            visible: root.fleetBackend && root.fleetBackend.authenticated
             Layout.fillWidth: true; Layout.margins: 12; spacing: 12
-            Text { Layout.fillWidth: true; text: _fleetControlLte.accountName; color: settings_form.secondaryText; font.pixelSize: 12; elide: Text.ElideRight }
+            Text { Layout.fillWidth: true; text: root.fleetBackend ? root.fleetBackend.accountName : ""; color: settings_form.secondaryText; font.pixelSize: 12; elide: Text.ElideRight }
             Pane {
                 Layout.fillWidth: true; padding: 12
                 background: Rectangle { radius: 8; color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor }
@@ -113,10 +117,10 @@ ScrollView {
                     Text { text: qsTr("Certificate"); color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
                     CompactLinkComboBox {
                         id: certificateBox; objectName: "fleetCertificate"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 13
-                        model: _fleetControlLte.licenses.map(function(license) { return license.plan + " · " + license.id.slice(-6) })
+                        model: root.fleetBackend ? root.fleetBackend.licenses.map(function(license) { return license.plan + " · " + license.id.slice(-6) }) : []
                         currentIndex: root.licenseIndex; enabled: !root.working && count > 1
                         displayText: root.selectedLicense ? model[root.licenseIndex] : qsTr("No certificates in this account")
-                        onActivated: root.selectedLicenseId = _fleetControlLte.licenses[currentIndex].id
+                        onActivated: { if (root.fleetBackend) root.selectedLicenseId = root.fleetBackend.licenses[currentIndex].id }
                     }
                     Text {
                         objectName: "fleetLicenceExpiry"; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
@@ -136,14 +140,14 @@ ScrollView {
                         Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
                         text: root.selectedLicense && root.selectedLicense.craftId ? qsTr("Assigned to this certificate")
                               : root.availableCrafts.length ? qsTr("Each certificate is permanently assigned to one craft.")
-                              : !_fleetControlLte.crafts.length ? qsTr("No craft in this account yet.") : qsTr("All your craft already have a certificate.")
+                              : !root.fleetBackend || !root.fleetBackend.crafts.length ? qsTr("No craft in this account yet.") : qsTr("All your craft already have a certificate.")
                     }
                     AdvancedActionButton {
                         objectName: "fleetAssign"; text: qsTr("Assign craft"); primary: true; Layout.alignment: Qt.AlignRight
                         visible: root.selectedLicense && !root.selectedLicense.craftId
                         enabled: !root.working && root.selectedCraft && root.selectedLicense && root.selectedLicense.status !== "expired"
                         opacity: enabled ? 1 : 0.5
-                        onClicked: _fleetControlLte.bindLicense(root.selectedLicense.id, root.selectedCraft.id)
+                        onClicked: { if (root.fleetBackend) root.fleetBackend.bindLicense(root.selectedLicense.id, root.selectedCraft.id) }
                     }
                 }
             }
@@ -161,7 +165,7 @@ ScrollView {
                             primary: !root.transmissionEnabled
                             enabled: !root.working && (root.transmissionEnabled || root.canStartTransmission)
                             opacity: enabled ? 1 : 0.5
-                            onClicked: _fleetControlLte.setTransmission(root.selectedCraft.id, !root.transmissionEnabled)
+                            onClicked: { if (root.fleetBackend) root.fleetBackend.setTransmission(root.selectedCraft.id, !root.transmissionEnabled) }
                         }
                     }
                     Text {
@@ -193,9 +197,9 @@ ScrollView {
                                 Rectangle { x: encryption.checked ? 23 : 3; y: 3; width: 18; height: 18; radius: 9; color: encryption.checked ? "white" : settings_form.secondaryText }
                             }
                             onClicked: {
-                                if (checked && (!_fleetControlLte.certificateInstalled || _fleetControlLte.certificateLicenseId !== root.selectedLicense.id)) {
+                                if (checked && root.fleetBackend && (!root.fleetBackend.certificateInstalled || root.fleetBackend.certificateLicenseId !== root.selectedLicense.id)) {
                                     root.pendingEncryptionLicense = root.selectedLicense.id
-                                    _fleetControlLte.requestVideoCertificate(root.selectedLicense.id)
+                                    root.fleetBackend.requestVideoCertificate(root.selectedLicense.id)
                                 } else {
                                     _airCameraSettingsModel.try_set_param_int_async("HIGH_ENCRYPTION", checked ? 1 : 0, true)
                                 }
@@ -211,7 +215,7 @@ ScrollView {
             }
         }
         Text {
-            Layout.fillWidth: true; Layout.margins: 12; text: _fleetControlLte.statusText
+            Layout.fillWidth: true; Layout.margins: 12; text: root.fleetBackend ? root.fleetBackend.statusText : ""
             color: settings_form.secondaryText; wrapMode: Text.WordWrap; font.pixelSize: 12
         }
     }

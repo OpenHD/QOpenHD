@@ -602,7 +602,7 @@ BaseWidget {
                         }
                     }
 
-                    ComboBox {
+                    DarkComboBox {
                         id: providerDropdown
                         height: 48
                         width: parent.width
@@ -614,7 +614,7 @@ BaseWidget {
 
                     }
 
-                    ComboBox {
+                    DarkComboBox {
                         id: variantDropdown
                         height: 48
                         width: parent.width

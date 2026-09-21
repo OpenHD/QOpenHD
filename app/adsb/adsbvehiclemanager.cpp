@@ -491,6 +491,20 @@ ADSBSdr::ADSBSdr()
 {
 }
 
+void ADSBSdr::recordSuccessfulPoll()
+{
+    _consecutiveFailedPolls = 0;
+    emit sourceStatusChanged(2);
+}
+
+void ADSBSdr::recordFailedPoll()
+{
+    ++_consecutiveFailedPolls;
+    if (_consecutiveFailedPolls >= OfflineFailureThreshold) {
+        emit sourceStatusChanged(1);
+    }
+}
+
 void ADSBSdr::requestData(void) {
     //TODO REFACTOR MSG
     //Logger::instance()->logData("request data", 1);
@@ -499,6 +513,7 @@ void ADSBSdr::requestData(void) {
 
     // If adsb or sdr adsb is disabled by settings don't make the request and return
     if (!_adsb_enable || !_adsb_show_sdr_data) {
+        _consecutiveFailedPolls = 0;
         emit sourceStatusChanged(0);
         return;
     }
@@ -524,7 +539,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
-        emit sourceStatusChanged(1);
+        recordFailedPoll();
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Reply Error", 4);
         reply->deleteLater();
@@ -536,7 +551,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
 
     if (doc.isNull()) {
-        emit sourceStatusChanged(1);
+        recordFailedPoll();
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Parse Error", 4);
         reply->deleteLater();
@@ -544,7 +559,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     if(!doc.isObject()){
-        emit sourceStatusChanged(1);
+        recordFailedPoll();
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Json not an object", 4);
         reply->deleteLater();
@@ -554,7 +569,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     QJsonObject jsonObject = doc.object();
 
     if(jsonObject.isEmpty()){
-        emit sourceStatusChanged(1);
+        recordFailedPoll();
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Json empty", 4);
         reply->deleteLater();
@@ -562,7 +577,9 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     QJsonArray array = jsonObject["aircraft"].toArray();
-    emit sourceStatusChanged(2);
+    // Reaching a valid dump1090 JSON response proves the receiver service is
+    // online, even when no aircraft happen to be in range.
+    recordSuccessfulPoll();
 
     if(array.isEmpty()){
         //TODO REFACTOR MSG

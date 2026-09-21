@@ -346,7 +346,7 @@ Rectangle{
             id: intEnumDynamicListModel
             ListElement {title: qsTr("I SHOULD NEVER APPEAR"); value: 0}
         }
-        ComboBox {
+        CompactLinkComboBox {
             id: intEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14
@@ -367,7 +367,7 @@ Rectangle{
             ListElement {title: qsTr("I SHOULD NEVER APPEAR"); value:"ERROR"}
         }
 
-        ComboBox {
+        CompactLinkComboBox {
             id: stringEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14

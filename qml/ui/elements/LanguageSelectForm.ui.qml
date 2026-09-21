@@ -7,7 +7,7 @@ Item {
         { text: qsTr("German"), locale: "de" }
     ]
 
-    ComboBox {
+    DarkComboBox {
         anchors.fill: parent
 
         model: localesModel

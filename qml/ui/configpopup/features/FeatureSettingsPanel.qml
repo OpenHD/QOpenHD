@@ -76,7 +76,7 @@ AdvancedPage {
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Streaming mode"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                ComboBox {
+                                CompactLinkComboBox {
                                     id: audioMode
                                     property var values: [1, 0, 100]
                                     model: [qsTr("Off"), qsTr("Microphone"), qsTr("Test tone")]
@@ -93,7 +93,7 @@ AdvancedPage {
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Microphone"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                ComboBox {
+                                CompactLinkComboBox {
                                     id: captureDevice
                                     Layout.preferredWidth: Math.min(420, root.width * 0.48)
                                     property var ids: []
@@ -239,7 +239,7 @@ AdvancedPage {
                                 }
                             }
                             Label { text: qsTr("Channel bandwidth"); color: settings_form.primaryText }
-                            ComboBox { Layout.fillWidth: true; model: [5, 10, 20, 40]; currentIndex: Math.max(0, model.indexOf(_ohdSystemAir.curr_channel_width_mhz)); onActivated: _wbLinkSettingsHelper.change_param_air_channel_width_async(model[index], true) }
+                            CompactLinkComboBox { Layout.fillWidth: true; model: [5, 10, 20, 40]; currentIndex: Math.max(0, model.indexOf(_ohdSystemAir.curr_channel_width_mhz)); onActivated: _wbLinkSettingsHelper.change_param_air_channel_width_async(model[index], true) }
                             Label { text: qsTr("FEC overhead (%)"); color: settings_form.primaryText }
                             SpinBox {
                                 Layout.fillWidth: true; from: 0; to: 100; editable: true
@@ -302,7 +302,7 @@ AdvancedPage {
                 RowLayout {
                     Layout.fillWidth: true
                     Label { text: qsTr("Output"); color: settings_form.primaryText; Layout.fillWidth: true }
-                    ComboBox {
+                    CompactLinkComboBox {
                         id: outputDevice; Layout.preferredWidth: Math.min(420, root.width * 0.48); model: _audioControl.outputDeviceNames
                         currentIndex: Math.max(0, _audioControl.outputDeviceIds.indexOf(_audioControl.selectedOutputDevice))
                         onActivated: _audioControl.selectedOutputDevice = _audioControl.outputDeviceIds[index]

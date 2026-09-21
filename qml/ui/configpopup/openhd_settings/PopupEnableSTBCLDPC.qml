@@ -58,7 +58,7 @@ PopupBigGeneric{
         anchors.rightMargin: 10
         anchors.topMargin: dirty_top_margin_for_implementation
 
-        ComboBox {
+        CompactLinkComboBox {
             id: comboBoxNAntennasAir
             Layout.minimumWidth: 100
             Layout.preferredWidth: 450
@@ -71,7 +71,7 @@ PopupBigGeneric{
                 }
             }
         }
-        ComboBox {
+        CompactLinkComboBox {
             id: comboBoxNAntennasGnd
             Layout.minimumWidth: 100
             Layout.preferredWidth: 450

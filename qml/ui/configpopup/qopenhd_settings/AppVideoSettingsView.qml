@@ -10,6 +10,7 @@ import OpenHD 1.0
 
 import "../../../ui" as Ui
 import "../../elements"
+import "../openhd_settings"
 
 ScrollView {
     id: appVideoSettingsView
@@ -95,7 +96,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Primary video codec")
-                    ComboBox {
+                    CompactLinkComboBox {
                         id: selectVideoCodecPrimary
                         width: 320
                         height: elementHeight
@@ -181,7 +182,7 @@ ScrollView {
                     m_short_description: qsTr("Secondary video codec")
                     // only show to dualcam users
                     visible: settings.dev_qopenhd_n_cameras==2
-                    ComboBox {
+                    CompactLinkComboBox {
                         id: selectVideoCodecSecondary
                         width: 320
                         height: elementHeight
@@ -241,7 +242,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Secondary video input (Android dev)")
                     visible: _qopenhd.is_android()
-                    ComboBox {
+                    CompactLinkComboBox {
                         width: 320
                         height: elementHeight
                         anchors.right: parent.right
@@ -301,7 +302,7 @@ ScrollView {
                         height: elementHeight
                         anchors.left: parent.left
                     }
-                    ComboBox {
+                    CompactLinkComboBox {
                         width: 320
                         height: elementHeight
                         anchors.right: parent.right

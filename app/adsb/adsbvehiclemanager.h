@@ -104,8 +104,13 @@ private slots:
     void requestData() override;
 
 private:
+    void recordSuccessfulPoll();
+    void recordFailedPoll();
+
     QString _groundAddress = "127.0.0.1";
     bool _adsb_show_sdr_data;
+    int _consecutiveFailedPolls = 0;
+    static constexpr int OfflineFailureThreshold = 3;
 };
 
 class ADSBVehicleManager : public QObject {

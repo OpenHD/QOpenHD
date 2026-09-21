@@ -169,19 +169,19 @@ ScrollView {
                     anchors.fill: parent
                     columns: 2
                     Label { text: qsTr("Mode") }
-                    ComboBox {
+                    CompactLinkComboBox {
                         id: mode
                         model: ["50 Hz", "31 Hz", "19 Hz", "FLRC", "FSK", "19 Hz 7x"]
                         Keys.onPressed: root.handleKeys(event, mode)
                     }
                     Label { text: qsTr("Band") }
-                    ComboBox {
+                    CompactLinkComboBox {
                         id: rfBand
                         model: ["2.4 GHz", "915 FCC", "868 MHz", "433 MHz", "70 cm", "866 India", "915 + 2.4", "868 + 2.4"]
                         Keys.onPressed: root.handleKeys(event, rfBand)
                     }
                     Label { text: qsTr("Orthogonality") }
-                    ComboBox {
+                    CompactLinkComboBox {
                         id: rfOrtho
                         model: [qsTr("Off"), "1/3", "2/3", "3/3"]
                         Keys.onPressed: root.handleKeys(event, rfOrtho)

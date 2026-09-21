@@ -63,7 +63,7 @@ BaseWidget {
                 Switch { checked: root.enabled; onToggled: root.setBoth("WB_UDP_ENABLE", checked ? 1 : 0) }
             }
             Label { visible: root.enabled; text: qsTr("Channel bandwidth"); color: "white" }
-            ComboBox {
+            DarkComboBox {
                 visible: root.enabled; Layout.fillWidth: true
                 model: [5, 10, 20, 40]
                 currentIndex: Math.max(0, model.indexOf(_ohdSystemAir.curr_channel_width_mhz))

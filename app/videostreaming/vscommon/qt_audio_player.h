@@ -30,7 +30,7 @@ public:
     int playbackVolume() const { return m_volume; }
     int inputLevel() const { return m_inputLevel; }
     int outputLevel() const { return m_outputLevel; }
-    bool playing() const { return m_audioOutput != nullptr; }
+    bool playing() const { return m_socket.state() == QAbstractSocket::BoundState; }
     Q_INVOKABLE void refreshDevices();
     Q_INVOKABLE void setPlaybackEnabled(bool enabled);
     Q_INVOKABLE void start_playing();
@@ -52,6 +52,8 @@ private:
     QStringList m_deviceNames, m_deviceIds;
     QString m_selectedDevice;
     int m_volume = 100, m_inputLevel = 0, m_outputLevel = 0;
+    int m_outputSampleRate = 8000;
+    int m_outputChannelCount = 1;
     QUdpSocket m_socket;
     QIODevice *m_audioDevice = nullptr;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)

@@ -214,7 +214,7 @@ PopupBigGeneric {
                             font.bold: true
                             font.letterSpacing: 1
                         }
-                        ComboBox {
+                        CompactLinkComboBox {
                             id: rangeCombo
                             Layout.fillWidth: true
                             Layout.preferredHeight: 34
@@ -235,7 +235,7 @@ PopupBigGeneric {
                             font.bold: true
                             font.letterSpacing: 1
                         }
-                        ComboBox {
+                        CompactLinkComboBox {
                             id: bandwidthCombo
                             Layout.fillWidth: true
                             Layout.preferredHeight: 34

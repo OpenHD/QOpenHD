@@ -363,7 +363,7 @@ BaseWidget {
             width: parent.width
             height: m_row_height
 
-            ComboBox{
+            DarkComboBox{
                 width: parent.width
                 height: m_row_height
                 id: mcs_cb
@@ -401,7 +401,7 @@ BaseWidget {
         Row{
             width: parent.width
             height: m_row_height
-            ComboBox{
+            DarkComboBox{
                 width: parent.width
                 height: m_row_height
                 id: pollution_cb

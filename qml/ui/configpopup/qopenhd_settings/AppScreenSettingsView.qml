@@ -10,6 +10,7 @@ import OpenHD 1.0
 
 import "../../../ui" as Ui
 import "../../elements"
+import "../openhd_settings"
 
 ScrollView {
     id: appScreenSettingsView
@@ -134,7 +135,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Screen rotation")
                     // anything other than 0 and 180 can breaks things
-                    ComboBox {
+                    CompactLinkComboBox {
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
@@ -243,7 +244,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Font DPI")
                     m_long_description: qsTr("Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD.")
-                    ComboBox {
+                    CompactLinkComboBox {
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18

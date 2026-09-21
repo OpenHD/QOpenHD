@@ -73,6 +73,7 @@ $qtDlls = @(
     "Qt5QuickControls2.dll",
     "Qt5QuickTemplates2.dll",
     "Qt5Widgets.dll",
+    "Qt5Multimedia.dll",
     "Qt5Charts.dll",
     "Qt5Location.dll",
     "Qt5Positioning.dll",
@@ -102,7 +103,7 @@ if ($FfmpegBin -and (Test-Path -LiteralPath $FfmpegBin -PathType Container)) {
         Copy-Item -Destination $TargetDir -Force
 }
 
-foreach ($pluginDir in @("platforms", "imageformats", "styles", "iconengines", "geoservices", "position", "bearer")) {
+foreach ($pluginDir in @("platforms", "imageformats", "styles", "iconengines", "geoservices", "position", "bearer", "audio")) {
     Copy-ExistingDirectory (Join-Path $qtPlugins $pluginDir) (Join-Path $TargetDir $pluginDir)
 }
 

@@ -18,7 +18,7 @@ Item {
         update_selection();
     }
 
-    ComboBox {
+    DarkComboBox {
         id: fontDropdown
         anchors.fill: parent
         font.pixelSize: 14

@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import "../elements"
 
 BaseWidget {
     id: debugWidget
@@ -795,7 +796,7 @@ BaseWidget {
                 RowLayout {
                     Layout.fillWidth: true
                     Text { text: qsTr("Refresh mode"); color: settings.color_text; Layout.preferredWidth: 122 }
-                    ComboBox {
+                    DarkComboBox {
                         model: [qsTr("rows"), qsTr("columns")]
                         currentIndex: requestedIntraRefreshMode
                         enabled: intraRefreshParamsAvailable

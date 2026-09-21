@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
+import "../elements"
 
 BaseWidget {
     id: groundPowerWidget
@@ -73,7 +74,7 @@ BaseWidget {
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    ComboBox {
+                    DarkComboBox {
                         id: batteryComboBox
                         width: 100
                         height: parent.height

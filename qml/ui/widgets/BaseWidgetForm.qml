@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 
 import OpenHD 1.0
+import "../elements"
 
 /*
  * This file is WAY longer than I'd like, it's very repetitive and could probably be cleaned
@@ -107,7 +108,7 @@ Rectangle {
         Item {
             anchors.fill: parent
 
-            ComboBox {
+            DarkComboBox {
                 id: choiceBox
                 model: ["Top Left", "Top Right", "Bottom Right", "Bottom Left"]
             }

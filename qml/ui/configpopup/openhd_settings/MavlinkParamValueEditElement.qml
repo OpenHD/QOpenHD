@@ -12,7 +12,7 @@ import "../../../ui" as Ui
 import "../../elements"
 
 
-ComboBox{
+CompactLinkComboBox{
     property string m_display_text: "FILL ME"
     property string m_param_id: "TODO"
 

@@ -103,7 +103,7 @@ Card {
             width: 200
             text: qsTr("Default Resolution: %1").arg(m_default_resolution_fps)
         }
-        ComboBox {
+        CompactLinkComboBox {
             width: 300
             id: combobox_resolutions
             model: resolutions_model

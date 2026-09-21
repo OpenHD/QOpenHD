@@ -407,7 +407,7 @@ Rectangle {
                             font.bold: true
                             color: settings_form.primaryText
                         }
-                        ComboBox {
+                        CompactLinkComboBox {
                             id: ipCameraProfileField
                             Layout.fillWidth: true
                             model: [qsTr("SIYI camera"), qsTr("Generic RTSP camera"), qsTr("Custom")]

@@ -643,12 +643,19 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     }
     set_curr_mcs_index(new_mcs_index);
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
-    set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
-    if(m_is_air){
-        WBLinkSettingsHelper::instance().validate_and_set_air_channel_width_mhz(msg.curr_tx_channel_w_mhz);
-    }else{
+    // Some link backends publish 0 while no fresh radio metrics sample is
+    // available. Zero means "unknown" here; do not replace the last valid
+    // bandwidth or report an invalid configuration for every stats packet.
+    if(msg.curr_tx_channel_w_mhz > 0){
+        set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+        if(m_is_air){
+            WBLinkSettingsHelper::instance().validate_and_set_air_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+        }else{
+            WBLinkSettingsHelper::instance().validate_and_set_gnd_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+        }
+    }
+    if(!m_is_air){
         WBLinkSettingsHelper::instance().validate_and_set_gnd_channel_mhz(msg.curr_tx_channel_mhz);
-        WBLinkSettingsHelper::instance().validate_and_set_gnd_channel_width_mhz(msg.curr_tx_channel_w_mhz);
     }
     set_curr_bitrate_kbits(msg.curr_rate_kbits);
     set_curr_n_rate_adjustments(msg.curr_n_rate_adjustments);

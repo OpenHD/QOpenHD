@@ -7,6 +7,7 @@
     import QtQuick.Shapes 1.0
 
     import OpenHD 1.0
+    import "../elements"
 
 
     /* Plane or Copter decides if the widget will use mavlink wind msg (only available for planes)
@@ -231,7 +232,7 @@
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    ComboBox {
+                    DarkComboBox {
                         id: windUnitCombo
                         width: 80
                         height: parent.height
