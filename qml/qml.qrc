@@ -88,6 +88,7 @@
         <file>ui/configpopup/AdvancedActionButton.qml</file>
         <file>ui/configpopup/AdvancedTabButton.qml</file>
         <file>ui/configpopup/AdvancedDialog.qml</file>
+        <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>

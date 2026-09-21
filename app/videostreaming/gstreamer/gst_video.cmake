@@ -1,5 +1,6 @@
 set(GSTREAMER_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/gstqmlglsinkstream.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/gstrtpaudioplayer.h
     ${CMAKE_CURRENT_LIST_DIR}/gstrtpaudioplayer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/gstrtpreceiver.cpp
 )

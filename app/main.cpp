@@ -53,6 +53,7 @@
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #include "videostreaming/gstreamer/gst_helper.hpp"
 #include "videostreaming/gstreamer/gstqmlglsinkstream.h"
+#include "videostreaming/gstreamer/gstrtpaudioplayer.h"
 #endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
 #include <videostreaming/android/qandroidmediaplayer.h>
@@ -533,6 +534,8 @@ int main(int argc, char *argv[]) {
 
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(true));
+    engine.rootContext()->setContextProperty("_audioControl", &GstRtpAudioPlayer::instance());
+    GstRtpAudioPlayer::instance().refreshDevices();
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
     engine.rootContext()->setContextProperty("_primary_video_gstreamer_qml", &GstQmlGlSinkStream::instancePrimary());
 #endif
