@@ -249,6 +249,11 @@ RESOURCES += qml/qml.qrc \
              qml/qml_assets_credits.qrc \
              qml/qml_assets_cursors.qrc
 
+# qtquickcompiler generates one source file per QML resource during qmake.
+# Regenerate the Makefile when the resource manifest changes; otherwise an
+# incremental build can update only qmlcache_loader.cpp and fail at link time.
+QMAKE_INTERNAL_INCLUDED_FILES += $$PWD/qml/qml.qrc
+
 
 DISTFILES += \
     README.md \
