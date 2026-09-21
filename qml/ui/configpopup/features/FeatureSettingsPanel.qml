@@ -16,6 +16,8 @@ AdvancedPage {
 
     property int airRevision: _ohdSystemAirSettingsModel.update_count
     property int groundRevision: _ohdSystemGroundSettings.update_count
+    property bool adsbAirParameterAvailable: airRevision >= 0 &&
+                                                 _ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
 
     function setAirInt(id, value) {
         if (!_ohdSystemAirSettingsModel.param_int_exists(id)) return
@@ -181,7 +183,7 @@ AdvancedPage {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Enable receiver on connected air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
-                                    enabled: _ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
+                                    enabled: root.adsbAirParameterAvailable
                                     checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("ADSB_ENABLE") !== 0 }
                                     onToggled: root.setAirInt("ADSB_ENABLE", checked ? 1 : 0)
                                 }
@@ -208,7 +210,7 @@ AdvancedPage {
                                 Switch { checked: settings.adsb_show_osd_markers; onToggled: settings.adsb_show_osd_markers = checked }
                             }
                             Label {
-                                visible: !_ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
+                                visible: !root.adsbAirParameterAvailable
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Connect to an OpenHD air unit with ADS-B support to enable its SDR receiver.")
                             }
