@@ -39,6 +39,9 @@ BaseWidget {
     readonly property bool gpsReady: _fcMavlinkSystem.gps_fix_type >= 2
                                      && !(_fcMavlinkSystem.lat === 0.0
                                           && _fcMavlinkSystem.lon === 0.0)
+    readonly property bool positionReady: applicationWindow.referencePositionValid
+    readonly property real referenceLatitude: applicationWindow.referenceLatitude
+    readonly property real referenceLongitude: applicationWindow.referenceLongitude
     readonly property real ownAltitude: _fcMavlinkSystem.altitude_msl_m
 
     property var displayedAircraft: []
@@ -143,11 +146,13 @@ BaseWidget {
     }
 
     function relativeBearing(vehicle) {
-        if (!vehicle || !gpsReady) return NaN
-        var absolute = bearing(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon,
+        if (!vehicle || !positionReady) return NaN
+        var absolute = bearing(referenceLatitude, referenceLongitude,
                                vehicle.lat, vehicle.lon)
         if (!validNumber(absolute)) return NaN
-        return (absolute - _fcMavlinkSystem.hdg + 360) % 360
+        // Without an FC heading, the rough fallback radar is north-up.
+        var heading = gpsReady ? _fcMavlinkSystem.hdg : 0
+        return (absolute - heading + 360) % 360
     }
 
     function refresh() {
@@ -163,7 +168,7 @@ BaseWidget {
             else if (level === 1) ++cautions
         }
         aircraft.sort(function(a, b) {
-            if (gpsReady) {
+            if (positionReady) {
                 var ad = usableDistance(a) ? a.distance : Number.POSITIVE_INFINITY
                 var bd = usableDistance(b) ? b.distance : Number.POSITIVE_INFINITY
                 return ad - bd
@@ -388,7 +393,9 @@ BaseWidget {
                         }
                         Text {
                             text: root.gpsReady ? qsTr("Heading-up view centered on this aircraft")
-                                                : qsTr("Waiting for own-aircraft GPS position")
+                                  : (root.positionReady
+                                     ? qsTr("North-up view using rough network position")
+                                     : qsTr("Waiting for a position"))
                             color: root.mutedColor
                             font.pixelSize: 11
                         }

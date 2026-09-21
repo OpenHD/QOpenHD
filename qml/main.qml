@@ -4,6 +4,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.0
 import Qt.labs.settings 1.0
+import QtPositioning 5.15
 
 import OpenHD 1.0
 
@@ -16,6 +17,37 @@ import "./video"
 ApplicationWindow {
     id: applicationWindow
     visible: true
+
+    // Position priority used by map/ADS-B consumers. The network provider is
+    // deliberately only a rough fallback; a valid FC fix always wins.
+    readonly property bool fcPositionValid: _fcMavlinkSystem.gps_fix_type >= 2
+                                            && isFinite(_fcMavlinkSystem.lat)
+                                            && isFinite(_fcMavlinkSystem.lon)
+                                            && !(_fcMavlinkSystem.lat === 0.0
+                                                 && _fcMavlinkSystem.lon === 0.0)
+    readonly property bool roughPositionValid: {
+        var coordinate = networkPositionSource.position.coordinate
+        return coordinate && coordinate.isValid
+                && isFinite(coordinate.latitude) && isFinite(coordinate.longitude)
+                && !(coordinate.latitude === 0.0 && coordinate.longitude === 0.0)
+    }
+    readonly property bool referencePositionValid: fcPositionValid || roughPositionValid
+    readonly property double referenceLatitude: fcPositionValid
+                                                ? _fcMavlinkSystem.lat
+                                                : (roughPositionValid
+                                                   ? networkPositionSource.position.coordinate.latitude : 0.0)
+    readonly property double referenceLongitude: fcPositionValid
+                                                 ? _fcMavlinkSystem.lon
+                                                 : (roughPositionValid
+                                                    ? networkPositionSource.position.coordinate.longitude : 0.0)
+    readonly property bool referencePositionIsRough: !fcPositionValid && roughPositionValid
+
+    PositionSource {
+        id: networkPositionSource
+        active: !applicationWindow.fcPositionValid
+        updateInterval: 60000
+        preferredPositioningMethods: PositionSource.NonSatellitePositioningMethods
+    }
 
 
     //property int m_window_width: 1280

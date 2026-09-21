@@ -21,10 +21,16 @@ Map {
 
     bearing: settings.map_orientation ? _fcMavlinkSystem.hdg : 360
 
-    // TMDT / W-tec, Wuppertal. Keep the map useful before the first GPS fix.
-    readonly property var defaultCoordinate: QtPositioning.coordinate(51.2373245, 7.1616353)
+    // Neutral map center while neither the FC nor the network provider has a
+    // usable position. Never use this coordinate for an ADS-B request.
+    readonly property var defaultCoordinate: QtPositioning.coordinate(0.0, 0.0)
     property bool hasValidDroneCoordinate: _fcMavlinkSystem.gps_fix_type >= 2
                                             && !(_fcMavlinkSystem.lat === 0.0 && _fcMavlinkSystem.lon === 0.0)
+    readonly property bool hasReferenceCoordinate: applicationWindow.referencePositionValid
+    readonly property var referenceCoordinate: hasReferenceCoordinate
+                                               ? QtPositioning.coordinate(applicationWindow.referenceLatitude,
+                                                                          applicationWindow.referenceLongitude)
+                                               : defaultCoordinate
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
     property var center_coord
@@ -36,8 +42,8 @@ Map {
 
 
     center {
-        latitude: hasValidDroneCoordinate ? followDrone ? _fcMavlinkSystem.lat : 9000 : defaultCoordinate.latitude
-        longitude: hasValidDroneCoordinate ? followDrone ? _fcMavlinkSystem.lon : 9000 : defaultCoordinate.longitude
+        latitude: hasReferenceCoordinate ? followDrone ? referenceCoordinate.latitude : 9000 : defaultCoordinate.latitude
+        longitude: hasReferenceCoordinate ? followDrone ? referenceCoordinate.longitude : 9000 : defaultCoordinate.longitude
     }
 
     onSupportedMapTypesChanged: {
@@ -58,12 +64,16 @@ Map {
         function onGps_fix_typeChanged() { map.updateOfflinePosition() }
     }
 
+    Connections {
+        target: applicationWindow
+        function onReferenceLatitudeChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
+        function onReferenceLongitudeChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
+    }
+
     Component.onCompleted: updateOfflinePosition()
 
     function updateOfflinePosition() {
-        var coordinate = hasValidDroneCoordinate
-                ? QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
-                : defaultCoordinate
+        var coordinate = referenceCoordinate
         _offlineMapTiles.setPosition(coordinate.latitude, coordinate.longitude)
     }
 
@@ -89,12 +99,9 @@ Map {
     // ADS-B search radius and distance are always relative to the aircraft,
     // even when the operator pans the map away from it.
     function updateAdsbPosition() {
-        var coordinate = hasValidDroneCoordinate
-                ? QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
-                : center_coord
-        if (!coordinate) coordinate = defaultCoordinate
-        AdsbVehicleManager.newMapLat(coordinate.latitude)
-        AdsbVehicleManager.newMapLon(coordinate.longitude)
+        if (!hasReferenceCoordinate) return
+        AdsbVehicleManager.newMapLat(referenceCoordinate.latitude)
+        AdsbVehicleManager.newMapLon(referenceCoordinate.longitude)
     }
 
     function coordinateWithFallback(lat, lon) {
