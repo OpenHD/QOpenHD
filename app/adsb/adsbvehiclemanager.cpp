@@ -27,6 +27,7 @@
 #include <QNetworkRequest>
 
 #include <QDebug>
+#include <QMetaObject>
 
 
 ADSBVehicleManager* ADSBVehicleManager::instance()
@@ -162,6 +163,16 @@ void ADSBVehicleManager::setSourceStatus(uint status)
 
 void ADSBVehicleManager::processMavlinkVehicle(const mavlink_adsb_vehicle_t& vehicle)
 {
+    // MAVLink receive callbacks run on their UDP/TCP worker threads. The
+    // vehicle model is exposed to QML and must only create or update QObjects
+    // on the QML/manager thread.
+    if (QThread::currentThread() != thread()) {
+        QMetaObject::invokeMethod(this, [this, vehicle]() {
+            processMavlinkVehicle(vehicle);
+        }, Qt::QueuedConnection);
+        return;
+    }
+
     constexpr uint16_t kOpenHdRssiFlag = 1U << 15;
     ADSBVehicle::VehicleInfo_t info{};
     info.icaoAddress = vehicle.ICAO_address;
