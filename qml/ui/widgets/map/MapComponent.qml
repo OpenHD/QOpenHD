@@ -53,8 +53,8 @@ Map {
 
     Connections {
         target: _fcMavlinkSystem
-        function onLatChanged() { map.updateOfflinePosition() }
-        function onLonChanged() { map.updateOfflinePosition() }
+        function onLatChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
+        function onLonChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
         function onGps_fix_typeChanged() { map.updateOfflinePosition() }
     }
 
@@ -83,9 +83,18 @@ Map {
 
     function findMapBounds(){
         center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
-        //console.log("Map component: center",center_coord.latitude, center_coord.longitude);
-        AdsbVehicleManager.newMapLat(center_coord.latitude);
-        AdsbVehicleManager.newMapLon(center_coord.longitude);
+        updateAdsbPosition()
+    }
+
+    // ADS-B search radius and distance are always relative to the aircraft,
+    // even when the operator pans the map away from it.
+    function updateAdsbPosition() {
+        var coordinate = hasValidDroneCoordinate
+                ? QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+                : center_coord
+        if (!coordinate) coordinate = defaultCoordinate
+        AdsbVehicleManager.newMapLat(coordinate.latitude)
+        AdsbVehicleManager.newMapLon(coordinate.longitude)
     }
 
     function coordinateWithFallback(lat, lon) {

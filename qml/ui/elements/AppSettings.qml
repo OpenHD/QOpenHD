@@ -96,6 +96,7 @@ Settings {
     property bool dev_disable_autofetch: false
     // Channel scan bandwidth (used by "Find Air Unit")
     property int scan_channel_width_mhz: 20
+    property bool scan_passive_nexmon: false
     // WARNING END
     //WARNING: THIS makes the RC panel visible
     property bool app_show_RC: false
@@ -348,6 +349,8 @@ Settings {
     property bool adsb_show_internet_data: true
     property bool adsb_show_sdr_data: true
     property bool adsb_show_unknown_or_zero_alt: false //alot of traffic has no alt and is not useful
+    property bool adsb_show_nearest_widget: true
+    property bool adsb_show_osd_markers: false
 
     property int map_zoom: 18
     property double map_size: 1

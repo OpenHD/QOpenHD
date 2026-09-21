@@ -8,7 +8,6 @@ import OpenHD 1.0
 import "connect"
 import "credits"
 import "dev"
-import "features"
 import "log"
 import "qopenhd_settings"
 import "openhd_settings"
@@ -63,7 +62,7 @@ Rectangle {
     }
     function openDeveloperTools() {
         openSettings()
-        mainStackLayout.currentIndex = 9
+        mainStackLayout.currentIndex = 8
         navigation.currentIndex = -1
         appDeveloperStatsPanel.gainFocus()
     }
@@ -104,7 +103,6 @@ Rectangle {
         ListElement { title: qsTr("Connect"); icon: "\uf6ff" }
         ListElement { title: qsTr("Credits"); icon: "\uf005" }
         ListElement { title: qsTr("MAV Debug"); icon: "\uf188" }
-        ListElement { title: qsTr("Audio & Data"); icon: "\uf1eb" }
     }
 
     Rectangle {
@@ -389,7 +387,6 @@ Rectangle {
             ConnectPanel { id: connectPanel }
             Credits { id: creditspanel }
             MavlinkDebugPanel { id: mavlinkDebugPanel }
-            FeatureSettingsPanel { id: featureSettingsPanel }
             AppDeveloperStatsPanel { id: appDeveloperStatsPanel }
         }
     }

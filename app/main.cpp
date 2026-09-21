@@ -62,6 +62,9 @@
 #endif
 #include "videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 #include "videostreaming/vscommon/audio_playback.h"
+#ifdef QOPENHD_ENABLE_QT_AUDIO
+#include "videostreaming/vscommon/qt_audio_player.h"
+#endif
 // Video end
 
 #include "util/qrenderstats.h"
@@ -534,8 +537,16 @@ int main(int argc, char *argv[]) {
 
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(true));
-    engine.rootContext()->setContextProperty("_audioControl", &GstRtpAudioPlayer::instance());
-    GstRtpAudioPlayer::instance().refreshDevices();
+#ifdef QOPENHD_ENABLE_QT_AUDIO
+    if (QOpenHD::instance().is_android()) {
+        engine.rootContext()->setContextProperty("_audioControl", &QtAudioPlayer::instance());
+        QtAudioPlayer::instance().refreshDevices();
+    } else
+#endif
+    {
+        engine.rootContext()->setContextProperty("_audioControl", &GstRtpAudioPlayer::instance());
+        GstRtpAudioPlayer::instance().refreshDevices();
+    }
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
     engine.rootContext()->setContextProperty("_primary_video_gstreamer_qml", &GstQmlGlSinkStream::instancePrimary());
 #endif
@@ -544,7 +555,18 @@ int main(int argc, char *argv[]) {
 #endif
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(false));
+#ifdef QOPENHD_ENABLE_QT_AUDIO
+    engine.rootContext()->setContextProperty("_audioControl", &QtAudioPlayer::instance());
+    QtAudioPlayer::instance().refreshDevices();
 #endif
+#endif
+    engine.rootContext()->setContextProperty("QOPENHD_AUDIO_PLAYBACK_AVAILABLE", QVariant(
+#if defined(QOPENHD_ENABLE_GSTREAMER_QMLGLSINK) || defined(QOPENHD_ENABLE_QT_AUDIO)
+        true
+#else
+        false
+#endif
+    ));
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
     // QT doesn't have the define(s) from c++
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(true));

@@ -15,9 +15,16 @@
 ADSBVehicle::ADSBVehicle(const VehicleInfo_t& vehicleInfo, QObject* parent)
     : QObject       (parent)
     , _icaoAddress  (vehicleInfo.icaoAddress)
+    , _lat          (qQNaN())
+    , _lon          (qQNaN())
     , _altitude     (qQNaN())
+    , _velocity     (qQNaN())
     , _heading      (qQNaN())
     , _alert        (false)
+    , _lastContact  (0)
+    , _verticalVel  (qQNaN())
+    , _distance     (qQNaN())
+    , _rssi         (qQNaN())
 {
     update(vehicleInfo);
 }
@@ -25,7 +32,6 @@ ADSBVehicle::ADSBVehicle(const VehicleInfo_t& vehicleInfo, QObject* parent)
 void ADSBVehicle::update(const VehicleInfo_t& vehicleInfo)
 {
     if (_icaoAddress != vehicleInfo.icaoAddress) {
-        qDebug() << "ICAO address mismatch expected:actual" << _icaoAddress << vehicleInfo.icaoAddress;
         return;
     }
     if (vehicleInfo.availableFlags & CallsignAvailable) {
@@ -82,6 +88,12 @@ void ADSBVehicle::update(const VehicleInfo_t& vehicleInfo)
         if (vehicleInfo.distance != _distance) {
             _distance = vehicleInfo.distance;
             emit distanceChanged();
+        }
+    }
+    if (vehicleInfo.availableFlags & RssiAvailable) {
+        if (!(qIsNaN(vehicleInfo.rssi) && qIsNaN(_rssi)) && !qFuzzyCompare(vehicleInfo.rssi, _rssi)) {
+            _rssi = vehicleInfo.rssi;
+            emit rssiChanged();
         }
     }
     _lastUpdateTimer.restart();

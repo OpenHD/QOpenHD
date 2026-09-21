@@ -16,6 +16,7 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Network)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS LinguistTools)
+find_package(Qt6 ${X_QT_VERSION} QUIET COMPONENTS Multimedia)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
@@ -121,6 +122,16 @@ qt_add_translations(QOpenHDApp
 )
 
 target_include_directories(QOpenHDApp PUBLIC app)
+if(APPLE AND NOT IOS)
+    target_compile_definitions(QOpenHDApp PRIVATE __macos__ __apple__)
+    set_target_properties(QOpenHDApp PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.openhd.QOpenHD"
+        MACOSX_BUNDLE_BUNDLE_NAME "QOpenHD"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    )
+endif()
 target_include_directories(QOpenHDApp PUBLIC app/common)
 target_include_directories(QOpenHDApp PUBLIC app/adsb)
 target_include_directories(QOpenHDApp PUBLIC app/logging)
@@ -152,6 +163,14 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 target_link_libraries(QOpenHDApp
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Network
 )
+if(TARGET Qt6::Multimedia)
+    target_sources(QOpenHDApp PRIVATE
+        app/videostreaming/vscommon/qt_audio_player.cpp
+        app/videostreaming/vscommon/qt_audio_player.h
+    )
+    target_link_libraries(QOpenHDApp PRIVATE Qt6::Multimedia)
+    target_compile_definitions(QOpenHDApp PRIVATE QOPENHD_ENABLE_QT_AUDIO)
+endif()
 
 add_executable(qopenhd-offline-map-test
     tests/offline_map_provider_test.cpp

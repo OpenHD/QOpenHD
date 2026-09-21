@@ -78,7 +78,7 @@ public:
 
     // Sent to the ground unit only
     bool send_command_analyze_channels_blocking(int freq_bands);
-    bool send_command_start_scan_channels_blocking(int freq_bands,int channel_widths);
+    bool send_command_start_scan_channels_blocking(int freq_bands,int channel_widths,bool passive = false);
 signals:
     void formatAirSdCardStatusChanged();
     void airStorageDevicesChanged();

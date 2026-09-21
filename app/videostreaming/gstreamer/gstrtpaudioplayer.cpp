@@ -186,7 +186,9 @@ QString GstRtpAudioPlayer::constructPipeline()
     QString pipeline = QStringLiteral(
         "udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)PCMA\" "
         "! rtppcmadepay ! audio/x-alaw, rate=8000, channels=1 ! alawdec ! audioconvert "
-        "! volume name=playback_volume volume=%1 ! level name=audio_level interval=50000000 post-messages=true ! tee name=t "
+        "! level name=input_level interval=50000000 post-messages=true "
+        "! volume name=playback_volume volume=%1 "
+        "! level name=output_level interval=50000000 post-messages=true ! tee name=t "
         "t. ! queue ! %2").arg(m_playbackVolume / 100.0, 0, 'f', 2).arg(sinkDescription());
     if (m_recording) {
         m_recordingPath = createRecordingPath();
@@ -237,7 +239,12 @@ void GstRtpAudioPlayer::stop_playing()
     gst_object_unref(m_pipeline);
     m_pipeline = nullptr;
     m_pipelineRecording = false;
-    if (m_audioLevel != 0) { m_audioLevel = 0; emit audioLevelChanged(); }
+    if (m_inputLevel != 0) { m_inputLevel = 0; emit inputLevelChanged(); }
+    if (m_outputLevel != 0) {
+        m_outputLevel = 0;
+        emit outputLevelChanged();
+        emit audioLevelChanged();
+    }
     emit playingChanged();
 }
 
@@ -266,7 +273,15 @@ void GstRtpAudioPlayer::pollBus()
                 if (peaks && GST_VALUE_HOLDS_LIST(peaks) && gst_value_list_get_size(peaks) > 0) {
                     const double db = g_value_get_double(gst_value_list_get_value(peaks, 0));
                     const int level = qBound(0, qRound((db + 60.0) * 100.0 / 60.0), 100);
-                    if (level != m_audioLevel) { m_audioLevel = level; emit audioLevelChanged(); }
+                    const QString sourceName = QString::fromUtf8(GST_OBJECT_NAME(GST_MESSAGE_SRC(message)));
+                    if (sourceName == QStringLiteral("input_level") && level != m_inputLevel) {
+                        m_inputLevel = level;
+                        emit inputLevelChanged();
+                    } else if (sourceName == QStringLiteral("output_level") && level != m_outputLevel) {
+                        m_outputLevel = level;
+                        emit outputLevelChanged();
+                        emit audioLevelChanged();
+                    }
                 }
             }
         }

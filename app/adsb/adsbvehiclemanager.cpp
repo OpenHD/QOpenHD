@@ -43,16 +43,19 @@ ADSBVehicleManager::ADSBVehicleManager(QObject *parent) : QObject(parent)
 ADSBVehicleManager::~ADSBVehicleManager()
 {
     // manually stop the threads
-    _internetLink->quit();
-    _internetLink->wait();
+    if (_internetLink) {
+        _internetLink->quit();
+        _internetLink->wait();
+    }
 
-    _sdrLink->quit();
-    _sdrLink->wait();
+    if (_sdrLink) {
+        _sdrLink->quit();
+        _sdrLink->wait();
+    }
 }
 
 void ADSBVehicleManager::onStarted()
 {
-    qDebug() << "ADSBVehicleManager::onStarted()";
     // this is for adsb recievers on the FC
     //   MavlinkTelemetry* mavlinktelemetry = MavlinkTelemetry::instance();
     //   connect(mavlinktelemetry, &MavlinkTelemetry::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
@@ -71,6 +74,7 @@ void ADSBVehicleManager::onStarted()
 
     _sdrLink = new ADSBSdr();
     connect(_sdrLink, &ADSBSdr::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
+    connect(_sdrLink, &ADSBSdr::sourceStatusChanged, this, &ADSBVehicleManager::setSourceStatus, Qt::QueuedConnection);
     //TODO COMMENTED TO GET WORKING
     //   connect(this, &ADSBVehicleManager::mapLatChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
     //   connect(this, &ADSBVehicleManager::mapLonChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
@@ -94,7 +98,6 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
     for (int i=_adsbVehicles.count()-1; i>=0; i--) {
         ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
         if (adsbVehicle->expired()) {
-            qDebug() << "Expired" << QStringLiteral("%1").arg(adsbVehicle->icaoAddress(), 0, 16);
             _adsbVehicles.removeAt(i);
             _adsbICAOMap.remove(adsbVehicle->icaoAddress());
             adsbVehicle->deleteLater();
@@ -114,7 +117,6 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
 
 //currently not used.. was for testing but could have future purpose to turn off display
 void ADSBVehicleManager::adsbClearModel(){
-    qDebug() << "_adsbVehicles.clearAndDeleteContents";
     _adsbVehicles.clearAndDeleteContents();
 }
 
@@ -122,9 +124,9 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
 {
     uint32_t icaoAddress = vehicleInfo.icaoAddress;
 
-    //no point in continuing because no location. This is somewhat redundant with parser
-    //possible situation where we start to not get location.. and gets stale then removed
-    if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
+    // Keep position-less reports as well: dump1090 can receive identity and RSSI
+    // before it has decoded a position, and the traffic widget can still rank them.
+    if (icaoAddress != 0) {
         //qDebug() << "ADD/Update ADSB Vehicle";
         //decide if its new or needs update
         if (_adsbICAOMap.contains(icaoAddress)) {
@@ -138,12 +140,70 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
         }
 
         // Show warnings if adsb reported traffic is too close
-        _evaluateTraffic(vehicleInfo.altitude, vehicleInfo.distance);
+        if ((vehicleInfo.availableFlags & ADSBVehicle::AltitudeAvailable) &&
+            (vehicleInfo.availableFlags & ADSBVehicle::DistanceAvailable)) {
+            _evaluateTraffic(vehicleInfo.altitude, vehicleInfo.distance);
+        }
 
         _last_update_timer.restart();
         _status = 2;
         emit statusChanged();
     }
+}
+
+void ADSBVehicleManager::setSourceStatus(uint status)
+{
+    if (_status == status) {
+        return;
+    }
+    _status = status;
+    emit statusChanged();
+}
+
+void ADSBVehicleManager::processMavlinkVehicle(const mavlink_adsb_vehicle_t& vehicle)
+{
+    constexpr uint16_t kOpenHdRssiFlag = 1U << 15;
+    ADSBVehicle::VehicleInfo_t info{};
+    info.icaoAddress = vehicle.ICAO_address;
+
+    if (vehicle.flags & ADSB_FLAGS_VALID_CALLSIGN) {
+        info.callsign = QString::fromLatin1(vehicle.callsign, sizeof(vehicle.callsign)).trimmed();
+        info.availableFlags |= ADSBVehicle::CallsignAvailable;
+    }
+    if (vehicle.flags & ADSB_FLAGS_VALID_COORDS) {
+        info.lat = vehicle.lat / 1e7;
+        info.lon = vehicle.lon / 1e7;
+        info.availableFlags |= ADSBVehicle::LocationAvailable;
+
+        const double latDistance = qDegreesToRadians(_api_lat - info.lat);
+        const double lonDistance = qDegreesToRadians(_api_lon - info.lon);
+        const double a = qSin(latDistance / 2) * qSin(latDistance / 2)
+                + qCos(qDegreesToRadians(_api_lat)) * qCos(qDegreesToRadians(info.lat))
+                * qSin(lonDistance / 2) * qSin(lonDistance / 2);
+        info.distance = 6371.0 * 2.0 * qAtan2(qSqrt(a), qSqrt(1.0 - a));
+        info.availableFlags |= ADSBVehicle::DistanceAvailable;
+    }
+    if (vehicle.flags & ADSB_FLAGS_VALID_ALTITUDE) {
+        info.altitude = vehicle.altitude / 1000.0;
+        info.availableFlags |= ADSBVehicle::AltitudeAvailable;
+    }
+    if (vehicle.flags & ADSB_FLAGS_VALID_HEADING) {
+        info.heading = vehicle.heading / 100.0;
+        info.availableFlags |= ADSBVehicle::HeadingAvailable;
+    }
+    if (vehicle.flags & ADSB_FLAGS_VALID_VELOCITY) {
+        info.velocity = vehicle.hor_velocity * 0.036;
+        info.verticalVel = vehicle.ver_velocity / 100.0;
+        info.availableFlags |= ADSBVehicle::VelocityAvailable | ADSBVehicle::VerticalVelAvailable;
+    }
+    info.lastContact = vehicle.tslc;
+    info.availableFlags |= ADSBVehicle::LastContactAvailable;
+    if (vehicle.flags & kOpenHdRssiFlag) {
+        info.rssi = vehicle.squawk / 100.0 - 100.0;
+        info.availableFlags |= ADSBVehicle::RssiAvailable;
+    }
+
+    adsbVehicleUpdate(info);
 }
 
 void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distance)
@@ -168,8 +228,9 @@ void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distan
     }
 }
 
-ADSBapi::ADSBapi()
+ADSBapi::ADSBapi(int requestIntervalMs)
     : QThread()
+    , timer_interval(requestIntervalMs)
 {
     moveToThread(this);
     start();
@@ -236,7 +297,6 @@ void ADSBInternet::requestData(void) {
     request.setUrl(api_request);
     request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
 
-    qDebug() << "url=" << api_request;
     m_manager->get(request);
 }
 
@@ -245,18 +305,14 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     max_distance=(_settings.value("adsb_radius").toInt());
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
-    qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
-        qDebug() << "ADSB OpenSky request error!";
-        qDebug() << reply->errorString();
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky Reply Error", 4);
         reply->deleteLater();
         return;
     }
     if(!reply->isFinished()){
-        qDebug()<<"We should only get finished replies";
     }
 
 
@@ -267,7 +323,6 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
 
     if (doc.isNull()) {
-        qDebug() << "ADSB internet network response: Parse failed";
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky Parse Error", 4);
         reply->deleteLater();
@@ -275,7 +330,6 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     }
 
     if(!doc.isObject()){
-        qDebug()<<"JSON is not an object.";
         reply->deleteLater();
         return;
     }
@@ -283,7 +337,6 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     QJsonObject jsonObject = doc.object();
 
     if(jsonObject.isEmpty()){
-        qDebug()<<"ADSB internet json response: JSON object is empty.";
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky empty object", 4);
         reply->deleteLater();
@@ -294,13 +347,12 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
     QJsonArray acArray = doc.object()["ac"].toArray();
 
-    qDebug()<<"adsb aircraft count:" << acArray.count();
 
     // Iterate through the "ac" array
     for (const QJsonValue &aircraftValue : acArray) {
         QJsonObject aircraft = aircraftValue.toObject();
 
-        ADSBVehicle::VehicleInfo_t adsbInfo;
+        ADSBVehicle::VehicleInfo_t adsbInfo{};
 
         //Aircraft Hex
         bool icaoOk;
@@ -309,7 +361,6 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         //qDebug() << "Hex:" << aircraft["hex"].toString();
         // Skip this element if icao number is not ok
         if (!icaoOk) {
-            qDebug()<<"skipping - icao not ok";
             continue;
         }
 
@@ -341,12 +392,10 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         double distance = 6371 * c;
 
         adsbInfo.distance = distance;
-        qDebug() << "adsb internet distance=" << distance;
         adsbInfo.availableFlags |= ADSBVehicle::DistanceAvailable;
 
         // If aircraft beyond max distance than skip this one
-        if(distance>max_distance){
-            qDebug() << "Aircraft Beyond max distance... SKIPPING aircraft";
+        if(distance > max_distance / 1000.0){
             //TODO commented for testing
             //continue;
         }
@@ -361,17 +410,14 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         //Aircraft altitude
         if(aircraft["alt_baro"].toDouble()){
             adsbInfo.altitude = aircraft["alt_baro"].toDouble();
-            qDebug()<<"alt:" << aircraft["alt_baro"].toDouble();
             //per setting eliminate all unknown alt
             if (adsbInfo.altitude<5 && unknown_zero_alt==false){
-                qDebug() << "ADSB Skipping aircraft for alt error";
                 continue;
             }
         }
         else {
             //per setting eliminate all unknown alt
             if (unknown_zero_alt==false){
-                qDebug() << "ADSB Skipping aircraft for alt error";
                 continue;
             }
             else {
@@ -430,23 +476,19 @@ void ADSBInternet::dirty_onSslError(QNetworkReply *reply, QList<QSslError> error
 }
 
 ADSBSdr::ADSBSdr()
-    : ADSBapi()
+    : ADSBapi(2000)
 {
-// we need to manage this properly
-#if defined(__rasp_pi__)|| defined(__jetson__)
-    _groundAddress = "127.0.0.1";
-#endif
-
-    timer_interval = 2000;
 }
 
 void ADSBSdr::requestData(void) {
     //TODO REFACTOR MSG
     //Logger::instance()->logData("request data", 1);
     _adsb_show_sdr_data = _settings.value("adsb_show_sdr_data").toBool();
+    _adsb_enable = _settings.value("adsb_enable").toBool();
 
     // If adsb or sdr adsb is disabled by settings don't make the request and return
     if (!_adsb_enable || !_adsb_show_sdr_data) {
+        emit sourceStatusChanged(0);
         return;
     }
 
@@ -465,17 +507,13 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     //TODO
     //Logger::instance()->logData("process reply", 1);
 
-    max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
+    max_distance = _settings.value("adsb_radius").toInt() / 1000;
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
     //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
-        if(!m_adsb_reply_error_logged_once){
-            m_adsb_reply_error_logged_once=true;
-            qDebug() << "ADSB SDR request error!";
-            qDebug() << reply->errorString();
-        }
+        emit sourceStatusChanged(1);
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Reply Error", 4);
         reply->deleteLater();
@@ -487,7 +525,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
 
     if (doc.isNull()) {
-        qDebug() << "ADSB SDR response: Parse failed";
+        emit sourceStatusChanged(1);
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Parse Error", 4);
         reply->deleteLater();
@@ -495,7 +533,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     if(!doc.isObject()){
-        qDebug()<<"JSON is not an object.";
+        emit sourceStatusChanged(1);
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Json not an object", 4);
         reply->deleteLater();
@@ -505,7 +543,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     QJsonObject jsonObject = doc.object();
 
     if(jsonObject.isEmpty()){
-        qDebug()<<"ADSB Openskynetwork response: JSON object is empty.";
+        emit sourceStatusChanged(1);
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Json empty", 4);
         reply->deleteLater();
@@ -513,9 +551,9 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     QJsonArray array = jsonObject["aircraft"].toArray();
+    emit sourceStatusChanged(2);
 
     if(array.isEmpty()){
-        qDebug()<<"JSON array is empty.";
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB SDR Json array empty", 4);
         reply->deleteLater();
@@ -524,7 +562,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
     foreach (const QJsonValue & val, array){
         //Logger::instance()->logData("For Each Loop... /n", 1);
-        ADSBVehicle::VehicleInfo_t adsbInfo;
+        ADSBVehicle::VehicleInfo_t adsbInfo{};
         bool icaoOk;
 
         // TODO
@@ -541,40 +579,45 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
             // location comes in lat lon format, but we need it as QGeoCoordinate
 
-            if(val.toObject().value("lat").isNull() || val.toObject().value("lon").isNull()){ //skip if no lat lon
-                continue;
-            }
-
-            double lat = val.toObject().value("lat").toDouble();
-            double lon = val.toObject().value("lon").toDouble();
+            const QJsonObject aircraft = val.toObject();
+            const bool hasPosition = aircraft.value("lat").isDouble() && aircraft.value("lon").isDouble();
+            if (hasPosition) {
+                const double lat = aircraft.value("lat").toDouble();
+                const double lon = aircraft.value("lon").toDouble();
 
             //QGeoCoordinate location(lat, lon);
             //adsbInfo.location = location;
-            adsbInfo.lat = lat;
-            adsbInfo.lon = lon;
-            adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
+                adsbInfo.lat = lat;
+                adsbInfo.lon = lon;
+                adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
 
             //evaluate distance for SDR adsb traffic... this is redundant with internet
-            double lat_1 = m_api_lat;
-            double lon_1 = m_api_lon;
+                double lat_1 = m_api_lat;
+                double lon_1 = m_api_lon;
 
-            double latDistance = qDegreesToRadians(lat_1 - lat);
-            double lngDistance = qDegreesToRadians(lon_1 - lon);
+                double latDistance = qDegreesToRadians(lat_1 - lat);
+                double lngDistance = qDegreesToRadians(lon_1 - lon);
 
-            double a = qSin(latDistance / 2) * qSin(latDistance / 2)
+                double a = qSin(latDistance / 2) * qSin(latDistance / 2)
                        + qCos(qDegreesToRadians(lat_1)) * qCos(qDegreesToRadians(lat))
                              * qSin(lngDistance / 2) * qSin(lngDistance / 2);
 
-            double c = 2 * qAtan2(qSqrt(a), qSqrt(1 - a));
-            double distance = 6371 * c;
+                double c = 2 * qAtan2(qSqrt(a), qSqrt(1 - a));
+                double distance = 6371 * c;
 
-            adsbInfo.distance = distance;
-            adsbInfo.availableFlags |= ADSBVehicle::DistanceAvailable;
+                adsbInfo.distance = distance;
+                adsbInfo.availableFlags |= ADSBVehicle::DistanceAvailable;
 
             // If aircraft beyond max distance than skip this one
-            if(distance>max_distance){
+                if(distance>max_distance){
                 //qDebug() << "Beyond max SKIPPING";
-                continue;
+                    continue;
+                }
+            }
+
+            if (aircraft.value("rssi").isDouble()) {
+                adsbInfo.rssi = aircraft.value("rssi").toDouble();
+                adsbInfo.availableFlags |= ADSBVehicle::RssiAvailable;
             }
 
             // callsign
@@ -586,61 +629,43 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
                 adsbInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
             }
 
-            //altitude
-            if(val.toObject().value("altitude").isNull()){
-                //per setting eliminate unknown alt traffic
-                if (unknown_zero_alt==false){
-                    //skip this traffic
-                    continue;
-                } else {
-                    adsbInfo.altitude=99999.9;
-                }
+            // dump1090 variants use either altitude or alt_baro (feet).
+            QJsonValue altitude = aircraft.value("alt_baro");
+            if (!altitude.isDouble()) altitude = aircraft.value("altitude");
+            if (altitude.isDouble() && (unknown_zero_alt || altitude.toDouble() >= 5)) {
+                adsbInfo.altitude = altitude.toDouble() * 0.3048;
+                adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
             }
-            else {
-                adsbInfo.altitude = val.toObject().value("altitude").toInt() * 0.3048;//feet to meters
-                //per setting eliminate all unknown alt
-                if (adsbInfo.altitude<5 && unknown_zero_alt==false){
-                    //skip this traffic
-                    continue;
-                }
-            }
-            adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
 
             //velocity
-            if(val.toObject().value("speed").isNull()){
-                adsbInfo.velocity=99999.9;
+            QJsonValue speed = aircraft.value("gs");
+            if (!speed.isDouble()) speed = aircraft.value("speed");
+            if (speed.isDouble()) {
+                adsbInfo.velocity = round(speed.toDouble() * 1.852); // knots to km/h
+                adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
             }
-            else {
-                adsbInfo.velocity = round(val.toObject().value("speed").toDouble() * 1.852); // knots to km/h
-            }
-            adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
 
             //heading
-            if(val.toObject().value("track").isNull()){
-                adsbInfo.heading=0.0;
+            if (aircraft.value("track").isDouble()) {
+                adsbInfo.heading = aircraft.value("track").toDouble();
+                adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
             }
-            else {
-                adsbInfo.heading = val.toObject().value("track").toDouble();
-            }
-            adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
 
             //last contact
-            if(val.toObject().value("seen_pos").isNull()){
-                adsbInfo.lastContact=0;
+            QJsonValue seen = aircraft.value("seen_pos");
+            if (!seen.isDouble()) seen = aircraft.value("seen");
+            if (seen.isDouble()) {
+                adsbInfo.lastContact = seen.toInt();
+                adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
             }
-            else {
-                adsbInfo.lastContact = val.toObject().value("seen_pos").toInt();
-            }
-            adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
 
             //vertical velocity
-            if(val.toObject().value("vert_rate").isNull()){
-                adsbInfo.verticalVel=0.0;
+            QJsonValue verticalRate = aircraft.value("baro_rate");
+            if (!verticalRate.isDouble()) verticalRate = aircraft.value("vert_rate");
+            if (verticalRate.isDouble()) {
+                adsbInfo.verticalVel = round(verticalRate.toDouble() * 0.00508); //feet/min to m/s
+                adsbInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
             }
-            else {
-                adsbInfo.verticalVel = round(val.toObject().value("vert_rate").toDouble() * 0.00508); //feet/min to m/s
-            }
-            adsbInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
 
 
             // this is received on adsbvehicleupdate slot
@@ -648,7 +673,6 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
         }
         else {
             //Logger::instance()->logData("icao REJECTED! /n", 1);
-            qDebug()<<"ICAO number NOT OK!";
         }
     }
     reply->deleteLater();

@@ -523,6 +523,14 @@ Item {
             id: mapWidget
         }
 
+        AdsbTrafficWidget {
+            id: adsbTrafficWidget
+        }
+
+        AdsbOsdOverlay {
+            anchors.fill: parent
+        }
+
         ExampleWidget {
             id: exampleWidget
         }

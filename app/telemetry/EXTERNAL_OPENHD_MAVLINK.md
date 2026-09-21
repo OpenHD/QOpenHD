@@ -3,6 +3,12 @@
 This note summarizes how third-party tools can re-use the same MAVLink profile QOpenHD relies on to configure and query an OpenHD air/ground pair.  It focuses on the OpenHD-specific command IDs and extended parameters that back the menu items described below.
 
 ## Connection and addressing
+Channel search command `11200` also uses `param3` to select its scan radio:
+`0` selects Normal scanning on the primary video radio, and `1` selects Passive
+scanning with Nexmon. Normal is the default for clients that leave `param3`
+unset. Passive requires the updated OpenHD backend, an installed Nexmon scout,
+and a 20/40 MHz scan width; an unavailable backend rejects the request.
+
 - OpenHD uses a custom MAVLink dialect (`openhd`).【F:lib/Readme.md†L1-L10】
 - The ground station listens on TCP `5760` and the default client UDP ports are `14550` (out) and `14551` (in). Target system IDs are `100` for the ground unit and `101` for the air unit; use component ID `191` for link parameters and `100/101` for the primary/secondary cameras.【F:app/telemetry/tutil/openhd_defines.hpp†L8-L21】
 - Write parameters with MAV_CMD or PARAM_EXT_SET against the air unit first and then the ground unit when you need both sides updated, mirroring `change_param_air_and_ground_blocking` in QOpenHD.【F:app/telemetry/settings/wblinksettingshelper.cpp†L183-L200】

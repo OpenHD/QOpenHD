@@ -37,8 +37,10 @@ SideBarBasePanel{
 
         function rebuildBandwidthModel(){
             scanBandwidthModel.clear();
-            scanBandwidthModel.append({value: 5, verbose: "5 MHz"});
-            scanBandwidthModel.append({value: 10, verbose: "10 MHz"});
+            if(!settings.scan_passive_nexmon){
+                scanBandwidthModel.append({value: 5, verbose: "5 MHz"});
+                scanBandwidthModel.append({value: 10, verbose: "10 MHz"});
+            }
             scanBandwidthModel.append({value: 20, verbose: "20 MHz"});
             scanBandwidthModel.append({value: 40, verbose: "40 MHz"});
         }
@@ -161,7 +163,7 @@ SideBarBasePanel{
                     event.accepted=true;
                 }else if(event.key===Qt.Key_Down){
                     choiceSelector.discard_and_close();
-                    startButton.focus=true;
+                    scanModeSwitch.forceActiveFocus();
                     event.accepted=true;
                 }
             }
@@ -196,6 +198,28 @@ SideBarBasePanel{
             }
         }
 
+        Connections {
+            target: settings
+            function onScan_passive_nexmonChanged() {
+                panelColumn.rebuildBandwidthModel();
+                panelColumn.syncBandwidthIndex();
+            }
+        }
+
+        Switch {
+            id: scanModeSwitch
+            Layout.alignment: Qt.AlignHCenter
+            text: checked ? qsTr("Passive (Nexmon)") : qsTr("Normal (Devourer radio)")
+            checked: settings.scan_passive_nexmon
+            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 0
+            onToggled: settings.scan_passive_nexmon = checked
+            Keys.onUpPressed: bandwidthSelection.takeover_control()
+            Keys.onDownPressed: startButton.forceActiveFocus()
+            Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
+            Keys.onReturnPressed: if (enabled) { settings.scan_passive_nexmon = !checked }
+            Keys.onEnterPressed: if (enabled) { settings.scan_passive_nexmon = !checked }
+        }
+
 Button {
     id: startButton
     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -223,11 +247,13 @@ Button {
     function startScan(){
         var how_many_freq_bands = bandSelection.currentIndex;
         var channel_width_mhz = settings.scan_channel_width_mhz;
-        var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, channel_width_mhz);
+        var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, channel_width_mhz, settings.scan_passive_nexmon);
         if(result){
             _qopenhd.show_toast(qsTr("Channel scan started, please wait"), true);
         } else {
-            _qopenhd.show_toast(qsTr("Busy, please try again later"), true);
+            _qopenhd.show_toast(settings.scan_passive_nexmon
+                ? qsTr("Passive scan could not start. Check Nexmon availability and radio status.")
+                : qsTr("Busy, please try again later"), true);
         }
     }
 
@@ -235,7 +261,7 @@ Button {
 
     Keys.onPressed: (event) => {
         if(event.key === Qt.Key_Up){
-            bandSelection.takeover_control();
+            scanModeSwitch.forceActiveFocus();
             event.accepted = true;
         } else if(event.key === Qt.Key_Left){
             sidebar.regain_control_on_sidebar_stack();

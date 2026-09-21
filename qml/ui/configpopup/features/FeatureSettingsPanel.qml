@@ -4,12 +4,13 @@ import QtQuick.Layouts 1.12
 import OpenHD 1.0
 
 import ".."
+import "../openhd_settings"
 
 AdvancedPage {
     id: root
     pageIcon: "\uf1eb"
-    pageTitle: qsTr("Audio & Data")
-    pageSubtitle: qsTr("Audio streaming, ADS-B traffic and universal data link")
+    pageTitle: qsTr("Extras")
+    pageSubtitle: qsTr("ADS-B traffic, audio, data link and FleetControl")
     initialFocusItem: audioTab
     onBackRequested: settings_form.side_bar_regain_focus()
 
@@ -46,6 +47,7 @@ AdvancedPage {
             AdvancedTabButton { id: audioTab; text: qsTr("AUDIO"); iconText: "\uf028" }
             AdvancedTabButton { text: qsTr("ADS-B"); iconText: "\uf072" }
             AdvancedTabButton { text: qsTr("DATA LINK"); iconText: "\uf1eb" }
+            AdvancedTabButton { text: qsTr("FLEETCONTROL"); iconText: "\uf0c0" }
         }
 
         StackLayout {
@@ -64,10 +66,10 @@ AdvancedPage {
                         Layout.fillWidth: true; implicitHeight: audioAirColumn.implicitHeight + 32
                         ColumnLayout {
                             id: audioAirColumn; anchors.fill: parent; spacing: 10
-                            Label { text: qsTr("AIR UNIT MICROPHONE"); color: settings_form.primaryText; font.bold: true }
+                            Label { text: qsTr("AUDIO INPUT & OUTPUT"); color: settings_form.primaryText; font.bold: true }
                             Label {
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Select the capture device advertised by OpenHD and set its input gain. Audio is disabled by default.")
+                                text: qsTr("Choose the air-unit microphone and this device's audio output. Audio is disabled by default.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
@@ -88,7 +90,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Capture device"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { text: qsTr("Microphone"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 ComboBox {
                                     id: captureDevice
                                     Layout.preferredWidth: Math.min(420, root.width * 0.48)
@@ -128,18 +130,17 @@ AdvancedPage {
                                 }
                                 Label { id: gainValue; text: Math.round(gainSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
                             }
+                            Loader {
+                                Layout.fillWidth: true
+                                active: QOPENHD_AUDIO_PLAYBACK_AVAILABLE
+                                sourceComponent: audioPlaybackControls
+                            }
+                            Label {
+                                visible: !QOPENHD_AUDIO_PLAYBACK_AVAILABLE
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("Output selection, volume and VU meters are unavailable in this build.")
+                            }
                         }
-                    }
-
-                    Loader {
-                        Layout.fillWidth: true
-                        active: QOPENHD_ENABLE_GSTREAMER_QMLGLSINK && !_qopenhd.is_android()
-                        sourceComponent: audioPlaybackCard
-                    }
-                    Label {
-                        visible: !QOPENHD_ENABLE_GSTREAMER_QMLGLSINK || _qopenhd.is_android()
-                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                        text: qsTr("Audio playback controls are unavailable in this build.")
                     }
                 }
             }
@@ -153,6 +154,14 @@ AdvancedPage {
                         ColumnLayout {
                             id: adsbColumn; anchors.fill: parent; spacing: 12
                             Label { text: qsTr("ADS-B TRAFFIC"); color: settings_form.primaryText; font.bold: true }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Rectangle { width: 12; height: 12; radius: 6; color: AdsbVehicleManager.status === 2 ? "#35d36b" : (AdsbVehicleManager.status === 1 ? "#ff5a5a" : "#7d8790") }
+                                Label {
+                                    Layout.fillWidth: true; color: settings_form.primaryText
+                                    text: AdsbVehicleManager.status === 2 ? qsTr("dump1090 connected") : (AdsbVehicleManager.status === 1 ? qsTr("dump1090 unavailable") : qsTr("ADS-B disabled"))
+                                }
+                            }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Show ADS-B traffic on map"); color: settings_form.primaryText; Layout.fillWidth: true }
@@ -170,7 +179,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Enable air-unit SDR receiver"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { text: qsTr("Enable receiver on connected air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
                                     enabled: _ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
                                     checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("ADSB_ENABLE") !== 0 }
@@ -187,6 +196,16 @@ AdvancedPage {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Show unknown / zero altitude"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch { checked: settings.adsb_show_unknown_or_zero_alt; onToggled: settings.adsb_show_unknown_or_zero_alt = checked }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Show three closest aircraft widget"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { checked: settings.adsb_show_nearest_widget; onToggled: settings.adsb_show_nearest_widget = checked }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Show aircraft direction on OSD"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { checked: settings.adsb_show_osd_markers; onToggled: settings.adsb_show_osd_markers = checked }
                             }
                             Label {
                                 visible: !_ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
@@ -260,16 +279,19 @@ AdvancedPage {
                     }
                 }
             }
+
+            FleetControlSettingsPanel {
+                onBackRequested: root.backRequested()
+            }
         }
     }
 
     Component {
-        id: audioPlaybackCard
-        AdvancedCard {
-            implicitHeight: playbackColumn.implicitHeight + 32
-            ColumnLayout {
-                id: playbackColumn; anchors.fill: parent; spacing: 10
-                Label { text: qsTr("GROUND AUDIO PLAYBACK"); color: settings_form.primaryText; font.bold: true }
+        id: audioPlaybackControls
+        ColumnLayout {
+            id: playbackColumn
+            width: parent ? parent.width : implicitWidth
+            spacing: 10
                 RowLayout {
                     Layout.fillWidth: true
                     Label { text: qsTr("Play received audio"); color: settings_form.primaryText; Layout.fillWidth: true }
@@ -277,7 +299,7 @@ AdvancedPage {
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Output device"); color: settings_form.primaryText; Layout.fillWidth: true }
+                    Label { text: qsTr("Output"); color: settings_form.primaryText; Layout.fillWidth: true }
                     ComboBox {
                         id: outputDevice; Layout.preferredWidth: Math.min(420, root.width * 0.48); model: _audioControl.outputDeviceNames
                         currentIndex: Math.max(0, _audioControl.outputDeviceIds.indexOf(_audioControl.selectedOutputDevice))
@@ -293,17 +315,16 @@ AdvancedPage {
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Received level"); color: settings_form.primaryText; Layout.preferredWidth: 130 }
-                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: _audioControl.audioLevel }
-                    Label { text: _audioControl.audioLevel + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
+                    Label { text: qsTr("Input VU"); color: settings_form.primaryText; Layout.preferredWidth: 130 }
+                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: _audioControl.inputLevel }
+                    Label { text: _audioControl.inputLevel + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Record received audio"); color: settings_form.primaryText; Layout.fillWidth: true }
-                    Switch { checked: _audioControl.recording; enabled: _audioControl.playing; onToggled: _audioControl.recording = checked }
+                    Label { text: qsTr("Output VU"); color: settings_form.primaryText; Layout.preferredWidth: 130 }
+                    ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: _audioControl.outputLevel }
+                    Label { text: _audioControl.outputLevel + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
                 }
-                Label { visible: _audioControl.recordingPath.length > 0; Layout.fillWidth: true; elide: Text.ElideMiddle; color: settings_form.secondaryText; text: qsTr("Recording: ") + _audioControl.recordingPath }
-            }
         }
     }
 }

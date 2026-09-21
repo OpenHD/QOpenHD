@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 
 import OpenHD 1.0
 import ".."
+import "../features"
 
 Rectangle {
     id: root
@@ -22,7 +23,7 @@ Rectangle {
         ListElement { title: qsTr("STORAGE"); icon: "\uf51f" }
         ListElement { title: qsTr("AIR"); icon: "\uf1d8" }
         ListElement { title: qsTr("GROUND"); icon: "\uf519" }
-        ListElement { title: qsTr("FLEETCONTROL"); icon: "\uf0c0" }
+        ListElement { title: qsTr("EXTRAS"); icon: "\uf067" }
     }
 
     function tabIsAvailable(index) {
@@ -35,7 +36,7 @@ Rectangle {
         if (index === 2) return qsTr("STORAGE")
         if (index === 3) return qsTr("AIR")
         if (index === 4) return qsTr("GROUND")
-        return qsTr("FLEETCONTROL")
+        return qsTr("EXTRAS")
     }
 
     function firstAvailableTab(from, step) {
@@ -78,7 +79,7 @@ Rectangle {
         else if (currentPage === 2) storagePanel.gainFocus()
         else if (currentPage === 3) airPanel.gainFocus()
         else if (currentPage === 4) groundPanel.gainFocus()
-        else if (currentPage === 5) fleetControlPanel.gainFocus()
+        else if (currentPage === 5) extrasPanel.gainFocus()
     }
 
     function user_quidance_animate_channel_scan() {
@@ -222,8 +223,8 @@ Rectangle {
                     m_requires_alive_air: false
                     onBackRequested: root.focusTab(4)
                 }
-                FleetControlSettingsPanel {
-                    id: fleetControlPanel
+                FeatureSettingsPanel {
+                    id: extrasPanel
                     onBackRequested: root.focusTab(5)
                 }
             }

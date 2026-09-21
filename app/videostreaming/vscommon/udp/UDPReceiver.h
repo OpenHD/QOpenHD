@@ -3,7 +3,7 @@
 #define FPV_VR_UDPRECEIVER_H
 
 #include <stdio.h>
-#if defined(__linux__) || defined(__macos__)
+#if !defined(_WIN32)
 #include <sys/socket.h>
 #include <netinet/in.h>
 #else

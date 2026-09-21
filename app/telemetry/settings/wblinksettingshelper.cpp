@@ -40,9 +40,9 @@ bool WBLinkSettingsHelper::start_analyze_channels(int freq_bands)
     return false;
 }
 
-bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths)
+bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths,bool passive)
 {
-    if(OHDAction::instance().send_command_start_scan_channels_blocking(freq_bands,channel_widths)){
+    if(OHDAction::instance().send_command_start_scan_channels_blocking(freq_bands,channel_widths,passive)){
         set_scan_progress_perc(0);
         set_scanning_text_for_ui("SCANNING");
         return true;

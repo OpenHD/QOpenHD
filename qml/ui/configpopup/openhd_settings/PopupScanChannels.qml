@@ -20,7 +20,7 @@ PopupBigGeneric {
     Material.foreground: settings_form.primaryText
     Material.background: settings_form.panelBackgroundRaised
 
-    function controls() { return [rangeCombo, bandwidthCombo, startButton] }
+    function controls() { return [scanModeSwitch, rangeCombo, bandwidthCombo, startButton] }
 
     function moveFocus(control, step) {
         var list = controls()
@@ -64,11 +64,13 @@ PopupBigGeneric {
     function startScan() {
         var band = rangeCombo.currentIndex
         var widthMhz = settings.scan_channel_width_mhz
-        var accepted = _wbLinkSettingsHelper.start_scan_channels(band, widthMhz)
+        var accepted = _wbLinkSettingsHelper.start_scan_channels(band, widthMhz, settings.scan_passive_nexmon)
         if (accepted)
             _qopenhd.show_toast(qsTr("Channel scan started"))
         else
-            _qopenhd.show_toast(qsTr("The radio is busy. Please try again."))
+            _qopenhd.show_toast(settings.scan_passive_nexmon
+                ? qsTr("Passive scan could not start. Check Nexmon availability and radio status.")
+                : qsTr("The radio is busy. Please try again."))
     }
 
     onCloseButtonClicked: requestClose()
@@ -82,13 +84,18 @@ PopupBigGeneric {
     }
 
     ListModel { id: bandwidthModel }
+    property bool rebuildingBandwidth: false
 
     function rebuildBandwidthModel() {
+        rebuildingBandwidth = true
         bandwidthModel.clear()
-        bandwidthModel.append({title: qsTr("5 MHz"), value: 5})
-        bandwidthModel.append({title: qsTr("10 MHz"), value: 10})
+        if (!settings.scan_passive_nexmon) {
+            bandwidthModel.append({title: qsTr("5 MHz"), value: 5})
+            bandwidthModel.append({title: qsTr("10 MHz"), value: 10})
+        }
         bandwidthModel.append({title: qsTr("20 MHz"), value: 20})
         bandwidthModel.append({title: qsTr("40 MHz"), value: 40})
+        rebuildingBandwidth = false
     }
 
     function syncBandwidthSelection() {
@@ -107,6 +114,14 @@ PopupBigGeneric {
     Component.onCompleted: {
         rebuildBandwidthModel()
         syncBandwidthSelection()
+    }
+
+    Connections {
+        target: settings
+        function onScan_passive_nexmonChanged() {
+            rebuildBandwidthModel()
+            syncBandwidthSelection()
+        }
     }
 
     Flickable {
@@ -130,6 +145,16 @@ PopupBigGeneric {
             spacing: 10
 
             Item { Layout.preferredHeight: 4 }
+
+            Switch {
+                id: scanModeSwitch
+                Layout.fillWidth: true
+                text: checked ? qsTr("Passive (Nexmon)") : qsTr("Normal (Devourer radio)")
+                checked: settings.scan_passive_nexmon
+                enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 0
+                onToggled: settings.scan_passive_nexmon = checked
+                Keys.onPressed: root.handleHorizontalKey(scanModeSwitch, event)
+            }
 
             RowLayout {
                 Layout.fillWidth: true
@@ -218,7 +243,7 @@ PopupBigGeneric {
                             textRole: "title"
                             enabled: _ohdSystemGround.is_alive && !root.scanning
                             onCurrentIndexChanged: {
-                                if (currentIndex >= 0)
+                                if (!root.rebuildingBandwidth && currentIndex >= 0)
                                     settings.scan_channel_width_mhz = bandwidthModel.get(currentIndex).value
                             }
                             Keys.onPressed: root.handleHorizontalKey(bandwidthCombo, event)

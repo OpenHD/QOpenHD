@@ -44,14 +44,13 @@ win32 {
     CONFIG += ltcg
 }
 
-macx {
+macx:!ios {
     message("MacBuild")
     CONFIG += MacBuild
     DEFINES += __macos__
     DEFINES += __apple__
-    CONFIG += x86_64
-    CONFIG -= x86
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+    # Use the selected Qt kit's architecture (Intel or Apple Silicon).
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
     QMAKE_CXXFLAGS += -fvisibility=hidden
     QMAKE_CXXFLAGS += -Wno-address-of-packed-member
     CONFIG += ltcg

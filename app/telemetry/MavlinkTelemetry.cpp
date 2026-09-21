@@ -1,4 +1,5 @@
 #include "MavlinkTelemetry.h"
+#include "adsb/adsbvehiclemanager.h"
 
 #include "models/aohdsystem.h"
 #include "models/fcmavlinksystem.h"
@@ -112,6 +113,14 @@ static int get_message_size(const mavlink_message_t& msg){
 
 void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
 {
+    // ADS-B may originate from either OpenHD unit or from the FC. Consume it
+    // before the normal system-id routing so every source reaches one model.
+    if (msg.msgid == MAVLINK_MSG_ID_ADSB_VEHICLE) {
+        mavlink_adsb_vehicle_t vehicle{};
+        mavlink_msg_adsb_vehicle_decode(&msg, &vehicle);
+        ADSBVehicleManager::instance()->processMavlinkVehicle(vehicle);
+        return;
+    }
     auto &statsModel = MavlinkMessageStatsModel::instance();
     if (statsModel.enabled()) {
         statsModel.record_message(msg);

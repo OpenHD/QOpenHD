@@ -383,7 +383,7 @@ bool OHDAction::send_command_analyze_channels_blocking(int freq_bands)
     return res==CmdSender::Result::CMD_SUCCESS;
 }
 
-bool OHDAction::send_command_start_scan_channels_blocking(int freq_bands, int channel_widths)
+bool OHDAction::send_command_start_scan_channels_blocking(int freq_bands, int channel_widths, bool passive)
 {
     mavlink_command_long_t cmd{};
     cmd.target_system=OHD_SYS_ID_GROUND;
@@ -391,6 +391,7 @@ bool OHDAction::send_command_start_scan_channels_blocking(int freq_bands, int ch
     cmd.command=OPENHD_CMD_INITIATE_CHANNEL_SEARCH;
     cmd.param1=static_cast<float>(freq_bands);
     cmd.param2=static_cast<float>(channel_widths);
+    cmd.param3=passive ? 1.0f : 0.0f;
     const auto res=CmdSender::instance().send_command_long_blocking(cmd);
     return res==CmdSender::Result::CMD_SUCCESS;
 }

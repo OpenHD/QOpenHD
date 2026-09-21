@@ -27,7 +27,8 @@ public:
         VelocityAvailable =     1 << 6,
         VerticalVelAvailable =  1 << 7,
         LastContactAvailable =  1 << 8,
-        DistanceAvailable =  1 << 8
+        DistanceAvailable =     1 << 9,
+        RssiAvailable =         1 << 10
     };
 
     typedef struct {
@@ -43,6 +44,7 @@ public:
         int             lastContact;
         double          verticalVel;
         double          distance;
+        double          rssi;
     } VehicleInfo_t;
 
     ADSBVehicle(const VehicleInfo_t& vehicleInfo, QObject* parent);
@@ -58,6 +60,7 @@ public:
     Q_PROPERTY(int              lastContact READ lastContact    NOTIFY lastContactChanged)
     Q_PROPERTY(double           verticalVel READ verticalVel    NOTIFY verticalVelChanged)
     Q_PROPERTY(double           distance    READ distance       NOTIFY distanceChanged)
+    Q_PROPERTY(double           rssi        READ rssi           NOTIFY rssiChanged)
 
     int             icaoAddress (void) const { return static_cast<int>(_icaoAddress); }
     QString         callsign    (void) const { return _callsign; }
@@ -70,6 +73,7 @@ public:
     int             lastContact (void) const { return _lastContact; }
     double          verticalVel (void) const { return _verticalVel; }
     double          distance    (void) const { return _distance; }
+    double          rssi        (void) const { return _rssi; }
 
     void update(const VehicleInfo_t& vehicleInfo);
 
@@ -89,6 +93,7 @@ signals:
     void lastContactChanged ();
     void verticalVelChanged ();
     void distanceChanged    ();
+    void rssiChanged        ();
 
 private:
     // This is the time in ms our vehicle will expire and thus removed from map
@@ -105,6 +110,7 @@ private:
     int             _lastContact;
     double          _verticalVel;
     double          _distance;
+    double          _rssi;
 
     QElapsedTimer   _lastUpdateTimer;
 

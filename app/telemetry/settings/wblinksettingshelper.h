@@ -65,7 +65,7 @@ public:
     // 1: 2.4G only
     // 2: 5.8G only
     // similar for channel widths
-    Q_INVOKABLE bool start_scan_channels(int freq_bands,int channel_widths);
+    Q_INVOKABLE bool start_scan_channels(int freq_bands,int channel_widths,bool passive = false);
 private:
     static constexpr auto PARAM_ID_WB_FREQ=openhd::WB_FREQUENCY;
     static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;

@@ -14,6 +14,8 @@ class GstRtpAudioPlayer : public QObject
     Q_PROPERTY(QString selectedOutputDevice READ selectedOutputDevice WRITE setSelectedOutputDevice NOTIFY selectedOutputDeviceChanged)
     Q_PROPERTY(int playbackVolume READ playbackVolume WRITE setPlaybackVolume NOTIFY playbackVolumeChanged)
     Q_PROPERTY(int audioLevel READ audioLevel NOTIFY audioLevelChanged)
+    Q_PROPERTY(int inputLevel READ inputLevel NOTIFY inputLevelChanged)
+    Q_PROPERTY(int outputLevel READ outputLevel NOTIFY outputLevelChanged)
     Q_PROPERTY(bool playing READ playing NOTIFY playingChanged)
     Q_PROPERTY(bool recording READ recording WRITE setRecording NOTIFY recordingChanged)
     Q_PROPERTY(QString recordingPath READ recordingPath NOTIFY recordingPathChanged)
@@ -26,7 +28,9 @@ public:
     QStringList outputDeviceIds() const { return m_outputDeviceIds; }
     QString selectedOutputDevice() const { return m_selectedOutputDevice; }
     int playbackVolume() const { return m_playbackVolume; }
-    int audioLevel() const { return m_audioLevel; }
+    int audioLevel() const { return m_outputLevel; }
+    int inputLevel() const { return m_inputLevel; }
+    int outputLevel() const { return m_outputLevel; }
     bool playing() const { return m_pipeline != nullptr; }
     bool recording() const { return m_recording; }
     QString recordingPath() const { return m_recordingPath; }
@@ -44,6 +48,8 @@ signals:
     void selectedOutputDeviceChanged();
     void playbackVolumeChanged();
     void audioLevelChanged();
+    void inputLevelChanged();
+    void outputLevelChanged();
     void playingChanged();
     void recordingChanged();
     void recordingPathChanged();
@@ -65,7 +71,8 @@ private:
     QString m_selectedOutputDevice;
     QString m_recordingPath;
     int m_playbackVolume = 100;
-    int m_audioLevel = 0;
+    int m_inputLevel = 0;
+    int m_outputLevel = 0;
     bool m_recording = false;
     bool m_pipelineRecording = false;
 };

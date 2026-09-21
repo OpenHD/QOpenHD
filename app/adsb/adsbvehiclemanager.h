@@ -2,6 +2,7 @@
 
 #include "qmlobjectlistmodel.h"
 #include "adsbvehicle.h"
+#include "telemetry/tutil/mavlink_include.h"
 
 #include <QThread>
 #include <QTcpSocket>
@@ -25,11 +26,12 @@ class ADSBapi : public QThread
     Q_OBJECT
 
 public:
-    ADSBapi();
+    explicit ADSBapi(int requestIntervalMs);
     ~ADSBapi();
 
 signals:
     void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
+    void sourceStatusChanged(uint status);
 
     void adsbClearModelRequest();
 
@@ -47,7 +49,7 @@ protected slots:
 protected:
     void init();
 
-    bool _adsb_enable;
+    bool _adsb_enable = false;
 
     // network
     QNetworkAccessManager * m_manager;
@@ -76,7 +78,7 @@ class ADSBInternet: public ADSBapi {
     Q_OBJECT
 
 public:
-    ADSBInternet() { timer_interval = 10000; }
+    ADSBInternet() : ADSBapi(10000) {}
     ~ADSBInternet() {}
 
 private slots:
@@ -102,9 +104,8 @@ private slots:
     void requestData() override;
 
 private:
-    QString _groundAddress = "";
+    QString _groundAddress = "127.0.0.1";
     bool _adsb_show_sdr_data;
-    bool m_adsb_reply_error_logged_once=false;
 };
 
 class ADSBVehicleManager : public QObject {
@@ -133,6 +134,9 @@ public:
 
     Q_INVOKABLE void setGroundIP(QString address) { _sdrLink->setGroundIP(address); }
 
+    // OpenHD's built-in dump1090 receiver forwards traffic as ADSB_VEHICLE.
+    void processMavlinkVehicle(const mavlink_adsb_vehicle_t& vehicle);
+
 signals:
     // sent to ADSBapi to make requests based into this
     void mapLatChanged(double map_lat);
@@ -145,6 +149,7 @@ public slots:
     void adsbVehicleUpdate  (const ADSBVehicle::VehicleInfo_t vehicleInfo);
     void onStarted();
     void adsbClearModel();
+    void setSourceStatus(uint status);
 
 private slots:
     void _cleanupStaleVehicles(void);
