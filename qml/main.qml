@@ -25,21 +25,36 @@ ApplicationWindow {
                                             && isFinite(_fcMavlinkSystem.lon)
                                             && !(_fcMavlinkSystem.lat === 0.0
                                                  && _fcMavlinkSystem.lon === 0.0)
-    readonly property bool roughPositionValid: {
+    property double ipLocationLatitude: Number.NaN
+    property double ipLocationLongitude: Number.NaN
+    property bool ipLocationRequestActive: false
+    property var ipLocationRequest: null
+    readonly property bool osPositionValid: {
         var coordinate = networkPositionSource.position.coordinate
         return coordinate && coordinate.isValid
                 && isFinite(coordinate.latitude) && isFinite(coordinate.longitude)
                 && !(coordinate.latitude === 0.0 && coordinate.longitude === 0.0)
     }
+    readonly property bool ipPositionValid: isFinite(ipLocationLatitude)
+                                             && isFinite(ipLocationLongitude)
+                                             && ipLocationLatitude >= -90.0
+                                             && ipLocationLatitude <= 90.0
+                                             && ipLocationLongitude >= -180.0
+                                             && ipLocationLongitude <= 180.0
+                                             && !(ipLocationLatitude === 0.0
+                                                  && ipLocationLongitude === 0.0)
+    readonly property bool roughPositionValid: osPositionValid || ipPositionValid
     readonly property bool referencePositionValid: fcPositionValid || roughPositionValid
     readonly property double referenceLatitude: fcPositionValid
                                                 ? _fcMavlinkSystem.lat
-                                                : (roughPositionValid
-                                                   ? networkPositionSource.position.coordinate.latitude : 0.0)
+                                                : (osPositionValid
+                                                   ? networkPositionSource.position.coordinate.latitude
+                                                   : (ipPositionValid ? ipLocationLatitude : 0.0))
     readonly property double referenceLongitude: fcPositionValid
                                                  ? _fcMavlinkSystem.lon
-                                                 : (roughPositionValid
-                                                    ? networkPositionSource.position.coordinate.longitude : 0.0)
+                                                 : (osPositionValid
+                                                    ? networkPositionSource.position.coordinate.longitude
+                                                    : (ipPositionValid ? ipLocationLongitude : 0.0))
     readonly property bool referencePositionIsRough: !fcPositionValid && roughPositionValid
 
     PositionSource {
@@ -47,6 +62,67 @@ ApplicationWindow {
         active: !applicationWindow.fcPositionValid
         updateInterval: 60000
         preferredPositioningMethods: PositionSource.NonSatellitePositioningMethods
+    }
+
+    function requestIpLocation() {
+        if (fcPositionValid || osPositionValid || ipLocationRequestActive) return
+        ipLocationRequestActive = true
+        var request = new XMLHttpRequest()
+        ipLocationRequest = request
+        request.onreadystatechange = function() {
+            if (request.readyState !== XMLHttpRequest.DONE) return
+            if (request !== ipLocationRequest) return
+            ipLocationRequestActive = false
+            ipLocationRequest = null
+            if (request.status !== 200) {
+                console.warn("IP location request failed with HTTP status", request.status)
+                return
+            }
+            try {
+                var response = JSON.parse(request.responseText)
+                var latitude = Number(response.latitude)
+                var longitude = Number(response.longitude)
+                if (response.success === true && isFinite(latitude) && isFinite(longitude)
+                        && latitude >= -90.0 && latitude <= 90.0
+                        && longitude >= -180.0 && longitude <= 180.0
+                        && !(latitude === 0.0 && longitude === 0.0)) {
+                    ipLocationLatitude = latitude
+                    ipLocationLongitude = longitude
+                    console.log("Using approximate IP location while FC position is unavailable")
+                } else {
+                    console.warn("IP location service returned no usable coordinate")
+                }
+            } catch (error) {
+                console.warn("Cannot parse IP location response:", error)
+            }
+        }
+        request.open("GET", "https://ipwho.is/?fields=success,latitude,longitude")
+        request.send()
+    }
+
+    Timer {
+        interval: 15000
+        running: applicationWindow.ipLocationRequestActive
+        repeat: false
+        onTriggered: {
+            if (applicationWindow.ipLocationRequest) {
+                var timedOutRequest = applicationWindow.ipLocationRequest
+                applicationWindow.ipLocationRequest = null
+                applicationWindow.ipLocationRequestActive = false
+                timedOutRequest.abort()
+                console.warn("IP location request timed out")
+            }
+        }
+    }
+
+    Timer {
+        // Retry promptly while unavailable; refresh occasionally in case the
+        // public IP/network changes while QOpenHD remains open.
+        interval: applicationWindow.ipPositionValid ? 1800000 : 300000
+        running: !applicationWindow.fcPositionValid
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: applicationWindow.requestIpLocation()
     }
 
 
