@@ -9,6 +9,7 @@
 #include "tutil/qopenhdmavlinkhelper.hpp"
 
 #include "action/fcmissionhandler.h"
+#include "action/fcaction.h"
 #include "action/impl/cmdsender.h"
 #include "action/fcmsgintervalhandler.h"
 #include "action/ohdaction.h"
@@ -248,6 +249,9 @@ void MavlinkTelemetry::process_broadcast_message_openhd_gnd(const mavlink_messag
 
 void MavlinkTelemetry::process_broadcast_message_fc(const mavlink_message_t &msg)
 {
+    if(FCAction::instance().process_message(msg)){
+        return;
+    }
     if(FCMissionHandler::instance().process_message(msg)){
         return; // No further processing needed;
     }

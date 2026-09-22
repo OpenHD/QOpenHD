@@ -2,6 +2,7 @@
 #define FCACTION_H
 
 #include <QObject>
+#include <QTimer>
 #include <mutex>
 
 #include "../tutil/mavlink_include.h"
@@ -46,8 +47,17 @@ public:
 
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE bool send_command_compass_calibration();
+    Q_INVOKABLE void set_battery_capacity_async(int capacity_mah);
+    bool process_message(const mavlink_message_t& msg);
 private:
     std::atomic<bool> m_has_currently_runnning_flight_mode_change=false;
+    void send_pending_battery_capacity();
+    void battery_capacity_timeout();
+    QTimer m_battery_capacity_timer;
+    mavlink_message_t m_pending_battery_capacity_message{};
+    QString m_pending_battery_capacity_param;
+    int m_pending_battery_capacity_mah = 0;
+    int m_battery_capacity_attempts = 0;
 };
 
 #endif // FCACTION_H

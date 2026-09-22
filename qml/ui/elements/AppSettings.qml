@@ -187,6 +187,8 @@ Settings {
     property bool air_battery_show_voltage_current: true
     property bool air_battery_show_single_cell: false
     property bool air_battery_use_batt_id_0_only: false
+    // Capacity value offered when writing the battery capacity to the FC over MAVLink.
+    property int air_battery_capacity_mah: 5000
 
     property bool ground_battery_show_voltage_current: false
     property bool ground_battery_show_single_cell: false

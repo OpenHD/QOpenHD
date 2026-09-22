@@ -52,6 +52,42 @@ ScrollView {
             }
 
             SettingBaseElement{
+                m_short_description: qsTr("Set FC Battery Capacity")
+                m_long_description: qsTr("Writes the battery capacity to a supported flight controller over MAVLink. QOpenHD continues to display the percentage reported by the FC. Unsupported FCs show a warning and are not changed.")
+                Row {
+                    height: elementHeight
+                    spacing: 6
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                    SpinBox {
+                        width: 155
+                        height: elementHeight
+                        font.pixelSize: 14
+                        from: 100
+                        to: 100000
+                        stepSize: 100
+                        editable: true
+                        value: settings.air_battery_capacity_mah
+                        textFromValue: function(value, locale) {
+                            return Number(value).toLocaleString(locale, 'f', 0) + " mAh"
+                        }
+                        valueFromText: function(text, locale) {
+                            return Number.fromLocaleString(locale, text.replace(/[^0-9]/g, ""))
+                        }
+                        onValueModified: settings.air_battery_capacity_mah = value
+                    }
+
+                    Button {
+                        height: elementHeight
+                        text: qsTr("Apply")
+                        onClicked: _fcMavlinkAction.set_battery_capacity_async(settings.air_battery_capacity_mah)
+                    }
+                }
+            }
+
+            SettingBaseElement{
                 m_short_description: qsTr("Show FC Messages in HUD")
                 Switch {
                     width: 32

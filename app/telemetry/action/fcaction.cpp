@@ -8,11 +8,16 @@
 #include "create_cmd_helper.hpp"
 #include "../models/fcmavlinksystem.h"
 #include "tutil/mavlink_enum_to_string.h"
+#include "tutil/qopenhdmavlinkhelper.hpp"
+
+#include <cstring>
 
 FCAction::FCAction(QObject *parent)
     : QObject{parent}
 {
-
+    m_battery_capacity_timer.setSingleShot(true);
+    QObject::connect(&m_battery_capacity_timer, &QTimer::timeout,
+                     this, &FCAction::battery_capacity_timeout);
 }
 
 FCAction &FCAction::instance()
@@ -188,4 +193,88 @@ bool FCAction::send_command_compass_calibration()
     auto command=cmd::helper::create_cmd_compass_calibration(fc_id.sys_id,fc_id.comp_id);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
     return res==CmdSender::Result::CMD_SUCCESS;
+}
+
+void FCAction::set_battery_capacity_async(int capacity_mah)
+{
+    if (!FCMavlinkSystem::instance().is_alive()) {
+        HUDLogMessagesModel::instance().add_message_warning("Battery capacity: no FC connected");
+        return;
+    }
+    if (capacity_mah < 100 || capacity_mah > 100000) {
+        HUDLogMessagesModel::instance().add_message_warning("Battery capacity: invalid value");
+        return;
+    }
+
+    const QString autopilot = FCMavlinkSystem::instance().autopilot_type_str();
+    if (autopilot == "ARDU") {
+        m_pending_battery_capacity_param = "BATT_CAPACITY";
+    } else if (autopilot == "Pixhawk") {
+        m_pending_battery_capacity_param = "BAT1_CAPACITY";
+    } else {
+        HUDLogMessagesModel::instance().add_message_warning(
+            "Battery capacity: FC does not expose a supported MAVLink parameter");
+        return;
+    }
+
+    const auto fc_id = MavlinkTelemetry::instance().get_fc_mav_id();
+    char param_id[16]{};
+    const QByteArray param_bytes = m_pending_battery_capacity_param.toLatin1();
+    std::memcpy(param_id, param_bytes.constData(),
+                static_cast<size_t>(qMin(param_bytes.size(), 16)));
+    mavlink_msg_param_set_pack(QOpenHDMavlinkHelper::get_own_sys_id(),
+                               QOpenHDMavlinkHelper::get_own_comp_id(),
+                               &m_pending_battery_capacity_message,
+                               fc_id.sys_id, fc_id.comp_id, param_id,
+                               static_cast<float>(capacity_mah), MAV_PARAM_TYPE_REAL32);
+    m_pending_battery_capacity_mah = capacity_mah;
+    m_battery_capacity_attempts = 0;
+    send_pending_battery_capacity();
+}
+
+void FCAction::send_pending_battery_capacity()
+{
+    ++m_battery_capacity_attempts;
+    if (!MavlinkTelemetry::instance().sendMessage(m_pending_battery_capacity_message)) {
+        m_battery_capacity_timer.stop();
+        HUDLogMessagesModel::instance().add_message_warning("Battery capacity: MAVLink send failed");
+        return;
+    }
+    m_battery_capacity_timer.start(1200);
+}
+
+void FCAction::battery_capacity_timeout()
+{
+    if (m_battery_capacity_attempts < 3) {
+        send_pending_battery_capacity();
+        return;
+    }
+    m_pending_battery_capacity_param.clear();
+    HUDLogMessagesModel::instance().add_message_warning(
+        "Battery capacity: FC did not acknowledge the parameter");
+}
+
+bool FCAction::process_message(const mavlink_message_t &msg)
+{
+    if (msg.msgid != MAVLINK_MSG_ID_PARAM_VALUE || m_pending_battery_capacity_param.isEmpty()) {
+        return false;
+    }
+    mavlink_param_value_t value{};
+    mavlink_msg_param_value_decode(&msg, &value);
+    QByteArray raw_id(value.param_id, 16);
+    const int terminator = raw_id.indexOf('\0');
+    if (terminator >= 0) raw_id.truncate(terminator);
+    if (QString::fromLatin1(raw_id) != m_pending_battery_capacity_param) {
+        return false;
+    }
+
+    m_battery_capacity_timer.stop();
+    const bool accepted = qAbs(value.param_value - static_cast<float>(m_pending_battery_capacity_mah)) < 0.5f;
+    m_pending_battery_capacity_param.clear();
+    if (accepted) {
+        HUDLogMessagesModel::instance().add_message_info("Battery capacity updated on FC");
+    } else {
+        HUDLogMessagesModel::instance().add_message_warning("Battery capacity: FC rejected the value");
+    }
+    return true;
 }

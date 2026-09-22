@@ -106,6 +106,7 @@ Item {
         id: cardBodyHolder
         anchors.top: cardID.bottom
         anchors.topMargin: 2
+        anchors.left: parent.left
         anchors.leftMargin: 18
         anchors.right: parent.right
         anchors.rightMargin: 18

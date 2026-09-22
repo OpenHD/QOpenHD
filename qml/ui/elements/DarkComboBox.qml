@@ -66,7 +66,13 @@ ComboBox {
         leftPadding: 12
         rightPadding: 38
         contentItem: Text {
-            text: control.textRole.length > 0 ? model[control.textRole] : modelData
+            // JavaScript array models expose their object through modelData,
+            // while QML/C++ item models expose named roles through model.
+            text: control.textRole.length > 0
+                  ? (Array.isArray(control.model)
+                     ? modelData[control.textRole]
+                     : model[control.textRole])
+                  : modelData
             color: highlighted ? control.focusColor : control.textColor
             font.pixelSize: control.font.pixelSize
             font.bold: control.currentIndex === index
