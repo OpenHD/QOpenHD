@@ -21,6 +21,8 @@ static constexpr auto WB_TX_POWER_LEVEL="TX_PWR_LVL";
 static constexpr auto WB_ENABLE_ADAPTIVE_CHANNEL="WB_ADAPT_CH";
 static constexpr auto WB_ENABLE_FHSS="WB_FHSS";
 static constexpr auto WB_FHSS_SLOT_MS="WB_FHSS_SLOT";
+static constexpr auto WB_ENABLE_RC_OPENHD_CONTROL="RC_OHD_CTRL";
+static constexpr auto WB_RC_SETTINGS_BASE_CHANNEL="RC_SET_BASE";
 static constexpr auto WB_QP_MAX="QP_MAX";
 static constexpr auto WB_QP_MIN="QP_MIN";
 // annoying 16 char settings limit

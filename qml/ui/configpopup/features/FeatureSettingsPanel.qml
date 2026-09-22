@@ -10,7 +10,7 @@ AdvancedPage {
     id: root
     pageIcon: "\uf1eb"
     pageTitle: qsTr("Extras")
-    pageSubtitle: qsTr("ADS-B traffic, audio, data link and FleetControl")
+    pageSubtitle: qsTr("ADS-B traffic, audio, RC Lua, data link and FleetControl")
     initialFocusItem: audioTab
     onBackRequested: settings_form.side_bar_regain_focus()
 
@@ -18,6 +18,14 @@ AdvancedPage {
     property int groundRevision: _ohdSystemGroundSettings.update_count
     property bool adsbAirParameterAvailable: airRevision >= 0 &&
                                                  _ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
+    property bool rcLuaAvailable: airRevision >= 0 &&
+                                  _ohdSystemAirSettingsModel.param_int_exists("RC_OHD_CTRL") &&
+                                  _ohdSystemAirSettingsModel.param_int_exists("RC_SET_BASE")
+    property int rcLuaBaseChannel: {
+        airRevision
+        return _ohdSystemAirSettingsModel.param_int_exists("RC_SET_BASE")
+                ? _ohdSystemAirSettingsModel.get_cached_int("RC_SET_BASE") : 0
+    }
 
     function setAirInt(id, value) {
         if (!_ohdSystemAirSettingsModel.param_int_exists(id)) return
@@ -48,6 +56,7 @@ AdvancedPage {
             background: Item { }
             AdvancedTabButton { id: audioTab; text: qsTr("AUDIO"); iconText: "\uf028" }
             AdvancedTabButton { text: qsTr("ADS-B"); iconText: "\uf072" }
+            AdvancedTabButton { text: qsTr("RC LUA"); iconText: "\uf11b" }
             AdvancedTabButton { text: qsTr("DATA LINK"); iconText: "\uf1eb" }
             AdvancedTabButton { text: qsTr("FLEETCONTROL"); iconText: "\uf0c0" }
         }
@@ -215,6 +224,108 @@ AdvancedPage {
                                 text: qsTr("Connect to an OpenHD air unit with ADS-B support to enable its SDR receiver.")
                             }
                         }
+                    }
+                }
+            }
+
+            ScrollView {
+                clip: true; contentWidth: availableWidth
+                ColumnLayout {
+                    width: parent.width; spacing: 12
+                    AdvancedCard {
+                        Layout.fillWidth: true; implicitHeight: rcLuaSetupColumn.implicitHeight + 32
+                        ColumnLayout {
+                            id: rcLuaSetupColumn; anchors.fill: parent; spacing: 11
+                            Label { text: qsTr("EDGETX / OPENTX LUA SETTINGS"); color: settings_form.primaryText; font.bold: true }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("Lets the OpenHD Lua tool change frequency, bandwidth, MCS and TX power, or disable FHSS. Assign the OHDSET mixer outputs to four consecutive receiver channels in this order: D2, D1, D0, CLK.")
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Enable Lua settings protocol"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.rcLuaAvailable && root.rcLuaBaseChannel > 0
+                                    checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("RC_OHD_CTRL") !== 0 }
+                                    onToggled: root.setAirInt("RC_OHD_CTRL", checked ? 1 : 0)
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("First RC channel"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                SpinBox {
+                                    id: rcLuaBase
+                                    from: 0; to: 15; editable: true
+                                    value: root.rcLuaBaseChannel
+                                    textFromValue: function(value) { return value === 0 ? qsTr("Disabled") : qsTr("CH %1").arg(value) }
+                                    onValueModified: root.setAirInt("RC_SET_BASE", value)
+                                }
+                            }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.primaryText
+                                text: root.rcLuaBaseChannel > 0
+                                      ? qsTr("Mapping: CH %1 = D2, CH %2 = D1, CH %3 = D0, CH %4 = CLK")
+                                            .arg(root.rcLuaBaseChannel).arg(root.rcLuaBaseChannel + 1)
+                                            .arg(root.rcLuaBaseChannel + 2).arg(root.rcLuaBaseChannel + 3)
+                                      : qsTr("Select a first channel. Four consecutive channels are required.")
+                            }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("The four channels must otherwise be unused. Configure RC_OHD_CTRL only after checking that all four live values reach the Air unit.")
+                            }
+                        }
+                    }
+
+                    AdvancedCard {
+                        Layout.fillWidth: true; implicitHeight: rcLuaDebugColumn.implicitHeight + 32
+                        ColumnLayout {
+                            id: rcLuaDebugColumn; anchors.fill: parent; spacing: 8
+                            Label { text: qsTr("LUA PROTOCOL DEBUG"); color: settings_form.primaryText; font.bold: true }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Rectangle { width: 12; height: 12; radius: 6; color: _rcchannelsmodelfc.is_alive ? "#35d36b" : "#ff5a5a" }
+                                Label {
+                                    Layout.fillWidth: true; color: settings_form.primaryText
+                                    text: _rcchannelsmodelfc.is_alive ? qsTr("RC channel data received") : qsTr("No RC channel data from the flight controller")
+                                }
+                            }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("Data lines must be near 1000 or 2000 µs. The clock must alternate while a command is sent. Mid-position values are invalid.")
+                            }
+                            Repeater {
+                                model: _rcchannelsmodelfc
+                                delegate: RowLayout {
+                                    property int protocolOffset: index - root.rcLuaBaseChannel + 1
+                                    visible: root.rcLuaBaseChannel > 0 && protocolOffset >= 0 && protocolOffset < 4
+                                    Layout.fillWidth: true
+                                    Label {
+                                        Layout.preferredWidth: 110; color: settings_form.primaryText; font.bold: true
+                                        text: protocolOffset === 0 ? "D2" : (protocolOffset === 1 ? "D1" : (protocolOffset === 2 ? "D0" : "CLK"))
+                                    }
+                                    Label { Layout.preferredWidth: 70; color: settings_form.secondaryText; text: qsTr("CH %1").arg(index + 1) }
+                                    ProgressBar { Layout.fillWidth: true; from: 1000; to: 2000; value: model.curr_value }
+                                    Label {
+                                        Layout.preferredWidth: 120; horizontalAlignment: Text.AlignRight
+                                        color: model.curr_value >= 900 && model.curr_value <= 1300 ? "#35d36b"
+                                               : (model.curr_value >= 1700 && model.curr_value <= 2100 ? "#35d36b" : "#ff5a5a")
+                                        text: model.curr_value + " µs  " +
+                                              (model.curr_value >= 900 && model.curr_value <= 1300 ? "0"
+                                               : (model.curr_value >= 1700 && model.curr_value <= 2100 ? "1" : qsTr("INVALID")))
+                                    }
+                                }
+                            }
+                            Label {
+                                visible: root.rcLuaBaseChannel === 0
+                                Layout.fillWidth: true; color: settings_form.secondaryText
+                                text: qsTr("Select the first RC channel to display protocol inputs.")
+                            }
+                        }
+                    }
+                    Label {
+                        visible: !root.rcLuaAvailable
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                        text: qsTr("Connect an Air unit containing the RC Lua settings protocol to configure it.")
                     }
                 }
             }

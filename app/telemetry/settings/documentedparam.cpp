@@ -112,6 +112,14 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    {{"25 ms",25},{"50 ms",50},{"100 ms",100}}),
                "Devourer FHSS dwell time. 50 ms is recommended."
                );
+    append_int(ret,openhd::WB_ENABLE_RC_OPENHD_CONTROL,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable OpenHD settings commands from the EdgeTX/OpenTX Lua tool. The transport uses four consecutive RC channels."
+               );
+    append_int(ret,openhd::WB_RC_SETTINGS_BASE_CHANNEL,
+               ImprovedIntSetting::createRangeOnly(0,15),
+               "First RC channel used by the Lua settings protocol. The mapping is D2, D1, D0 and CLK; zero disables the protocol."
+               );
     append_int(ret,openhd::WB_ENABLE_RETRANSMISSION,
                ImprovedIntSetting::createEnumEnableDisable(),
                "Enable ARQ retransmission for video. Requires restart to take effect.",
