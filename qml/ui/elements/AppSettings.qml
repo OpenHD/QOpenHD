@@ -348,8 +348,9 @@ Settings {
 
     property bool adsb_enable: false
     property double adsb_radius: 50000 //using meters for now- api is in NM
-    property bool adsb_show_internet_data: true
-    property bool adsb_show_sdr_data: true
+    // 0 = public internet feed, 1 = OpenHD/dump1090 SDR feed.
+    property int adsb_source: 0
+    property bool adsb_estimate_position_from_internet: false
     property bool adsb_show_unknown_or_zero_alt: false //alot of traffic has no alt and is not useful
     property bool adsb_show_nearest_widget: true
     property bool adsb_show_osd_markers: false

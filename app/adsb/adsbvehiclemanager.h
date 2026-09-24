@@ -86,7 +86,7 @@ private slots:
     void dirty_onSslError(QNetworkReply* reply, QList<QSslError> errors);
     void requestData() override;
 private:
-    bool _adsb_show_internet_data;
+    static constexpr int InternetSource = 0;
 };
 
 // This class gets the info from SDR
@@ -108,7 +108,7 @@ private:
     void recordFailedPoll();
 
     QString _groundAddress = "127.0.0.1";
-    bool _adsb_show_sdr_data;
+    static constexpr int SdrSource = 1;
     int _consecutiveFailedPolls = 0;
     static constexpr int OfflineFailureThreshold = 3;
 };
@@ -171,6 +171,7 @@ private:
     double                          _api_lon;
     QElapsedTimer                   _last_update_timer;
     uint                            _status = 0;
+    int                             _activeSource = -1;
 
     qreal distance = 0;
     QSettings _settings;

@@ -43,7 +43,9 @@ ApplicationWindow {
                                              && ipLocationLongitude <= 180.0
                                              && !(ipLocationLatitude === 0.0
                                                   && ipLocationLongitude === 0.0)
-    readonly property bool roughPositionValid: osPositionValid || ipPositionValid
+    readonly property bool internetPositionEstimateEnabled: settings.adsb_estimate_position_from_internet
+    readonly property bool roughPositionValid: internetPositionEstimateEnabled
+                                                && (osPositionValid || ipPositionValid)
     readonly property bool referencePositionValid: fcPositionValid || roughPositionValid
     readonly property double referenceLatitude: fcPositionValid
                                                 ? _fcMavlinkSystem.lat
@@ -59,13 +61,15 @@ ApplicationWindow {
 
     PositionSource {
         id: networkPositionSource
-        active: !applicationWindow.fcPositionValid
+        active: applicationWindow.internetPositionEstimateEnabled
+                && !applicationWindow.fcPositionValid
         updateInterval: 60000
         preferredPositioningMethods: PositionSource.NonSatellitePositioningMethods
     }
 
     function requestIpLocation() {
-        if (fcPositionValid || osPositionValid || ipLocationRequestActive) return
+        if (!internetPositionEstimateEnabled || fcPositionValid
+                || osPositionValid || ipLocationRequestActive) return
         ipLocationRequestActive = true
         var request = new XMLHttpRequest()
         ipLocationRequest = request
@@ -119,7 +123,8 @@ ApplicationWindow {
         // Retry promptly while unavailable; refresh occasionally in case the
         // public IP/network changes while QOpenHD remains open.
         interval: applicationWindow.ipPositionValid ? 1800000 : 300000
-        running: !applicationWindow.fcPositionValid
+        running: applicationWindow.internetPositionEstimateEnabled
+                 && !applicationWindow.fcPositionValid
         repeat: true
         triggeredOnStart: true
         onTriggered: applicationWindow.requestIpLocation()

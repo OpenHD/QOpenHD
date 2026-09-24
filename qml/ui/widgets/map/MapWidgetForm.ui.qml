@@ -300,29 +300,6 @@ BaseWidget {
                 height: 32
                 visible: settings.adsb_enable
                 Text {
-                    text: qsTr("ADSB Internet Source")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.adsb_show_internet_data
-                    onCheckedChanged: settings.adsb_show_internet_data = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                //TODO turn on once sdr is fixed
-                visible: false
-                Text {
                     text: qsTr("ADSB SDR Source")
                     color: "white"
                     height: parent.height
@@ -336,8 +313,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.adsb_show_sdr_data
-                    onCheckedChanged: settings.adsb_show_sdr_data = checked
+                    checked: settings.adsb_source === 1
+                    onToggled: settings.adsb_source = checked ? 1 : 0
                 }
             }
             Item {

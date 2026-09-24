@@ -28,6 +28,7 @@
 
 #include <QDebug>
 #include <QMetaObject>
+#include <limits>
 
 
 ADSBVehicleManager* ADSBVehicleManager::instance()
@@ -67,6 +68,7 @@ void ADSBVehicleManager::onStarted()
 
     _internetLink = new ADSBInternet();
     connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
+    connect(_internetLink, &ADSBInternet::sourceStatusChanged, this, &ADSBVehicleManager::setSourceStatus, Qt::QueuedConnection);
     //there is probably a better way to get map lat,lon from map component
     //currently map componenet calls adsbvehicle method which then emits signal to slot in adsbapi with lat lon
     connect(this, &ADSBVehicleManager::mapLatChanged, _internetLink, &ADSBInternet::mapLatChanged, Qt::QueuedConnection);
@@ -95,6 +97,13 @@ void ADSBVehicleManager::newMapLon(double map_lon) {
 
 void ADSBVehicleManager::_cleanupStaleVehicles()
 {
+    const int selectedSource = _settings.value("adsb_source", 0).toInt();
+    if (_activeSource != selectedSource) {
+        _activeSource = selectedSource;
+        adsbClearModel();
+        _status = 0;
+        emit statusChanged();
+    }
     // Remove all expired ADSB vehicles
     for (int i=_adsbVehicles.count()-1; i>=0; i--) {
         ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
@@ -104,16 +113,8 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
             adsbVehicle->deleteLater();
         }
     }
-    // if more than 20 seconds with with no updates, set frontend indicator red
-    // if more than 60 seconds with no updates deactivate frontend indicator
-    if (_last_update_timer.elapsed() > 60000) {
-        _status = 0;
-        emit statusChanged();
-
-    } else if (_last_update_timer.elapsed() > 20000) {
-        _status = 1;
-        emit statusChanged();
-    }
+    // Source health is driven by successful/failed polls. A valid empty
+    // response must remain healthy.
 }
 
 //currently not used.. was for testing but could have future purpose to turn off display
@@ -170,6 +171,11 @@ void ADSBVehicleManager::processMavlinkVehicle(const mavlink_adsb_vehicle_t& veh
         QMetaObject::invokeMethod(this, [this, vehicle]() {
             processMavlinkVehicle(vehicle);
         }, Qt::QueuedConnection);
+        return;
+    }
+
+    if (!_settings.value("adsb_enable").toBool()
+            || _settings.value("adsb_source", 0).toInt() != 1) {
         return;
     }
 
@@ -273,9 +279,10 @@ void ADSBapi::init(void) {
     // How frequently data is requested
     timer->start(timer_interval);
 
-    //init a lat lon here jsut in case map doesnt send anything in time
-    mapLatChanged(40.4820);
-    mapLonChanged(-3.3599);
+    // Wait for QML to supply either a valid GPS fix or the explicitly enabled
+    // rough internet position; never query around a developer coordinate.
+    m_api_lat = std::numeric_limits<double>::quiet_NaN();
+    m_api_lon = std::numeric_limits<double>::quiet_NaN();
 }
 
 // This is the slot for the singal emitted from adsbvehicle class that map center changed
@@ -291,22 +298,26 @@ void ADSBapi::mapLonChanged(double map_lon) {
 
 void ADSBInternet::requestData(void) {
     _adsb_enable = _settings.value("adsb_enable").toBool();
-    _adsb_show_internet_data = _settings.value("adsb_show_internet_data").toBool();
     max_distance = _settings.value("adsb_radius").toInt();
     QObject::connect(m_manager, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(dirty_onSslError(QNetworkReply*, QList<QSslError>)));
 
     QString distance_string = QString::number(max_distance/1852); // convert meters to NM for api
 
     // If adsb or adsb_internet is disabled by settings don't make the internet request and return
-    if (!_adsb_enable || !_adsb_show_internet_data) {
+    if (!_adsb_enable) {
+           emit sourceStatusChanged(0);
+           return;
+    }
+    if (_settings.value("adsb_source", 0).toInt() != InternetSource
+            || !qIsFinite(m_api_lat) || !qIsFinite(m_api_lon)) {
            return;
     }
     // TODO - http instead of https ?
-    adsb_url="https://api.airplanes.live/v2/point/"+  lat_string +"/"+ lon_string + "/" + distance_string;
+    adsb_url="https://api.adsb.lol/v2/point/"+ lat_string +"/"+ lon_string + "/" + distance_string;
     QNetworkRequest request;
     QUrl api_request = adsb_url;
     request.setUrl(api_request);
-    request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
+    request.setRawHeader("User-Agent", "QOpenHD ADS-B client");
 
     m_manager->get(request);
 }
@@ -316,10 +327,17 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     max_distance=(_settings.value("adsb_radius").toInt());
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
+    if (!_settings.value("adsb_enable").toBool()
+            || _settings.value("adsb_source", 0).toInt() != InternetSource) {
+        reply->deleteLater();
+        return;
+    }
+
 
     if (reply->error()) {
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky Reply Error", 4);
+        emit sourceStatusChanged(1);
         reply->deleteLater();
         return;
     }
@@ -336,11 +354,13 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     if (doc.isNull()) {
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky Parse Error", 4);
+        emit sourceStatusChanged(1);
         reply->deleteLater();
         return;
     }
 
     if(!doc.isObject()){
+        emit sourceStatusChanged(1);
         reply->deleteLater();
         return;
     }
@@ -350,6 +370,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     if(jsonObject.isEmpty()){
         //TODO REFACTOR MSG
         //LocalMessage::instance()->showMessage("ADSB OpenSky empty object", 4);
+        emit sourceStatusChanged(1);
         reply->deleteLater();
         return;
     }
@@ -357,7 +378,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
 
     QJsonArray acArray = doc.object()["ac"].toArray();
-
+    emit sourceStatusChanged(2);
 
     // Iterate through the "ac" array
     for (const QJsonValue &aircraftValue : acArray) {
@@ -420,7 +441,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
         //Aircraft altitude
         if(aircraft["alt_baro"].toDouble()){
-            adsbInfo.altitude = aircraft["alt_baro"].toDouble();
+            adsbInfo.altitude = aircraft["alt_baro"].toDouble() * 0.3048;
             //per setting eliminate all unknown alt
             if (adsbInfo.altitude<5 && unknown_zero_alt==false){
                 continue;
@@ -439,7 +460,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
         //Aircraft velocity
         if(aircraft["gs"].toDouble()){
-            adsbInfo.velocity = aircraft["gs"].toDouble() * 3.6; // m/s to km/h
+            adsbInfo.velocity = aircraft["gs"].toDouble() * 1.852; // knots to km/h
         }
         else {
             adsbInfo.velocity=99999.9;
@@ -466,7 +487,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
         //vertical velocity
         if(aircraft["baro_rate"].isDouble()){
-            adsbInfo.verticalVel = aircraft["baro_rate"].toDouble();
+            adsbInfo.verticalVel = aircraft["baro_rate"].toDouble() * 0.00508;
         }
         else {
             adsbInfo.verticalVel=0.0;
@@ -508,13 +529,16 @@ void ADSBSdr::recordFailedPoll()
 void ADSBSdr::requestData(void) {
     //TODO REFACTOR MSG
     //Logger::instance()->logData("request data", 1);
-    _adsb_show_sdr_data = _settings.value("adsb_show_sdr_data").toBool();
     _adsb_enable = _settings.value("adsb_enable").toBool();
 
     // If adsb or sdr adsb is disabled by settings don't make the request and return
-    if (!_adsb_enable || !_adsb_show_sdr_data) {
+    if (!_adsb_enable) {
         _consecutiveFailedPolls = 0;
         emit sourceStatusChanged(0);
+        return;
+    }
+    if (_settings.value("adsb_source", 0).toInt() != SdrSource) {
+        _consecutiveFailedPolls = 0;
         return;
     }
 
@@ -535,6 +559,12 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
     max_distance = _settings.value("adsb_radius").toInt() / 1000;
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
+
+    if (!_settings.value("adsb_enable").toBool()
+            || _settings.value("adsb_source", 0).toInt() != SdrSource) {
+        reply->deleteLater();
+        return;
+    }
 
     //qDebug() << "MAX adsb distance=" << max_distance;
 

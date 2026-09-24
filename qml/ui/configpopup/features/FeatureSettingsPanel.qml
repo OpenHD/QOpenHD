@@ -170,7 +170,11 @@ AdvancedPage {
                                 Rectangle { width: 12; height: 12; radius: 6; color: AdsbVehicleManager.status === 2 ? "#35d36b" : (AdsbVehicleManager.status === 1 ? "#ff5a5a" : "#7d8790") }
                                 Label {
                                     Layout.fillWidth: true; color: settings_form.primaryText
-                                    text: AdsbVehicleManager.status === 2 ? qsTr("dump1090 connected") : (AdsbVehicleManager.status === 1 ? qsTr("dump1090 unavailable") : qsTr("ADS-B disabled"))
+                                    text: AdsbVehicleManager.status === 2
+                                          ? (settings.adsb_source === 0 ? qsTr("Internet ADS-B connected") : qsTr("SDR ADS-B connected"))
+                                          : (AdsbVehicleManager.status === 1
+                                             ? (settings.adsb_source === 0 ? qsTr("Internet ADS-B unavailable") : qsTr("SDR ADS-B unavailable"))
+                                             : qsTr("ADS-B disabled"))
                                 }
                             }
                             RowLayout {
@@ -180,13 +184,20 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Internet traffic source"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch { checked: settings.adsb_show_internet_data; onToggled: settings.adsb_show_internet_data = checked }
+                                Label { text: qsTr("Traffic source"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                CompactLinkComboBox {
+                                    model: [qsTr("Internet"), qsTr("SDR / OpenHD")]
+                                    currentIndex: settings.adsb_source
+                                    onActivated: settings.adsb_source = index
+                                }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("SDR / OpenHD traffic source"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch { checked: settings.adsb_show_sdr_data; onToggled: settings.adsb_show_sdr_data = checked }
+                                Label { text: qsTr("Estimate position from internet"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    checked: settings.adsb_estimate_position_from_internet
+                                    onToggled: settings.adsb_estimate_position_from_internet = checked
+                                }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
