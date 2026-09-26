@@ -133,6 +133,8 @@
         <file>ui/configpopup/openhd_settings/DynamicLinkSetting.qml</file>
         <file>ui/configpopup/openhd_settings/CompactLinkComboBox.qml</file>
         <file>ui/configpopup/openhd_settings/WifiBroadcastLinkCard.qml</file>
+        <file>ui/configpopup/openhd_settings/SimulatedLinkCard.qml</file>
+        <file>ui/configpopup/openhd_settings/LinkUsageMeter.qml</file>
         <file>ui/configpopup/openhd_settings/MicrohardLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/ArtosynLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/MLRSLinkCard.qml</file>

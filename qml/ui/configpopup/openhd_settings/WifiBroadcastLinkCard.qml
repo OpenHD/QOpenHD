@@ -7,6 +7,7 @@ Rectangle {
     property var host
     property int cardIndex: -1
     property bool keyboardSelected: false
+    property bool simulated: settings.dev_simulate_wifibroadcast_link
     radius: 10
     color: settings_form.panelBackgroundRaised
     border.color: keyboardSelected ? settings_form.accentColor : settings_form.lineColor
@@ -15,17 +16,17 @@ Rectangle {
     ListModel { id: bandwidths }
     ListModel { id: mcsValues }
 
-    property int currentFrequency: _ohdSystemGround.curr_channel_mhz > 0
+    property int currentFrequency: simulated ? 5805 : (_ohdSystemGround.curr_channel_mhz > 0
                                    ? _ohdSystemGround.curr_channel_mhz
                                    : (_wbLinkSettingsHelper.curr_channel_mhz > 0
                                       ? _wbLinkSettingsHelper.curr_channel_mhz
-                                      : _ohdSystemAir.curr_channel_mhz)
-    property int currentBandwidth: _ohdSystemGround.curr_channel_width_mhz > 0
+                                      : _ohdSystemAir.curr_channel_mhz))
+    property int currentBandwidth: simulated ? 20 : (_ohdSystemGround.curr_channel_width_mhz > 0
                                    ? _ohdSystemGround.curr_channel_width_mhz
                                    : (_wbLinkSettingsHelper.curr_channel_width_mhz > 0
                                       ? _wbLinkSettingsHelper.curr_channel_width_mhz
-                                      : _ohdSystemAir.curr_channel_width_mhz)
-    property int currentMcs: _ohdSystemAir.curr_mcs_index
+                                      : _ohdSystemAir.curr_channel_width_mhz))
+    property int currentMcs: simulated ? 4 : _ohdSystemAir.curr_mcs_index
     property int settingsRevision: _ohdSystemGroundSettings.update_count + _ohdSystemAirSettingsModel.update_count
     property bool adaptiveAvailable: settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_ADAPT_CH")
     property bool fhssAvailable: settingsRevision >= 0 &&
@@ -132,19 +133,27 @@ Rectangle {
             Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
             Text { text: "\uf1eb"; color: "#55aaff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 18 }
             Text { text: qsTr("WiFiBroadcast Link"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
-            Rectangle { width: activeText.implicitWidth + 14; height: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
+            Rectangle { Layout.preferredWidth: activeText.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
                 Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
             }
+        }
+
+        LinkUsageMeter {
+            visible: settings.dev_show_advanced_button
+            Layout.fillWidth: true
+            Layout.preferredHeight: visible ? (root.width < 360 ? 100 : 78) : 0
+            usage: root.host ? root.host.usageFor("wifi") : null
+            title: qsTr("Link Usage")
         }
 
         GridLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 48; columns: 4; columnSpacing: 0; rowSpacing: 0
             Repeater {
                 model: [
-                    {label: qsTr("LOSS"), value: _ohdSystemGround.curr_rx_packet_loss_perc < 0 ? qsTr("N/A") : _ohdSystemGround.curr_rx_packet_loss_perc + "%", bad: _ohdSystemGround.curr_rx_packet_loss_perc > 5},
-                    {label: qsTr("POLLUTION"), value: _ohdSystemGround.wb_link_curr_foreign_pps < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_curr_foreign_pps + " pps", bad: _ohdSystemGround.wb_link_curr_foreign_pps > 20},
-                    {label: qsTr("TX ERRORS"), value: String(_ohdSystemAir.count_tx_inj_error_hint), bad: _ohdSystemAir.count_tx_inj_error_hint > 0},
-                    {label: qsTr("LINK LOAD"), value: _ohdSystemGround.wb_link_pollution_perc < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_pollution_perc + "%", bad: _ohdSystemGround.wb_link_pollution_perc > 75}
+                    {label: qsTr("LOSS"), value: root.simulated ? "0%" : (_ohdSystemGround.curr_rx_packet_loss_perc < 0 ? qsTr("N/A") : _ohdSystemGround.curr_rx_packet_loss_perc + "%"), bad: !root.simulated && _ohdSystemGround.curr_rx_packet_loss_perc > 5},
+                    {label: qsTr("POLLUTION"), value: root.simulated ? "3 pps" : (_ohdSystemGround.wb_link_curr_foreign_pps < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_curr_foreign_pps + " pps"), bad: !root.simulated && _ohdSystemGround.wb_link_curr_foreign_pps > 20},
+                    {label: qsTr("TX ERRORS"), value: root.simulated ? "0" : String(_ohdSystemAir.count_tx_inj_error_hint), bad: !root.simulated && _ohdSystemAir.count_tx_inj_error_hint > 0},
+                    {label: qsTr("LINK LOAD"), value: root.simulated ? "42%" : (_ohdSystemGround.wb_link_pollution_perc < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_pollution_perc + "%"), bad: !root.simulated && _ohdSystemGround.wb_link_pollution_perc > 75}
                 ]
                 delegate: Rectangle {
                     Layout.fillWidth: true; Layout.fillHeight: true; color: settings_form.panelBackground; border.color: settings_form.lineColor
@@ -161,6 +170,7 @@ Rectangle {
             Item { Layout.fillWidth: true }
             Button {
                 id: scan; Layout.preferredWidth: 88; Layout.preferredHeight: 29
+                enabled: !root.simulated
                 text: qsTr("SCAN"); hoverEnabled: true
                 contentItem: Text { text: scan.text; color: scan.activeFocus || scan.hovered ? settings_form.accentColor : settings_form.primaryText; font.pixelSize: 9; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 background: Rectangle { radius: 7; color: scan.down ? Qt.rgba(0.12, 0.55, 1, 0.18) : (scan.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground); border.color: scan.activeFocus || scan.hovered ? settings_form.accentColor : settings_form.lineColor; border.width: scan.activeFocus ? 2 : 1 }
@@ -168,6 +178,7 @@ Rectangle {
             }
             Button {
                 id: analyze; Layout.preferredWidth: 88; Layout.preferredHeight: 29
+                enabled: !root.simulated
                 text: qsTr("ANALYZE"); hoverEnabled: true
                 contentItem: Text { text: analyze.text; color: analyze.activeFocus || analyze.hovered ? settings_form.accentColor : settings_form.primaryText; font.pixelSize: 9; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 background: Rectangle { radius: 7; color: analyze.down ? Qt.rgba(0.12, 0.55, 1, 0.18) : (analyze.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground); border.color: analyze.activeFocus || analyze.hovered ? settings_form.accentColor : settings_form.lineColor; border.width: analyze.activeFocus ? 2 : 1 }
@@ -184,28 +195,28 @@ Rectangle {
                 RowLayout { Layout.fillWidth: true; spacing: 6
                     ColumnLayout { Layout.fillWidth: true; spacing: 1
                         Text { text: qsTr("Channel"); color: settings_form.secondaryText; font.pixelSize: 7 }
-                        CompactLinkComboBox { id: frequency; Layout.fillWidth: true; Layout.preferredHeight: 31; model: host ? host.frequencyModel : null; textRole: "title"; popupWidth: Math.max(width, 250); displayText: root.currentFrequency > 0 && host ? host.formatFrequency(root.currentFrequency) : qsTr("N/A"); onActivated: if (host) host.chooseFrequency(currentIndex); Keys.onPressed: root.keyNav(event) }
+                        CompactLinkComboBox { id: frequency; Layout.fillWidth: true; Layout.preferredHeight: 31; model: host ? host.frequencyModel : null; textRole: "title"; popupWidth: Math.max(width, 250); displayText: root.currentFrequency > 0 && host ? host.formatFrequency(root.currentFrequency) : qsTr("N/A"); enabled: !root.simulated; onActivated: if (host) host.chooseFrequency(currentIndex); Keys.onPressed: root.keyNav(event) }
                     }
                     ColumnLayout { Layout.fillWidth: true; spacing: 1
                         Text { text: qsTr("Channel Width"); color: settings_form.secondaryText; font.pixelSize: 7 }
-                        CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: 31; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
+                        CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: 31; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
                     }
                     ColumnLayout { Layout.fillWidth: true; spacing: 1
                         Text { text: qsTr("MCS"); color: settings_form.secondaryText; font.pixelSize: 7 }
-                        CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 31; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
+                        CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 31; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
                     }
                 }
             }
         }
 
         Rectangle {
-            visible: root.adaptiveAvailable || root.fhssAvailable || root.dwellAvailable
+            visible: root.adaptiveAvailable || (settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable))
             Layout.fillWidth: true; Layout.preferredHeight: visible ? 66 : 0
             radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
             RowLayout { anchors.fill: parent; anchors.margins: 7; spacing: 10
                 DynamicLinkSetting { id: adaptive; Layout.fillWidth: true; visible: root.adaptiveAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "WB_ADAPT_CH"; label: qsTr("Adaptive Link"); preferRadioToggle: true; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                 ColumnLayout {
-                    visible: root.fhssAvailable || root.dwellAvailable
+                    visible: settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable)
                     Layout.fillWidth: true
                     Layout.minimumWidth: root.dwellAvailable ? 210 : 120
                     spacing: 1
@@ -252,9 +263,9 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 25; spacing: 6
-            Text { Layout.fillWidth: true; text: qsTr("Driver: %1").arg(_wifi_card_air.card_type_as_string); color: settings_form.secondaryText; font.pixelSize: 7; elide: Text.ElideRight }
+            Text { Layout.fillWidth: true; text: qsTr("Driver: %1").arg(root.simulated ? "RTL8812AU" : _wifi_card_air.card_type_as_string); color: settings_form.secondaryText; font.pixelSize: 7; elide: Text.ElideRight }
             Text { visible: _ohdSystemAir.onboard_uptime_ms > 0; text: qsTr("Uptime: %1").arg(root.formatUptime(_ohdSystemAir.onboard_uptime_ms)); color: settings_form.secondaryText; font.pixelSize: 7 }
-            Rectangle { width: 7; height: 7; radius: 4; color: settings_form.goodColor }
+            Rectangle { Layout.preferredWidth: 7; Layout.preferredHeight: 7; radius: 4; color: settings_form.goodColor }
         }
     }
 }

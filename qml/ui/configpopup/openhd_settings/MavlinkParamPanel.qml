@@ -58,6 +58,14 @@ Rectangle {
     }
 
     function activeAirLinks() {
+        // Developer fixtures for validating the status strip without a connected
+        // Air unit. Keep the output deterministic and separate from live data.
+        var simulated = []
+        if (settings.dev_simulate_ethernet_link) simulated.push(qsTr("Ethernet"))
+        if (settings.dev_simulate_wifibroadcast_link) simulated.push(qsTr("WiFiBroadcast"))
+        if (settings.dev_simulate_uart_link) simulated.push(qsTr("UART"))
+        if (simulated.length > 0) return simulated
+
         // ACTIVE_LINKS is authoritative and also contains secondary transports
         // such as Ethernet. update_count keeps this binding live after a fetch.
         var unusedRevision = m_instanceMavlinkSettingsModel.update_count

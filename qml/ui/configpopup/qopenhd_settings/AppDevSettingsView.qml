@@ -87,6 +87,48 @@ ScrollView {
                 }
             }
             SettingBaseElement{
+                m_short_description: qsTr("Simulate Ethernet link")
+                m_long_description: qsTr("UI debugging only. Does not create or change any real connection.")
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_simulate_ethernet_link
+                    onCheckedChanged: settings.dev_simulate_ethernet_link = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: qsTr("Simulate WiFiBroadcast link")
+                m_long_description: qsTr("UI debugging only. Shows populated radio data in the Link tab.")
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_simulate_wifibroadcast_link
+                    onCheckedChanged: settings.dev_simulate_wifibroadcast_link = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: qsTr("Simulate UART link")
+                m_long_description: qsTr("UI debugging only. Does not create or change any real connection.")
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_simulate_uart_link
+                    onCheckedChanged: settings.dev_simulate_uart_link = checked
+                }
+            }
+            SettingBaseElement{
                 m_short_description: qsTr("Save Settings to file")
                 m_long_description: qsTr("Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux.")
 

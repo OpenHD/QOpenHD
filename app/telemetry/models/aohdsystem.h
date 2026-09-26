@@ -7,7 +7,9 @@
 #include <array>
 #include <QQmlContext>
 #include <QVariantList>
+#include <QVariantMap>
 #include <atomic>
+#include <map>
 
 #include "../tutil/mavlink_include.h"
 
@@ -35,6 +37,11 @@ public:
     // Returns true if the passed message was processed (known message id), false otherwise
     bool process_message(const mavlink_message_t& msg);
 public: // public for QT
+    Q_PROPERTY(QVariantList link_usage READ link_usage NOTIFY link_usage_changed)
+    QVariantList link_usage() const { return m_link_usage; }
+signals:
+    void link_usage_changed();
+public:
     // NOTE: I wrote this class before I knew about the lqutils macros, which is why they are used sparingly here
     //
     // WB / Monitor mode link statistics, generic for both air and ground (incoming / outgoing)
@@ -201,9 +208,12 @@ private:
      void process_sys_status1(const mavlink_openhd_sys_status1_t& msg);
      void process_op_mode(const mavlink_openhd_wifbroadcast_gnd_operating_mode_t& msg);
      void process_onboard_computer_status(const mavlink_onboard_computer_status_t& msg);
+     void process_link_usage(const mavlink_data96_t& msg);
      // When apropriate, auto-fecth params until success
      void autofech_params_if_apropriate();
 private:
+     QVariantList m_link_usage;
+     std::map<int, int64_t> m_link_usage_last_ms;
      std::atomic<int64_t> m_last_heartbeat_ms = -1;
      std::atomic<int64_t> m_last_message_ms= -1;
      //

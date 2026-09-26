@@ -80,6 +80,7 @@ class FleetControlLte : public QObject {
   void setStatusText(const QString& value);
   void clearSession();
   void refreshLocalStatus();
+  void restoreProvisionedLogin();
   static QString responseError(const QJsonObject& object,
                                const QString& fallback);
   bool installCertificate(const QByteArray& certificate, QString& path,

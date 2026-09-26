@@ -74,6 +74,12 @@ Rectangle {
             }
         }
 
+        LinkUsageMeter {
+            Layout.fillWidth: true
+            Layout.preferredHeight: root.width < 360 ? 100 : 78
+            usage: root.host ? root.host.usageFor("fleetcontrol") : null
+        }
+
         GridLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: root.width < 310 ? 112 : 58

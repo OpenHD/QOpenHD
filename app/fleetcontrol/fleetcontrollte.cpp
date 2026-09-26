@@ -63,6 +63,19 @@ FleetControlLte::FleetControlLte(QObject* parent)
   connect(&m_timer, &QTimer::timeout, this, &FleetControlLte::refreshLocalStatus);
   m_timer.start(5000);
   refreshLocalStatus();
+  QTimer::singleShot(0, this, &FleetControlLte::restoreProvisionedLogin);
+}
+
+void FleetControlLte::restoreProvisionedLogin() {
+  QFile file(QStringLiteral("/root/.config/OpenHD/FleetControlCredentials.json"));
+  if (!file.open(QIODevice::ReadOnly)) return;
+  QJsonParseError parse_error{};
+  const auto document = QJsonDocument::fromJson(file.readAll(), &parse_error);
+  if (parse_error.error != QJsonParseError::NoError || !document.isObject()) return;
+  const auto object = document.object();
+  const QString username = object.value(QStringLiteral("username")).toString();
+  const QString password = object.value(QStringLiteral("password")).toString();
+  if (!username.trimmed().isEmpty() && !password.isEmpty()) login(username, password);
 }
 
 void FleetControlLte::setBusy(bool value) {

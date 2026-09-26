@@ -21,6 +21,7 @@ Rectangle {
                 Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
             }
         }
+        LinkUsageMeter { Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("microhard") : null }
         GridLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 55; columns: 4; columnSpacing: 0
             Repeater { model: [

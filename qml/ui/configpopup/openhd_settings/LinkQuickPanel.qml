@@ -16,15 +16,26 @@ Rectangle {
     property int cardColumns: Math.max(1, Math.min(activeLinks.count, availableCardColumns))
     property int collapsedCardWidth: Math.floor((cardsFlow.width - (cardColumns - 1) * cardsFlow.spacing) / cardColumns)
     property int expandedCardIndex: -1
+    readonly property var reportedUsage: _ohdSystemAir.link_usage
+    readonly property string reportedLinkKinds: {
+        var ids = []
+        for (var i = 0; i < reportedUsage.length; ++i) ids.push(reportedUsage[i].id)
+        return ids.sort().join(",")
+    }
+    readonly property var totalUsage: primaryUsage()
     property bool fleetConfigured: (fleetBackend && fleetBackend.configured) ||
                                    _ohdSystemAir.fleetcontrol_lte_active ||
-                                   _ohdSystemAir.fleetcontrol_lte_max_kbit > 0
+                                   _ohdSystemAir.fleetcontrol_lte_max_kbit > 0 ||
+                                   hasReportedUsage(6)
     property int linkRevision: _ohdSystemGround.primary_link_type + _ohdSystemAir.primary_link_type +
                                _ohdSystemGround.microhard_enabled + _ohdSystemAir.microhard_enabled +
                                (_ohdSystemGround.artosyn_link_detected ? 10 : 0) +
                                (_ohdSystemAir.artosyn_link_detected ? 20 : 0) +
                                (_wifi_card_gnd0.alive ? 40 : 0) + (_wifi_card_air.alive ? 80 : 0) +
-                               (_mlrsController.alive ? 160 : 0)
+                               (_mlrsController.alive ? 160 : 0) +
+                               (settings.dev_simulate_ethernet_link ? 320 : 0) +
+                               (settings.dev_simulate_wifibroadcast_link ? 640 : 0) +
+                               (settings.dev_simulate_uart_link ? 1280 : 0)
 
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
     Material.accent: settings_form.accentColor
@@ -45,25 +56,69 @@ Rectangle {
     }
 
     function wifiActive() {
+        if (settings.dev_simulate_wifibroadcast_link) return true
+        if (hasReportedUsage(1)) return true
         var card = (_wifi_card_gnd0.alive && _wifi_card_gnd0.card_type_as_string !== "ARTOSYN") ||
                    (_wifi_card_air.alive && _wifi_card_air.card_type_as_string !== "ARTOSYN")
         return card || ((_ohdSystemGround.is_alive || _ohdSystemAir.is_alive) &&
                         !_ohdSystemGround.artosyn_link_detected && !_ohdSystemAir.artosyn_link_detected &&
                         _ohdSystemGround.microhard_enabled <= 0 && _ohdSystemAir.microhard_enabled <= 0)
     }
+    function hasReportedUsage(id) {
+        for (var i = 0; i < reportedUsage.length; ++i)
+            if (reportedUsage[i].id === id) return true
+        return false
+    }
+    function fixture(id, capacity, rates) {
+        var categories = []
+        var total = 0
+        for (var i = 0; i < rates.length; ++i) {
+            categories.push({id: i + 1, bps: rates[i]})
+            total += rates[i]
+        }
+        return {id: id, total_bps: total, capacity_bps: capacity, categories: categories}
+    }
+    function usageFor(kind) {
+        var id = kind === "wifi" ? 1 : kind === "ethernet" ? 2 :
+                 kind === "uart" ? 3 : kind === "microhard" ? 4 :
+                 kind === "artosyn" ? 5 : kind === "fleetcontrol" ? 6 : 7
+        if (id === 1 && settings.dev_simulate_wifibroadcast_link)
+            return fixture(1, 40000000, [12000000, 2000000, 1000000, 400000, 0, 0])
+        if (id === 2 && settings.dev_simulate_ethernet_link)
+            return fixture(2, 1000000000, [0, 0, 0, 0, 0, 0])
+        if (id === 3 && settings.dev_simulate_uart_link)
+            return fixture(3, 2000000, [0, 0, 0, 400000, 200000, 200000])
+        for (var i = 0; i < reportedUsage.length; ++i)
+            if (reportedUsage[i].id === id) return reportedUsage[i]
+        return null
+    }
+    function primaryUsage() {
+        // Do not combine unlike capacities: a quiet gigabit Ethernet link
+        // must not dilute the utilization of the constrained radio link.
+        var kinds = ["wifi", "microhard", "artosyn", "fleetcontrol", "ethernet", "uart", "mlrs"]
+        for (var i = 0; i < kinds.length; ++i) {
+            var link = usageFor(kinds[i])
+            if (link) return link
+        }
+        return null
+    }
+    function ethernetActive() { return settings.dev_simulate_ethernet_link || hasReportedUsage(2) }
+    function uartActive() { return settings.dev_simulate_uart_link || hasReportedUsage(3) }
     function artosynActive() {
-        return _ohdSystemGround.artosyn_link_detected || _ohdSystemAir.artosyn_link_detected ||
+        return hasReportedUsage(5) || _ohdSystemGround.artosyn_link_detected || _ohdSystemAir.artosyn_link_detected ||
                _ohdSystemGround.primary_link_type === 4 || _ohdSystemAir.primary_link_type === 4
     }
-    function microhardActive() { return _ohdSystemGround.microhard_enabled > 0 || _ohdSystemAir.microhard_enabled > 0 }
+    function microhardActive() { return hasReportedUsage(4) || _ohdSystemGround.microhard_enabled > 0 || _ohdSystemAir.microhard_enabled > 0 }
 
     function rebuildLinks() {
         expandedCardIndex = -1
         activeLinks.clear()
         if (wifiActive()) activeLinks.append({kind: "wifi"})
+        if (ethernetActive()) activeLinks.append({kind: "ethernet"})
+        if (uartActive()) activeLinks.append({kind: "uart"})
         if (microhardActive()) activeLinks.append({kind: "microhard"})
         if (artosynActive()) activeLinks.append({kind: "artosyn"})
-        if (_mlrsController.alive) activeLinks.append({kind: "mlrs"})
+        if (_mlrsController.alive || hasReportedUsage(7)) activeLinks.append({kind: "mlrs"})
         if (fleetConfigured) activeLinks.append({kind: "fleetcontrol"})
     }
     function rebuildFrequencies() {
@@ -192,6 +247,7 @@ Rectangle {
     }
 
     onLinkRevisionChanged: rebuildLinks()
+    onReportedLinkKindsChanged: rebuildLinks()
     onFleetConfiguredChanged: rebuildLinks()
     property int frequencyRevision: _wbLinkSettingsHelper.ui_rebuild_models
     onFrequencyRevisionChanged: rebuildFrequencies()
@@ -207,6 +263,21 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 8
         spacing: 9
+
+        Rectangle {
+            visible: settings.dev_show_advanced_button
+            Layout.fillWidth: true
+            Layout.preferredHeight: visible ? 86 : 0
+            radius: 10
+            color: settings_form.panelBackgroundRaised
+            border.color: settings_form.lineColor
+            LinkUsageMeter {
+                anchors.fill: parent
+                anchors.margins: 9
+                usage: root.totalUsage
+                title: qsTr("Total Link Usage")
+            }
+        }
 
         Flickable {
             id: linksFlickable
@@ -225,15 +296,17 @@ Rectangle {
                     id: cell
                     property var loadedCard: loader.item
                     width: root.expandedCardIndex === index ? cardsFlow.width : root.collapsedCardWidth
-                    height: 462
+                    height: 570
                     z: root.expandedCardIndex === index ? 2 : 1
                     Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Loader {
                         id: loader; anchors.fill: parent
                         sourceComponent: kind === "wifi" ? wifiCard
+                                         : (kind === "ethernet" ? ethernetCard
+                                         : (kind === "uart" ? uartCard
                                          : (kind === "microhard" ? microhardCard
                                          : (kind === "artosyn" ? artosynCard
-                                         : (kind === "fleetcontrol" ? fleetControlCard : mlrsCard)))
+                                         : (kind === "fleetcontrol" ? fleetControlCard : mlrsCard)))))
                         onLoaded: {
                             item.host = root
                             item.cardIndex = index
@@ -272,6 +345,8 @@ Rectangle {
     }
 
     Component { id: wifiCard; WifiBroadcastLinkCard {} }
+    Component { id: ethernetCard; SimulatedLinkCard { linkKind: "ethernet" } }
+    Component { id: uartCard; SimulatedLinkCard { linkKind: "uart" } }
     Component { id: microhardCard; MicrohardLinkCard {} }
     Component { id: artosynCard; ArtosynLinkCard {} }
     Component { id: mlrsCard; MLRSLinkCard {} }

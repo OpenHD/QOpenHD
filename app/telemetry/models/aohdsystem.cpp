@@ -29,6 +29,15 @@
 #include <cstring>
 #include <limits>
 
+namespace {
+uint32_t link_usage_u32(const uint8_t* data, int offset) {
+    return static_cast<uint32_t>(data[offset]) |
+           (static_cast<uint32_t>(data[offset + 1]) << 8) |
+           (static_cast<uint32_t>(data[offset + 2]) << 16) |
+           (static_cast<uint32_t>(data[offset + 3]) << 24);
+}
+}
+
 // From https://netbeez.net/blog/what-is-mcs-index/
 static std::vector<int> get_dbm_20mhz(){
     return {-82,-79,-77,-74,-70,-66,-65,-64,-59,-57};
@@ -157,6 +166,15 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             mavlink_msg_openhd_stats_wb_video_air_decode(&msg,&parsedMsg);
             process_x3(parsedMsg);
             consumed=true;
+        }break;
+        case MAVLINK_MSG_ID_DATA96:{
+            if(!m_is_air) break;
+            mavlink_data96_t parsed{};
+            mavlink_msg_data96_decode(&msg, &parsed);
+            if(parsed.type != 0x4f || parsed.len < 16 || parsed.len > 96 ||
+                    std::memcmp(parsed.data, "OHLU", 4) != 0 || parsed.data[4] != 1) break;
+            process_link_usage(parsed);
+            consumed = true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_AIR_FEC_PERFORMANCE:{
             mavlink_openhd_stats_wb_video_air_fec_performance_t parsedMsg;
@@ -846,6 +864,19 @@ void AOHDSystem::autofech_params_if_apropriate()
 
 void AOHDSystem::update_alive()
 {
+    if(m_is_air && !m_link_usage.isEmpty()) {
+        const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+        bool changed = false;
+        for(int i = m_link_usage.size() - 1; i >= 0; --i) {
+            const int id = m_link_usage[i].toMap().value("id").toInt();
+            if(now - m_link_usage_last_ms[id] > 3000) {
+                m_link_usage.removeAt(i);
+                m_link_usage_last_ms.erase(id);
+                changed = true;
+            }
+        }
+        if(changed) emit link_usage_changed();
+    }
     // NOTE: Since we are really resourcefully with the link, we consider the system alive if any message coming from it has
     // come through, not only a heartbeat
     // AIR: Quite lossy, and r.n we send about 2 to 3 telemetry packets per second
@@ -858,6 +889,34 @@ void AOHDSystem::update_alive()
     const auto elapsed_ms=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_message_ms;
     const bool alive=elapsed_ms < (m_is_air ? 3*1000 : 2*1000);
     update_alive_status_with_hud_message(alive);
+}
+
+void AOHDSystem::process_link_usage(const mavlink_data96_t& msg)
+{
+    const int id = msg.data[5];
+    const int count = msg.data[6];
+    if(id < 1 || id > 7 || count > 16 || msg.len < 16 + count * 5) return;
+    QVariantList categories;
+    for(int i = 0; i < count; ++i) {
+        const int offset = 16 + i * 5;
+        categories.append(QVariantMap{{"id", static_cast<int>(msg.data[offset])},
+                                      {"bps", static_cast<qulonglong>(link_usage_u32(msg.data, offset + 1))}});
+    }
+    QVariantMap usage{{"id", id},
+                      {"total_bps", static_cast<qulonglong>(link_usage_u32(msg.data, 8))},
+                      {"capacity_bps", static_cast<qulonglong>(link_usage_u32(msg.data, 12))},
+                      {"categories", categories}};
+    bool replaced = false;
+    for(int i = 0; i < m_link_usage.size(); ++i) {
+        if(m_link_usage[i].toMap().value("id").toInt() == id) {
+            m_link_usage[i] = usage;
+            replaced = true;
+            break;
+        }
+    }
+    if(!replaced) m_link_usage.append(usage);
+    m_link_usage_last_ms[id] = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    emit link_usage_changed();
 }
 
 void AOHDSystem::update_alive_status_with_hud_message(bool alive)
