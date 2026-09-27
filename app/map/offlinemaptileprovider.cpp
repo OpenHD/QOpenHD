@@ -21,6 +21,9 @@ QStringList packageDirectories()
     QStringList paths;
     const auto configured = qEnvironmentVariable("GLIDE_MAP_PACKAGE_DIR");
     if (!configured.isEmpty()) paths << configured;
+    // ImageWriter places selected ground-station packages on the Config partition.
+    paths << QStringLiteral("/Config/openhd/maps")
+          << QStringLiteral("/Config/maps");
     paths << QStringLiteral("/usr/share/openhd-glide/assets/maps/packages")
           << QStringLiteral("/usr/local/share/openhd-glide/assets/maps/packages")
           << QDir(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)).filePath(QStringLiteral("maps"))

@@ -42,6 +42,9 @@ Rectangle {
     property bool showGroundPower: groundPowerAvailable
     property bool airSystemAlive: _ohdSystemAir.is_alive
     property bool groundSystemAlive: _ohdSystemGround.is_alive
+    readonly property int linkSwitchRevision: _ohdSystemGroundSettings.update_count
+    readonly property bool linkSwitchAvailable: linkSwitchRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("WFB_LINK_EN")
+    readonly property bool linkRoutingEnabled: !linkSwitchAvailable || _ohdSystemGroundSettings.get_cached_int("WFB_LINK_EN") !== 0
 
     function ensureLinkParametersFetched() {
         if (_ohdSystemAirSettingsModel.system_is_alive()
@@ -82,7 +85,8 @@ Rectangle {
         syncRadio()
     }
     function controls() {
-        var result = [scan, analyze, frequency, bandwidth, mcs]
+        var result = linkSwitchAvailable ? [linkSwitch, scan, analyze, frequency, bandwidth, mcs]
+                                         : [scan, analyze, frequency, bandwidth, mcs]
         var settings = [adaptive, fhss, dwell, pitMode, airPower, groundPower]
         for (var i = 0; i < settings.length; ++i)
             if (settings[i].visible && settings[i].focusControl && settings[i].focusControl.enabled)
@@ -106,7 +110,7 @@ Rectangle {
         else if (event.key === Qt.Key_Escape) { leaveCard(); event.accepted = true }
     }
     function leaveCard() { if (host) host.collapseCard(cardIndex) }
-    function gainFocus() { focusAndReveal(scan) }
+    function gainFocus() { focusAndReveal(linkSwitchAvailable ? linkSwitch : scan) }
     function animateScan() { scanAnimation.start() }
     function formatUptime(ms) {
         if (ms <= 0) return ""
@@ -133,8 +137,19 @@ Rectangle {
             Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
             Text { text: "\uf1eb"; color: "#55aaff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 18 }
             Text { text: qsTr("WiFiBroadcast Link"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
-            Rectangle { Layout.preferredWidth: activeText.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
-                Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
+            Switch {
+                id: linkSwitch
+                visible: root.linkSwitchAvailable && !root.simulated
+                enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
+                text: checked ? qsTr("ENABLED") : qsTr("DISABLED")
+                ToolTip.visible: hovered
+                ToolTip.text: qsTr("Toggle ground WiFiBroadcast data routing. Resets on OpenHD restart.")
+                onClicked: _ohdSystemGroundSettings.try_set_param_int_async("WFB_LINK_EN", checked ? 1 : 0, true)
+                Keys.onPressed: root.keyNav(event)
+            }
+            Binding { target: linkSwitch; property: "checked"; value: root.linkRoutingEnabled }
+            Rectangle { visible: !linkSwitch.visible; Layout.preferredWidth: activeText.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
+                Text { id: activeText; anchors.centerIn: parent; text: root.simulated ? qsTr("SIMULATED") : qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
             }
         }
 

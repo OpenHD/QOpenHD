@@ -10,6 +10,9 @@ Rectangle {
     property string linkKind: "ethernet"
     readonly property bool simulated: ethernet ? settings.dev_simulate_ethernet_link : settings.dev_simulate_uart_link
     readonly property bool ethernet: linkKind === "ethernet"
+    readonly property int linkSwitchRevision: _ohdSystemGroundSettings.update_count
+    readonly property bool linkSwitchAvailable: ethernet && linkSwitchRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("ETH_LINK_EN")
+    readonly property bool linkRoutingEnabled: !linkSwitchAvailable || _ohdSystemGroundSettings.get_cached_int("ETH_LINK_EN") !== 0
     readonly property string title: ethernet ? qsTr("Ethernet Link") : qsTr("UART Link")
     readonly property string icon: ethernet ? "\uf796" : "\uf120"
     readonly property string endpoint: simulated ? (ethernet ? "192.168.2.2:5600" : "/dev/ttyS1") : qsTr("Reported by OpenHD")
@@ -18,7 +21,7 @@ Rectangle {
     border.color: keyboardSelected ? settings_form.accentColor : settings_form.lineColor
     border.width: keyboardSelected ? 2 : 1
 
-    function gainFocus() { details.forceActiveFocus() }
+    function gainFocus() { if (linkSwitch.visible) linkSwitch.forceActiveFocus(); else details.forceActiveFocus() }
     function leaveCard() { if (host) host.collapseCard(cardIndex) }
 
     ColumnLayout {
@@ -27,7 +30,18 @@ Rectangle {
             Layout.fillWidth: true
             Text { text: root.icon; color: ethernet ? "#49a6ff" : "#c98cff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 19 }
             Text { text: root.title; color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
-            Rectangle { Layout.preferredWidth: active.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
+            Switch {
+                id: linkSwitch
+                visible: root.linkSwitchAvailable && !root.simulated
+                enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
+                text: checked ? qsTr("ENABLED") : qsTr("DISABLED")
+                ToolTip.visible: hovered
+                ToolTip.text: qsTr("Toggle ground Ethernet data routing. Resets on OpenHD restart.")
+                onClicked: _ohdSystemGroundSettings.try_set_param_int_async("ETH_LINK_EN", checked ? 1 : 0, true)
+                Keys.onPressed: function(event) { if (event.key === Qt.Key_Escape) { root.leaveCard(); event.accepted = true } }
+            }
+            Binding { target: linkSwitch; property: "checked"; value: root.linkRoutingEnabled }
+            Rectangle { visible: !linkSwitch.visible; Layout.preferredWidth: active.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
                 Text { id: active; anchors.centerIn: parent; text: root.simulated ? qsTr("SIMULATED") : qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
             }
         }

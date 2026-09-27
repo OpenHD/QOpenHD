@@ -56,6 +56,7 @@ MapWidgetForm {
             break
         }
         case "openhd_offline":{
+            _offlineMapTiles.reload()
             createMap(widgetInnerMap, "openhd_offline")
             break
         }

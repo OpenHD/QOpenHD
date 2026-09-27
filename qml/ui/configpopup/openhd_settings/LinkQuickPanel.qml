@@ -28,6 +28,7 @@ Rectangle {
                                    _ohdSystemAir.fleetcontrol_lte_max_kbit > 0 ||
                                    hasReportedUsage(6)
     property int linkRevision: _ohdSystemGround.primary_link_type + _ohdSystemAir.primary_link_type +
+                               _ohdSystemGroundSettings.update_count +
                                _ohdSystemGround.microhard_enabled + _ohdSystemAir.microhard_enabled +
                                (_ohdSystemGround.artosyn_link_detected ? 10 : 0) +
                                (_ohdSystemAir.artosyn_link_detected ? 20 : 0) +
@@ -56,6 +57,7 @@ Rectangle {
     }
 
     function wifiActive() {
+        if (_ohdSystemGroundSettings.param_int_exists("WFB_LINK_EN")) return true
         if (settings.dev_simulate_wifibroadcast_link) return true
         if (hasReportedUsage(1)) return true
         var card = (_wifi_card_gnd0.alive && _wifi_card_gnd0.card_type_as_string !== "ARTOSYN") ||
@@ -102,7 +104,8 @@ Rectangle {
         }
         return null
     }
-    function ethernetActive() { return settings.dev_simulate_ethernet_link || hasReportedUsage(2) }
+    function ethernetActive() { return settings.dev_simulate_ethernet_link || hasReportedUsage(2) ||
+                                       _ohdSystemGroundSettings.param_int_exists("ETH_LINK_EN") }
     function uartActive() { return settings.dev_simulate_uart_link || hasReportedUsage(3) }
     function artosynActive() {
         return hasReportedUsage(5) || _ohdSystemGround.artosyn_link_detected || _ohdSystemAir.artosyn_link_detected ||
