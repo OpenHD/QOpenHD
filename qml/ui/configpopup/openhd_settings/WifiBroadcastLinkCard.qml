@@ -139,7 +139,7 @@ Rectangle {
             Text { text: qsTr("WiFiBroadcast Link"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
             Switch {
                 id: linkSwitch
-                visible: root.linkSwitchAvailable && !root.simulated
+                visible: root.linkSwitchAvailable && !root.simulated && root.host && root.host.bothMultiEnabled
                 enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
                 text: checked ? qsTr("ENABLED") : qsTr("DISABLED")
                 ToolTip.visible: hovered

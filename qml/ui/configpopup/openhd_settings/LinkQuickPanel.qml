@@ -37,6 +37,33 @@ Rectangle {
                                (settings.dev_simulate_ethernet_link ? 320 : 0) +
                                (settings.dev_simulate_wifibroadcast_link ? 640 : 0) +
                                (settings.dev_simulate_uart_link ? 1280 : 0)
+    readonly property int airSettingsRevision: _ohdSystemAirSettingsModel.update_count
+    readonly property bool linkModeAvailable: {
+        linkRevision; airSettingsRevision
+        return _ohdSystemGround.is_alive && _ohdSystemAir.is_alive &&
+               _ohdSystemGroundSettings.param_int_exists("MULTI_LINK_EN") &&
+               _ohdSystemAirSettingsModel.param_int_exists("MULTI_LINK_EN")
+    }
+    readonly property bool enterpriseEligible: {
+        linkRevision; airSettingsRevision
+        return linkModeAvailable &&
+               _ohdSystemGroundSettings.param_int_exists("MULTI_LINK_CAP") &&
+               _ohdSystemAirSettingsModel.param_int_exists("MULTI_LINK_CAP") &&
+               _ohdSystemGroundSettings.get_cached_int("MULTI_LINK_CAP") === 1 &&
+               _ohdSystemAirSettingsModel.get_cached_int("MULTI_LINK_CAP") === 1
+    }
+    readonly property bool bothMultiEnabled: {
+        linkRevision; airSettingsRevision
+        return linkModeAvailable &&
+               _ohdSystemGroundSettings.get_cached_int("MULTI_LINK_EN") === 1 &&
+               _ohdSystemAirSettingsModel.get_cached_int("MULTI_LINK_EN") === 1
+    }
+    readonly property bool bothSingleEnabled: {
+        linkRevision; airSettingsRevision
+        return linkModeAvailable &&
+               _ohdSystemGroundSettings.get_cached_int("MULTI_LINK_EN") === 0 &&
+               _ohdSystemAirSettingsModel.get_cached_int("MULTI_LINK_EN") === 0
+    }
 
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
     Material.accent: settings_form.accentColor
@@ -266,6 +293,61 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 8
         spacing: 9
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: modeLayout.implicitHeight + 18
+            radius: 10
+            color: settings_form.panelBackgroundRaised
+            border.color: settings_form.lineColor
+            ColumnLayout {
+                id: modeLayout
+                anchors.fill: parent
+                anchors.margins: 9
+                spacing: 5
+                Text {
+                    text: qsTr("Link routing")
+                    color: settings_form.primaryText
+                    font.pixelSize: 11
+                    font.bold: true
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Button {
+                        text: root.wifiActive() ? qsTr("WiFiBroadcast only + UART") : qsTr("One link + UART")
+                        highlighted: root.bothSingleEnabled
+                        enabled: root.linkModeAvailable &&
+                                 !_ohdSystemGroundSettings.ui_is_busy &&
+                                 !_ohdSystemAirSettingsModel.ui_is_busy
+                        onClicked: root.setBoth("MULTI_LINK_EN", 0)
+                    }
+                    Button {
+                        text: qsTr("Multiple links (Enterprise)")
+                        highlighted: root.bothMultiEnabled
+                        enabled: root.enterpriseEligible &&
+                                 !_ohdSystemGroundSettings.ui_is_busy &&
+                                 !_ohdSystemAirSettingsModel.ui_is_busy
+                        onClicked: root.setBoth("MULTI_LINK_EN", 1)
+                    }
+                    Item { Layout.fillWidth: true }
+                }
+                Text {
+                    Layout.fillWidth: true
+                    text: !root.linkModeAvailable
+                          ? qsTr("Connect Air and Ground units with link mode support.")
+                          : root.bothMultiEnabled
+                            ? qsTr("Enterprise multi-link is active on Air and Ground.")
+                            : root.bothSingleEnabled
+                              ? (root.enterpriseEligible
+                                 ? qsTr("One transport per unit; WiFiBroadcast is preferred. UART telemetry remains available.")
+                                 : qsTr("One transport per unit; WiFiBroadcast is preferred. UART remains available. Multiple links require verified enterprise certificates on Air and Ground."))
+                              : qsTr("Air and Ground have different link modes. Select One link + UART to synchronize them.")
+                    color: settings_form.secondaryText
+                    font.pixelSize: 9
+                    wrapMode: Text.WordWrap
+                }
+            }
+        }
 
         Rectangle {
             visible: settings.dev_show_advanced_button

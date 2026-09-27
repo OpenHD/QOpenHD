@@ -18,6 +18,8 @@ AdvancedPage {
     property int groundRevision: _ohdSystemGroundSettings.update_count
     property bool adsbAirParameterAvailable: airRevision >= 0 &&
                                                  _ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
+    property bool adsbGroundParameterAvailable: groundRevision >= 0 &&
+                                                    _ohdSystemGroundSettings.param_int_exists("ADSB_ENABLE")
     property bool rcLuaAvailable: airRevision >= 0 &&
                                   _ohdSystemAirSettingsModel.param_int_exists("RC_OHD_CTRL") &&
                                   _ohdSystemAirSettingsModel.param_int_exists("RC_SET_BASE")
@@ -35,6 +37,11 @@ AdvancedPage {
     function setAirString(id, value) {
         if (!_ohdSystemAirSettingsModel.param_string_exists(id)) return
         var error = _ohdSystemAirSettingsModel.try_update_parameter_string(id, value)
+        if (error !== "") _hudLogMessagesModel.signalAddLogMessage(4, error)
+    }
+    function setGroundInt(id, value) {
+        if (!_ohdSystemGroundSettings.param_int_exists(id)) return
+        var error = _ohdSystemGroundSettings.try_update_parameter_int(id, value)
         if (error !== "") _hudLogMessagesModel.signalAddLogMessage(4, error)
     }
     function setBoth(id, value) {
@@ -179,7 +186,25 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Show ADS-B traffic on map"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { text: qsTr("Enable ADS-B receiver on Air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.adsbAirParameterAvailable && !_ohdSystemAirSettingsModel.ui_is_busy
+                                    checked: { root.airRevision; return root.adsbAirParameterAvailable && _ohdSystemAirSettingsModel.get_cached_int("ADSB_ENABLE") !== 0 }
+                                    onClicked: root.setAirInt("ADSB_ENABLE", checked ? 1 : 0)
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Enable ADS-B receiver on Ground unit"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.adsbGroundParameterAvailable && !_ohdSystemGroundSettings.ui_is_busy
+                                    checked: { root.groundRevision; return root.adsbGroundParameterAvailable && _ohdSystemGroundSettings.get_cached_int("ADSB_ENABLE") !== 0 }
+                                    onClicked: root.setGroundInt("ADSB_ENABLE", checked ? 1 : 0)
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Enable ADS-B traffic in QOpenHD"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch { checked: settings.adsb_enable; onToggled: settings.adsb_enable = checked }
                             }
                             RowLayout {
@@ -191,21 +216,17 @@ AdvancedPage {
                                     onActivated: settings.adsb_source = index
                                 }
                             }
+                            Label {
+                                visible: settings.adsb_source === 0 && (root.adsbAirParameterAvailable || root.adsbGroundParameterAvailable)
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("Select SDR / OpenHD to display traffic from an OpenHD ADS-B receiver.")
+                            }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Estimate position from internet"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
                                     checked: settings.adsb_estimate_position_from_internet
                                     onToggled: settings.adsb_estimate_position_from_internet = checked
-                                }
-                            }
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Label { text: qsTr("Enable receiver on connected air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
-                                    enabled: root.adsbAirParameterAvailable
-                                    checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("ADSB_ENABLE") !== 0 }
-                                    onToggled: root.setAirInt("ADSB_ENABLE", checked ? 1 : 0)
                                 }
                             }
                             RowLayout {
@@ -230,9 +251,9 @@ AdvancedPage {
                                 Switch { checked: settings.adsb_show_osd_markers; onToggled: settings.adsb_show_osd_markers = checked }
                             }
                             Label {
-                                visible: !root.adsbAirParameterAvailable
+                                visible: !root.adsbAirParameterAvailable && !root.adsbGroundParameterAvailable
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Connect to an OpenHD air unit with ADS-B support to enable its SDR receiver.")
+                                text: qsTr("Connect an OpenHD unit with ADS-B support to enable its SDR receiver.")
                             }
                         }
                     }

@@ -935,6 +935,10 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
         append_int(ret,"UART_PRI_FC",ImprovedIntSetting(0,10,uart_priority_items),
                    "Priority bucket for FC-originating MAVLink on the OpenHD UART.");
         append_int(ret,"CONFIG_BOOT_AIR",ImprovedIntSetting::createEnumEnableDisable(),"DEV, change boot as air / ground",true);
+        append_int(ret,"MULTI_LINK_EN",ImprovedIntSetting::createEnumEnableDisable(),
+                   "Route video and data over multiple links. Requires a verified enterprise certificate on each OpenHD unit; standard mode uses one link and keeps UART telemetry available.");
+        append_documented_read_only(ret,"MULTI_LINK_CAP",
+                   "Whether this unit has a verified enterprise certificate permitting multiple links.");
         append_int(ret,"WIFI_MODE",ImprovedIntSetting::createEnum({"OFF","HOTSPOT","CLIENT"}),
                    "Select how the built-in WiFi card is used. OFF disables WiFi entirely, HOTSPOT enables the access point for nearby devices, and CLIENT connects the unit to an existing WiFi network.");
         append_int(ret,"WIFI_HOTSPOT_E",ImprovedIntSetting::createEnum({"AUTO","ALWAYS_OFF","ALWAYS_ON"}),

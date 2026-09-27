@@ -32,7 +32,7 @@ Rectangle {
             Text { text: root.title; color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
             Switch {
                 id: linkSwitch
-                visible: root.linkSwitchAvailable && !root.simulated
+                visible: root.linkSwitchAvailable && !root.simulated && root.host && root.host.bothMultiEnabled
                 enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
                 text: checked ? qsTr("ENABLED") : qsTr("DISABLED")
                 ToolTip.visible: hovered
@@ -41,8 +41,16 @@ Rectangle {
                 Keys.onPressed: function(event) { if (event.key === Qt.Key_Escape) { root.leaveCard(); event.accepted = true } }
             }
             Binding { target: linkSwitch; property: "checked"; value: root.linkRoutingEnabled }
-            Rectangle { visible: !linkSwitch.visible; Layout.preferredWidth: active.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
-                Text { id: active; anchors.centerIn: parent; text: root.simulated ? qsTr("SIMULATED") : qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
+            Rectangle { visible: !linkSwitch.visible; Layout.preferredWidth: active.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: active.text === qsTr("NOT ROUTED") ? settings_form.panelBackground : Qt.rgba(0.1, 0.8, 0.35, 0.12)
+                Text {
+                    id: active
+                    anchors.centerIn: parent
+                    text: root.simulated ? qsTr("SIMULATED") :
+                          (root.ethernet && root.host && root.host.bothSingleEnabled && root.host.wifiActive()
+                           ? qsTr("NOT ROUTED") : qsTr("ACTIVE"))
+                    color: text === qsTr("NOT ROUTED") ? settings_form.secondaryText : settings_form.goodColor
+                    font.pixelSize: 8; font.bold: true
+                }
             }
         }
         LinkUsageMeter {
