@@ -64,7 +64,7 @@ AdvancedPage {
             background: Item { }
             AdvancedTabButton { id: audioTab; text: qsTr("AUDIO"); iconText: "\uf028" }
             AdvancedTabButton { text: qsTr("ADS-B"); iconText: "\uf072" }
-            AdvancedTabButton { text: qsTr("RC LUA"); iconText: "\uf11b" }
+            AdvancedTabButton { text: qsTr("RC / LOGS"); iconText: "\uf11b" }
             AdvancedTabButton { text: qsTr("DATA LINK"); iconText: "\uf1eb" }
             AdvancedTabButton { text: qsTr("FLEETCONTROL"); iconText: "\uf0c0" }
         }
@@ -362,13 +362,57 @@ AdvancedPage {
                     }
 
                     AdvancedCard {
-                        Layout.fillWidth: true; implicitHeight: devourerColumn.implicitHeight + 32
+                        Layout.fillWidth: true; implicitHeight: diagnosticsColumn.implicitHeight + 32
                         ColumnLayout {
-                            id: devourerColumn; anchors.fill: parent; spacing: 8
-                            Label { text: qsTr("DEVOURER DIAGNOSTICS"); color: settings_form.primaryText; font.bold: true }
+                            id: diagnosticsColumn; anchors.fill: parent; spacing: 8
+                            Label { text: qsTr("DIAGNOSTIC LOGS"); color: settings_form.primaryText; font.bold: true }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("Start or stop split OpenHD logs immediately. Files are written to the video partition under logs/openhd.")
+                            }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Enable Devourer logs on SD card"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { text: qsTr("OpenHD logs on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("LOG_OPENHD")
+                                    checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("LOG_OPENHD") !== 0 }
+                                    onToggled: root.setAirInt("LOG_OPENHD", checked ? 1 : 0)
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("OpenHD logs on Ground"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.groundRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("LOG_OPENHD")
+                                    checked: { root.groundRevision; return enabled && _ohdSystemGroundSettings.get_cached_int("LOG_OPENHD") !== 0 }
+                                    onToggled: root.setGroundInt("LOG_OPENHD", checked ? 1 : 0)
+                                }
+                            }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("Raw MAVLink telemetry recording is optional and separate from the OpenHD diagnostic logs.")
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Raw telemetry recording on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("LOG_MAVLINK")
+                                    checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("LOG_MAVLINK") !== 0 }
+                                    onToggled: root.setAirInt("LOG_MAVLINK", checked ? 1 : 0)
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Raw telemetry recording on Ground"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.groundRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("LOG_MAVLINK")
+                                    checked: { root.groundRevision; return enabled && _ohdSystemGroundSettings.get_cached_int("LOG_MAVLINK") !== 0 }
+                                    onToggled: root.setGroundInt("LOG_MAVLINK", checked ? 1 : 0)
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Keep Devourer log enabled separately"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
                                     enabled: root.airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_DEV_LOGS")
                                     checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("WB_DEV_LOGS") !== 0 }
