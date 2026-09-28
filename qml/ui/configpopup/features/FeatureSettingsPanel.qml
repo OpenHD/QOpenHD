@@ -16,6 +16,7 @@ AdvancedPage {
 
     property int airRevision: _ohdSystemAirSettingsModel.update_count
     property int groundRevision: _ohdSystemGroundSettings.update_count
+    property bool devourerLoggingAvailable: airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_DEV_LOGS")
     property bool adsbAirParameterAvailable: airRevision >= 0 &&
                                                  _ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
     property bool adsbGroundParameterAvailable: groundRevision >= 0 &&
@@ -358,6 +359,23 @@ AdvancedPage {
                         visible: !root.rcLuaAvailable
                         Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                         text: qsTr("Connect an Air unit containing the RC Lua settings protocol to configure it.")
+                    }
+
+                    AdvancedCard {
+                        Layout.fillWidth: true; implicitHeight: devourerColumn.implicitHeight + 32
+                        ColumnLayout {
+                            id: devourerColumn; anchors.fill: parent; spacing: 8
+                            Label { text: qsTr("DEVOURER DIAGNOSTICS"); color: settings_form.primaryText; font.bold: true }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Enable Devourer logs on SD card"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    enabled: root.airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_DEV_LOGS")
+                                    checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("WB_DEV_LOGS") !== 0 }
+                                    onToggled: root.setAirInt("WB_DEV_LOGS", checked ? 1 : 0)
+                                }
+                            }
+                        }
                     }
                 }
             }
