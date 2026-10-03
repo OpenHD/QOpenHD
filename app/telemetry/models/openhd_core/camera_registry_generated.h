@@ -37,6 +37,7 @@ static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_2MP = 60;
 static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307 = 61;
 static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132 = 62;
 static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM = 63;
+static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662 = 64;
 static constexpr int X_CAM_TYPE_X20_HDZERO_GENERIC = 70;
 static constexpr int X_CAM_TYPE_X20_HDZERO_RUNCAM_V1 = 71;
 static constexpr int X_CAM_TYPE_X20_HDZERO_RUNCAM_V2 = 72;
@@ -74,6 +75,7 @@ static constexpr int X_CAM_TYPE_ORQA_REKINDLE = 124;
 static constexpr int X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2 = 125;
 static constexpr int X_CAM_TYPE_NXP_IMX8_V4L2 = 130;
 static constexpr int X_CAM_TYPE_NXP_IMX8_OS08A20 = 131;
+static constexpr int X_CAM_TYPE_NXP_IMX8_IMX662 = 132;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV110X = 140;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV1126_CSI = 141;
 static constexpr int X_CAM_TYPE_ROCKCHIP_RV1126_TEST = 142;
@@ -121,6 +123,7 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {61, "VEYE_IMX307"},
   {62, "VEYE_CSSC132"},
   {63, "VEYE_MVCAM"},
+  {64, "VEYE_GX_IMX662"},
   {70, "X20_HDZERO_GENERIC"},
   {71, "X20_HDZERO_RUNCAM_V1"},
   {72, "X20_HDZERO_RUNCAM_V2"},
@@ -158,6 +161,7 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {125, "ORQA_ORCA_DIGITAL_V2"},
   {130, "NXP_IMX8_V4L2"},
   {131, "NXP_IMX8_OS08A20"},
+  {132, "NXP_IMX8_IMX662"},
   {140, "LUCKFOX_MIS5001"},
   {141, "RV1126B_CSI"},
   {142, "RV1126B_TEST"},
@@ -351,6 +355,11 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSS
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM[] = {
   {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662[] = {
+  {1920, 1080, 30},
+  {1920, 1080, 60},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X20_HDZERO_GENERIC[] = {
@@ -549,6 +558,11 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20[
   {1280, 720, 60},
 };
 
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_NXP_IMX8_IMX662[] = {
+  {1920, 1080, 60},
+  {1280, 720, 60},
+};
+
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X[] = {
   {1296, 968, 60},
   {1920, 1080, 30},
@@ -647,6 +661,7 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307, kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307[0])},
   {X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132, kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132[0])},
   {X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM, kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM[0])},
+  {X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662, kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662[0])},
   {X_CAM_TYPE_X20_HDZERO_GENERIC, kCameraResolutions_X_CAM_TYPE_X20_HDZERO_GENERIC, sizeof(kCameraResolutions_X_CAM_TYPE_X20_HDZERO_GENERIC) / sizeof(kCameraResolutions_X_CAM_TYPE_X20_HDZERO_GENERIC[0])},
   {X_CAM_TYPE_X20_HDZERO_RUNCAM_V1, kCameraResolutions_X_CAM_TYPE_X20_HDZERO_RUNCAM_V1, sizeof(kCameraResolutions_X_CAM_TYPE_X20_HDZERO_RUNCAM_V1) / sizeof(kCameraResolutions_X_CAM_TYPE_X20_HDZERO_RUNCAM_V1[0])},
   {X_CAM_TYPE_X20_HDZERO_RUNCAM_V2, kCameraResolutions_X_CAM_TYPE_X20_HDZERO_RUNCAM_V2, sizeof(kCameraResolutions_X_CAM_TYPE_X20_HDZERO_RUNCAM_V2) / sizeof(kCameraResolutions_X_CAM_TYPE_X20_HDZERO_RUNCAM_V2[0])},
@@ -682,6 +697,7 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2, kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2, sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2) / sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2[0])},
   {X_CAM_TYPE_NXP_IMX8_V4L2, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2[0])},
   {X_CAM_TYPE_NXP_IMX8_OS08A20, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20[0])},
+  {X_CAM_TYPE_NXP_IMX8_IMX662, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_IMX662, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_IMX662) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_IMX662[0])},
   {X_CAM_TYPE_ROCKCHIP_RV110X, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV110X[0])},
   {X_CAM_TYPE_ROCKCHIP_RV1126_CSI, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_CSI[0])},
   {X_CAM_TYPE_ROCKCHIP_RV1126_TEST, kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST, sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCKCHIP_RV1126_TEST[0])},
@@ -754,6 +770,7 @@ inline constexpr CameraUiEntry kManufacturer_RPI_VEYE_Cameras[] = {
   {X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307, "CSIMX307"},
   {X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132, "CSSC132"},
   {X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM, "MVCAM"},
+  {X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662, "GX/GXC IMX662 (ISP)"},
 };
 
 inline constexpr ManufacturerEntry kManufacturer_RPI_VEYE = {"VEYE", kManufacturer_RPI_VEYE_Cameras, sizeof(kManufacturer_RPI_VEYE_Cameras) / sizeof(kManufacturer_RPI_VEYE_Cameras[0])};
@@ -850,6 +867,7 @@ inline constexpr ManufacturerEntry kManufacturer_ORQA = {"ORQA", kManufacturer_O
 
 inline constexpr CameraUiEntry kManufacturer_NXP_Cameras[] = {
   {X_CAM_TYPE_NXP_IMX8_OS08A20, "OS08A20"},
+  {X_CAM_TYPE_NXP_IMX8_IMX662, "IMX662"},
   {X_CAM_TYPE_NXP_IMX8_V4L2, "V4L2 CSI"},
 };
 
@@ -1113,6 +1131,7 @@ using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_2MP;
 using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307;
 using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132;
 using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_MVCAM;
+using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_GX_IMX662;
 using openhd::camera_registry::X_CAM_TYPE_X20_HDZERO_GENERIC;
 using openhd::camera_registry::X_CAM_TYPE_X20_HDZERO_RUNCAM_V1;
 using openhd::camera_registry::X_CAM_TYPE_X20_HDZERO_RUNCAM_V2;
@@ -1150,6 +1169,7 @@ using openhd::camera_registry::X_CAM_TYPE_ORQA_REKINDLE;
 using openhd::camera_registry::X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2;
 using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_V4L2;
 using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_OS08A20;
+using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_IMX662;
 using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV110X;
 using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV1126_CSI;
 using openhd::camera_registry::X_CAM_TYPE_ROCKCHIP_RV1126_TEST;

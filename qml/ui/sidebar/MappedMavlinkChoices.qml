@@ -185,6 +185,19 @@ Item {
         ListElement {value: 20; verbose:"20Mhz"}
         ListElement {value: 40; verbose:"40Mhz\n(HIGH BW)"}
     }
+    ListModel { id: supported_frequencies_model }
+
+    function get_frequency_model() {
+        supported_frequencies_model.clear();
+        var frequencies = _frequencyHelper.get_frequencies(settings.qopenhd_frequency_filter_selection);
+        for (var i = 0; i < frequencies.length; ++i) {
+            supported_frequencies_model.append({
+                value: frequencies[i],
+                verbose: _frequencyHelper.get_frequency_description(frequencies[i])
+            });
+        }
+        return supported_frequencies_model;
+    }
     ListModel{
         id: elements_model_rate
         ListElement {value: 0; verbose:"MCS0\n(LONG RANGE)"}
@@ -196,7 +209,45 @@ Item {
     }
 
 
+    ListModel { id: gx_choices }
+    function gx_model(param_id) {
+        gx_choices.clear();
+        var values = [];
+        var labels = [];
+        if (param_id === "GX_DAYNIGHT") {
+            values = [0, 1, 2]; labels = ["Day / IR-cut", "Night / clear", "External trigger"];
+        } else if (param_id === "GX_EXPOSURE" || param_id === "GX_WB_MODE") {
+            values = [2, 0]; labels = ["Auto", "Manual"];
+        } else if (param_id === "GX_IRCUT_DIR") {
+            values = [0, 1]; labels = ["Normal", "Reversed"];
+        } else if (param_id === "GX_IRCUT_TIMER") {
+            values = [0, 1]; labels = ["Off", "On"];
+        } else if (param_id === "GX_AE_STRATEGY") {
+            values = [0, 1]; labels = ["Highlight priority", "Shadow priority"];
+        } else if (param_id === "GX_GAIN" || param_id === "GX_AE_MAX_GAIN") {
+            values = [0, 30, 60, 90, 120, 180, 240, 300, 360, 420, 453, 480, 540, 600, 660, 720];
+        } else if (param_id === "GX_SHUTTER_US" || param_id === "GX_AE_MAX_US") {
+            values = [100, 250, 500, 1000, 2000, 4000, 8000, 10000, 16666, 20000, 33333];
+        } else if (param_id === "GX_WB_RED" || param_id === "GX_WB_BLUE") {
+            values = [0, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4095];
+        } else if (param_id === "GX_GAMMA") {
+            values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+            labels = ["Linear", "Default", "1.6", "1.8", "2.0", "2.2", "Style 1", "Style 2", "Style 3", "Style 4", "Style 5", "Style 6"];
+        } else if (param_id === "GX_SATURATION" || param_id === "GX_CONTRAST" || param_id === "GX_HUE") {
+            values = [0, 10, 25, 40, 50, 60, 75, 90, 100];
+        } else {
+            values = [0, 16, 32, 48, 64, 96, 128, 160, 192, 224, 255];
+        }
+        for (var i = 0; i < values.length; ++i) {
+            var label = labels.length ? labels[i] : String(values[i]);
+            if (param_id === "GX_GAIN" || param_id === "GX_AE_MAX_GAIN") label = (values[i] / 10).toFixed(1) + " dB";
+            if (param_id === "GX_SHUTTER_US" || param_id === "GX_AE_MAX_US") label = (values[i] / 1000).toFixed(2) + " ms";
+            gx_choices.append({value: values[i], verbose: label});
+        }
+        return gx_choices;
+    }
     function get_model(param_id){
+        if (param_id.indexOf("GX_") === 0) return gx_model(param_id);
         if(param_id=="BRIGHTNESS"){
             return elements_model_brightness;
         }else if(param_id=="SATURATION"){
@@ -226,10 +277,7 @@ Item {
         }else if(param_id=="RESOLUTION_FPS"){
             return get_camera_resolution_model();
         }else if(param_id=="FREQUENCY"){
-            if(settings.dev_show_5180mhz_lowband){
-                return frequencies_model_with_5180mhz_lowband
-            }
-            return frequencies_model;
+            return get_frequency_model();
         }else if(param_id=="CHANNEL_WIDTH"){
             return elements_model_channel_width;
         }else if(param_id=="RATE"){

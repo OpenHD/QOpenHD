@@ -354,6 +354,7 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
 
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
+    m_last_decoded_frame = std::chrono::steady_clock::now();
     {
         std::stringstream ss;
         ss<<safe_av_get_pix_fmt_name((AVPixelFormat)frame->format)<<" "<<frame->width<<"x"<<frame->height;
@@ -371,6 +372,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
     if(last_frame_width==-1 || last_frame_height==-1){
         last_frame_width=frame->width;
         last_frame_height=frame->height;
+        qDebug()<<"Decoder received first frame:"<<frame->width<<"x"<<frame->height;
     }else{
         if(last_frame_width!=frame->width || last_frame_height!=frame->height){
             // PI and SW decoer will just slently start outputting garbage frames
@@ -384,6 +386,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 
 void AVCodecDecoder::reset_before_decode_start()
 {
+    m_last_decoded_frame = std::chrono::steady_clock::now();
     n_no_output_frame_after_x_seconds=0;
     last_frame_width=-1;
     last_frame_height=-1;
@@ -472,6 +475,16 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     AVFormatContext *input_ctx = nullptr;
     input_ctx=avformat_alloc_context();
     assert(input_ctx);
+    if(settings.generic.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
+        // Network reads must yield when restarting or when decoding stops producing frames.
+        m_last_decoded_frame = std::chrono::steady_clock::now();
+        input_ctx->interrupt_callback.opaque = this;
+        input_ctx->interrupt_callback.callback = [](void* opaque) -> int {
+            auto* self = static_cast<AVCodecDecoder*>(opaque);
+            return self->request_restart ||
+                std::chrono::steady_clock::now() - self->m_last_decoded_frame > std::chrono::seconds(10);
+        };
+    }
     /*input_ctx->video_codec_id=AV_CODEC_ID_H264;
     input_ctx->flags |= AVFMT_FLAG_FLUSH_PACKETS;
     input_ctx->flags |= AVFMT_FLAG_NOBUFFER;*/
@@ -798,6 +811,10 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
      while(true){
+         if(std::chrono::steady_clock::now() - m_last_decoded_frame > std::chrono::seconds(10)){
+             qWarning()<<"No decoded video frame for 10 seconds; reopening RTP decoder";
+             goto finish;
+         }
          // We break out of this loop if someone requested a restart
          if(request_restart){
              request_restart=false;
@@ -838,6 +855,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
 finish:
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-end loop";
      m_rtp_receiver=nullptr;
+     av_packet_free(&pkt);
      avcodec_free_context(&decoder_ctx);
 }
 

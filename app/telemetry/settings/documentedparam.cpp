@@ -82,6 +82,8 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, "
                "but increases packet collisions."
                );
+    append_int(ret,"ESP_ANALYSE", ImprovedIntSetting::createEnumEnableDisable(),
+               "Use the connected ESP background RF survey for analysis and prioritize air discovery. Legacy scanning remains the fallback.");
     append_int(ret,openhd::WB_PASSIVE_MODE,
                ImprovedIntSetting::createEnumEnableDisable(),
                "Enable passive mode if you want to use your GCS as a passive listener to an existing openhd air-ground link. E.g. if you want to tune into"
@@ -740,6 +742,24 @@ static std::vector<std::shared_ptr<XParam>> get_parameters_list(){
                    );
         append_only_documented(ret,"BRIGHTNESS","Image capture brightness, [0..200], default 100. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.");
         append_only_documented(ret,"ISO","ISO value to use (0 = Auto)");
+        append_int(ret, "GX_DAYNIGHT", ImprovedIntSetting::createEnum({"Day / IR-cut", "Night / clear", "External trigger"}),
+                   "GX ISP day/night mode. Drives an attached IR-cut actuator; does not control IR illumination.");
+        append_int(ret, "GX_IRCUT_DIR", ImprovedIntSetting::createEnum({"Normal", "Reversed"}), "Reverse IR-cut actuator polarity to match the attached lens.");
+        append_int(ret, "GX_IRCUT_TIMER", ImprovedIntSetting::createEnumEnableDisable(), "Periodically reassert the IR-cut actuator state.");
+        for (const auto& id : {"GX_EXPOSURE", "GX_WB_MODE"})
+            append_int(ret, id, ImprovedIntSetting(0, 2, {{"Manual", 0}, {"Auto", 2}}), "GX ISP control mode. Manual gain/shutter or manual WB channel gains take effect only in Manual mode.");
+        for (const auto& id : {"GX_GAIN", "GX_AE_MAX_GAIN"})
+            append_int(ret, id, ImprovedIntSetting::createRangeOnly(0, 720), "GX gain in tenths of a dB: 60 means 6.0 dB. Manual gain requires manual exposure mode. Values above 45.3 dB include digital gain.");
+        for (const auto& id : {"GX_SHUTTER_US", "GX_AE_MAX_US"})
+            append_int(ret, id, ImprovedIntSetting::createRangeOnly(16, 33333), "Exposure time in microseconds, limited to one 30-fps frame. Manual shutter requires manual exposure mode.");
+        append_int(ret, "GX_AE_STRATEGY", ImprovedIntSetting::createEnum({"Highlight priority", "Shadow priority"}), "Automatic exposure strategy.");
+        for (const auto& id : {"GX_WB_RED", "GX_WB_BLUE"})
+            append_int(ret, id, ImprovedIntSetting::createRangeOnly(0, 4095), "Manual white balance channel gain. Requires GX_WB_MODE=Manual.");
+        for (const auto& id : {"GX_SATURATION", "GX_CONTRAST", "GX_HUE"})
+            append_int(ret, id, ImprovedIntSetting::createRangeOnly(0, 100), "GX ISP image adjustment, vendor range 0-100.");
+        for (const auto& id : {"GX_AE_TARGET", "GX_SHARPNESS", "GX_DENOISE_2D", "GX_DENOISE_3D", "GX_DRC"})
+            append_int(ret, id, ImprovedIntSetting::createRangeOnly(0, 255), "GX ISP strength or AE brightness target, vendor range 0-255. AE target requires auto exposure mode.");
+        append_int(ret, "GX_GAMMA", ImprovedIntSetting::createEnum({"Linear", "Default", "Gamma 1.6", "Gamma 1.8", "Gamma 2.0", "Gamma 2.2", "Style 1", "Style 2", "Style 3", "Style 4", "Style 5", "Style 6"}), "GX ISP gamma curve.");
 
         {
             // rpicamsrc only for now

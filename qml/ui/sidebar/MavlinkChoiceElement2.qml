@@ -103,9 +103,10 @@ BaseJoyEditElement2{
     property int m_update_count: m_settings_model.update_count
     onM_update_countChanged: {
         if(visible){
-            if(m_settings_model.last_updated_param_id===m_param_id){
-                populate();
-            }
+            // Full fetches replace the cache without setting an individual
+            // last_updated_param_id. Refresh availability for those too.
+            populate();
+            extra_populate();
         }
     }
     property bool m_has_params_fetched: m_settings_model.has_params_fetched
@@ -172,6 +173,14 @@ BaseJoyEditElement2{
             }
         }
         if(model_index==-1){
+            if (m_param_id === "GX_GAIN" || m_param_id === "GX_AE_MAX_GAIN") {
+                populate_display_text = (value / 10).toFixed(1) + " dB";
+                return;
+            }
+            if (m_param_id === "GX_SHUTTER_US" || m_param_id === "GX_AE_MAX_US") {
+                populate_display_text = (value / 1000).toFixed(2) + " ms";
+                return;
+            }
             // The current value does not exist inside the model
             var tmp="{";
             tmp+=value;
@@ -188,9 +197,13 @@ BaseJoyEditElement2{
 
 
     function user_selected_value(value_new){
+        if (!override_takes_string_param) {
+            value_new = Number(value_new);
+            if (!isFinite(value_new)) return;
+        }
         // A few need to be handled specially
          if(m_param_id==mPARAM_ID_FREQUENCY){
-            if(_fcMavlinkSystem.armed){
+            if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed){
                 if(settings.dev_allow_freq_change_when_armed){
                     // okay
                 }else{
@@ -202,13 +215,18 @@ BaseJoyEditElement2{
         if(m_param_id==mPARAM_ID_FREQUENCY){
             const new_frequency=value_new;
             _qopenhd.set_busy_for_milliseconds(2000,qsTr("CHANGING FREQUENCY"));
-            if(_ohdSystemAir.is_alive){
-                _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new)
+            var success = false;
+            if(_ohdSystemAir.is_alive && _ohdSystemGround.is_alive){
+                success = _wbLinkSettingsHelper.change_param_air_and_ground_frequency(value_new) === 0;
+            }else if(_ohdSystemAir.is_alive){
+                success = _wbLinkSettingsHelper.change_param_air_only_frequency(value_new);
             }else if(_ohdSystemGround.is_alive){
-                _wbLinkSettingsHelper.change_param_ground_only_frequency(value_new)
+                success = _wbLinkSettingsHelper.change_param_ground_only_frequency(value_new);
             }else{
                 _qopenhd.show_toast(qsTr("No ground connection"));
+                return;
             }
+            _qopenhd.show_toast(success ? qsTr("Frequency change accepted") : qsTr("Frequency change failed"));
             return;
         }else if(m_param_id==mPARAM_ID_CHANNEL_WIDTH){
             const channel_width_mhz=value_new;
@@ -235,9 +253,9 @@ BaseJoyEditElement2{
         }else{
             // 'normal' params
             if(override_takes_string_param){
-                m_settings_model.try_set_param_string_async(m_param_id,value_new);
+                m_settings_model.try_set_param_string_async(m_param_id,value_new,true);
             }else{
-                m_settings_model.try_set_param_int_async(m_param_id,value_new);
+                m_settings_model.try_set_param_int_async(m_param_id,value_new,true);
             }
         }
     }

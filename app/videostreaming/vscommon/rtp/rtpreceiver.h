@@ -9,6 +9,7 @@
 #include <fstream>
 #include <mutex>
 #include <functional>
+#include <atomic>
 
 #include "../nalu/NALU.hpp"
 #include "../nalu/CodecConfigFinder.hpp"
@@ -40,7 +41,7 @@ public:
     void register_new_nalu_callback(NEW_NALU_CALLBACK cb);
     // return nullptr if not enough config data is available yet, otherwise, return valid config data
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
-    bool config_has_changed_during_decode=false;
+    std::atomic<bool> config_has_changed_during_decode{false};
     // get width height using the config data (SPS)
     // do not call that if there is no config data
     std::array<int,2> sps_get_width_height();

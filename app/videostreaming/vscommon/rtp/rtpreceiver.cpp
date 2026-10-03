@@ -116,7 +116,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
     std::lock_guard<std::mutex> lock(m_data_mutex);
     // we discard any data in this state
     // TODO fixme
-    //if(config_has_changed_during_decode)return;
+    if(config_has_changed_during_decode)return;
     //qDebug()<<"Got frame2";
     NALU nalu(nalu_data,nalu_data_len,is_h265);
     //qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();

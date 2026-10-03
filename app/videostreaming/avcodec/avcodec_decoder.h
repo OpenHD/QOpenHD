@@ -88,6 +88,7 @@ private:
 private:
     int last_frame_width=-1;
     int last_frame_height=-1;
+    std::chrono::steady_clock::time_point m_last_decoded_frame = std::chrono::steady_clock::now();
 private:
     //std::unique_ptr<DRMPrimeOut> drm_prime_out=nullptr;
 private:

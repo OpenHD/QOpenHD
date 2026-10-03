@@ -78,6 +78,15 @@ MavlinkTelemetry &MavlinkTelemetry::instance()
     return instance;
 }
 
+bool MavlinkTelemetry::has_active_tcp_connection() const
+{
+    // Match sendMessage(): an active UDP connection takes precedence.
+    if (m_udp_connection && m_udp_connection->threadsafe_is_alive()) return false;
+    return (m_tcp_connection_wifi_hs && m_tcp_connection_wifi_hs->threadsafe_is_alive()) ||
+           (m_tcp_connection_eth_hs && m_tcp_connection_eth_hs->threadsafe_is_alive()) ||
+           (m_tcp_connection_custom && m_tcp_connection_custom->threadsafe_is_alive());
+}
+
 bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     const auto sys_id=QOpenHDMavlinkHelper::get_own_sys_id();
     const auto comp_id=QOpenHDMavlinkHelper::get_own_comp_id();

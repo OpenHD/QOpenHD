@@ -13,6 +13,7 @@
 #include <logging/logmessagesmodel.h>
 
 #include "openhd_core/camera.hpp"
+#include "../settings/mavlinksettingsmodel.h"
 
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
@@ -207,6 +208,15 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     //qDebug()<<"X:"<<(int)msg.cam_type;
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
+    if (m_camera_type != msg.cam_type) {
+        // Camera types expose different parameter sets. Refetch after the air
+        // unit reports its new type so cached HDMI controls cannot survive a
+        // switch to libcamera (or the reverse).
+        auto& settings = m_camera_index == 0
+                ? MavlinkSettingsModel::instanceAirCamera()
+                : MavlinkSettingsModel::instanceAirCamera2();
+        settings.set_has_params_fetched(false);
+    }
     set_camera_type(msg.cam_type);
     set_encoding_codec(msg.encoding_format);
     set_supports_variable_bitrate(msg.supports_variable_bitrate==1);

@@ -48,6 +48,7 @@ public:
      * @return true on success (this does not mean the message was received, but rather the message was sent out via the lossy connection)
      */
     bool sendMessage(mavlink_message_t msg);
+    bool has_active_tcp_connection() const;
     struct FCMavId{
         int comp_id;
         int sys_id;

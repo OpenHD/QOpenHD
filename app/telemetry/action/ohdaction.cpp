@@ -1,4 +1,5 @@
 #include "ohdaction.h"
+#include "../settings/mavlinksettingsmodel.h"
 
 #include "create_cmd_helper.hpp"
 #include "../MavlinkTelemetry.h"
@@ -375,7 +376,8 @@ bool OHDAction::process_message(const mavlink_message_t &message)
 bool OHDAction::send_command_analyze_channels_blocking(int freq_bands)
 {
     mavlink_command_long_t cmd{};
-    cmd.target_system=OHD_SYS_ID_GROUND;
+    const bool airEsp=MavlinkSettingsModel::instanceAir().param_int_exists("ESP_ANALYSE") && MavlinkSettingsModel::instanceAir().get_cached_int("ESP_ANALYSE")==1;
+    cmd.target_system=airEsp ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
     cmd.target_component=MAV_COMP_ID_ONBOARD_COMPUTER;
     cmd.command=OPENHD_CMD_INITIATE_CHANNEL_ANALYZE;
     cmd.param1=static_cast<float>(freq_bands);

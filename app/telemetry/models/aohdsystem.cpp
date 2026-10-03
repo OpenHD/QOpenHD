@@ -282,7 +282,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_OPENHD_WIFBROADCAST_ANALYZE_CHANNELS_PROGRESS:{
             mavlink_openhd_wifbroadcast_analyze_channels_progress_t parsedMsg;
             mavlink_msg_openhd_wifbroadcast_analyze_channels_progress_decode(&msg,&parsedMsg);
-            if(!m_is_air){
+            if(!m_is_air || parsedMsg.dummy0==0x4553){
                 WBLinkSettingsHelper::instance().process_message_openhd_wifibroadcast_analyze_channels_progress(parsedMsg);
             }
             consumed=true;
@@ -841,8 +841,11 @@ void AOHDSystem::autofech_params_if_apropriate()
         // AIR - auto fetch IF ;)
         if(!MavlinkSettingsModel::instanceGround().is_x_busy()){
             // Ground is currently not fetching params
-            if(m_curr_rx_last_packet_status_good){
-                // air reports a working uplink
+            const bool direct_air_tcp = m_is_alive &&
+                    !AOHDSystem::instanceGround().is_alive() &&
+                    MavlinkTelemetry::instance().has_active_tcp_connection();
+            if(m_curr_rx_last_packet_status_good || direct_air_tcp){
+                // Direct TCP reaches the air unit without a radio uplink.
                 if(!MavlinkSettingsModel::is_air_or_cam_param_busy()){
                     // None of the (up to 3) air param set(s) are currently fetching params
                     if(!MavlinkSettingsModel::instanceAir().has_params_fetched()){

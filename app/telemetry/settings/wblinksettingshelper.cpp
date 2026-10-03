@@ -110,14 +110,29 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
         if(msg.channels_mhz[i]==0){
             break;
         }
-        PollutionHelper::PollutionElement tmp;
+        PollutionHelper::PollutionElement tmp{};
         tmp.frequency_mhz=msg.channels_mhz[i];
-        tmp.n_foreign_packets=msg.foreign_packets[i];
+        tmp.rf_sampled_busy=msg.dummy0==0x4553;
+        tmp.n_foreign_packets=tmp.rf_sampled_busy ? std::min(100,(int)msg.dummy[i]/100) : msg.foreign_packets[i];
         analyzed_channels.push_back(tmp);
     }
     if(analyzed_channels.size()==0){
         qDebug()<<"Perhaps malformed message analyze channels";
         return;
+    }
+    int effective_progress=msg.progress_perc;
+    if(msg.dummy0==0x4553 && msg.dummy2!=0) {
+        static int32_t batch=-1;
+        static int total=0;
+        static std::map<int,PollutionHelper::PollutionElement> pages;
+        const int offset=static_cast<uint32_t>(msg.dummy2)&0xffff;
+        const int expected=static_cast<uint32_t>(msg.dummy2)>>16;
+        if(expected<1 || expected>64 || offset+static_cast<int>(analyzed_channels.size())>expected) return;
+        if(batch!=msg.dummy1 || total!=expected) { batch=msg.dummy1;total=expected;pages.clear(); }
+        for(size_t i=0;i<analyzed_channels.size();i++) pages[offset+i]=analyzed_channels[i];
+        analyzed_channels.clear();
+        for(const auto& entry:pages) analyzed_channels.push_back(entry.second);
+        effective_progress=100*pages.size()/expected;
     }
     const uint16_t curr_channel_mhz=analyzed_channels[analyzed_channels.size()-1].frequency_mhz;
     const uint16_t curr_channel_width_mhz=40;
@@ -126,24 +141,25 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
         std::stringstream ss;
         ss<<"Analyzed "<<(int)curr_channel_mhz<<"@"<<(int)curr_channel_width_mhz;
         //ss<<" Foreign:"<<(int)curr_foreign_packets<<"packets";
-        ss<<" Progress:"<<(int)msg.progress_perc<<"%";
+        ss<<" Progress:"<<effective_progress<<"%";
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
     }
     //qDebug()<<"Got progress "<<msg.channel_mhz<<"@"<<msg.channel_width_mhz<<"Mhz "<<msg.progress<<"%";
     std::stringstream ss;
     ss<<"Analyzed "<<(int)curr_channel_mhz<<"@"<<(int)curr_channel_width_mhz<<"Mhz, ";
-    ss<<" Foreign packets:"<<curr_foreign_packets<<" ";
-    if(msg.progress_perc>=100){
+    if(msg.dummy0==0x4553) ss<<" RF sampled busy:"<<curr_foreign_packets<<"% ";
+    else ss<<" Foreign packets:"<<curr_foreign_packets<<" ";
+    if(effective_progress>=100){
         ss<<"100%, Done";
         // DONE
         set_current_analyze_frequency(-1);
     }else{
-        ss<<(int)msg.progress_perc<<"%";
+        ss<<effective_progress<<"%";
         set_current_analyze_frequency(curr_channel_mhz);
     }
     qDebug()<<ss.str().c_str();
     PollutionHelper::instance().threadsafe_update(analyzed_channels);
-    set_analyze_progress_perc(msg.progress_perc);
+    set_analyze_progress_perc(effective_progress);
     // signal to the UI to rebuild model
     signal_ui_rebuild_model_when_possible();
 }

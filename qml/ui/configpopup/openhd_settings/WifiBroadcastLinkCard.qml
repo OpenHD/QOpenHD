@@ -15,6 +15,12 @@ Rectangle {
 
     ListModel { id: bandwidths }
     ListModel { id: mcsValues }
+    ListModel {
+        id: frequencyFilters
+        ListElement { title: qsTr("OHD frequencies"); value: 0 }
+        ListElement { title: qsTr("5.8 GHz"); value: 2 }
+        ListElement { title: qsTr("2.4 GHz"); value: 1 }
+    }
 
     property int currentFrequency: simulated ? 5805 : (_ohdSystemGround.curr_channel_mhz > 0
                                    ? _ohdSystemGround.curr_channel_mhz
@@ -85,8 +91,8 @@ Rectangle {
         syncRadio()
     }
     function controls() {
-        var result = linkSwitchAvailable ? [linkSwitch, scan, analyze, frequency, bandwidth, mcs]
-                                         : [scan, analyze, frequency, bandwidth, mcs]
+        var result = linkSwitchAvailable ? [linkSwitch, scan, analyze, frequencyFilter, frequency, bandwidth, mcs]
+                                         : [scan, analyze, frequencyFilter, frequency, bandwidth, mcs]
         var settings = [adaptive, fhss, dwell, pitMode, airPower, groundPower]
         for (var i = 0; i < settings.length; ++i)
             if (settings[i].visible && settings[i].focusControl && settings[i].focusControl.enabled)
@@ -206,7 +212,23 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true; Layout.preferredHeight: 92; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
             ColumnLayout { anchors.fill: parent; anchors.margins: 7; spacing: 4
-                Text { text: qsTr("FREQUENCY / RADIO"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text { text: qsTr("FREQUENCY / RADIO"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true; Layout.fillWidth: true }
+                    CompactLinkComboBox {
+                        id: frequencyFilter
+                        Layout.preferredWidth: 140
+                        Layout.preferredHeight: 25
+                        model: frequencyFilters
+                        textRole: "title"
+                        currentIndex: root.modelIndex(frequencyFilters, settings.qopenhd_frequency_filter_selection)
+                        onActivated: {
+                            settings.qopenhd_frequency_filter_selection = frequencyFilters.get(currentIndex).value
+                            root.syncRadio()
+                        }
+                        Keys.onPressed: root.keyNav(event)
+                    }
+                }
                 RowLayout { Layout.fillWidth: true; spacing: 6
                     ColumnLayout { Layout.fillWidth: true; spacing: 1
                         Text { text: qsTr("Channel"); color: settings_form.secondaryText; font.pixelSize: 7 }
@@ -221,6 +243,32 @@ Rectangle {
                         CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 31; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
                     }
                 }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            DynamicLinkSetting {
+                id: espAnalyseAir
+                Layout.fillWidth: true
+                visible: root.settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("ESP_ANALYSE")
+                settingsModel: _ohdSystemAirSettingsModel
+                paramId: "ESP_ANALYSE"
+                label: qsTr("ESP analysis (Air)")
+                preferRadioToggle: true
+                onMoveRequested: root.moveFocus(step)
+                onBackRequested: root.leaveCard()
+            }
+            DynamicLinkSetting {
+                id: espAnalyseGround
+                Layout.fillWidth: true
+                visible: root.settingsRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE")
+                settingsModel: _ohdSystemGroundSettings
+                paramId: "ESP_ANALYSE"
+                label: qsTr("ESP analysis (Ground)")
+                preferRadioToggle: true
+                onMoveRequested: root.moveFocus(step)
+                onBackRequested: root.leaveCard()
             }
         }
 

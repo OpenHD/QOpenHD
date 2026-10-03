@@ -12,7 +12,26 @@ import OpenHD 1.0
 import "../elements"
 
 SideBarBasePanel{
+    id: cameraPanel
     override_title: "Camera"
+    property bool gx_camera: _cameraStreamModelPrimary.camera_type === 64
+
+    // Opening camera controls must request missing parameters even when the
+    // radio-uplink status used by background autofetch is unavailable.
+    Timer {
+        interval: 2000
+        repeat: true
+        triggeredOnStart: true
+        running: cameraPanel.visible && !_airCameraSettingsModel.has_params_fetched
+        onTriggered: {
+            if (_airCameraSettingsModel.system_is_alive()
+                    && !_ohdSystemGroundSettings.ui_is_busy
+                    && !_ohdSystemAirSettingsModel.ui_is_busy
+                    && !_airCameraSettingsModel.ui_is_busy
+                    && !_airCameraSettingsModel2.ui_is_busy)
+                _airCameraSettingsModel.try_refetch_all_parameters_async(false)
+        }
+    }
 
     property int air_settings_update_count: _ohdSystemAirSettingsModel.update_count
     property bool camera_plugin_active: {
@@ -27,7 +46,8 @@ SideBarBasePanel{
     }
 
     function takeover_control(){
-        libcamera_impl.takeover_control();
+        if (gx_camera && gxControls.count) gxControls.itemAt(0).takeover_control();
+        else libcamera_impl.takeover_control();
     }
 
     Column {
@@ -36,6 +56,7 @@ SideBarBasePanel{
         spacing: 5
         MavlinkChoiceElement2{
             id: libcamera_impl
+            visible: !cameraPanel.gx_camera
             m_title: "Camera backend"
             m_param_id: "LIBCAMERA_IMPL"
             m_settings_model: _airCameraSettingsModel
@@ -48,6 +69,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: sensor_mode
+            visible: !cameraPanel.gx_camera
             m_title: "Sensor mode"
             m_param_id: "SENSOR_MODE"
             m_settings_model: _airCameraSettingsModel
@@ -61,6 +83,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: brightness
+            visible: !cameraPanel.gx_camera
             m_title: "Brightness"
             m_param_id: "BRIGHTNESS"
             m_settings_model: _airCameraSettingsModel
@@ -73,6 +96,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: saturation
+            visible: !cameraPanel.gx_camera
             m_title: "Saturation"
             m_param_id: "SATURATION"
             m_settings_model: _airCameraSettingsModel
@@ -85,6 +109,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: contrast
+            visible: !cameraPanel.gx_camera
             m_title: "Contrast"
             m_param_id: "CONTRAST"
             m_settings_model: _airCameraSettingsModel
@@ -97,6 +122,7 @@ SideBarBasePanel{
         }
         MavlinkChoiceElement2{
             id: sharpness
+            visible: !cameraPanel.gx_camera
             m_title: "Sharpness"
             m_param_id: "SHARPNESS"
             m_settings_model: _airCameraSettingsModel
@@ -105,6 +131,46 @@ SideBarBasePanel{
             }
             onGoto_next: {
                 sidebar.regain_control_on_sidebar_stack()
+            }
+        }
+
+        Repeater {
+            id: gxControls
+            model: cameraPanel.gx_camera ? [
+                ["Day/night & IR-cut", "GX_DAYNIGHT"],
+                ["IR-cut direction", "GX_IRCUT_DIR"],
+                ["IR-cut periodic control", "GX_IRCUT_TIMER"],
+                ["Exposure mode", "GX_EXPOSURE"],
+                ["Manual gain (dB)", "GX_GAIN"],
+                ["Manual shutter", "GX_SHUTTER_US"],
+                ["AE target brightness", "GX_AE_TARGET"],
+                ["AE maximum shutter", "GX_AE_MAX_US"],
+                ["AE maximum gain (dB)", "GX_AE_MAX_GAIN"],
+                ["AE strategy", "GX_AE_STRATEGY"],
+                ["White balance mode", "GX_WB_MODE"],
+                ["Manual WB red gain", "GX_WB_RED"],
+                ["Manual WB blue gain", "GX_WB_BLUE"],
+                ["Sharpness", "GX_SHARPNESS"],
+                ["2D noise reduction", "GX_DENOISE_2D"],
+                ["3D noise reduction", "GX_DENOISE_3D"],
+                ["Saturation", "GX_SATURATION"],
+                ["Contrast", "GX_CONTRAST"],
+                ["Hue", "GX_HUE"],
+                ["Gamma", "GX_GAMMA"],
+                ["Dynamic range compression", "GX_DRC"]
+            ] : []
+            delegate: MavlinkChoiceElement2 {
+                m_title: modelData[0]
+                m_param_id: modelData[1]
+                m_settings_model: _airCameraSettingsModel
+                onGoto_previous: {
+                    if (index > 0) gxControls.itemAt(index - 1).takeover_control();
+                    else sidebar.regain_control_on_sidebar_stack();
+                }
+                onGoto_next: {
+                    if (index + 1 < gxControls.count) gxControls.itemAt(index + 1).takeover_control();
+                    else sidebar.regain_control_on_sidebar_stack();
+                }
             }
         }
 

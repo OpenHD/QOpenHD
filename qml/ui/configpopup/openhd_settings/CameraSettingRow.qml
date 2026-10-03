@@ -167,7 +167,8 @@ FocusScope {
     }
 
     function commitInt(value) {
-        if (!settingsModel || readOnly || busy || Number(value) === Number(paramValue)) return
+        if (!settingsModel || readOnly || busy) return
+        if (paramId !== "BITRATE_MBITS" && Number(value) === Number(paramValue)) return
         warnIfNeeded()
         settingsModel.try_set_param_int_async(paramId, Number(value), true)
     }
@@ -398,11 +399,15 @@ FocusScope {
             property string selectedSensorMode: root.sensorModeValue
             property bool dirty: selectedResolution + "@" + selectedFps !== String(root.paramValue)
             property bool sensorModeDirty: selectedSensorMode !== root.sensorModeValue
-            property int observedRevision: root.modelUpdate
-            onObservedRevisionChanged: {
-                selectedResolution = root.resolutionPart(root.paramValue)
-                selectedFps = root.fpsPart(root.paramValue)
-                selectedSensorMode = root.sensorModeValue
+            Connections {
+                target: root
+                function onParamValueChanged() {
+                    formatEditor.selectedResolution = root.resolutionPart(root.paramValue)
+                    formatEditor.selectedFps = root.fpsPart(root.paramValue)
+                }
+                function onSensorModeValueChanged() {
+                    formatEditor.selectedSensorMode = root.sensorModeValue
+                }
             }
 
             RowLayout {
@@ -631,6 +636,13 @@ FocusScope {
                     }
                     Component.onCompleted: value = Number(root.paramValue)
                     onObservedRevisionChanged: if (!pressed && !locallyEdited) value = Number(root.paramValue)
+                    Connections {
+                        target: root
+                        function onParamValueChanged() {
+                            if (!valueSlider.pressed && !valueSlider.locallyEdited)
+                                valueSlider.value = Number(root.paramValue)
+                        }
+                    }
                     onMoved: locallyEdited = true
                     onPressedChanged: {
                         if (!pressed && locallyEdited) {
