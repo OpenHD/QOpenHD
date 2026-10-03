@@ -295,8 +295,9 @@ Rectangle {
         spacing: 9
 
         Rectangle {
+            visible: settings.dev_show_link_routing
             Layout.fillWidth: true
-            Layout.preferredHeight: modeLayout.implicitHeight + 18
+            Layout.preferredHeight: visible ? (modeLayout.implicitHeight + 18) : 0
             radius: 10
             color: settings_form.panelBackgroundRaised
             border.color: settings_form.lineColor
@@ -350,7 +351,7 @@ Rectangle {
         }
 
         Rectangle {
-            visible: settings.dev_show_advanced_button
+            visible: settings.dev_show_link_usage
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? 86 : 0
             radius: 10

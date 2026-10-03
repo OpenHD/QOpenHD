@@ -87,6 +87,34 @@ ScrollView {
                 }
             }
             SettingBaseElement{
+                m_short_description: qsTr("Show link routing")
+                m_long_description: qsTr("Show the Link routing selector in the OpenHD Link panel.")
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_show_link_routing
+                    onCheckedChanged: settings.dev_show_link_routing = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: qsTr("Show link usage")
+                m_long_description: qsTr("Show Total Link Usage meter in the OpenHD Link panel.")
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_show_link_usage
+                    onCheckedChanged: settings.dev_show_link_usage = checked
+                }
+            }
+            SettingBaseElement{
                 m_short_description: qsTr("Simulate Ethernet link")
                 m_long_description: qsTr("UI debugging only. Does not create or change any real connection.")
                 Switch {

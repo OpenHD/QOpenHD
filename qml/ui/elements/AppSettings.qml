@@ -95,6 +95,8 @@ Settings {
     property bool dev_show_5180mhz_lowband: false
     property bool dev_disable_autofetch: false
     // UI-only link fixtures. They do not create or alter any real transport.
+    property bool dev_show_link_routing: false
+    property bool dev_show_link_usage: true
     property bool dev_simulate_ethernet_link: false
     property bool dev_simulate_wifibroadcast_link: false
     property bool dev_simulate_uart_link: false
