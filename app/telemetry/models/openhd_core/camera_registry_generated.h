@@ -33,6 +33,7 @@ static constexpr int X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX327 = 44;
 static constexpr int X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX290 = 45;
 static constexpr int X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX462_LOWLIGHT_MINI = 46;
 static constexpr int X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662 = 47;
+static constexpr int X_CAM_TYPE_RPI_LIBCAMERA_IMX415 = 48;
 static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_2MP = 60;
 static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307 = 61;
 static constexpr int X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132 = 62;
@@ -119,6 +120,7 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {45, "ARDUCAM_IMX290"},
   {46, "ARDUCAM_IMX462_LOWLIGHT_MINI"},
   {47, "ARDUCAM_IMX662"},
+  {48, "IMX415"},
   {60, "VEYE_2MP"},
   {61, "VEYE_IMX307"},
   {62, "VEYE_CSSC132"},
@@ -338,6 +340,12 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARD
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662[] = {
   {1280, 720, 60},
   {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_IMX415[] = {
+  {1280, 720, 60},
+  {1920, 1080, 30},
+  {1920, 1080, 60},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_2MP[] = {
@@ -657,6 +665,7 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX327, kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX327, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX327) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX327[0])},
   {X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX462_LOWLIGHT_MINI, kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX462_LOWLIGHT_MINI, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX462_LOWLIGHT_MINI) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX462_LOWLIGHT_MINI[0])},
   {X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662, kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662[0])},
+  {X_CAM_TYPE_RPI_LIBCAMERA_IMX415, kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_IMX415, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_IMX415) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_LIBCAMERA_IMX415[0])},
   {X_CAM_TYPE_RPI_V4L2_VEYE_2MP, kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_2MP, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_2MP) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_2MP[0])},
   {X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307, kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307[0])},
   {X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132, kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132, sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132) / sizeof(kCameraResolutions_X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132[0])},
@@ -764,6 +773,12 @@ inline constexpr CameraUiEntry kManufacturer_RPI_ARDUCAM_Cameras[] = {
 };
 
 inline constexpr ManufacturerEntry kManufacturer_RPI_ARDUCAM = {"ARDUCAM", kManufacturer_RPI_ARDUCAM_Cameras, sizeof(kManufacturer_RPI_ARDUCAM_Cameras) / sizeof(kManufacturer_RPI_ARDUCAM_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_RPI_SONY_Cameras[] = {
+  {X_CAM_TYPE_RPI_LIBCAMERA_IMX415, "IMX415 (2-lane binning)"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_RPI_SONY = {"SONY", kManufacturer_RPI_SONY_Cameras, sizeof(kManufacturer_RPI_SONY_Cameras) / sizeof(kManufacturer_RPI_SONY_Cameras[0])};
 
 inline constexpr CameraUiEntry kManufacturer_RPI_VEYE_Cameras[] = {
   {X_CAM_TYPE_RPI_V4L2_VEYE_2MP, "2MP"},
@@ -923,6 +938,7 @@ inline constexpr ManufacturerEntry kManufacturer_ROCKCHIP_RV1126_TEST = {"ROCKCH
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_OLD_Manufacturers[] = {
   kManufacturer_RPI_ARDUCAM,
+  kManufacturer_RPI_SONY,
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
   kManufacturer_RPI_HDMI,
@@ -933,6 +949,7 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_OLD_Manufacture
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_4_Manufacturers[] = {
   kManufacturer_RPI_ARDUCAM,
+  kManufacturer_RPI_SONY,
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
   kManufacturer_RPI_HDMI,
@@ -943,6 +960,7 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_4_Manufacturers
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RPI_CM4_Manufacturers[] = {
   kManufacturer_RPI_ARDUCAM,
+  kManufacturer_RPI_SONY,
   kManufacturer_RPI_VEYE,
   kManufacturer_RPI_RPIF,
   kManufacturer_RPI_HDMI,
@@ -1127,6 +1145,7 @@ using openhd::camera_registry::X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX327;
 using openhd::camera_registry::X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX290;
 using openhd::camera_registry::X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX462_LOWLIGHT_MINI;
 using openhd::camera_registry::X_CAM_TYPE_RPI_LIBCAMERA_ARDUCAM_IMX662;
+using openhd::camera_registry::X_CAM_TYPE_RPI_LIBCAMERA_IMX415;
 using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_2MP;
 using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_CSIMX307;
 using openhd::camera_registry::X_CAM_TYPE_RPI_V4L2_VEYE_CSSC132;
