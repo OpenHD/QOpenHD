@@ -16,6 +16,17 @@ AdvancedPage {
 
     property int airRevision: _ohdSystemAirSettingsModel.update_count
     property int groundRevision: _ohdSystemGroundSettings.update_count
+    property bool audioAvailable: airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("AUDIO_ENABLE")
+    property int audioModeValue: {
+        airRevision
+        return audioAvailable ? _ohdSystemAirSettingsModel.get_cached_int("AUDIO_ENABLE") : 1
+    }
+    property bool exampleAudioAvailable: airRevision >= 0 &&
+                                         _ohdSystemAirSettingsModel.param_int_exists("AUDIO_EXAMPLE") &&
+                                         _ohdSystemAirSettingsModel.get_cached_int("AUDIO_EXAMPLE") > 0
+    property int preferredAudioSource: 0
+    onAudioModeValueChanged: if (audioModeValue !== 1) preferredAudioSource = audioModeValue
+    Component.onCompleted: if (audioModeValue !== 1) preferredAudioSource = audioModeValue
     property bool devourerLoggingAvailable: airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_DEV_LOGS")
     property bool adsbAirParameterAvailable: airRevision >= 0 &&
                                                  _ohdSystemAirSettingsModel.param_int_exists("ADSB_ENABLE")
@@ -92,26 +103,47 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Streaming mode"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { text: qsTr("Stream audio from air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch {
+                                    objectName: "audioStreamingSwitch"
+                                    checked: root.audioModeValue !== 1
+                                    enabled: root.audioAvailable
+                                    onToggled: root.setAirInt("AUDIO_ENABLE", checked ? root.preferredAudioSource : 1)
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Audio source"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 CompactLinkComboBox {
                                     id: audioMode
-                                    property var values: [1, 0, 100]
-                                    model: [qsTr("Off"), qsTr("Microphone"), qsTr("Test tone")]
+                                    objectName: "audioSourceSelector"
+                                    property var values: root.exampleAudioAvailable ? [0, 101, 100] : [0, 100]
+                                    model: root.exampleAudioAvailable
+                                           ? [qsTr("Microphone"), qsTr("Example audio (loop)"), qsTr("Test tone")]
+                                           : [qsTr("Microphone"), qsTr("Test tone")]
                                     currentIndex: {
-                                        root.airRevision
-                                        if (!_ohdSystemAirSettingsModel.param_int_exists("AUDIO_ENABLE")) return 0
-                                        var i = values.indexOf(_ohdSystemAirSettingsModel.get_cached_int("AUDIO_ENABLE"))
+                                        var i = values.indexOf(root.audioModeValue !== 1 ? root.audioModeValue : root.preferredAudioSource)
                                         return i < 0 ? 0 : i
                                     }
-                                    enabled: _ohdSystemAirSettingsModel.param_int_exists("AUDIO_ENABLE")
-                                    onActivated: root.setAirInt("AUDIO_ENABLE", values[index])
+                                    enabled: root.audioAvailable
+                                    onActivated: {
+                                        root.preferredAudioSource = values[index]
+                                        if (root.audioModeValue !== 1) root.setAirInt("AUDIO_ENABLE", values[index])
+                                    }
                                 }
+                            }
+                            Label {
+                                visible: !root.audioAvailable || !root.exampleAudioAvailable
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: !root.audioAvailable ? qsTr("Connect an air unit to configure audio streaming.")
+                                      : qsTr("Without a microphone, Microphone mode plays the bundled example audio. Update OpenHD for explicit example selection.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Microphone"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 CompactLinkComboBox {
                                     id: captureDevice
+                                    enabled: root.audioAvailable && audioMode.currentIndex === 0
                                     Layout.preferredWidth: Math.min(420, root.width * 0.48)
                                     property var ids: []
                                     model: []
@@ -143,7 +175,8 @@ AdvancedPage {
                                 Slider {
                                     id: gainSlider; Layout.preferredWidth: Math.min(360, root.width * 0.4); from: 0; to: 200; stepSize: 1
                                     value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("AUDIO_GAIN") ? _ohdSystemAirSettingsModel.get_cached_int("AUDIO_GAIN") : 100 }
-                                    enabled: _ohdSystemAirSettingsModel.param_int_exists("AUDIO_GAIN")
+                                    enabled: root.audioAvailable && audioMode.currentIndex === 0 &&
+                                             _ohdSystemAirSettingsModel.param_int_exists("AUDIO_GAIN")
                                     onMoved: gainValue.text = Math.round(value) + "%"
                                     onPressedChanged: if (!pressed) root.setAirInt("AUDIO_GAIN", Math.round(value))
                                 }

@@ -70,6 +70,7 @@ public:
 
     static int helper_get_gnd_curr_best_rssi();
     static int helper_get_gnd_worst_temperature_state();
+    static QString helper_get_gnd_temperature_display();
 private:
     std::chrono::steady_clock::time_point m_last_disconnected_warning=std::chrono::steady_clock::now();
     static constexpr auto CARD_DISCONNECTED_WARNING_INTERVAL=std::chrono::seconds(3);

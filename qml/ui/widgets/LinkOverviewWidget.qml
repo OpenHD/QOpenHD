@@ -36,9 +36,9 @@ BaseWidget {
     property int snr_min_db: settings.link_snr_min_db
     property int snr_max_db: settings.link_snr_max_db
     property int m_tx_temperature_state: _ohdSystemAir.radio_temperature_state
-    property string m_tx_temperature_text: _ohdSystemAir.radio_temperature_state_text
+    property string m_tx_temperature_text: _ohdSystemAir.is_alive ? _ohdSystemAir.radio_temperature_display_text : "N/A"
     property int m_rx_temperature_state: _ohdSystemGround.radio_temperature_state
-    property string m_rx_temperature_text: _ohdSystemGround.radio_temperature_state_text
+    property string m_rx_temperature_text: _ohdSystemGround.is_alive ? _ohdSystemGround.radio_temperature_display_text : "N/A"
     property int m_packet_loss_perc: _ohdSystemGround.curr_rx_packet_loss_perc
     property bool use_calculated_quality: settings.downlink_calc_quality_enabled
     property bool use_artosyn_quality: _ohdSystemGround.artosyn_link_detected
@@ -144,8 +144,9 @@ BaseWidget {
         return "" + dbm;
     }
 
-    function get_txc_text() {
-        return m_tx_temperature_text;
+    function get_rx_loss_text() {
+        return _ohdSystemGround.is_alive && m_packet_loss_perc >= 0
+                ? clamp(m_packet_loss_perc, 0, 100) + "%" : "N/A";
     }
 
     function get_channel_width_index() {
@@ -301,7 +302,7 @@ BaseWidget {
     }
 
     function get_primary_link_text() {
-        return get_dbm_text() + " dBm " + get_txc_text();
+        return get_dbm_text() + " dBm | " + qsTr("loss %1").arg(get_rx_loss_text());
     }
 
     function get_quality_percent_value() {
@@ -543,11 +544,14 @@ BaseWidget {
             Item {
                 width: parent.width
                 height: 28
-                visible: m_rx_temperature_state >= 0
+                visible: m_rx_temperature_text !== "N/A"
                 Text {
                     text: qsTr("RX temperature: %1").arg(m_rx_temperature_text)
                     color: "white"
                     height: parent.height
+                    width: parent.width
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: 12
                     font.bold: true
                     font.family: linkFont
                     font.pixelSize: detailPanelFontPixels
@@ -558,11 +562,14 @@ BaseWidget {
             Item {
                 width: parent.width
                 height: 28
-                visible: m_tx_temperature_state >= 0
+                visible: m_tx_temperature_text !== "N/A"
                 Text {
                     text: qsTr("TX temperature: %1").arg(m_tx_temperature_text)
                     color: "white"
                     height: parent.height
+                    width: parent.width
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: 12
                     font.bold: true
                     font.family: linkFont
                     font.pixelSize: detailPanelFontPixels
@@ -623,7 +630,8 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("Loss: %1%").arg(m_packet_loss_perc)
+                    text: qsTr("RX packet loss: %1")
+                        .arg(get_rx_loss_text())
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -1184,6 +1192,9 @@ BaseWidget {
 
             Text {
                 text: get_primary_link_text()
+                Layout.fillWidth: true
+                fontSizeMode: Text.Fit
+                minimumPixelSize: 11
                 color: settings.color_text
                 font.pixelSize: 16
                 font.family: linkFont

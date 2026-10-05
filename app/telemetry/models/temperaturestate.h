@@ -52,6 +52,26 @@ inline int worst(const int lhs, const int rhs)
     return std::max(lhs, rhs);
 }
 
+inline QString displayCelsius(const int celsius)
+{
+    return fromLegacyCelsius(celsius) == Unknown ? QStringLiteral("N/A")
+        : QString::number(celsius) + QStringLiteral("\u00b0C");
+}
+
+inline QString displayDevourer(const bool valid, const int delta)
+{
+    if (!valid) return QStringLiteral("N/A");
+    // Relative RF readings cannot give a reliable absolute temperature.
+    // Negative deltas simply mean the radio is below its reference reading.
+    switch (fromDevourerDelta(valid, delta)) {
+    case Cold: return QStringLiteral("Normal");
+    case Ok: return QStringLiteral("Warm");
+    case Hot: return QStringLiteral("Hot");
+    case SuperHot: return QStringLiteral("Overheating");
+    default: return QStringLiteral("N/A");
+    }
+}
+
 } // namespace TemperatureTelemetry
 
 #endif // TEMPERATURESTATE_H

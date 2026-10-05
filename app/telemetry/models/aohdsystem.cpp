@@ -551,6 +551,7 @@ void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &
             TemperatureTelemetry::fromLegacyCelsius(msg.wifi1_temp));
         set_radio_temperature_state(radioTemperatureState);
         set_radio_temperature_state_text(TemperatureTelemetry::toString(radioTemperatureState));
+        set_radio_temperature_display_text(TemperatureTelemetry::displayCelsius(std::max(msg.wifi0_temp, msg.wifi1_temp)));
     }
     set_curr_cpu_freq_mhz(msg.cpu_clock);
     set_curr_isp_freq_mhz(msg.isp_clock);
@@ -610,6 +611,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         auto& card=WiFiCard::instance_air();
         card.process_mavlink(msg);
         set_current_rx_rssi(card.curr_rx_rssi_dbm());
+        set_radio_temperature_display_text(card.card_temperature_status());
         if(card.temperature_state()!=TemperatureTelemetry::Unknown){
             m_has_per_card_temperature=true;
             set_radio_temperature_state(card.temperature_state());
@@ -624,6 +626,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         card.process_mavlink(msg);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
         const int temperatureState=WiFiCard::helper_get_gnd_worst_temperature_state();
+        set_radio_temperature_display_text(WiFiCard::helper_get_gnd_temperature_display());
         if(temperatureState!=TemperatureTelemetry::Unknown){
             m_has_per_card_temperature=true;
             set_radio_temperature_state(temperatureState);

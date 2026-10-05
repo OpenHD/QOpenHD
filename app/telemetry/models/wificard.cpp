@@ -153,7 +153,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         const int temperatureState = TemperatureTelemetry::fromDevourerDelta(thermalValid, thermalDelta);
         set_temperature_state(temperatureState);
         set_temperature_state_text(TemperatureTelemetry::toString(temperatureState));
-        set_card_temperature_status(TemperatureTelemetry::toString(temperatureState));
+        set_card_temperature_status(TemperatureTelemetry::displayDevourer(thermalValid, thermalDelta));
         set_devourer_quality_valid(qualityValid);
         set_devourer_link_health(qualityValid
             ? devourer_verdict_to_string((metadata >> 16) & 0x7) : "N/A");
@@ -166,7 +166,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         const int temperatureState = TemperatureTelemetry::fromLegacyCelsius(msg.card_temperature);
         set_temperature_state(temperatureState);
         set_temperature_state_text(TemperatureTelemetry::toString(temperatureState));
-        set_card_temperature_status(TemperatureTelemetry::toString(temperatureState));
+        set_card_temperature_status(TemperatureTelemetry::displayCelsius(msg.card_temperature));
         set_thermal_valid(false);
         set_thermal_raw(-1);
         set_thermal_baseline(-1);
@@ -271,6 +271,21 @@ int WiFiCard::helper_get_gnd_worst_temperature_state()
         }
     }
     return result;
+}
+
+QString WiFiCard::helper_get_gnd_temperature_display()
+{
+    WiFiCard* hottest = nullptr;
+    for (int i = 0; i < N_CARDS; ++i) {
+        auto& card = instance_gnd(i);
+        if (!card.alive() || card.temperature_state() == TemperatureTelemetry::Unknown) continue;
+        if (!hottest || card.temperature_state() > hottest->temperature_state() ||
+                (card.temperature_state() == hottest->temperature_state() &&
+                 ((card.thermal_valid() && hottest->thermal_valid() && card.thermal_delta() > hottest->thermal_delta()) ||
+                  (!card.thermal_valid() && !hottest->thermal_valid() && card.card_temperature() > hottest->card_temperature()))))
+            hottest = &card;
+    }
+    return hottest ? hottest->card_temperature_status() : QStringLiteral("N/A");
 }
 
 void WiFiCard::update_alive()
