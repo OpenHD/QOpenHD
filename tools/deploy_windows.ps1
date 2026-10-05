@@ -98,6 +98,20 @@ foreach ($dll in @("libgcc_s_dw2-1.dll", "libstdc++-6.dll", "libwinpthread-1.dll
     Copy-ExistingFile (Join-Path $MingwBin $dll) (Join-Path $TargetDir $dll)
 }
 
+# These are loaded dynamically by QtNetwork and are missed by DLL dependency scans.
+$tlsDirectories = @($env:QOPENHD_OPENSSL_BIN, $qtBin, $MingwBin) | Where-Object { $_ }
+foreach ($dll in @("libcrypto-1_1.dll", "libssl-1_1.dll")) {
+    $source = $tlsDirectories | ForEach-Object { Join-Path $_ $dll } |
+        Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
+    if (!$source) {
+        throw "Missing Qt 5 TLS runtime $dll. Set QOPENHD_OPENSSL_BIN to the matching OpenSSL directory."
+    }
+    Copy-ExistingFile $source (Join-Path $TargetDir $dll)
+}
+if ($env:QOPENHD_OPENSSL_BIN) {
+    Copy-ExistingFile (Join-Path $env:QOPENHD_OPENSSL_BIN "LICENSE") (Join-Path $TargetDir "OpenSSL-LICENSE.txt")
+}
+
 if ($FfmpegBin -and (Test-Path -LiteralPath $FfmpegBin -PathType Container)) {
     Get-ChildItem -LiteralPath $FfmpegBin -Filter "*.dll" -File |
         Copy-Item -Destination $TargetDir -Force

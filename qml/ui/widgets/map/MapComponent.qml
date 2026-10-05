@@ -59,15 +59,15 @@ Map {
 
     Connections {
         target: _fcMavlinkSystem
-        function onLatChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
-        function onLonChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
+        function onLatChanged() { map.updateOfflinePosition() }
+        function onLonChanged() { map.updateOfflinePosition() }
         function onGps_fix_typeChanged() { map.updateOfflinePosition() }
     }
 
     Connections {
         target: applicationWindow
-        function onReferenceLatitudeChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
-        function onReferenceLongitudeChanged() { map.updateOfflinePosition(); map.updateAdsbPosition() }
+        function onReferenceLatitudeChanged() { map.updateOfflinePosition() }
+        function onReferenceLongitudeChanged() { map.updateOfflinePosition() }
     }
 
     Component.onCompleted: updateOfflinePosition()
@@ -82,7 +82,6 @@ Map {
     }
 
     onMapReadyChanged: {
-        //needed to intitialize adsb api coordinates
         console.log("Map component: is ready");
         findMapBounds();
     }
@@ -93,15 +92,6 @@ Map {
 
     function findMapBounds(){
         center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
-        updateAdsbPosition()
-    }
-
-    // ADS-B search radius and distance are always relative to the aircraft,
-    // even when the operator pans the map away from it.
-    function updateAdsbPosition() {
-        if (!hasReferenceCoordinate) return
-        AdsbVehicleManager.newMapLat(referenceCoordinate.latitude)
-        AdsbVehicleManager.newMapLon(referenceCoordinate.longitude)
     }
 
     function coordinateWithFallback(lat, lon) {

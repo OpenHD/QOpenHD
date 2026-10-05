@@ -273,12 +273,10 @@ void QmlObjectListModel::deleteListAndContents()
 
 void QmlObjectListModel::clearAndDeleteContents()
 {
-    beginResetModel();
     for (int i=0; i<_objectList.count(); i++) {
         _objectList[i]->deleteLater();
     }
     clear();
-    endResetModel();
 }
 
 void QmlObjectListModel::beginReset()

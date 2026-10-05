@@ -338,7 +338,8 @@ BaseWidget {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: AdsbVehicleManager.status === 2
-                          ? qsTr("Receiver ready") : qsTr("Waiting for traffic source")
+                          ? qsTr("Traffic source ready") : (AdsbVehicleManager.status === 3
+                            ? qsTr("Waiting for GPS or internet position") : qsTr("Waiting for traffic source"))
                     color: root.textColor
                     opacity: 0.72
                     font.family: root.textFontFamily

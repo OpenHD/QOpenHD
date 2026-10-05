@@ -20,9 +20,11 @@ ApplicationWindow {
 
     // Position priority used by map/ADS-B consumers. The network provider is
     // deliberately only a rough fallback; a valid FC fix always wins.
-    readonly property bool fcPositionValid: _fcMavlinkSystem.gps_fix_type >= 2
+    readonly property bool fcPositionValid: _fcMavlinkSystem.is_alive && _fcMavlinkSystem.gps_fix_type >= 2
                                             && isFinite(_fcMavlinkSystem.lat)
                                             && isFinite(_fcMavlinkSystem.lon)
+                                            && Math.abs(_fcMavlinkSystem.lat) <= 90.0
+                                            && Math.abs(_fcMavlinkSystem.lon) <= 180.0
                                             && !(_fcMavlinkSystem.lat === 0.0
                                                  && _fcMavlinkSystem.lon === 0.0)
     property double ipLocationLatitude: Number.NaN
@@ -58,6 +60,16 @@ ApplicationWindow {
                                                     ? networkPositionSource.position.coordinate.longitude
                                                     : (ipPositionValid ? ipLocationLongitude : 0.0))
     readonly property bool referencePositionIsRough: !fcPositionValid && roughPositionValid
+
+    // Traffic polling also works when the map widget is disabled or unloaded.
+    function updateAdsbReferencePosition() {
+        AdsbVehicleManager.setReferencePosition(referencePositionValid ? referenceLatitude : Number.NaN,
+                                               referencePositionValid ? referenceLongitude : Number.NaN)
+    }
+    onReferencePositionValidChanged: updateAdsbReferencePosition()
+    onReferenceLatitudeChanged: updateAdsbReferencePosition()
+    onReferenceLongitudeChanged: updateAdsbReferencePosition()
+    Component.onCompleted: updateAdsbReferencePosition()
 
     PositionSource {
         id: networkPositionSource

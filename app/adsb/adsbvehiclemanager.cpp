@@ -69,10 +69,9 @@ void ADSBVehicleManager::onStarted()
     _internetLink = new ADSBInternet();
     connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
     connect(_internetLink, &ADSBInternet::sourceStatusChanged, this, &ADSBVehicleManager::setSourceStatus, Qt::QueuedConnection);
-    //there is probably a better way to get map lat,lon from map component
-    //currently map componenet calls adsbvehicle method which then emits signal to slot in adsbapi with lat lon
     connect(this, &ADSBVehicleManager::mapLatChanged, _internetLink, &ADSBInternet::mapLatChanged, Qt::QueuedConnection);
     connect(this, &ADSBVehicleManager::mapLonChanged, _internetLink, &ADSBInternet::mapLonChanged, Qt::QueuedConnection);
+    connect(this, &ADSBVehicleManager::referencePositionChanged, _internetLink, &ADSBapi::setReferencePosition, Qt::QueuedConnection);
     connect(_internetLink, &ADSBInternet::adsbClearModelRequest, this, &ADSBVehicleManager::adsbClearModel, Qt::QueuedConnection);
 
     _sdrLink = new ADSBSdr();
@@ -82,6 +81,16 @@ void ADSBVehicleManager::onStarted()
     //   connect(this, &ADSBVehicleManager::mapLatChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
     //   connect(this, &ADSBVehicleManager::mapLonChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
     connect(_sdrLink, &ADSBSdr::adsbClearModelRequest, this, &ADSBVehicleManager::adsbClearModel, Qt::QueuedConnection);
+    connect(this, &ADSBVehicleManager::referencePositionChanged, _sdrLink, &ADSBapi::setReferencePosition, Qt::QueuedConnection);
+}
+
+void ADSBVehicleManager::setReferencePosition(double latitude, double longitude)
+{
+    _api_lat = latitude;
+    _api_lon = longitude;
+    emit mapLatChanged(latitude);
+    emit mapLonChanged(longitude);
+    emit referencePositionChanged(latitude, longitude);
 }
 
 // called from qml when the center of map component changes
@@ -120,6 +129,7 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
 //currently not used.. was for testing but could have future purpose to turn off display
 void ADSBVehicleManager::adsbClearModel(){
     _adsbVehicles.clearAndDeleteContents();
+    _adsbICAOMap.clear();
 }
 
 void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo)
@@ -263,6 +273,11 @@ void ADSBapi::run(void)
 {
     init();
     exec();
+    // Network objects and timers must be destroyed on their owning thread.
+    delete timer;
+    timer = nullptr;
+    delete m_manager;
+    m_manager = nullptr;
 }
 
 void ADSBapi::init(void) {
@@ -295,11 +310,17 @@ void ADSBapi::mapLonChanged(double map_lon) {
     lon_string=QString::number(m_api_lon);
 }
 
+void ADSBapi::setReferencePosition(double latitude, double longitude) {
+    m_api_lat = latitude;
+    m_api_lon = longitude;
+    lat_string = QString::number(latitude, 'f', 6);
+    lon_string = QString::number(longitude, 'f', 6);
+}
+
 
 void ADSBInternet::requestData(void) {
     _adsb_enable = _settings.value("adsb_enable").toBool();
-    max_distance = _settings.value("adsb_radius").toInt();
-    QObject::connect(m_manager, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(dirty_onSslError(QNetworkReply*, QList<QSslError>)));
+    max_distance = qBound(5000, _settings.value("adsb_radius", 50000).toInt(), 200000);
 
     QString distance_string = QString::number(max_distance/1852); // convert meters to NM for api
 
@@ -308,23 +329,27 @@ void ADSBInternet::requestData(void) {
            emit sourceStatusChanged(0);
            return;
     }
-    if (_settings.value("adsb_source", 0).toInt() != InternetSource
-            || !qIsFinite(m_api_lat) || !qIsFinite(m_api_lon)) {
+    if (_settings.value("adsb_source", 0).toInt() != InternetSource) {
            return;
     }
-    // TODO - http instead of https ?
+    if (!qIsFinite(m_api_lat) || !qIsFinite(m_api_lon) ||
+            qAbs(m_api_lat) > 90 || qAbs(m_api_lon) > 180) {
+        emit sourceStatusChanged(3); // Enabled, waiting for a search position.
+        return;
+    }
     adsb_url="https://api.adsb.lol/v2/point/"+ lat_string +"/"+ lon_string + "/" + distance_string;
     QNetworkRequest request;
     QUrl api_request = adsb_url;
     request.setUrl(api_request);
     request.setRawHeader("User-Agent", "QOpenHD ADS-B client");
+    request.setTransferTimeout(8000);
 
     m_manager->get(request);
 }
 
 void ADSBInternet::processReply(QNetworkReply *reply) {
 
-    max_distance=(_settings.value("adsb_radius").toInt());
+    max_distance = qBound(5000, _settings.value("adsb_radius", 50000).toInt(), 200000);
     unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
     if (!_settings.value("adsb_enable").toBool()
@@ -377,7 +402,12 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
 
 
-    QJsonArray acArray = doc.object()["ac"].toArray();
+    if (!jsonObject.value("ac").isArray()) {
+        emit sourceStatusChanged(1);
+        reply->deleteLater();
+        return;
+    }
+    QJsonArray acArray = jsonObject.value("ac").toArray();
     emit sourceStatusChanged(2);
 
     // Iterate through the "ac" array
@@ -397,11 +427,15 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         }
 
         //Aircraft lat/lon
-        if(aircraft["lat"].isNull() || aircraft["lon"].isNull()){ //skip if no lat lon
+        if (!aircraft["lat"].isDouble() || !aircraft["lon"].isDouble()) {
             continue;
         }
         double lat = aircraft["lat"].toDouble();
         double lon = aircraft["lon"].toDouble();
+        if (!qIsFinite(lat) || !qIsFinite(lon) || qAbs(lat) > 90 || qAbs(lon) > 180) continue;
+        const QJsonValue seen = aircraft.value("seen_pos").isDouble()
+                ? aircraft.value("seen_pos") : aircraft.value("seen");
+        if (seen.isDouble() && seen.toDouble() >= 25.0) continue;
         //qDebug()<<"lat/lon" << lat << " / " << lon;
         //adsbInfo.location = location;
         adsbInfo.lat = lat;
@@ -428,8 +462,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
         // If aircraft beyond max distance than skip this one
         if(distance > max_distance / 1000.0){
-            //TODO commented for testing
-            //continue;
+            continue;
         }
 
         //Aircraft callsign
@@ -481,7 +514,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
             adsbInfo.lastContact=0;
         }
         else {
-            adsbInfo.lastContact = aircraft["seen"].toInt();
+            adsbInfo.lastContact = seen.toInt();
         }
         adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
 
@@ -498,13 +531,6 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         emit adsbVehicleUpdate(adsbInfo);
     }
     reply->deleteLater();
-}
-
-void ADSBInternet::dirty_onSslError(QNetworkReply *reply, QList<QSslError> errors)
-{
-    // Consti10: Dang openssl - just ignore all SSL errors !
-    //qDebug()<<"got some ssl errors";
-    reply->ignoreSslErrors();
 }
 
 ADSBSdr::ADSBSdr()

@@ -39,6 +39,7 @@ protected:
     void run(void) final;
 
 public slots:
+    void setReferencePosition(double latitude, double longitude);
     void mapLatChanged(double map_lat);
     void mapLonChanged(double map_lon);
 
@@ -66,8 +67,8 @@ protected:
 
     QSettings _settings;
 
-    double m_api_lat; //private but duplicated across classes
-    double m_api_lon; //private but duplicated across classes
+    double m_api_lat = qQNaN();
+    double m_api_lon = qQNaN();
 
     qreal max_distance;
     bool unknown_zero_alt;
@@ -83,7 +84,6 @@ public:
 
 private slots:
     void processReply(QNetworkReply *reply) override;
-    void dirty_onSslError(QNetworkReply* reply, QList<QSslError> errors);
     void requestData() override;
 private:
     static constexpr int InternetSource = 0;
@@ -125,7 +125,7 @@ public:
     Q_PROPERTY(double apiLat READ apiLat MEMBER _api_lat NOTIFY mapLatChanged)
     Q_PROPERTY(double apiLon READ apiLon MEMBER _api_lon NOTIFY mapLonChanged)
 
-    // frontend indicator. 0 inactive, 1 red, 2 green
+    // Frontend indicator: 0 inactive, 1 unavailable, 2 connected, 3 waiting for position.
     Q_PROPERTY(uint status READ status NOTIFY statusChanged)
 
     QmlObjectListModel* adsbVehicles(void) { return &_adsbVehicles; }
@@ -136,6 +136,7 @@ public:
     // called from qml when the map has moved
     Q_INVOKABLE void newMapLat(double map_lat);
     Q_INVOKABLE void newMapLon(double map_lon);
+    Q_INVOKABLE void setReferencePosition(double latitude, double longitude);
 
     Q_INVOKABLE void setGroundIP(QString address) { _sdrLink->setGroundIP(address); }
 
@@ -143,6 +144,7 @@ public:
     void processMavlinkVehicle(const mavlink_adsb_vehicle_t& vehicle);
 
 signals:
+    void referencePositionChanged(double latitude, double longitude);
     // sent to ADSBapi to make requests based into this
     void mapLatChanged(double map_lat);
     void mapLonChanged(double map_lon);
@@ -167,8 +169,8 @@ private:
     QTimer                          _adsbVehicleCleanupTimer;
     ADSBInternet*                   _internetLink = nullptr;
     ADSBSdr*                        _sdrLink = nullptr;
-    double                          _api_lat;
-    double                          _api_lon;
+    double                          _api_lat = qQNaN();
+    double                          _api_lon = qQNaN();
     QElapsedTimer                   _last_update_timer;
     uint                            _status = 0;
     int                             _activeSource = -1;

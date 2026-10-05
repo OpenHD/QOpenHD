@@ -182,11 +182,12 @@ AdvancedPage {
                                           ? (settings.adsb_source === 0 ? qsTr("Internet ADS-B connected") : qsTr("SDR ADS-B connected"))
                                           : (AdsbVehicleManager.status === 1
                                              ? (settings.adsb_source === 0 ? qsTr("Internet ADS-B unavailable") : qsTr("SDR ADS-B unavailable"))
-                                             : qsTr("ADS-B disabled"))
+                                             : (AdsbVehicleManager.status === 3 ? qsTr("Internet ADS-B waiting for position") : qsTr("ADS-B disabled")))
                                 }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
+                                visible: settings.adsb_source === 1
                                 Label { text: qsTr("Enable ADS-B receiver on Air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
                                     enabled: root.adsbAirParameterAvailable && !_ohdSystemAirSettingsModel.ui_is_busy
@@ -196,6 +197,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
+                                visible: settings.adsb_source === 1
                                 Label { text: qsTr("Enable ADS-B receiver on Ground unit"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
                                     enabled: root.adsbGroundParameterAvailable && !_ohdSystemGroundSettings.ui_is_busy
@@ -218,9 +220,9 @@ AdvancedPage {
                                 }
                             }
                             Label {
-                                visible: settings.adsb_source === 0 && (root.adsbAirParameterAvailable || root.adsbGroundParameterAvailable)
+                                visible: settings.adsb_source === 0
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Select SDR / OpenHD to display traffic from an OpenHD ADS-B receiver.")
+                                text: qsTr("Internet traffic requires no SDR. Uses GPS or the optional approximate internet position. Enable position estimation below if no GPS is available.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
@@ -252,7 +254,7 @@ AdvancedPage {
                                 Switch { checked: settings.adsb_show_osd_markers; onToggled: settings.adsb_show_osd_markers = checked }
                             }
                             Label {
-                                visible: !root.adsbAirParameterAvailable && !root.adsbGroundParameterAvailable
+                                visible: settings.adsb_source === 1 && !root.adsbAirParameterAvailable && !root.adsbGroundParameterAvailable
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Connect an OpenHD unit with ADS-B support to enable its SDR receiver.")
                             }

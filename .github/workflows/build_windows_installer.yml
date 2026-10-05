@@ -24,7 +24,29 @@ env:
   FFMPEG_SHA256: ef966e53e5bbae6e2e8a4d313fac0ae93b2b42a0ddec978e6131df98dfa345d0
 
 jobs:
+  openssl:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Cache Windows TLS runtime
+        id: openssl-cache
+        uses: actions/cache@v4
+        with:
+          path: windows-openssl
+          key: win32-openssl-${{ runner.os }}-${{ hashFiles('ci/build-windows-openssl.sh') }}
+      - name: Build Windows TLS runtime
+        if: steps.openssl-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-mingw-w64-i686-posix
+          bash ci/build-windows-openssl.sh windows-openssl
+      - uses: actions/upload-artifact@v5
+        with:
+          name: windows-openssl
+          path: windows-openssl/
+
   build:
+    needs: openssl
     runs-on: windows-2022
 
     defaults:
@@ -51,6 +73,16 @@ jobs:
 
       - name: Install build tools
         run: choco install nsis -y --no-progress
+
+      - name: Download Windows TLS runtime
+        uses: actions/download-artifact@v5
+        with:
+          name: windows-openssl
+          path: build-libs-windows/openssl
+
+      - name: Configure Windows TLS runtime
+        run: |
+          "QOPENHD_OPENSSL_BIN=$(Join-Path $env:GITHUB_WORKSPACE 'build-libs-windows\openssl')" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Install FFmpeg SDK
         run: |
@@ -90,6 +122,19 @@ jobs:
           qmake -v
           & $mingwMake.FullName --version
 
+      - name: Test Internet ADS-B without SDR
+        run: |
+          $env:Path = "$env:QT_MINGW_BIN;$env:Path"
+          New-Item -ItemType Directory -Path adsb-test -Force | Out-Null
+          Push-Location adsb-test
+          qmake ../tests/adsb_internet_test.pro CONFIG+=release
+          & (Join-Path $env:QT_MINGW_BIN "mingw32-make.exe") -j2 "SHELL=cmd.exe"
+          if ($LASTEXITCODE -ne 0) { throw "ADS-B test build failed" }
+          & ./release/adsb_internet_test.exe -o results.txt,txt
+          if ($LASTEXITCODE -ne 0) { Get-Content results.txt; throw "ADS-B tests failed" }
+          Get-Content results.txt
+          Pop-Location
+
       - name: Configure
         run: |
           $env:Path = "$env:QT_MINGW_BIN;$env:Path"
@@ -107,6 +152,28 @@ jobs:
           $env:Path = "$env:QT_MINGW_BIN;$env:Path"
           $env:SHELL = "cmd.exe"
           & (Join-Path $env:QT_MINGW_BIN "mingw32-make.exe") -C build -j2 "SHELL=cmd.exe"
+
+      - name: Verify deployed TLS without developer PATH
+        run: |
+          $env:Path = "$env:QT_MINGW_BIN;$env:Path"
+          New-Item -ItemType Directory -Path tls-test -Force | Out-Null
+          Push-Location tls-test
+          qmake ../tests/windows_tls_test.pro CONFIG+=release
+          & (Join-Path $env:QT_MINGW_BIN "mingw32-make.exe") -j2 "SHELL=cmd.exe"
+          if ($LASTEXITCODE -ne 0) { throw "TLS probe build failed" }
+          Pop-Location
+          $deployDir = Join-Path $env:GITHUB_WORKSPACE "build/release"
+          $probe = Join-Path $deployDir "windows_tls_test.exe"
+          Copy-Item tls-test/release/windows_tls_test.exe $probe
+          $originalPath = $env:Path
+          try {
+            $env:Path = "$env:SystemRoot\System32;$env:SystemRoot"
+            & $probe
+            if ($LASTEXITCODE -ne 0) { throw "The deployed app cannot load TLS libraries" }
+          } finally {
+            $env:Path = $originalPath
+            Remove-Item -LiteralPath $probe
+          }
 
       - name: Build NSIS installer
         run: |
