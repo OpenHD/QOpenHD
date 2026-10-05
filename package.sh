@@ -20,7 +20,12 @@ mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
 
 VER2=$(git rev-parse --short HEAD)
 
-if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] && [[ "${PACKAGE_ARCH}" = "armhf" ]] ; then
+# Cross builds package an already linked target binary on the native host.
+if [[ -n "${PREBUILT_QOPENHD:-}" ]]; then
+    test -f "$PREBUILT_QOPENHD" || exit 1
+    mkdir -p release
+    cp "$PREBUILT_QOPENHD" release/QOpenHD || exit 1
+elif [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] && [[ "${PACKAGE_ARCH}" = "armhf" ]] ; then
     QT_VERSION=Qt5.15.4
     echo "debug"
     /opt/Qt5.15.4/bin/qmake

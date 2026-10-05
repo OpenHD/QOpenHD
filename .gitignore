@@ -89,3 +89,6 @@ qopenhd_qmltyperegistrations.cpp
 CMakeLists.txt.user
 /1op
 /android/.gradle
+
+# Native host cross SDK and target build outputs
+.cross-build/

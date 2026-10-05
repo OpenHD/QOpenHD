@@ -1,0 +1,77 @@
+name: Native host cross package
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
+      publish:
+        default: true
+        type: boolean
+    secrets:
+      CLOUDSMITH_API_KEY:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - name: Install native host dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential perl curl git \
+            dpkg-dev mmdebstrap debian-archive-keyring gnupg python3-pip pkg-config ruby-dev
+          sudo gem install fpm --version 1.16.0 --no-document
+      - name: Cache native Qt tools shared by ARM targets
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cross-build/qt-host-*
+            .cross-build/*.tar.xz
+          key: qopenhd-qt-host-v1-${{ runner.os }}-${{ hashFiles('ci/cross-build.sh') }}
+      - name: Cache target compiler and sysroot
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cross-build/gcc-*
+            .cross-build/sysroot-*
+            .cross-build/*.tar.bz2
+          key: qopenhd-cross-v1-${{ runner.os }}-${{ inputs.target }}-${{ hashFiles('ci/cross-build.sh', 'ci/relativize-sysroot.py') }}
+      - name: Compile and package without target emulation
+        env:
+          CROSS_TARGET: ${{ inputs.target }}
+        run: bash ci/cross-build.sh "$CROSS_TARGET"
+      - name: Upload packages and ELF inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: QOpenHD-${{ inputs.target }}
+          path: |
+            *.deb
+            .cross-build/build-*/elf-*.txt
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Publish packages
+        if: inputs.publish && (github.ref_name == 'release' || github.ref_name == 'dev-release')
+        env:
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+          CROSS_TARGET: ${{ inputs.target }}
+          PACKAGE_REPO: ${{ github.ref_name }}
+        run: |
+          python3 -m pip install cloudsmith-cli
+          case "$CROSS_TARGET" in
+            pi-bullseye-armhf) distro=raspbian; release=bullseye ;;
+            pi-bookworm-arm64) distro=raspbian; release=bookworm ;;
+            rock-bookworm-arm64) distro=debian; release=bookworm ;;
+            *) exit 2 ;;
+          esac
+          for package in ./*.deb; do
+            cloudsmith push deb --republish "openhd/$PACKAGE_REPO/$distro/$release" "$package"
+          done
