@@ -62,7 +62,7 @@ Item {
             Rectangle {
                 Layout.preferredWidth: 42; Layout.preferredHeight: 22; radius: 6
                 color: "#163955"; border.color: "#31516c"
-                Text { anchors.centerIn: parent; text: root.usage && root.capacity > 0 ? Math.round(root.total * 100 / root.capacity) + "%" : "N/A"; color: "#e7f2ff"; font.pixelSize: 10; font.bold: true }
+                Text { anchors.centerIn: parent; text: root.usage && root.capacity > 0 ? Math.min(100, Math.max(0, Math.round(root.total * 100 / root.capacity))) + "%" : "N/A"; color: "#e7f2ff"; font.pixelSize: 10; font.bold: true }
             }
         }
         Rectangle {
