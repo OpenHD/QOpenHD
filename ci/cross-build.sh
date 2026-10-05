@@ -20,7 +20,7 @@ case "$target" in
     bootlin_arch=aarch64; compiler=aarch64-buildroot-linux-gnu
     distro=debian; [[ "$target" == pi-* ]] && distro=raspbian
     qt_prefix=/usr
-    qt_deps=qtbase5-dev,qtbase5-private-dev,qtdeclarative5-dev,qttools5-dev,qttools5-dev-tools,qtmultimedia5-dev,qtpositioning5-dev,libqt5charts5-dev,libqt5texttospeech5-dev
+    qt_deps=qtbase5-dev,qtbase5-private-dev,qtdeclarative5-dev,qttools5-dev,qttools5-dev-tools,qtmultimedia5-dev,qtpositioning5-dev,libqt5charts5-dev,libqt5texttospeech5-dev,libqt5opengl5-dev
     ;;
   *) echo "Unsupported cross target: $target" >&2; exit 2 ;;
 esac

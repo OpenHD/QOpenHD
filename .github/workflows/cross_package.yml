@@ -31,12 +31,13 @@ jobs:
             dpkg-dev mmdebstrap debian-archive-keyring gnupg python3-pip pkg-config ruby-dev
           sudo gem install fpm --version 1.16.0 --no-document
       - name: Cache native Qt tools shared by ARM targets
-        uses: actions/cache@v4
+        id: host-qt-cache
+        uses: actions/cache/restore@v4
         with:
           path: |
             .cross-build/qt-host-*
             .cross-build/*.tar.xz
-          key: qopenhd-qt-host-v1-${{ runner.os }}-${{ hashFiles('ci/cross-build.sh') }}
+          key: qopenhd-qt-host-v2-${{ runner.os }}-5.15.4-static-tools
       - name: Cache target compiler and sysroot
         uses: actions/cache@v4
         with:
@@ -49,6 +50,14 @@ jobs:
         env:
           CROSS_TARGET: ${{ inputs.target }}
         run: bash ci/cross-build.sh "$CROSS_TARGET"
+      - name: Keep completed host tools even if a target build fails
+        if: always() && steps.host-qt-cache.outputs.cache-hit != 'true' && hashFiles('.cross-build/qt-host-*/.complete') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .cross-build/qt-host-*
+            .cross-build/*.tar.xz
+          key: ${{ steps.host-qt-cache.outputs.cache-primary-key }}
       - name: Upload packages and ELF inspection
         uses: actions/upload-artifact@v4
         with:
