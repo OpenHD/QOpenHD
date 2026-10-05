@@ -323,6 +323,11 @@ BaseWidget {
             height: m_row_height
             spacing: 20
             Button{
+                text: qsTr("10 MHz")
+                onClicked: set_channel_width_async(10)
+                highlighted: m_curr_channel_width==10
+            }
+            Button{
                 text: qsTr("20 MHz")
                 onClicked: {
                     set_channel_width_async(20)

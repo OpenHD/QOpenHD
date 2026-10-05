@@ -37,6 +37,9 @@ SideBarBasePanel{
 
         function rebuildBandwidthModel(){
             scanBandwidthModel.clear();
+            if(!settings.scan_passive_nexmon){
+                scanBandwidthModel.append({value: 10, verbose: "10 MHz"});
+            }
             scanBandwidthModel.append({value: 20, verbose: "20 MHz"});
             scanBandwidthModel.append({value: 40, verbose: "40 MHz"});
         }

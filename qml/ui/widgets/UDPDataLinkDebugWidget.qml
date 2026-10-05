@@ -65,7 +65,7 @@ BaseWidget {
             Label { visible: root.enabled; text: qsTr("Channel bandwidth"); color: "white" }
             DarkComboBox {
                 visible: root.enabled; Layout.fillWidth: true
-                model: [20, 40]
+                model: [10, 20, 40]
                 currentIndex: Math.max(0, model.indexOf(_ohdSystemAir.curr_channel_width_mhz))
                 onActivated: root.setBandwidth(model[index])
             }
