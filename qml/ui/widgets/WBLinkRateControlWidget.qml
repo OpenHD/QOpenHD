@@ -323,22 +323,6 @@ BaseWidget {
             height: m_row_height
             spacing: 20
             Button{
-                text: qsTr("5 MHz")
-                onClicked: {
-                    set_channel_width_async(5)
-                }
-                highlighted: m_curr_channel_width==5
-                //enabled: _ohdSystemAir.is_alive;
-            }
-            Button{
-                text: qsTr("10 MHz")
-                onClicked: {
-                    set_channel_width_async(10)
-                }
-                highlighted: m_curr_channel_width==10
-                //enabled: _ohdSystemAir.is_alive;
-            }
-            Button{
                 text: qsTr("20 MHz")
                 onClicked: {
                     set_channel_width_async(20)

@@ -180,8 +180,6 @@ Item {
     }
     ListModel{
         id: elements_model_channel_width
-        ListElement {value: 5; verbose:"5Mhz"}
-        ListElement {value: 10; verbose:"10Mhz"}
         ListElement {value: 20; verbose:"20Mhz"}
         ListElement {value: 40; verbose:"40Mhz\n(HIGH BW)"}
     }

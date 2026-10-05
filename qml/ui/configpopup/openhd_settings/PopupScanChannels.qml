@@ -89,10 +89,6 @@ PopupBigGeneric {
     function rebuildBandwidthModel() {
         rebuildingBandwidth = true
         bandwidthModel.clear()
-        if (!settings.scan_passive_nexmon) {
-            bandwidthModel.append({title: qsTr("5 MHz"), value: 5})
-            bandwidthModel.append({title: qsTr("10 MHz"), value: 10})
-        }
         bandwidthModel.append({title: qsTr("20 MHz"), value: 20})
         bandwidthModel.append({title: qsTr("40 MHz"), value: 40})
         rebuildingBandwidth = false
