@@ -47,6 +47,47 @@ if [[ ! -x "$gcc/bin/$compiler-g++" ]]; then
   tar -xf "$work/$name" -C "$gcc" --strip-components=1
 fi
 
+if [[ ! -f "$sysroot/.complete" ]]; then
+  sources="$work/$target.sources.list"
+  keys="$work/keys"
+  mkdir -p "$keys"
+  if [[ "$arch" == armhf ]]; then
+    download https://archive.raspbian.org/raspbian.public.key "$keys/raspbian.asc"
+    download https://archive.raspberrypi.org/debian/raspberrypi.gpg.key "$keys/raspberrypi.asc"
+    download https://dl.cloudsmith.io/public/openhd/release/gpg.key "$keys/openhd.asc"
+    for key in raspbian raspberrypi openhd; do
+      gpg --batch --yes --dearmor -o "$keys/$key.gpg" "$keys/$key.asc"
+    done
+    cat > "$sources" <<EOF
+deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi
+deb http://archive.raspberrypi.org/debian/ bullseye main
+deb https://dl.cloudsmith.io/public/openhd/release/deb/raspbian bullseye main
+EOF
+  else
+    # Ubuntu 22.04's archive keyring predates Bookworm's signing keys.
+    download https://ftp-master.debian.org/keys/archive-key-12.asc "$keys/debian.asc"
+    download https://ftp-master.debian.org/keys/archive-key-12-security.asc "$keys/debian-security.asc"
+    cat "$keys/debian.asc" "$keys/debian-security.asc" | \
+      gpg --batch --yes --dearmor -o "$keys/debian.gpg"
+    cat > "$sources" <<EOF
+deb https://deb.debian.org/debian bookworm main
+deb https://deb.debian.org/debian bookworm-updates main
+deb https://security.debian.org/debian-security bookworm-security main
+EOF
+  fi
+  deps="$qt_deps,libc6-dev,libavcodec-dev,libavformat-dev,libavutil-dev,libgstreamer1.0-dev,libgstreamer-plugins-base1.0-dev,libdrm-dev,libgles-dev,libegl-dev"
+  # extract performs package extraction only, without running foreign maintainer scripts.
+  sudo mmdebstrap --mode=root --architectures="$arch" --variant=extract \
+    --keyring="$keys" \
+    --aptopt='Acquire::ForceIPv4 "true"' --include="$deps" \
+    "$release" "$work/sysroot-$target.tar" "$sources"
+  mkdir -p "$sysroot"
+  sudo tar --exclude=./dev -xf "$work/sysroot-$target.tar" -C "$sysroot"
+  sudo chown -R "$(id -u):$(id -g)" "$sysroot"
+  python3 "$source_dir/ci/relativize-sysroot.py" "$sysroot"
+  touch "$sysroot/.complete"
+fi
+
 # Build native tools once, matching the custom Pi Qt kit. The same Qt 5.15
 # tools work with the distro Qt 5.15 kits; target libraries always come from
 # their own sysroot, never the host Qt build.
@@ -86,45 +127,6 @@ PY
   touch "$host_qt/.complete"
 fi
 
-if [[ ! -f "$sysroot/.complete" ]]; then
-  sources="$work/$target.sources.list"
-  keys="$work/keys"
-  mkdir -p "$keys"
-  if [[ "$arch" == armhf ]]; then
-    download https://archive.raspbian.org/raspbian.public.key "$keys/raspbian.asc"
-    download https://archive.raspberrypi.org/debian/raspberrypi.gpg.key "$keys/raspberrypi.asc"
-    download https://dl.cloudsmith.io/public/openhd/release/gpg.key "$keys/openhd.asc"
-    for key in raspbian raspberrypi openhd; do
-      gpg --batch --yes --dearmor -o "$keys/$key.gpg" "$keys/$key.asc"
-    done
-    cat > "$sources" <<EOF
-deb [signed-by=$keys/raspbian.gpg] http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi
-deb [signed-by=$keys/raspberrypi.gpg] http://archive.raspberrypi.org/debian/ bullseye main
-deb [signed-by=$keys/openhd.gpg] https://dl.cloudsmith.io/public/openhd/release/deb/raspbian bullseye main
-EOF
-  else
-    # Ubuntu 22.04's archive keyring predates Bookworm's signing keys.
-    download https://ftp-master.debian.org/keys/archive-key-12.asc "$keys/debian.asc"
-    download https://ftp-master.debian.org/keys/archive-key-12-security.asc "$keys/debian-security.asc"
-    cat "$keys/debian.asc" "$keys/debian-security.asc" | \
-      gpg --batch --yes --dearmor -o "$keys/debian.gpg"
-    cat > "$sources" <<EOF
-deb [signed-by=$keys/debian.gpg] https://deb.debian.org/debian bookworm main
-deb [signed-by=$keys/debian.gpg] https://deb.debian.org/debian bookworm-updates main
-deb [signed-by=$keys/debian.gpg] https://security.debian.org/debian-security bookworm-security main
-EOF
-  fi
-  deps="$qt_deps,libc6-dev,libavcodec-dev,libavformat-dev,libavutil-dev,libgstreamer1.0-dev,libgstreamer-plugins-base1.0-dev,libdrm-dev,libgles-dev,libegl-dev"
-  # extract performs package extraction only, without running foreign maintainer scripts.
-  sudo mmdebstrap --mode=root --architectures="$arch" --variant=extract \
-    --aptopt='Acquire::ForceIPv4 "true"' --include="$deps" \
-    "$release" "$work/sysroot-$target.tar" "$sources"
-  mkdir -p "$sysroot"
-  sudo tar --exclude=./dev -xf "$work/sysroot-$target.tar" -C "$sysroot"
-  sudo chown -R "$(id -u):$(id -g)" "$sysroot"
-  python3 "$source_dir/ci/relativize-sysroot.py" "$sysroot"
-  touch "$sysroot/.complete"
-fi
 
 qt_data="$sysroot$qt_prefix"
 if [[ "$qt_prefix" == /usr ]]; then qt_data="$sysroot/usr/lib/$triplet/qt5"; fi
