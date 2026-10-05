@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>resources/rapha.png</file>
+        <file>resources/credits/01.dat</file>
+        <file>resources/credits/02.wav</file>
         <file>resources/max.png</file>
         <file>resources/thomas.png</file>
         <file>resources/pete.png</file>

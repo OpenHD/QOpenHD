@@ -13,6 +13,16 @@ AdvancedPage {
 
     readonly property int portraitColumns: Math.max(1, Math.min(3, Math.floor(scroll.width / 230)))
     readonly property int portraitHeight: scroll.width < 620 ? 218 : 246
+    property int archiveTapCount: 0
+
+    onVisibleChanged: {
+        if (!visible) {
+            archiveTapCount = 0
+            creditArchive.close()
+        }
+    }
+
+    CreditArchive { id: creditArchive; objectName: "creditArchive"; onClosed: peopleGrid.forceActiveFocus() }
 
     ListModel {
         id: people
@@ -92,6 +102,7 @@ AdvancedPage {
                         color: settings_form.panelBackground
                         border.width: GridView.isCurrentItem && peopleGrid.activeFocus ? 2 : 1
                         border.color: GridView.isCurrentItem && peopleGrid.activeFocus ? settings_form.accentColor : settings_form.lineColor
+                        MouseArea { anchors.fill: parent; onClicked: { peopleGrid.currentIndex = index; peopleGrid.forceActiveFocus() } }
                         Column {
                             anchors.centerIn: parent
                             spacing: 10
@@ -102,11 +113,27 @@ AdvancedPage {
                                 radius: 12
                                 color: settings_form.panelBackgroundRaised
                                 clip: true
-                                Image { anchors.fill: parent; anchors.margins: 5; source: portrait; fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true }
+                                Image {
+                                    anchors.fill: parent; anchors.margins: 5; source: portrait
+                                    fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true
+                                    MouseArea {
+                                        objectName: personName === "Raphael" ? "archivePortrait" : ""
+                                        anchors.fill: parent
+                                        enabled: personName === "Raphael"
+                                        onClicked: {
+                                            peopleGrid.currentIndex = index
+                                            peopleGrid.forceActiveFocus()
+                                            root.archiveTapCount += 1
+                                            if (root.archiveTapCount === 7) {
+                                                root.archiveTapCount = 0
+                                                creditArchive.open()
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             Text { anchors.horizontalCenter: parent.horizontalCenter; text: personName; color: settings_form.primaryText; font.pixelSize: 16; font.bold: true }
                         }
-                        MouseArea { anchors.fill: parent; onClicked: { peopleGrid.currentIndex = index; peopleGrid.forceActiveFocus() } }
                     }
                 }
                 Keys.onPressed: function(event) {

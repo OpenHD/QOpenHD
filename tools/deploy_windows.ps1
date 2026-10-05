@@ -74,6 +74,7 @@ $qtDlls = @(
     "Qt5QuickTemplates2.dll",
     "Qt5Widgets.dll",
     "Qt5Multimedia.dll",
+    "Qt5MultimediaQuick.dll",
     "Qt5Charts.dll",
     "Qt5Location.dll",
     "Qt5Positioning.dll",
@@ -121,7 +122,7 @@ foreach ($pluginDir in @("platforms", "imageformats", "styles", "iconengines", "
     Copy-ExistingDirectory (Join-Path $qtPlugins $pluginDir) (Join-Path $TargetDir $pluginDir)
 }
 
-foreach ($qmlImport in @("Qt", "QtCharts", "QtGraphicalEffects", "QtLocation", "QtPositioning", "QtQml", "QtQuick", "QtQuick.2")) {
+foreach ($qmlImport in @("Qt", "QtCharts", "QtGraphicalEffects", "QtLocation", "QtMultimedia", "QtPositioning", "QtQml", "QtQuick", "QtQuick.2")) {
     Copy-ExistingDirectory (Join-Path $qtQml $qmlImport) (Join-Path (Join-Path $TargetDir "qml") $qmlImport)
 }
 

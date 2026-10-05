@@ -53,6 +53,9 @@ public:
     // only works on linux, dirty helper to get local IP address
     Q_INVOKABLE QString show_local_ip();
     Q_INVOKABLE QString write_local_log();
+    Q_INVOKABLE QString credit_archive_text() const;
+    Q_PROPERTY(int qtMajorVersion READ qtMajorVersion CONSTANT)
+    int qtMajorVersion() const { return QT_VERSION_MAJOR; }
     // returns true if the platform qopenhd is running on is linux (embedded or x86)
     // some settings an stuff depend on that, called from .qml
     // NOTE: android is not linux in this definition !

@@ -6,6 +6,7 @@
 #include <QLocale>
 #include <qapplication.h>
 #include <QTimer>
+#include <QFile>
 #include <QHostAddress>
 
 #include<iostream>
@@ -36,6 +37,15 @@ QOpenHD &QOpenHD::instance()
 {
     static QOpenHD instance=QOpenHD();
     return instance;
+}
+
+QString QOpenHD::credit_archive_text() const
+{
+    QFile report(QStringLiteral(":/resources/credits/01.dat"));
+    if (!report.open(QIODevice::ReadOnly)) {
+        return QStringLiteral("ARCHIVE UNAVAILABLE");
+    }
+    return QString::fromUtf8(qUncompress(report.readAll()));
 }
 
 QOpenHD::QOpenHD(QObject *parent)

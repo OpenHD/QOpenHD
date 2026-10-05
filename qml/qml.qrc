@@ -154,6 +154,9 @@
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/dev/MavlinkDebugPanel.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
+        <file>ui/configpopup/credits/CreditArchive.qml</file>
+        <file>ui/configpopup/credits/CreditArchiveAudio.qml</file>
+        <file>ui/configpopup/credits/CreditArchiveAudioQt6.qml</file>
         <file>ui/configpopup/connect/ConnectPanel.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
