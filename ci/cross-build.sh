@@ -59,8 +59,8 @@ if [[ ! -f "$sysroot/.complete" ]]; then
       gpg --batch --yes --dearmor -o "$keys/$key.gpg" "$keys/$key.asc"
     done
     cat > "$sources" <<EOF
-deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi
-deb http://archive.raspberrypi.org/debian/ bullseye main
+deb https://archive.raspbian.org/raspbian/ bullseye main contrib non-free rpi
+deb https://archive.raspberrypi.org/debian/ bullseye main
 deb https://dl.cloudsmith.io/public/openhd/release/deb/raspbian bullseye main
 EOF
   else
@@ -76,11 +76,19 @@ deb https://security.debian.org/debian-security bookworm-security main
 EOF
   fi
   deps="$qt_deps,libc6-dev,libavcodec-dev,libavformat-dev,libavutil-dev,libgstreamer1.0-dev,libgstreamer-plugins-base1.0-dev,libdrm-dev,libgles-dev,libegl-dev"
+  # APT's sandbox user cannot traverse the runner's private workspace. Put
+  # the public signing keys in an accessible file, without weakening checks.
+  apt_keyring=$(mktemp /tmp/qopenhd-archive-keys.XXXXXX.gpg)
+  cat "$keys/"*.gpg > "$apt_keyring"
+  chmod 644 "$apt_keyring"
+  trap 'rm -f "$apt_keyring"' EXIT
   # extract performs package extraction only, without running foreign maintainer scripts.
   sudo mmdebstrap --mode=root --architectures="$arch" --variant=extract \
-    --keyring="$keys" \
+    --keyring="$apt_keyring" \
     --aptopt='Acquire::ForceIPv4 "true"' --include="$deps" \
     "$release" "$work/sysroot-$target.tar" "$sources"
+  rm -f "$apt_keyring"
+  trap - EXIT
   mkdir -p "$sysroot"
   sudo tar --exclude=./dev -xf "$work/sysroot-$target.tar" -C "$sysroot"
   sudo chown -R "$(id -u):$(id -g)" "$sysroot"
