@@ -20,7 +20,7 @@ case "$target" in
     bootlin_arch=aarch64; compiler=aarch64-buildroot-linux-gnu
     distro=debian; [[ "$target" == pi-* ]] && distro=raspbian
     qt_prefix=/usr
-    qt_deps=qtbase5-dev,qtbase5-private-dev,qtdeclarative5-dev,qttools5-dev,qttools5-dev-tools,qtmultimedia5-dev,qtpositioning5-dev,libqt5charts5-dev,libqt5texttospeech5-dev,libqt5opengl5-dev
+    qt_deps=qtbase5-dev,qtbase5-private-dev,qtdeclarative5-dev,qttools5-dev,qttools5-dev-tools,qtmultimedia5-dev,qtpositioning5-dev,libqt5charts5-dev,libqt5texttospeech5-dev,libqt5opengl5-dev,libstdc++-12-dev
     ;;
   *) echo "Unsupported cross target: $target" >&2; exit 2 ;;
 esac
@@ -185,6 +185,10 @@ else
   cat >> "$spec/qmake.conf" <<'EOF'
 include(../common/linux_device_post.conf)
 EOF
+  # Debian's Qt/FFmpeg dependencies require GCC 12 runtime symbols. Compile
+  # with cross GCC, but resolve libstdc++ from the target, not Bootlin's GCC 10.
+  test -f "$sysroot/usr/lib/gcc/$triplet/12/libstdc++.so"
+  echo "QMAKE_LFLAGS += -L$sysroot/usr/lib/gcc/$triplet/12" >> "$spec/qmake.conf"
 fi
 cat >> "$spec/qmake.conf" <<'EOF'
 EGLFS_DEVICE_INTEGRATION = eglfs_kms
