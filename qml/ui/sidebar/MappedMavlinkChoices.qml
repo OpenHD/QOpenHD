@@ -180,9 +180,18 @@ Item {
     }
     ListModel{
         id: elements_model_channel_width
-        ListElement {value: 10; verbose:"10Mhz"}
-        ListElement {value: 20; verbose:"20Mhz"}
-        ListElement {value: 40; verbose:"40Mhz\n(HIGH BW)"}
+    }
+    function rebuildChannelWidths() {
+        elements_model_channel_width.clear();
+        if (_wbLinkSettingsHelper.supports_10mhz)
+            elements_model_channel_width.append({value: 10, verbose: "10Mhz"});
+        elements_model_channel_width.append({value: 20, verbose: "20Mhz"});
+        elements_model_channel_width.append({value: 40, verbose: "40Mhz\n(HIGH BW)"});
+    }
+    Component.onCompleted: rebuildChannelWidths()
+    Connections {
+        target: _wbLinkSettingsHelper
+        function onSupports_10mhzChanged() { rebuildChannelWidths(); }
     }
     ListModel { id: supported_frequencies_model }
 

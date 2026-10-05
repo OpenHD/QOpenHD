@@ -89,7 +89,7 @@ PopupBigGeneric {
     function rebuildBandwidthModel() {
         rebuildingBandwidth = true
         bandwidthModel.clear()
-        if (!settings.scan_passive_nexmon) {
+        if (!settings.scan_passive_nexmon && _wbLinkSettingsHelper.ground_supports_10mhz) {
             bandwidthModel.append({title: qsTr("10 MHz"), value: 10})
         }
         bandwidthModel.append({title: qsTr("20 MHz"), value: 20})
@@ -113,6 +113,13 @@ PopupBigGeneric {
     Component.onCompleted: {
         rebuildBandwidthModel()
         syncBandwidthSelection()
+    }
+    Connections {
+        target: _wbLinkSettingsHelper
+        function onGround_supports_10mhzChanged() {
+            rebuildBandwidthModel()
+            syncBandwidthSelection()
+        }
     }
 
     Connections {

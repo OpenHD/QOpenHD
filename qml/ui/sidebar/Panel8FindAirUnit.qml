@@ -37,7 +37,7 @@ SideBarBasePanel{
 
         function rebuildBandwidthModel(){
             scanBandwidthModel.clear();
-            if(!settings.scan_passive_nexmon){
+            if(!settings.scan_passive_nexmon && _wbLinkSettingsHelper.ground_supports_10mhz){
                 scanBandwidthModel.append({value: 10, verbose: "10 MHz"});
             }
             scanBandwidthModel.append({value: 20, verbose: "20 MHz"});
@@ -200,6 +200,13 @@ SideBarBasePanel{
         Connections {
             target: settings
             function onScan_passive_nexmonChanged() {
+                panelColumn.rebuildBandwidthModel();
+                panelColumn.syncBandwidthIndex();
+            }
+        }
+        Connections {
+            target: _wbLinkSettingsHelper
+            function onGround_supports_10mhzChanged() {
                 panelColumn.rebuildBandwidthModel();
                 panelColumn.syncBandwidthIndex();
             }

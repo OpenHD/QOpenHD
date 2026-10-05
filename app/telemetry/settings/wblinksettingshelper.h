@@ -27,6 +27,8 @@ public:
     explicit WBLinkSettingsHelper(QObject *parent = nullptr);
 
     static WBLinkSettingsHelper& instance();
+    L_RO_PROP(bool,supports_10mhz,set_supports_10mhz,false)
+    L_RO_PROP(bool,ground_supports_10mhz,set_ground_supports_10mhz,false)
 
     // FLOW: Invalid until first message announcing channel frequency and width is received from the ground
     // When we receive this type of message from the ground, we start requesting the supported frequencies from the ground unit
@@ -98,6 +100,7 @@ public:
         return change_param_air_only_blocking(PARAM_ID_WB_FREQ,value);
     }
     Q_INVOKABLE bool change_param_ground_only_channel_width(int value){
+        if(value == 10 && !m_supports_10mhz) return false;
         return change_param_ground_only_blocking(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
     Q_INVOKABLE bool change_param_ground_only_mcs(int value){

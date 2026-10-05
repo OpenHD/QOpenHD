@@ -324,6 +324,7 @@ BaseWidget {
             spacing: 20
             Button{
                 text: qsTr("10 MHz")
+                enabled: _wbLinkSettingsHelper.supports_10mhz
                 onClicked: set_channel_width_async(10)
                 highlighted: m_curr_channel_width==10
             }

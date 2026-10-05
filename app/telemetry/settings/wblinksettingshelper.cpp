@@ -2,6 +2,8 @@
 #include "../action/impl/xparam.h"
 
 #include "../models/aohdsystem.h"
+#include "../models/wificard.h"
+#include "../models/openhd_core/wifi_card_type.h"
 
 #include "../logging/hudlogmessagesmodel.h"
 #include <qsettings.h>
@@ -23,6 +25,22 @@ static void tmp_log_result(bool enable,const std::string message){
 WBLinkSettingsHelper::WBLinkSettingsHelper(QObject *parent)
     : QObject{parent}
 {
+    auto timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this]() {
+        auto is_eu = [](const WiFiCard& card) {
+            return card.card_type() == static_cast<int>(openhd::WiFiCardType::OPENHD_RTL_88X2EU) ||
+                   card.card_type() == static_cast<int>(openhd::WiFiCardType::DEVOURER_RTL8822E);
+        };
+        bool ground_eu = WiFiCard::instance_gnd(0).alive() && is_eu(WiFiCard::instance_gnd(0));
+        for(int i = 1; i < WiFiCard::N_CARDS; ++i) {
+            const auto& card = WiFiCard::instance_gnd(i);
+            if(card.alive() && !is_eu(card)) ground_eu = false;
+        }
+        set_ground_supports_10mhz(ground_eu);
+        set_supports_10mhz(ground_eu && AOHDSystem::instanceAir().is_alive() &&
+                          is_eu(WiFiCard::instance_air()));
+    });
+    timer->start(1000);
 }
 
 WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
@@ -381,6 +399,10 @@ void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::s
 
 void WBLinkSettingsHelper::change_param_air_channel_width_async(int value, bool log_result)
 {
+    if(value == 10 && !m_supports_10mhz){
+        tmp_log_result(true,"10 MHz requires 8812EU radios on Air and Ground");
+        return;
+    }
     if(!AOHDSystem::instanceAir().is_alive()){
         tmp_log_result(true,"Cannot change BW, AIR not alive");
         return;
