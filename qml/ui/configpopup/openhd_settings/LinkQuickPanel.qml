@@ -131,8 +131,14 @@ Rectangle {
         }
         return null
     }
-    function ethernetActive() { return settings.dev_simulate_ethernet_link || hasReportedUsage(2) ||
-                                       _ohdSystemGroundSettings.param_int_exists("ETH_LINK_EN") }
+    function ethernetActive() {
+        if (settings.dev_simulate_ethernet_link) return true
+        if (_ohdSystemGroundSettings.param_int_exists("ETH_LINK_EN"))
+            return _ohdSystemGroundSettings.get_cached_int("ETH_LINK_EN") === 1
+        // Older units report enabled transports through usage/primary-link telemetry.
+        return hasReportedUsage(2) || _ohdSystemGround.primary_link_type === 2 ||
+               _ohdSystemAir.primary_link_type === 2
+    }
     function uartActive() { return settings.dev_simulate_uart_link || hasReportedUsage(3) }
     function artosynActive() {
         return hasReportedUsage(5) || _ohdSystemGround.artosyn_link_detected || _ohdSystemAir.artosyn_link_detected ||
