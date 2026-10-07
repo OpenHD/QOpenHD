@@ -24,7 +24,12 @@ Item {
             var vehicle = AdsbVehicleManager.adsbVehicles.get(i)
             if (!vehicle || !isFinite(vehicle.lat) || !isFinite(vehicle.lon)) continue
             var angle = relativeAngle(bearing(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon, vehicle.lat, vehicle.lon))
-            if (Math.abs(angle) <= 70) result.push(vehicle)
+            // Delegates can outlive the manager's aircraft QObject. Keep
+            // values in this array, so removal cannot leave a raw model pointer.
+            if (Math.abs(angle) <= 70) result.push({
+                icaoAddress: vehicle.icaoAddress, callsign: vehicle.callsign,
+                lat: vehicle.lat, lon: vehicle.lon, altitude: vehicle.altitude,
+                distance: vehicle.distance, alert: vehicle.alert})
         }
         result.sort(function(a, b) { return a.distance - b.distance })
         aircraft = result.slice(0, 8)

@@ -252,6 +252,9 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true
+            visible: settings.dev_show_advanced_button && root.settingsRevision >= 0 &&
+                     (_ohdSystemAirSettingsModel.param_int_exists("ESP_ANALYSE") ||
+                      _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE"))
             DynamicLinkSetting {
                 id: espAnalyseAir
                 Layout.fillWidth: true

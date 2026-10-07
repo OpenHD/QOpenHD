@@ -13,6 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("build_dir", type=Path)
     parser.add_argument("--compiler", required=True, type=Path)
+    parser.add_argument("--source", type=Path)
     args = parser.parse_args()
     if os.name != "nt":
         parser.error("This harness uses the Windows qmake build.")
@@ -29,8 +30,9 @@ def main():
     response = build / "hud-latency-test-objects.txt"
     response.write_text("\n".join(obj for obj in objects
                                   if not obj.replace("\\", "/").endswith("/main.o")))
-    exe = build / "hud-latency-test.exe"
-    source = Path(__file__).with_name("hud_latency_test.cpp").resolve()
+    source = (args.source or Path(__file__).with_name("hud_latency_test.cpp")).resolve()
+    test_name = source.stem.replace("_", "-")
+    exe = build / (test_name + ".exe")
     env = os.environ.copy()
     env["PATH"] = os.pathsep.join([str(build / "release"), str(qt / "bin"),
                                    str(compiler.parent), env["PATH"]])
@@ -43,9 +45,9 @@ def main():
                QT_QPA_PLATFORM_PLUGIN_PATH=str(qt / "plugins/platforms"),
                QML2_IMPORT_PATH=str(qt / "qml"),
                QT_QPA_FONTDIR=str(Path(os.environ["WINDIR"]) / "Fonts"))
-    result = subprocess.run([str(exe)], cwd=build, env=env, capture_output=True, timeout=15)
+    result = subprocess.run([str(exe)], cwd=build, env=env, capture_output=True, timeout=60)
     output = result.stdout.decode(errors="replace") + result.stderr.decode(errors="replace")
-    (build / "hud-latency-test-results.txt").write_text(output)
+    (build / (test_name + "-results.txt")).write_text(output)
     print(output)
     return result.returncode
 

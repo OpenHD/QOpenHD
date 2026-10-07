@@ -162,7 +162,15 @@ BaseWidget {
         for (var i = 0; i < AdsbVehicleManager.adsbVehicles.count; ++i) {
             var vehicle = AdsbVehicleManager.adsbVehicles.get(i)
             if (!vehicle) continue
-            aircraft.push(vehicle)
+            // ListView may incubate delegates after the manager removes a
+            // vehicle. Never keep QObject pointers in a JavaScript list model:
+            // Qt 5 stores their raw pointers in delegate QVariant modelData.
+            aircraft.push({icaoAddress: vehicle.icaoAddress,
+                           callsign: vehicle.callsign, lat: vehicle.lat, lon: vehicle.lon,
+                           altitude: vehicle.altitude, velocity: vehicle.velocity,
+                           heading: vehicle.heading, alert: vehicle.alert,
+                           lastContact: vehicle.lastContact, verticalVel: vehicle.verticalVel,
+                           distance: vehicle.distance, rssi: vehicle.rssi})
             var level = threatLevel(vehicle)
             if (level === 2) ++warnings
             else if (level === 1) ++cautions
@@ -369,6 +377,26 @@ BaseWidget {
             border.width: 1
             radius: 9
 
+            Rectangle {
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.margins: 14
+                width: 32; height: 32; radius: 5
+                color: closeArea.pressed ? "#314253" : "#1c2732"
+                Text {
+                    anchors.centerIn: parent
+                    text: "\uf00d"
+                    color: "white"
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 14
+                }
+                MouseArea {
+                    id: closeArea
+                    anchors.fill: parent
+                    onClicked: root.widgetAction.close()
+                }
+            }
+
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 14
@@ -376,6 +404,8 @@ BaseWidget {
 
                 RowLayout {
                     Layout.fillWidth: true
+                    Layout.fillHeight: false
+                    Layout.rightMargin: 41
                     spacing: 9
                     Text {
                         text: "\uf072"
@@ -427,22 +457,7 @@ BaseWidget {
                             }
                         }
                     }
-                    Rectangle {
-                        width: 32; height: 32; radius: 5
-                        color: closeArea.pressed ? "#314253" : "#1c2732"
-                        Text {
-                            anchors.centerIn: parent
-                            text: "\uf00d"
-                            color: "white"
-                            font.family: "Font Awesome 5 Free"
-                            font.pixelSize: 14
-                        }
-                        MouseArea {
-                            id: closeArea
-                            anchors.fill: parent
-                            onClicked: root.widgetAction.close()
-                        }
-                    }
+
                 }
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: root.lineColor }
