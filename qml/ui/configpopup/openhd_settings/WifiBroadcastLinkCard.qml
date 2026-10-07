@@ -173,11 +173,15 @@ Rectangle {
                 model: [
                     {label: qsTr("LOSS"), value: root.simulated ? "0%" : (_ohdSystemGround.curr_rx_packet_loss_perc < 0 ? qsTr("N/A") : _ohdSystemGround.curr_rx_packet_loss_perc + "%"), bad: !root.simulated && _ohdSystemGround.curr_rx_packet_loss_perc > 5},
                     {label: qsTr("POLLUTION"), value: root.simulated ? "3 pps" : (_ohdSystemGround.wb_link_curr_foreign_pps < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_curr_foreign_pps + " pps"), bad: !root.simulated && _ohdSystemGround.wb_link_curr_foreign_pps > 20},
-                    {label: qsTr("TX ERRORS"), value: root.simulated ? "0" : String(_ohdSystemAir.count_tx_inj_error_hint), bad: !root.simulated && _ohdSystemAir.count_tx_inj_error_hint > 0},
+                    {label: qsTr("TX DROPS"), value: root.simulated ? "0" : String(_ohdSystemAir.count_tx_dropped_packets), bad: !root.simulated && _ohdSystemAir.count_tx_dropped_packets > 0,
+                     details: qsTr("Packets that could not be transmitted. Slow injections (at least 1 ms): %1. Counts accumulate during the radio session.").arg(root.simulated ? 0 : _ohdSystemAir.count_tx_inj_error_hint)},
                     {label: qsTr("LINK LOAD"), value: root.simulated ? "42%" : (_ohdSystemGround.wb_link_pollution_perc < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_pollution_perc + "%"), bad: !root.simulated && _ohdSystemGround.wb_link_pollution_perc > 75}
                 ]
                 delegate: Rectangle {
                     Layout.fillWidth: true; Layout.fillHeight: true; color: settings_form.panelBackground; border.color: settings_form.lineColor
+                    ToolTip.visible: metricHover.containsMouse && !!modelData.details
+                    ToolTip.text: modelData.details || ""
+                    MouseArea { id: metricHover; anchors.fill: parent; hoverEnabled: true; acceptedButtons: Qt.NoButton }
                     Column { anchors.centerIn: parent; spacing: 1
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 7; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: modelData.bad ? settings_form.errorColor : settings_form.primaryText; font.pixelSize: 10; font.bold: true }

@@ -52,6 +52,11 @@ QOpenHD::QOpenHD(QObject *parent)
     : QObject{parent}
 {
     connect(this, &QOpenHD::signal_toast_add, this, &QOpenHD::do_not_call_toast_add);
+    connect(&m_ping, &AsyncPing::finished, this, &QOpenHD::pingFinished);
+    connect(&m_commands, &AsyncCommandRunner::finished, this, &QOpenHD::systemActionFinished);
+    connect(&m_commands, &AsyncCommandRunner::finished, this, [this](QString id, QString result, bool success) {
+        if (!success || id == "service" || id == "dhcp") show_toast(result, !success);
+    });
 
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
@@ -172,15 +177,14 @@ void QOpenHD::restart_local_oenhd_service()
 {
 #ifdef __linux__
 
-    OHDUtil::run_command("sudo systemctl stop openhd",{""},true);
-    OHDUtil::run_command("sudo systemctl start openhd",{""},true);
+    m_commands.run("service", "sudo", {"systemctl", "restart", "openhd"}, tr("OpenHD service restarted"));
 #endif
 }
 
 void QOpenHD::run_dhclient_eth0()
 {
 #ifdef __linux__
-    OHDUtil::run_command("sudo dhclient eth0",{""},true);
+    m_commands.run("dhcp", "sudo", {"dhclient", "eth0"}, tr("Ethernet address request completed"));
 #endif
 }
 
@@ -261,11 +265,11 @@ bool QOpenHD::reset_settings()
 QString QOpenHD::show_local_ip()
 {
 #ifdef __linux__
-    auto res=OHDUtil::run_command_out("hostname -I");
-    return QString(res->c_str());
+    m_commands.run("local_ip", "hostname", {"-I"});
+    return tr("Reading local IP…");
 #elif defined(__macos__)
-    auto res=OHDUtil::run_command_out("ifconfig -l | xargs -n1 ipconfig getifaddr");
-    return QString(res->c_str());
+    m_commands.run("local_ip", "/bin/sh", {"-c", "ifconfig -l | xargs -n1 ipconfig getifaddr"});
+    return tr("Reading local IP…");
 #else
     return QString("Only works on linux");
 #endif
@@ -274,8 +278,8 @@ QString QOpenHD::show_local_ip()
 QString QOpenHD::write_local_log()
 {
 #ifdef __linux__
-    auto res=OHDUtil::run_command_out("journalctl > /boot/openhd/openhd.log");
-    return QString("Groundstation Log written !");
+    m_commands.run("ground_log", "journalctl", {}, tr("Groundstation log written"), "/boot/openhd/openhd.log");
+    return tr("Writing Ground log…");
 #else
     return QString("Only works on linux");
 #endif
@@ -336,17 +340,9 @@ void QOpenHD::android_open_tethering_settings()
 void QOpenHD::sysctl_openhd(int task)
 {
 #ifdef __linux__
-    if(task==0){
-       OHDUtil::run_command("systemctl start openhd",{""},true);
-    }else if(task==1){
-       OHDUtil::run_command("systemctl stop openhd",{""},true);
-    }else if(task==2){
-       OHDUtil::run_command("systemctl enable openhd",{""},true);
-    }else if(task==3){
-       OHDUtil::run_command("systemctl disable openhd",{""},true);
-    }else{
-       qDebug()<<"Unknown task";
-    }
+    const QStringList actions{"start", "stop", "enable", "disable"};
+    if (task < 0 || task >= actions.size()) return;
+    m_commands.run("service", "systemctl", {actions.at(task), "openhd"}, tr("OpenHD service action completed"));
     return;
 #endif
     // not supported
@@ -357,33 +353,6 @@ bool QOpenHD::is_valid_ip(QString ip)
     QHostAddress addr;
     bool valid=addr.setAddress(ip);
     return valid;
-}
-
-bool QOpenHD::ping_ip(QString ip)
-{
-#if defined(__linux__) || defined(__macos__) || defined(_WIN32)
-    if(!is_valid_ip(ip)){
-        return false;
-    }
-    QProcess ping_process;
-#if defined(_WIN32)
-    QStringList arguments = {"-n", "1", "-w", "1000", ip};
-#else
-    // Use a short timeout to keep the scan responsive
-    QStringList arguments = {"-c", "1", "-W", "1", ip};
-#endif
-    ping_process.start("ping", arguments);
-    // Keep the call short so the UI remains responsive while scanning a range
-    if(!ping_process.waitForFinished(400)){
-        ping_process.kill();
-        ping_process.waitForFinished();
-        return false;
-    }
-    return ping_process.exitStatus() == QProcess::NormalExit && ping_process.exitCode() == 0;
-#else
-    Q_UNUSED(ip);
-    return false;
-#endif
 }
 
 bool QOpenHD::is_platform_rpi()

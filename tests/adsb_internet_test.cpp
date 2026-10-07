@@ -5,6 +5,7 @@
 #include <QSslSocket>
 #include <QTemporaryDir>
 #include <QtTest>
+#include <QAbstractItemModelTester>
 #include <cstring>
 
 class JsonReply : public QNetworkReply {
@@ -31,6 +32,83 @@ private:
 class InternetTest : public QObject {
     Q_OBJECT
 private slots:
+    void workerLifecycle() {
+        QSettings settings;
+        settings.setValue("adsb_enable", false);
+        settings.sync();
+        for (int i = 0; i < 200; ++i) {
+            ADSBInternet internet;
+            ADSBSdr sdr;
+            QVERIFY(!internet.isRunning());
+            QVERIFY(!sdr.isRunning());
+            internet.start();
+            sdr.start();
+            sdr.setGroundIP("127.0.0.2");
+            QVERIFY(QMetaObject::invokeMethod(&internet, "requestData", Qt::BlockingQueuedConnection));
+            QVERIFY(QMetaObject::invokeMethod(&sdr, "requestData", Qt::BlockingQueuedConnection));
+            // Destruct while their timers/event loops are still active.
+        }
+        ADSBVehicleManager manager;
+        manager.setGroundIP("127.0.0.1"); // QML may call before startup.
+        manager.onStarted();
+        manager.onStarted();
+    }
+    void mavlinkTrafficChurn() {
+        QSettings settings;
+        settings.setValue("adsb_enable", true);
+        settings.setValue("adsb_source", 1);
+        settings.sync();
+        ADSBVehicleManager manager;
+        QAbstractItemModelTester tester(manager.adsbVehicles(), QAbstractItemModelTester::FailureReportingMode::QtTest);
+        for (int cycle = 0; cycle < 20; ++cycle) {
+            QThread* receiver = QThread::create([&] {
+                for (int i = 1; i <= 250; ++i) {
+                    mavlink_adsb_vehicle_t vehicle{};
+                    vehicle.ICAO_address = uint32_t(i);
+                    vehicle.flags = ADSB_FLAGS_VALID_COORDS | ADSB_FLAGS_VALID_CALLSIGN;
+                    vehicle.lat = 512500000;
+                    vehicle.lon = 71500000;
+                    std::memcpy(vehicle.callsign, "TRAFFIC", 7);
+                    manager.processMavlinkVehicle(vehicle);
+                    manager.processMavlinkVehicle(vehicle);
+                }
+            });
+            receiver->start();
+            QVERIFY(receiver->wait(5000));
+            delete receiver;
+            QTRY_COMPARE(manager.adsbVehicles()->count(), 250);
+            auto aircraft = qobject_cast<ADSBVehicle*>(manager.adsbVehicles()->get(0));
+            QCOMPARE(aircraft->thread(), manager.thread());
+            QVERIFY(qIsNaN(aircraft->property("distance").toDouble()));
+            manager.adsbClearModel();
+            QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+        }
+        manager.setReferencePosition(51.25, 7.15);
+        mavlink_adsb_vehicle_t vehicle{};
+        vehicle.ICAO_address = 1;
+        vehicle.flags = ADSB_FLAGS_VALID_COORDS;
+        vehicle.lat = 512500000;
+        vehicle.lon = 71500000;
+        manager.processMavlinkVehicle(vehicle);
+        QCOMPARE(manager.adsbVehicles()->get(0)->property("distance").toDouble(), 0.0);
+    }
+    void modelInsertions() {
+        QmlObjectListModel model;
+        QAbstractItemModelTester tester(&model, QAbstractItemModelTester::FailureReportingMode::QtTest);
+        QObject first, second, third;
+        int oldCount = -1;
+        connect(&model, &QAbstractItemModel::rowsAboutToBeInserted, this,
+                [&] { oldCount = model.count(); });
+        model.append(&first);
+        QCOMPARE(oldCount, 0);
+        model.insert(0, QList<QObject*>{&second, &third});
+        QCOMPARE(oldCount, 1);
+        QCOMPARE(model.get(0), &second);
+        QCOMPARE(model.get(1), &third);
+        QCOMPARE(model.get(2), &first);
+        model.removeAt(1);
+        model.clear();
+    }
     void resetThenReceiveSameAircraft() {
         ADSBVehicleManager manager;
         ADSBVehicle::VehicleInfo_t info{};
@@ -56,6 +134,7 @@ private slots:
         settings.setValue("adsb_radius", 50000);
         settings.sync();
         ADSBInternet worker;
+        worker.start();
         QSignalSpy status(&worker, &ADSBapi::sourceStatusChanged);
         QSignalSpy traffic(&worker, &ADSBapi::adsbVehicleUpdate);
         auto request = [&] {
@@ -104,6 +183,7 @@ static int liveCheck(QCoreApplication& app) {
     settings.setValue("adsb_show_unknown_or_zero_alt", true);
     settings.sync();
     ADSBInternet worker;
+    worker.start();
     QNetworkAccessManager network;
     int count = 0;
     QObject::connect(&worker, &ADSBapi::adsbVehicleUpdate, &app, [&](const ADSBVehicle::VehicleInfo_t&) { ++count; });

@@ -14,6 +14,13 @@ BaseWidget {
 
     visible: settings.show_ground_battery && settings.show_widgets && _ohdSystemGround.ina219_current_milliamps !== -1
 
+    // Follow telemetry directly; do not poll or persist a live value in settings.
+    readonly property bool percentageReported: _ohdSystemGround.ina219_current_milliamps === 1337
+                                               || _ohdSystemGround.ina219_current_milliamps === 1338
+    readonly property int batteryPercentage: percentageReported
+                                             ? _ohdSystemGround.ina219_voltage_millivolt
+                                             : calculateBatteryPercentage(_ohdSystemGround.ina219_voltage_millivolt)
+
     widgetIdentifier: "ground_battery_widget"
     bw_verbose_name: qsTr("GROUND BATTERY")
 
@@ -237,7 +244,7 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: settings.ground_voltage_in_percent + "%"
+            text: groundPowerWidget.batteryPercentage + "%"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -250,34 +257,11 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
 
-            Timer {
-                interval: 1000 // Interval of 1000 milliseconds (1 second)
-                running: true // Start the timer immediately
-                repeat: true // Repeat the timer indefinitely
-
-                onTriggered: {
-                    var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
-                    if (_ohdSystemGround.ina219_current_milliamps===1338) {
-                        var percentage = _ohdSystemGround.ina219_voltage_millivolt;
-                        battery_volt_text.visible= false;
-                        battery_amp_text.visible=false;
-                    }
-                    else if (_ohdSystemGround.ina219_current_milliamps===1337) {
-                        var percentage = _ohdSystemGround.ina219_voltage_millivolt;
-                        battery_volt_text.visible= false;
-                        battery_amp_text.visible= false;
-                    }
-                    else {
-                        var percentage = calculateBatteryPercentage(currentVoltage);
-                    }
-                    settings.ground_voltage_in_percent = percentage;
-                }
-            }
         }
 
         Text {
             id: battery_amp_text
-            visible: true
+            visible: !groundPowerWidget.percentageReported
             y: 0
             text: _ohdSystemGround.ina219_current_milliamps + "mA"
             color: settings.color_text
@@ -296,7 +280,7 @@ BaseWidget {
 
         Text {
             id: battery_volt_text
-            visible: true
+            visible: !groundPowerWidget.percentageReported
             text: {
                 if (settings.ground_battery_show_single_cell) {
                     return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells / 1000).toFixed(2) + "mVpC";
@@ -325,14 +309,14 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = settings.ground_voltage_in_percent;
+                var percent = groundPowerWidget.batteryPercentage;
 
                 // 20% warning, 15% critical
                 return percent < 50 ? (percent < 20 ? "#ff0000" : "#fbfd15") : settings.color_shape;
             }
             opacity: bw_current_opacity
             text: {
-                var percent = settings.ground_voltage_in_percent;
+                var percent = groundPowerWidget.batteryPercentage;
 
                 // Define symbols based on battery level
                 var symbol;

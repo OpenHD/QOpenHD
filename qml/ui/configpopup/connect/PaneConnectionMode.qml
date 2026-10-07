@@ -22,21 +22,38 @@ Rectangle {
     Timer {
         id: scanTimer
         interval: 120
-        repeat: true
+        repeat: false
         onTriggered: {
+            if (!root.isScanning) return
             if (root.scanIndex > root.scanMax) {
                 root.isScanning = false
                 root.scanProgress = 100
-                stop()
                 return
             }
             var candidateIp = root.scanPrefix + "." + root.scanIndex
-            if (_qopenhd.ping_ip(candidateIp))
-                scanResultsModel.append({ ip: candidateIp })
-            root.scanProgress = Math.min(100, Math.round((root.scanIndex / root.scanMax) * 100))
-            root.scanIndex++
+            // A canceled process may still be exiting. Retry without blocking.
+            if (!_qopenhd.ping_ip_async(candidateIp)) restart()
         }
     }
+
+    Connections {
+        target: _qopenhd
+        function onPingFinished(ip, reachable) {
+            if (!root.isScanning || ip !== root.scanPrefix + "." + root.scanIndex) return
+            if (reachable) scanResultsModel.append({ ip: ip })
+            root.scanProgress = Math.min(100, Math.round((root.scanIndex / root.scanMax) * 100))
+            root.scanIndex++
+            scanTimer.restart()
+        }
+    }
+
+    function stopScan() {
+        scanTimer.stop()
+        _qopenhd.cancel_ping()
+        isScanning = false
+    }
+    onVisibleChanged: if (!visible) stopScan()
+    Component.onDestruction: stopScan()
 
     function derivePrefix() {
         var parts = settings.qopenhd_mavlink_connection_manual_tcp_ip.split(".")
@@ -58,8 +75,7 @@ Rectangle {
             settings.qopenhd_mavlink_connection_mode = mode
         }
         if (mode !== 2 && isScanning) {
-            scanTimer.stop()
-            isScanning = false
+            stopScan()
             scanProgress = 0
         }
     }

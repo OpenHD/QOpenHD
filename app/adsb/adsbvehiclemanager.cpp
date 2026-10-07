@@ -48,16 +48,20 @@ ADSBVehicleManager::~ADSBVehicleManager()
     if (_internetLink) {
         _internetLink->quit();
         _internetLink->wait();
+        delete _internetLink;
     }
 
     if (_sdrLink) {
         _sdrLink->quit();
         _sdrLink->wait();
+        delete _sdrLink;
     }
 }
 
 void ADSBVehicleManager::onStarted()
 {
+    if (_internetLink || _sdrLink) return;
+    qRegisterMetaType<ADSBVehicle::VehicleInfo_t>();
     // this is for adsb recievers on the FC
     //   MavlinkTelemetry* mavlinktelemetry = MavlinkTelemetry::instance();
     //   connect(mavlinktelemetry, &MavlinkTelemetry::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
@@ -82,6 +86,9 @@ void ADSBVehicleManager::onStarted()
     //   connect(this, &ADSBVehicleManager::mapLonChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
     connect(_sdrLink, &ADSBSdr::adsbClearModelRequest, this, &ADSBVehicleManager::adsbClearModel, Qt::QueuedConnection);
     connect(this, &ADSBVehicleManager::referencePositionChanged, _sdrLink, &ADSBapi::setReferencePosition, Qt::QueuedConnection);
+    // Start only after derived construction and all signal connections finish.
+    _internetLink->start();
+    _sdrLink->start();
 }
 
 void ADSBVehicleManager::setReferencePosition(double latitude, double longitude)
@@ -202,13 +209,17 @@ void ADSBVehicleManager::processMavlinkVehicle(const mavlink_adsb_vehicle_t& veh
         info.lon = vehicle.lon / 1e7;
         info.availableFlags |= ADSBVehicle::LocationAvailable;
 
-        const double latDistance = qDegreesToRadians(_api_lat - info.lat);
-        const double lonDistance = qDegreesToRadians(_api_lon - info.lon);
-        const double a = qSin(latDistance / 2) * qSin(latDistance / 2)
-                + qCos(qDegreesToRadians(_api_lat)) * qCos(qDegreesToRadians(info.lat))
-                * qSin(lonDistance / 2) * qSin(lonDistance / 2);
-        info.distance = 6371.0 * 2.0 * qAtan2(qSqrt(a), qSqrt(1.0 - a));
-        info.availableFlags |= ADSBVehicle::DistanceAvailable;
+        if (qIsFinite(_api_lat) && qIsFinite(_api_lon)
+                && qAbs(_api_lat) <= 90 && qAbs(_api_lon) <= 180
+                && qAbs(info.lat) <= 90 && qAbs(info.lon) <= 180) {
+            const double latDistance = qDegreesToRadians(_api_lat - info.lat);
+            const double lonDistance = qDegreesToRadians(_api_lon - info.lon);
+            const double a = qBound(0.0, qSin(latDistance / 2) * qSin(latDistance / 2)
+                    + qCos(qDegreesToRadians(_api_lat)) * qCos(qDegreesToRadians(info.lat))
+                    * qSin(lonDistance / 2) * qSin(lonDistance / 2), 1.0);
+            info.distance = 6371.0 * 2.0 * qAtan2(qSqrt(a), qSqrt(1.0 - a));
+            info.availableFlags |= ADSBVehicle::DistanceAvailable;
+        }
     }
     if (vehicle.flags & ADSB_FLAGS_VALID_ALTITUDE) {
         info.altitude = vehicle.altitude / 1000.0;
@@ -233,7 +244,7 @@ void ADSBVehicleManager::processMavlinkVehicle(const mavlink_adsb_vehicle_t& veh
     adsbVehicleUpdate(info);
 }
 
-void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distance)
+void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, double traffic_distance)
 {
     /*
      * Centralise traffic threat detection here. Once threat is detected it should be
@@ -260,7 +271,6 @@ ADSBapi::ADSBapi(int requestIntervalMs)
     , timer_interval(requestIntervalMs)
 {
     moveToThread(this);
-    start();
 }
 
 ADSBapi::~ADSBapi(void)
@@ -538,6 +548,15 @@ ADSBSdr::ADSBSdr()
 {
 }
 
+void ADSBSdr::setGroundIP(QString address)
+{
+    if (QThread::currentThread() != thread()) {
+        QMetaObject::invokeMethod(this, [this, address] { setGroundIP(address); }, Qt::QueuedConnection);
+        return;
+    }
+    _groundAddress = address;
+}
+
 void ADSBSdr::recordSuccessfulPoll()
 {
     _consecutiveFailedPolls = 0;
@@ -574,6 +593,7 @@ void ADSBSdr::requestData(void) {
     QUrl api_request = adsb_url;
     request.setUrl(api_request);
     request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
+    request.setTransferTimeout(1500);
 
     // qDebug() << "url=" << api_request;
     m_manager->get(request);

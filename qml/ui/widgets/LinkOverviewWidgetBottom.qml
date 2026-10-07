@@ -601,55 +601,24 @@ BaseWidget {
         return rssi + "%";
     }
 
-    widgetActionComponent: ScrollView {
-        contentHeight: actionColumn.implicitHeight
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
+    widgetActionComponent: Loader {
+        active: widgetAction.visible
+        asynchronous: true
+        sourceComponent: ScrollView {
+            contentHeight: actionColumn.implicitHeight
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            clip: true
 
-        ColumnLayout {
-            id: actionColumn
-            width: parent.width
-            spacing: 4
-
-            Item {
+            ColumnLayout {
+                id: actionColumn
                 width: parent.width
-                height: 24
-                Text {
-                    text: qsTr("Mode: %1").arg(format_flight_mode())
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 24
-                Text {
-                    text: qsTr("Time: %1").arg(format_nav_time())
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkMonoFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+                spacing: 4
 
-            Repeater {
-                model: 8
-                delegate: Item {
+                Item {
                     width: parent.width
                     height: 24
-                    property int slotIndex: index + 1
-                    property string slotSelection: get_slot_selection(slotIndex)
-                    visible: slotSelection !== "none"
                     Text {
-                        text: slot_label(slotSelection)
+                        text: qsTr("Mode: %1").arg(format_flight_mode())
                         color: "white"
                         height: parent.height
                         font.bold: true
@@ -658,68 +627,81 @@ BaseWidget {
                         anchors.left: parent.left
                         verticalAlignment: Text.AlignVCenter
                     }
+                }
+                Item {
+                    width: parent.width
+                    height: 24
                     Text {
-                        text: slot_text(slotSelection)
+                        text: qsTr("Time: %1").arg(format_nav_time())
                         color: "white"
                         height: parent.height
                         font.bold: true
                         font.family: linkMonoFont
                         font.pixelSize: detailPanelFontPixels
-                        anchors.right: parent.right
+                        anchors.left: parent.left
                         verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Repeater {
+                    model: 8
+                    delegate: Item {
+                        width: parent.width
+                        height: 24
+                        property int slotIndex: index + 1
+                        property string slotSelection: get_slot_selection(slotIndex)
+                        visible: slotSelection !== "none"
+                        Text {
+                            text: slot_label(slotSelection)
+                            color: "white"
+                            height: parent.height
+                            font.bold: true
+                            font.family: linkFont
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        Text {
+                            text: slot_text(slotSelection)
+                            color: "white"
+                            height: parent.height
+                            font.bold: true
+                            font.family: linkMonoFont
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.right: parent.right
+                            verticalAlignment: Text.AlignVCenter
+                        }
                     }
                 }
             }
         }
     }
 
-    widgetDetailComponent: ScrollView {
-        contentHeight: detailColumn.height
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
+    widgetDetailComponent: Loader {
+        active: widgetDetail.visible
+        asynchronous: true
+        sourceComponent: ScrollView {
+            contentHeight: detailColumn.height
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            clip: true
 
-        Column {
-            id: detailColumn
-            width: parent.width
-            spacing: 4
-
-            BaseWidgetDefaultUiControlElements {
-                id: idBaseWidgetDefaultUiControlElements
-                show_transparency: false
-                show_background_color: true
-                background_color_target: linkOverviewWidgetBottom
-            }
-
-            Item {
+            Column {
+                id: detailColumn
                 width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Hide N/A")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: hide_na
-                    onCheckedChanged: hide_na = checked
-                }
-            }
+                spacing: 4
 
-            Repeater {
-                model: slotLabels.length
-                delegate: Item {
+                BaseWidgetDefaultUiControlElements {
+                    id: idBaseWidgetDefaultUiControlElements
+                    show_transparency: false
+                    show_background_color: true
+                    background_color_target: linkOverviewWidgetBottom
+                }
+
+                Item {
                     width: parent.width
                     height: 32
-                    property int slotIndex: index + 1
                     Text {
-                        text: slotLabels[index]
+                        text: qsTr("Hide N/A")
                         color: "white"
                         height: parent.height
                         font.bold: true
@@ -727,22 +709,48 @@ BaseWidget {
                         anchors.left: parent.left
                         verticalAlignment: Text.AlignVCenter
                     }
-                    DarkComboBox {
-                        id: slotCombo
-                        model: slotOptions
-                        textRole: "label"
-                        currentIndex: slot_index_for_value(get_slot_selection(slotIndex))
-                        anchors.right: parent.right
+                    Switch {
+                        width: 32
+                        height: parent.height
                         anchors.rightMargin: 6
-                        anchors.top: parent.top
-                        anchors.topMargin: 4
-                        width: 160
-                        height: parent.height - 4
-                        onActivated: {
-                            if (index < 0 || index >= slotOptions.length) {
-                                return;
+                        anchors.right: parent.right
+                        checked: hide_na
+                        onCheckedChanged: hide_na = checked
+                    }
+                }
+
+                Repeater {
+                    model: slotLabels.length
+                    delegate: Item {
+                        width: parent.width
+                        height: 32
+                        property int slotIndex: index + 1
+                        Text {
+                            text: slotLabels[index]
+                            color: "white"
+                            height: parent.height
+                            font.bold: true
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        DarkComboBox {
+                            id: slotCombo
+                            model: slotOptions
+                            textRole: "label"
+                            currentIndex: slot_index_for_value(get_slot_selection(slotIndex))
+                            anchors.right: parent.right
+                            anchors.rightMargin: 6
+                            anchors.top: parent.top
+                            anchors.topMargin: 4
+                            width: 160
+                            height: parent.height - 4
+                            onActivated: {
+                                if (index < 0 || index >= slotOptions.length) {
+                                    return;
+                                }
+                                request_slot_selection(slotIndex, slotOptions[index].value);
                             }
-                            request_slot_selection(slotIndex, slotOptions[index].value);
                         }
                     }
                 }

@@ -39,9 +39,7 @@ QObject* QmlObjectListModel::get(int index)
 
 int QmlObjectListModel::rowCount(const QModelIndex& parent) const
 {
-    Q_UNUSED(parent);
-
-    return _objectList.count();
+    return parent.isValid() ? 0 : _objectList.count();
 }
 
 QVariant QmlObjectListModel::data(const QModelIndex &index, int role) const
@@ -84,30 +82,11 @@ bool QmlObjectListModel::setData(const QModelIndex& index, const QVariant& value
     return false;
 }
 
-bool QmlObjectListModel::insertRows(int position, int rows, const QModelIndex& parent)
-{
-    Q_UNUSED(parent);
-
-    if (position < 0 || position > _objectList.count() + 1) {
-        qWarning() << "Invalid position position:count" << position << _objectList.count();
-    }
-
-    beginInsertRows(QModelIndex(), position, position + rows - 1);
-    endInsertRows();
-
-    emit countChanged(count());
-
-    return true;
-}
-
 bool QmlObjectListModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
-    Q_UNUSED(parent);
-
-    if (position < 0 || position >= _objectList.count()) {
-        qWarning() << "Invalid position position:count" << position << _objectList.count();
-    } else if (position + rows > _objectList.count()) {
-        qWarning() << "Invalid rows position:rows:count" << position << rows << _objectList.count();
+    if (parent.isValid() || position < 0 || rows <= 0
+            || position > _objectList.count() || rows > _objectList.count() - position) {
+        return false;
     }
 
     beginRemoveRows(QModelIndex(), position, position + rows - 1);
@@ -151,6 +130,7 @@ void QmlObjectListModel::clear()
 
 QObject* QmlObjectListModel::removeAt(int i)
 {
+    if (i < 0 || i >= _objectList.count()) return nullptr;
     QObject* removedObject = _objectList[i];
     if(removedObject) {
         // Look for a dirtyChanged signal on the object
@@ -167,28 +147,12 @@ QObject* QmlObjectListModel::removeAt(int i)
 
 void QmlObjectListModel::insert(int i, QObject* object)
 {
-    if (i < 0 || i > _objectList.count()) {
-        qWarning() << "Invalid index index:count" << i << _objectList.count();
-    }
-    if(object) {
-        QQmlEngine::setObjectOwnership(object, QQmlEngine::CppOwnership);
-        // Look for a dirtyChanged signal on the object
-        if (object->metaObject()->indexOfSignal(QMetaObject::normalizedSignature("dirtyChanged(bool)")) != -1) {
-            if (!_skipDirtyFirstItem || i != 0) {
-                QObject::connect(object, SIGNAL(dirtyChanged(bool)), this, SLOT(_childDirtyChanged(bool)));
-            }
-        }
-    }
-    _objectList.insert(i, object);
-    insertRows(i, 1);
-    setDirty(true);
+    insert(i, QList<QObject*>{object});
 }
 
 void QmlObjectListModel::insert(int i, QList<QObject*> objects)
 {
-    if (i < 0 || i > _objectList.count()) {
-        qWarning() << "Invalid index index:count" << i << _objectList.count();
-    }
+    if (i < 0 || i > _objectList.count() || objects.isEmpty() || objects.contains(nullptr)) return;
 
     int j = i;
     for (QObject* object: objects) {
@@ -201,11 +165,14 @@ void QmlObjectListModel::insert(int i, QList<QObject*> objects)
             }
         }
         j++;
-
-        _objectList.insert(j, object);
     }
 
-    insertRows(i, objects.count());
+    // Views must see the old contents during rowsAboutToBeInserted.
+    beginInsertRows(QModelIndex(), i, i + objects.count() - 1);
+    j = i;
+    for (QObject* object : objects) _objectList.insert(j++, object);
+    endInsertRows();
+    emit countChanged(count());
 
     setDirty(true);
 }

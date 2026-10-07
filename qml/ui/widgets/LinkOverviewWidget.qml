@@ -266,21 +266,9 @@ BaseWidget {
             m_quality_smoothed = -1;
             return;
         }
-        if (m_quality_smoothed < 0) {
-            m_quality_smoothed = current;
-            return;
-        }
-        if (use_artosyn_quality) {
-            // The producer is already fast-down/slow-up; another EMA here
-            // would delay a safety-relevant falling indication.
-            m_quality_smoothed = current;
-            return;
-        }
-        if (current < m_quality_smoothed) {
-            m_quality_smoothed = (m_quality_smoothed * 0.70) + (current * 0.30);
-        } else {
-            m_quality_smoothed = (m_quality_smoothed * 0.90) + (current * 0.10);
-        }
+        // Publish the current link indication immediately. An EMA driven only
+        // by changes can stay stale indefinitely when the raw value stabilizes.
+        m_quality_smoothed = current;
     }
 
     function get_quality_display_text() {
@@ -449,427 +437,431 @@ BaseWidget {
             .arg(_ohdSystemAir.count_tx_dropped_packets);
     }
 
-    widgetActionComponent: ScrollView {
-        contentHeight: actionColumn.implicitHeight
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
-
-        Column {
-            id: actionColumn
-            width: parent.width
-            spacing: 2
-
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("SNR A1/A2 (Card %1): %2 / %3")
-                        .arg(get_best_card_index() + 1)
-                        .arg(snr_text(get_best_card().rx_snr_antenna1))
-                        .arg(snr_text(get_best_card().rx_snr_antenna2))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("SNR best: %1").arg(snr_text(m_best_snr_db))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: get_best_card().devourer_quality_valid
-                Text {
-                    text: qsTr("Health: %1 | RX paths: %2")
-                        .arg(get_best_card().devourer_link_health)
-                        .arg(devourer_paths_text(get_best_card()))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: get_best_card().devourer_quality_valid
-                Text {
-                    text: qsTr("EVM: %1 | Noise: %2")
-                        .arg(metric_db_text(get_best_card().rx_evm_db))
-                        .arg(metric_dbm_text(get_best_card().rx_noise_dbm))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: get_best_card().rx_paths_valid
-                Text {
-                    text: qsTr("RSSI A1/A2: %1 / %2")
-                        .arg(metric_dbm_text(get_best_card().curr_rx_rssi_dbm_antenna1))
-                        .arg(metric_dbm_text(get_best_card().curr_rx_rssi_dbm_antenna2))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: m_rx_temperature_text !== "N/A"
-                Text {
-                    text: qsTr("RX temperature: %1").arg(m_rx_temperature_text)
-                    color: "white"
-                    height: parent.height
-                    width: parent.width
-                    fontSizeMode: Text.Fit
-                    minimumPixelSize: 12
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: m_tx_temperature_text !== "N/A"
-                Text {
-                    text: qsTr("TX temperature: %1").arg(m_tx_temperature_text)
-                    color: "white"
-                    height: parent.height
-                    width: parent.width
-                    fontSizeMode: Text.Fit
-                    minimumPixelSize: 12
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: _wifi_card_air.devourer_quality_valid
-                Text {
-                    text: qsTr("AIR health: %1 | RX paths: %2")
-                        .arg(_wifi_card_air.devourer_link_health)
-                        .arg(devourer_paths_text(_wifi_card_air))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: _wifi_card_air.devourer_quality_valid
-                Text {
-                    text: qsTr("AIR SNR A1/A2: %1 / %2 | EVM: %3")
-                        .arg(snr_text(_wifi_card_air.rx_snr_antenna1))
-                        .arg(snr_text(_wifi_card_air.rx_snr_antenna2))
-                        .arg(metric_db_text(_wifi_card_air.rx_evm_db))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("RX packet loss: %1")
-                        .arg(get_rx_loss_text())
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("Pollution: %1 pps").arg(_ohdSystemGround.wb_link_curr_foreign_pps)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("Quality: %1").arg(get_quality_display_text())
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("TX: %1").arg(Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                Text {
-                    text: qsTr("RX: %1").arg(Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: _wifi_card_gnd0.alive
-                Text {
-                    text: text_for_card(0)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: _wifi_card_gnd1.alive
-                Text {
-                    text: text_for_card(1)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: _wifi_card_gnd2.alive
-                Text {
-                    text: text_for_card(2)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 28
-                visible: _wifi_card_gnd3.alive
-                Text {
-                    text: text_for_card(3)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: 1
-                color: "#444444"
-                opacity: 0.7
-            }
-
-            Text {
-                text: qsTr("Debug")
-                color: "white"
-                font.bold: true
-                font.family: linkFont
-                font.pixelSize: detailPanelFontPixels
-            }
+    widgetActionComponent: Loader {
+        active: widgetAction.visible
+        asynchronous: true
+        sourceComponent: ScrollView {
+            contentHeight: actionColumn.implicitHeight
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            clip: true
 
             Column {
+                id: actionColumn
                 width: parent.width
-                spacing: 4
+                spacing: 2
+
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("SNR A1/A2 (Card %1): %2 / %3")
+                            .arg(get_best_card_index() + 1)
+                            .arg(snr_text(get_best_card().rx_snr_antenna1))
+                            .arg(snr_text(get_best_card().rx_snr_antenna2))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("SNR best: %1").arg(snr_text(m_best_snr_db))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: get_best_card().devourer_quality_valid
+                    Text {
+                        text: qsTr("Health: %1 | RX paths: %2")
+                            .arg(get_best_card().devourer_link_health)
+                            .arg(devourer_paths_text(get_best_card()))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: get_best_card().devourer_quality_valid
+                    Text {
+                        text: qsTr("EVM: %1 | Noise: %2")
+                            .arg(metric_db_text(get_best_card().rx_evm_db))
+                            .arg(metric_dbm_text(get_best_card().rx_noise_dbm))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: get_best_card().rx_paths_valid
+                    Text {
+                        text: qsTr("RSSI A1/A2: %1 / %2")
+                            .arg(metric_dbm_text(get_best_card().curr_rx_rssi_dbm_antenna1))
+                            .arg(metric_dbm_text(get_best_card().curr_rx_rssi_dbm_antenna2))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: m_rx_temperature_text !== "N/A"
+                    Text {
+                        text: qsTr("RX temperature: %1").arg(m_rx_temperature_text)
+                        color: "white"
+                        height: parent.height
+                        width: parent.width
+                        fontSizeMode: Text.Fit
+                        minimumPixelSize: 12
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: m_tx_temperature_text !== "N/A"
+                    Text {
+                        text: qsTr("TX temperature: %1").arg(m_tx_temperature_text)
+                        color: "white"
+                        height: parent.height
+                        width: parent.width
+                        fontSizeMode: Text.Fit
+                        minimumPixelSize: 12
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: _wifi_card_air.devourer_quality_valid
+                    Text {
+                        text: qsTr("AIR health: %1 | RX paths: %2")
+                            .arg(_wifi_card_air.devourer_link_health)
+                            .arg(devourer_paths_text(_wifi_card_air))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: _wifi_card_air.devourer_quality_valid
+                    Text {
+                        text: qsTr("AIR SNR A1/A2: %1 / %2 | EVM: %3")
+                            .arg(snr_text(_wifi_card_air.rx_snr_antenna1))
+                            .arg(snr_text(_wifi_card_air.rx_snr_antenna2))
+                            .arg(metric_db_text(_wifi_card_air.rx_evm_db))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("RX packet loss: %1")
+                            .arg(get_rx_loss_text())
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("Pollution: %1 pps").arg(_ohdSystemGround.wb_link_curr_foreign_pps)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("Quality: %1").arg(get_quality_display_text())
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("TX: %1").arg(Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    Text {
+                        text: qsTr("RX: %1").arg(Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: _wifi_card_gnd0.alive
+                    Text {
+                        text: text_for_card(0)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: _wifi_card_gnd1.alive
+                    Text {
+                        text: text_for_card(1)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: _wifi_card_gnd2.alive
+                    Text {
+                        text: text_for_card(2)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Item {
+                    width: parent.width
+                    height: 28
+                    visible: _wifi_card_gnd3.alive
+                    Text {
+                        text: text_for_card(3)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: "#444444"
+                    opacity: 0.7
+                }
 
                 Text {
-                    text: get_tx_error_text()
+                    text: qsTr("Debug")
                     color: "white"
                     font.bold: true
                     font.family: linkFont
                     font.pixelSize: detailPanelFontPixels
-                    elide: Text.ElideRight
-                    wrapMode: Text.NoWrap
                 }
 
-                RowLayout {
+                Column {
                     width: parent.width
-                    spacing: 16
+                    spacing: 4
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 4
-                        Text {
-                            text: qsTr("Blocks lost: %1").arg(_cameraStreamModelPrimary.count_blocks_lost)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
-                        }
-                        Text {
-                            text: qsTr("Fragments recovered: %1").arg(_cameraStreamModelPrimary.count_fragments_recovered)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
-                        }
-                        Text {
-                            text: qsTr("AIR TX tele: %1").arg(_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
-                        }
-                        Text {
-                            text: qsTr("AIR RX: %1").arg(_ohdSystemAir.rx_packets_per_second_and_bits_per_second)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
-                        }
+                    Text {
+                        text: get_tx_error_text()
+                        color: "white"
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        elide: Text.ElideRight
+                        wrapMode: Text.NoWrap
                     }
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 4
-                        Text {
-                            text: qsTr("Blocks recovered: %1").arg(_cameraStreamModelPrimary.count_blocks_recovered)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
+                    RowLayout {
+                        width: parent.width
+                        spacing: 16
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 4
+                            Text {
+                                text: qsTr("Blocks lost: %1").arg(_cameraStreamModelPrimary.count_blocks_lost)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
+                            Text {
+                                text: qsTr("Fragments recovered: %1").arg(_cameraStreamModelPrimary.count_fragments_recovered)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
+                            Text {
+                                text: qsTr("AIR TX tele: %1").arg(_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
+                            Text {
+                                text: qsTr("AIR RX: %1").arg(_ohdSystemAir.rx_packets_per_second_and_bits_per_second)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
                         }
-                        Text {
-                            text: qsTr("AIR TX: %1").arg(_ohdSystemAir.tx_packets_per_second_and_bits_per_second)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
-                        }
-                        Text {
-                            text: qsTr("AIR TX video0: %1").arg(_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
-                        }
-                        Text {
-                            text: qsTr("TX PWR Air: %1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit)
-                            color: "white"
-                            font.bold: true
-                            font.family: linkFont
-                            font.pixelSize: detailPanelFontPixels
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 4
+                            Text {
+                                text: qsTr("Blocks recovered: %1").arg(_cameraStreamModelPrimary.count_blocks_recovered)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
+                            Text {
+                                text: qsTr("AIR TX: %1").arg(_ohdSystemAir.tx_packets_per_second_and_bits_per_second)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
+                            Text {
+                                text: qsTr("AIR TX video0: %1").arg(_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
+                            Text {
+                                text: qsTr("TX PWR Air: %1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit)
+                                color: "white"
+                                font.bold: true
+                                font.family: linkFont
+                                font.pixelSize: detailPanelFontPixels
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                            }
                         }
                     }
                 }
@@ -877,215 +869,219 @@ BaseWidget {
         }
     }
 
-    widgetDetailComponent: ScrollView {
-        contentHeight: idBaseWidgetDefaultUiControlElements.height
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
+    widgetDetailComponent: Loader {
+        active: widgetDetail.visible
+        asynchronous: true
+        sourceComponent: ScrollView {
+            contentHeight: idBaseWidgetDefaultUiControlElements.height
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            clip: true
 
-        BaseWidgetDefaultUiControlElements {
-            id: idBaseWidgetDefaultUiControlElements
-            show_transparency: false
-            show_background_color: true
-            background_color_target: linkOverviewWidget
+            BaseWidgetDefaultUiControlElements {
+                id: idBaseWidgetDefaultUiControlElements
+                show_transparency: false
+                show_background_color: true
+                background_color_target: linkOverviewWidget
 
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("SNR min: %1 dB").arg(settings.link_snr_min_db)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.link_snr_min_db
-                    to: 40
-                    stepSize: 1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 120
+                Item {
+                    width: parent.width
+                    height: 32
+                    Text {
+                        text: qsTr("SNR min: %1 dB").arg(settings.link_snr_min_db)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Slider {
+                        orientation: Qt.Horizontal
+                        from: 0
+                        value: settings.link_snr_min_db
+                        to: 40
+                        stepSize: 1
+                        height: parent.height
+                        anchors.rightMargin: 0
+                        anchors.right: parent.right
+                        width: parent.width - 120
 
-                    onValueChanged: {
-                        var v = Math.round(value);
-                        if (settings.link_snr_min_db !== v) {
-                            settings.link_snr_min_db = v;
-                        }
-                        if (settings.link_snr_min_db >= settings.link_snr_max_db) {
-                            settings.link_snr_max_db = settings.link_snr_min_db + 1;
+                        onValueChanged: {
+                            var v = Math.round(value);
+                            if (settings.link_snr_min_db !== v) {
+                                settings.link_snr_min_db = v;
+                            }
+                            if (settings.link_snr_min_db >= settings.link_snr_max_db) {
+                                settings.link_snr_max_db = settings.link_snr_min_db + 1;
+                            }
                         }
                     }
                 }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("SNR max: %1 dB").arg(settings.link_snr_max_db)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.link_snr_max_db
-                    to: 40
-                    stepSize: 1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 120
+                Item {
+                    width: parent.width
+                    height: 32
+                    Text {
+                        text: qsTr("SNR max: %1 dB").arg(settings.link_snr_max_db)
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Slider {
+                        orientation: Qt.Horizontal
+                        from: 0
+                        value: settings.link_snr_max_db
+                        to: 40
+                        stepSize: 1
+                        height: parent.height
+                        anchors.rightMargin: 0
+                        anchors.right: parent.right
+                        width: parent.width - 120
 
-                    onValueChanged: {
-                        var v = Math.round(value);
-                        if (v <= settings.link_snr_min_db) {
-                            v = settings.link_snr_min_db + 1;
-                        }
-                        if (settings.link_snr_max_db !== v) {
-                            settings.link_snr_max_db = v;
+                        onValueChanged: {
+                            var v = Math.round(value);
+                            if (v <= settings.link_snr_min_db) {
+                                v = settings.link_snr_min_db + 1;
+                            }
+                            if (settings.link_snr_max_db !== v) {
+                                settings.link_snr_max_db = v;
+                            }
                         }
                     }
                 }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Calculated Quality of Link")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
+                Item {
+                    width: parent.width
+                    height: 32
+                    Text {
+                        text: qsTr("Calculated Quality of Link")
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Switch {
+                        width: 32
+                        height: parent.height
+                        anchors.rightMargin: 6
+                        anchors.right: parent.right
+                        checked: settings.downlink_calc_quality_enabled
+                        onCheckedChanged: settings.downlink_calc_quality_enabled = checked
+                    }
                 }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.downlink_calc_quality_enabled
-                    onCheckedChanged: settings.downlink_calc_quality_enabled = checked
+                Item {
+                    width: parent.width
+                    height: 32
+                    visible: settings.downlink_calc_quality_enabled
+                    Text {
+                        text: qsTr("Loss Weight: %1").arg(Number(settings.downlink_quality_loss_weight).toFixed(2))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Slider {
+                        orientation: Qt.Horizontal
+                        from: 0
+                        value: settings.downlink_quality_loss_weight
+                        to: 1
+                        stepSize: 0.01
+                        height: parent.height
+                        anchors.rightMargin: 0
+                        anchors.right: parent.right
+                        width: parent.width - 140
+                        onValueChanged: settings.downlink_quality_loss_weight = value
+                    }
                 }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                visible: settings.downlink_calc_quality_enabled
-                Text {
-                    text: qsTr("Loss Weight: %1").arg(Number(settings.downlink_quality_loss_weight).toFixed(2))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
+                Item {
+                    width: parent.width
+                    height: 32
+                    visible: settings.downlink_calc_quality_enabled
+                    Text {
+                        text: qsTr("SNR Weight: %1").arg(Number(settings.downlink_quality_snr_weight).toFixed(2))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Slider {
+                        orientation: Qt.Horizontal
+                        from: 0
+                        value: settings.downlink_quality_snr_weight
+                        to: 1
+                        stepSize: 0.01
+                        height: parent.height
+                        anchors.rightMargin: 0
+                        anchors.right: parent.right
+                        width: parent.width - 140
+                        onValueChanged: settings.downlink_quality_snr_weight = value
+                    }
                 }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.downlink_quality_loss_weight
-                    to: 1
-                    stepSize: 0.01
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 140
-                    onValueChanged: settings.downlink_quality_loss_weight = value
+                Item {
+                    width: parent.width
+                    height: 32
+                    visible: settings.downlink_calc_quality_enabled
+                    Text {
+                        text: qsTr("RSSI Weight: %1").arg(Number(settings.downlink_quality_rssi_weight).toFixed(2))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Slider {
+                        orientation: Qt.Horizontal
+                        from: 0
+                        value: settings.downlink_quality_rssi_weight
+                        to: 1
+                        stepSize: 0.01
+                        height: parent.height
+                        anchors.rightMargin: 0
+                        anchors.right: parent.right
+                        width: parent.width - 140
+                        onValueChanged: settings.downlink_quality_rssi_weight = value
+                    }
                 }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                visible: settings.downlink_calc_quality_enabled
-                Text {
-                    text: qsTr("SNR Weight: %1").arg(Number(settings.downlink_quality_snr_weight).toFixed(2))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.downlink_quality_snr_weight
-                    to: 1
-                    stepSize: 0.01
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 140
-                    onValueChanged: settings.downlink_quality_snr_weight = value
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                visible: settings.downlink_calc_quality_enabled
-                Text {
-                    text: qsTr("RSSI Weight: %1").arg(Number(settings.downlink_quality_rssi_weight).toFixed(2))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.downlink_quality_rssi_weight
-                    to: 1
-                    stepSize: 0.01
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 140
-                    onValueChanged: settings.downlink_quality_rssi_weight = value
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                visible: settings.downlink_calc_quality_enabled
-                Text {
-                    text: qsTr("Quality Offset: %1").arg(Number(settings.downlink_quality_offset).toFixed(1))
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.family: linkFont
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: -100
-                    value: settings.downlink_quality_offset
-                    to: 100
-                    stepSize: 1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 140
-                    onValueChanged: settings.downlink_quality_offset = value
+                Item {
+                    width: parent.width
+                    height: 32
+                    visible: settings.downlink_calc_quality_enabled
+                    Text {
+                        text: qsTr("Quality Offset: %1").arg(Number(settings.downlink_quality_offset).toFixed(1))
+                        color: "white"
+                        height: parent.height
+                        font.bold: true
+                        font.family: linkFont
+                        font.pixelSize: detailPanelFontPixels
+                        anchors.left: parent.left
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Slider {
+                        orientation: Qt.Horizontal
+                        from: -100
+                        value: settings.downlink_quality_offset
+                        to: 100
+                        stepSize: 1
+                        height: parent.height
+                        anchors.rightMargin: 0
+                        anchors.right: parent.right
+                        width: parent.width - 140
+                        onValueChanged: settings.downlink_quality_offset = value
+                    }
                 }
             }
         }

@@ -141,6 +141,12 @@ bool UDPConnection::setup_socket()
         qDebug() << "Error: Winsock failed, error: %d", WSAGetLastError();
         return false;
     }
+    m_socket_fd = static_cast<int>(socket(AF_INET, SOCK_DGRAM, 0));
+    if (m_socket_fd == static_cast<int>(INVALID_SOCKET)) {
+        qDebug() << "Cannot create UDP socket:" << WSAGetLastError();
+        WSACleanup();
+        return false;
+    }
 #else
     m_socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -148,6 +154,7 @@ bool UDPConnection::setup_socket()
         qDebug()<<"Cannot create socket"<<strerror(errno);
         return false;
     }
+#endif
 
     struct sockaddr_in addr {};
     addr.sin_family = AF_INET;
@@ -172,10 +179,14 @@ if(_local_port==14550){
     _local_port= m_local_port; //finally back to whatever is set if its not 14550 or 14551.. unlikely
 }
 }*/
+#ifdef _WIN32
+        closesocket(m_socket_fd);
+        WSACleanup();
+#else
         close(m_socket_fd);
+#endif
         return false;
     }
-#endif
     return true;
 }
 

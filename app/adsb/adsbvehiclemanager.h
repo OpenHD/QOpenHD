@@ -53,7 +53,7 @@ protected:
     bool _adsb_enable = false;
 
     // network
-    QNetworkAccessManager * m_manager;
+    QNetworkAccessManager * m_manager = nullptr;
     QString adsb_url;
 
 
@@ -63,7 +63,7 @@ protected:
 
     // timer for requests
     int timer_interval;
-    QTimer *timer;
+    QTimer *timer = nullptr;
 
     QSettings _settings;
 
@@ -80,7 +80,7 @@ class ADSBInternet: public ADSBapi {
 
 public:
     ADSBInternet() : ADSBapi(10000) {}
-    ~ADSBInternet() {}
+    ~ADSBInternet() override { quit(); wait(); }
 
 private slots:
     void processReply(QNetworkReply *reply) override;
@@ -95,9 +95,9 @@ class ADSBSdr: public ADSBapi {
 
 public:
     ADSBSdr();
-    ~ADSBSdr() {}
+    ~ADSBSdr() override { quit(); wait(); }
 
-    void setGroundIP(QString address) { _groundAddress = address; }
+    void setGroundIP(QString address);
 
 private slots:
     void processReply(QNetworkReply *reply) override;
@@ -138,7 +138,7 @@ public:
     Q_INVOKABLE void newMapLon(double map_lon);
     Q_INVOKABLE void setReferencePosition(double latitude, double longitude);
 
-    Q_INVOKABLE void setGroundIP(QString address) { _sdrLink->setGroundIP(address); }
+    Q_INVOKABLE void setGroundIP(QString address) { if (_sdrLink) _sdrLink->setGroundIP(address); }
 
     // OpenHD's built-in dump1090 receiver forwards traffic as ADSB_VEHICLE.
     void processMavlinkVehicle(const mavlink_adsb_vehicle_t& vehicle);
@@ -162,7 +162,7 @@ private slots:
     void _cleanupStaleVehicles(void);
 
 private:
-    void _evaluateTraffic(double traffic_alt, int traffic_distance);
+    void _evaluateTraffic(double traffic_alt, double traffic_distance);
 
     QmlObjectListModel              _adsbVehicles;
     QMap<uint32_t, ADSBVehicle*>    _adsbICAOMap;

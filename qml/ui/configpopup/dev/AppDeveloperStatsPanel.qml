@@ -12,6 +12,14 @@ AdvancedPage {
     initialFocusItem: restartService
     onBackRequested: settings_form.side_bar_regain_focus()
 
+    Connections {
+        target: _qopenhd
+        function onSystemActionFinished(id, result, success) {
+            if (id === "local_ip") localIp.text = result
+            else if (id === "ground_log") groundLog.text = result
+        }
+    }
+
     function yes_or_no_as_string(yes) { return yes ? "Y" : "N" }
     function get_features_string() {
         return "AVCODEC:" + yes_or_no_as_string(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)

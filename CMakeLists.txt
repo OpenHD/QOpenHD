@@ -30,6 +30,8 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/util/WorkaroundMessageBox.cpp
     app/util/mousehelper.cpp
     app/util/qopenhd.cpp
+    app/util/asyncping.cpp
+    app/util/asynccommandrunner.cpp
     app/util/qrenderstats.cpp
     app/map/offlinemaptileprovider.cpp
     app/fleetcontrol/fleetcontrollte.cpp

@@ -77,7 +77,9 @@ private:
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
     static constexpr auto QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT=5760;
     // Called every time we get a mavlink message (from any system).
-    void process_mavlink_message(const mavlink_message_t& msg);
+    void process_mavlink_message(const mavlink_message_t& msg, uint64_t generation);
+    void publish_connection_status(QString status);
+    std::atomic<uint64_t> m_receive_generation{0};
     void process_broadcast_message_openhd_air(const mavlink_message_t& msg);
     void process_broadcast_message_openhd_gnd(const mavlink_message_t& msg);
     void process_broadcast_message_fc(const mavlink_message_t& msg);
@@ -90,9 +92,9 @@ private:
     std::unique_ptr<TCPConnection> m_tcp_connection_custom=nullptr;
 
     int64_t m_last_timesync_out_us=0;
-    bool m_fc_found=false;
-    int m_fc_sys_id=-1;
-    int m_fc_comp_id=-1;
+    std::atomic_bool m_fc_found{false};
+    std::atomic_int m_fc_sys_id{-1};
+    std::atomic_int m_fc_comp_id{-1};
     // For calculating input pps / bps
     int64_t m_tele_received_bytes=0;
     int64_t m_tele_received_packets=0;

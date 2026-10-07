@@ -22,20 +22,21 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 
 void MavlinkTelemetry::start()
 {
+    const auto generation = ++m_receive_generation;
     QSettings settings;
     int mavlink_connection_mode=settings.value("qopenhd_mavlink_connection_mode",0).toInt();
     if(mavlink_connection_mode<0 || mavlink_connection_mode>2)mavlink_connection_mode=0;
     m_connection_mode=mavlink_connection_mode;
     QString tcp_manual_ip=settings.value("qopenhd_mavlink_connection_manual_tcp_ip","192.168.178.36").toString();
     threadsafe_set_manual_tcp_ip(tcp_manual_ip.toStdString());
-    auto cb_udp=[this](mavlink_message_t msg){
-        process_mavlink_message(msg);
+    auto cb_udp=[this, generation](mavlink_message_t msg){
+        process_mavlink_message(msg, generation);
     };
     const auto udp_ip="0.0.0.0"; //"127.0.0.1"
     m_udp_connection=std::make_unique<UDPConnection>(udp_ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
     m_udp_connection->start_looping();
-    auto cb_tcp=[this](mavlink_message_t msg){
-        process_mavlink_message(msg);
+    auto cb_tcp=[this, generation](mavlink_message_t msg){
+        process_mavlink_message(msg, generation);
     };
     const std::string IP_OPENHD_WIFI_HOTSPOT="192.168.3.1";
     const std::string IP_OPENHD_ETHERNET_HOTSPOT="192.168.2.1";
@@ -49,6 +50,7 @@ void MavlinkTelemetry::start()
 
 void MavlinkTelemetry::terminate()
 {
+    ++m_receive_generation; // Discard deliveries queued by a retired connection.
     // first stop any incoming telemetry
     if(m_heartbeat_thread){
         m_heartbeat_thread_run=false;
@@ -121,8 +123,17 @@ static int get_message_size(const mavlink_message_t& msg){
     return sizeof(msg);
 }
 
-void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg)
+void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uint64_t generation)
 {
+    if (generation != m_receive_generation.load()) return;
+    // Publish immediately through the event loop, without an update timer or
+    // rate limit. All QML-visible receive state belongs to this (GUI) thread.
+    if (QThread::currentThread() != thread()) {
+        QMetaObject::invokeMethod(this, [this, msg, generation] {
+            process_mavlink_message(msg, generation);
+        }, Qt::QueuedConnection);
+        return;
+    }
     // ADS-B may originate from either OpenHD unit or from the FC. Consume it
     // before the normal system-id routing so every source reaches one model.
     if (msg.msgid == MAVLINK_MSG_ID_ADSB_VEHICLE) {
@@ -312,7 +323,7 @@ void MavlinkTelemetry::ping_all_systems()
 MavlinkTelemetry::FCMavId MavlinkTelemetry::get_fc_mav_id()
 {
     if(m_fc_found){
-        return {m_fc_sys_id,m_fc_comp_id};
+        return {m_fc_sys_id.load(),m_fc_comp_id.load()};
     }
     return {1,MAV_COMP_ID_AUTOPILOT1};
 }
@@ -351,6 +362,18 @@ void MavlinkTelemetry::send_heartbeat_loop()
     }*/
 }
 
+void MavlinkTelemetry::publish_connection_status(QString status)
+{
+    if (QThread::currentThread() != thread()) {
+        const auto generation = m_receive_generation.load();
+        QMetaObject::invokeMethod(this, [this, status, generation] {
+            if (generation == m_receive_generation.load()) set_telemetry_connection_status(status);
+        }, Qt::QueuedConnection);
+        return;
+    }
+    set_telemetry_connection_status(status);
+}
+
 void MavlinkTelemetry::perform_connection_management()
 {
     const int mavlink_connection_mode=m_connection_mode;
@@ -371,7 +394,7 @@ void MavlinkTelemetry::perform_connection_management()
             }else{
                 status_text="AUTO-DISCONNECTED(LOCAL ONLY) OPENHD CORE RUNNING ?";
             }
-             set_telemetry_connection_status(status_text.c_str());
+             publish_connection_status(status_text.c_str());
         }else{
             // We have to account for all the cases the user might connect this device to his ground station
             m_tcp_connection_custom->stop_looping_if();
@@ -380,7 +403,7 @@ void MavlinkTelemetry::perform_connection_management()
             }
             // Prefer UDP if possible
             if(m_udp_connection->threadsafe_is_alive()){
-                set_telemetry_connection_status("AUTO-CONNECTED(UDP,LOCALHOST)");
+                publish_connection_status("AUTO-CONNECTED(UDP,LOCALHOST)");
                 m_tcp_connection_wifi_hs->stop_looping_if();
                 m_tcp_connection_eth_hs->stop_looping_if();
             }else{
@@ -391,11 +414,11 @@ void MavlinkTelemetry::perform_connection_management()
                     m_tcp_connection_eth_hs->start_looping();
                 }
                 if(m_tcp_connection_wifi_hs->threadsafe_is_alive()){
-                    set_telemetry_connection_status("AUTO-CONNECTED(TCP,WIFI HS)");
+                    publish_connection_status("AUTO-CONNECTED(TCP,WIFI HS)");
                 }else if(m_tcp_connection_eth_hs->threadsafe_is_alive()){
-                    set_telemetry_connection_status("AUTO-CONNECTED(TCP,ETHERNET HS)");
+                    publish_connection_status("AUTO-CONNECTED(TCP,ETHERNET HS)");
                 }else{
-                    set_telemetry_connection_status("AUTO-NOT CONNECTED");
+                    publish_connection_status("AUTO-NOT CONNECTED");
                 }
             }
         }
@@ -409,7 +432,7 @@ void MavlinkTelemetry::perform_connection_management()
         }
         std::stringstream ss;
         ss<<"MANUAL UDP-"<<(m_udp_connection->threadsafe_is_alive() ? "ALIVE" : "NO DATA");
-        set_telemetry_connection_status(ss.str().c_str());
+        publish_connection_status(ss.str().c_str());
     }else if(mavlink_connection_mode==2){
         // Explicit TCP
         // Stop all the stuff from auto
@@ -432,9 +455,9 @@ void MavlinkTelemetry::perform_connection_management()
         }else{
             ss<<"NOT CONNECTED ["<<user_ip<<"]";
         }
-        set_telemetry_connection_status(ss.str().c_str());
+        publish_connection_status(ss.str().c_str());
     }else{
-        set_telemetry_connection_status("UNKNOWN CONNECTION MODE");
+        publish_connection_status("UNKNOWN CONNECTION MODE");
     }
 }
 
