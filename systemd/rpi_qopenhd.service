@@ -1,6 +1,8 @@
 [Unit]
 Description=QOpenHD
-After=multi-user.target
+# SysUtils starts QOpenHD before publishing its control socket. Waiting for
+# multi-user.target here blocks SysUtils until its socket readiness timeout.
+After=local-fs.target
 
 [Service]
 Type=simple
