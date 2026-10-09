@@ -1251,6 +1251,8 @@ static std::map<std::string, void *> get_whitelisted_params()
     ret["AUDIO_DEVICE"]=nullptr;
     ret["AUDIO_GAIN"]=nullptr;
     ret["AUDIO_DEV_COUNT"]=nullptr;
+    ret["AUDIO_USB_COUNT"]=nullptr;
+    ret["AUD_USB_NAMES"]=nullptr;
     ret["AUDIO_EXAMPLE"]=nullptr;
     for (int i = 0; i < 8; ++i) {
         ret["AUD_DEV_" + std::to_string(i)]=nullptr;

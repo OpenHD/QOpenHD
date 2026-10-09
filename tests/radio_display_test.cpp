@@ -45,9 +45,10 @@ private slots:
             "property var settings_form: ({primaryText: 'white'}); "
             "property var _hudLogMessagesModel: QtObject { function signalAddLogMessage(level, text) {} } "
             "property var _ohdSystemAirSettingsModel: QtObject { property int update_count: 0; property int mode: 101; "
-            "property bool available: true; property bool example: true; "
-            "function param_int_exists(id) { return available && (id === 'AUDIO_ENABLE' || (id === 'AUDIO_EXAMPLE' && example)); } "
-            "function get_cached_int(id) { return id === 'AUDIO_ENABLE' ? mode : 1; } "
+            "property bool available: true; property bool example: true; property int usbCount: -1; property int captureCount: 0; "
+            "function param_int_exists(id) { return available && (id === 'AUDIO_ENABLE' || (id === 'AUDIO_EXAMPLE' && example) || id === 'AUDIO_USB_COUNT' || id === 'AUDIO_DEV_COUNT'); } "
+            "function get_cached_int(id) { return id === 'AUDIO_ENABLE' ? mode : (id === 'AUDIO_USB_COUNT' ? usbCount : (id === 'AUDIO_DEV_COUNT' ? captureCount : 1)); } "
+            "function param_string_exists(id) { return id === 'AUD_USB_NAMES'; } function get_cached_string(id) { return 'USB Headset'; } "
             "function try_update_parameter_int(id, value) { mode = value; update_count++; return ''; } } "
             + panel.mid(props, propsEnd - props) + panel.mid(setter, setterEnd - setter)
             + "ColumnLayout { anchors.fill: parent; " + rows + "} }", QUrl());
@@ -58,6 +59,16 @@ private slots:
         auto* selector = root->findChild<QObject*>("audioSourceSelector");
         auto* model = root->property("_ohdSystemAirSettingsModel").value<QObject*>();
         QVERIFY(toggle && selector && model);
+        QVERIFY(root->property("usbAudioStatus").toString().contains("unavailable"));
+        model->setProperty("usbCount", 0);
+        model->setProperty("update_count", 1);
+        QVERIFY(root->property("usbAudioStatus").toString().contains("No USB audio device"));
+        QVERIFY(root->property("captureAudioStatus").toString().contains("No microphone input"));
+        model->setProperty("usbCount", 1);
+        model->setProperty("captureCount", 2);
+        model->setProperty("update_count", 2);
+        QCOMPARE(root->property("usbAudioStatus").toString(), QString("USB audio detected: USB Headset"));
+        QCOMPARE(root->property("captureAudioStatus").toString(), QString("Microphone inputs detected: 2"));
         QCOMPARE(toggle->property("checked").toBool(), true);
         QCOMPARE(selector->property("currentIndex").toInt(), 1);
         toggle->setProperty("checked", false);
@@ -83,6 +94,47 @@ private slots:
         model->setProperty("available", false);
         model->setProperty("update_count", 21);
         QCOMPARE(toggle->property("enabled").toBool(), false);
+    }
+    void microphoneDevices() {
+        QFile source(QFINDTESTDATA("../qml/ui/configpopup/features/FeatureSettingsPanel.qml"));
+        QVERIFY(source.open(QIODevice::ReadOnly));
+        const auto panel = source.readAll();
+        const int start = panel.indexOf("                                CompactLinkComboBox {", panel.indexOf("Label { text: qsTr(\"Microphone\")"));
+        const int end = panel.indexOf("                                Button {", start);
+        QVERIFY(start >= 0 && end > start);
+        QByteArray control = panel.mid(start, end - start);
+        control.replace("CompactLinkComboBox", "ComboBox");
+        QQmlEngine engine;
+        QQmlComponent component(&engine);
+        component.setData("import QtQuick 2.12\nimport QtQuick.Controls 2.12\nimport QtQuick.Layouts 1.12\n"
+            "Item { id: root; width: 700; property bool audioAvailable: true; "
+            "property var audioMode: ({currentIndex: 0}); "
+            "property var _ohdSystemAirSettingsModel: QtObject { property int update_count: 0; "
+            "property string selected: ''; property var devices: []; "
+            "function param_string_exists(id) { return id === 'AUDIO_DEVICE' || devices[Number(id.substring(8))] !== undefined; } "
+            "function get_cached_string(id) { return id === 'AUDIO_DEVICE' ? selected : devices[Number(id.substring(8))]; } } "
+            "function setAirString(id, value) { _ohdSystemAirSettingsModel.selected = value; _ohdSystemAirSettingsModel.update_count++; } "
+            + control + "}", QUrl());
+        QVERIFY2(component.isReady(), qPrintable(component.errorString()));
+        QScopedPointer<QObject> root(component.create());
+        QVERIFY(root);
+        auto* selector = root->findChild<QObject*>("audioMicrophoneSelector");
+        auto* model = root->property("_ohdSystemAirSettingsModel").value<QObject*>();
+        QVERIFY(selector && model);
+        QCOMPARE(selector->property("count").toInt(), 1);
+        model->setProperty("devices", QStringList{"alsasrc:plughw:2,0|USB microphone", "alsasrc:plughw:3,1|Headset"});
+        model->setProperty("update_count", 1);
+        QCOMPARE(selector->property("count").toInt(), 3);
+        QCOMPARE(selector->property("model").toStringList().at(1), QString("USB microphone"));
+        QVERIFY(QMetaObject::invokeMethod(selector, "activated", Q_ARG(int, 2)));
+        QCOMPARE(model->property("selected").toString(), QString("alsasrc:plughw:3,1"));
+        QCOMPARE(selector->property("currentIndex").toInt(), 2);
+        QVERIFY(QMetaObject::invokeMethod(selector, "activated", Q_ARG(int, 0)));
+        QCOMPARE(model->property("selected").toString(), QString());
+        model->setProperty("devices", QStringList{});
+        model->setProperty("update_count", 4);
+        QCOMPARE(selector->property("count").toInt(), 1);
+        QCOMPARE(selector->property("currentIndex").toInt(), 0);
     }
     void initTestCase() {
         QFile source(QFINDTESTDATA("../qml/ui/widgets/LinkOverviewWidget.qml"));

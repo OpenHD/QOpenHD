@@ -24,6 +24,28 @@ AdvancedPage {
     property bool exampleAudioAvailable: airRevision >= 0 &&
                                          _ohdSystemAirSettingsModel.param_int_exists("AUDIO_EXAMPLE") &&
                                          _ohdSystemAirSettingsModel.get_cached_int("AUDIO_EXAMPLE") > 0
+    property int usbAudioCount: {
+        airRevision
+        return _ohdSystemAirSettingsModel.param_int_exists("AUDIO_USB_COUNT")
+                ? _ohdSystemAirSettingsModel.get_cached_int("AUDIO_USB_COUNT") : -1
+    }
+    property string usbAudioStatus: {
+        airRevision
+        if (!audioAvailable) return qsTr("Connect an air unit to check USB audio.")
+        if (usbAudioCount < 0) return qsTr("USB audio detection is unavailable on this air unit.")
+        if (usbAudioCount === 0) return qsTr("No USB audio device detected by the air unit.")
+        var names = _ohdSystemAirSettingsModel.param_string_exists("AUD_USB_NAMES")
+                ? String(_ohdSystemAirSettingsModel.get_cached_string("AUD_USB_NAMES")) : ""
+        return names.length ? qsTr("USB audio detected: %1").arg(names)
+                            : qsTr("USB audio devices detected: %1").arg(usbAudioCount)
+    }
+    property string captureAudioStatus: {
+        airRevision
+        if (!_ohdSystemAirSettingsModel.param_int_exists("AUDIO_DEV_COUNT")) return ""
+        var count = _ohdSystemAirSettingsModel.get_cached_int("AUDIO_DEV_COUNT")
+        return count > 0 ? qsTr("Microphone inputs detected: %1").arg(count)
+                         : qsTr("No microphone input detected. Check the USB connection and audio driver.")
+    }
     property int preferredAudioSource: 0
     onAudioModeValueChanged: if (audioModeValue !== 1) preferredAudioSource = audioModeValue
     Component.onCompleted: if (audioModeValue !== 1) preferredAudioSource = audioModeValue
@@ -136,13 +158,25 @@ AdvancedPage {
                                 visible: !root.audioAvailable || !root.exampleAudioAvailable
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: !root.audioAvailable ? qsTr("Connect an air unit to configure audio streaming.")
-                                      : qsTr("Without a microphone, Microphone mode plays the bundled example audio. Update OpenHD for explicit example selection.")
+                                      : qsTr("Update OpenHD to select example audio explicitly.")
+                            }
+                            Label {
+                                objectName: "usbAudioDiagnostic"
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap
+                                color: root.usbAudioCount > 0 ? "#35d36b" : settings_form.secondaryText
+                                text: root.usbAudioStatus
+                            }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                visible: text.length > 0
+                                text: root.captureAudioStatus + " " + qsTr("Detection is reported at air-unit startup.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Microphone"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 CompactLinkComboBox {
                                     id: captureDevice
+                                    objectName: "audioMicrophoneSelector"
                                     enabled: root.audioAvailable && audioMode.currentIndex === 0
                                     Layout.preferredWidth: Math.min(420, root.width * 0.48)
                                     property var ids: []
