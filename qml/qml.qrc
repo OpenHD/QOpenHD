@@ -13,6 +13,13 @@
 </qresource>
 <qresource prefix="/">
         <file>main.qml</file>
+        <file>HudContent.qml</file>
+        <file>BootSplash.qml</file>
+        <file>BootVideo.qml</file>
+        <file>boot-video.mp4</file>
+        <file>boot-video-last.png</file>
+        <file>PiStartupWindow.qml</file>
+        <file>PiFlightContent.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>ui/widgets/MessageHUD.qml</file>
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>

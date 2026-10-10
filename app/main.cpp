@@ -1,6 +1,10 @@
 #include "qqmlcontext.h"
 #include "qscreen.h"
 #include <QApplication>
+#include <QQuickWindow>
+#include <QEventLoop>
+#include <QTimer>
+#include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QDebug>
@@ -434,7 +438,35 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
+    const bool earlyPiSplash = QOpenHD::instance().is_platform_rpi();
+#if defined(__linux__) && !defined(__android__)
+    if (earlyPiSplash && (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM") ||
+                          qEnvironmentVariable("QT_QPA_PLATFORM").startsWith("eglfs"))) {
+        // Keep Plymouth running throughout initialization before Qt claims DRM.
+        QProcess plymouth;
+        plymouth.start("/usr/bin/plymouth", {"quit", "--retain-splash"});
+        if (!plymouth.waitForFinished(2000)) plymouth.kill();
+    }
+#endif
     QApplication app(argc, argv);
+    QQmlApplicationEngine engine;
+    if (earlyPiSplash) {
+        // Create the permanent EGLFS window before fonts and telemetry models.
+        // Replacing this window later would clear the display a second time.
+        engine.load(QUrl(QStringLiteral("qrc:/PiStartupWindow.qml")));
+        if (engine.rootObjects().isEmpty()) return 1;
+        auto window = qobject_cast<QQuickWindow*>(engine.rootObjects().first());
+        if (!window) return 1;
+        QEventLoop firstFrame;
+        QTimer timeout;
+        timeout.setSingleShot(true);
+        QObject::connect(window, &QQuickWindow::frameSwapped, &firstFrame, &QEventLoop::quit);
+        QObject::connect(&timeout, &QTimer::timeout, &firstFrame, &QEventLoop::quit);
+        timeout.start(5000);
+        firstFrame.exec();
+        qWarning() << "QOpenHD startup splash: early first frame";
+    }
+
 
     // Load translation based on saved locale (requires an active Q(Core)Application on Qt5)
     QString localeStr = settings.value("locale", "en").toString();
@@ -468,7 +500,6 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
-    QQmlApplicationEngine engine;
     OfflineMapTileProvider offlineMapTiles;
     FleetControlLte fleetControlLte;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
@@ -614,7 +645,11 @@ int main(int argc, char *argv[]) {
     //const QUrl url(QStringLiteral("qrc:/qt/qml/main.qml"));
     //const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     const QUrl url(QStringLiteral("qrc:/main.qml"));
-    engine.load(url);
+    if (earlyPiSplash) {
+        if (!QMetaObject::invokeMethod(engine.rootObjects().first(), "loadFlightUi")) return 1;
+    } else {
+        engine.load(url);
+    }
     //engine.loadFromModule("QOpenHD", "qrc:/main.qml");
     //engine.loadFromModule("QOpenHDApp","qrc:/main.qml");
     //engine.load("qml/main.qml");

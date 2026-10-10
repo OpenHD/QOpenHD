@@ -14,9 +14,9 @@ import "./ui/elements"
 import "./ui/configpopup"
 import "./video"
 
-ApplicationWindow {
+Item {
     id: applicationWindow
-    visible: true
+    anchors.fill: parent
 
     // Position priority used by map/ADS-B consumers. The network provider is
     // deliberately only a rough fallback; a valid FC fix always wins.
@@ -150,9 +150,6 @@ ApplicationWindow {
 
     //width: 850
     //height: 480
-    width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_height : m_window_width
-    height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? m_window_width : m_window_height
-
     onWidthChanged: {
         _qrenderstats.set_window_width(width)
     }
@@ -160,22 +157,10 @@ ApplicationWindow {
         _qrenderstats.set_window_height(height)
     }
 
-    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
-    contentItem.rotation: settings.general_screen_rotation
-
-    //minimumWidth: 850
-    //minimumHeight: 480
-    title: qsTr("QOpenHD EVO")
-    // Transparent background is needed when the video is not rendered via (OpenGL) inside QT,
-    // but rather done independently by using a pipeline that directly goes to the HW composer (e.g. mmal on pi).
-    //color: "transparent" //Consti10 transparent background
-    //color : "#2C3E50" // reduce KREBS
-    color: settings.app_background_transparent ? "transparent" : "#2C3E50"
-    //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
-    //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
-    //visibility: "FullScreen"
-    // android / ios - specifc: We need to explicitly say full screen, otherwise things might be "cut off"
-    visibility: (settings.dev_force_show_full_screen || QOPENHD_IS_MOBILE) ? "FullScreen" : "AutomaticVisibility"
+    readonly property int screenRotation: settings.general_screen_rotation
+    readonly property color windowColor: settings.app_background_transparent ? "transparent" : "#2C3E50"
+    readonly property bool hudReady: flightUi.status === Loader.Ready
+    readonly property bool hudFailed: flightUi.status === Loader.Error
 
     // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
     // and equivalent settings systems on Linux and Android
@@ -184,22 +169,13 @@ ApplicationWindow {
     AppSettings {
         id: settings
     }
-    // Create the first frame before compiling and incubating the flight UI.
-    readonly property bool bootSplashEnabled: _qopenhd.is_platform_rpi()
-    property bool firstFrameShown: false
-    onFrameSwapped: {
-        if (!firstFrameShown) {
-            firstFrameShown = true
-            if (bootSplashEnabled)
-                console.warn("QOpenHD startup splash: first frame")
-        }
-    }
+    readonly property bool bootSplashEnabled: true
 
     Loader {
         id: flightUi
         anchors.fill: parent
-        active: !applicationWindow.bootSplashEnabled || applicationWindow.firstFrameShown
-        asynchronous: applicationWindow.bootSplashEnabled
+        active: true
+        asynchronous: false
         source: "HudContent.qml"
         onLoaded: {
             console.warn("QOpenHD HUD: loaded")
@@ -210,10 +186,4 @@ ApplicationWindow {
         }
     }
 
-    BootSplash {
-        anchors.fill: parent
-        visible: applicationWindow.bootSplashEnabled && flightUi.status !== Loader.Ready
-        z: 10000
-        failed: flightUi.status === Loader.Error
-    }
 }
