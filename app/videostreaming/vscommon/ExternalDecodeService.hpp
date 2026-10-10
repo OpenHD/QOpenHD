@@ -14,6 +14,7 @@
 #ifdef __linux__
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #endif
 
@@ -99,7 +100,12 @@ void decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamCon
     }
 
     const auto rotation=QOpenHDVideoHelper::get_display_rotation();
-    if(!send_sysutil_video_request("start", stream_config, rotation, false, is_secondary)){
+#ifdef __linux__
+    struct stat video_socket{};
+    bool socket_known=::stat("/run/openhd/openhd_sys.sock", &video_socket)==0;
+#endif
+    bool video_requested=send_sysutil_video_request("start", stream_config, rotation, false, is_secondary);
+    if(!video_requested){
         LogMessagesModel::instanceGround().add_message_warn("QOpenHD","Failed to request video service from sysutils");
         HUDLogMessagesModel::instance().add_message_warning("Sysutils video request failed");
     }
@@ -110,6 +116,27 @@ void decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamCon
             break;
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
+#ifdef __linux__
+        struct stat current_socket{};
+        if(::stat("/run/openhd/openhd_sys.sock", &current_socket)!=0){
+            socket_known=false;
+            video_requested=false;
+            continue;
+        }
+        // Sysutils owns the decoder and kills it on restart. A replacement
+        // socket identifies a new service instance; request video again once.
+        if(!socket_known || current_socket.st_dev!=video_socket.st_dev ||
+                current_socket.st_ino!=video_socket.st_ino ||
+                current_socket.st_ctim.tv_sec!=video_socket.st_ctim.tv_sec ||
+                current_socket.st_ctim.tv_nsec!=video_socket.st_ctim.tv_nsec){
+            video_requested=false;
+        }
+        video_socket=current_socket;
+        socket_known=true;
+        if(!video_requested){
+            video_requested=send_sysutil_video_request("start", stream_config, rotation, false, is_secondary);
+        }
+#endif
     }
     send_sysutil_video_request("stop", stream_config, rotation, false, is_secondary);
     qDebug()<<"dirty_generic_decode_via_external_decode_service end";

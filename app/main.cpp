@@ -439,6 +439,11 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
     const bool earlyPiSplash = QOpenHD::instance().is_platform_rpi();
+    if (earlyPiSplash) {
+        // The startup window also hosts the HUD above the external video plane.
+        // EGL's alpha format must be selected before this window is created.
+        QQuickWindow::setDefaultAlphaBuffer(true);
+    }
 #if defined(__linux__) && !defined(__android__)
     if (earlyPiSplash && (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM") ||
                           qEnvironmentVariable("QT_QPA_PLATFORM").startsWith("eglfs"))) {

@@ -5,7 +5,8 @@ Window {
     id: startupWindow
     visible: true
     visibility: Window.FullScreen
-    color: hudPresented && flightContent.item ? flightContent.item.windowColor : "black"
+    // BootSplash supplies the black background without making the EGL surface opaque.
+    color: hudPresented && flightContent.item ? flightContent.item.windowColor : "transparent"
     title: "QOpenHD EVO"
     contentItem.rotation: flightContent.item ? flightContent.item.screenRotation : 0
     contentOrientation: flightContent.item && flightContent.item.screenRotation !== 0
