@@ -142,11 +142,26 @@ Item {
         }
         var supported_resolutions=_cameraStreamModelPrimary.get_supported_resolutions();
         elements_model_camera_resolution_dynamic.clear()
-        for(var i=0; i<supported_resolutions.length; i++){
-            var tmp=supported_resolutions[i];
-            var verbose_str=_cameraStreamModelPrimary.make_resolution_fps_verbose(tmp);
-            //console.log("Supported:["+tmp+"]");
-            elements_model_camera_resolution_dynamic.append({value: tmp, verbose: verbose_str});
+        var currentFps = Number(String(_cameraStreamModelPrimary.curr_set_video_format).split("@")[1]) || 30;
+        var formats = [];
+        var positions = {};
+        for (var i=0; i<supported_resolutions.length; i++) {
+            var format = String(supported_resolutions[i]);
+            var resolution = format.split("@")[0];
+            if (settings.dev_show_advanced_button || positions[resolution] === undefined) {
+                positions[resolution] = formats.length;
+                formats.push(format);
+            } else {
+                var index = positions[resolution];
+                if (Math.abs(Number(format.split("@")[1]) - currentFps) <
+                        Math.abs(Number(formats[index].split("@")[1]) - currentFps)) formats[index] = format;
+            }
+        }
+        for (var j=0; j<formats.length; j++) {
+            var parts = formats[j].split("@");
+            var label = parts[0].split("x")[1] + "p";
+            if (settings.dev_show_advanced_button) label += "\n" + parts[1] + "fps";
+            elements_model_camera_resolution_dynamic.append({value: formats[j], verbose: label});
         }
         return elements_model_camera_resolution_dynamic;
     }

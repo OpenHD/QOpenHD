@@ -15,6 +15,7 @@
 #include "logging/logmessagesmodel.h"
 
 #include "ExternalDecodeService.hpp"
+#include "telemetry/models/camerastreammodel.h"
 
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     int err = 0;
@@ -83,6 +84,18 @@ AVCodecDecoder::~AVCodecDecoder()
 void AVCodecDecoder::init(bool primaryStream)
 {
     m_primary_stream=primaryStream;
+    for (int camera=0; camera<2; ++camera) {
+        QObject::connect(&CameraStreamModel::instance(camera), &CameraStreamModel::streamFormatChanged,
+                         this, [this, camera] {
+            const auto settings=QOpenHDVideoHelper::read_config_from_settings();
+            const bool secondary=m_primary_stream == settings.generic.qopenhd_switch_primary_secondary;
+            bool external=settings.generic.dev_always_use_generic_external_decode_service;
+#ifdef IS_PLATFORM_RPI
+            external=external || settings.generic.dev_rpi_use_external_omx_decode_service;
+#endif
+            if (external && camera == (secondary ? 1 : 0)) request_restart=true;
+        });
+    }
     qDebug() << "AVCodecDecoder::init()" << (m_primary_stream ? "primary" : "secondary");
     m_last_video_settings=QOpenHDVideoHelper::read_config_from_settings();
     decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );

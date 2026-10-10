@@ -55,7 +55,8 @@ FocusScope {
             "BITRATE_MBITS": qsTr("Encoder bitrate"),
             "VIDEO_CODEC": qsTr("Video codec"),
             "KEYFRAME_I": qsTr("Keyframe interval"),
-            "RESOLUTION_FPS": qsTr("Resolution and frame rate"),
+            "RESOLUTION_FPS": qsTr("Output resolution"),
+            "SENSOR_MODE": qsTr("Sensor mode"),
             "CAMERA_TYPE": qsTr("Camera model"),
             "LIBCAMERA_IMPL": qsTr("Camera backend"),
             "ROCKCHIP_IMPL": qsTr("Camera backend"),
@@ -105,7 +106,8 @@ FocusScope {
             "BITRATE_MBITS": qsTr("Encoder target when variable bitrate is off. Higher values use more link bandwidth."),
             "VIDEO_CODEC": qsTr("H.264 maximizes compatibility; H.265 can save bandwidth on supported hardware."),
             "KEYFRAME_I": qsTr("Shorter intervals recover faster after signal loss; longer intervals compress more efficiently."),
-            "RESOLUTION_FPS": qsTr("Choose a format supported by this camera. The stream restarts after a change."),
+            "RESOLUTION_FPS": qsTr("Choose the video resolution. The camera selects a suitable sensor mode automatically."),
+            "SENSOR_MODE": qsTr("Override the capture dimensions, or use Automatic for the selected video resolution."),
             "CAMERA_TYPE": qsTr("Select the camera connected to this air-unit slot."),
             "LIBCAMERA_IMPL": qsTr("Switch between the GStreamer libcamerasrc pipeline and the direct libcamera camera application. The stream restarts after a change."),
             "ROCKCHIP_IMPL": qsTr("Switch between GStreamer with Rockchip MPP elements and OpenHD's direct MPP implementation. OpenHD restarts after a change."),
@@ -220,9 +222,14 @@ FocusScope {
             if (resolutionPart(source[i]) === resolution) result.push(fpsPart(source[i]))
         return result
     }
+    function resolutionLabel(value) {
+        var names = {"1920x1080": "1080p", "1280x720": "720p", "2560x1440": "1440p",
+                     "3840x2160": "2160p", "640x480": "480p", "848x480": "480p"}
+        return names[value] || String(value).replace("x", " \u00d7 ")
+    }
     function sensorModes() {
         var source = streamModel ? streamModel.get_supported_resolutions() : []
-        var result = []
+        var result = ["0x0@0"]
         for (var i = 0; i < source.length; ++i) {
             var value = String(source[i])
             if (result.indexOf(value) < 0) result.push(value)
@@ -230,9 +237,10 @@ FocusScope {
         return result
     }
     function readableMode(value) {
+        if (String(value) === "0x0@0") return qsTr("Automatic")
         var parts = String(value).split("@")
         var resolution = parts[0].replace("x", " \u00d7 ")
-        return parts.length > 1 ? resolution + " @ " + parts[1] + qsTr(" fps") : resolution
+        return resolution
     }
 
     function handleNavigation(event) {
@@ -376,15 +384,15 @@ FocusScope {
             id: controlLoader
             Layout.fillWidth: true
             Layout.preferredWidth: root.compact ? -1 : Math.max(270, contentGrid.width * 0.42)
-            Layout.preferredHeight: root.paramId === "RESOLUTION_FPS" && root.hasSensorMode
-                                    ? 84 : (root.useSlider && !root.readOnly ? 54 : 38)
+            Layout.preferredHeight: root.useSlider && !root.readOnly ? 54 : 38
             enabled: !root.busy
             opacity: enabled ? 1.0 : 0.52
             sourceComponent: root.readOnly ? inlineControl
                              : (root.paramId === "CAMERA_TYPE" ? cameraTypeControl
+                             : (root.paramId === "SENSOR_MODE" ? sensorModeControl
                              : (root.paramId === "RESOLUTION_FPS" ? resolutionControl
                              : (root.useSlider ? sliderControl
-                             : (root.useToggle ? toggleControl : inlineControl))))
+                             : (root.useToggle ? toggleControl : inlineControl)))))
         }
     }
 
@@ -396,17 +404,12 @@ FocusScope {
             property Item focusControl: resolutionBox
             property string selectedResolution: root.resolutionPart(root.paramValue)
             property string selectedFps: root.fpsPart(root.paramValue)
-            property string selectedSensorMode: root.sensorModeValue
             property bool dirty: selectedResolution + "@" + selectedFps !== String(root.paramValue)
-            property bool sensorModeDirty: selectedSensorMode !== root.sensorModeValue
             Connections {
                 target: root
                 function onParamValueChanged() {
                     formatEditor.selectedResolution = root.resolutionPart(root.paramValue)
                     formatEditor.selectedFps = root.fpsPart(root.paramValue)
-                }
-                function onSensorModeValueChanged() {
-                    formatEditor.selectedSensorMode = root.sensorModeValue
                 }
             }
 
@@ -420,14 +423,15 @@ FocusScope {
                     model: root.uniqueResolutions()
                     currentIndex: model.indexOf(formatEditor.selectedResolution)
                     displayText: currentIndex >= 0
-                                 ? String(model[currentIndex]).replace("x", " \u00d7 ")
+                                 ? root.resolutionLabel(String(model[currentIndex]))
                                  : formatEditor.selectedResolution
                     enabled: !root.busy && !root.readOnly && model.length > 0
                     popupWidth: Math.max(width, 210)
                     Keys.priority: Keys.BeforeItem
                     Keys.onPressed: function(event) {
                         if (event.key === Qt.Key_Right) {
-                            fpsBox.forceActiveFocus()
+                            if (fpsBox.visible) fpsBox.forceActiveFocus()
+                            else formatApplyButton.forceActiveFocus()
                             event.accepted = true
                         } else if (event.key === Qt.Key_Left) {
                             root.categoryRequested()
@@ -445,6 +449,7 @@ FocusScope {
                 }
                 CompactLinkComboBox {
                     id: fpsBox
+                    visible: settings.dev_show_advanced_button
                     Layout.preferredWidth: 96
                     Layout.preferredHeight: 38
                     model: root.fpsForResolution(formatEditor.selectedResolution)
@@ -491,10 +496,8 @@ FocusScope {
                     Keys.priority: Keys.BeforeItem
                     Keys.onPressed: function(event) {
                         if (event.key === Qt.Key_Left) {
-                            fpsBox.forceActiveFocus()
-                            event.accepted = true
-                        } else if (event.key === Qt.Key_Right && root.hasSensorMode) {
-                            sensorModeBox.forceActiveFocus()
+                            if (fpsBox.visible) fpsBox.forceActiveFocus()
+                            else resolutionBox.forceActiveFocus()
                             event.accepted = true
                         } else {
                             root.handleNavigation(event)
@@ -504,33 +507,37 @@ FocusScope {
                 }
             }
 
+        }
+    }
+
+    Component {
+        id: sensorModeControl
             RowLayout {
                 Layout.fillWidth: true
-                visible: root.hasSensorMode
-                spacing: 8
-                Text {
-                    text: qsTr("Advanced sensor mode")
-                    color: settings_form.secondaryText
-                    font.pixelSize: 9
-                    font.bold: true
-                    Layout.preferredWidth: root.compact ? 118 : 132
-                    elide: Text.ElideRight
+                id: sensorEditor
+                property Item focusControl: sensorModeBox
+                property string selectedSensorMode: String(root.paramValue)
+                property bool sensorModeDirty: selectedSensorMode !== String(root.paramValue)
+                Connections {
+                    target: root
+                    function onParamValueChanged() { sensorEditor.selectedSensorMode = String(root.paramValue) }
                 }
+                spacing: 8
                 CompactLinkComboBox {
                     id: sensorModeBox
                     Layout.fillWidth: true
                     Layout.preferredHeight: 38
                     model: root.sensorModes()
-                    currentIndex: model.indexOf(formatEditor.selectedSensorMode)
+                    currentIndex: model.indexOf(sensorEditor.selectedSensorMode)
                     displayText: root.readableMode(currentIndex >= 0
                                                    ? model[currentIndex]
-                                                   : formatEditor.selectedSensorMode)
+                                                   : sensorEditor.selectedSensorMode)
                     enabled: !root.busy && !root.readOnly && model.length > 0
                     popupWidth: Math.max(width, 250)
                     Keys.priority: Keys.BeforeItem
                     Keys.onPressed: function(event) {
                         if (event.key === Qt.Key_Left) {
-                            formatApplyButton.forceActiveFocus()
+                            root.categoryRequested()
                             event.accepted = true
                         } else if (event.key === Qt.Key_Right) {
                             sensorModeApplyButton.forceActiveFocus()
@@ -539,14 +546,14 @@ FocusScope {
                             root.handleNavigation(event)
                         }
                     }
-                    onActivated: formatEditor.selectedSensorMode = String(model[currentIndex])
+                    onActivated: sensorEditor.selectedSensorMode = String(model[currentIndex])
                 }
                 Button {
                     id: sensorModeApplyButton
                     Layout.preferredWidth: 68
                     Layout.preferredHeight: 38
                     text: qsTr("Apply")
-                    enabled: formatEditor.sensorModeDirty && !root.busy && !root.readOnly
+                    enabled: sensorEditor.sensorModeDirty && !root.busy && !root.readOnly
                     hoverEnabled: true
                     font.pixelSize: 10
                     font.bold: true
@@ -572,11 +579,9 @@ FocusScope {
                             root.handleNavigation(event)
                         }
                     }
-                    onClicked: root.settingsModel.try_set_param_string_async(
-                                   "SENSOR_MODE", formatEditor.selectedSensorMode, true)
+                    onClicked: root.commitString(sensorEditor.selectedSensorMode)
                 }
             }
-        }
     }
 
     Component {

@@ -249,6 +249,14 @@ void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QSt
         m_is_currently_busy=false;
         set_ui_is_busy(false);
         finalize_update_param(param_id,value.toStdString(),result.is_accepted(),log_result);
+        if(result.is_accepted() && param_id == "RESOLUTION_FPS"){
+            // Resolution can reset SENSOR_MODE on the air unit. Read back the
+            // actual values after leaving XParam's callback and its mutex.
+            QMetaObject::invokeMethod(this, [this]() {
+                if(param_string_exists("SENSOR_MODE"))
+                    try_refetch_all_parameters_async(false);
+            }, Qt::QueuedConnection);
+        }
      };
      XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
 }

@@ -47,7 +47,7 @@ SideBarBasePanel{
 
     function takeover_control(){
         if (gx_camera && gxControls.count) gxControls.itemAt(0).takeover_control();
-        else libcamera_impl.takeover_control();
+        else brightness.takeover_control();
     }
 
     Column {
@@ -55,40 +55,13 @@ SideBarBasePanel{
         anchors.topMargin: 0
         spacing: 5
         MavlinkChoiceElement2{
-            id: libcamera_impl
-            visible: !cameraPanel.gx_camera
-            m_title: "Camera backend"
-            m_param_id: "LIBCAMERA_IMPL"
-            m_settings_model: _airCameraSettingsModel
-            onGoto_previous: {
-                sidebar.regain_control_on_sidebar_stack()
-            }
-            onGoto_next: {
-                sensor_mode.takeover_control();
-            }
-        }
-        MavlinkChoiceElement2{
-            id: sensor_mode
-            visible: !cameraPanel.gx_camera
-            m_title: "Sensor mode"
-            m_param_id: "SENSOR_MODE"
-            m_settings_model: _airCameraSettingsModel
-            override_takes_string_param: true
-            onGoto_previous: {
-                libcamera_impl.takeover_control();
-            }
-            onGoto_next: {
-                brightness.takeover_control();
-            }
-        }
-        MavlinkChoiceElement2{
             id: brightness
             visible: !cameraPanel.gx_camera
             m_title: "Brightness"
             m_param_id: "BRIGHTNESS"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
-                sensor_mode.takeover_control();
+                sidebar.regain_control_on_sidebar_stack();
             }
             onGoto_next: {
                 saturation.takeover_control();

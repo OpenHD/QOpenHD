@@ -238,6 +238,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
            if(m_curr_res_framerate!=new_res_fps){
                m_curr_res_framerate=new_res_fps;
                qDebug()<<"Res/Framerate changed:"<<resolution_framerate_to_string(m_curr_res_framerate).c_str();
+               emit streamFormatChanged();
            }
         }
     }
