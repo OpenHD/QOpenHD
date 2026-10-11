@@ -98,8 +98,21 @@ Item {
         id: loadingSettingsOverlay
         anchors.fill: parent
         z: 5
-        color: "#091827"
+        color: "transparent"
         visible: settings_panel.visible && settings_panel.status !== Loader.Ready
+        // Consume taps while loading, with a visible way back to the HUD.
+        MouseArea { anchors.fill: parent }
+        Rectangle {
+            anchors.centerIn: parent
+            width: 240; height: 240; radius: 12
+            color: "#a6102235"
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: parent.height / 2 + 76
+            text: qsTr("Close")
+            onClicked: settings_panel.close_all()
+        }
         BusyIndicator {
             anchors.centerIn: parent
             running: parent.visible && settings_panel.status !== Loader.Error

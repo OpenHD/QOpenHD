@@ -74,17 +74,13 @@ Rectangle {
     }
 
     function focusCurrentPage() {
-        if (currentPage === 0) quickPanel.gainFocus()
-        else if (currentPage === 1) cameraDualPanel.gainFocus()
-        else if (currentPage === 2) storagePanel.gainFocus()
-        else if (currentPage === 3) airPanel.gainFocus()
-        else if (currentPage === 4) groundPanel.gainFocus()
-        else if (currentPage === 5) extrasPanel.gainFocus()
+        var page = settingsStack.children[currentPage]
+        if (page) page.gainFocus()
     }
 
     function user_quidance_animate_channel_scan() {
         currentPage = 0
-        quickPanel.user_quidance_animate_channel_scan()
+        linkPage.item.user_quidance_animate_channel_scan()
     }
 
     ColumnLayout {
@@ -196,36 +192,49 @@ Rectangle {
             clip: true
 
             StackLayout {
+                id: settingsStack
                 anchors.fill: parent
                 anchors.margins: 1
                 currentIndex: root.currentPage
 
-                LinkQuickPanel { id: quickPanel; onBackRequested: root.focusTab(0) }
-                CameraDualPanel {
-                    id: cameraDualPanel
-                    onBackRequested: root.focusTab(1)
+                AdvancedPageLoader { id: linkPage; selected: root.currentPage === 0; sourceComponent:
+                    LinkQuickPanel { id: quickPanel; onBackRequested: root.focusTab(0) }
                 }
-                StorageSettingsPanel { id: storagePanel; onBackRequested: root.focusTab(2) }
-                MavlinkParamPanel {
-                    id: airPanel
-                    m_name: "AIR"
-                    m_show_link_status: true
-                    m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
-                    m_instanceCheckIsAvlie: _ohdSystemAir
-                    m_requires_alive_air: true
-                    onBackRequested: root.focusTab(3)
+                AdvancedPageLoader { selected: root.currentPage === 1; sourceComponent:
+                    CameraDualPanel {
+                        id: cameraDualPanel
+                        onBackRequested: root.focusTab(1)
+                    }
                 }
-                MavlinkParamPanel {
-                    id: groundPanel
-                    m_name: "GROUND"
-                    m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
-                    m_instanceCheckIsAvlie: _ohdSystemGround
-                    m_requires_alive_air: false
-                    onBackRequested: root.focusTab(4)
+                AdvancedPageLoader { selected: root.currentPage === 2; sourceComponent:
+                    StorageSettingsPanel { id: storagePanel; onBackRequested: root.focusTab(2) }
                 }
-                FeatureSettingsPanel {
-                    id: extrasPanel
-                    onBackRequested: root.focusTab(5)
+                AdvancedPageLoader { selected: root.currentPage === 3; sourceComponent:
+                    MavlinkParamPanel {
+                        id: airPanel
+                        m_name: "AIR"
+                        m_show_link_status: true
+                        m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
+                        m_instanceCheckIsAvlie: _ohdSystemAir
+                        m_requires_alive_air: true
+                        onBackRequested: root.focusTab(3)
+                    }
+                }
+                AdvancedPageLoader { selected: root.currentPage === 4; sourceComponent:
+                    MavlinkParamPanel {
+                        id: groundPanel
+                        m_name: "GROUND"
+                        m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
+                        m_instanceCheckIsAvlie: _ohdSystemGround
+                        m_requires_alive_air: false
+                        onBackRequested: root.focusTab(4)
+                    }
+                }
+                AdvancedPageLoader { selected: root.currentPage === 5; sourceComponent:
+                    FeatureSettingsPanel {
+                        id: extrasPanel
+                        onBackRequested: root.focusTab(5)
+                    }
                 }
             }
         }

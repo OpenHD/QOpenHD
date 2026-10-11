@@ -94,6 +94,7 @@
         <file>ui/widgets/map/MapComponent.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
         <file>ui/configpopup/AdvancedPage.qml</file>
+        <file>ui/configpopup/AdvancedPageLoader.qml</file>
         <file>ui/configpopup/AdvancedCard.qml</file>
         <file>ui/configpopup/AdvancedActionButton.qml</file>
         <file>ui/configpopup/AdvancedTabButton.qml</file>

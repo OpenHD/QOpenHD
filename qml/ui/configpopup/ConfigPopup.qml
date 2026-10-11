@@ -14,7 +14,7 @@ import "openhd_settings"
 import "rc"
 import "status"
 
-// Shared framework for the advanced menu. Pages remain in the StackLayout;
+// Shared framework for the advanced menu. Pages are created on first selection;
 // responsive navigation and keyboard ownership live here.
 Rectangle {
     id: settings_form
@@ -22,6 +22,10 @@ Rectangle {
     z: 4
     color: pageBackground
     focus: visible
+
+    readonly property var statusPanel: statusPage.item
+    readonly property var ohdSettingsPanel: openhdPage.item
+    readonly property var appDeveloperStatsPanel: developerPage.item
 
     property bool darkMode: advancedThemeSettings.darkMode
     property color pageBackground: darkMode ? "#091827" : "#eef4fa"
@@ -247,19 +251,8 @@ Rectangle {
                     mainStackLayout.currentIndex = currentIndex
                     event.accepted = true
                 } else if (event.key === Qt.Key_Right) {
-                    if (currentIndex === 0)
-                        statusPanel.gainFocus()
-                    else if (currentIndex === 1)
-                        ohdSettingsPanel.gainFocus()
-                    else if (currentIndex === 2)
-                        appSettingsPanel.gainFocus()
-                    else {
-                        var page = mainStackLayout.itemAt(currentIndex)
-                        if (page && page.gainFocus)
-                            page.gainFocus()
-                        else if (page)
-                            page.forceActiveFocus()
-                    }
+                    var page = mainStackLayout.children[currentIndex]
+                    if (page) page.gainFocus()
                     event.accepted = true
                 } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Escape) {
                     close_all()
@@ -379,15 +372,15 @@ Rectangle {
             id: mainStackLayout
             anchors.fill: parent
             currentIndex: 0
-            PanelStatus { id: statusPanel }
-            OHDSettingsPanel { id: ohdSettingsPanel }
-            AppSettingsPanel { id: appSettingsPanel }
-            LogMessagesStatusView { id: logMessagesStatusView }
-            RcInfoPanel { id: rcInfoPanel }
-            ConnectPanel { id: connectPanel }
-            Credits { id: creditspanel }
-            MavlinkDebugPanel { id: mavlinkDebugPanel }
-            AppDeveloperStatsPanel { id: appDeveloperStatsPanel }
+            AdvancedPageLoader { id: statusPage; selected: mainStackLayout.currentIndex === 0; sourceComponent: PanelStatus { } }
+            AdvancedPageLoader { id: openhdPage; selected: mainStackLayout.currentIndex === 1; sourceComponent: OHDSettingsPanel { } }
+            AdvancedPageLoader { id: osdPage; selected: mainStackLayout.currentIndex === 2; sourceComponent: AppSettingsPanel { } }
+            AdvancedPageLoader { id: logPage; selected: mainStackLayout.currentIndex === 3; sourceComponent: LogMessagesStatusView { } }
+            AdvancedPageLoader { id: rcPage; selected: mainStackLayout.currentIndex === 4; sourceComponent: RcInfoPanel { } }
+            AdvancedPageLoader { id: connectPage; selected: mainStackLayout.currentIndex === 5; sourceComponent: ConnectPanel { } }
+            AdvancedPageLoader { id: creditsPage; selected: mainStackLayout.currentIndex === 6; sourceComponent: Credits { } }
+            AdvancedPageLoader { id: mavDebugPage; selected: mainStackLayout.currentIndex === 7; sourceComponent: MavlinkDebugPanel { } }
+            AdvancedPageLoader { id: developerPage; selected: mainStackLayout.currentIndex === 8; sourceComponent: AppDeveloperStatsPanel { } }
         }
     }
 }

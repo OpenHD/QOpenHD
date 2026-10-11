@@ -42,7 +42,7 @@ Rectangle {
     function gainFocus() { focusTab(currentPage) }
 
     function focusCurrentPage() {
-        var page = settingsStack.itemAt(currentPage)
+        var page = settingsStack.children[currentPage]
         if (page) page.gainFocus()
     }
 
@@ -172,13 +172,13 @@ Rectangle {
                 anchors.margins: 1
                 currentIndex: root.currentPage
 
-                AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppWidgetSettingsView { anchors.fill: parent } }
-                AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppWidgetStyleSettingsView { anchors.fill: parent } }
-                AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppGeneralSettingsView { anchors.fill: parent } }
-                AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVehicleSettingsView { anchors.fill: parent } }
-                AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppScreenSettingsView { anchors.fill: parent } }
-                AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVideoSettingsView { anchors.fill: parent } }
-                AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppDevSettingsView { anchors.fill: parent } }
+                AdvancedPageLoader { selected: root.currentPage === 0; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppWidgetSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 1; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppWidgetStyleSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 2; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppGeneralSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 3; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVehicleSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 4; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppScreenSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 5; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVideoSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 6; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppDevSettingsView { anchors.fill: parent } } }
             }
         }
 
