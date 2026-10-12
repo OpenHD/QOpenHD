@@ -7,7 +7,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../../ui" as Ui
 import "../elements"
 
 Item {
@@ -141,11 +140,22 @@ Item {
             return elements_model_camera_resolution_bup;
         }
         var supported_resolutions=_cameraStreamModelPrimary.get_supported_resolutions();
+        if (_airCameraSettingsModel.param_int_exists("RK_CAM_MODE")) {
+            var mode = _airCameraSettingsModel.get_cached_int("RK_CAM_MODE");
+            var id = mode === 0 ? "RK_FMT_FULL" : mode === 1 ? "RK_FMT_CROP" : "RK_FMT_HDR";
+            // The air unit supplies the actual pipeline choices. An empty list
+            // must not fall back to unrelated static resolutions.
+            supported_resolutions = _airCameraSettingsModel.param_string_exists(id) ?
+                        _airCameraSettingsModel.get_cached_string(id).split(";").filter(function(x) { return x.length > 0; }) : [];
+        }
         elements_model_camera_resolution_dynamic.clear()
         for (var i=0; i<supported_resolutions.length; i++) {
             var format = String(supported_resolutions[i]);
             var parts = format.split("@");
             var label = parts[0].split("x")[1] + "p\n" + parts[1] + "fps";
+            if (_airCameraSettingsModel.param_int_exists("RK_CAM_MODE") &&
+                    _airCameraSettingsModel.get_cached_int("RK_CAM_MODE") === 2 && parts[0] === "1280x720")
+                label += "\nExperimental crop";
             elements_model_camera_resolution_dynamic.append({value: format, verbose: label});
         }
         return elements_model_camera_resolution_dynamic;
@@ -254,7 +264,18 @@ Item {
         }
         return gx_choices;
     }
+    ListModel { id: readout_modes }
+    function get_readout_modes() {
+        readout_modes.clear();
+        readout_modes.append({value: 0, verbose: "Full frame"});
+        readout_modes.append({value: 1, verbose: "Crop"});
+        var hdr = _airCameraSettingsModel.param_string_exists("RK_FMT_HDR") &&
+                _airCameraSettingsModel.get_cached_string("RK_FMT_HDR").length > 0;
+        readout_modes.append({value: 2, verbose: hdr ? "HDR" : "HDR\nUnavailable"});
+        return readout_modes;
+    }
     function get_model(param_id){
+        if (param_id === "RK_CAM_MODE") return get_readout_modes();
         if (param_id.indexOf("GX_") === 0) return gx_model(param_id);
         if(param_id=="BRIGHTNESS"){
             return elements_model_brightness;

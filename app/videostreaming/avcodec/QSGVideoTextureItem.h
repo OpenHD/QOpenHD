@@ -19,15 +19,19 @@ class QSGVideoTextureItem : public QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
+    Q_PROPERTY(QVector3D previewGain READ previewGain WRITE setPreviewGain NOTIFY previewGainChanged)
     Q_PROPERTY(bool primaryStream READ primaryStream WRITE setPrimaryStream NOTIFY primaryStreamChanged)
 public:
     QSGVideoTextureItem();
     ~QSGVideoTextureItem() override;
 
+    QVector3D previewGain() const { return m_preview_gain; }
+    void setPreviewGain(const QVector3D& gain);
     bool primaryStream() const { return m_primary_stream; }
     void setPrimaryStream(bool primaryStream);
 
 signals:
+    void previewGainChanged();
     void primaryStreamChanged();
 
 public slots:
@@ -46,6 +50,7 @@ public slots:
     void m_QQuickWindow_beforeRenderPassRecording();
 private:
     std::unique_ptr<AVCodecDecoder> m_av_codec_decoder=nullptr;
+    QVector3D m_preview_gain{1.0f,1.0f,1.0f};
     bool m_primary_stream=true;
     bool m_decoder_started=false;
 };

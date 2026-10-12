@@ -8,6 +8,11 @@
 #include <QTimer>
 #include <QFile>
 #include <QHostAddress>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QSaveFile>
+#include <QStandardPaths>
+#include <QDir>
 
 #include<iostream>
 #include <sys/stat.h>
@@ -465,4 +470,18 @@ void QOpenHD::show_toast_and_add_remove_timer(QString text,bool long_toast)
     //const int timeout_ms = long_toast ? 8*1000 : 3*1000;
     const int timeout_ms = long_toast ? 3500 : 2000;
     QTimer::singleShot(timeout_ms, this, &QOpenHD::handle_toast_timeout);
+}
+
+QString QOpenHD::export_color_preview(const QString& json)
+{
+    QJsonParseError error;
+    const auto doc=QJsonDocument::fromJson(json.toUtf8(), &error);
+    if(error.error != QJsonParseError::NoError || !doc.isObject()) return QString();
+    const auto directory=QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    if(directory.isEmpty() || !QDir().mkpath(directory)) return QString();
+    const auto path=directory + "/color-preview.json";
+    QSaveFile file(path);
+    const auto data=doc.toJson();
+    if(!file.open(QIODevice::WriteOnly) || file.write(data) != data.size() || !file.commit()) return QString();
+    return path;
 }

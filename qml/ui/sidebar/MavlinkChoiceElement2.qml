@@ -7,7 +7,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../../ui" as Ui
 import "../elements"
 
 
@@ -200,6 +199,13 @@ BaseJoyEditElement2{
         if (!override_takes_string_param) {
             value_new = Number(value_new);
             if (!isFinite(value_new)) return;
+        }
+        if (m_param_id === "RK_CAM_MODE" && value_new === 2 &&
+                (!m_settings_model.param_string_exists("RK_FMT_HDR") ||
+                 m_settings_model.get_cached_string("RK_FMT_HDR").length === 0)) {
+            _qopenhd.show_toast(m_settings_model.param_string_exists("RK_HDR_STATUS") ?
+                m_settings_model.get_cached_string("RK_HDR_STATUS") : qsTr("HDR video is unavailable on this image"));
+            return;
         }
         // A few need to be handled specially
          if(m_param_id==mPARAM_ID_FREQUENCY){

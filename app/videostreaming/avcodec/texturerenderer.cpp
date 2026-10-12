@@ -95,6 +95,7 @@ void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
    }
    glDisable(GL_DEPTH_TEST);
 
+   gl_video_renderer->set_preview_gain(m_preview_gain);
    gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames,rotation_degree);
 
    // Composite secondary video in the same external-command block. Keeping one

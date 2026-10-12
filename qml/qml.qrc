@@ -13,6 +13,8 @@
 </qresource>
 <qresource prefix="/">
         <file>main.qml</file>
+        <file>video/ColorPreviewMath.js</file>
+        <file>ui/sidebar/ColorPreviewControls.qml</file>
         <file>HudContent.qml</file>
         <file>BootSplash.qml</file>
         <file>BootVideo.qml</file>

@@ -23,6 +23,16 @@ QSGVideoTextureItem::~QSGVideoTextureItem()
     }
 }
 
+void QSGVideoTextureItem::setPreviewGain(const QVector3D& gain)
+{
+    auto safe = [](float x) { return qIsFinite(x) ? qBound(0.1f,x,8.0f) : 1.0f; };
+    const QVector3D value(safe(gain.x()),safe(gain.y()),safe(gain.z()));
+    if(value == m_preview_gain) return;
+    m_preview_gain=value;
+    emit previewGainChanged();
+    update();
+}
+
 void QSGVideoTextureItem::setPrimaryStream(bool primaryStream)
 {
     if (m_decoder_started || m_primary_stream == primaryStream) {
@@ -81,6 +91,7 @@ void QSGVideoTextureItem::sync()
     const qreal dpr=window()->devicePixelRatio();
     if (m_primary_stream) {
         m_renderer->setViewportSize(window()->size() * dpr);
+        m_renderer->setPreviewGain(m_preview_gain);
     } else {
         const QPointF top_left=mapToScene(QPointF(0, 0));
         const int viewport_x=qRound(top_left.x() * dpr);

@@ -55,6 +55,7 @@ public:
     // only works on linux, dirty helper to get local IP address
     Q_INVOKABLE QString show_local_ip();
     Q_INVOKABLE QString write_local_log();
+    Q_INVOKABLE QString export_color_preview(const QString& json);
     Q_INVOKABLE QString credit_archive_text() const;
     Q_PROPERTY(int qtMajorVersion READ qtMajorVersion CONSTANT)
     int qtMajorVersion() const { return QT_VERSION_MAJOR; }

@@ -59,18 +59,22 @@ static const GLchar* fragment_shader_source_GL_OES_EGL_IMAGE_EXTERNAL =
     "#version 100\n"
 	"#extension GL_OES_EGL_image_external : require\n"
 	"precision mediump float;\n"
+    "uniform vec3 preview_gain;\n"
 	"uniform samplerExternalOES texture;\n"
     "varying vec2 v_texCoord;\n"
 	"void main() {	\n"
     "	gl_FragColor = texture2D( texture, v_texCoord );\n"
+    "gl_FragColor.rgb = clamp(gl_FragColor.rgb * preview_gain, 0.0, 1.0);\n"
 	"}\n";
 static const GLchar* fragment_shader_source_RGB =
     "#version 100\n"
 	"precision mediump float;\n"
+    "uniform vec3 preview_gain;\n"
 	"uniform sampler2D s_texture;\n"
     "varying vec2 v_texCoord;\n"
 	"void main() {	\n"
     "	gl_FragColor = texture2D( s_texture, v_texCoord );\n"
+    "gl_FragColor.rgb = clamp(gl_FragColor.rgb * preview_gain, 0.0, 1.0);\n"
     "	gl_FragColor.a = 1.0;\n"
 	"}\n";
 // I think we always have BT601 ?
@@ -78,6 +82,7 @@ static const GLchar* fragment_shader_source_RGB =
 static const GLchar* fragment_shader_source_YUV420P =
     "#version 100\n"
 	"precision highp float;\n"
+    "uniform vec3 preview_gain;\n"
 	"uniform sampler2D s_texture_y;\n"
 	"uniform sampler2D s_texture_u;\n"
 	"uniform sampler2D s_texture_v;\n"
@@ -98,10 +103,12 @@ static const GLchar* fragment_shader_source_YUV420P =
 	"	rgb.g = dot(yuv, Gcoeff);\n"
 	"	rgb.b = dot(yuv, Bcoeff);\n"
     "	gl_FragColor = vec4(rgb, 1.0);\n"
+    "gl_FragColor.rgb = clamp(gl_FragColor.rgb * preview_gain, 0.0, 1.0);\n"
 	"}\n";
 static const GLchar* fragment_shader_source_NV12 =
     "#version 100\n"
 	"precision mediump float;\n"
+    "uniform vec3 preview_gain;\n"
 	"uniform sampler2D s_texture_y;\n"
 	"uniform sampler2D s_texture_uv;\n"
     "varying vec2 v_texCoord;\n"
@@ -116,6 +123,7 @@ static const GLchar* fragment_shader_source_NV12 =
     "        1.5960, -0.8129, 0.0"
 	"		);\n"
     "	gl_FragColor = vec4(clamp(YCbCr*colorMatrix,0.0,1.0), 1.0);\n"
+    "gl_FragColor.rgb = clamp(gl_FragColor.rgb * preview_gain, 0.0, 1.0);\n"
 	"}\n";
 
 /// negative x,y is bottom left and first vertex
@@ -260,6 +268,7 @@ void GL_shaders::afterDrawVboCleanup(GLint pos, GLint uvs) {
 
 void GL_shaders::draw_rgb(GLuint texture,int rotation_degree) {
   glUseProgram(rgba_shader.program);
+  apply_preview_gain(rgba_shader.program);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
   glUniform1i(rgba_shader.sampler,0);
@@ -272,6 +281,7 @@ void GL_shaders::draw_rgb(GLuint texture,int rotation_degree) {
 
 void GL_shaders::draw_egl(GLuint texture,int rotation_degree) {
   glUseProgram(egl_shader.program);
+  apply_preview_gain(egl_shader.program);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES,texture);
   beforeDrawVboSetup(egl_shader.pos,egl_shader.uvs,rotation_degree);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -306,6 +316,7 @@ static void set_uniforms_ascending(std::vector<GLint> uniforms){
 void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV,int rotation_degree) {
   checkGlError("B Draw YUV420 texture");
   glUseProgram(yuv_420P_shader.program);
+  apply_preview_gain(yuv_420P_shader.program);
   const std::vector<GLuint> textures{textureY,textureU,textureV};
   bind_textures(textures);
   const std::vector<GLint> uniforms{yuv_420P_shader.s_texture_y,yuv_420P_shader.s_texture_u,yuv_420P_shader.s_texture_v};
@@ -319,6 +330,7 @@ void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV,
 
 void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV,int rotation_degree) {
   glUseProgram(nv12_shader.program);
+  apply_preview_gain(nv12_shader.program);
   const std::vector<GLuint> textures{textureY,textureUV};
   bind_textures(textures);
   const std::vector<GLint> uniforms{nv12_shader.s_texture_y,nv12_shader.s_texture_uv};
@@ -337,4 +349,8 @@ void GL_shaders::debug_set_swap_interval(int interval)
         std::cerr<<"Cannot set swap interval of "<<interval<<"\n";
     }
 
+}
+
+void GL_shaders::apply_preview_gain(GLuint program) const {
+    glUniform3f(glGetUniformLocation(program, "preview_gain"), preview_gain[0], preview_gain[1], preview_gain[2]);
 }

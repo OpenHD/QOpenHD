@@ -9,6 +9,7 @@
 #include <chrono>
 #include <mutex>
 #include <QRect>
+#include <QVector3D>
 
 #include "gl/gl_videorenderer.h"
 
@@ -23,6 +24,7 @@ public:
 
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
     void setSecondaryViewport(const QRect &viewport);
+    void setPreviewGain(const QVector3D& gain) { m_preview_gain={{gain.x(),gain.y(),gain.z()}}; }
     // create and link the shaders
     void initGL(QQuickWindow *window);
     // draw function
@@ -40,6 +42,7 @@ public:
         m_clear_all_video_textures_next_frame=true;
     }
 private:
+    std::array<float,3> m_preview_gain{{1.0f,1.0f,1.0f}};
     QSize m_viewportSize;
     QRect m_secondaryViewport;
     std::mutex m_secondary_viewport_mutex;

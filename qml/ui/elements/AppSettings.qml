@@ -37,6 +37,11 @@ Settings {
 
     // Android debugging helper: disable the primary video renderer while keeping the secondary stream available
     property bool dev_disable_primary_video: false
+    property bool color_preview_enabled: false
+    property int color_preview_temperature: 6500
+    property double color_preview_red: 1.0
+    property double color_preview_green: 1.0
+    property double color_preview_blue: 1.0
 
     // Video decode settings, per primary / secondary video
     property int qopenhd_primary_video_rtp_input_port: 5600

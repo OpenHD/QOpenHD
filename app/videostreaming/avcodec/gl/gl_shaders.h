@@ -9,6 +9,7 @@ extern "C" {
 #include "glhelp.h"
 }
 #include <string>
+#include <array>
 
 // Holds multiple GL programs that render different types of (Video) textures
 // All textures fill up the full gl viewport, adjust it accordingly to preserve video ratio.
@@ -49,6 +50,8 @@ class GL_shaders {
 	GLint s_texture_u=-1;
 	GLint s_texture_v=-1;
   };
+  std::array<float,3> preview_gain{{1.0f,1.0f,1.0f}};
+  void apply_preview_gain(GLuint program) const;
   EGLShader egl_shader;
   RGBAShader rgba_shader;
   YUV420PShader yuv_420P_shader;
@@ -62,6 +65,7 @@ class GL_shaders {
   static void checkGlError(const std::string& caller);
   // needs to be called on the OpenGL thread and before the first use of any draw_XXX calls
   void initialize();
+  void set_preview_gain(const std::array<float,3>& gain) { preview_gain=gain; }
   // "normal" RGB(A) texture
   void draw_rgb(GLuint texture,int rotation_degree);
   // gl oes egl external texture
