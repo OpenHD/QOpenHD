@@ -1,4 +1,5 @@
 <RCC>
+  <qresource prefix="/settings"><file alias="catalog.json">../app/telemetry/settings/catalog.json</file></qresource>
 <qresource prefix="/translations">
         <file>QOpenHD_en.qm</file>
         <file>QOpenHD_de.qm</file>

@@ -7,6 +7,7 @@
 
 #include <qdebug.h>
 #include "../../MavlinkTelemetry.h"
+#include "../../settings/documentedparam.h"
 
 XParam::XParam()
 {
@@ -37,6 +38,22 @@ XParam &XParam::instance()
 
 bool XParam::process_message(const mavlink_message_t &msg)
 {
+    if(msg.msgid==MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL){
+        mavlink_file_transfer_protocol_t ftp{};
+        mavlink_msg_file_transfer_protocol_decode(&msg,&ftp);
+        if(ftp.target_system!=255 || ftp.target_component!=190) return false;
+        bool handled=false;
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            const auto it=m_metadata_downloads.find({msg.sysid,msg.compid});
+            if(it==m_metadata_downloads.end()) return false;
+            openhd::settings::FtpPayload payload{};
+            std::copy_n(ftp.payload,251,payload.begin());
+            handled=it->second.client.handle(payload);
+        }
+        if(handled) poll_metadata(); // Advance immediately; no 100 ms delay per block.
+        return handled;
+    }
     if(msg.msgid==MAVLINK_MSG_ID_PARAM_EXT_ACK){
         mavlink_param_ext_ack_t ack;
         mavlink_msg_param_ext_ack_decode(&msg,&ack);
@@ -47,6 +64,40 @@ bool XParam::process_message(const mavlink_message_t &msg)
         return handle_param_ext_value(response,msg.sysid,msg.compid);
     }
     return false;
+}
+
+void XParam::try_get_metadata_async(int sys,int comp,std::function<void(bool)> callback)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    auto& download=m_metadata_downloads[{sys,comp}];
+    DocumentedParam::invalidate_metadata(sys,comp);
+    download.callback=std::move(callback);
+    download.client.start("/openhd/settings.json");
+}
+
+void XParam::poll_metadata()
+{
+    std::vector<mavlink_message_t> outbound;
+    std::vector<std::pair<std::function<void(bool)>,bool>> completed;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        for(auto it=m_metadata_downloads.begin();it!=m_metadata_downloads.end();){
+            auto& download=it->second;
+            if(const auto payload=download.client.poll()){
+                mavlink_message_t msg{};
+                mavlink_msg_file_transfer_protocol_pack(255,190,&msg,0,it->first.first,it->first.second,payload->data());
+                outbound.push_back(msg);
+            }
+            if(!download.client.active){
+                const bool ok=download.client.success && DocumentedParam::install_metadata(it->first.first,it->first.second,
+                    QByteArray::fromStdString(download.client.content));
+                completed.push_back({download.callback,ok});
+                it=m_metadata_downloads.erase(it);
+            }else ++it;
+        }
+    }
+    for(const auto& message:outbound) MavlinkTelemetry::instance().sendMessage(message);
+    for(const auto& completion:completed) if(completion.first) completion.first(completion.second);
 }
 
 bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RESULT_CB result_cb,PROGRESS_CB opt_progress_cb, std::chrono::milliseconds retransmit_delay, int n_wanted_retransmissions)
@@ -417,6 +468,7 @@ void XParam::loop_timeout()
 {
     while(m_timeout_thread_run){
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        poll_metadata();
         check_timeout_param_get_all();
         check_timeout_param_set();
         /*std::lock_guard<std::mutex> lock(m_mutex);

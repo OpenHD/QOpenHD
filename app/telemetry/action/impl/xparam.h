@@ -9,6 +9,8 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <map>
+#include "../../settings/metadata_ftp.h"
 
 
 #include "../../tutil/mavlink_include.h"
@@ -24,6 +26,7 @@ public:
      * returns true if this message has been consumed, false otherwise.
      */
     bool process_message(const mavlink_message_t& msg);
+    void try_get_metadata_async(int sys,int comp,std::function<void(bool)> callback);
 public:
     // Progress CB - no heavy load must be performed on the progress cb,
     // as well as any try_() method since lock might be hold
@@ -75,6 +78,12 @@ public:
 
 private:
     std::mutex m_mutex;
+    struct MetadataDownload {
+        openhd::settings::MetadataFtpClient client;
+        std::function<void(bool)> callback;
+    };
+    std::map<std::pair<int,int>,MetadataDownload> m_metadata_downloads;
+    void poll_metadata();
     // A currently active set param action
     struct RunningParamCmdSet{
         mavlink_param_ext_set_t cmd;

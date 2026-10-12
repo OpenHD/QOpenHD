@@ -6,10 +6,17 @@
 
 #include <optional>
 #include <string>
+#include <QJsonObject>
+#include <QByteArray>
 
 
 
 namespace DocumentedParam {
+
+bool install_metadata(int sys,int comp,const QByteArray& bytes);
+void invalidate_metadata(int sys,int comp);
+bool has_device_metadata(int sys,int comp);
+QJsonObject metadata(const std::string& id,int sys,int comp);
 
 struct XParam{
     // each param has a unique name / ID.
@@ -31,28 +38,28 @@ struct XParam{
     }
 };
 
-std::optional<XParam> find_param(const std::string& param_name);
+std::optional<XParam> find_param(const std::string& param_name,int sys=0,int comp=0);
 
-std::optional<ImprovedIntSetting> get_improved_for_int(const std::string& param_id);
+std::optional<ImprovedIntSetting> get_improved_for_int(const std::string& param_id,int sys=0,int comp=0);
 
-std::optional<ImprovedStringSetting> get_improved_for_string(const std::string param_id);
+std::optional<ImprovedStringSetting> get_improved_for_string(const std::string param_id,int sys=0,int comp=0);
 
-std::optional<std::string> int_param_to_enum_string_if_known(const std::string param_id,int value);
-std::optional<std::string> string_param_to_enum_string_if_known(const std::string param_id,std::string value);
+std::optional<std::string> int_param_to_enum_string_if_known(const std::string param_id,int value,int sys=0,int comp=0);
+std::optional<std::string> string_param_to_enum_string_if_known(const std::string param_id,std::string value,int sys=0,int comp=0);
 
 // By default, a param is not read-only
-bool read_only(const std::string& param_name);
+bool read_only(const std::string& param_name,int sys=0,int comp=0);
 
 // By default, a param doesn't require reboot
-bool requires_reboot(const std::string& param_name);
+bool requires_reboot(const std::string& param_name,int sys=0,int comp=0);
 
 // Returns the param deocumentation if it exists,
 // 'TODO' otherwise
-std::string get_short_description(const std::string& param_name);
+std::string get_short_description(const std::string& param_name,int sys=0,int comp=0);
 
 // extra, we whitelist some params, aka they should not be exposed in the param list to the user
 // (since they are changed in a different part in the UI)
-bool is_param_whitelisted(const std::string& param_id);
+bool is_param_whitelisted(const std::string& param_id,int sys=0,int comp=0);
 
 }
 

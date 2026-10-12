@@ -1,5 +1,26 @@
 #include "frequencyhelper.h"
 #include "wifi_channel.h"
+#include "documentedparam.h"
+#include <QJsonArray>
+
+namespace {
+QList<int> supported_frequencies(QList<int> values) {
+    for (const int system : {100, 101}) {
+        if (!DocumentedParam::has_device_metadata(system, 191)) continue;
+        const auto metadata = DocumentedParam::metadata("WB_FREQUENCY", system, 191);
+        if (!metadata.contains("choices")) {
+            if (metadata.isEmpty()) values.clear();
+            continue;
+        }
+        QList<int> allowed;
+        for (const auto& choice : metadata.value("choices").toArray())
+            allowed.append(choice.toObject().value("value").toInt());
+        for (int i=values.size()-1; i>=0; --i)
+            if (!allowed.contains(values[i])) values.removeAt(i);
+    }
+    return values;
+}
+}
 
 FrequencyHelper::FrequencyHelper(QObject *parent) : QObject{parent}
 {
@@ -41,7 +62,7 @@ QList<int> FrequencyHelper::get_frequencies(int filter)
             }
         }
     }
-    return ret;
+    return supported_frequencies(ret);
 }
 
 QList<int> FrequencyHelper::filter_frequencies_40mhz_ht40plus_only(QList<int> frequencies)
@@ -57,7 +78,7 @@ QList<int> FrequencyHelper::filter_frequencies_40mhz_ht40plus_only(QList<int> fr
             ret.push_back(channel.frequency);
         }
     }
-    return ret;
+    return supported_frequencies(ret);
 }
 
 QList<int> FrequencyHelper::get_frequencies_all_40Mhz()
@@ -75,7 +96,7 @@ QList<int> FrequencyHelper::get_frequencies_all_40Mhz()
             }
         }
     }
-    return ret;
+    return supported_frequencies(ret);
 }
 
 bool FrequencyHelper::get_frequency_radar(int frequency_mhz)

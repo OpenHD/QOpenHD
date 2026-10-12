@@ -18,8 +18,8 @@
 // (the side that changes parameter(s) provided by a specific system & component).
 // For each of these components, you can use an instance of this class - see the singletons below for
 // current OpenHD mavlink settings components.
-// NOTE: R.n the enum / parameter validation needs to be duplicated in both OpenHD and QOpenHD.
-// Eventually we'l migrate to the proper way, which is fetching something like this:
+// Device metadata supplies enums, constraints and capabilities over MAVLink FTP.
+// The bundled generated catalog is a fallback for older firmware only.
 // https://github.com/mavlink/mavlink/blob/master/component_metadata/parameter.schema.json
 // https://mavlink.io/en/services/parameter.html
 class MavlinkSettingsModel : public QAbstractListModel
@@ -196,6 +196,7 @@ private:
 private:
     void finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result);
     void perform_dirty_actions(const MavlinkSettingsModel::SettingData& data);
+    void refresh_metadata_async();
 };
 
 Q_DECLARE_METATYPE(MavlinkSettingsModel::ParamIntEnum);

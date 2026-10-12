@@ -88,7 +88,7 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
     if(param_id == "WB_N_CARDS" || param_id == "WB_N_RX_CARDS"){
         return true;
     }
-    return DocumentedParam::is_param_whitelisted(param_id);
+    return DocumentedParam::is_param_whitelisted(param_id,m_sys_id,m_comp_id);
 }
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
@@ -150,6 +150,7 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
     m_is_currently_busy=true;
     set_ui_is_busy(true);
     set_curr_get_all_progress_perc(0);
+    refresh_metadata_async();
     auto cb=[this,log_result](XParam::GetAllParamResult result){
         if(result.success){
             const auto param_set=result.param_set;
@@ -169,10 +170,24 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
     auto cb_progress=[this](float progress){
         const int progress_int=std::lroundf(progress);
         set_curr_get_all_progress_perc(progress_int);
-        //qDebug()<<"Progress:"<<progress<<"%";
     };
     const auto command=XParam::create_cmd_get_all(m_sys_id,m_comp_id);
     XParam::instance().try_get_param_all_async(command,cb,cb_progress);
+}
+
+void MavlinkSettingsModel::refresh_metadata_async()
+{
+    XParam::instance().try_get_metadata_async(m_sys_id,m_comp_id,[this](bool ok){
+        if(ok) QMetaObject::invokeMethod(this,[this]{
+            for(int row=m_data.size()-1;row>=0;--row)
+                if(DocumentedParam::metadata(m_data[row].unique_id.toStdString(),m_sys_id,m_comp_id).isEmpty()) removeData(row);
+            m_hidden_data.erase(std::remove_if(m_hidden_data.begin(),m_hidden_data.end(),[this](const auto& entry){
+                return DocumentedParam::metadata(entry.unique_id.toStdString(),m_sys_id,m_comp_id).isEmpty();
+            }),m_hidden_data.end());
+            if(!m_data.empty()) emit dataChanged(index(0),index(m_data.size()-1));
+            set_update_count(m_update_count+1);
+        },Qt::QueuedConnection);
+    });
 }
 
 std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResult &res)
@@ -354,18 +369,18 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         }
         return 1;
     } else if(role == ShortDescriptionRole){
-        QString ret=DocumentedParam::get_short_description(data.unique_id.toStdString()).c_str();
+        QString ret=DocumentedParam::get_short_description(data.unique_id.toStdString(),m_sys_id,m_comp_id).c_str();
         return ret;
     } else if(role ==ReadOnlyRole){
         if(data.unique_id=="CAMERA_TYPE" && AOHDSystem::instanceAir().ohd_platform_type()==30){
             // X20 - camera type is not changeable by the user
             return true;
         }
-        return DocumentedParam::read_only(data.unique_id.toStdString());
+        return DocumentedParam::read_only(data.unique_id.toStdString(),m_sys_id,m_comp_id);
     }else if(role == WhitelistedRole){
-        return DocumentedParam::is_param_whitelisted(data.unique_id.toStdString());
+        return DocumentedParam::is_param_whitelisted(data.unique_id.toStdString(),m_sys_id,m_comp_id);
     }else if(role == GroupRole){
-        return parameter_group(data.unique_id);
+        return DocumentedParam::metadata(data.unique_id.toStdString(),m_sys_id,m_comp_id)["group"].toString(parameter_group(data.unique_id));
     }
     else
         return QVariant();
@@ -447,7 +462,7 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 
 QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)const
 {
-    auto as_enum=DocumentedParam::int_param_to_enum_string_if_known(param_id.toStdString(),value);
+    auto as_enum=DocumentedParam::int_param_to_enum_string_if_known(param_id.toStdString(),value,m_sys_id,m_comp_id);
     if(as_enum.has_value()){
         return QString(as_enum.value().c_str());
     }
@@ -458,7 +473,7 @@ QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)
 
 QString MavlinkSettingsModel::string_enum_get_readable(QString param_id,QString value) const
 {
-    auto as_enum=DocumentedParam::string_param_to_enum_string_if_known(param_id.toStdString(),value.toStdString());
+    auto as_enum=DocumentedParam::string_param_to_enum_string_if_known(param_id.toStdString(),value.toStdString(),m_sys_id,m_comp_id);
     if(as_enum.has_value()){
         return QString(as_enum.value().c_str());
     }
@@ -469,7 +484,7 @@ QString MavlinkSettingsModel::string_enum_get_readable(QString param_id,QString 
 
 bool MavlinkSettingsModel::int_param_has_min_max(QString param_id) const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         // min max is a requirement for int param
         return true;
@@ -479,7 +494,7 @@ bool MavlinkSettingsModel::int_param_has_min_max(QString param_id) const
 
 int MavlinkSettingsModel::int_param_get_min_value(QString param_id)const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         return improved_opt->min_value_int;
     }
@@ -496,7 +511,7 @@ QStringList MavlinkSettingsModel::param_ids() const
 
 int MavlinkSettingsModel::int_param_get_max_value(QString param_id)const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         return improved_opt->max_value_int;
     }
@@ -505,7 +520,7 @@ int MavlinkSettingsModel::int_param_get_max_value(QString param_id)const
 
 bool MavlinkSettingsModel::int_param_has_enum_keys_values(QString param_id)const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         if(improved_opt->has_enum_mapping()){
             return true;
@@ -516,7 +531,7 @@ bool MavlinkSettingsModel::int_param_has_enum_keys_values(QString param_id)const
 
 QStringList MavlinkSettingsModel::int_param_get_enum_keys(QString param_id) const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         const auto improved=improved_opt.value();
         if(improved.has_enum_mapping()){
@@ -532,7 +547,7 @@ QStringList MavlinkSettingsModel::int_param_get_enum_keys(QString param_id) cons
 
 QList<int> MavlinkSettingsModel::int_param_get_enum_values(QString param_id) const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         const auto improved=improved_opt.value();
         if(improved.has_enum_mapping()){
@@ -547,7 +562,7 @@ QList<int> MavlinkSettingsModel::int_param_get_enum_values(QString param_id) con
 MavlinkSettingsModel::ParamIntEnum MavlinkSettingsModel::int_param_get_enum(QString param_id) const
 {
     ParamIntEnum ret{false,{},{}};
-    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_int(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         auto improved=improved_opt.value();
         ret.values=improved.int_enum_values();
@@ -562,7 +577,7 @@ MavlinkSettingsModel::ParamIntEnum MavlinkSettingsModel::int_param_get_enum(QStr
 
 bool MavlinkSettingsModel::string_param_has_enum(QString param_id) const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         return !improved_opt->enum_keys().isEmpty();
     }
@@ -571,7 +586,7 @@ bool MavlinkSettingsModel::string_param_has_enum(QString param_id) const
 
 QStringList MavlinkSettingsModel::string_param_get_enum_keys(QString param_id) const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         return improved_opt->enum_keys();
     }
@@ -582,7 +597,7 @@ QStringList MavlinkSettingsModel::string_param_get_enum_keys(QString param_id) c
 
 QStringList MavlinkSettingsModel::string_param_get_enum_values(QString param_id) const
 {
-    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         return improved_opt->enum_values();
     }
@@ -594,7 +609,7 @@ QStringList MavlinkSettingsModel::string_param_get_enum_values(QString param_id)
 MavlinkSettingsModel::ParamStringEnum MavlinkSettingsModel::string_param_get_enum(QString param_id) const
 {
     ParamStringEnum ret{false,{},{}};
-    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString());
+    const auto improved_opt=DocumentedParam::get_improved_for_string(param_id.toStdString(),m_sys_id,m_comp_id);
     if(improved_opt.has_value()){
         auto improved=improved_opt.value();
         ret.values=improved.enum_values();
@@ -616,11 +631,12 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 
 bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 {
-    return DocumentedParam::requires_reboot(param_id.toStdString());
+    return DocumentedParam::requires_reboot(param_id.toStdString(),m_sys_id,m_comp_id);
 }
 
 bool MavlinkSettingsModel::param_int_exists(QString param_id)
 {
+    if(DocumentedParam::has_device_metadata(m_sys_id,m_comp_id) && DocumentedParam::metadata(param_id.toStdString(),m_sys_id,m_comp_id).isEmpty()) return false;
     for (const auto& tmp : m_hidden_data)
         if (tmp.unique_id == param_id && std::holds_alternative<int>(tmp.value)) return true;
     //qDebug()<<"Size:"<<m_data.size();
@@ -637,6 +653,7 @@ bool MavlinkSettingsModel::param_int_exists(QString param_id)
 
 bool MavlinkSettingsModel::param_string_exists(QString param_id)
 {
+    if(DocumentedParam::has_device_metadata(m_sys_id,m_comp_id) && DocumentedParam::metadata(param_id.toStdString(),m_sys_id,m_comp_id).isEmpty()) return false;
     for (const auto& tmp : m_hidden_data)
         if (tmp.unique_id == param_id && std::holds_alternative<std::string>(tmp.value)) return true;
     for(const auto& tmp:m_data){
@@ -682,6 +699,7 @@ void MavlinkSettingsModel::remove_and_replace_param_set(const std::vector<mavlin
     const auto parsed_param_set=XParam::parse_server_param_set(param_set);
     QtParamSet qt_param_set{};
     for(const auto& param:parsed_param_set){
+        if(DocumentedParam::has_device_metadata(m_sys_id,m_comp_id) && DocumentedParam::metadata(param.param_id,m_sys_id,m_comp_id).isEmpty()) continue;
         if(param.int_param.has_value()){
             auto tmp=QtParamValue{param.param_id.c_str(),param.int_param.value(),0};
             qt_param_set.param_set.push_back(tmp);
@@ -733,7 +751,20 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
 QVariantMap MavlinkSettingsModel::get_ui_metadata(QString param_id) const
 {
     QVariantMap result;
-    const auto documented = DocumentedParam::find_param(param_id.toStdString());
+    result.insert("fromDevice",DocumentedParam::has_device_metadata(m_sys_id,m_comp_id));
+    bool exists=false;
+    for(const auto& entry:m_data) if(entry.unique_id==param_id) exists=true;
+    for(const auto& entry:m_hidden_data) if(entry.unique_id==param_id) exists=true;
+    if(!exists){ result.insert("control","unsupported"); return result; }
+    const auto documented = DocumentedParam::find_param(param_id.toStdString(),m_sys_id,m_comp_id);
+    const auto resolved=DocumentedParam::metadata(param_id.toStdString(),m_sys_id,m_comp_id);
+    result.insert("label",resolved["label"].toString(param_id));
+    result.insert("group",resolved["group"].toString());
+    if(!resolved.isEmpty() && !resolved["writable"].toBool(true)) {
+        result.insert("control","readonly"); result.insert("readOnly",true);
+        result.insert("description",resolved["reason"].toString(resolved["description"].toString()));
+        return result;
+    }
     if (!documented.has_value()) {
         result.insert(QStringLiteral("control"), QStringLiteral("unsupported"));
         return result;
@@ -791,6 +822,7 @@ QVariantMap MavlinkSettingsModel::get_ui_metadata(QString param_id) const
 
 void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<int32_t,std::string> value, bool success,bool log_result)
 {
+    if(success) refresh_metadata_async();
     set_last_updated_param_id(param_id);
     set_last_updated_param_success(success);
     if(log_result){

@@ -136,6 +136,13 @@ Item {
     }
     // Built dynamically depending on the used camera
     function get_camera_resolution_model(){
+        var metadata = _airCameraSettingsModel.get_ui_metadata("RESOLUTION_FPS");
+        if (metadata.fromDevice && metadata.control === "dropdown" && metadata.values) {
+            elements_model_camera_resolution_dynamic.clear();
+            for (var n=0; n<metadata.values.length; ++n)
+                elements_model_camera_resolution_dynamic.append({value: String(metadata.values[n]), verbose: String(metadata.keys[n])});
+            return elements_model_camera_resolution_dynamic;
+        }
         if(_cameraStreamModelPrimary.camera_type<0){
             return elements_model_camera_resolution_bup;
         }
@@ -208,7 +215,10 @@ Item {
     function get_frequency_model() {
         supported_frequencies_model.clear();
         var frequencies = _frequencyHelper.get_frequencies(settings.qopenhd_frequency_filter_selection);
+        var metadata = _ohdSystemAirSettingsModel.get_ui_metadata("WB_FREQUENCY");
+        if (!metadata.fromDevice) metadata = _ohdSystemGroundSettings.get_ui_metadata("WB_FREQUENCY");
         for (var i = 0; i < frequencies.length; ++i) {
+            if (metadata.fromDevice && metadata.values && metadata.values.indexOf(frequencies[i]) < 0) continue;
             supported_frequencies_model.append({
                 value: frequencies[i],
                 verbose: _frequencyHelper.get_frequency_description(frequencies[i])
@@ -271,10 +281,39 @@ Item {
         readout_modes.append({value: 1, verbose: "Crop"});
         var hdr = _airCameraSettingsModel.param_string_exists("RK_FMT_HDR") &&
                 _airCameraSettingsModel.get_cached_string("RK_FMT_HDR").length > 0;
-        readout_modes.append({value: 2, verbose: hdr ? "HDR" : "HDR\nUnavailable"});
+        if (hdr) readout_modes.append({value: 2, verbose: "HDR"});
         return readout_modes;
     }
+    property var metadataModels: ({})
+    function metadata_model(param_id) {
+        var aliases = {ROTATION: "ROTATION_DEG", CHANNEL_WIDTH: "WB_CHANNEL_W", RATE: "WB_MCS_INDEX"};
+        var id = aliases[param_id] || param_id;
+        var providers = [_airCameraSettingsModel, _ohdSystemAirSettingsModel, _ohdSystemGroundSettings];
+        for (var p=0; p<providers.length; ++p) {
+            var metadata = providers[p].get_ui_metadata(id);
+            if (!metadata.values || !metadata.keys) continue;
+            var key = String(p) + "/" + id;
+            var fingerprint = JSON.stringify([metadata.values, metadata.keys]);
+            var cached = metadataModels[key];
+            if (!cached) {
+                cached = {model: Qt.createQmlObject('import QtQuick 2.12; ListModel { dynamicRoles: true }', mappedMavlinkChoices), fingerprint: ""};
+                metadataModels[key] = cached;
+            }
+            if (cached.fingerprint !== fingerprint) {
+                cached.model.clear();
+                for (var i=0; i<metadata.values.length; ++i)
+                    cached.model.append({value: metadata.values[i], verbose: String(metadata.keys[i])});
+                cached.fingerprint = fingerprint;
+            }
+            return cached.model;
+        }
+        return null;
+    }
     function get_model(param_id){
+        if (param_id === "RESOLUTION_FPS" || param_id === "SENSOR_MODE") return get_camera_resolution_model();
+        if (param_id === "FREQUENCY") return get_frequency_model();
+        var resolved = metadata_model(param_id);
+        if (resolved) return resolved;
         if (param_id === "RK_CAM_MODE") return get_readout_modes();
         if (param_id.indexOf("GX_") === 0) return gx_model(param_id);
         if(param_id=="BRIGHTNESS"){
