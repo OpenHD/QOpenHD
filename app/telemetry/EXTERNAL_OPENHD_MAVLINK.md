@@ -14,8 +14,8 @@ and a 20/40 MHz scan width; an unavailable backend rejects the request.
 - Write parameters with MAV_CMD or PARAM_EXT_SET against the air unit first and then the ground unit when you need both sides updated, mirroring `change_param_air_and_ground_blocking` in QOpenHD.【F:app/telemetry/settings/wblinksettingshelper.cpp†L183-L200】
 
 ## F1 – Find AirUnit / Channel scan
-- Start a spectrum analyze pass by sending `OPENHD_CMD_INITIATE_CHANNEL_ANALYZE` to system 100 / component 191 with `param1` set to the frequency bands bitmask you want to inspect.【F:app/telemetry/action/ohdaction.cpp†L35-L44】
-- Start a channel search (auto-find the air unit) by sending `OPENHD_CMD_INITIATE_CHANNEL_SEARCH` with `param1` = frequency bands bitmask and `param2` = allowed channel widths bitmask.【F:app/telemetry/action/ohdaction.cpp†L46-L55】
+- Start a spectrum analyze pass by sending `MAV_CMD_OPENHD_INITIATE_CHANNEL_ANALYZE` to system 100 / component 191 with `param1` set to the frequency bands bitmask you want to inspect.【F:app/telemetry/action/ohdaction.cpp†L35-L44】
+- Start a channel search (auto-find the air unit) by sending `MAV_CMD_OPENHD_INITIATE_CHANNEL_SEARCH` with `param1` = frequency bands bitmask and `param2` = allowed channel widths bitmask.【F:app/telemetry/action/ohdaction.cpp†L46-L55】
 - Format a listed air-unit partition with the standard
   `MAV_CMD_STORAGE_FORMAT` command, targeted at
   `OHD_SYS_ID_AIR:MAV_COMP_ID_ONBOARD_COMPUTER`. Set `param1` (storage ID) to
@@ -27,14 +27,14 @@ and a 20/40 MHz scan width; an unavailable backend rejects the request.
   must retain the same source system/component IDs and should increment the
   MAVLink `confirmation` field. OpenHD caches the terminal result briefly so a
   lost acknowledgement cannot immediately start another format.
-- Refresh the safe air-storage inventory with `OPENHD_CMD_STORAGE_MANAGE`
+- Refresh the safe air-storage inventory with `MAV_CMD_OPENHD_STORAGE_MANAGE`
   (`11202`), setting `param1=1`. OpenHD responds with one
   `STORAGE_INFORMATION` per sysutils-approved item. Names beginning with `D `
   are whole disks and names beginning with `P ` are partitions. Capacity and
   available space are in the standard MAVLink fields; the
   `STORAGE_USAGE_FLAG_VIDEO` flag identifies the partition mounted at
   `/Video`.
-- Repartition a listed whole disk with `OPENHD_CMD_STORAGE_MANAGE`,
+- Repartition a listed whole disk with `MAV_CMD_OPENHD_STORAGE_MANAGE`,
   `param1=2`, `param2=storage_id`, `param3=1`. Mount a listed formatted
   partition for recording with `param1=3`, `param2=storage_id`, `param3=1`.
   Both operations use progress and terminal `COMMAND_ACK` replies.

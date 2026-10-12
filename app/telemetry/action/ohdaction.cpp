@@ -91,7 +91,7 @@ bool OHDAction::send_storage_action(int action, int storageId,
     mavlink_command_long_t command{};
     command.target_system=OHD_SYS_ID_AIR;
     command.target_component=MAV_COMP_ID_ONBOARD_COMPUTER;
-    command.command=OPENHD_CMD_STORAGE_MANAGE;
+    command.command=MAV_CMD_OPENHD_STORAGE_MANAGE;
     command.param1=static_cast<float>(action);
     command.param2=static_cast<float>(storageId);
     command.param3=action==1 ? 0.0F : 1.0F;
@@ -379,7 +379,7 @@ bool OHDAction::send_command_analyze_channels_blocking(int freq_bands)
     const bool airEsp=MavlinkSettingsModel::instanceAir().param_int_exists("ESP_ANALYSE") && MavlinkSettingsModel::instanceAir().get_cached_int("ESP_ANALYSE")==1;
     cmd.target_system=airEsp ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
     cmd.target_component=MAV_COMP_ID_ONBOARD_COMPUTER;
-    cmd.command=OPENHD_CMD_INITIATE_CHANNEL_ANALYZE;
+    cmd.command=MAV_CMD_OPENHD_INITIATE_CHANNEL_ANALYZE;
     cmd.param1=static_cast<float>(freq_bands);
     const auto res=CmdSender::instance().send_command_long_blocking(cmd);
     return res==CmdSender::Result::CMD_SUCCESS;
@@ -390,7 +390,7 @@ bool OHDAction::send_command_start_scan_channels_blocking(int freq_bands, int ch
     mavlink_command_long_t cmd{};
     cmd.target_system=OHD_SYS_ID_GROUND;
     cmd.target_component=MAV_COMP_ID_ONBOARD_COMPUTER;
-    cmd.command=OPENHD_CMD_INITIATE_CHANNEL_SEARCH;
+    cmd.command=MAV_CMD_OPENHD_INITIATE_CHANNEL_SEARCH;
     cmd.param1=static_cast<float>(freq_bands);
     cmd.param2=static_cast<float>(channel_widths);
     cmd.param3=passive ? 1.0f : 0.0f;
