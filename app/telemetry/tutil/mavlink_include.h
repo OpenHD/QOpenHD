@@ -6,6 +6,8 @@
 #define MAVLINK_USE_MESSAGE_INFO
 #endif
 
+// Generated message introspection uses offsetof; own the prerequisite here.
+#include <cstddef>
 #include "../../../lib/mavlink-headers/mavlink/v2.0/openhd/mavlink.h"
 #include "../../../lib/mavlink-headers/mavlink/v2.0/mavlink_get_info.h"
 
