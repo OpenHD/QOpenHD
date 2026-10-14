@@ -279,7 +279,7 @@ Rectangle {
     function gainFocus() { if (activeLinks.count) focusCard(0); else settings_form.side_bar_regain_focus() }
     function user_quidance_animate_channel_scan() {
         for (var i = 0; i < activeLinks.count; ++i)
-            if (activeLinks.get(i).kind === "wifi" && cards.itemAt(i).item) cards.itemAt(i).item.animateScan()
+            if (activeLinks.get(i).kind === "wifi" && cards.itemAt(i).loadedCard) cards.itemAt(i).loadedCard.animateScan()
     }
 
     onLinkRevisionChanged: rebuildLinks()
@@ -356,21 +356,6 @@ Rectangle {
             }
         }
 
-        Rectangle {
-            visible: settings.dev_show_link_usage
-            Layout.fillWidth: true
-            Layout.preferredHeight: visible ? 86 : 0
-            radius: 10
-            color: settings_form.panelBackgroundRaised
-            border.color: settings_form.lineColor
-            LinkUsageMeter {
-                anchors.fill: parent
-                anchors.margins: 9
-                usage: root.totalUsage
-                title: qsTr("Total Link Usage")
-            }
-        }
-
         Flickable {
             id: linksFlickable
             Layout.fillWidth: true; Layout.fillHeight: true
@@ -388,7 +373,8 @@ Rectangle {
                     id: cell
                     property var loadedCard: loader.item
                     width: root.expandedCardIndex === index ? cardsFlow.width : root.collapsedCardWidth
-                    height: 570
+                    // WiFi configuration sizes itself to its visible controls.
+                    height: kind === "wifi" && loadedCard ? loadedCard.implicitHeight : 570
                     z: root.expandedCardIndex === index ? 2 : 1
                     Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Loader {
@@ -434,6 +420,23 @@ Rectangle {
                 }
             }
         }
+        Rectangle {
+            visible: settings.dev_show_link_usage
+            Layout.fillWidth: true
+            Layout.preferredHeight: totalUsageMeter.implicitHeight + 18
+            Layout.maximumHeight: Layout.preferredHeight
+            radius: 10
+            color: settings_form.panelBackgroundRaised
+            border.color: settings_form.lineColor
+            LinkUsageMeter {
+                id: totalUsageMeter
+                anchors.fill: parent
+                anchors.margins: 9
+                usage: root.totalUsage
+                title: qsTr("Total Link Usage")
+            }
+        }
+
     }
 
     Component { id: wifiCard; WifiBroadcastLinkCard {} }

@@ -8,6 +8,7 @@ Rectangle {
     property int cardIndex: -1
     property bool keyboardSelected: false
     property bool simulated: settings.dev_simulate_wifibroadcast_link
+    implicitHeight: cardContent.implicitHeight + 16
     radius: 10
     color: settings_form.panelBackgroundRaised
     border.color: keyboardSelected ? settings_form.accentColor : settings_form.lineColor
@@ -93,15 +94,16 @@ Rectangle {
     function controls() {
         var result = linkSwitchAvailable ? [linkSwitch, scan, analyze, frequencyFilter, frequency, bandwidth, mcs]
                                          : [scan, analyze, frequencyFilter, frequency, bandwidth, mcs]
-        var settings = [adaptive, fhss, dwell, pitMode, airPower, groundPower]
+        var settings = [pitMode, airPower, groundPower, espAnalyseAir, espAnalyseGround, adaptive, fhss, dwell]
         for (var i = 0; i < settings.length; ++i)
             if (settings[i].visible && settings[i].focusControl && settings[i].focusControl.enabled)
                 result.push(settings[i].focusControl)
-        return result
+        return result.filter(function(item) { return item.visible && item.enabled })
     }
     function moveFocus(step) {
         var list = controls(), current = -1
         for (var i = 0; i < list.length; ++i) if (list[i].activeFocus) current = i
+        if (!list.length) return
         focusAndReveal(list[(current + step + list.length) % list.length])
     }
     function focusAndReveal(item) {
@@ -116,7 +118,7 @@ Rectangle {
         else if (event.key === Qt.Key_Escape) { leaveCard(); event.accepted = true }
     }
     function leaveCard() { if (host) host.collapseCard(cardIndex) }
-    function gainFocus() { focusAndReveal(linkSwitchAvailable ? linkSwitch : scan) }
+    function gainFocus() { var list = controls(); if (list.length) focusAndReveal(list[0]) }
     function animateScan() { scanAnimation.start() }
     function formatUptime(ms) {
         if (ms <= 0) return ""
@@ -138,7 +140,9 @@ Rectangle {
     }
 
     ColumnLayout {
-        anchors.fill: parent; anchors.margins: 8; spacing: 5
+        id: cardContent
+        anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
+        anchors.margins: 8; spacing: 7
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
             Text { text: "\uf1eb"; color: "#55aaff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 18 }
@@ -154,97 +158,168 @@ Rectangle {
                 Keys.onPressed: root.keyNav(event)
             }
             Binding { target: linkSwitch; property: "checked"; value: root.linkRoutingEnabled }
-            Rectangle { visible: !linkSwitch.visible; Layout.preferredWidth: activeText.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
-                Text { id: activeText; anchors.centerIn: parent; text: root.simulated ? qsTr("SIMULATED") : qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
+            Rectangle { visible: !linkSwitch.visible; Layout.preferredWidth: activeText.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: root.simulated || (root.airSystemAlive && root.groundSystemAlive && root.linkRoutingEnabled) ? Qt.rgba(0.1, 0.8, 0.35, 0.12) : settings_form.panelBackground
+                Text { id: activeText; anchors.centerIn: parent; text: root.simulated ? qsTr("SIMULATED") : !root.groundSystemAlive ? qsTr("GROUND OFFLINE") : !root.airSystemAlive ? qsTr("AIR OFFLINE") : !root.linkRoutingEnabled ? qsTr("DISABLED") : qsTr("UNITS ONLINE"); color: root.simulated || (root.airSystemAlive && root.groundSystemAlive && root.linkRoutingEnabled) ? settings_form.goodColor : settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
             }
         }
 
-        LinkUsageMeter {
-            visible: settings.dev_show_advanced_button
-            Layout.fillWidth: true
-            Layout.preferredHeight: visible ? (root.width < 360 ? 100 : 78) : 0
-            usage: root.host ? root.host.usageFor("wifi") : null
-            title: qsTr("Link Usage")
-        }
-
         GridLayout {
-            Layout.fillWidth: true; Layout.preferredHeight: 48; columns: 4; columnSpacing: 0; rowSpacing: 0
+            Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 88 : 44; Layout.maximumHeight: Layout.preferredHeight; columns: root.width < 360 ? 2 : 4; columnSpacing: 4; rowSpacing: 4
             Repeater {
                 model: [
-                    {label: qsTr("LOSS"), value: root.simulated ? "0%" : (_ohdSystemGround.curr_rx_packet_loss_perc < 0 ? qsTr("N/A") : _ohdSystemGround.curr_rx_packet_loss_perc + "%"), bad: !root.simulated && _ohdSystemGround.curr_rx_packet_loss_perc > 5},
-                    {label: qsTr("POLLUTION"), value: root.simulated ? "3 pps" : (_ohdSystemGround.wb_link_curr_foreign_pps < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_curr_foreign_pps + " pps"), bad: !root.simulated && _ohdSystemGround.wb_link_curr_foreign_pps > 20},
-                    {label: qsTr("TX DROPS"), value: root.simulated ? "0" : String(_ohdSystemAir.count_tx_dropped_packets), bad: !root.simulated && _ohdSystemAir.count_tx_dropped_packets > 0,
+                    {label: qsTr("LOSS"), value: root.simulated ? "0%" : (!root.groundSystemAlive || _ohdSystemGround.curr_rx_packet_loss_perc < 0 ? qsTr("N/A") : _ohdSystemGround.curr_rx_packet_loss_perc + "%"), bad: !root.simulated && root.groundSystemAlive && _ohdSystemGround.curr_rx_packet_loss_perc > 5},
+                    {label: qsTr("POLLUTION"), value: root.simulated ? "3 pps" : (!root.groundSystemAlive || _ohdSystemGround.wb_link_curr_foreign_pps < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_curr_foreign_pps + " pps"), bad: !root.simulated && root.groundSystemAlive && _ohdSystemGround.wb_link_curr_foreign_pps > 20},
+                    {label: qsTr("TX DROPS"), value: root.simulated ? "0" : (root.airSystemAlive ? String(_ohdSystemAir.count_tx_dropped_packets) : qsTr("N/A")), bad: !root.simulated && root.airSystemAlive && _ohdSystemAir.count_tx_dropped_packets > 0,
                      details: qsTr("Packets that could not be transmitted. Slow injections (at least 1 ms): %1. Counts accumulate during the radio session.").arg(root.simulated ? 0 : _ohdSystemAir.count_tx_inj_error_hint)},
-                    {label: qsTr("LINK LOAD"), value: root.simulated ? "42%" : (_ohdSystemGround.wb_link_pollution_perc < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_pollution_perc + "%"), bad: !root.simulated && _ohdSystemGround.wb_link_pollution_perc > 75}
+                    {label: qsTr("LINK LOAD"), value: root.simulated ? "42%" : (!root.groundSystemAlive || _ohdSystemGround.wb_link_pollution_perc < 0 ? qsTr("N/A") : _ohdSystemGround.wb_link_pollution_perc + "%"), bad: !root.simulated && root.groundSystemAlive && _ohdSystemGround.wb_link_pollution_perc > 75}
                 ]
                 delegate: Rectangle {
-                    Layout.fillWidth: true; Layout.fillHeight: true; color: settings_form.panelBackground; border.color: settings_form.lineColor
+                    Layout.fillWidth: true; Layout.fillHeight: true; Layout.minimumHeight: 40; radius: 5; color: settings_form.panelBackground; border.color: settings_form.lineColor
                     ToolTip.visible: metricHover.containsMouse && !!modelData.details
                     ToolTip.text: modelData.details || ""
                     MouseArea { id: metricHover; anchors.fill: parent; hoverEnabled: true; acceptedButtons: Qt.NoButton }
                     Column { anchors.centerIn: parent; spacing: 1
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 7; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: modelData.bad ? settings_form.errorColor : settings_form.primaryText; font.pixelSize: 10; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: modelData.bad ? settings_form.errorColor : settings_form.primaryText; font.pixelSize: 12; font.bold: true }
                     }
                 }
             }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true; Layout.preferredHeight: 31; spacing: 5
-            Item { Layout.fillWidth: true }
-            Button {
-                id: scan; Layout.preferredWidth: 88; Layout.preferredHeight: 29
-                enabled: !root.simulated
-                text: qsTr("SCAN"); hoverEnabled: true
-                contentItem: Text { text: scan.text; color: scan.activeFocus || scan.hovered ? settings_form.accentColor : settings_form.primaryText; font.pixelSize: 9; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                background: Rectangle { radius: 7; color: scan.down ? Qt.rgba(0.12, 0.55, 1, 0.18) : (scan.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground); border.color: scan.activeFocus || scan.hovered ? settings_form.accentColor : settings_form.lineColor; border.width: scan.activeFocus ? 2 : 1 }
-                onClicked: host.openScan(); Keys.onPressed: root.keyNav(event)
-            }
-            Button {
-                id: analyze; Layout.preferredWidth: 88; Layout.preferredHeight: 29
-                enabled: !root.simulated
-                text: qsTr("ANALYZE"); hoverEnabled: true
-                contentItem: Text { text: analyze.text; color: analyze.activeFocus || analyze.hovered ? settings_form.accentColor : settings_form.primaryText; font.pixelSize: 9; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                background: Rectangle { radius: 7; color: analyze.down ? Qt.rgba(0.12, 0.55, 1, 0.18) : (analyze.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground); border.color: analyze.activeFocus || analyze.hovered ? settings_form.accentColor : settings_form.lineColor; border.width: analyze.activeFocus ? 2 : 1 }
-                onClicked: host.openAnalyze(); Keys.onPressed: root.keyNav(event)
-            }
-            Item { Layout.fillWidth: true }
-            SequentialAnimation { id: scanAnimation; loops: 3; PropertyAnimation { target: scan; property: "scale"; to: 1.08; duration: 130 } PropertyAnimation { target: scan; property: "scale"; to: 1; duration: 130 } }
         }
 
         Rectangle {
-            Layout.fillWidth: true; Layout.preferredHeight: 92; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
-            ColumnLayout { anchors.fill: parent; anchors.margins: 7; spacing: 4
-                RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: radioContent.implicitHeight + 24
+            radius: 10; color: settings_form.panelBackground; border.color: settings_form.lineColor
+            ColumnLayout {
+                id: radioContent
+                anchors.fill: parent; anchors.margins: 12; spacing: 10
+                Text { text: qsTr("Channel & frequency"); color: settings_form.primaryText; font.pixelSize: 15; font.bold: true }
+                GridLayout {
                     Layout.fillWidth: true
-                    Text { text: qsTr("FREQUENCY / RADIO"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true; Layout.fillWidth: true }
-                    CompactLinkComboBox {
-                        id: frequencyFilter
-                        Layout.preferredWidth: 140
-                        Layout.preferredHeight: 25
-                        model: frequencyFilters
-                        textRole: "title"
-                        currentIndex: root.modelIndex(frequencyFilters, settings.qopenhd_frequency_filter_selection)
-                        onActivated: {
-                            settings.qopenhd_frequency_filter_selection = frequencyFilters.get(currentIndex).value
-                            root.syncRadio()
+                    columns: root.width < 650 ? 1 : 2
+                    columnSpacing: 12; rowSpacing: 12
+                    Rectangle {
+                        Layout.fillWidth: true; Layout.fillHeight: true; Layout.preferredWidth: 320
+                        Layout.preferredHeight: 184
+                        radius: 8; color: settings_form.panelBackgroundRaised
+                        ColumnLayout {
+                            id: discoveryContent
+                            anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
+                            anchors.margins: 12; spacing: 10
+                            Text { text: qsTr("Find a channel"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
+                            Text { Layout.fillWidth: true; text: qsTr("Scan to find your Air unit, or analyze interference before choosing a frequency."); color: settings_form.secondaryText; font.pixelSize: 11; wrapMode: Text.WordWrap }
+                            RowLayout {
+                                Layout.fillWidth: true; spacing: 8
+                                Button {
+                                    id: scan
+                                    Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: 64
+                                    enabled: !root.simulated; text: qsTr("Scan"); hoverEnabled: true
+                                    contentItem: Item {
+                                      Column {
+                                        width: parent.width; anchors.verticalCenter: parent.verticalCenter; spacing: 5
+                                        Text { width: parent.width; text: scan.text; color: "white"; font.pixelSize: 15; font.bold: true; horizontalAlignment: Text.AlignHCenter }
+                                        Text { width: parent.width; text: qsTr("Find Air unit"); color: "white"; font.pixelSize: 10; horizontalAlignment: Text.AlignHCenter }
+                                      }
+                                    }
+                                    background: Rectangle { radius: 8; color: scan.down ? Qt.darker(settings_form.accentColor, 1.2) : (scan.hovered ? Qt.lighter(settings_form.accentColor, 1.1) : settings_form.accentColor); opacity: scan.enabled ? 1 : 0.45; border.color: scan.activeFocus ? settings_form.primaryText : settings_form.accentColor; border.width: scan.activeFocus ? 2 : 1 }
+                                    onClicked: if (host) host.openScan()
+                                    Keys.onPressed: root.keyNav(event)
+                                }
+                                Button {
+                                    id: analyze
+                                    Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: 64
+                                    enabled: !root.simulated; text: qsTr("Analyze"); hoverEnabled: true
+                                    contentItem: Item {
+                                      Column {
+                                        width: parent.width; anchors.verticalCenter: parent.verticalCenter; spacing: 5
+                                        Text { width: parent.width; text: analyze.text; color: settings_form.primaryText; font.pixelSize: 15; font.bold: true; horizontalAlignment: Text.AlignHCenter }
+                                        Text { width: parent.width; text: qsTr("Check interference"); color: settings_form.secondaryText; font.pixelSize: 10; horizontalAlignment: Text.AlignHCenter }
+                                      }
+                                    }
+                                    background: Rectangle { radius: 8; color: analyze.down || analyze.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground; border.color: analyze.activeFocus || analyze.hovered ? settings_form.accentColor : settings_form.lineColor; border.width: analyze.activeFocus ? 2 : 1; opacity: analyze.enabled ? 1 : 0.6 }
+                                    onClicked: if (host) host.openAnalyze()
+                                    Keys.onPressed: root.keyNav(event)
+                                }
+                            }
                         }
-                        Keys.onPressed: root.keyNav(event)
+                    }
+                    Rectangle {
+                        Layout.fillWidth: true; Layout.fillHeight: true; Layout.preferredWidth: 480
+                        Layout.preferredHeight: channelContent.implicitHeight + 24
+                        radius: 8; color: settings_form.panelBackgroundRaised
+                        ColumnLayout {
+                            id: channelContent
+                            anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
+                            anchors.margins: 12; spacing: 7
+                            RowLayout {
+                                Layout.fillWidth: true; spacing: 8
+                                Text { Layout.fillWidth: true; text: qsTr("Radio settings"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
+                                CompactLinkComboBox {
+                                    id: frequencyFilter
+                                    Layout.preferredWidth: 140; Layout.preferredHeight: 32; font.pixelSize: 11
+                                    model: frequencyFilters; textRole: "title"
+                                    currentIndex: root.modelIndex(frequencyFilters, settings.qopenhd_frequency_filter_selection)
+                                    onActivated: { settings.qopenhd_frequency_filter_selection = frequencyFilters.get(currentIndex).value; root.syncRadio() }
+                                    Keys.onPressed: root.keyNav(event)
+                                }
+                            }
+                            Text { text: qsTr("Channel / frequency"); color: settings_form.secondaryText; font.pixelSize: 10 }
+                            CompactLinkComboBox {
+                                id: frequency
+                                Layout.fillWidth: true; Layout.preferredHeight: 44; font.pixelSize: 14; font.bold: true
+                                model: host ? host.frequencyModel : null; textRole: "title"; popupWidth: Math.max(width, 250)
+                                displayText: root.currentFrequency > 0 && host ? host.formatFrequency(root.currentFrequency) : qsTr("N/A")
+                                enabled: !root.simulated
+                                onActivated: if (host) host.chooseFrequency(currentIndex)
+                                Keys.onPressed: root.keyNav(event)
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true; spacing: 10
+                                ColumnLayout {
+                                    Layout.fillWidth: true; spacing: 4
+                                    Text { text: qsTr("Channel width"); color: settings_form.secondaryText; font.pixelSize: 10 }
+                                    CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 12; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
+                                }
+                                ColumnLayout {
+                                    Layout.fillWidth: true; spacing: 4
+                                    Text { text: qsTr("MCS"); color: settings_form.secondaryText; font.pixelSize: 10 }
+                                    CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 12; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
+                                }
+                            }
+                        }
                     }
                 }
-                RowLayout { Layout.fillWidth: true; spacing: 6
-                    ColumnLayout { Layout.fillWidth: true; spacing: 1
-                        Text { text: qsTr("Channel"); color: settings_form.secondaryText; font.pixelSize: 7 }
-                        CompactLinkComboBox { id: frequency; Layout.fillWidth: true; Layout.preferredHeight: 31; model: host ? host.frequencyModel : null; textRole: "title"; popupWidth: Math.max(width, 250); displayText: root.currentFrequency > 0 && host ? host.formatFrequency(root.currentFrequency) : qsTr("N/A"); enabled: !root.simulated; onActivated: if (host) host.chooseFrequency(currentIndex); Keys.onPressed: root.keyNav(event) }
-                    }
-                    ColumnLayout { Layout.fillWidth: true; spacing: 1
-                        Text { text: qsTr("Channel Width"); color: settings_form.secondaryText; font.pixelSize: 7 }
-                        CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: 31; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
-                    }
-                    ColumnLayout { Layout.fillWidth: true; spacing: 1
-                        Text { text: qsTr("MCS"); color: settings_form.secondaryText; font.pixelSize: 7 }
-                        CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 31; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
+            }
+            SequentialAnimation { id: scanAnimation; loops: 3; PropertyAnimation { target: scan; property: "scale"; to: 1.04; duration: 130 } PropertyAnimation { target: scan; property: "scale"; to: 1; duration: 130 } }
+        }
+
+        Rectangle {
+            visible: root.pitModeAvailable || root.showAirPower || root.showGroundPower
+            Layout.fillWidth: true; Layout.preferredHeight: 91; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
+            RowLayout { anchors.fill: parent; anchors.margins: 7; spacing: 10
+                DynamicLinkSetting {
+                    id: pitMode
+                    Layout.preferredWidth: Math.min(220, parent.width * 0.24)
+                    Layout.fillHeight: true
+                    visible: root.pitModeAvailable
+                    editorEnabled: root.pitModeAvailable
+                    settingsModel: _ohdSystemAirSettingsModel
+                    paramId: "WB_PIT_MODE"
+                    label: qsTr("Pit Mode")
+                    onMoveRequested: root.moveFocus(step)
+                    onBackRequested: root.leaveCard()
+                }
+                Rectangle {
+                    visible: pitMode.visible
+                    Layout.preferredWidth: 1; Layout.fillHeight: true
+                    color: settings_form.lineColor
+                }
+                ColumnLayout {
+                    Layout.fillWidth: true; Layout.fillHeight: true; spacing: 1
+                    Text { text: qsTr("TX POWER"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                    RowLayout { Layout.fillWidth: true; spacing: 14
+                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: settings.dev_show_advanced_button ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: settings.dev_show_advanced_button ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                     }
                 }
             }
@@ -300,42 +375,18 @@ Rectangle {
             }
         }
 
-        Rectangle {
-            Layout.fillWidth: true; Layout.preferredHeight: 91; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
-            RowLayout { anchors.fill: parent; anchors.margins: 7; spacing: 10
-                DynamicLinkSetting {
-                    id: pitMode
-                    Layout.preferredWidth: Math.min(220, parent.width * 0.24)
-                    Layout.fillHeight: true
-                    visible: root.pitModeAvailable
-                    editorEnabled: root.pitModeAvailable
-                    settingsModel: _ohdSystemAirSettingsModel
-                    paramId: "WB_PIT_MODE"
-                    label: qsTr("Pit Mode")
-                    onMoveRequested: root.moveFocus(step)
-                    onBackRequested: root.leaveCard()
-                }
-                Rectangle {
-                    visible: pitMode.visible
-                    Layout.preferredWidth: 1; Layout.fillHeight: true
-                    color: settings_form.lineColor
-                }
-                ColumnLayout {
-                    Layout.fillWidth: true; Layout.fillHeight: true; spacing: 1
-                    Text { text: qsTr("TX POWER"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
-                    RowLayout { Layout.fillWidth: true; spacing: 14
-                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: settings.dev_show_advanced_button ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: settings.dev_show_advanced_button ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                    }
-                }
-            }
+        LinkUsageMeter {
+            visible: settings.dev_show_advanced_button
+            Layout.fillWidth: true
+            Layout.preferredHeight: implicitHeight
+            usage: root.host ? root.host.usageFor("wifi") : null
+            title: qsTr("Link Usage")
         }
 
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 25; spacing: 6
             Text { Layout.fillWidth: true; text: qsTr("Driver: %1").arg(root.simulated ? "RTL8812AU" : _wifi_card_air.card_type_as_string); color: settings_form.secondaryText; font.pixelSize: 7; elide: Text.ElideRight }
             Text { visible: _ohdSystemAir.onboard_uptime_ms > 0; text: qsTr("Uptime: %1").arg(root.formatUptime(_ohdSystemAir.onboard_uptime_ms)); color: settings_form.secondaryText; font.pixelSize: 7 }
-            Rectangle { Layout.preferredWidth: 7; Layout.preferredHeight: 7; radius: 4; color: settings_form.goodColor }
         }
     }
 }

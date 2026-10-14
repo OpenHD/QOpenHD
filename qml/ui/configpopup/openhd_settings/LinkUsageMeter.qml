@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.12
 
 Item {
     id: root
+    implicitHeight: usageContent.implicitHeight
     property var usage: null
     property string title: qsTr("Link Usage")
     readonly property real total: usage ? Number(usage.total_bps) : 0
@@ -49,7 +50,8 @@ Item {
     }
 
     Column {
-        anchors.fill: parent
+        id: usageContent
+        width: parent.width
         spacing: 6
         RowLayout {
             width: parent.width
