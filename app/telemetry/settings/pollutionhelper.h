@@ -20,18 +20,24 @@ public:
     static PollutionHelper& instance();
 public:
     struct PollutionElement{
-        int frequency_mhz;
-        int width_mhz;
-        int n_foreign_packets;
+        int frequency_mhz = 0;
+        int width_mhz = 20;
+        int n_foreign_packets = 0;
         int n_foreign_packets_normalized = 0;
         bool rf_sampled_busy = false;
+        bool devourer_survey = false;
+        int nhm_env_percent = -1;
+        int busy_percent = -1;
     };
     void threadsafe_update(const std::vector<PollutionElement>& values);
+    static void decode_survey_metrics(PollutionElement& sample, uint16_t packed);
     std::optional<PollutionElement> threadsafe_get_pollution_for_frequency(int frequency);
 public:
     Q_INVOKABLE QStringList pollution_frequencies_int_to_qstringlist(QList<int> frequencies);
     Q_INVOKABLE QVariantList pollution_frequencies_int_get_pollution(QList<int> frequencies,bool normalize=false);
     Q_INVOKABLE int pollution_get_last_scan_pollution_for_frequency(int frequency);
+    Q_INVOKABLE QVariantList survey_values(QList<int> frequencies, int metric);
+    Q_INVOKABLE QStringList survey_labels(QList<int> frequencies, int metric);
 private:
     // Written by telemetry, read by UI
     std::map<int,PollutionElement> m_pollution_elements;

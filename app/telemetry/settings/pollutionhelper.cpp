@@ -22,7 +22,8 @@ static std::vector<PollutionHelper::PollutionElement> normalize(const std::vecto
     if(max==0)return values;
     std::vector<PollutionHelper::PollutionElement> ret;
     for(auto value:values){
-        value.n_foreign_packets_normalized=value.rf_sampled_busy ? value.n_foreign_packets : value.n_foreign_packets*100 / max;
+        value.n_foreign_packets_normalized=value.n_foreign_packets < 0 ? -1 :
+            (value.rf_sampled_busy ? value.n_foreign_packets : value.n_foreign_packets*100 / max);
         //value.n_foreign_packets=value.n_foreign_packets*100 / max;
         ret.push_back(value);
     }
@@ -107,4 +108,45 @@ int PollutionHelper::pollution_get_last_scan_pollution_for_frequency(int frequen
         return tmp.value().n_foreign_packets;
     }
     return -1;
+}
+
+QVariantList PollutionHelper::survey_values(QList<int> frequencies, int metric)
+{
+    QVariantList values;
+    for (int frequency : frequencies) {
+        const auto sample = threadsafe_get_pollution_for_frequency(frequency);
+        int value = -1;
+        if (sample) {
+            if (metric == 0) value = sample->nhm_env_percent;
+            else if (metric == 1) value = sample->busy_percent;
+            else if (metric == 2) value = sample->n_foreign_packets;
+            else if (metric == 3) value = sample->n_foreign_packets_normalized;
+        }
+        values.push_back(value);
+    }
+    return values;
+}
+
+void PollutionHelper::decode_survey_metrics(PollutionElement& sample, uint16_t packed)
+{
+    sample.devourer_survey = true;
+    if (packed == 0x3fff) {
+        sample.n_foreign_packets = -1;
+        sample.n_foreign_packets_normalized = -1;
+    }
+    const int nhm = (packed >> 7) & 0x7f;
+    const int busy = packed & 0x7f;
+    sample.nhm_env_percent = (packed & 0x8000) && nhm <= 100 ? nhm : -1;
+    sample.busy_percent = (packed & 0x4000) && busy <= 100 ? busy : -1;
+}
+
+QStringList PollutionHelper::survey_labels(QList<int> frequencies, int metric)
+{
+    const auto values = survey_values(frequencies, metric);
+    QStringList labels;
+    for (int i = 0; i < frequencies.size(); ++i) {
+        labels.push_back(QString::number(frequencies[i]) +
+                         (values[i].toInt() < 0 ? " N/A" : " MHz"));
+    }
+    return labels;
 }

@@ -12,8 +12,8 @@ PopupBigGeneric {
     m_modern_style: true
     focus: visible
 
-    property bool normalized: false
     property int chartMinimumWidth: 1080
+    property int displayedChannelCount: 0
     property bool analyzing: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 2
     property int analyzeProgress: Math.max(0, Math.min(100, _wbLinkSettingsHelper.analyze_progress_perc))
 
@@ -52,7 +52,7 @@ PopupBigGeneric {
             _qopenhd.show_toast(qsTr("The radio is busy. Please try again."))
     }
 
-    function controls() { return [filterCombo, normalizeSwitch, startButton] }
+    function controls() { return [filterCombo, metricCombo, startButton] }
 
     function moveFocus(control, step) {
         var list = controls()
@@ -119,27 +119,15 @@ PopupBigGeneric {
                     Keys.onPressed: root.handleKey(filterCombo, event)
                 }
 
-                RowLayout {
-                    Layout.preferredWidth: 142
-                    spacing: 5
-                    Switch {
-                        id: normalizeSwitch
-                        checked: root.normalized
-                        enabled: !root.analyzing
-                        onClicked: {
-                            root.normalized = checked
-                            pollutionChart.updatePollutionGraph()
-                            if (root.normalized)
-                                _qopenhd.show_toast(qsTr("Relative scaling can exaggerate small differences"))
-                        }
-                        Keys.onPressed: root.handleKey(normalizeSwitch, event)
-                    }
-                    Text {
-                        text: root.normalized ? qsTr("RELATIVE") : qsTr("ABSOLUTE")
-                        color: settings_form.secondaryText
-                        font.pixelSize: 10
-                        font.bold: true
-                    }
+                CompactLinkComboBox {
+                    id: metricCombo
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    model: [qsTr("Energy above noise floor (%)"), qsTr("Channel busy (%)"),
+                            qsTr("Wi-Fi packets"), qsTr("Wi-Fi packets (relative)")]
+                    enabled: !root.analyzing
+                    onCurrentIndexChanged: pollutionChart.updatePollutionGraph()
+                    Keys.onPressed: root.handleKey(metricCombo, event)
                 }
 
                 Button {
@@ -227,14 +215,13 @@ PopupBigGeneric {
                 contentWidth: pollutionChart.width
                 contentHeight: height
                 clip: true
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                 ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
                 ChartView {
                     id: pollutionChart
-                    width: filterCombo.currentIndex === 2
-                           ? Math.max(chartScroller.width, root.chartMinimumWidth)
-                           : chartScroller.width
+                    width: Math.max(chartScroller.width, root.displayedChannelCount * 90,
+                                    filterCombo.currentIndex === 2 ? root.chartMinimumWidth : 0)
                     height: chartScroller.height
                     antialiasing: true
                     animationOptions: ChartView.SeriesAnimations
@@ -251,38 +238,42 @@ PopupBigGeneric {
                         var filter = filterCombo.currentIndex
                         if (filter < 0) filter = 0
                         var frequencies = _frequencyHelper.get_frequencies(filter)
-                        if (filter === 2)
-                            frequencies = _frequencyHelper.filter_frequencies_40mhz_ht40plus_only(frequencies)
-                        categoryAxis.categories = _pollutionHelper.pollution_frequencies_int_to_qstringlist(frequencies)
-                        pollutionBars.values = _pollutionHelper.pollution_frequencies_int_get_pollution(frequencies, root.normalized)
-                        qualityAxis.labelsVisible = !root.normalized
+                        root.displayedChannelCount = frequencies.length
+                        categoryAxis.categories = _pollutionHelper.survey_labels(frequencies, metricCombo.currentIndex)
+                        var values = _pollutionHelper.survey_values(frequencies, metricCombo.currentIndex)
+                        pollutionBars.values = values
+                        var maximum = 0
+                        for (var i = 0; i < values.length; ++i)
+                            maximum = Math.max(maximum, values[i])
                         qualityAxis.min = 0
-                        qualityAxis.max = root.normalized ? 100 : 30
+                        qualityAxis.max = metricCombo.currentIndex === 2 ? Math.max(10, maximum * 1.1) : 100
+                        qualityAxis.labelFormat = metricCombo.currentIndex === 2 ? "%.0f" : "%.0f%%"
                     }
 
                     BarSeries {
                         axisX: BarCategoryAxis {
                             id: categoryAxis
                             labelsColor: settings_form.secondaryText
+                            labelsFont.family: Qt.application.font.family
+                            labelsFont.pixelSize: 11
                             gridVisible: false
                             lineVisible: false
                         }
-                        axisY: CategoryAxis {
+                        axisY: ValueAxis {
                             id: qualityAxis
                             min: 0
-                            max: 30
+                            max: 100
                             labelsColor: settings_form.secondaryText
+                            labelsFont.family: Qt.application.font.family
+                            labelsFont.pixelSize: 11
                             gridLineColor: settings_form.lineColor
                             lineVisible: false
-                            labelsPosition: CategoryAxis.AxisLabelsPositionOnValue
-                            CategoryRange { label: qsTr("perfect"); endValue: 0 }
-                            CategoryRange { label: qsTr("good"); endValue: 10 }
-                            CategoryRange { label: qsTr("medium"); endValue: 20 }
-                            CategoryRange { label: qsTr("bad"); endValue: 30 }
+                            labelFormat: "%.0f%%"
+                            tickCount: 6
                         }
                         BarSet {
                             id: pollutionBars
-                            label: qsTr("Wi-Fi pollution estimate")
+                            label: metricCombo.currentText
                             values: [0, 0, 0, 0]
                             color: settings_form.errorColor
                             borderColor: settings_form.errorColor
@@ -295,7 +286,7 @@ PopupBigGeneric {
 
         Text {
             Layout.fillWidth: true
-            text: qsTr("Lower bars indicate cleaner channels. Swipe horizontally to inspect the full 5.8 GHz range.")
+            text: qsTr("Higher energy or busy bars indicate occupied channels. Energy includes OpenHD traffic; stop Air transmission for an interference-only scan. Check both 20 MHz halves for 40 MHz. N/A means no measurement. Repeat to check intermittent interference. Swipe to inspect all channels.")
             color: settings_form.secondaryText
             font.pixelSize: 9
             horizontalAlignment: Text.AlignHCenter

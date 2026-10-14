@@ -1,0 +1,7 @@
+<RCC><qresource prefix="/qml">
+  <file alias="Archivo-Regular.ttf">../qml/osdfonts/Archivo-Regular.ttf</file>
+  <file alias="ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml">../qml/ui/configpopup/openhd_settings/PopupAnalyzeChannels.qml</file>
+  <file alias="ui/configpopup/openhd_settings/PopupBigGeneric.qml">../qml/ui/configpopup/openhd_settings/PopupBigGeneric.qml</file>
+  <file alias="ui/configpopup/openhd_settings/CompactLinkComboBox.qml">../qml/ui/configpopup/openhd_settings/CompactLinkComboBox.qml</file>
+  <file alias="ui/elements/DarkComboBox.qml">../qml/ui/elements/DarkComboBox.qml</file>
+</qresource></RCC>

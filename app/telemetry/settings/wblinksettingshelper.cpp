@@ -132,6 +132,8 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
         tmp.frequency_mhz=msg.channels_mhz[i];
         tmp.rf_sampled_busy=msg.dummy0==0x4553;
         tmp.n_foreign_packets=tmp.rf_sampled_busy ? std::min(100,(int)msg.dummy[i]/100) : msg.foreign_packets[i];
+        tmp.devourer_survey=msg.dummy0==0x4456;
+        if (tmp.devourer_survey) PollutionHelper::decode_survey_metrics(tmp, msg.dummy[i]);
         analyzed_channels.push_back(tmp);
     }
     if(analyzed_channels.size()==0){
@@ -139,21 +141,22 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
         return;
     }
     int effective_progress=msg.progress_perc;
-    if(msg.dummy0==0x4553 && msg.dummy2!=0) {
+    if((msg.dummy0==0x4553 || msg.dummy0==0x4456) && msg.dummy2!=0) {
         static int32_t batch=-1;
         static int total=0;
+        static uint16_t source=0;
         static std::map<int,PollutionHelper::PollutionElement> pages;
         const int offset=static_cast<uint32_t>(msg.dummy2)&0xffff;
         const int expected=static_cast<uint32_t>(msg.dummy2)>>16;
-        if(expected<1 || expected>64 || offset+static_cast<int>(analyzed_channels.size())>expected) return;
-        if(batch!=msg.dummy1 || total!=expected) { batch=msg.dummy1;total=expected;pages.clear(); }
+        if(expected<1 || expected>256 || offset+static_cast<int>(analyzed_channels.size())>expected) return;
+        if(batch!=msg.dummy1 || total!=expected || source!=msg.dummy0) { batch=msg.dummy1;total=expected;source=msg.dummy0;pages.clear(); }
         for(size_t i=0;i<analyzed_channels.size();i++) pages[offset+i]=analyzed_channels[i];
         analyzed_channels.clear();
         for(const auto& entry:pages) analyzed_channels.push_back(entry.second);
         effective_progress=100*pages.size()/expected;
     }
     const uint16_t curr_channel_mhz=analyzed_channels[analyzed_channels.size()-1].frequency_mhz;
-    const uint16_t curr_channel_width_mhz=40;
+    const uint16_t curr_channel_width_mhz=20;
     const uint16_t curr_foreign_packets=analyzed_channels[analyzed_channels.size()-1].n_foreign_packets;
     {
         std::stringstream ss;
@@ -166,6 +169,10 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_analyze_channels
     std::stringstream ss;
     ss<<"Analyzed "<<(int)curr_channel_mhz<<"@"<<(int)curr_channel_width_mhz<<"Mhz, ";
     if(msg.dummy0==0x4553) ss<<" RF sampled busy:"<<curr_foreign_packets<<"% ";
+    else if(msg.dummy0==0x4456) {
+        const auto& sample = analyzed_channels.back();
+        ss<<" Energy above floor:"<<sample.nhm_env_percent<<"%, busy:"<<sample.busy_percent<<"%, packets:"<<curr_foreign_packets<<" ";
+    }
     else ss<<" Foreign packets:"<<curr_foreign_packets<<" ";
     if(effective_progress>=100){
         ss<<"100%, Done";
