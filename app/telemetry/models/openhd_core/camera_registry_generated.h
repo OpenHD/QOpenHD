@@ -74,6 +74,7 @@ static constexpr int X_CAM_TYPE_ORQA_HORNET = 122;
 static constexpr int X_CAM_TYPE_ORQA_JAGUAR = 123;
 static constexpr int X_CAM_TYPE_ORQA_REKINDLE = 124;
 static constexpr int X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2 = 125;
+static constexpr int X_CAM_TYPE_ORQA_V1 = 126;
 static constexpr int X_CAM_TYPE_NXP_IMX8_V4L2 = 130;
 static constexpr int X_CAM_TYPE_NXP_IMX8_OS08A20 = 131;
 static constexpr int X_CAM_TYPE_NXP_IMX8_IMX662 = 132;
@@ -158,10 +159,11 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {110, "OPENIPC_X"},
   {120, "CORETRONIC IMX577"},
   {121, "CORETRONIC OV9282"},
-  {122, "ORQA_HORNET"},
+  {122, "RUNCAM_WASP"},
   {123, "ORQA_JAGUAR"},
   {124, "ORQA_REKINDLE"},
   {125, "ORQA_ORCA_DIGITAL_V2"},
+  {126, "ORQA_V1"},
   {130, "NXP_IMX8_V4L2"},
   {131, "NXP_IMX8_OS08A20"},
   {132, "NXP_IMX8_IMX662"},
@@ -557,6 +559,10 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL
   {1280, 720, 60},
 };
 
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ORQA_V1[] = {
+  {1920, 1080, 60},
+};
+
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2[] = {
   {1280, 720, 60},
   {1920, 1080, 30},
@@ -713,6 +719,7 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_ORQA_JAGUAR, kCameraResolutions_X_CAM_TYPE_ORQA_JAGUAR, sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_JAGUAR) / sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_JAGUAR[0])},
   {X_CAM_TYPE_ORQA_REKINDLE, kCameraResolutions_X_CAM_TYPE_ORQA_REKINDLE, sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_REKINDLE) / sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_REKINDLE[0])},
   {X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2, kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2, sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2) / sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2[0])},
+  {X_CAM_TYPE_ORQA_V1, kCameraResolutions_X_CAM_TYPE_ORQA_V1, sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_V1) / sizeof(kCameraResolutions_X_CAM_TYPE_ORQA_V1[0])},
   {X_CAM_TYPE_NXP_IMX8_V4L2, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_V4L2[0])},
   {X_CAM_TYPE_NXP_IMX8_OS08A20, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_OS08A20[0])},
   {X_CAM_TYPE_NXP_IMX8_IMX662, kCameraResolutions_X_CAM_TYPE_NXP_IMX8_IMX662, sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_IMX662) / sizeof(kCameraResolutions_X_CAM_TYPE_NXP_IMX8_IMX662[0])},
@@ -883,9 +890,10 @@ inline constexpr ManufacturerEntry kManufacturer_NVIDIA_LEOPARD = {"LEOPARD", kM
 
 inline constexpr CameraUiEntry kManufacturer_ORQA_Cameras[] = {
   {X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2, "ORCA DIGITAL V2"},
-  {X_CAM_TYPE_ORQA_HORNET, "HORNET"},
+  {X_CAM_TYPE_ORQA_HORNET, "RunCam Wasp"},
   {X_CAM_TYPE_ORQA_JAGUAR, "JAGUAR"},
   {X_CAM_TYPE_ORQA_REKINDLE, "REKINDLE"},
+  {X_CAM_TYPE_ORQA_V1, "ORQA v1"},
 };
 
 inline constexpr ManufacturerEntry kManufacturer_ORQA = {"ORQA", kManufacturer_ORQA_Cameras, sizeof(kManufacturer_ORQA_Cameras) / sizeof(kManufacturer_ORQA_Cameras[0])};
@@ -1121,6 +1129,7 @@ inline constexpr ManufacturerEntry kSecondaryManufacturers[] = {
   kManufacturer_DISABLE,
   kManufacturer_IP_CAMERA,
   kManufacturer_USB,
+  kManufacturer_ORQA,
   kManufacturer_DEBUG,
 };
 
@@ -1210,6 +1219,7 @@ using openhd::camera_registry::X_CAM_TYPE_ORQA_HORNET;
 using openhd::camera_registry::X_CAM_TYPE_ORQA_JAGUAR;
 using openhd::camera_registry::X_CAM_TYPE_ORQA_REKINDLE;
 using openhd::camera_registry::X_CAM_TYPE_ORQA_ORCA_DIGITAL_V2;
+using openhd::camera_registry::X_CAM_TYPE_ORQA_V1;
 using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_V4L2;
 using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_OS08A20;
 using openhd::camera_registry::X_CAM_TYPE_NXP_IMX8_IMX662;

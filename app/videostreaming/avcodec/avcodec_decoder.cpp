@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "avcodec_helper.hpp"
+#include "nal_access_unit_parser.hpp"
 #include "common/TimeHelper.hpp"
 #include "common/util_fs.h"
 
@@ -822,7 +823,24 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
+     NalAccessUnitParser access_units(decoder->id);
+     auto feed_nal = [&](const uint8_t* data, size_t size,
+                         std::chrono::steady_clock::time_point received) {
+         const auto pts = std::chrono::duration_cast<std::chrono::microseconds>(
+             received.time_since_epoch()).count();
+         return access_units.feed(decoder_ctx, data, size, pts,
+             [&](const uint8_t* frame_data, int frame_size, int64_t frame_pts) {
+                 // FFmpeg requires zero padding and may retain a packet ref.
+                 if (av_new_packet(pkt, frame_size) < 0) return;
+                 std::memcpy(pkt->data, frame_data, frame_size);
+                 const auto created = frame_pts == AV_NOPTS_VALUE ? received :
+                     std::chrono::steady_clock::time_point(std::chrono::microseconds(frame_pts));
+                 decode_and_wait_for_frame(pkt, created);
+                 av_packet_unref(pkt);
+             });
+     };
      bool has_keyframe_data=false;
+     if (!access_units.valid()) goto finish;
      while(true){
          if(std::chrono::steady_clock::now() - m_last_decoded_frame > std::chrono::seconds(10)){
              qWarning()<<"No decoded video frame for 10 seconds; reopening RTP decoder";
@@ -846,9 +864,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                   continue;
               }
               qDebug()<<"Got decode data (before keyframe)";
-              pkt->data=keyframe_buf->data();
-              pkt->size=keyframe_buf->size();
-              decode_config_data(pkt);
+              feed_nal(keyframe_buf->data(), keyframe_buf->size(),
+                       std::chrono::steady_clock::now());
               has_keyframe_data=true;
               continue;
          }else{
@@ -859,9 +876,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
              }
              //qDebug()<<"Got frame";
              //qDebug()<<"Got decode data (after keyframe)";
-             pkt->data=(uint8_t*)buf->get_nal().getData();
-             pkt->size=buf->get_nal().getSize();
-             decode_and_wait_for_frame(pkt,buf->get_nal().creationTime);
+             if (!feed_nal(buf->get_nal().getData(), buf->get_nal().getSize(),
+                           buf->get_nal().creationTime)) goto finish;
              //fetch_frame_or_feed_input_packet();
          }
      }

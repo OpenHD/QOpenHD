@@ -172,24 +172,32 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
         MavlinkSettingsModel::instanceGround().set_ready();
     }else{
         //qDebug()<<"MavlinkTelemetry::XonProcessMavlinkMessage"<<msg.msgid<<"compid:"<<source_compid<<" source_sysid:"<<source_sysid;
-        if(!m_fc_found){
-            // For the fc we need to wait until we got an heartbeat
+        bool fc_heartbeat = false;
+        if (msg.msgid == MAVLINK_MSG_ID_HEARTBEAT) {
+            mavlink_heartbeat_t hb{};
+            mavlink_msg_heartbeat_decode(&msg, &hb);
+            fc_heartbeat = hb.autopilot != MAV_AUTOPILOT_INVALID && hb.type != MAV_TYPE_GCS &&
+                hb.type != MAV_TYPE_ONBOARD_CONTROLLER && hb.type != MAV_TYPE_CAMERA &&
+                hb.type != MAV_TYPE_GIMBAL && hb.type != MAV_TYPE_ANTENNA_TRACKER;
+        }
+        if (fc_heartbeat && (!m_fc_found || !FCMavlinkSystem::instance().telemetry_active())) {
+            // Discover only from vehicle heartbeats, never companion/GCS traffic.
             if(source_compid==MAV_COMP_ID_AUTOPILOT1){
-                FCMavlinkSystem::instance().set_system_id(source_sysid);
+                FCMavlinkSystem::instance().set_system_id(source_sysid, source_compid);
                 m_fc_sys_id=source_sysid;
                 m_fc_comp_id=source_compid;
                 m_fc_found=true;
             }
             else if(source_sysid==0){
                 qDebug()<<"Found betaflight FC:"<<source_sysid;
-                FCMavlinkSystem::instance().set_system_id(source_sysid);
+                FCMavlinkSystem::instance().set_system_id(source_sysid, source_compid);
                 m_fc_sys_id=source_sysid;
                 m_fc_comp_id=source_compid;
                 m_fc_found=true;
             }else if(source_compid==MAV_COMP_ID_SYSTEM_CONTROL && source_sysid==1){
                 // Aparently INAV uses a weird comp id & sys id 1
                 qDebug()<<"Found INAV FC:"<<source_sysid;
-                FCMavlinkSystem::instance().set_system_id(source_sysid);
+                FCMavlinkSystem::instance().set_system_id(source_sysid, source_compid);
                 m_fc_sys_id=source_sysid;
                 m_fc_comp_id=source_compid;
                 m_fc_found=true;
@@ -209,6 +217,20 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
         process_message_timesync(msg);
         return;
     }
+    const bool firmware_status = FCMavlinkSystem::instance().process_firmware_status(msg);
+    if (firmware_status) {
+        // Air's configured UART can establish an FC endpoint even when its
+        // heartbeat stream is disabled. Reuse the same FC routing/model state.
+        const auto identity = FCMavlinkSystem::instance().firmware_identity();
+        if (identity.value("sys", -1).toInt() >= 0 && identity.value("comp", -1).toInt() >= 0) {
+            m_fc_sys_id = identity.value("sys").toInt();
+            m_fc_comp_id = identity.value("comp").toInt();
+            m_fc_found = true;
+        }
+        FCAction::instance().request_battery_capacity_if_needed();
+        // These are also registered parameters. Let XParam account for their
+        // indexes during a list fetch before consuming unsolicited updates.
+    }
     if(CmdSender::instance().process_message(msg)){
         // Consumed, no further processing needed
         return;
@@ -220,6 +242,7 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
         // Consumed, no further processing needed
         return;
     }
+    if (firmware_status) return;
     // Other than ping, we seperate by sys ID's - there are up to 3 Systems - The OpenHD air unit, the OpenHD ground unit and the FC connected to the OHD air unit.
     // The systems then (optionally) can seperate by components, but r.n this is not needed.
     if(msg.sysid==OHD_SYS_ID_AIR){
@@ -236,8 +259,13 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
         if(fc_sys_id.has_value()){
             if(msg.sysid==fc_sys_id.value()){
                process_broadcast_message_fc(msg);
-               FCMsgIntervalHandler::instance().opt_send_messages();
-               FCMissionHandler::instance().opt_send_messages();
+               const auto firmware = FCMavlinkSystem::instance().firmware_identity().value("type").toInt();
+               // Do not flood INAV/BF/unknown FCs with unsupported rate/mission
+               // requests while their normal telemetry is already arriving.
+               if (firmware == 1 || firmware == 2) {
+                   FCMsgIntervalHandler::instance().opt_send_messages();
+                   FCMissionHandler::instance().opt_send_messages();
+               }
             }else{
                 qDebug()<<"MavlinkTelemetry received unmatched message "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
             }

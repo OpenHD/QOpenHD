@@ -11,11 +11,13 @@ Item {
     property string iconText: "\uf1eb"
     property color iconColor: settings_form.accentColor
     property bool alive: false
+    property bool actionsAvailable: alive
     property int systemType: 0 // 0 ground, 1 air, 2 flight controller
     property Component bodyComponent
+    signal detailsRequested()
 
-    function actionButtons() { return [rebootButton, shutdownButton, calibrationButton] }
-    function showPowerActions() { return alive }
+    function actionButtons() { return [detailsButton, rebootButton, shutdownButton, calibrationButton] }
+    function showPowerActions() { return actionsAvailable }
     function handleNavigation(event) {
         if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
             statusPanel.moveFocus(1)
@@ -153,6 +155,43 @@ Item {
                 Keys.onPressed: card.handleNavigation(event)
                 background: Rectangle { radius: 8; color: parent.hovered ? "#263b50" : "transparent"; border.color: parent.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: parent.activeFocus ? 2 : 1 }
                 contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+            }
+        }
+    }
+
+    Button {
+        id: detailsButton
+        objectName: "craftDetailsButton"
+        anchors.left: parent.left; anchors.right: parent.right
+        anchors.top: parent.top; anchors.bottom: bodyLoader.bottom
+        visible: card.systemType === 2
+        enabled: visible
+        hoverEnabled: true
+        Accessible.name: qsTr("Open craft diagnostics")
+        ToolTip.visible: hovered
+        ToolTip.text: qsTr("Open craft diagnostics")
+        background: Rectangle {
+            radius: 17
+            color: detailsButton.hovered ? "#12a486ff" : "transparent"
+            border.color: detailsButton.activeFocus ? card.iconColor : "transparent"
+            border.width: 2
+        }
+        contentItem: Item {
+            Text {
+                anchors.right: parent.right; anchors.bottom: parent.bottom
+                anchors.margins: 12
+                text: qsTr("CRAFT DETAILS  ›")
+                color: card.iconColor; font.pixelSize: 10; font.bold: true
+            }
+        }
+        onClicked: card.detailsRequested()
+        onActiveFocusChanged: if (activeFocus) statusPanel.syncFocus(detailsButton)
+        Keys.onPressed: function(event) {
+            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                card.detailsRequested()
+                event.accepted = true
+            } else {
+                card.handleNavigation(event)
             }
         }
     }

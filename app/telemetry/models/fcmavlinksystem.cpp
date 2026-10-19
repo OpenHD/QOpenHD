@@ -2,6 +2,10 @@
 #include "rcchannelsmodel.h"
 
 #include <QDebug>
+#include <cstring>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include "tutil/openhd_defines.hpp"
 #include "util/qopenhd.h"
 
 #include "../tutil/geodesi_helper.h"
@@ -41,7 +45,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         return false;
     }
     const auto set_sys_id=opt_set_sys_id.value();
-    if(msg.sysid!=set_sys_id){
+    if(msg.sysid!=set_sys_id || msg.compid != m_comp_id){
         qDebug()<<"Do not pass messages not coming from the FC to the FC model";
         return false;
     }
@@ -55,14 +59,16 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     }
     m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    set_telemetry_active(true);
+    record_diagnostic_message(msg);
     switch (msg.msgid) {
     case MAVLINK_MSG_ID_HEARTBEAT: {
         mavlink_heartbeat_t heartbeat;
         mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-        m_last_heartbeat_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
         const auto opt_info=Telemetryutil::parse_heartbeat(heartbeat);
         if(opt_info.has_value()){
             // heartbeat okay
+            m_last_heartbeat_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
             const auto info=opt_info.value();
             set_flight_mode(info.flight_mode);
             set_autopilot_type_str(info.autopilot);
@@ -141,7 +147,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_PARAM_VALUE:{
-        // handled by XParam
+        observe_battery_capacity(msg);
         break;
     }
     case MAVLINK_MSG_ID_GPS_RAW_INT:{
@@ -281,21 +287,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
-        //qDebug()<<"Got MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN";
-        // inav for some reason publishes the home position via this message instead of the home position one (and doesn't want to change it)
-        QSettings settings;
-        const bool dirty_enable_inav_hacks=settings.value("dirty_enable_inav_hacks",false).toBool();
-        if(dirty_enable_inav_hacks){
-           mavlink_gps_global_origin_t decoded;
-           mavlink_msg_gps_global_origin_decode(&msg, &decoded);
-           const double home_lat=(double)decoded.latitude / 10000000.0;
-           const double home_lon=(double)decoded.longitude / 10000000.0;
-           // inav reports 0 until it has home
-           if(home_lat!=0.0 && home_lon !=0.0){
-               set_home_latitude(home_lat);
-               set_home_longitude(home_lon);
-           }
-        }
+        // INAV reports its home through GPS_GLOBAL_ORIGIN. The received packet
+        // is already cached, so detection and origin may arrive in either order.
+        apply_inav_home_compatibility();
         break;
     }
     case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:{
@@ -440,6 +434,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_HOME_POSITION:{
+        m_inav_home_active = false;
         mavlink_home_position_t home_position;
         mavlink_msg_home_position_decode(&msg, &home_position);
         set_home_latitude((double)home_position.latitude / 10000000.0);
@@ -502,6 +497,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     }
     }
 
+    refresh_diagnostics(false);
     return true;
 }
 
@@ -515,14 +511,24 @@ std::optional<uint8_t> FCMavlinkSystem::get_fc_sys_id()
     return sys_id;
 }
 
-bool FCMavlinkSystem::set_system_id(int sys_id)
+bool FCMavlinkSystem::set_system_id(int sys_id, int comp_id)
 {
 
     if(sys_id<0 || sys_id >= UINT8_MAX){
         qWarning()<<"Invalid sys id";
         return false;
     }
+    if (m_sys_id != sys_id || m_comp_id != comp_id) {
+        set_battery_capacity_parameter(QVariantMap());
+        m_diagnostic_messages.clear();
+        m_diagnostic_state.clear();
+        m_diagnostic_events.clear();
+        m_diagnostic_refresh_ms = 0;
+        set_firmware_identity(QVariantMap());
+        apply_inav_home_compatibility();
+    }
     m_sys_id=sys_id;
+    m_comp_id=comp_id;
     m_discovered=true;
     set_for_osd_sys_id(sys_id);
     return true;
@@ -829,13 +835,336 @@ void FCMavlinkSystem::send_message_hud_connection(bool connected)
         message << "connected";
         HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
     }else{
-        message << "disconnected";
+        const auto telemetry_age = QOpenHDMavlinkHelper::getTimeMilliseconds() -
+                m_last_message_ms.load();
+        if (m_last_message_ms >= 0 && telemetry_age < 4000)
+            message << "heartbeat lost; telemetry still arriving";
+        else
+            message << "disconnected";
         HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
     }
 }
 
+bool FCMavlinkSystem::process_firmware_status(const mavlink_message_t& msg)
+{
+    if (msg.sysid != OHD_SYS_ID_AIR || msg.compid != MAV_COMP_ID_ONBOARD_COMPUTER ||
+        msg.msgid != MAVLINK_MSG_ID_PARAM_EXT_VALUE) return false;
+    mavlink_param_ext_value_t value{};
+    mavlink_msg_param_ext_value_decode(&msg, &value);
+    const auto id = QByteArray(value.param_id, int(strnlen(value.param_id, sizeof(value.param_id))));
+    if (id != "FC_FW_INFO" && id != "FC_FW_EVID") return false;
+    const auto text = QByteArray(value.param_value, int(strnlen(value.param_value, sizeof(value.param_value))));
+    if (id == "FC_FW_EVID") {
+        const auto evidence = QJsonDocument::fromJson(text).object().toVariantMap();
+        auto identity = firmware_identity();
+        if (!identity.contains("gen") || evidence.value("gen") != identity.value("gen") ||
+            evidence.value("type") != identity.value("type")) return true;
+        identity["evidence"] = evidence.value("evidence");
+        set_firmware_identity(identity);
+        return true;
+    }
+    const auto document = QJsonDocument::fromJson(text);
+    if (!document.isObject()) return true;
+    auto identity = document.object().toVariantMap();
+    const auto system = identity.value("sys", -1).toInt();
+    const auto component = identity.value("comp", -1).toInt();
+    const auto type = identity.value("type", -1).toInt();
+    if (type < 0 || type > 4 || system < -1 || system > 255 || component < -1 || component > 255) return true;
+    // Keep the last identified craft visible across a transport outage. A new
+    // positive endpoint/session below invalidates its observed capabilities.
+    if (system < 0) return true;
+    if (system >= 0 && (!m_discovered || !telemetry_active()))
+        set_system_id(system, component);
+    if (system >= 0 && m_discovered && (system != m_sys_id || component != m_comp_id)) return true;
+    const auto previous = firmware_identity();
+    if (previous.contains("gen") && (previous.value("gen") != identity.value("gen") ||
+                                     previous.value("sys") != identity.value("sys"))) {
+        if (m_inav_home_active) {
+            set_home_latitude(0); set_home_longitude(0);
+            m_inav_home_active = false;
+        }
+        m_diagnostic_messages.clear(); m_diagnostic_state.clear(); m_diagnostic_events.clear();
+        set_battery_capacity_parameter(QVariantMap());
+        m_diagnostic_refresh_ms = 0;
+        set_craft_diagnostics(QVariantMap());
+    }
+    const QStringList names{"Unknown", "ArduPilot", "PX4", "INAV", "Betaflight"};
+    identity["name"] = names[type];
+    if (previous.value("gen") == identity.value("gen") && previous.value("type") == identity.value("type"))
+        identity["evidence"] = previous.value("evidence");
+    m_firmware_status_ms = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    set_firmware_identity(identity);
+    if (previous.value("type") != identity.value("type") || previous.value("gen") != identity.value("gen"))
+        qInfo() << "FC firmware status:" << identity.value("name").toString()
+                << "system" << system << "component" << component << "session" << identity.value("gen");
+    apply_inav_home_compatibility();
+    return true;
+}
+
+void FCMavlinkSystem::apply_inav_home_compatibility()
+{
+    if (firmware_identity().value("type").toInt() != 3) {
+        if (m_inav_home_active) {
+            set_home_latitude(0); set_home_longitude(0);
+            m_inav_home_active = false;
+        }
+        return;
+    }
+    const auto origin = m_diagnostic_messages.constFind(MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN);
+    if (origin == m_diagnostic_messages.constEnd()) return;
+    mavlink_gps_global_origin_t decoded{};
+    mavlink_msg_gps_global_origin_decode(&origin->latest, &decoded);
+    const double latitude = decoded.latitude / 10000000.0;
+    const double longitude = decoded.longitude / 10000000.0;
+    if (latitude != 0 && longitude != 0 && std::abs(latitude) <= 90 && std::abs(longitude) <= 180) {
+        set_home_latitude(latitude); set_home_longitude(longitude);
+        m_inav_home_active = true;
+        calculate_home_distance(); calculate_home_course();
+    }
+}
+
+void FCMavlinkSystem::observe_battery_capacity(const mavlink_message_t& msg)
+{
+    if (msg.msgid != MAVLINK_MSG_ID_PARAM_VALUE || msg.sysid != m_sys_id || msg.compid != m_comp_id) return;
+    mavlink_param_value_t value{};
+    mavlink_msg_param_value_decode(&msg, &value);
+    const QString id = QString::fromLatin1(value.param_id, int(strnlen(value.param_id, 16)));
+    const bool supported_type = value.param_type == MAV_PARAM_TYPE_REAL32 ||
+        (id == "BATT_CAPACITY" && firmware_identity().value("type").toInt() == 1 && value.param_type == MAV_PARAM_TYPE_INT32);
+    if ((id != "BATT_CAPACITY" && id != "BAT1_CAPACITY") ||
+        !supported_type || !std::isfinite(value.param_value) ||
+        value.param_value < -1 || value.param_value > 100000) return;
+    set_battery_capacity_parameter(QVariantMap{{"id", id}, {"value", value.param_value}, {"type", value.param_type}});
+}
+
+void FCMavlinkSystem::record_diagnostic_message(const mavlink_message_t& msg)
+{
+    // Capture only the discovered FC, before the normal decoder consumes it.
+    // Bound the inspector even if a device sends arbitrary message IDs.
+    if (!m_diagnostic_messages.contains(msg.msgid) && m_diagnostic_messages.size() >= 128)
+        return;
+    const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    auto& entry = m_diagnostic_messages[msg.msgid];
+    ++entry.count;
+    entry.received_ms = now;
+    entry.component = msg.compid;
+    entry.payload = QByteArray(_MAV_PAYLOAD(&msg), msg.len).toHex(' ');
+    entry.latest = msg;
+    // MAVLink 2 trims trailing zeros, including extension fields. Introspection
+    // must see those as zero, never as bytes left in the parser's buffer.
+    std::memset(reinterpret_cast<char*>(entry.latest.payload64) + msg.len, 0,
+                MAVLINK_MAX_PAYLOAD_LEN - msg.len);
+    if (msg.compid != m_comp_id)
+        return;
+    auto observed = m_diagnostic_state.value("observed").toMap();
+    const auto put = [&](const QString& key, double value, bool valid = true) {
+        if (valid && std::isfinite(value)) observed[key] = QVariantMap{{"value", value}, {"receivedMs", now}, {"valid", true}};
+        else if (observed.contains(key)) {
+            auto previous = observed.value(key).toMap();
+            previous["valid"] = false;
+            observed[key] = previous;
+        }
+    };
+    switch (msg.msgid) {
+    case MAVLINK_MSG_ID_ATTITUDE: {
+        mavlink_attitude_t v{}; mavlink_msg_attitude_decode(&msg, &v);
+        put("roll", v.roll * 180.0 / M_PI); put("pitch", v.pitch * 180.0 / M_PI);
+        put("yaw", v.yaw * 180.0 / M_PI); break;
+    }
+    case MAVLINK_MSG_ID_SYS_STATUS: {
+        mavlink_sys_status_t v{}; mavlink_msg_sys_status_decode(&msg, &v);
+        put("packVoltage", v.voltage_battery / 1000.0, v.voltage_battery > 0 && v.voltage_battery != UINT16_MAX);
+        put("batteryPercent", v.battery_remaining, v.battery_remaining >= 0 && v.battery_remaining <= 100);
+        put("current", v.current_battery / 100.0, v.current_battery >= 0);
+        put("load", v.load / 10.0, v.load <= 1000); break;
+    }
+    case MAVLINK_MSG_ID_GPS_RAW_INT: {
+        mavlink_gps_raw_int_t v{}; mavlink_msg_gps_raw_int_decode(&msg, &v);
+        put("gpsFix", v.fix_type); put("satellites", v.satellites_visible, v.satellites_visible != UINT8_MAX);
+        put("hdop", v.eph / 100.0, v.eph != UINT16_MAX);
+        put("latitude", v.lat / 1e7, v.fix_type >= 3); put("longitude", v.lon / 1e7, v.fix_type >= 3); break;
+    }
+    case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
+        mavlink_global_position_int_t v{}; mavlink_msg_global_position_int_decode(&msg, &v);
+        put("relativeAltitude", v.relative_alt / 1000.0);
+        put("heading", v.hdg / 100.0, v.hdg <= 36000); break;
+    }
+    case MAVLINK_MSG_ID_VFR_HUD: {
+        mavlink_vfr_hud_t v{}; mavlink_msg_vfr_hud_decode(&msg, &v);
+        put("groundSpeed", v.groundspeed, v.groundspeed >= 0);
+        put("climb", v.climb); put("throttle", v.throttle, v.throttle <= 100); break;
+    }
+    case MAVLINK_MSG_ID_RC_CHANNELS: {
+        mavlink_rc_channels_t v{}; mavlink_msg_rc_channels_decode(&msg, &v);
+        put("rcRssi", Telemetryutil::mavlink_rc_rssi_to_percent(v.rssi), v.rssi != UINT8_MAX);
+        put("rcChannels", v.chancount, v.chancount > 0); break;
+    }
+    case MAVLINK_MSG_ID_RC_CHANNELS_RAW: {
+        mavlink_rc_channels_raw_t v{}; mavlink_msg_rc_channels_raw_decode(&msg, &v);
+        put("rcRssi", Telemetryutil::mavlink_rc_rssi_to_percent(v.rssi), v.rssi != UINT8_MAX); break;
+    }
+    case MAVLINK_MSG_ID_BATTERY_STATUS: {
+        mavlink_battery_status_t v{}; mavlink_msg_battery_status_decode(&msg, &v);
+        if (v.id != 0) break;
+        put("batteryTemperature", v.temperature / 100.0, v.temperature != INT16_MAX);
+        put("consumedMah", v.current_consumed, v.current_consumed >= 0);
+        unsigned voltage = 0, cells = 0;
+        for (unsigned i = 0; i < 10; ++i) { const auto cell = v.voltages[i]; if (cell != UINT16_MAX && cell != 0) { voltage += cell; ++cells; } }
+        put("batteryPackVoltage", voltage / 1000.0, cells > 0);
+        put("cellAverage", cells ? voltage / (1000.0 * cells) : 0, cells > 1);
+        put("cellCount", cells, cells > 1);
+        break;
+    }
+    case MAVLINK_MSG_ID_SCALED_PRESSURE: {
+        mavlink_scaled_pressure_t v{}; mavlink_msg_scaled_pressure_decode(&msg, &v);
+        put("sensorTemperature", v.temperature / 100.0, v.temperature != 0);
+        put("pressure", v.press_abs, v.press_abs > 0); break;
+    }
+    default: break;
+    }
+    m_diagnostic_state["observed"] = observed;
+    if (msg.msgid == MAVLINK_MSG_ID_HEARTBEAT) {
+        mavlink_heartbeat_t value;
+        mavlink_msg_heartbeat_decode(&msg, &value);
+        m_diagnostic_state["customMode"] = value.custom_mode;
+        m_diagnostic_state["autopilotId"] = value.autopilot;
+        m_diagnostic_state["vehicleTypeId"] = value.type;
+        m_diagnostic_state["systemState"] = value.system_status;
+    } else if (msg.msgid == MAVLINK_MSG_ID_SYS_STATUS) {
+        mavlink_sys_status_t value;
+        mavlink_msg_sys_status_decode(&msg, &value);
+        m_diagnostic_state["load"] = value.load > 1000 ? -1.0 : value.load / 10.0;
+        m_diagnostic_state["present"] = value.onboard_control_sensors_present;
+        m_diagnostic_state["enabled"] = value.onboard_control_sensors_enabled;
+        m_diagnostic_state["healthy"] = value.onboard_control_sensors_health;
+        m_diagnostic_state["statusReceivedMs"] = now;
+    } else if (msg.msgid == MAVLINK_MSG_ID_AUTOPILOT_VERSION) {
+        mavlink_autopilot_version_t value;
+        mavlink_msg_autopilot_version_decode(&msg, &value);
+        const auto version = value.flight_sw_version;
+        m_diagnostic_state["firmwareVersion"] = version == 0 ? tr("Not reported")
+            : QString("%1.%2.%3 (type %4)").arg((version >> 24) & 255)
+                .arg((version >> 16) & 255).arg((version >> 8) & 255).arg(version & 255);
+        m_diagnostic_state["boardVersion"] = value.board_version;
+        m_diagnostic_state["vendorId"] = value.vendor_id;
+        m_diagnostic_state["productId"] = value.product_id;
+        m_diagnostic_state["uid"] = QString::number(value.uid, 16);
+        m_diagnostic_state["capabilities"] = QString::number(value.capabilities, 16);
+    } else if (msg.msgid == MAVLINK_MSG_ID_STATUSTEXT) {
+        mavlink_statustext_t value;
+        mavlink_msg_statustext_decode(&msg, &value);
+        // Multi-part text is left to the existing log; don't present a fragment as a full event.
+        if (value.chunk_seq != 0)
+            return;
+        const auto text = QString::fromUtf8(value.text, int(strnlen(value.text, sizeof(value.text)))).trimmed();
+        if (text.isEmpty())
+            return;
+        int match = -1;
+        for (int i = 0; i < m_diagnostic_events.size(); ++i) {
+            if (m_diagnostic_events[i].toMap().value("text").toString() == text) {
+                match = i;
+                break;
+            }
+        }
+        auto event = match >= 0 ? m_diagnostic_events.takeAt(match).toMap() : QVariantMap();
+        event["text"] = text;
+        event["severity"] = value.severity;
+        event["count"] = event.value("count").toInt() + 1;
+        event["receivedMs"] = now;
+        m_diagnostic_events.prepend(event);
+        while (m_diagnostic_events.size() > 20) m_diagnostic_events.removeLast();
+    }
+}
+
+void FCMavlinkSystem::refresh_diagnostics(bool update_rates)
+{
+    const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    const auto elapsed = m_diagnostic_refresh_ms > 0 ? now - m_diagnostic_refresh_ms : 1000;
+    QVariantList messages;
+    quint64 total = 0;
+    for (auto it = m_diagnostic_messages.begin(); it != m_diagnostic_messages.end(); ++it) {
+        auto& entry = it.value();
+        const auto* info = mavlink_get_message_info_by_id(it.key());
+        QVariantList fields;
+        if (info) {
+            for (unsigned int f = 0; f < info->num_fields; ++f) {
+                const auto& field = info->fields[f];
+                QStringList values;
+                const auto length = field.array_length ? field.array_length : 1;
+                const auto& msg = entry.latest;
+                for (unsigned int index = 0; index < length; ++index) {
+                    const auto offset = field.wire_offset;
+                    switch (field.type) {
+                    case MAVLINK_TYPE_CHAR:
+                        values << QString::fromLatin1(_MAV_PAYLOAD(&msg) + offset,
+                            int(strnlen(_MAV_PAYLOAD(&msg) + offset, length)));
+                        index = length;
+                        break;
+                    case MAVLINK_TYPE_UINT8_T: values << QString::number(_MAV_RETURN_uint8_t(&msg, offset + index)); break;
+                    case MAVLINK_TYPE_INT8_T: values << QString::number(_MAV_RETURN_int8_t(&msg, offset + index)); break;
+                    case MAVLINK_TYPE_UINT16_T: values << QString::number(_MAV_RETURN_uint16_t(&msg, offset + index * 2)); break;
+                    case MAVLINK_TYPE_INT16_T: values << QString::number(_MAV_RETURN_int16_t(&msg, offset + index * 2)); break;
+                    case MAVLINK_TYPE_UINT32_T: values << QString::number(_MAV_RETURN_uint32_t(&msg, offset + index * 4)); break;
+                    case MAVLINK_TYPE_INT32_T: values << QString::number(_MAV_RETURN_int32_t(&msg, offset + index * 4)); break;
+                    case MAVLINK_TYPE_UINT64_T: values << QString::number(_MAV_RETURN_uint64_t(&msg, offset + index * 8)); break;
+                    case MAVLINK_TYPE_INT64_T: values << QString::number(_MAV_RETURN_int64_t(&msg, offset + index * 8)); break;
+                    case MAVLINK_TYPE_FLOAT: values << QString::number(_MAV_RETURN_float(&msg, offset + index * 4), 'g', 7); break;
+                    case MAVLINK_TYPE_DOUBLE: values << QString::number(_MAV_RETURN_double(&msg, offset + index * 8), 'g', 12); break;
+                    default: values << "?"; break;
+                    }
+                }
+                fields.append(QVariantMap{{"name", QString(field.name)}, {"value", values.join(", ")}});
+            }
+        }
+        if (update_rates) {
+            entry.rate = elapsed > 0 ? (entry.count - entry.previous_count) * 1000.0 / elapsed : 0.0;
+            entry.previous_count = entry.count;
+        }
+        messages.append(QVariantMap{{"id", it.key()}, {"name", info ? QString(info->name) : tr("Unknown")},
+            {"component", entry.component}, {"count", QVariant::fromValue(entry.count)},
+            {"rate", entry.rate},
+            {"age", (now - entry.received_ms) / 1000.0}, {"payload", entry.payload}, {"fields", fields}});
+        total += entry.count;
+    }
+    if (update_rates) m_diagnostic_refresh_ms = now;
+    QVariantList sensors;
+    const auto present = m_diagnostic_state.value("present").toUInt();
+    const auto enabled = m_diagnostic_state.value("enabled").toUInt();
+    const auto healthy = m_diagnostic_state.value("healthy").toUInt();
+    const struct { uint32_t bit; const char* name; } names[] = {
+        {MAV_SYS_STATUS_SENSOR_3D_GYRO, "Gyroscope"}, {MAV_SYS_STATUS_SENSOR_3D_ACCEL, "Accelerometer"},
+        {MAV_SYS_STATUS_SENSOR_3D_MAG, "Compass"}, {MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE, "Barometer"},
+        {MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE, "Airspeed sensor"}, {MAV_SYS_STATUS_SENSOR_GPS, "GPS"},
+        {MAV_SYS_STATUS_SENSOR_RC_RECEIVER, "RC receiver"}, {MAV_SYS_STATUS_AHRS, "Attitude estimator"},
+        {MAV_SYS_STATUS_PREARM_CHECK, "Pre-arm checks"}};
+    for (const auto& sensor : names) {
+        if (!(present & sensor.bit)) continue;
+        sensors.append(QVariantMap{{"name", tr(sensor.name)}, {"enabled", bool(enabled & sensor.bit)},
+                                   {"healthy", bool(healthy & sensor.bit)}});
+    }
+    auto snapshot = m_diagnostic_state;
+    snapshot["messages"] = messages;
+    snapshot["sensors"] = sensors;
+    snapshot["events"] = m_diagnostic_events;
+    snapshot["total"] = QVariant::fromValue(total);
+    snapshot["heartbeatAge"] = m_last_heartbeat_ms < 0 ? -1.0 : (now - m_last_heartbeat_ms.load()) / 1000.0;
+    snapshot["telemetryAge"] = m_last_message_ms < 0 ? -1.0 : (now - m_last_message_ms.load()) / 1000.0;
+    snapshot["statusAge"] = m_diagnostic_state.contains("statusReceivedMs")
+        ? (now - m_diagnostic_state.value("statusReceivedMs").toLongLong()) / 1000.0 : -1.0;
+    snapshot["nowMs"] = now;
+    set_craft_diagnostics(snapshot);
+}
+
 void FCMavlinkSystem::update_alive()
 {
+    const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    set_telemetry_active(m_last_message_ms >= 0 &&
+                        now - m_last_message_ms.load() < 4000);
+    // Silence ages readings; it does not change the craft or its capabilities.
+    // Observations are reset by an explicit new FC session/identity instead.
+    if (firmware_identity().value("type").toInt() != 3)
+        apply_inav_home_compatibility();
+    refresh_diagnostics();
     if(m_last_heartbeat_ms==-1){
         // we did not get any heartbeat (yet)
         set_is_alive(false);

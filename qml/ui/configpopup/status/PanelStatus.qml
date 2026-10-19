@@ -10,6 +10,9 @@ Rectangle {
     focus: false
 
     property int keyboardIndex: 0
+    // A modal popup lives in the window overlay, outside this page's visual
+    // hierarchy. Close it when navigating away so it cannot block the menu.
+    onVisibleChanged: if (!visible) craftDetails.close()
 
     function voltage_as_string(voltage_mv) { return voltage_mv === 0 ? "N/A" : voltage_mv + " mV" }
     function current_as_string(current_ma) { return current_ma === 0 ? "N/A" : current_ma + " mA" }
@@ -106,11 +109,28 @@ Rectangle {
             }
             StatusCardsColumn {
                 id: statusCards
+                onCraftDetailsRequested: craftDetails.open()
                 Layout.fillWidth: true
             }
         }
     }
 
     PowerActionDialoque { id: powerDialog }
+    Popup {
+        id: craftDetails
+        parent: root
+        anchors.centerIn: parent
+        width: Math.min(parent.width - 12, 1000)
+        height: parent.height - 12
+        modal: true
+        dim: false
+        focus: true
+        padding: 0
+        closePolicy: Popup.CloseOnEscape
+        background: Rectangle { color: settings_form.pageBackground; radius: 14; border.color: settings_form.lineColor }
+        contentItem: CraftDetailsPanel { onCloseRequested: craftDetails.close() }
+        onOpened: { contentItem.gainFocus() }
+        onClosed: if (root.visible) root.gainFocus()
+    }
     DialoqueNotAlive { id: dialoqueNotAlive }
 }

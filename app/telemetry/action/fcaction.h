@@ -48,6 +48,7 @@ public:
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE bool send_command_compass_calibration();
     Q_INVOKABLE void set_battery_capacity_async(int capacity_mah);
+    void request_battery_capacity_if_needed();
     bool process_message(const mavlink_message_t& msg);
 private:
     std::atomic<bool> m_has_currently_runnning_flight_mode_change=false;
@@ -58,6 +59,7 @@ private:
     QString m_pending_battery_capacity_param;
     int m_pending_battery_capacity_mah = 0;
     int m_battery_capacity_attempts = 0;
+    QString m_battery_capacity_probe_session;
 };
 
 #endif // FCACTION_H

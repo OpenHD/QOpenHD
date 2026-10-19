@@ -4,6 +4,8 @@
 #include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
+#include <QVariantMap>
+#include <QMap>
 #include <QQmlContext>
 
 #include "../tutil/mavlink_include.h"
@@ -42,8 +44,14 @@ public:
     std::optional<uint8_t> get_fc_sys_id();
     // Set the mavlink system reference, once discovered.
     // NOTE: We only use the system to get broadcast message(s) (pass_through) and a few more things
-    bool set_system_id(int sys_id);
+    bool set_system_id(int sys_id, int comp_id = MAV_COMP_ID_AUTOPILOT1);
+    bool process_firmware_status(const mavlink_message_t& msg);
+    void observe_battery_capacity(const mavlink_message_t& msg);
 public: // Stuff needs to be public for qt
+    L_RO_PROP(QVariantMap, craft_diagnostics, set_craft_diagnostics, QVariantMap())
+    L_RO_PROP(bool, telemetry_active, set_telemetry_active, false)
+    L_RO_PROP(QVariantMap, firmware_identity, set_firmware_identity, QVariantMap())
+    L_RO_PROP(QVariantMap, battery_capacity_parameter, set_battery_capacity_parameter, QVariantMap())
     // These members can be written & read from c++, but are only readable from qml (which is a common recommendation for QT application(s)).
     // Aka we just set them in c++ by calling the setter declared from the macro, which then emits the changed signal if needed
     // and therefore updates the corresponding UI element in QT
@@ -181,6 +189,7 @@ public:
 
     Q_PROPERTY(bool armed MEMBER m_armed WRITE set_armed NOTIFY armed_changed)
     void set_armed(bool armed);
+    bool armed() const { return m_armed; }
 
     Q_PROPERTY(QString flight_mode MEMBER m_flight_mode WRITE set_flight_mode NOTIFY flight_mode_changed)
     void set_flight_mode(QString flight_mode);
@@ -191,6 +200,23 @@ signals:
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
 private:
+    struct DiagnosticMessage {
+        quint64 count = 0;
+        quint64 previous_count = 0;
+        qint64 received_ms = 0;
+        int component = 0;
+        QString payload;
+        mavlink_message_t latest{};
+        double rate = 0;
+    };
+    QMap<uint32_t, DiagnosticMessage> m_diagnostic_messages;
+    QVariantMap m_diagnostic_state;
+    QVariantList m_diagnostic_events;
+    qint64 m_diagnostic_refresh_ms = 0;
+    void record_diagnostic_message(const mavlink_message_t& msg);
+    void refresh_diagnostics(bool update_rates = true);
+    void apply_inav_home_compatibility();
+    bool m_inav_home_active = false;
     // other members
     bool m_armed = false;
     QString m_flight_mode = "------";
@@ -237,6 +263,8 @@ private:
 private:
     std::atomic<bool> m_discovered=false;
     int m_sys_id=-1;
+    int m_comp_id=MAV_COMP_ID_AUTOPILOT1;
+    qint64 m_firmware_status_ms = -1;
 };
 
 

@@ -195,9 +195,28 @@ bool FCAction::send_command_compass_calibration()
     return res==CmdSender::Result::CMD_SUCCESS;
 }
 
+void FCAction::request_battery_capacity_if_needed()
+{
+    const auto identity = FCMavlinkSystem::instance().firmware_identity();
+    const int type = identity.value("type").toInt();
+    if (type != 1 && type != 2) return;
+    const auto session = QString("%1/%2/%3/%4").arg(identity.value("sys").toInt())
+        .arg(identity.value("comp").toInt()).arg(identity.value("gen").toULongLong()).arg(type);
+    if (session == m_battery_capacity_probe_session) return;
+    m_battery_capacity_probe_session = session;
+    char id[16]{};
+    const QByteArray name = type == 1 ? QByteArray("BATT_CAPACITY") : QByteArray("BAT1_CAPACITY");
+    std::memcpy(id, name.constData(), size_t(name.size()));
+    mavlink_message_t request{};
+    mavlink_msg_param_request_read_pack(QOpenHDMavlinkHelper::get_own_sys_id(),
+        QOpenHDMavlinkHelper::get_own_comp_id(), &request, identity.value("sys").toInt(),
+        identity.value("comp").toInt(), id, -1);
+    MavlinkTelemetry::instance().sendMessage(request);
+}
+
 void FCAction::set_battery_capacity_async(int capacity_mah)
 {
-    if (!FCMavlinkSystem::instance().is_alive()) {
+    if (!FCMavlinkSystem::instance().telemetry_active() || FCMavlinkSystem::instance().armed()) {
         HUDLogMessagesModel::instance().add_message_warning("Battery capacity: no FC connected");
         return;
     }
@@ -206,16 +225,14 @@ void FCAction::set_battery_capacity_async(int capacity_mah)
         return;
     }
 
-    const QString autopilot = FCMavlinkSystem::instance().autopilot_type_str();
-    if (autopilot == "ARDU") {
-        m_pending_battery_capacity_param = "BATT_CAPACITY";
-    } else if (autopilot == "Pixhawk") {
-        m_pending_battery_capacity_param = "BAT1_CAPACITY";
-    } else {
+    if (m_battery_capacity_timer.isActive()) return;
+    const auto parameter = FCMavlinkSystem::instance().battery_capacity_parameter();
+    if (parameter.isEmpty()) {
         HUDLogMessagesModel::instance().add_message_warning(
             "Battery capacity: FC does not expose a supported MAVLink parameter");
         return;
     }
+    m_pending_battery_capacity_param = parameter.value("id").toString();
 
     const auto fc_id = MavlinkTelemetry::instance().get_fc_mav_id();
     char param_id[16]{};
@@ -226,7 +243,7 @@ void FCAction::set_battery_capacity_async(int capacity_mah)
                                QOpenHDMavlinkHelper::get_own_comp_id(),
                                &m_pending_battery_capacity_message,
                                fc_id.sys_id, fc_id.comp_id, param_id,
-                               static_cast<float>(capacity_mah), MAV_PARAM_TYPE_REAL32);
+                               static_cast<float>(capacity_mah), parameter.value("type").toInt());
     m_pending_battery_capacity_mah = capacity_mah;
     m_battery_capacity_attempts = 0;
     send_pending_battery_capacity();
@@ -234,6 +251,16 @@ void FCAction::set_battery_capacity_async(int capacity_mah)
 
 void FCAction::send_pending_battery_capacity()
 {
+    mavlink_param_set_t pending{};
+    mavlink_msg_param_set_decode(&m_pending_battery_capacity_message, &pending);
+    const auto fc = MavlinkTelemetry::instance().get_fc_mav_id();
+    if (pending.target_system != fc.sys_id || pending.target_component != fc.comp_id ||
+        !FCMavlinkSystem::instance().telemetry_active() || FCMavlinkSystem::instance().armed()) {
+        m_battery_capacity_timer.stop();
+        m_pending_battery_capacity_param.clear();
+        HUDLogMessagesModel::instance().add_message_warning("Battery capacity: FC state changed; update stopped");
+        return;
+    }
     ++m_battery_capacity_attempts;
     if (!MavlinkTelemetry::instance().sendMessage(m_pending_battery_capacity_message)) {
         m_battery_capacity_timer.stop();
@@ -256,9 +283,12 @@ void FCAction::battery_capacity_timeout()
 
 bool FCAction::process_message(const mavlink_message_t &msg)
 {
+    FCMavlinkSystem::instance().observe_battery_capacity(msg);
     if (msg.msgid != MAVLINK_MSG_ID_PARAM_VALUE || m_pending_battery_capacity_param.isEmpty()) {
         return false;
     }
+    const auto fc_id = MavlinkTelemetry::instance().get_fc_mav_id();
+    if (msg.sysid != fc_id.sys_id || msg.compid != fc_id.comp_id) return false;
     mavlink_param_value_t value{};
     mavlink_msg_param_value_decode(&msg, &value);
     QByteArray raw_id(value.param_id, 16);

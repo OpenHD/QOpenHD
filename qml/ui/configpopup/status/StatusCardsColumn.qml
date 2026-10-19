@@ -3,9 +3,10 @@ import QtQuick.Layouts 1.12
 
 GridLayout {
     id: cards
+    signal craftDetailsRequested()
     readonly property int onlineCount: (_ohdSystemGround.is_alive ? 1 : 0)
                                        + (_ohdSystemAir.is_alive ? 1 : 0)
-                                       + (_fcMavlinkSystem.is_alive ? 1 : 0)
+                                       + (fcCard.visible ? 1 : 0)
     readonly property int responsiveColumns: width >= 680 ? 3 : (width >= 440 ? 2 : 1)
     columns: Math.max(1, Math.min(onlineCount, responsiveColumns))
     columnSpacing: width < 800 ? 8 : 14
@@ -45,13 +46,19 @@ GridLayout {
     }
     StatusCard {
         id: fcCard
-        visible: alive
+        objectName: "statusCraftCard"
+        onDetailsRequested: cards.craftDetailsRequested()
+        visible: alive || _fcMavlinkSystem.for_osd_sys_id >= 0
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
         title: qsTr("Flight controller")
         iconText: "\uf2db"
-        iconColor: "#a486ff"
-        alive: _fcMavlinkSystem.is_alive
+        iconColor: _fcMavlinkSystem.firmware_identity.type === 3 ? "#23b9e6"
+            : _fcMavlinkSystem.firmware_identity.type === 4 ? "#ffb400"
+            : _fcMavlinkSystem.firmware_identity.type === 2 ? "#52d6a0"
+            : _fcMavlinkSystem.firmware_identity.type === 1 ? "#54bfff" : "#a486ff"
+        alive: _fcMavlinkSystem.telemetry_active
+        actionsAvailable: false // No writable FC commands are inferred from a firmware label.
         systemType: 2
         bodyComponent: Component { StatusCardBodyFC {} }
     }

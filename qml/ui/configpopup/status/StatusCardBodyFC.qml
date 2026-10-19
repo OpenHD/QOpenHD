@@ -18,7 +18,8 @@ Column {
 
     property bool m_is_alive: _fcMavlinkSystem.is_alive
     function get_alive_text(){
-        return m_is_alive ? qsTr("Yes") : qsTr("No")
+        var age = _fcMavlinkSystem.craft_diagnostics.heartbeatAge
+        return age === undefined || age < 0 ? qsTr("Not received") : qsTr("%1 s ago").arg(Math.floor(age))
     }
     function get_alive_text_color(){
         return m_is_alive ? settings_form.goodColor : settings_form.primaryText
@@ -26,7 +27,7 @@ Column {
 
     StatusCardRow{
         m_left_text: qsTr("Firmware:") //Autopilot
-        m_right_text:  _fcMavlinkSystem.autopilot_type_str
+        m_right_text: _fcMavlinkSystem.firmware_identity.name || qsTr("Unknown")
     }
 
     StatusCardRow{
@@ -40,7 +41,7 @@ Column {
     }
 
     StatusCardRow{
-        m_left_text: qsTr("Alive:")
+        m_left_text: qsTr("Heartbeat:")
         m_right_text: get_alive_text();
         m_right_text_color: get_alive_text_color()
     }

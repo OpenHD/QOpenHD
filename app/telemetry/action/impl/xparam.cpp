@@ -46,13 +46,15 @@ bool XParam::process_message(const mavlink_message_t &msg)
         {
             std::lock_guard<std::mutex> lock(m_mutex);
             const auto it=m_metadata_downloads.find({msg.sysid,msg.compid});
-            if(it==m_metadata_downloads.end()) return false;
+            // A retransmitted/late FTP response can arrive after completion.
+            // It still belongs to this protocol handler, not AOHDSystem.
+            if(it==m_metadata_downloads.end()) return true;
             openhd::settings::FtpPayload payload{};
             std::copy_n(ftp.payload,251,payload.begin());
             handled=it->second.client.handle(payload);
         }
         if(handled) poll_metadata(); // Advance immediately; no 100 ms delay per block.
-        return handled;
+        return true;
     }
     if(msg.msgid==MAVLINK_MSG_ID_PARAM_EXT_ACK){
         mavlink_param_ext_ack_t ack;
