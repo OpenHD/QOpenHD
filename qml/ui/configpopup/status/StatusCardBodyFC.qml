@@ -31,11 +31,6 @@ Column {
     }
 
     StatusCardRow{
-        m_left_text: qsTr("Ping:")
-        m_right_text: _fcMavlinkSystem.last_ping_result_flight_ctrl
-    }
-
-    StatusCardRow{
         m_left_text: qsTr("Type:") // MAV type
         m_right_text: _fcMavlinkSystem.mav_type_str
     }

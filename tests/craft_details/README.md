@@ -37,3 +37,20 @@ and preservation across telemetry updates, and closing the details page. It also
 renders desktop and narrow/offline PNGs to `build/craft-*.png` using representative
 FC data. It also checks missing fields, stale readings, labels and firmware
 palettes. These fixtures do not establish live compatibility with every FC firmware.
+
+The C++ observation regression reuses the application's actual Qt 5 objects.
+After building the application, with its Qt/MinGW bin directories on PATH:
+
+```powershell
+py -3 tests/run_fc_observations_test.py build-qt5-clean-repro
+```
+
+It checks immediate message-driven updates, retention through an 11-second
+outage, explicit session invalidation, matching capacity-parameter senders,
+and ArduPilot's integer capacity type. It performs no FC writes.
+
+The capacity editor appears only after the FC reports a supported battery
+capacity parameter. It uses `BATT_CAPACITY` for ArduPilot or `BAT1_CAPACITY` for
+PX4, preserves the reported MAVLink type, and waits for a matching FC echo.
+INAV's empty parameter reply does not enable a capacity editor. No MSP fallback
+is used. PX4's capacity change requires an FC restart.
