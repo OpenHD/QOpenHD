@@ -47,10 +47,12 @@ public:
     bool set_system_id(int sys_id, int comp_id = MAV_COMP_ID_AUTOPILOT1);
     bool process_firmware_status(const mavlink_message_t& msg);
     void observe_battery_capacity(const mavlink_message_t& msg);
+    bool observe_remote_id(const mavlink_message_t& msg);
 public: // Stuff needs to be public for qt
     L_RO_PROP(QVariantMap, craft_diagnostics, set_craft_diagnostics, QVariantMap())
     L_RO_PROP(bool, telemetry_active, set_telemetry_active, false)
     L_RO_PROP(QVariantMap, firmware_identity, set_firmware_identity, QVariantMap())
+    L_RO_PROP(QVariantMap, remote_id_status, set_remote_id_status, QVariantMap())
     L_RO_PROP(QVariantMap, battery_capacity_parameter, set_battery_capacity_parameter, QVariantMap())
     // These members can be written & read from c++, but are only readable from qml (which is a common recommendation for QT application(s)).
     // Aka we just set them in c++ by calling the setter declared from the macro, which then emits the changed signal if needed

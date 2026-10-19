@@ -1,3 +1,6 @@
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(mavlinkRoutingLog, "qopenhd.mavlink.unhandled.routing", QtWarningMsg)
+
 #include "MavlinkTelemetry.h"
 #include "adsb/adsbvehiclemanager.h"
 
@@ -231,6 +234,9 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
         // These are also registered parameters. Let XParam account for their
         // indexes during a list fetch before consuming unsolicited updates.
     }
+    if (FCMavlinkSystem::instance().observe_remote_id(msg)) {
+        FCAction::instance().request_remote_id_parameters_if_needed(msg.sysid, msg.compid);
+    }
     if(CmdSender::instance().process_message(msg)){
         // Consumed, no further processing needed
         return;
@@ -257,7 +263,7 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
         // msg was neither produced by the OHD air nor ground unit, so almost 100% from the FC
         const auto fc_sys_id=FCMavlinkSystem::instance().get_fc_sys_id();
         if(fc_sys_id.has_value()){
-            if(msg.sysid==fc_sys_id.value()){
+            if(msg.sysid==fc_sys_id.value() && msg.compid==m_fc_comp_id){
                process_broadcast_message_fc(msg);
                const auto firmware = FCMavlinkSystem::instance().firmware_identity().value("type").toInt();
                // Do not flood INAV/BF/unknown FCs with unsupported rate/mission
@@ -267,11 +273,11 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
                    FCMissionHandler::instance().opt_send_messages();
                }
             }else{
-                qDebug()<<"MavlinkTelemetry received unmatched message "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+                qCDebug(mavlinkRoutingLog)<<"Ignoring MAVLink traffic from another system "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
             }
         }else{
             // we don't know the FC sys id yet.
-            qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet known) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+            qCDebug(mavlinkRoutingLog)<<"MAVLink traffic before FC discovery "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
         }
     }
 }
@@ -306,7 +312,7 @@ void MavlinkTelemetry::process_broadcast_message_fc(const mavlink_message_t &msg
     if(FCMavlinkSystem::instance().process_message(msg)){
         return;
     }
-    qDebug()<<"MavlinkTelemetry::process_message_fc unmatched message:"<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+    qCDebug(mavlinkRoutingLog)<<"Unhandled FC MAVLink message:"<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
 }
 
 void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)

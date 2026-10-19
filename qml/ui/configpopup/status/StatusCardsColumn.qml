@@ -53,10 +53,6 @@ GridLayout {
         Layout.preferredHeight: implicitHeight
         title: qsTr("Flight controller")
         iconText: "\uf2db"
-        iconColor: _fcMavlinkSystem.firmware_identity.type === 3 ? "#23b9e6"
-            : _fcMavlinkSystem.firmware_identity.type === 4 ? "#ffb400"
-            : _fcMavlinkSystem.firmware_identity.type === 2 ? "#52d6a0"
-            : _fcMavlinkSystem.firmware_identity.type === 1 ? "#54bfff" : "#a486ff"
         alive: _fcMavlinkSystem.telemetry_active
         actionsAvailable: false // No writable FC commands are inferred from a firmware label.
         systemType: 2

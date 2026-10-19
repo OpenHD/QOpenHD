@@ -8,6 +8,13 @@ Rectangle {
     radius: 14
     signal closeRequested()
     property var fc: _fcMavlinkSystem
+    property var fcAction: _fcMavlinkAction
+    readonly property var remoteId: fc.remote_id_status || ({})
+    readonly property bool hasRemoteId: Object.keys(remoteId).length > 0
+    onRemoteIdChanged: syncRows(telemetryRows, telemetryCards())
+    onHasRemoteIdChanged: syncRows(telemetryRows, telemetryCards())
+    readonly property var capacityParameter: fc.battery_capacity_parameter || ({})
+    readonly property bool hasCapacity: Object.keys(capacityParameter).length > 0
     readonly property var identity: fc.firmware_identity || ({})
     readonly property var observed: diagnostics.observed || ({})
     readonly property string firmwareName: identity.name || qsTr("Flight controller")
@@ -17,6 +24,8 @@ Rectangle {
     readonly property bool online: fc.telemetry_active
     readonly property color accent: identity.type === 3 ? "#23b9e6" : identity.type === 4 ? "#ffb400"
         : identity.type === 2 ? "#52d6a0" : identity.type === 1 ? "#54bfff" : "#b39aff"
+    onCapacityParameterChanged: syncRows(telemetryRows, telemetryCards())
+    onHasCapacityChanged: syncRows(telemetryRows, telemetryCards())
     property int selectedTab: 0
     property var expandedMessages: []
     function gainFocus() { backButton.forceActiveFocus() }
@@ -61,7 +70,7 @@ Rectangle {
         function add(key, title, digits, suffix, detail) {
             if (root.has(key)) {
                 var old = !root.online || root.diagnostics.nowMs - root.observed[key].receivedMs > 4000
-                cards.push({label: title, value: root.reading(key, digits, suffix),
+                cards.push({key: key, label: title, value: root.reading(key, digits, suffix),
                     detail: old ? qsTr("Last received %1 ago").arg(root.age((root.diagnostics.nowMs - root.observed[key].receivedMs) / 1000)) : detail || ""})
             }
         }
@@ -85,12 +94,22 @@ Rectangle {
         add("throttle", qsTr("THROTTLE"), 0, "%")
         add("sensorTemperature", qsTr("SENSOR TEMPERATURE"), 1, "\u00b0C")
         add("pressure", qsTr("PRESSURE"), 1, " hPa")
+        if (hasRemoteId) cards.push({key: "remoteId", label: qsTr("REMOTE ID"),
+            value: remoteId.aircraftId || qsTr("Data received"),
+            detail: !root.online ? qsTr("Last received ? Click for details") : qsTr("Click for details")})
+        if (hasCapacity) cards.push({key: "capacity", label: qsTr("BATTERY CAPACITY"),
+            value: Number(capacityParameter.value).toLocaleString(Qt.locale(), "f", 0) + " mAh",
+            detail: root.fc.armed ? qsTr("Disarm to edit") : root.online ? qsTr("Click to edit") : qsTr("Last received")})
         return cards
     }
     function identityRows() {
         var rows = []
         var v = Number(identity.ver || 0)
-        if ((v >>> 24) > 0 && v !== 4294967295) rows.push(qsTr("Firmware version: %1.%2.%3").arg((v >>> 24) & 255).arg((v >>> 16) & 255).arg((v >>> 8) & 255))
+        var major = (v >>> 24) & 255
+        var minor = (v >>> 16) & 255
+        // Betaflight CalVer encodes the year relative to 2000 in MAVLink.
+        if (identity.type === 4 && major >= 25 && minor >= 1 && minor <= 12) major += 2000
+        if ((v >>> 24) > 0 && v !== 4294967295) rows.push(qsTr("Firmware version: %1.%2.%3").arg(major).arg(minor).arg((v >>> 8) & 255))
         if (diagnostics.boardVersion) rows.push(qsTr("Board revision: %1").arg(diagnostics.boardVersion))
         if (diagnostics.vendorId || diagnostics.productId) rows.push(qsTr("Vendor / product: %1 / %2").arg(diagnostics.vendorId).arg(diagnostics.productId))
         if (diagnostics.uid && diagnostics.uid !== "0") rows.push(qsTr("UID: %1").arg(diagnostics.uid))
@@ -102,6 +121,150 @@ Rectangle {
     }
     function age(value) { return value === undefined || value < 0 ? qsTr("Not received") : Number(value).toFixed(1) + " s" }
     function known(value) { return value === undefined || value === "" ? qsTr("Not reported") : String(value) }
+
+    function openCapacityEditor() {
+        if (!hasCapacity || !online || fc.armed) return
+        capacityInput.value = Math.max(100, capacityParameter.value || 100)
+        capacityDialog.open()
+    }
+    Dialog {
+        id: capacityDialog; objectName: "craftBatteryCapacityDialog"
+        parent: Overlay.overlay
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        width: Math.min(340, parent.width - 24)
+        title: qsTr("Battery capacity")
+        modal: true; focus: true
+        onAccepted: root.fcAction.set_battery_capacity_async(capacityInput.value)
+        ColumnLayout {
+            width: parent.width; spacing: 10
+            RowLayout {
+                SpinBox {
+                    id: capacityInput; objectName: "craftBatteryCapacity"
+                    Layout.fillWidth: true
+                    from: 100; to: 100000; stepSize: 100; editable: true
+                    enabled: root.online && !root.fc.armed
+                    Accessible.name: qsTr("Battery capacity in mAh")
+                }
+                Label { text: "mAh" }
+            }
+            Label {
+                visible: root.capacityParameter.id === "BAT1_CAPACITY"
+                Layout.fillWidth: true; wrapMode: Text.Wrap
+                text: qsTr("Restart PX4 for this change to take effect.")
+            }
+        }
+        footer: DialogButtonBox {
+            Button { text: qsTr("Cancel"); onClicked: capacityDialog.reject() }
+            Button {
+                objectName: "craftBatteryCapacityApply"
+                text: qsTr("Save")
+                enabled: root.online && !root.fc.armed && capacityInput.value !== root.capacityParameter.value
+                onClicked: capacityDialog.accept()
+            }
+        }
+    }
+
+    function openRemoteId() {
+        aircraftIdInput.text = (remoteId.aircraftParameter || {}).value || ""
+        operatorIdInput.text = (remoteId.operatorParameter || {}).value || ""
+        remoteIdDialog.open()
+    }
+    function remoteIdStatus() {
+        if (remoteId.armStatus === undefined) return qsTr("Module readiness not reported")
+        var ageMs = (diagnostics.nowMs || 0) - remoteId.armStatusReceivedMs
+        var old = !online || ageMs > 4000
+        var status = remoteId.armStatus === 0 ? qsTr("Module reports ready") : qsTr("Module reports a fault")
+        return old ? qsTr("Last report: %1").arg(status) : status
+    }
+    Dialog {
+        id: remoteIdDialog; objectName: "craftRemoteIdDialog"
+        parent: Overlay.overlay
+        x: Math.round((parent.width - width) / 2); y: Math.round((parent.height - height) / 2)
+        width: Math.min(420, parent.width - 24)
+        title: qsTr("Remote ID"); modal: true; focus: true
+        palette.window: settings_form.panelBackground
+        palette.windowText: settings_form.primaryText
+        palette.text: settings_form.primaryText
+        palette.base: settings_form.pageBackground
+        palette.button: settings_form.panelBackground
+        palette.buttonText: settings_form.primaryText
+        palette.highlight: root.accent
+        background: Rectangle { color: settings_form.panelBackground; radius: 10; border.color: settings_form.lineColor }
+        standardButtons: Dialog.Close
+        ColumnLayout {
+            width: parent.width; spacing: 10
+            Label { Layout.fillWidth: true; wrapMode: Text.Wrap; text: root.remoteIdStatus() }
+            Label {
+                Layout.fillWidth: true; wrapMode: Text.Wrap
+                text: qsTr("Aircraft ID: %1").arg(root.remoteId.aircraftId || qsTr("Not reported"))
+            }
+            Label {
+                visible: root.remoteId.idType !== undefined
+                Layout.fillWidth: true; wrapMode: Text.Wrap
+                text: qsTr("ID type: %1").arg(root.remoteId.idType === 1 ? qsTr("Serial number")
+                    : root.remoteId.idType === 2 ? qsTr("Registration ID") : root.remoteId.idType === 3
+                    ? qsTr("UTM UUID") : root.remoteId.idType === 4 ? qsTr("Session ID") : qsTr("Unspecified"))
+            }
+            Label {
+                visible: root.remoteId.operatorId !== undefined
+                Layout.fillWidth: true; wrapMode: Text.Wrap
+                text: qsTr("Reported operator ID: %1").arg(root.remoteId.operatorId || qsTr("Empty"))
+            }
+            Label {
+                visible: root.remoteId.error !== undefined && root.remoteId.error !== ""
+                Layout.fillWidth: true; wrapMode: Text.Wrap; text: root.remoteId.error || ""
+            }
+            Label {
+                Layout.fillWidth: true; wrapMode: Text.Wrap
+                text: qsTr("MAVLink reports do not confirm Bluetooth/Wi-Fi broadcasting.")
+                color: settings_form.secondaryText
+            }
+            Label {
+                visible: !root.remoteId.aircraftParameter && !root.remoteId.operatorParameter
+                Layout.fillWidth: true; wrapMode: Text.Wrap
+                text: qsTr("This device does not expose ID editing over MAVLink.")
+                color: settings_form.secondaryText
+            }
+            Label { visible: !!root.remoteId.aircraftParameter; text: qsTr("Aircraft ID") }
+            RowLayout {
+                visible: !!root.remoteId.aircraftParameter; Layout.fillWidth: true
+                TextField {
+                    id: aircraftIdInput; objectName: "craftRemoteAircraftId"
+                    Layout.fillWidth: true; maximumLength: 20; selectByMouse: true
+                    enabled: root.online && !root.fc.armed && !root.fcAction.remote_id_busy
+                }
+                Button {
+                    objectName: "craftRemoteAircraftIdSave"; text: qsTr("Save")
+                    enabled: aircraftIdInput.enabled && aircraftIdInput.text.length > 0
+                        && aircraftIdInput.text !== (root.remoteId.aircraftParameter || {}).value
+                    onClicked: root.fcAction.set_remote_id_async(false, aircraftIdInput.text)
+                }
+            }
+            Label { visible: !!root.remoteId.operatorParameter; text: qsTr("Operator ID") }
+            RowLayout {
+                visible: !!root.remoteId.operatorParameter; Layout.fillWidth: true
+                TextField {
+                    id: operatorIdInput; objectName: "craftRemoteOperatorId"
+                    Layout.fillWidth: true; maximumLength: 20; selectByMouse: true
+                    enabled: root.online && !root.fc.armed && !root.fcAction.remote_id_busy
+                }
+                Button {
+                    objectName: "craftRemoteOperatorIdSave"; text: qsTr("Save")
+                    enabled: operatorIdInput.enabled && operatorIdInput.text.length > 0
+                        && operatorIdInput.text !== (root.remoteId.operatorParameter || {}).value
+                    onClicked: root.fcAction.set_remote_id_async(true, operatorIdInput.text)
+                }
+            }
+            Label {
+                visible: !!root.remoteId.aircraftParameter || !!root.remoteId.operatorParameter
+                Layout.fillWidth: true; wrapMode: Text.Wrap
+                text: root.fcAction.remote_id_busy ? qsTr("Waiting for device confirmation?")
+                    : qsTr("ID changes require confirmation from the device.")
+                color: settings_form.secondaryText
+            }
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent; anchors.margins: root.width < 500 ? 12 : 20
@@ -182,46 +345,39 @@ Rectangle {
                 }
 
                 GridLayout {
+                    id: telemetryGrid
                     Layout.fillWidth: true; columns: root.width >= 600 ? 3 : 2; columnSpacing: 10; rowSpacing: 10
                     Repeater {
                         model: telemetryRows
                         delegate: Rectangle {
-                            objectName: "craftTelemetryTile_" + entry.label
+                            readonly property bool capacityCard: entry.key === "capacity"
+                            readonly property bool remoteIdCard: entry.key === "remoteId"
+                            objectName: remoteIdCard ? "craftRemoteIdCard" : capacityCard ? "craftBatteryCapacityCard" : "craftTelemetryTile_" + entry.label
                             Layout.fillWidth: true; implicitHeight: 100
+                            activeFocusOnTab: capacityMouse.enabled
+                            Accessible.role: (capacityCard || remoteIdCard) ? Accessible.Button : Accessible.StaticText
+                            Accessible.name: entry.label + ": " + entry.value
+                            Keys.onReturnPressed: if (remoteIdCard) root.openRemoteId(); else if (capacityCard) root.openCapacityEditor()
+                            Keys.onSpacePressed: if (remoteIdCard) root.openRemoteId(); else if (capacityCard) root.openCapacityEditor()
                             color: settings_form.panelBackground; radius: 10; border.color: settings_form.lineColor
                             ColumnLayout {
                                 anchors.fill: parent; anchors.margins: 12; spacing: 4
                                 Text { text: entry.label; font.pixelSize: 9; font.bold: true; color: root.accent }
                                 Text { Layout.fillWidth: true; text: entry.value; font.pixelSize: 21; font.bold: true; color: settings_form.primaryText; elide: Text.ElideRight }
                                 Text { Layout.fillWidth: true; text: entry.detail; font.pixelSize: 10; color: settings_form.secondaryText; elide: Text.ElideRight }
+
+                            }
+                            MouseArea {
+                                id: capacityMouse
+                                anchors.fill: parent
+                                enabled: remoteIdCard || (capacityCard && root.online && !root.fc.armed)
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: if (remoteIdCard) root.openRemoteId(); else root.openCapacityEditor()
                             }
                         }
                     }
                 }
                 Label { visible: root.identityRows().length > 0; text: qsTr("IDENTIFICATION"); color: root.accent; font.bold: true; font.pixelSize: 11 }
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    visible: root.fc.battery_capacity_parameter !== undefined && Object.keys(root.fc.battery_capacity_parameter).length > 0
-                    Label { text: qsTr("FC BATTERY CAPACITY"); color: root.accent; font.bold: true }
-                    RowLayout {
-                        SpinBox {
-                            id: capacityInput; objectName: "craftBatteryCapacity"
-                            from: 100; to: 100000; stepSize: 100; editable: true
-                            value: root.fc.battery_capacity_parameter ? Math.max(100, root.fc.battery_capacity_parameter.value || 100) : 100
-                            enabled: root.online && !root.fc.armed
-                        }
-                        Label { text: "mAh"; color: settings_form.secondaryText }
-                        Button {
-                            text: qsTr("Apply to FC"); enabled: root.online && !root.fc.armed
-                            onClicked: _fcMavlinkAction.set_battery_capacity_async(capacityInput.value)
-                        }
-                    }
-                    Label {
-                        text: root.fc.battery_capacity_parameter && root.fc.battery_capacity_parameter.id === "BAT1_CAPACITY"
-                            ? qsTr("PX4: restart the FC for this change to take effect.") : qsTr("The FC confirms the value with a matching parameter response.")
-                        color: settings_form.secondaryText; wrapMode: Text.Wrap; Layout.fillWidth: true
-                    }
-                }
                 Repeater {
                     model: root.identityRows()
                     delegate: Label { Layout.fillWidth: true; wrapMode: Text.Wrap; text: modelData; color: settings_form.secondaryText; font.pixelSize: 12 }

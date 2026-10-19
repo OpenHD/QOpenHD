@@ -373,8 +373,11 @@ struct HeartBeatInfo{
     bool is_arduplane=false;
     bool is_arduvtol=false;
 };
-static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& heartbeat){
+static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& heartbeat,
+        int firmware_type = 0, uint32_t firmware_version = 0){
     HeartBeatInfo info{};
+    // Vehicle type is independent of whether a custom flight mode is enabled.
+    info.mav_type = qopenhd::mav_type_to_string(static_cast<MAV_TYPE>(heartbeat.type));
     const auto custom_mode = heartbeat.custom_mode;
     const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
     switch (autopilot) {
@@ -385,7 +388,6 @@ static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& h
                     auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
                     info.flight_mode=px4_mode;
        }
-       info.mav_type=QString("PX4?");
        break;
     }
     case MAV_AUTOPILOT_GENERIC: // inav for example
@@ -393,6 +395,24 @@ static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& h
     {
        if(autopilot==MAV_AUTOPILOT_GENERIC){
             info.autopilot="Generic";
+            const auto major = (firmware_version >> 24) & 255;
+            const auto minor = (firmware_version >> 16) & 255;
+            // Betaflight 2026.6 introduced this mode enumeration. Its Acro
+            // heartbeat sends custom_mode=0 without CUSTOM_MODE_ENABLED.
+            if (firmware_type == 4 && (major > 26 || (major == 26 && minor >= 6))) {
+                switch (custom_mode) {
+                case 0: info.flight_mode="Acro"; break;
+                case 1: info.flight_mode="Angle"; break;
+                case 2: info.flight_mode="Horizon"; break;
+                case 3: info.flight_mode="Alt Hold"; break;
+                case 4: info.flight_mode="Pos Hold"; break;
+                case 5: info.flight_mode="Autopilot"; break;
+                case 6: info.flight_mode="RTL"; break;
+                case 7: info.flight_mode="Failsafe"; break;
+                default: info.flight_mode=QString("Mode %1").arg(custom_mode); break;
+                }
+                break;
+            }
        }else{
             info.autopilot="ARDU";
        }
@@ -400,7 +420,6 @@ static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& h
             auto uav_type = heartbeat.type;
             auto type_and_flight_mode=qopenhd::type_and_flight_mode_as_string((MAV_TYPE)uav_type,custom_mode);
             info.flight_mode=type_and_flight_mode.flight_mode;
-            info.mav_type=type_and_flight_mode.mav_type;
             if(autopilot==MAV_AUTOPILOT_ARDUPILOTMEGA){
                 if(type_and_flight_mode.is_copter){
                     info.is_arducopter=true;

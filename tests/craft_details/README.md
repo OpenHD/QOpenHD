@@ -48,9 +48,46 @@ py -3 tests/run_fc_observations_test.py build-qt5-clean-repro
 It checks immediate message-driven updates, retention through an 11-second
 outage, explicit session invalidation, matching capacity-parameter senders,
 and ArduPilot's integer capacity type. It performs no FC writes.
+It also checks vehicle type without the heartbeat custom-mode flag and gates
+Betaflight 2026.6+ flight-mode decoding by detected firmware/version. INAV,
+unidentified generic systems, ArduPilot, PX4 and older Betaflight retain their
+existing flight-mode parsing.
 
 The capacity editor appears only after the FC reports a supported battery
 capacity parameter. It uses `BATT_CAPACITY` for ArduPilot or `BAT1_CAPACITY` for
 PX4, preserves the reported MAVLink type, and waits for a matching FC echo.
 INAV's empty parameter reply does not enable a capacity editor. No MSP fallback
 is used. PX4's capacity change requires an FC restart.
+
+
+Battery capacity uses the same compact tile layout as other readings and is the
+last telemetry card. Clicking it opens a small Save/Cancel dialog. It appears
+only after a supported FC parameter reply; armed/offline controllers cannot be
+edited. Telemetry updates preserve a draft, and the card reflects FC replies.
+The main FC status card uses the standard footer button for Craft details and
+has no firmware-colored card outline. Firmware themes stay inside diagnostics.
+
+Remote ID appears as a normal craft telemetry card only after onboard OpenDroneID
+traffic is received. Its dialog separates aircraft Basic ID, reported operator
+ID and module ARM_STATUS; a location packet alone never implies a working beacon.
+Traffic describing nearby aircraft (nonzero id_or_mac) is excluded. Identity is
+retained through silence and invalidated with the FC session. No Remote ID
+broadcasting or regulatory compliance is inferred from these MAVLink reports.
+
+Standard PX4 generates its Basic ID from its board GUID and does not offer a
+MAVLink aircraft-ID setter. These PX4 values are read-only. The editor appears
+only if an onboard device actually returns a CUSTOM string PARAM_EXT_VALUE for
+UAS_ID or OPERATOR_ID. These are optional device parameters, not universal PX4
+or ArduPilot parameters. ArduRemoteID currently does not expose its string
+parameters through MAVLink, so this path does not edit its locked/DroneCAN IDs.
+Edits use the existing asynchronous XParam service, retain source system and
+component IDs, and require a matching accepted PARAM_EXT_ACK and echoed value.
+No synthetic BASIC_ID broadcasts, MSP, FC firmware changes or local-only ID
+substitutes are used. Device persistence and RF broadcasting require separate
+hardware tests; the live PX4 integration test exercises readout only.
+
+The FC regression includes a loopback TCP device to test an actual outgoing
+ID update, matching confirmation, wrong-component ACK rejection and a denied
+update. It never sends an ID change to physical hardware. QML tests cover card
+visibility, the read-only dialog, conditional editing, draft retention and
+armed/offline gating.

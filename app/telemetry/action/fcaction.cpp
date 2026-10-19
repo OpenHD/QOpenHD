@@ -4,6 +4,7 @@
 #include "../../logging/hudlogmessagesmodel.h"
 #include "../MavlinkTelemetry.h"
 #include "impl/cmdsender.h"
+#include "impl/xparam.h"
 
 #include "create_cmd_helper.hpp"
 #include "../models/fcmavlinksystem.h"
@@ -307,4 +308,61 @@ bool FCAction::process_message(const mavlink_message_t &msg)
         HUDLogMessagesModel::instance().add_message_warning("Battery capacity: FC rejected the value");
     }
     return true;
+}
+
+void FCAction::request_remote_id_parameters_if_needed(int sys, int comp)
+{
+    const auto identity=FCMavlinkSystem::instance().firmware_identity();
+    const auto session=QString("%1/%2/%3/%4").arg(sys).arg(comp)
+        .arg(identity.value("gen").toULongLong()).arg(identity.value("type").toInt());
+    if(m_remote_id_probes.contains(session)) return;
+    if(m_remote_id_probes.size()>32) m_remote_id_probes.clear();
+    m_remote_id_probes.insert(session);
+    for(const auto* name : {"UAS_ID", "OPERATOR_ID"}) {
+        mavlink_param_ext_request_read_t v{};v.target_system=sys;v.target_component=comp;v.param_index=-1;
+        std::memcpy(v.param_id,name,std::strlen(name));
+        mavlink_message_t request{};
+        mavlink_msg_param_ext_request_read_encode(QOpenHDMavlinkHelper::get_own_sys_id(),
+            QOpenHDMavlinkHelper::get_own_comp_id(),&request,&v);
+        MavlinkTelemetry::instance().sendMessage(request);
+    }
+}
+
+void FCAction::set_remote_id_async(bool operator_id, QString value)
+{
+    auto& fc=FCMavlinkSystem::instance();
+    const auto field=operator_id?"operatorParameter":"aircraftParameter";
+    const auto parameter=fc.remote_id_status().value(field).toMap();
+    const auto bytes=value.toLatin1();
+    if(remote_id_busy() || !fc.telemetry_active() || fc.armed() || parameter.isEmpty()) return;
+    if(value.isEmpty() || value.size()>20 || QString::fromLatin1(bytes)!=value) {
+        HUDLogMessagesModel::instance().add_message_warning("Remote ID: enter 1 to 20 ASCII characters");return;
+    }
+    for(const auto c:bytes) if(c<32 || c>126) {
+        HUDLogMessagesModel::instance().add_message_warning("Remote ID: use printable ASCII characters");return;
+    }
+    const auto identity=fc.firmware_identity();
+    const auto cmd=XParam::create_cmd_set_string(parameter.value("sys").toInt(),parameter.value("comp").toInt(),
+        parameter.value("id").toString().toStdString(),value.toStdString());
+    set_remote_id_busy(true);
+    const bool queued=XParam::instance().try_set_param_async(cmd,[this,identity,parameter,value,field](XParam::SetParamResult result) mutable {
+        QMetaObject::invokeMethod(this,[this,identity,parameter,value,field,result]() mutable {
+            set_remote_id_busy(false);
+            auto& fc=FCMavlinkSystem::instance();
+            if(fc.firmware_identity()!=identity) return;
+            bool matched=false;
+            if(result.is_accepted()) {
+                QByteArray echoed(result.response->param_value,128);
+                const int end=echoed.indexOf('\0');if(end>=0)echoed.truncate(end);
+                matched=QString::fromLatin1(echoed)==value;
+            }
+            if(matched) {
+                auto state=fc.remote_id_status();auto updated=parameter;updated["value"]=value;state[field]=updated;
+                fc.set_remote_id_status(state);
+                HUDLogMessagesModel::instance().add_message_info("Remote ID parameter confirmed by device");
+                request_remote_id_parameters_if_needed(parameter.value("sys").toInt(),parameter.value("comp").toInt());
+            } else HUDLogMessagesModel::instance().add_message_warning("Remote ID: update was not confirmed by device");
+        },Qt::QueuedConnection);
+    });
+    if(!queued) {set_remote_id_busy(false);HUDLogMessagesModel::instance().add_message_warning("Remote ID: parameter interface busy");}
 }

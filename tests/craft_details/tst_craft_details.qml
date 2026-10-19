@@ -27,7 +27,7 @@ Item {
         id: craftCard
         Status.StatusCard {
             width: 300; height: 319
-            title: "Flight controller"; systemType: 2; alive: true
+            title: "Flight controller"; systemType: 2; alive: true; actionsAvailable: false
             bodyComponent: Component { Item {} }
         }
     }
@@ -54,6 +54,7 @@ Item {
         property real altitude_rel_m: 0
         property int rc_rssi_percentage: 0
         property var firmware_identity: ({type: 3, name: "INAV", confidence: "likely", evidence: "Empty PARAM_VALUE signature; likely INAV", ver: 0})
+        property var remote_id_status: ({})
         property var battery_capacity_parameter: ({})
         property var craft_diagnostics: ({
             heartbeatAge: 0.2, statusAge: 0.2, load: 11.5, total: 128, nowMs: 10000,
@@ -72,11 +73,94 @@ Item {
         })
     }
     Rectangle { anchors.fill: parent; color: settings_form.pageBackground }
-    Status.CraftDetailsPanel { id: panel; anchors.fill: parent; fc: mock }
+    QtObject {
+        id: mockAction
+        property int requestedCapacity: 0
+        property bool remote_id_busy: false
+        property string requestedRemoteId: ""
+        property bool requestedOperatorId: false
+        function set_remote_id_async(isOperator, value) { requestedOperatorId=isOperator; requestedRemoteId=value }
+        function set_battery_capacity_async(value) { requestedCapacity = value }
+    }
+    Status.CraftDetailsPanel { id: panel; anchors.fill: parent; fc: mock; fcAction: mockAction }
     SignalSpy { id: closeSpy; target: panel; signalName: "closeRequested" }
     TestCase {
         name: "CraftDetails"
         when: windowShown
+        function test_remote_id_card() {
+            mock.telemetry_active=true;mock.armed=false;panel.selectedTab=0
+            mock.remote_id_status={aircraftId: "FC-BOARD-ID", idType: 1, locationReceivedMs: 9900}
+            wait(50)
+            var card=findChild(panel,"craftRemoteIdCard")
+            verify(card!==null)
+            verify(panel.remoteIdStatus().indexOf("ready") < 0)
+            panel.openRemoteId();wait(50)
+            var dialog=findChild(panel,"craftRemoteIdDialog")
+            verify(dialog.opened)
+            verify(!findChild(panel,"craftRemoteAircraftId").visible)
+            var readonlyImage=grabImage(scene)
+            if (readonlyImage.width > 0) readonlyImage.save("QOpenHD/build/remote-id-readonly.png")
+            dialog.close()
+            mock.remote_id_status={aircraftId: "MODULE-ID", armStatus: 0, armStatusReceivedMs: 9900,
+                operatorParameter: {id: "OPERATOR_ID", value: "OLD-ID", sys: 1, comp: 236, type: 11}}
+            panel.openRemoteId();wait(50)
+            var input=findChild(panel,"craftRemoteOperatorId")
+            verify(input.visible);input.text="NEW-ID"
+            var editorImage=grabImage(scene)
+            if (editorImage.width > 0) editorImage.save("QOpenHD/build/remote-id-editor.png")
+            var save=findChild(panel,"craftRemoteOperatorIdSave")
+            verify(save.enabled);mouseClick(save)
+            compare(mockAction.requestedRemoteId,"NEW-ID");verify(mockAction.requestedOperatorId)
+            mock.remote_id_status={operatorParameter: {id: "OPERATOR_ID", value: "OLD-ID"}, locationReceivedMs: 9990}
+            wait(20);compare(input.text,"NEW-ID")
+            mock.armed=true;verify(!save.enabled)
+            mock.armed=false;mock.telemetry_active=false;verify(!save.enabled)
+            dialog.close();mock.telemetry_active=true;mock.remote_id_status={}
+        }
+        function test_battery_capacity_card() {
+            var savedDiagnostics = mock.craft_diagnostics
+            mock.telemetry_active = true
+            mock.armed = false
+            panel.selectedTab = 0
+            mock.craft_diagnostics = {nowMs: 10000, observed: {packVoltage: {value: 12, receivedMs: 9990}}, messages: [], sensors: [], events: []}
+            mock.battery_capacity_parameter = {id: "BATT_CAPACITY", value: 3300, type: 6}
+            wait(50)
+            var tile = findChild(panel, "craftBatteryCapacityCard")
+            verify(tile !== null)
+            compare(tile.height, findChild(panel, "craftTelemetryTile_BATTERY").height)
+            compare(panel.telemetryCards()[panel.telemetryCards().length - 1].key, "capacity")
+            var dialog = findChild(panel, "craftBatteryCapacityDialog")
+            verify(!dialog.visible)
+            screenshot("capacity-card")
+            mouseClick(tile)
+            tryCompare(dialog, "visible", true)
+            verify(dialog.width <= 340)
+            compare(dialog.title, "Battery capacity")
+            var input = findChild(panel, "craftBatteryCapacity")
+            var apply = findChild(panel, "craftBatteryCapacityApply")
+            compare(input.value, 3300)
+            verify(!apply.enabled)
+            input.value = 2500
+            mock.craft_diagnostics = {nowMs: 10001, observed: {packVoltage: {value: 11.9, receivedMs: 10001}}, messages: [], sensors: [], events: []}
+            compare(input.value, 2500, "Telemetry must preserve the edited capacity")
+            mouseClick(apply)
+            compare(mockAction.requestedCapacity, 2500)
+            tryCompare(dialog, "visible", false)
+            compare(panel.capacityParameter.value, 3300, "A click alone must not claim success")
+            mock.battery_capacity_parameter = {id: "BATT_CAPACITY", value: 2500, type: 6}
+            verify(panel.telemetryCards()[1].value.indexOf("2") >= 0)
+            mock.armed = true
+            panel.openCapacityEditor()
+            verify(!dialog.visible)
+            mock.armed = false
+            mock.telemetry_active = false
+            panel.openCapacityEditor()
+            verify(!dialog.visible)
+            mock.battery_capacity_parameter = {}
+            verify(findChild(panel, "craftBatteryCapacityCard") === null)
+            mock.telemetry_active = true
+            mock.craft_diagnostics = savedDiagnostics
+        }
         function test_card_click_and_keyboard() {
             var card = createTemporaryObject(craftCard, scene, {z: 10})
             verify(card !== null)
@@ -85,7 +169,8 @@ Item {
             verify(button !== null)
             waitForRendering(card)
             verify(button.visible)
-            verify(button.height > 0)
+            compare(button.height, 38)
+            verify(button.mapToItem(card, 0, 0).y > 250, "Craft details must be a footer button")
             mouseClick(button)
             compare(cardSpy.count, 1)
             card.alive = false
@@ -187,6 +272,14 @@ Item {
             compare(panel.firmwareName, "INAV")
             mock.telemetry_active = true
             mock.craft_diagnostics = saved
+        }
+        function test_betaflight_version_formats() {
+            var saved = mock.firmware_identity
+            mock.firmware_identity = {type: 4, name: "Betaflight", ver: 0x1a060200}
+            compare(panel.identityRows()[0], "Firmware version: 2026.6.2")
+            mock.firmware_identity = {type: 4, name: "Betaflight", ver: 0x040501ff}
+            compare(panel.identityRows()[0], "Firmware version: 4.5.1")
+            mock.firmware_identity = saved
         }
     }
 }

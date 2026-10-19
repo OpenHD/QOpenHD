@@ -13,7 +13,7 @@
  * We need to manually request / set the message interval(s) for specific messages on ardupilot
  * (It doesn't send them by default).
  * The way this works is not ideal in regards to reliability - but I implemented a similar pattern like QGroundControl here.
- * Basically, we enqueue one message intervall command after each other, and stop in case one of them times out -
+ * Basically, we enqueue one message intervall command after each other, skip streams rejected by the FC, and stop if a command times out -
  * but we use a really high retransmit intervall, so if the commands time out, we should probably stop.
  */
 class FCMsgIntervalHandler{
@@ -48,6 +48,7 @@ private:
         MessageInterval{MAVLINK_MSG_ID_AOA_SSA,1},
         MessageInterval{MAVLINK_MSG_ID_SCALED_PRESSURE,1},
         MessageInterval{MAVLINK_MSG_ID_MISSION_CURRENT,1},
+        MessageInterval{MAVLINK_MSG_ID_OPEN_DRONE_ID_BASIC_ID,1},
         //MessageInterval{MAVLINK_MSG_ID_MISSION_COUNT,1}, Doesn't work broadcast
         // NOTE: We cannot set broadcast on this one !
         //MessageInterval{MAVLINK_MSG_ID_MISSION_ITEM_INT,1},
@@ -57,6 +58,7 @@ private:
     std::mutex m_mutex;
     bool m_ready_for_next_command=true;
     int m_next_rate_index=0;
+    int m_skipped_intervals=0;
 };
 
 #endif // FCMSGINTERVALHANDLER_H

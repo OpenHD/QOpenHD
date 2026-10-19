@@ -1,3 +1,6 @@
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(fcUnhandledLog, "qopenhd.mavlink.unhandled.fc", QtWarningMsg)
+
 #include "fcmavlinksystem.h"
 #include "rcchannelsmodel.h"
 
@@ -65,7 +68,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_HEARTBEAT: {
         mavlink_heartbeat_t heartbeat;
         mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-        const auto opt_info=Telemetryutil::parse_heartbeat(heartbeat);
+        const auto opt_info=Telemetryutil::parse_heartbeat(heartbeat,
+            firmware_identity().value("type").toInt(), firmware_identity().value("ver").toUInt());
         if(opt_info.has_value()){
             // heartbeat okay
             m_last_heartbeat_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
@@ -488,11 +492,10 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_distance_sensor_distance_cm(decoded.current_distance);
     };break;
     default: {
-        //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
-        qDebug()<<"FCMavlinkSystem received unmatched message with ID "<<msg.msgid
-               <<", sequence: "<<msg.seq
-              <<" from component "<<msg.compid
-             <<" of system "<<msg.sysid;
+        // Valid MAVLink without a dashboard field is still recorded above
+        // for the craft inspector. Packet-level logging is opt-in.
+        qCDebug(fcUnhandledLog)<<"FC MAVLink message available in inspector"
+               <<"msgid"<<msg.msgid<<"sysid"<<msg.sysid<<"compid"<<msg.compid;
         break;
     }
     }
@@ -520,6 +523,7 @@ bool FCMavlinkSystem::set_system_id(int sys_id, int comp_id)
     }
     if (m_sys_id != sys_id || m_comp_id != comp_id) {
         set_battery_capacity_parameter(QVariantMap());
+        set_remote_id_status(QVariantMap());
         m_diagnostic_messages.clear();
         m_diagnostic_state.clear();
         m_diagnostic_events.clear();
@@ -877,14 +881,17 @@ bool FCMavlinkSystem::process_firmware_status(const mavlink_message_t& msg)
         set_system_id(system, component);
     if (system >= 0 && m_discovered && (system != m_sys_id || component != m_comp_id)) return true;
     const auto previous = firmware_identity();
+    const bool family_changed = previous.value("type").toInt() > 0 && type > 0 &&
+        previous.value("type").toInt() != type;
     if (previous.contains("gen") && (previous.value("gen") != identity.value("gen") ||
-                                     previous.value("sys") != identity.value("sys"))) {
+                                     previous.value("sys") != identity.value("sys") || family_changed)) {
         if (m_inav_home_active) {
             set_home_latitude(0); set_home_longitude(0);
             m_inav_home_active = false;
         }
         m_diagnostic_messages.clear(); m_diagnostic_state.clear(); m_diagnostic_events.clear();
         set_battery_capacity_parameter(QVariantMap());
+        set_remote_id_status(QVariantMap());
         m_diagnostic_refresh_ms = 0;
         set_craft_diagnostics(QVariantMap());
     }
@@ -1220,4 +1227,73 @@ void FCMavlinkSystem::recalculate_efficiency()
     }else{
         //qDebug()<<"Not enough difference, recalculating later: "<<delta_distance_m<<"m, "<<delta_charge_mah<<"mAh";
     }
+}
+
+// Remote ID traffic may originate at the FC or at a separate onboard module.
+// id_or_mac identifies received traffic about OTHER aircraft; never use that
+// traffic as this craft's identity or as permission to edit onboard settings.
+bool FCMavlinkSystem::observe_remote_id(const mavlink_message_t& msg)
+{
+    if (!m_discovered || msg.sysid != m_sys_id ||
+        (msg.compid != m_comp_id && (msg.compid < MAV_COMP_ID_ODID_TXRX_1 ||
+                                    msg.compid > MAV_COMP_ID_ODID_TXRX_3))) return false;
+    auto state=remote_id_status();
+    const auto text=[](const void* data, int length) {
+        QByteArray bytes(static_cast<const char*>(data), length);
+        const auto end=bytes.indexOf('\0');if(end>=0)bytes.truncate(end);
+        return QString::fromLatin1(bytes);
+    };
+    const auto other_aircraft=[](const uint8_t* id) {
+        for(int i=0;i<20;++i) if(id[i]!=0) return true;
+        return false;
+    };
+    const auto now=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    switch(msg.msgid) {
+    case MAVLINK_MSG_ID_OPEN_DRONE_ID_BASIC_ID: {
+        mavlink_open_drone_id_basic_id_t v{};mavlink_msg_open_drone_id_basic_id_decode(&msg,&v);
+        if(other_aircraft(v.id_or_mac)) return false;
+        auto ids=state.value("ids").toMap();
+        ids[QString::number(v.id_type)]=QVariantMap{{"value",text(v.uas_id,20)},{"type",v.id_type}};
+        state["ids"]=ids;
+        if(!state.contains("aircraftId") || v.id_type==MAV_ODID_ID_TYPE_SERIAL_NUMBER) {
+            state["aircraftId"]=text(v.uas_id,20);state["idType"]=v.id_type;
+        }
+        state["identityReceivedMs"]=now;break;
+    }
+    case MAVLINK_MSG_ID_OPEN_DRONE_ID_OPERATOR_ID: {
+        mavlink_open_drone_id_operator_id_t v{};mavlink_msg_open_drone_id_operator_id_decode(&msg,&v);
+        if(other_aircraft(v.id_or_mac)) return false;
+        state["operatorId"]=text(v.operator_id,20);state["operatorReceivedMs"]=now;break;
+    }
+    case MAVLINK_MSG_ID_OPEN_DRONE_ID_LOCATION: {
+        mavlink_open_drone_id_location_t v{};mavlink_msg_open_drone_id_location_decode(&msg,&v);
+        if(other_aircraft(v.id_or_mac)) return false;
+        state["locationReceivedMs"]=now;state["locationStatus"]=v.status;
+        // Zero/zero and -1000 are the protocol's unknown values.
+        if(v.latitude!=0 || v.longitude!=0) {
+            state["latitude"]=v.latitude/1e7;state["longitude"]=v.longitude/1e7;
+        } else {state.remove("latitude");state.remove("longitude");}
+        break;
+    }
+    case MAVLINK_MSG_ID_OPEN_DRONE_ID_ARM_STATUS: {
+        mavlink_open_drone_id_arm_status_t v{};mavlink_msg_open_drone_id_arm_status_decode(&msg,&v);
+        state["armStatus"]=v.status;state["error"]=text(v.error,50);
+        state["armStatusReceivedMs"]=now;break;
+    }
+    case MAVLINK_MSG_ID_PARAM_EXT_VALUE: {
+        // A received custom string parameter is required before editing.
+        // Standard PX4's generated aircraft ID does NOT expose this setter.
+        if(state.isEmpty()) return false;
+        mavlink_param_ext_value_t v{};mavlink_msg_param_ext_value_decode(&msg,&v);
+        const auto id=text(v.param_id,16);
+        if(v.param_type!=MAV_PARAM_EXT_TYPE_CUSTOM || (id!="UAS_ID" && id!="OPERATOR_ID")) return false;
+        state[id=="UAS_ID"?"aircraftParameter":"operatorParameter"]=QVariantMap{
+            {"sys",msg.sysid},{"comp",msg.compid},{"id",id},{"value",text(v.param_value,128)},{"type",v.param_type}};
+        break;
+    }
+    default:return false;
+    }
+    state["receivedMs"]=now;
+    set_remote_id_status(state);
+    return true;
 }

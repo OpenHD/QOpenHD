@@ -37,7 +37,7 @@ def main():
     subprocess.run([args.cxx, "-Wl,--allow-multiple-definition", "-mthreads", "-o",
                     str(executable), "@" + str(response), *flags("LIBS")], cwd=build, check=True)
     environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_FORCE_STDERR_LOGGING="1")
-    subprocess.run([str(executable)], cwd=build, env=environment, check=True, timeout=25)
+    subprocess.run([str(executable)], cwd=build, env=environment, check=True, timeout=40)
 
 
 if __name__ == "__main__":

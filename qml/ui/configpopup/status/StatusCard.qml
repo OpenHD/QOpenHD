@@ -109,7 +109,7 @@ Item {
         anchors.top: bodyLoader.bottom
         anchors.topMargin: 8
         height: 38
-        visible: card.showPowerActions()
+        visible: card.systemType === 2 || card.showPowerActions()
         radius: 9
         color: "transparent"
         border.color: "transparent"
@@ -117,6 +117,30 @@ Item {
         RowLayout {
             anchors.fill: parent
             spacing: 5
+            Button {
+                id: detailsButton
+                objectName: "craftDetailsButton"
+                Layout.fillWidth: true; Layout.fillHeight: true
+                visible: card.systemType === 2
+                enabled: visible
+                text: qsTr("CRAFT DETAILS")
+                font.pixelSize: card.width < 260 ? 9 : 11
+                Accessible.name: qsTr("Open craft diagnostics")
+                onClicked: card.detailsRequested()
+                onActiveFocusChanged: if (activeFocus) statusPanel.syncFocus(detailsButton)
+                Keys.onPressed: function(event) {
+                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        card.detailsRequested()
+                        event.accepted = true
+                    } else card.handleNavigation(event)
+                }
+                background: Rectangle {
+                    radius: 8
+                    color: parent.down ? "#0e64ba" : (parent.hovered ? "#217de0" : settings_form.accentColor)
+                    border.color: parent.activeFocus ? "white" : "transparent"; border.width: 2
+                }
+                contentItem: Text { text: parent.text; font: parent.font; color: "white"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+            }
             Button {
                 id: rebootButton
                 Layout.fillWidth: true; Layout.fillHeight: true
@@ -159,40 +183,4 @@ Item {
         }
     }
 
-    Button {
-        id: detailsButton
-        objectName: "craftDetailsButton"
-        anchors.left: parent.left; anchors.right: parent.right
-        anchors.top: parent.top; anchors.bottom: bodyLoader.bottom
-        visible: card.systemType === 2
-        enabled: visible
-        hoverEnabled: true
-        Accessible.name: qsTr("Open craft diagnostics")
-        ToolTip.visible: hovered
-        ToolTip.text: qsTr("Open craft diagnostics")
-        background: Rectangle {
-            radius: 17
-            color: detailsButton.hovered ? "#12a486ff" : "transparent"
-            border.color: detailsButton.activeFocus ? card.iconColor : "transparent"
-            border.width: 2
-        }
-        contentItem: Item {
-            Text {
-                anchors.right: parent.right; anchors.bottom: parent.bottom
-                anchors.margins: 12
-                text: qsTr("CRAFT DETAILS  ›")
-                color: card.iconColor; font.pixelSize: 10; font.bold: true
-            }
-        }
-        onClicked: card.detailsRequested()
-        onActiveFocusChanged: if (activeFocus) statusPanel.syncFocus(detailsButton)
-        Keys.onPressed: function(event) {
-            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                card.detailsRequested()
-                event.accepted = true
-            } else {
-                card.handleNavigation(event)
-            }
-        }
-    }
 }

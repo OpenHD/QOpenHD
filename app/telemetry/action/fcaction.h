@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QSet>
 #include <mutex>
 
 #include "../tutil/mavlink_include.h"
@@ -50,10 +51,14 @@ public:
     Q_INVOKABLE void set_battery_capacity_async(int capacity_mah);
     void request_battery_capacity_if_needed();
     bool process_message(const mavlink_message_t& msg);
+    void request_remote_id_parameters_if_needed(int sys, int comp);
+    Q_INVOKABLE void set_remote_id_async(bool operator_id, QString value);
+    L_RO_PROP(bool, remote_id_busy, set_remote_id_busy, false)
 private:
     std::atomic<bool> m_has_currently_runnning_flight_mode_change=false;
     void send_pending_battery_capacity();
     void battery_capacity_timeout();
+    QSet<QString> m_remote_id_probes;
     QTimer m_battery_capacity_timer;
     mavlink_message_t m_pending_battery_capacity_message{};
     QString m_pending_battery_capacity_param;

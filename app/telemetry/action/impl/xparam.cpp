@@ -59,7 +59,10 @@ bool XParam::process_message(const mavlink_message_t &msg)
     if(msg.msgid==MAVLINK_MSG_ID_PARAM_EXT_ACK){
         mavlink_param_ext_ack_t ack;
         mavlink_msg_param_ext_ack_decode(&msg,&ack);
-        return handle_param_ext_ack(ack,msg.sysid,msg.compid);
+        handle_param_ext_ack(ack,msg.sysid,msg.compid);
+        // Late acknowledgements or another GCS's transaction still belong to
+        // this known protocol, even when no local transaction is pending.
+        return true;
     }else if(msg.msgid==MAVLINK_MSG_ID_PARAM_EXT_VALUE){
         mavlink_param_ext_value_t response;
         mavlink_msg_param_ext_value_decode(&msg,&response);

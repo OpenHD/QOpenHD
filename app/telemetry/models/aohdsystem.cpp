@@ -1,3 +1,6 @@
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(ohdUnhandledLog, "qopenhd.mavlink.unhandled.openhd", QtWarningMsg)
+
 #include "aohdsystem.h"
 
 #include "../../common/StringHelper.hpp"
@@ -309,7 +312,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             consumed=true;
         }break;
         default:{
-            qDebug()<<"Unknown openhd message type"
+            qCDebug(ohdUnhandledLog)<<"Unhandled OpenHD MAVLink message"
                    <<"msgid"<<msg.msgid
                    <<"sysid"<<msg.sysid
                    <<"compid"<<msg.compid;
