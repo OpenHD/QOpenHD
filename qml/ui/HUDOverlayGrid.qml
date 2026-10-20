@@ -43,12 +43,13 @@ Item {
 
     // Called by the config popup when closed to give focus back
     function regain_focus(){
-        hudOverlayGrid.focus = true;
         // Receive key events
         hudOverlayGrid.enabled =true;
         hudOverlayGrid.visible =true;
         // argh
         actual_hud_elements.visible=true;
+        // The HUD can be nested inside several Loader focus scopes.
+        hudOverlayGrid.forceActiveFocus();
     }
     // Opens the config popup and gives it focus
     function open_config_popup(){

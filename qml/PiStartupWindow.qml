@@ -40,6 +40,7 @@ Window {
     Loader {
         id: flightContent
         anchors.fill: parent
+        focus: true
         active: false
         source: "PiFlightContent.qml"
     }

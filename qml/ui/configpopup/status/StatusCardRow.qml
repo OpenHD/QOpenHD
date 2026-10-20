@@ -9,7 +9,7 @@ Item {
     property string m_left_text: qsTr("LEFT")
     property string m_right_text: qsTr("RIGHT")
     property bool m_has_error: false
-    property color m_right_text_color: settings_form.goodColor
+    property color m_right_text_color: settings_form.primaryText
     property color m_right_text_color_error: settings_form.errorColor
     property string m_error_text: qsTr("NONE")
     property bool m_error_view: false
@@ -19,7 +19,9 @@ Item {
         if (value.indexOf("platform") >= 0 || value.indexOf("firmware") >= 0) return "\uf1b3"
         if (value.indexOf("version") >= 0) return "\uf013"
         if (value.indexOf("link") >= 0) return "\uf0c1"
-        if (value.indexOf("hidden") >= 0) return "\uf070"
+        if (value.indexOf("health") >= 0) return "\uf2db"
+        if (value.indexOf("state") >= 0) return "\uf023"
+        if (value.indexOf("mode") >= 0) return "\uf124"
         if (value.indexOf("wifi") >= 0) return "\uf1eb"
         if (value.indexOf("sys") >= 0) return "\uf2db"
         if (value.indexOf("ping") >= 0) return "\uf1eb"

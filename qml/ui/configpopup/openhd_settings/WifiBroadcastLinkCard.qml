@@ -57,11 +57,11 @@ Rectangle {
         if (_ohdSystemAirSettingsModel.system_is_alive()
                 && !_ohdSystemAirSettingsModel.has_params_fetched
                 && !_ohdSystemAirSettingsModel.ui_is_busy)
-            _ohdSystemAirSettingsModel.try_refetch_all_parameters_async(false)
+            _ohdSystemAirSettingsModel.ensure_parameters_available()
         if (_ohdSystemGroundSettings.system_is_alive()
                 && !_ohdSystemGroundSettings.has_params_fetched
                 && !_ohdSystemGroundSettings.ui_is_busy)
-            _ohdSystemGroundSettings.try_refetch_all_parameters_async(false)
+            _ohdSystemGroundSettings.ensure_parameters_available()
     }
 
     function modelIndex(model, value) {

@@ -6,17 +6,14 @@ import QtQuick.Controls.Material 2.12
 
 import Qt.labs.settings 1.0
 
-import OpenHD 1.0
-
-import "../../../ui" as Ui
-import "../../elements"
-
 Column {
     width: parent.width
     height: parent.height
     spacing: 1
 
     property bool m_is_alive: _fcMavlinkSystem.is_alive
+    readonly property bool heartbeatFresh: m_is_alive && _fcMavlinkSystem.craft_diagnostics.heartbeatAge >= 0
+                                          && _fcMavlinkSystem.craft_diagnostics.heartbeatAge < 5
     function get_alive_text(){
         var age = _fcMavlinkSystem.craft_diagnostics.heartbeatAge
         return age === undefined || age < 0 ? qsTr("Not received") : qsTr("%1 s ago").arg(Math.floor(age))
@@ -41,9 +38,16 @@ Column {
         m_right_text_color: get_alive_text_color()
     }
 
-    StatusCardRow{
-        m_left_text: qsTr("SysID:")
-        m_right_text: _fcMavlinkSystem.for_osd_sys_id == -1 ? qsTr("N/A") : String(_fcMavlinkSystem.for_osd_sys_id)
+    StatusCardRow {
+        m_left_text: qsTr("State:")
+        m_right_text: heartbeatFresh ? (_fcMavlinkSystem.armed ? qsTr("Armed") : qsTr("Disarmed")) : qsTr("Unknown")
+        m_right_text_color: !heartbeatFresh ? settings_form.secondaryText
+                            : (_fcMavlinkSystem.armed ? settings.color_caution : settings_form.goodColor)
+    }
+    StatusCardRow {
+        m_left_text: qsTr("Flight mode:")
+        m_right_text: heartbeatFresh && _fcMavlinkSystem.flight_mode !== "------"
+                      ? _fcMavlinkSystem.flight_mode : qsTr("Unknown")
     }
     // Padding
     Item{

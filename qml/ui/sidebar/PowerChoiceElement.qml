@@ -97,7 +97,7 @@ BaseJoyEditElement2 {
         if (!model.system_is_alive()) return;
         if (model.has_params_fetched) return;
         if (model.ui_is_busy) return;
-        model.try_refetch_all_parameters_async(false);
+        model.ensure_parameters_available();
     }
 
     function refresh_target_model() {

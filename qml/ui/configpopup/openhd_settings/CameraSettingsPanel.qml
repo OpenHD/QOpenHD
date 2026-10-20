@@ -239,7 +239,7 @@ FocusScope {
     onParamRevisionChanged: ensureActiveCategory()
     onVisibleChanged: {
         if (visible && _ohdSystemAir.is_alive && !settingsModel.has_params_fetched && !settingsModel.ui_is_busy)
-            settingsModel.try_refetch_all_parameters_async(false)
+            settingsModel.ensure_parameters_available()
         if (visible) Qt.callLater(ensureActiveCategory)
     }
     Component.onCompleted: ensureActiveCategory()

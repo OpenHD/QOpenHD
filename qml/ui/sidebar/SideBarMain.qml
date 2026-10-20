@@ -98,7 +98,7 @@ Item {
         m_extra_is_visible=false;
         stack_manager.visible=false;
         choiceSelector.discard_and_close();
-        hudOverlayGrid.focus=true;
+        hudOverlayGrid.forceActiveFocus();
     }
 
     function regain_control_on_sidebar_stack(){

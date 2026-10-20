@@ -51,6 +51,9 @@ public:
     L_RO_PROP(QString,scanning_text_for_ui,set_scanning_text_for_ui,"");
     L_RO_PROP(int,scan_progress_perc,set_scan_progress_perc,0)
     // Analyzing
+    L_RO_PROP(bool,analyze_request_pending,set_analyze_request_pending,false)
+    L_RO_PROP(int,analyzed_channel_count,set_analyzed_channel_count,0)
+    L_RO_PROP(int,analyze_results_revision,set_analyze_results_revision,0)
     L_RO_PROP(int,analyze_progress_perc,set_analyze_progress_perc,0)
     L_RO_PROP(int,current_analyze_frequency,set_current_analyze_frequency,-1);
 public:
@@ -61,7 +64,7 @@ public:
     void validate_and_set_gnd_channel_width_mhz(int channel_width_mhz);
     void validate_and_set_air_channel_width_mhz(int channel_width_mhz);
 public:
-    Q_INVOKABLE bool start_analyze_channels(int freq_bands);
+    Q_INVOKABLE bool start_analyze_channels(int freq_bands, int scan_profile = 1);
     // freq_bands:
     // 0: 2.4G and 5.8G
     // 1: 2.4G only

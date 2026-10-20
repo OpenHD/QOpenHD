@@ -14,8 +14,12 @@ PopupBigGeneric {
 
     property int chartMinimumWidth: 1080
     property int displayedChannelCount: 0
-    property bool analyzing: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 2
+    property bool analyzing: _wbLinkSettingsHelper.analyze_request_pending ||
+                             (_ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 2)
     property int analyzeProgress: Math.max(0, Math.min(100, _wbLinkSettingsHelper.analyze_progress_perc))
+
+    property int surveyRevision: _wbLinkSettingsHelper.analyze_results_revision
+    onSurveyRevisionChanged: if (visible) update()
 
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
     Material.accent: settings_form.accentColor
@@ -45,14 +49,16 @@ PopupBigGeneric {
     function update() { pollutionChart.updatePollutionGraph() }
 
     function startAnalysis() {
-        var accepted = _wbLinkSettingsHelper.start_analyze_channels(filterCombo.currentIndex)
-        if (accepted)
-            _qopenhd.show_toast(qsTr("Channel analysis started"))
+        var accepted = _wbLinkSettingsHelper.start_analyze_channels(filterCombo.currentIndex, durationCombo.currentIndex)
+        if (accepted) {
+            pollutionChart.updatePollutionGraph()
+            _qopenhd.show_toast(qsTr("Requesting channel analysis"))
+        }
         else
-            _qopenhd.show_toast(qsTr("The radio is busy. Please try again."))
+            _qopenhd.show_toast(qsTr("Could not queue the analysis request. Please try again."))
     }
 
-    function controls() { return [filterCombo, metricCombo, startButton] }
+    function controls() { return [filterCombo, metricCombo, durationCombo, startButton] }
 
     function moveFocus(control, step) {
         var list = controls()
@@ -80,7 +86,7 @@ PopupBigGeneric {
         id: filterModel
         ListElement { title: qsTr("OpenHD channels 1–7"); value: 0 }
         ListElement { title: qsTr("All 2.4 GHz channels"); value: 1 }
-        ListElement { title: qsTr("All 5.8 GHz channels"); value: 2 }
+        ListElement { title: qsTr("All supported 5 GHz channels"); value: 2 }
     }
 
     ColumnLayout {
@@ -121,6 +127,8 @@ PopupBigGeneric {
 
                 CompactLinkComboBox {
                     id: metricCombo
+                    objectName: "surveyMetric"
+                    currentIndex: 0
                     Layout.fillWidth: true
                     Layout.preferredHeight: 38
                     model: [qsTr("Energy above noise floor (%)"), qsTr("Channel busy (%)"),
@@ -128,6 +136,17 @@ PopupBigGeneric {
                     enabled: !root.analyzing
                     onCurrentIndexChanged: pollutionChart.updatePollutionGraph()
                     Keys.onPressed: root.handleKey(metricCombo, event)
+                }
+
+                CompactLinkComboBox {
+                    id: durationCombo
+                    objectName: "surveyDuration"
+                    currentIndex: 1
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 38
+                    model: [qsTr("Quick"), qsTr("Medium"), qsTr("Detailed")]
+                    enabled: !root.analyzing
+                    Keys.onPressed: root.handleKey(durationCombo, event)
                 }
 
                 Button {
@@ -164,7 +183,8 @@ PopupBigGeneric {
             Layout.fillWidth: true
             spacing: 10
             Text {
-                text: root.analyzing ? qsTr("Analyzing") : (root.analyzeProgress >= 100 ? qsTr("Analysis complete") : qsTr("Ready"))
+                objectName: "surveyStatus"
+                text: root.analyzing ? (root.analyzeProgress >= 100 ? qsTr("Restoring radio") : qsTr("Analyzing (%1 channels)").arg(_wbLinkSettingsHelper.analyzed_channel_count)) : (root.analyzeProgress >= 100 ? qsTr("Analysis complete") : qsTr("Ready"))
                 color: settings_form.primaryText
                 font.pixelSize: 11
                 font.bold: true
@@ -192,9 +212,15 @@ PopupBigGeneric {
 
         Text {
             Layout.fillWidth: true
-            Layout.preferredHeight: visible ? 18 : 0
-            visible: _wbLinkSettingsHelper.current_analyze_frequency > 0
-            text: qsTr("Analyzing %1 MHz").arg(_wbLinkSettingsHelper.current_analyze_frequency)
+            Layout.preferredHeight: 18
+            objectName: "surveySweepStatus"
+            text: root.analyzing && durationCombo.currentIndex === 2 &&
+                  _wbLinkSettingsHelper.analyzed_channel_count >= root.displayedChannelCount && root.displayedChannelCount > 0
+                  ? qsTr("Second sweep: comparing measurements")
+                  : root.analyzing && _wbLinkSettingsHelper.current_analyze_frequency > 0
+                    ? qsTr("Last measured: %1 MHz").arg(_wbLinkSettingsHelper.current_analyze_frequency)
+                    : [qsTr("Quick: one short sweep"), qsTr("Medium: one longer sweep"),
+                       qsTr("Detailed: two medium sweeps; readings averaged")][durationCombo.currentIndex]
             color: settings_form.secondaryText
             font.pixelSize: 10
             horizontalAlignment: Text.AlignHCenter
@@ -220,12 +246,15 @@ PopupBigGeneric {
 
                 ChartView {
                     id: pollutionChart
+                    objectName: "surveyChart"
+                    property int measuredChannels: 0
                     width: Math.max(chartScroller.width, root.displayedChannelCount * 90,
                                     filterCombo.currentIndex === 2 ? root.chartMinimumWidth : 0)
                     height: chartScroller.height
                     antialiasing: true
-                    animationOptions: ChartView.SeriesAnimations
-                    animationDuration: 180
+                    // Results arrive incrementally: rebuilding/animating all bars flashes
+                    // the chart and momentarily hides measurements already received.
+                    animationOptions: ChartView.NoAnimation
                     backgroundColor: "transparent"
                     plotAreaColor: "transparent"
                     legend.visible: false
@@ -237,11 +266,26 @@ PopupBigGeneric {
                     function updatePollutionGraph() {
                         var filter = filterCombo.currentIndex
                         if (filter < 0) filter = 0
-                        var frequencies = _frequencyHelper.get_frequencies(filter)
+                        var frequencies = _frequencyHelper.get_analyze_frequencies(filter)
                         root.displayedChannelCount = frequencies.length
-                        categoryAxis.categories = _pollutionHelper.survey_labels(frequencies, metricCombo.currentIndex)
+                        var labels = _pollutionHelper.survey_labels(frequencies, metricCombo.currentIndex)
+                        if (JSON.stringify(categoryAxis.categories) !== JSON.stringify(labels))
+                            categoryAxis.categories = labels
                         var values = _pollutionHelper.survey_values(frequencies, metricCombo.currentIndex)
-                        pollutionBars.values = values
+                        var plotted = []
+                        var measured = 0
+                        for (var v = 0; v < values.length; ++v) {
+                            if (values[v] >= 0) ++measured
+                            plotted.push(Math.max(0, values[v]))
+                        }
+                        measuredChannels = measured
+                        if (pollutionBars.count !== plotted.length) {
+                            pollutionBars.values = plotted
+                        } else {
+                            for (var b = 0; b < plotted.length; ++b)
+                                if (pollutionBars.at(b) !== plotted[b])
+                                    pollutionBars.replace(b, plotted[b])
+                        }
                         var maximum = 0
                         for (var i = 0; i < values.length; ++i)
                             maximum = Math.max(maximum, values[i])
@@ -273,6 +317,7 @@ PopupBigGeneric {
                         }
                         BarSet {
                             id: pollutionBars
+                            objectName: "surveyBars"
                             label: metricCombo.currentText
                             values: [0, 0, 0, 0]
                             color: settings_form.errorColor
@@ -286,7 +331,18 @@ PopupBigGeneric {
 
         Text {
             Layout.fillWidth: true
-            text: qsTr("Higher energy or busy bars indicate occupied channels. Energy includes OpenHD traffic; stop Air transmission for an interference-only scan. Check both 20 MHz halves for 40 MHz. N/A means no measurement. Repeat to check intermittent interference. Swipe to inspect all channels.")
+            objectName: "surveyExplanation"
+            Layout.minimumHeight: root.width >= 700 ? 48 : 88
+            text: (pollutionChart.measuredChannels === 0
+                   ? (root.analyzing ? qsTr("Waiting for measurements. ")
+                      : root.analyzeProgress === 0 ? qsTr("Start an analysis to measure channels. ")
+                      : qsTr("This analysis supplied no values for this view. The radio/backend may not support this measurement. Select another metric. "))
+                   : qsTr("%1 of %2 channels measured. ").arg(pollutionChart.measuredChannels).arg(root.displayedChannelCount))
+                  + [qsTr("Energy above the receiver's noise floor; includes OpenHD traffic."),
+                     qsTr("Channel busy measures occupied airtime; it is not a packet count."),
+                     qsTr("Foreign Wi-Fi packets received during each channel observation."),
+                     qsTr("Relative Wi-Fi packets: the busiest measured channel is 100%. This is not airtime usage.")][metricCombo.currentIndex]
+                  + qsTr(" Not scanned means no result; Unavailable means no valid reading. Stop Air transmission for an interference-only scan. Check both 20 MHz halves for 40 MHz. Swipe to inspect all channels.")
             color: settings_form.secondaryText
             font.pixelSize: 9
             horizontalAlignment: Text.AlignHCenter

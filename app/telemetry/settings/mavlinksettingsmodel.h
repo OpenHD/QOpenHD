@@ -7,6 +7,7 @@
 #include <optional>
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include <QJSValue>
 #include <QVariantMap>
 
@@ -57,6 +58,8 @@ public:
     // async with progress bar and result being prompted to the user
     // re-fetches the complete param set - any changed values, types, ... are catched from it
     Q_INVOKABLE void try_refetch_all_parameters_async(bool log_result=true);
+    // Background/UI discovery shares a cooldown; manual refresh bypasses it.
+    Q_INVOKABLE void ensure_parameters_available();
 
     // first updates the parameter on the server via XParam (unless server rejects / rare timeout)
     // then updates the internal cached parameter
@@ -102,6 +105,7 @@ public slots:
     void updateData(std::optional<int> row,MavlinkSettingsModel::SettingData new_data);
     void addData(MavlinkSettingsModel::SettingData data);
 private:
+    std::atomic<int64_t> m_next_auto_fetch_ms{0};
     QVector<MavlinkSettingsModel::SettingData> m_data;
     // Dedicated Link controls need parameters hidden from the generic list.
     QVector<MavlinkSettingsModel::SettingData> m_hidden_data;

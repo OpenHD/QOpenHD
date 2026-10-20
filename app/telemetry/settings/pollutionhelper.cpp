@@ -19,12 +19,10 @@ static std::vector<PollutionHelper::PollutionElement> normalize(const std::vecto
     for(const auto& value:values){
         max=std::max(max,value.n_foreign_packets);
     }
-    if(max==0)return values;
     std::vector<PollutionHelper::PollutionElement> ret;
     for(auto value:values){
         value.n_foreign_packets_normalized=value.n_foreign_packets < 0 ? -1 :
-            (value.rf_sampled_busy ? value.n_foreign_packets : value.n_foreign_packets*100 / max);
-        //value.n_foreign_packets=value.n_foreign_packets*100 / max;
+            (value.rf_sampled_busy ? value.n_foreign_packets : (max > 0 ? value.n_foreign_packets*100 / max : 0));
         ret.push_back(value);
     }
     return ret;
@@ -145,8 +143,10 @@ QStringList PollutionHelper::survey_labels(QList<int> frequencies, int metric)
     const auto values = survey_values(frequencies, metric);
     QStringList labels;
     for (int i = 0; i < frequencies.size(); ++i) {
+        const bool scanned = threadsafe_get_pollution_for_frequency(frequencies[i]).has_value();
         labels.push_back(QString::number(frequencies[i]) +
-                         (values[i].toInt() < 0 ? " N/A" : " MHz"));
+                         (!scanned ? tr(" Not scanned") :
+                          values[i].toInt() < 0 ? tr(" Unavailable") : QStringLiteral(" MHz")));
     }
     return labels;
 }

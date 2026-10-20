@@ -43,7 +43,7 @@ BaseWidget {
         running: _ohdSystemAir.is_alive
                  && !_ohdSystemAirSettingsModel.has_params_fetched
                  && !_ohdSystemAirSettingsModel.ui_is_busy
-        onTriggered: _ohdSystemAirSettingsModel.try_refetch_all_parameters_async(false)
+        onTriggered: _ohdSystemAirSettingsModel.ensure_parameters_available()
     }
 
     visible: settings.show_ip_camera_control_widget && settings.show_widgets

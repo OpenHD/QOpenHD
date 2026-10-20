@@ -839,7 +839,7 @@ void AOHDSystem::autofech_params_if_apropriate()
                 if(!MavlinkSettingsModel::instanceGround().has_params_fetched() && !MavlinkSettingsModel::instanceGround().is_x_busy()){
                     qDebug()<<"Init autofetch of groun param set";
                     // Ground has neither already fetched all params or is busy fetching already
-                    MavlinkSettingsModel::instanceGround().try_refetch_all_parameters_async(true);
+                    MavlinkSettingsModel::instanceGround().ensure_parameters_available();
                 }
             }
         }
@@ -856,13 +856,13 @@ void AOHDSystem::autofech_params_if_apropriate()
                     // None of the (up to 3) air param set(s) are currently fetching params
                     if(!MavlinkSettingsModel::instanceAir().has_params_fetched()){
                         qDebug()<<"Init autofetch of air param set";
-                        MavlinkSettingsModel::instanceAir().try_refetch_all_parameters_async();
+                        MavlinkSettingsModel::instanceAir().ensure_parameters_available();
                     }else if(!MavlinkSettingsModel::instanceAirCamera().has_params_fetched()){
                         qDebug()<<"Init autofetch of air camera1 param set";
-                        MavlinkSettingsModel::instanceAirCamera().try_refetch_all_parameters_async();
+                        MavlinkSettingsModel::instanceAirCamera().ensure_parameters_available();
                     }else if(!MavlinkSettingsModel::instanceAirCamera2().has_params_fetched()){
                         qDebug()<<"Init autofetch of air camera2 param set";
-                        MavlinkSettingsModel::instanceAirCamera2().try_refetch_all_parameters_async();
+                        MavlinkSettingsModel::instanceAirCamera2().ensure_parameters_available();
                     }
                 }
             }

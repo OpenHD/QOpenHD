@@ -158,11 +158,7 @@ Rectangle {
         if (fleetConfigured) activeLinks.append({kind: "fleetcontrol"})
     }
     function rebuildFrequencies() {
-        frequencyChoices.clear()
         var list = _frequencyHelper.get_frequencies(settings.qopenhd_frequency_filter_selection)
-        for (var i = 0; i < list.length; ++i)
-            frequencyChoices.append({title: formatFrequency(list[i]), value: list[i]})
-
         // Always retain the currently reported channel, even when it sits
         // outside the user's active frequency filter.
         var current = _ohdSystemGround.curr_channel_mhz > 0
@@ -170,18 +166,16 @@ Rectangle {
                     : (_wbLinkSettingsHelper.curr_channel_mhz > 0
                        ? _wbLinkSettingsHelper.curr_channel_mhz
                        : _ohdSystemAir.curr_channel_mhz)
-        if (current > 0) {
-            var found = false
-            for (var j = 0; j < frequencyChoices.count; ++j) {
-                if (frequencyChoices.get(j).value === current) {
-                    found = true
-                    break
-                }
-            }
-            if (!found)
-                frequencyChoices.append({title: formatFrequency(current), value: current})
-        }
+        if (current > 0 && list.indexOf(current) < 0) list.push(current)
+        var unchanged = frequencyChoices.count === list.length
+        for (var j = 0; unchanged && j < list.length; ++j)
+            unchanged = frequencyChoices.get(j).value === list[j]
+        if (unchanged) return
+        frequencyChoices.clear()
+        for (var k = 0; k < list.length; ++k)
+            frequencyChoices.append({title: formatFrequency(list[k]), value: list[k]})
     }
+
     function formatFrequency(value) {
         return _frequencyHelper.get_frequency_description(value)
                 .replace(/\[\s+/g, "[")
@@ -287,6 +281,9 @@ Rectangle {
     onFleetConfiguredChanged: rebuildLinks()
     property int frequencyRevision: _wbLinkSettingsHelper.ui_rebuild_models
     onFrequencyRevisionChanged: rebuildFrequencies()
+    property string frequencyCapabilitiesRevision: _ohdSystemGroundSettings.update_count + ":" +
+                                                   _ohdSystemAirSettingsModel.update_count
+    onFrequencyCapabilitiesRevisionChanged: rebuildFrequencies()
     property int frequencyFilterRevision: settings.qopenhd_frequency_filter_selection
     onFrequencyFilterRevisionChanged: rebuildFrequencies()
     property int reportedFrequencyRevision: _ohdSystemGround.curr_channel_mhz > 0

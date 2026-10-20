@@ -6,12 +6,8 @@ import QtQuick.Controls.Material 2.12
 
 import Qt.labs.settings 1.0
 
-import OpenHD 1.0
-
-import "../../../ui" as Ui
-import "../../elements"
-
 Column {
+    id: body
     //Layout.fillWidth: true
     //Layout.fillHeight: true
     // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
@@ -29,6 +25,30 @@ Column {
     property string m_qopenhd_version: _qopenhd.version_string
     property int m_ground_settings_update_count: _ohdSystemGroundSettings.update_count
     property int m_air_settings_update_count: _ohdSystemAirSettingsModel.update_count
+
+    readonly property bool videoEncrypted: {
+        var updates = _airCameraSettingsModel.update_count
+        return !m_is_ground && m_is_alive && _airCameraSettingsModel.has_params_fetched
+                && _airCameraSettingsModel.param_int_exists("HIGH_ENCRYPTION")
+                && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
+    }
+    readonly property bool hotspotActive: m_is_alive && m_model.wifi_hotspot_state === 2
+    readonly property int temperature: m_model.curr_soc_temp_degree
+    readonly property int cpuLoad: m_model.curr_cpuload_perc
+    // Legacy core telemetry defaults to zero until a sample arrives.
+    readonly property bool hasTemperature: m_is_alive && temperature > 0
+    readonly property bool hasCpuLoad: m_is_alive && cpuLoad >= 0 && cpuLoad <= 100
+                                       && (m_model.onboard_uptime_ms >= 0 || hasTemperature)
+    readonly property bool x20: !m_is_ground && m_model.ohd_platform_type === 30
+    readonly property int temperatureWarn: x20 ? 78 : (m_is_ground ? settings.ground_status_temp_warn : settings.air_status_temp_warn)
+    readonly property int temperatureCaution: x20 ? 74 : (m_is_ground ? settings.ground_status_temp_caution : settings.air_status_temp_caution)
+    readonly property int cpuWarn: x20 ? 95 : (m_is_ground ? settings.ground_status_cpu_warn : settings.air_status_cpu_warn)
+    readonly property int cpuCaution: x20 ? 85 : (m_is_ground ? settings.ground_status_cpu_caution : settings.air_status_cpu_caution)
+    readonly property bool healthWarning: (hasTemperature && temperature >= temperatureWarn)
+                                         || (hasCpuLoad && cpuLoad >= cpuWarn)
+                                         || (m_is_alive && m_model.rpi_undervolt_error)
+    readonly property bool healthCaution: (hasTemperature && temperature >= temperatureCaution)
+                                         || (hasCpuLoad && cpuLoad >= cpuCaution)
 
     //fucking hell qt
     property int m_font_pixel_size: 13
@@ -119,6 +139,36 @@ Column {
         }
         // Fallback when parsing fails on custom strings
         return _ohdSystemGround.openhd_version === m_qopenhd_version
+    }
+
+    Item {
+        width: parent.width
+        height: visible ? 29 : 0
+        visible: body.videoEncrypted || body.hotspotActive
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 10; anchors.rightMargin: 10
+            spacing: 5
+            Repeater {
+                model: [ { label: qsTr("Video encrypted"), active: body.videoEncrypted },
+                         { label: qsTr("WiFi hotspot"), active: body.hotspotActive } ]
+                Rectangle {
+                    visible: modelData.active
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 22
+                    radius: 7
+                    color: Qt.rgba(settings_form.accentColor.r, settings_form.accentColor.g, settings_form.accentColor.b, 0.14)
+                    Text {
+                        anchors.fill: parent; anchors.leftMargin: 5; anchors.rightMargin: 5
+                        text: modelData.label
+                        color: settings_form.accentColor
+                        font.pixelSize: 9
+                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+        }
     }
 
     StatusCardRow{
@@ -238,71 +288,17 @@ Column {
     //         return message;
     //     }
     // }
-    StatusCardRow{
-        m_left_text: qsTr("Hidden:")
-        m_right_text: qsTr("No")
-    }
-    StatusCardRow{
-        visible: !m_is_ground
-        m_left_text: qsTr("SysId:")
+    StatusCardRow {
+        m_left_text: qsTr("System health:")
         m_right_text: {
-            var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
-            if(air_fc_sys_id==-1){
-                return qsTr("NOT FOUND")
-            }
-            return qsTr("FOUND: %1").arg(air_fc_sys_id);
+            if (m_is_alive && m_model.rpi_undervolt_error) return qsTr("Undervoltage")
+            var parts = []
+            if (body.hasTemperature) parts.push(qsTr("%1 \u00b0C").arg(body.temperature))
+            if (body.hasCpuLoad) parts.push(qsTr("%1% CPU").arg(body.cpuLoad))
+            return parts.length ? parts.join(" \u00b7 ") : qsTr("Not reported")
         }
-        m_error_text: {
-            var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
-            if(air_fc_sys_id==-1){
-                return qsTr("Your AIR Unit cannot find your FC (UART). Please check:\n1) Wiring\n2) Right serial port enabled (OpenHD AIR param set)\n3) MAVLINK selected on your FC uart");
-            }
-            return qsTr("Please make sure:\n1) ARDUPILOT / PX4: FC sys id needs to be set to 1 (DEFAULT ARDUPILOT SYSID)\n2) INAV / Betaflight: Nothing needs to be changed, sys id should be 0");
-        }
-        m_has_error: {
-            if(!_ohdSystemAir.is_alive)return false;
-            var air_fc_sys_id=_ohdSystemAir.air_reported_fc_sys_id;
-            // We allow 0 (Betaflight / inav / ... ) and 1 (Arupilot)
-            if(air_fc_sys_id==0 || air_fc_sys_id==1)return false;
-            return true;
-        }
-        m_error_view: true;
-    }
-    StatusCardRow{
-        m_left_text: qsTr("WiFi HS:")
-        m_right_text: {
-            if(!m_model.is_alive || m_model.wifi_hotspot_state<0){
-                return qsTr("N/A");
-            }
-            if(m_model.wifi_hotspot_state==0){
-                return qsTr("UNAVAILABLE");
-            }
-            if(m_model.wifi_hotspot_state==1){
-                return qsTr("DISABLED");
-            }
-            return qsTr("ENABLED");
-        }
-        m_right_text_color: {
-            if(m_right_text=="DISABLED" || m_right_text=="ENABLED"){
-                return settings_form.goodColor
-            }
-            return settings_form.primaryText;
-        }
-        m_right_text_color_error: settings_form.primaryText;
-        m_error_text: {
-            if(m_model.wifi_hotspot_state==0){
-                var message=qsTr("To use the WiFi hotspot feature on your air / ground unit you need to use a RPI / ROCK with integrated wifi module.")
-                return message;
-            }
-            if(m_model.wifi_hotspot_state==1 || m_model.wifi_hotspot_state==2){
-                var message=qsTr("WiFi hotspot is automatically disabled when armed, and enabled when disarmed. To change this behaviour (discouraged) set it to either always off / always on");
-                return message;
-            }
-            return qsTr("I should not appear");
-        }
-        m_has_error: {
-            return m_right_text=="UNAVAILABLE";
-        }
+        m_has_error: body.healthWarning
+        m_right_text_color: body.healthCaution ? settings.color_caution : settings_form.primaryText
     }
     StatusCardRow{
         visible: m_is_ground;

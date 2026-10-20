@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariantList>
+#include <functional>
 
 #include "../tutil/mavlink_include.h"
 
@@ -77,7 +78,7 @@ public:
     QVariantList airStorageDevices() const { return m_air_storage_devices; }
 
     // Sent to the ground unit only
-    bool send_command_analyze_channels_blocking(int freq_bands);
+    bool send_command_analyze_channels_async(int freq_bands, int scan_profile, std::function<void(QString)> completion);
     bool send_command_start_scan_channels_blocking(int freq_bands,int channel_widths,bool passive = false);
 signals:
     void formatAirSdCardStatusChanged();

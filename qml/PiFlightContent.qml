@@ -174,6 +174,7 @@ Item {
     Loader {
         id: flightUi
         anchors.fill: parent
+        focus: true
         active: true
         asynchronous: false
         source: "HudContent.qml"

@@ -36,6 +36,10 @@ FrequencyHelper &FrequencyHelper::instance()
 QList<int> FrequencyHelper::get_frequencies(int filter)
 {
     QList<int> ret;
+    if (filter == 1 || filter == 2) {
+        const auto advertised = get_analyze_frequencies(filter);
+        if (!advertised.empty()) return supported_frequencies(advertised);
+    }
     if(filter==0){
         auto tmp=openhd::get_openhd_channels_1_to_7();
         for(auto& channel:tmp){
@@ -63,6 +67,31 @@ QList<int> FrequencyHelper::get_frequencies(int filter)
         }
     }
     return supported_frequencies(ret);
+}
+
+QList<int> FrequencyHelper::get_analyze_frequencies(int filter)
+{
+    // A ground survey is limited by the receiver's driver, not the Air radio
+    // or the standard-channel subset used by the normal frequency selector.
+    QList<int> supported;
+    const auto metadata = DocumentedParam::metadata("WB_FREQUENCY", 100, 191);
+    if (DocumentedParam::has_device_metadata(100, 191) && metadata.contains("choices")) {
+        for (const auto& choice : metadata.value("choices").toArray())
+            supported.append(choice.toObject().value("value").toInt());
+    } else {
+        std::lock_guard<std::mutex> lock(m_supported_channels_mutex);
+        for (const auto frequency : m_supported_channels) supported.append(frequency);
+    }
+    QList<int> result;
+    if (filter == 0) {
+        for (const auto& channel : openhd::get_openhd_channels_1_to_7())
+            if (supported.contains(channel.frequency)) result.append(channel.frequency);
+    } else {
+        for (const auto frequency : supported)
+            if ((filter == 1 && frequency < 3000) || (filter == 2 && frequency >= 3000))
+                if (!result.contains(frequency)) result.append(frequency);
+    }
+    return result;
 }
 
 QList<int> FrequencyHelper::filter_frequencies_40mhz_ht40plus_only(QList<int> frequencies)

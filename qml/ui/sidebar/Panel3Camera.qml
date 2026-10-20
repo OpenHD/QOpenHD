@@ -29,7 +29,7 @@ SideBarBasePanel{
                     && !_ohdSystemAirSettingsModel.ui_is_busy
                     && !_airCameraSettingsModel.ui_is_busy
                     && !_airCameraSettingsModel2.ui_is_busy)
-                _airCameraSettingsModel.try_refetch_all_parameters_async(false)
+                _airCameraSettingsModel.ensure_parameters_available()
         }
     }
 

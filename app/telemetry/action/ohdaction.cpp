@@ -373,7 +373,7 @@ bool OHDAction::process_message(const mavlink_message_t &message)
     return true;
 }
 
-bool OHDAction::send_command_analyze_channels_blocking(int freq_bands)
+bool OHDAction::send_command_analyze_channels_async(int freq_bands, int scan_profile, std::function<void(QString)> completion)
 {
     mavlink_command_long_t cmd{};
     const bool airEsp=MavlinkSettingsModel::instanceAir().param_int_exists("ESP_ANALYSE") && MavlinkSettingsModel::instanceAir().get_cached_int("ESP_ANALYSE")==1;
@@ -381,8 +381,19 @@ bool OHDAction::send_command_analyze_channels_blocking(int freq_bands)
     cmd.target_component=MAV_COMP_ID_ONBOARD_COMPUTER;
     cmd.command=MAV_CMD_OPENHD_INITIATE_CHANNEL_ANALYZE;
     cmd.param1=static_cast<float>(freq_bands);
-    const auto res=CmdSender::instance().send_command_long_blocking(cmd);
-    return res==CmdSender::Result::CMD_SUCCESS;
+    cmd.param2=static_cast<float>(scan_profile);
+    return CmdSender::instance().send_command_long_async(cmd,
+        [this, completion](CmdSender::RunCommandResult result) {
+            QMetaObject::invokeMethod(this, [completion, result] {
+                QString error;
+                if (!result.opt_ack) error = tr("No response to the channel analysis request. Check the ground connection.");
+                else if (result.opt_ack->result == MAV_RESULT_UNSUPPORTED)
+                    error = tr("This OpenHD backend does not support channel analysis.");
+                else if (result.opt_ack->result != MAV_RESULT_ACCEPTED)
+                    error = tr("Channel analysis was rejected by OpenHD (result %1). Check the radio or analyzer status.").arg(result.opt_ack->result);
+                completion(error);
+            }, Qt::QueuedConnection);
+        });
 }
 
 bool OHDAction::send_command_start_scan_channels_blocking(int freq_bands, int channel_widths, bool passive)

@@ -198,6 +198,7 @@ ApplicationWindow {
     Loader {
         id: flightUi
         anchors.fill: parent
+        focus: true
         active: !applicationWindow.bootSplashEnabled || applicationWindow.firstFrameShown
         asynchronous: applicationWindow.bootSplashEnabled
         source: "HudContent.qml"

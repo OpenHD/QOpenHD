@@ -131,6 +131,19 @@ bool MavlinkSettingsModel::is_x_busy()
     return m_is_currently_busy;
 }
 
+void MavlinkSettingsModel::ensure_parameters_available()
+{
+    if (m_has_params_fetched || !m_is_ready || m_is_currently_busy || !system_is_alive()) return;
+    const auto& ground = AOHDSystem::instanceGround();
+    if (ground.is_alive() && ground.wb_gnd_operating_mode() != 0) return;
+    if (MavlinkSettingsModel::is_air_or_cam_param_busy() ||
+        MavlinkSettingsModel::instanceGround().is_x_busy()) return;
+    const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count();
+    if (now < m_next_auto_fetch_ms.load()) return;
+    try_refetch_all_parameters_async(false);
+}
+
 void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
 {
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
@@ -147,11 +160,16 @@ void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
         }
         return;
     }
+    m_next_auto_fetch_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count() + 30000;
     m_is_currently_busy=true;
     set_ui_is_busy(true);
     set_curr_get_all_progress_perc(0);
     refresh_metadata_async();
     auto cb=[this,log_result](XParam::GetAllParamResult result){
+        // Leave a quiet interval after completion, including a long timeout.
+        m_next_auto_fetch_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()).count() + 30000;
         if(result.success){
             const auto param_set=result.param_set;
             remove_and_replace_param_set(param_set);
