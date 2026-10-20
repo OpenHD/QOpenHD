@@ -30,7 +30,7 @@ jobs:
           echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV    
              
       - name: Checkout repository and submodules
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: Building QOpenHD in CHROOT
@@ -58,7 +58,7 @@ jobs:
         run: echo "artifact_name=QOpenHD-${{ env.DT }}" >> $GITHUB_ENV
         
       - name: Upload to Github
-        uses: 'actions/upload-artifact@v4'
+        uses: 'actions/upload-artifact@v7'
         with:
           name: "QOpenHD-${{ env.DT }}"
           path: |
