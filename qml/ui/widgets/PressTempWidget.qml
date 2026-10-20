@@ -14,7 +14,13 @@ BaseWidget {
     visible: settings.show_press_temp && settings.show_widgets
 
     widgetIdentifier: "press_temp_widget"
-    bw_verbose_name: qsTr("PREASSURE SENSOR TEMP")
+    bw_verbose_name: qsTr("PRESSURE SENSOR TEMP")
+
+    readonly property int selectedTemperature: settings.press_temp_source === 1
+        ? _fcMavlinkSystem.preasure_sensor2_temperature_degree
+        : settings.press_temp_source === 2
+          ? _fcMavlinkSystem.preasure_sensor3_temperature_degree
+          : _fcMavlinkSystem.preasure_sensor_temperature_degree
 
     defaultAlignment: 1
     defaultXOffset: 140
@@ -32,6 +38,31 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements{
             id: idBaseWidgetDefaultUiControlElements
+            Item {
+                width: parent.width
+                height: 64
+                Text {
+                    text: qsTr("Temperature source")
+                    font.family: settings.font_text
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                }
+                ComboBox {
+                    id: temperatureSource
+                    font.family: settings.font_text
+                    objectName: "pressureTemperatureSource"
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    height: 36
+                    model: [qsTr("Barometer 1"), qsTr("Barometer 2"), qsTr("Barometer 3")]
+                    currentIndex: settings.press_temp_source >= 0 && settings.press_temp_source <= 2
+                        ? settings.press_temp_source : 0
+                    onActivated: settings.press_temp_source = currentIndex
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -145,8 +176,9 @@ BaseWidget {
 
         Text {
             id: temp_glyph
-            color: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            text: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
+            objectName: "pressureTemperatureGlyph"
+            color: pressTempWidget.selectedTemperature >= settings.press_temp_caution ? (pressTempWidget.selectedTemperature >= settings.press_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            text: pressTempWidget.selectedTemperature >= settings.press_temp_caution ? (pressTempWidget.selectedTemperature >= settings.press_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             font.family: "Font Awesome 5 Free"
@@ -161,11 +193,12 @@ BaseWidget {
 
         Text {
             id: press_temp
+            objectName: "pressureTemperatureValue"
             color: {
-                if (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn) {
+                if (pressTempWidget.selectedTemperature >= settings.press_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_fcMavlinkSystem.preasure_sensor_temperature_degree > settings.press_temp_caution) {
+                } else if (pressTempWidget.selectedTemperature > settings.press_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.press_temp_declutter == true
@@ -177,7 +210,7 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            text: _fcMavlinkSystem.preasure_sensor_temperature_degree == 0 ? qsTr("N/A") : _fcMavlinkSystem.preasure_sensor_temperature_degree + "°"
+            text: pressTempWidget.selectedTemperature == 0 ? qsTr("N/A") : pressTempWidget.selectedTemperature + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

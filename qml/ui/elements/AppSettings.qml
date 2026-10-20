@@ -240,6 +240,8 @@ Settings {
     property double imu_temp_caution: 65
 
     property bool show_press_temp: false
+    // 0/1/2 select SCALED_PRESSURE / SCALED_PRESSURE2 / SCALED_PRESSURE3.
+    property int press_temp_source: 0
     property bool press_temp_declutter: false
     property double press_temp_warn: 75
     property double press_temp_caution: 60
