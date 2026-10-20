@@ -15,7 +15,11 @@ permissions:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [rock-bullseye-arm64, rock-bookworm-arm64]
     uses: ./.github/workflows/cross_package.yml
     with:
-      target: rock-bookworm-arm64
+      target: ${{ matrix.target }}
     secrets: inherit

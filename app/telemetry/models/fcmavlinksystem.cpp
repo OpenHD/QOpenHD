@@ -950,7 +950,7 @@ void FCMavlinkSystem::record_diagnostic_message(const mavlink_message_t& msg)
     // Bound the inspector even if a device sends arbitrary message IDs.
     if (!m_diagnostic_messages.contains(msg.msgid) && m_diagnostic_messages.size() >= 128)
         return;
-    const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    const qint64 now = static_cast<qint64>(QOpenHDMavlinkHelper::getTimeMilliseconds());
     auto& entry = m_diagnostic_messages[msg.msgid];
     ++entry.count;
     entry.received_ms = now;
@@ -1085,7 +1085,7 @@ void FCMavlinkSystem::record_diagnostic_message(const mavlink_message_t& msg)
 
 void FCMavlinkSystem::refresh_diagnostics(bool update_rates)
 {
-    const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    const qint64 now = static_cast<qint64>(QOpenHDMavlinkHelper::getTimeMilliseconds());
     const auto elapsed = m_diagnostic_refresh_ms > 0 ? now - m_diagnostic_refresh_ms : 1000;
     QVariantList messages;
     quint64 total = 0;
@@ -1164,7 +1164,7 @@ void FCMavlinkSystem::refresh_diagnostics(bool update_rates)
 
 void FCMavlinkSystem::update_alive()
 {
-    const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    const qint64 now = static_cast<qint64>(QOpenHDMavlinkHelper::getTimeMilliseconds());
     set_telemetry_active(m_last_message_ms >= 0 &&
                         now - m_last_message_ms.load() < 4000);
     // Silence ages readings; it does not change the craft or its capabilities.
@@ -1247,7 +1247,7 @@ bool FCMavlinkSystem::observe_remote_id(const mavlink_message_t& msg)
         for(int i=0;i<20;++i) if(id[i]!=0) return true;
         return false;
     };
-    const auto now=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    const qint64 now=static_cast<qint64>(QOpenHDMavlinkHelper::getTimeMilliseconds());
     switch(msg.msgid) {
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_BASIC_ID: {
         mavlink_open_drone_id_basic_id_t v{};mavlink_msg_open_drone_id_basic_id_decode(&msg,&v);

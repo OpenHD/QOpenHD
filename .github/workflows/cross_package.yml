@@ -79,6 +79,7 @@ jobs:
             pi-bullseye-armhf) distro=raspbian; release=bullseye ;;
             pi-bookworm-arm64) distro=raspbian; release=bookworm ;;
             rock-bookworm-arm64) distro=debian; release=bookworm ;;
+            rock-bullseye-arm64) distro=debian; release=bullseye ;;
             *) exit 2 ;;
           esac
           for package in ./*.deb; do

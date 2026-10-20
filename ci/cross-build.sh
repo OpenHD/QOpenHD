@@ -4,7 +4,7 @@
 set -euo pipefail
 
 source_dir=$(cd "$(dirname "$0")/.." && pwd)
-target=${1:?Specify pi-bullseye-armhf, pi-bookworm-arm64, or rock-bookworm-arm64}
+target=${1:?Specify pi-bullseye-armhf, pi-bookworm-arm64, rock-bullseye-arm64, or rock-bookworm-arm64}
 work=${QOPENHD_CROSS_WORK:-"$source_dir/.cross-build"}
 jobs=${BUILD_JOBS:-$(nproc)}
 qt_version=5.15.4
@@ -14,6 +14,12 @@ case "$target" in
     bootlin_arch=armv7-eabihf; compiler=arm-buildroot-linux-gnueabihf
     qt_prefix=/opt/Qt5.15.4
     qt_deps=openhd-qt
+    ;;
+  rock-bullseye-arm64)
+    arch=arm64; triplet=aarch64-linux-gnu; release=bullseye; distro=debian
+    bootlin_arch=aarch64; compiler=aarch64-buildroot-linux-gnu
+    qt_prefix=/usr
+    qt_deps=qtbase5-dev,qtbase5-private-dev,qtdeclarative5-dev,qttools5-dev,qttools5-dev-tools,qtmultimedia5-dev,qtpositioning5-dev,libqt5charts5-dev,libqt5texttospeech5-dev,libqt5opengl5-dev,libstdc++-10-dev
     ;;
   pi-bookworm-arm64|rock-bookworm-arm64)
     arch=arm64; triplet=aarch64-linux-gnu; release=bookworm
@@ -65,15 +71,21 @@ deb https://dl.cloudsmith.io/public/openhd/release/deb/raspbian bullseye main
 EOF
   else
     # Ubuntu 22.04's archive keyring predates Bookworm's signing keys.
-    download https://ftp-master.debian.org/keys/archive-key-12.asc "$keys/debian.asc"
-    download https://ftp-master.debian.org/keys/archive-key-12-security.asc "$keys/debian-security.asc"
+    debian_key_version=12
+    [[ "$release" == bullseye ]] && debian_key_version=11
+    download https://ftp-master.debian.org/keys/archive-key-$debian_key_version.asc "$keys/debian.asc"
+    download https://ftp-master.debian.org/keys/archive-key-$debian_key_version-security.asc "$keys/debian-security.asc"
     cat "$keys/debian.asc" "$keys/debian-security.asc" | \
       gpg --batch --yes --dearmor -o "$keys/debian.gpg"
     cat > "$sources" <<EOF
-deb https://deb.debian.org/debian bookworm main
-deb https://deb.debian.org/debian bookworm-updates main
-deb https://security.debian.org/debian-security bookworm-security main
+deb https://deb.debian.org/debian $release main
+deb https://deb.debian.org/debian $release-updates main
+deb https://security.debian.org/debian-security $release-security main
 EOF
+    if [[ "$release" == bullseye ]]; then
+      # Bullseye updates/security suites have been retired; use its base archive.
+      sed -i '/bullseye-updates/d; /bullseye-security/d' "$sources"
+    fi
   fi
   deps="$qt_deps,libc6-dev,libavcodec-dev,libavformat-dev,libavutil-dev,libgstreamer1.0-dev,libgstreamer-plugins-base1.0-dev,libdrm-dev,libgles-dev,libegl-dev"
   # APT's sandbox user cannot traverse the runner's private workspace. Put
@@ -187,8 +199,10 @@ include(../common/linux_device_post.conf)
 EOF
   # Debian's Qt/FFmpeg dependencies require GCC 12 runtime symbols. Compile
   # with cross GCC, but resolve libstdc++ from the target, not Bootlin's GCC 10.
-  test -f "$sysroot/usr/lib/gcc/$triplet/12/libstdc++.so"
-  echo "QMAKE_LFLAGS += -L$sysroot/usr/lib/gcc/$triplet/12" >> "$spec/qmake.conf"
+  runtime_gcc=12
+  [[ "$release" == bullseye ]] && runtime_gcc=10
+  test -f "$sysroot/usr/lib/gcc/$triplet/$runtime_gcc/libstdc++.so"
+  echo "QMAKE_LFLAGS += -L$sysroot/usr/lib/gcc/$triplet/$runtime_gcc" >> "$spec/qmake.conf"
 fi
 cat >> "$spec/qmake.conf" <<'EOF'
 EGLFS_DEVICE_INTEGRATION = eglfs_kms
