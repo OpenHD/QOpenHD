@@ -2,6 +2,7 @@
 Q_LOGGING_CATEGORY(mavlinkRoutingLog, "qopenhd.mavlink.unhandled.routing", QtWarningMsg)
 
 #include "MavlinkTelemetry.h"
+#include "tutil/openhd_defines.hpp"
 #include "adsb/adsbvehiclemanager.h"
 
 #include "models/aohdsystem.h"
@@ -36,17 +37,17 @@ void MavlinkTelemetry::start()
         process_mavlink_message(msg, generation);
     };
     const auto udp_ip="0.0.0.0"; //"127.0.0.1"
-    m_udp_connection=std::make_unique<UDPConnection>(udp_ip,QOPENHD_GROUND_CLIENT_UDP_PORT_IN,cb_udp);
+    // OpenHD Ground sends to this client port; replies use the discovered sender.
+    m_udp_connection=std::make_unique<UDPConnection>(udp_ip,OHD_GROUND_CLIENT_UDP_PORT_OUT,cb_udp);
     m_udp_connection->start_looping();
     auto cb_tcp=[this, generation](mavlink_message_t msg){
         process_mavlink_message(msg, generation);
     };
     const std::string IP_OPENHD_WIFI_HOTSPOT="192.168.3.1";
     const std::string IP_OPENHD_ETHERNET_HOTSPOT="192.168.2.1";
-    const int PORT_OHD_MAVLINK_TCP_SERVER=5760;
-    m_tcp_connection_wifi_hs=std::make_unique<TCPConnection>(cb_tcp,IP_OPENHD_WIFI_HOTSPOT,PORT_OHD_MAVLINK_TCP_SERVER,1);
-    m_tcp_connection_eth_hs=std::make_unique<TCPConnection>(cb_tcp,IP_OPENHD_ETHERNET_HOTSPOT,PORT_OHD_MAVLINK_TCP_SERVER,2);
-    m_tcp_connection_custom=std::make_unique<TCPConnection>(cb_tcp,tcp_manual_ip.toStdString(),PORT_OHD_MAVLINK_TCP_SERVER,3);
+    m_tcp_connection_wifi_hs=std::make_unique<TCPConnection>(cb_tcp,IP_OPENHD_WIFI_HOTSPOT,OHD_GROUND_SERVER_TCP_PORT,1);
+    m_tcp_connection_eth_hs=std::make_unique<TCPConnection>(cb_tcp,IP_OPENHD_ETHERNET_HOTSPOT,OHD_GROUND_SERVER_TCP_PORT,2);
+    m_tcp_connection_custom=std::make_unique<TCPConnection>(cb_tcp,tcp_manual_ip.toStdString(),OHD_GROUND_SERVER_TCP_PORT,3);
     m_heartbeat_thread_run=true;
     m_heartbeat_thread=std::make_unique<std::thread>(&MavlinkTelemetry::send_heartbeat_loop,this);
 }
@@ -474,7 +475,7 @@ void MavlinkTelemetry::perform_connection_management()
         m_tcp_connection_eth_hs->stop_looping_if();
         m_udp_connection->stop_looping_if();
         const std::string user_ip=threadsafe_get_manual_tcp_ip();
-        const int user_port=5760;
+        const int user_port=OHD_GROUND_SERVER_TCP_PORT;
         if(m_tcp_connection_custom->m_remote_ip!=user_ip || m_tcp_connection_custom->m_remote_port!=user_port){
             m_tcp_connection_custom->stop_looping_if();
             m_tcp_connection_custom->set_remote(user_ip,user_port);

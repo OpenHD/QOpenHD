@@ -72,10 +72,6 @@ public:
     L_RO_PROP(QString,telemetry_connection_status,set_telemetry_connection_status,"N/A");
 
 private:
-    // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
-    // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
-    static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
-    static constexpr auto QOPENHD_OPENHD_GROUND_TCP_SERVER_PORT=5760;
     // Called every time we get a mavlink message (from any system).
     void process_mavlink_message(const mavlink_message_t& msg, uint64_t generation);
     void publish_connection_status(QString status);

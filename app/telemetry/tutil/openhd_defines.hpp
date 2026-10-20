@@ -11,6 +11,8 @@ static_assert(OHD_SYS_ID_GROUND != OHD_SYS_ID_AIR);
 // other
 static constexpr auto OHD_GROUND_SERVER_TCP_PORT=5760;
 
+// UDP directions are from OpenHD Ground: OUT is the QOpenHD listen port,
+// IN is the port for clients sending to Ground.
 static constexpr auto OHD_GROUND_CLIENT_UDP_PORT_OUT = 14550;
 static constexpr auto OHD_GROUND_CLIENT_UDP_PORT_IN = 14551;
 

@@ -169,16 +169,6 @@ bool UDPConnection::setup_socket()
     }*/
     if (bind(m_socket_fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0) {
         qDebug()<<"Cannot bind port "<<strerror(errno);
-        // TODO finalize merge
-/*if (errno==98){ //port already bound error code
-if(_local_port==14550){
-    _local_port=14551;
-} else if (_local_port == 14551){
-    _local_port= 14550;
-} else {
-    _local_port= m_local_port; //finally back to whatever is set if its not 14550 or 14551.. unlikely
-}
-}*/
 #ifdef _WIN32
         closesocket(m_socket_fd);
         WSACleanup();
