@@ -30,6 +30,9 @@ public:
     // @param system_id: 0 for ground, 1 for air, 2 for FC
     Q_INVOKABLE bool send_command_reboot_air(bool reboot);
     Q_INVOKABLE bool send_command_reboot_gnd(bool reboot);
+    // Returns accepted, unconfirmed, denied, or queue_full. Silence during a
+    // power transition does not prove that the command failed.
+    Q_INVOKABLE QString request_power_action(bool ground, bool reboot);
     // Starts formatting storage 1 (the air unit's RECORDINGS SD card).
     // Completion is reported by formatAirSdCardStatusChanged.
     Q_INVOKABLE bool send_command_format_air_sd_card();

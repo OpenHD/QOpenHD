@@ -11,10 +11,6 @@ GridLayout {
     columns: Math.max(1, Math.min(onlineCount, responsiveColumns))
     columnSpacing: width < 800 ? 8 : 14
     rowSpacing: columnSpacing
-    implicitHeight: onlineCount > 0
-                    ? Math.ceil(onlineCount / columns) * 319
-                      + (Math.ceil(onlineCount / columns) - 1) * rowSpacing
-                    : 120
 
     function actionButtons() {
         return groundCard.actionButtons().concat(airCard.actionButtons()).concat(fcCard.actionButtons())
@@ -25,6 +21,7 @@ GridLayout {
         visible: alive
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
+        Layout.alignment: Qt.AlignTop
         title: qsTr("Ground station")
         iconText: "\uf519"
         iconColor: "#43a1ff"
@@ -37,6 +34,7 @@ GridLayout {
         visible: alive
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
+        Layout.alignment: Qt.AlignTop
         title: qsTr("Air unit")
         iconText: "\uf1d8"
         iconColor: "#6fb2ff"
@@ -51,6 +49,7 @@ GridLayout {
         visible: alive || _fcMavlinkSystem.for_osd_sys_id >= 0
         Layout.fillWidth: true
         Layout.preferredHeight: implicitHeight
+        Layout.alignment: Qt.AlignTop
         title: qsTr("Flight controller")
         iconText: "\uf2db"
         alive: _fcMavlinkSystem.telemetry_active

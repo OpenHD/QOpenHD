@@ -13,7 +13,6 @@ Column {
     // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
     //anchors.fill: parent
     width: parent.width
-    height: parent.height
     spacing: 1
 
     property bool m_is_ground: false
@@ -32,7 +31,6 @@ Column {
                 && _airCameraSettingsModel.param_int_exists("HIGH_ENCRYPTION")
                 && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
     }
-    readonly property bool hotspotActive: m_is_alive && m_model.wifi_hotspot_state === 2
     readonly property int temperature: m_model.curr_soc_temp_degree
     readonly property int cpuLoad: m_model.curr_cpuload_perc
     // Legacy core telemetry defaults to zero until a sample arrives.
@@ -144,14 +142,13 @@ Column {
     Item {
         width: parent.width
         height: visible ? 29 : 0
-        visible: body.videoEncrypted || body.hotspotActive
+        visible: body.videoEncrypted
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 10; anchors.rightMargin: 10
             spacing: 5
             Repeater {
-                model: [ { label: qsTr("Video encrypted"), active: body.videoEncrypted },
-                         { label: qsTr("WiFi hotspot"), active: body.hotspotActive } ]
+                model: [ { label: qsTr("Video encrypted"), active: body.videoEncrypted } ]
                 Rectangle {
                     visible: modelData.active
                     Layout.fillWidth: true
@@ -319,9 +316,4 @@ Column {
         m_right_text: qsTr("Community")
     }
 
-    // Padding
-    Item{
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-    }
 }

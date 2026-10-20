@@ -366,6 +366,8 @@ MavlinkTelemetry::FCMavId MavlinkTelemetry::get_fc_mav_id()
 void MavlinkTelemetry::re_apply_rates()
 {
     FCMsgIntervalHandler::instance().restart();
+    // A manual retry must also start when the FC is currently silent.
+    FCMsgIntervalHandler::instance().opt_send_messages();
 }
 
 void MavlinkTelemetry::change_telemetry_connection_mode(int mavlink_connection_mode)

@@ -8,7 +8,6 @@ import Qt.labs.settings 1.0
 
 Column {
     width: parent.width
-    height: parent.height
     spacing: 1
 
     property bool m_is_alive: _fcMavlinkSystem.is_alive
@@ -48,10 +47,5 @@ Column {
         m_left_text: qsTr("Flight mode:")
         m_right_text: heartbeatFresh && _fcMavlinkSystem.flight_mode !== "------"
                       ? _fcMavlinkSystem.flight_mode : qsTr("Unknown")
-    }
-    // Padding
-    Item{
-        Layout.fillWidth: true
-        Layout.fillHeight: true
     }
 }

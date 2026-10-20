@@ -142,41 +142,35 @@ Card {
 
 
             onPressed: {
-                var result=false
-                var messageForHUD="ERROR"
-                if (powerAction === PowerActionDialoque.PowerAction.RebootGround) {
-                    messageForHUD="Rebooting ground station"
-                    result = _ohdAction.send_command_reboot_gnd(true)
+                var isGround = powerAction === PowerActionDialoque.PowerAction.RebootGround
+                        || powerAction === PowerActionDialoque.PowerAction.ShutdownGround
+                var isAir = powerAction === PowerActionDialoque.PowerAction.RebootAir
+                        || powerAction === PowerActionDialoque.PowerAction.ShutdownAir
+                var reboot = powerAction === PowerActionDialoque.PowerAction.RebootGround
+                        || powerAction === PowerActionDialoque.PowerAction.RebootAir
+                        || powerAction === PowerActionDialoque.PowerAction.RebootFC
+                var result
+                if (isGround || isAir) {
+                    result = _ohdAction.request_power_action(isGround, reboot)
+                } else {
+                    result = _fcMavlinkAction.send_command_reboot(reboot) ? "accepted" : "unconfirmed"
                 }
-                if (powerAction === PowerActionDialoque.PowerAction.ShutdownGround) {
-                    messageForHUD="Shutting down ground station"
-                    result =  _ohdAction.send_command_reboot_gnd(false);
-                }
-                if (powerAction === PowerActionDialoque.PowerAction.RebootAir) {
-                    messageForHUD="Rebooting air pi"
-                    result =  _ohdAction.send_command_reboot_air(true);
-                }
-                if (powerAction === PowerActionDialoque.PowerAction.ShutdownAir) {
-                    messageForHUD="Shutting down air pi"
-                    result =  _ohdAction.send_command_reboot_air(false);
-                }
-                if (powerAction === PowerActionDialoque.PowerAction.ShutdownFC) { //button commented out
-                    messageForHUD="Shutting down Flight Controller"
-                    result = _fcMavlinkAction.send_command_reboot(false);
-                }
-                if (powerAction === PowerActionDialoque.PowerAction.RebootFC) {
-                    messageForHUD="Rebooting Flight Controller"
-                   result =  _fcMavlinkAction.send_command_reboot(true);
-                }
-                if(result){
-                    settings_panel.close_all();
+                if (result === "accepted" || result === "unconfirmed") {
+                    settings_panel.close_all()
                     powerDialog.visible = false
-                    _qopenhd.show_toast(messageForHUD);
-                }else{
-                    console.log("Reboot/Shutdown failed, no response.")
-                    messageForHUD="Reboot/Shutdown failed, no response"
-                    _qopenhd.show_toast(messageForHUD);
                 }
+                var message
+                if (result === "accepted") {
+                    message = reboot ? qsTr("Reboot request accepted") : qsTr("Shutdown request accepted")
+                } else if (result === "unconfirmed") {
+                    message = reboot ? qsTr("No confirmation received; the unit may already be rebooting")
+                                     : qsTr("No confirmation received; the unit may already be shutting down")
+                } else if (result === "denied") {
+                    message = qsTr("Reboot/Shutdown request rejected by the unit")
+                } else {
+                    message = qsTr("Could not queue Reboot/Shutdown request; please try again")
+                }
+                _qopenhd.show_toast(message)
             }
         }
     }

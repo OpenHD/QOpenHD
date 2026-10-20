@@ -27,16 +27,26 @@ OHDAction& OHDAction::instance()
 
 bool OHDAction::send_command_reboot_air(bool reboot)
 {
-    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_AIR,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
-    const auto res=CmdSender::instance().send_command_long_blocking(command);
-    return res==CmdSender::Result::CMD_SUCCESS;
+    return request_power_action(false, reboot) == "accepted";
 }
 
 bool OHDAction::send_command_reboot_gnd(bool reboot)
 {
-    auto command=cmd::helper::create_cmd_reboot(OHD_SYS_ID_GROUND,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
+    return request_power_action(true, reboot) == "accepted";
+}
+
+QString OHDAction::request_power_action(bool ground, bool reboot)
+{
+    const auto system = ground ? OHD_SYS_ID_GROUND : OHD_SYS_ID_AIR;
+    const auto command=cmd::helper::create_cmd_reboot(system,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
     const auto res=CmdSender::instance().send_command_long_blocking(command);
-    return res==CmdSender::Result::CMD_SUCCESS;
+    switch (res) {
+    case CmdSender::CMD_SUCCESS: return "accepted";
+    case CmdSender::NO_RESPONSE: return "unconfirmed";
+    case CmdSender::CMD_DENIED: return "denied";
+    case CmdSender::QUEUE_FULL: return "queue_full";
+    }
+    return "unconfirmed";
 }
 
 bool OHDAction::send_command_format_air_sd_card()

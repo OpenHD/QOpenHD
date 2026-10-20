@@ -16,6 +16,7 @@ Item {
         property color primaryText: "#eef4ff"
         property color secondaryText: "#96a8bf"
         property color goodColor: "#65d99b"
+        property color errorColor: "#ff6060"
         property color lineColor: "#304057"
     }
     QtObject {
@@ -23,12 +24,51 @@ Item {
         function syncFocus(item) {}
         function moveFocus(step) {}
     }
+    QtObject { id: settings; property bool set_mavlink_message_rates: true }
+    QtObject {
+        id: _mavlinkTelemetry
+        property int rateRequests: 0
+        function re_apply_rates() { rateRequests++ }
+    }
+    QtObject {
+        id: _qopenhd
+        property string toast: ""
+        function show_toast(message) { toast = message }
+    }
+    QtObject { id: _ohdSystemAir; property int wifi_hotspot_state: 0 }
+    QtObject { id: _ohdSystemGround; property int wifi_hotspot_state: 0 }
+    QtObject {
+        id: _ohdSystemAirSettingsModel
+        property bool has_params_fetched: true
+        property int requestedHotspot: -1
+        function param_int_exists(id) { return id === "WIFI_HOTSPOT_E" }
+        function try_set_param_int_async(id, value, log) { requestedHotspot = value }
+    }
+    property var _ohdSystemGroundSettings: _ohdSystemAirSettingsModel
     Component {
         id: craftCard
         Status.StatusCard {
             width: 300; height: 319
             title: "Flight controller"; systemType: 2; alive: true; actionsAvailable: false
-            bodyComponent: Component { Item {} }
+            bodyComponent: Component { Item { implicitHeight: 204 } }
+        }
+    }
+    Component {
+        id: compactStatusBody
+        Column {
+            objectName: "compactStatusBody"
+            width: parent.width
+            spacing: 1
+            property int rowCount: 4
+            property bool extraBadge: false
+            Item { width: parent.width; height: 29; visible: parent.extraBadge }
+            Repeater {
+                model: parent.rowCount
+                Status.StatusCardRow {
+                    m_left_text: ["Platform:", "Version:", "Link:", "System health:", "Shared:"][index]
+                    m_right_text: ["RPI 4", "3.0.0-evo", "Devourer RTL8822C", "51 ?C ? 1% CPU", "1x"][index]
+                }
+            }
         }
     }
     SignalSpy { id: cardSpy; signalName: "detailsRequested" }
@@ -160,6 +200,104 @@ Item {
             verify(findChild(panel, "craftBatteryCapacityCard") === null)
             mock.telemetry_active = true
             mock.craft_diagnostics = savedDiagnostics
+        }
+        function test_card_fits_body() {
+            var card = createTemporaryObject(craftCard, scene, {systemType: 1, title: "Air unit", actionsAvailable: true,
+                bodyComponent: compactStatusBody, z: 10})
+            card.height = Qt.binding(function() { return card.implicitHeight })
+            var body = findChild(card, "compactStatusBody")
+            var strip = findChild(card, "airUtilityStrip")
+            var power = card.actionButtons()[3]
+            tryCompare(body, "height", 139)
+            compare(strip.y, body.mapToItem(card, 0, body.height).y + 8)
+            compare(card.height, power.mapToItem(card, 0, power.height).y + 16)
+            captureCompactCard(card, "air")
+            var airHeight = card.height
+            body.extraBadge = true
+            tryCompare(card, "height", airHeight + 30)
+            body.extraBadge = false
+            card.systemType = 0
+            card.title = "Ground station"
+            body.rowCount = 5
+            tryCompare(body, "height", 174)
+            compare(strip.y, body.mapToItem(card, 0, body.height).y + 8)
+            compare(power.mapToItem(card, 0, 0).y, strip.y + strip.height + 8)
+            compare(card.height, power.mapToItem(card, 0, power.height).y + 16)
+            captureCompactCard(card, "ground")
+        }
+        function captureCompactCard(card, name) {
+            waitForRendering(card)
+            var path = decodeURIComponent(Qt.resolvedUrl("../../build/compact-" + name + ".png").toString())
+                    .replace("file:///", Qt.platform.os === "windows" ? "" : "/")
+            var captured = {done: false}
+            if (card.grabToImage(function(result) { result.saveToFile(path); captured.done = true }))
+                tryVerify(function() { return captured.done })
+        }
+        function test_air_utility_actions() {
+            var card = createTemporaryObject(craftCard, scene, {systemType: 1, title: "Air unit", actionsAvailable: true, height: 362, z: 10})
+            var rates = findChild(card, "setLinkRatesButton")
+            var hotspot = findChild(card, "wifiHotspotButton")
+            waitForRendering(card)
+            verify(rates.visible)
+            verify(rates.enabled, "Air availability must allow requests without FC telemetry")
+            verify(!findChild(card, "craftDetailsButton").visible)
+            var controls = card.actionButtons()
+            var power = controls[3]
+            verify(power.visible)
+            compare(power.mapToItem(card, 0, 0).y - rates.mapToItem(card, 0, 0).y, 46)
+            var before = _mavlinkTelemetry.rateRequests
+            mouseClick(rates)
+            compare(_mavlinkTelemetry.rateRequests, before + 1)
+            rates.forceActiveFocus()
+            keyClick(Qt.Key_Return)
+            compare(_mavlinkTelemetry.rateRequests, before + 2)
+            settings.set_mavlink_message_rates = false
+            mouseClick(rates)
+            compare(_mavlinkTelemetry.rateRequests, before + 2)
+            verify(_qopenhd.toast.indexOf("Enable") >= 0)
+            settings.set_mavlink_message_rates = true
+            var hotspotState = findChild(card, "hotspotStateText")
+            compare(hotspotState.text, "Inactive")
+            verify(!hotspot.hotspotActive)
+            mouseClick(hotspot)
+            compare(_ohdSystemAirSettingsModel.requestedHotspot, 2)
+            verify(!hotspot.hotspotActive, "Show reported state until the unit actually activates its hotspot")
+            _ohdSystemAir.wifi_hotspot_state = 2
+            verify(hotspot.hotspotActive)
+            compare(hotspotState.text, "Active")
+            mouseClick(hotspot)
+            compare(_ohdSystemAirSettingsModel.requestedHotspot, 1)
+            _ohdSystemAir.wifi_hotspot_state = 0
+            card.width = 220
+            waitForRendering(card)
+            verify(rates.width > 0 && hotspot.width > 0)
+            verify(Math.abs(rates.width - hotspot.width) <= 1, "Both halves of the strip must remain usable at narrow widths")
+            var capture = grabImage(card)
+            var capturePath = decodeURIComponent(Qt.resolvedUrl("../../build/air-status-actions.png").toString())
+                    .replace("file:///", Qt.platform.os === "windows" ? "" : "/")
+            if (capture.width > 0) capture.save(capturePath)
+            else {
+                var captured = {done: false}
+                if (card.grabToImage(function(result) { result.saveToFile(capturePath); captured.done = true }))
+                    tryVerify(function() { return captured.done })
+            }
+            card.alive = false
+            verify(!rates.enabled)
+            card.systemType = 0
+            card.alive = true
+            verify(!rates.visible && hotspot.visible)
+            verify(hotspot.enabled)
+            compare(hotspotState.text, "Inactive")
+            mouseClick(hotspot)
+            compare(_ohdSystemGroundSettings.requestedHotspot, 2)
+            _ohdSystemGround.wifi_hotspot_state = 2
+            compare(hotspotState.text, "Active")
+            _ohdSystemGround.wifi_hotspot_state = 0
+            waitForRendering(card)
+            var strip = findChild(card, "airUtilityStrip")
+            compare(hotspot.width, strip.width, "Ground hotspot control must fill the strip and center its contents")
+            card.systemType = 2
+            verify(!rates.visible && !hotspot.visible)
         }
         function test_card_click_and_keyboard() {
             var card = createTemporaryObject(craftCard, scene, {z: 10})
