@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -108,7 +108,7 @@ jobs:
         run: ccache -s
 
       - name: Upload AAB artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.ARTIFACT }}
           path: ${{ runner.temp }}/shadow_build_dir/android-build/build/outputs/bundle/release/*.aab

@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: Install native host dependencies
@@ -32,14 +32,14 @@ jobs:
           sudo gem install fpm --version 1.16.0 --no-document
       - name: Cache native Qt tools shared by ARM targets
         id: host-qt-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             .cross-build/qt-host-*
             .cross-build/*.tar.xz
           key: qopenhd-qt-host-v2-${{ runner.os }}-5.15.4-static-tools
       - name: Cache target compiler and sysroot
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             .cross-build/gcc-*
@@ -52,14 +52,14 @@ jobs:
         run: bash ci/cross-build.sh "$CROSS_TARGET"
       - name: Keep completed host tools even if a target build fails
         if: always() && steps.host-qt-cache.outputs.cache-hit != 'true' && hashFiles('.cross-build/qt-host-*/.complete') != ''
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             .cross-build/qt-host-*
             .cross-build/*.tar.xz
           key: ${{ steps.host-qt-cache.outputs.cache-primary-key }}
       - name: Upload packages and ELF inspection
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: QOpenHD-${{ inputs.target }}
           path: |

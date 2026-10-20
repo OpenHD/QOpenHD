@@ -27,10 +27,10 @@ jobs:
   openssl:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Cache Windows TLS runtime
         id: openssl-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: windows-openssl
           key: win32-openssl-${{ runner.os }}-${{ hashFiles('ci/build-windows-openssl.sh') }}
@@ -40,7 +40,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends gcc-mingw-w64-i686-posix
           bash ci/build-windows-openssl.sh windows-openssl
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: windows-openssl
           path: windows-openssl/
@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Checkout repository and submodules
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -75,7 +75,7 @@ jobs:
         run: choco install nsis -y --no-progress
 
       - name: Download Windows TLS runtime
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: windows-openssl
           path: build-libs-windows/openssl
@@ -197,7 +197,7 @@ jobs:
             $script
 
       - name: Upload installer artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: QOpenHD-Windows-Installer
           path: build/QOpenHD-Windows-Installer.exe
