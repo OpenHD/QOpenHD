@@ -50,6 +50,17 @@ jobs:
         env:
           CROSS_TARGET: ${{ inputs.target }}
         run: bash ci/cross-build.sh "$CROSS_TARGET"
+      - name: Verify runtime package dependencies
+        run: |
+          python3 ci/test_package_dependencies.py
+          for package in ./*.deb; do
+            dependencies=$(dpkg-deb -f "$package" Depends)
+            echo "$package: $dependencies"
+            if printf '%s\n' "$dependencies" | grep -Eq '(^|[ ,])[^ ,]*(-dev|qmake)[^ ,]*'; then
+              echo "Runtime package unexpectedly depends on development headers or tools" >&2
+              exit 1
+            fi
+          done
       - name: Keep completed host tools even if a target build fails
         if: always() && steps.host-qt-cache.outputs.cache-hit != 'true' && hashFiles('.cross-build/qt-host-*/.complete') != ''
         uses: actions/cache/save@v6
