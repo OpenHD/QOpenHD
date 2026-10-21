@@ -207,14 +207,18 @@ AdvancedPage {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Microphone gain"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Slider {
-                                    id: gainSlider; Layout.preferredWidth: Math.min(360, root.width * 0.4); from: 0; to: 200; stepSize: 1
+                                    id: gainSlider; Layout.preferredWidth: Math.min(360, root.width * 0.4); from: 0; to: 1000; stepSize: 1
                                     value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("AUDIO_GAIN") ? _ohdSystemAirSettingsModel.get_cached_int("AUDIO_GAIN") : 100 }
                                     enabled: root.audioAvailable && audioMode.currentIndex === 0 &&
                                              _ohdSystemAirSettingsModel.param_int_exists("AUDIO_GAIN")
                                     onMoved: gainValue.text = Math.round(value) + "%"
                                     onPressedChanged: if (!pressed) root.setAirInt("AUDIO_GAIN", Math.round(value))
                                 }
-                                Label { id: gainValue; text: Math.round(gainSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
+                                Label { id: gainValue; text: Math.round(gainSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 64 }
+                            }
+                            Label {
+                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
+                                text: qsTr("Boost quiet microphones up to 1000% (+20 dB). Start at 200–400% and reduce the gain if sound becomes noisy or distorted.")
                             }
                             Loader {
                                 Layout.fillWidth: true
