@@ -943,7 +943,7 @@ inline constexpr CameraUiEntry kManufacturer_X21_IMX662_Cameras[] = {
 inline constexpr ManufacturerEntry kManufacturer_X21_IMX662 = {"IMX662 CSI", kManufacturer_X21_IMX662_Cameras, sizeof(kManufacturer_X21_IMX662_Cameras) / sizeof(kManufacturer_X21_IMX662_Cameras[0])};
 
 inline constexpr CameraUiEntry kManufacturer_X21_ARDUCAM_Cameras[] = {
-  {X_CAM_TYPE_X21_ARDUCAM_PIVARIETY, "Pivariety (detected)"},
+  {X_CAM_TYPE_X21_ARDUCAM_PIVARIETY, "arducam_openhd cam (detected)"},
   {X_CAM_TYPE_X21_ARDUCAM_IMX462, "IMX462"},
   {X_CAM_TYPE_X21_ARDUCAM_IMX519, "IMX519"},
   {X_CAM_TYPE_X21_ARDUCAM_IMX708, "IMX708"},
