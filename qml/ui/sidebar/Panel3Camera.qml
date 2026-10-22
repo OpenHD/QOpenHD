@@ -18,6 +18,22 @@ SideBarBasePanel{
     property bool arducam_camera: _cameraStreamModelPrimary.camera_type === 152 ||
         (cameraParamUpdates >= 0 && _airCameraSettingsModel.param_int_exists("ISP_EXPOSURE_US"))
     property bool gx_camera: _cameraStreamModelPrimary.camera_type === 64
+    property bool manualExposure: cameraParamUpdates >= 0 &&
+        (!_airCameraSettingsModel.param_int_exists("ISP_AE_MODE") ||
+         _airCameraSettingsModel.get_cached_int("ISP_AE_MODE") !== 0)
+    property bool manualWhiteBalance: cameraParamUpdates >= 0 &&
+        _airCameraSettingsModel.param_int_exists("ISP_WB_AUTO") &&
+        _airCameraSettingsModel.get_cached_int("ISP_WB_AUTO") === 0
+    function focusIsp(index, direction) {
+        for (var i = index; i >= 0 && i < ispControls.count; i += direction) {
+            var control = ispControls.itemAt(i);
+            if (control && control.visible) {
+                control.takeover_control();
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Opening camera controls must request missing parameters even when the
     // radio-uplink status used by background autofetch is unavailable.
@@ -67,8 +83,21 @@ SideBarBasePanel{
             font.bold: true
             leftPadding: 6
         }
+        Label {
+            visible: cameraPanel.arducam_camera
+            width: parent.width - 12
+            leftPadding: 6
+            wrapMode: Text.WordWrap
+            color: "white"
+            font.pixelSize: 12
+            text: cameraPanel.manualExposure ?
+                qsTr("Exposure mode changes may briefly pause video. Other adjustments apply live.") :
+                qsTr("Auto adjusts shutter and gain. Select Manual to set them. Turn off auto white balance to set color temperature.")
+        }
         Repeater {
             id: ispControls
+            // Keep delegates alive when AE/AWB changes: ChoiceSelector returns
+            // focus to the row that opened it after saving a selection.
             model: cameraPanel.arducam_camera ? [
                 ["Exposure mode", "ISP_AE_MODE"],
                 ["Exposure (us)", "ISP_EXPOSURE_US"],
@@ -78,16 +107,16 @@ SideBarBasePanel{
                 ["Gamma (%)", "ISP_GAMMA"]
             ] : []
             delegate: MavlinkChoiceElement2 {
+                visible: (m_param_id !== "ISP_EXPOSURE_US" && m_param_id !== "ISP_GAIN" || cameraPanel.manualExposure) &&
+                         (m_param_id !== "ISP_WB_K" || cameraPanel.manualWhiteBalance)
                 m_title: modelData[0]
                 m_param_id: modelData[1]
                 m_settings_model: _airCameraSettingsModel
                 onGoto_previous: {
-                    if(index>0) ispControls.itemAt(index-1).takeover_control();
-                    else sidebar.regain_control_on_sidebar_stack();
+                    if (!cameraPanel.focusIsp(index - 1, -1)) sidebar.regain_control_on_sidebar_stack();
                 }
                 onGoto_next: {
-                    if(index+1<ispControls.count) ispControls.itemAt(index+1).takeover_control();
-                    else brightness.takeover_control();
+                    if (!cameraPanel.focusIsp(index + 1, 1)) brightness.takeover_control();
                 }
             }
         }
