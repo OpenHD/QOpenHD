@@ -294,10 +294,16 @@ Item {
     }
       ListModel {
           id: arducam_ae_modes
-          ListElement { value: 0; verbose: "Auto (experimental)" }
+          ListElement { value: 0; verbose: "Auto" }
           ListElement { value: 1; verbose: "Manual" }
       }
     property var metadataModels: ({})
+      ListModel {
+          id: arducam_ae_profiles
+          ListElement { value: 0; verbose: "Normal" }
+          ListElement { value: 1; verbose: "Sport (2 ms shutter)" }
+          ListElement { value: 2; verbose: "Fly (ground priority, experimental)" }
+      }
     function metadata_model(param_id) {
         var aliases = {ROTATION: "ROTATION_DEG", CHANNEL_WIDTH: "WB_CHANNEL_W", RATE: "WB_MCS_INDEX"};
         var id = aliases[param_id] || param_id;
@@ -331,6 +337,7 @@ Item {
         if (param_id === "ARDUCAM_HDR") return arducam_hdr_modes;
         if (param_id === "ISP_WB_AUTO") return elements_model_on_off;
          if (param_id === "ISP_AE_MODE") return arducam_ae_modes;
+          if (param_id === "ISP_AE_PROFILE") return arducam_ae_profiles;
         if (param_id.indexOf("GX_") === 0) return gx_model(param_id);
         if(param_id=="BRIGHTNESS"){
             return elements_model_brightness;

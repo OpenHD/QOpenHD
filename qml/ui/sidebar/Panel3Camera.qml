@@ -24,6 +24,9 @@ SideBarBasePanel{
     property bool manualWhiteBalance: cameraParamUpdates >= 0 &&
         _airCameraSettingsModel.param_int_exists("ISP_WB_AUTO") &&
         _airCameraSettingsModel.get_cached_int("ISP_WB_AUTO") === 0
+    property int arducamAeProfile: cameraParamUpdates >= 0 &&
+        _airCameraSettingsModel.param_int_exists("ISP_AE_PROFILE") ?
+        _airCameraSettingsModel.get_cached_int("ISP_AE_PROFILE") : 0
     function focusIsp(index, direction) {
         for (var i = index; i >= 0 && i < ispControls.count; i += direction) {
             var control = ispControls.itemAt(i);
@@ -92,6 +95,10 @@ SideBarBasePanel{
             font.pixelSize: 12
             text: cameraPanel.manualExposure ?
                 qsTr("Exposure mode changes may briefly pause video. Other adjustments apply live.") :
+                cameraPanel.arducamAeProfile === 1 ?
+                qsTr("Sport limits shutter to 2 ms to reduce motion blur. Gain rises when needed; low light can look noisier.") :
+                cameraPanel.arducamAeProfile === 2 ?
+                qsTr("Fly prioritizes the lower part of the displayed image and allows bright sky to clip. Experimental; outdoor testing is pending.") :
                 qsTr("Auto adjusts shutter and gain. Select Manual to set them. Turn off auto white balance to set color temperature.")
         }
         Repeater {
@@ -100,6 +107,7 @@ SideBarBasePanel{
             // focus to the row that opened it after saving a selection.
             model: cameraPanel.arducam_camera ? [
                 ["Exposure mode", "ISP_AE_MODE"],
+                ["Auto exposure profile", "ISP_AE_PROFILE"],
                 ["Exposure (us)", "ISP_EXPOSURE_US"],
                 ["Gain (%)", "ISP_GAIN"],
                 ["Auto white balance", "ISP_WB_AUTO"],
@@ -107,7 +115,10 @@ SideBarBasePanel{
                 ["Gamma (%)", "ISP_GAMMA"]
             ] : []
             delegate: MavlinkChoiceElement2 {
-                visible: (m_param_id !== "ISP_EXPOSURE_US" && m_param_id !== "ISP_GAIN" || cameraPanel.manualExposure) &&
+                visible: (m_param_id !== "ISP_AE_PROFILE" ||
+                          (!cameraPanel.manualExposure && cameraPanel.cameraParamUpdates >= 0 &&
+                           _airCameraSettingsModel.param_int_exists("ISP_AE_PROFILE"))) &&
+                         (m_param_id !== "ISP_EXPOSURE_US" && m_param_id !== "ISP_GAIN" || cameraPanel.manualExposure) &&
                          (m_param_id !== "ISP_WB_K" || cameraPanel.manualWhiteBalance)
                 m_title: modelData[0]
                 m_param_id: modelData[1]
