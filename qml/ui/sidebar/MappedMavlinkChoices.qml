@@ -155,6 +155,9 @@ Item {
             supported_resolutions = _airCameraSettingsModel.param_string_exists(id) ?
                         _airCameraSettingsModel.get_cached_string(id).split(";").filter(function(x) { return x.length > 0; }) : [];
         }
+        if (_airCameraSettingsModel.param_int_exists("ARDUCAM_HDR") &&
+                _airCameraSettingsModel.get_cached_int("ARDUCAM_HDR") === 1)
+            supported_resolutions = ["1280x720@30", "1920x1080@30"];
         elements_model_camera_resolution_dynamic.clear()
         for (var i=0; i<supported_resolutions.length; i++) {
             var format = String(supported_resolutions[i]);
@@ -284,6 +287,16 @@ Item {
         if (hdr) readout_modes.append({value: 2, verbose: "HDR"});
         return readout_modes;
     }
+    ListModel {
+        id: arducam_hdr_modes
+        ListElement { value: 0; verbose: "Standard" }
+        ListElement { value: 1; verbose: "3-exposure HDR (experimental)" }
+    }
+      ListModel {
+          id: arducam_ae_modes
+          ListElement { value: 0; verbose: "Auto (experimental)" }
+          ListElement { value: 1; verbose: "Manual" }
+      }
     property var metadataModels: ({})
     function metadata_model(param_id) {
         var aliases = {ROTATION: "ROTATION_DEG", CHANNEL_WIDTH: "WB_CHANNEL_W", RATE: "WB_MCS_INDEX"};
@@ -315,6 +328,9 @@ Item {
         var resolved = metadata_model(param_id);
         if (resolved) return resolved;
         if (param_id === "RK_CAM_MODE") return get_readout_modes();
+        if (param_id === "ARDUCAM_HDR") return arducam_hdr_modes;
+        if (param_id === "ISP_WB_AUTO") return elements_model_on_off;
+         if (param_id === "ISP_AE_MODE") return arducam_ae_modes;
         if (param_id.indexOf("GX_") === 0) return gx_model(param_id);
         if(param_id=="BRIGHTNESS"){
             return elements_model_brightness;

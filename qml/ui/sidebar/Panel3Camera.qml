@@ -14,6 +14,7 @@ import "../elements"
 SideBarBasePanel{
     id: cameraPanel
     override_title: "Camera"
+    property bool arducam_camera: _cameraStreamModelPrimary.camera_type === 152
     property bool gx_camera: _cameraStreamModelPrimary.camera_type === 64
 
     // Opening camera controls must request missing parameters even when the
@@ -46,7 +47,8 @@ SideBarBasePanel{
     }
 
     function takeover_control(){
-        if (_qopenhd.is_windows()) colourPreview.takeover_control();
+        if (arducam_camera && ispControls.count) ispControls.itemAt(0).takeover_control();
+        else if (_qopenhd.is_windows()) colourPreview.takeover_control();
         else if (gx_camera && gxControls.count) gxControls.itemAt(0).takeover_control();
         else brightness.takeover_control();
     }
@@ -56,6 +58,37 @@ SideBarBasePanel{
         anchors.topMargin: 0
         spacing: 5
         width: secondaryUiWidth
+        Label {
+            visible: cameraPanel.arducam_camera
+            text: qsTr("Live camera controls")
+            color: "white"
+            font.bold: true
+            leftPadding: 6
+        }
+        Repeater {
+            id: ispControls
+            model: cameraPanel.arducam_camera ? [
+                ["Exposure mode", "ISP_AE_MODE"],
+                ["Exposure (us)", "ISP_EXPOSURE_US"],
+                ["Gain (%)", "ISP_GAIN"],
+                ["Auto white balance", "ISP_WB_AUTO"],
+                ["Color temperature (K)", "ISP_WB_K"],
+                ["Gamma (%)", "ISP_GAMMA"]
+            ] : []
+            delegate: MavlinkChoiceElement2 {
+                m_title: modelData[0]
+                m_param_id: modelData[1]
+                m_settings_model: _airCameraSettingsModel
+                onGoto_previous: {
+                    if(index>0) ispControls.itemAt(index-1).takeover_control();
+                    else sidebar.regain_control_on_sidebar_stack();
+                }
+                onGoto_next: {
+                    if(index+1<ispControls.count) ispControls.itemAt(index+1).takeover_control();
+                    else brightness.takeover_control();
+                }
+            }
+        }
         ColorPreviewControls {
             id: colourPreview
             width: parent.width - 20
@@ -70,7 +103,8 @@ SideBarBasePanel{
             m_param_id: "BRIGHTNESS"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
-                sidebar.regain_control_on_sidebar_stack();
+                if (cameraPanel.arducam_camera && ispControls.count) ispControls.itemAt(ispControls.count-1).takeover_control();
+                else sidebar.regain_control_on_sidebar_stack();
             }
             onGoto_next: {
                 saturation.takeover_control();
@@ -99,12 +133,13 @@ SideBarBasePanel{
                saturation.takeover_control();
             }
             onGoto_next: {
-                sharpness.takeover_control();
+                if (cameraPanel.arducam_camera) sidebar.regain_control_on_sidebar_stack();
+                else sharpness.takeover_control();
             }
         }
         MavlinkChoiceElement2{
             id: sharpness
-            visible: !cameraPanel.gx_camera
+            visible: !cameraPanel.gx_camera && !cameraPanel.arducam_camera
             m_title: "Sharpness"
             m_param_id: "SHARPNESS"
             m_settings_model: _airCameraSettingsModel

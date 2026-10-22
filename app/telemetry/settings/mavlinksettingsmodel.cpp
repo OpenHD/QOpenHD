@@ -256,7 +256,7 @@ void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int v
        m_is_currently_busy=false;
        set_ui_is_busy(false);
        finalize_update_param(param_id,static_cast<int32_t>(value),result.is_accepted(),log_result);
-       if (result.is_accepted() && param_id == "RK_CAM_MODE") {
+       if (result.is_accepted() && (param_id == "RK_CAM_MODE" || param_id == "ARDUCAM_HDR")) {
            // Mode switches also change output dimensions/FPS; read their values
            // after releasing XParam's mutex, instead of displaying stale data.
            QMetaObject::invokeMethod(this, [this]() {
