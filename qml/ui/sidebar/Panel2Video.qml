@@ -60,7 +60,7 @@ SideBarBasePanel{
             m_param_id: "ARDUCAM_HDR"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: sidebar.regain_control_on_sidebar_stack()
-            onGoto_next: edit_resolution_element.takeover_control()
+            onGoto_next: camera_controls.takeover_control()
         }
         Label {
             visible: videoPanel.hasArducamHdr
@@ -71,6 +71,28 @@ SideBarBasePanel{
             font.pixelSize: 12
             text: qsTr("HDR uses three exposures, the full field of view and 30 fps. Manual exposure; experimental ISP tuning.")
         }
+        ActionElement {
+            id: camera_controls
+            visible: videoPanel.hasArducamHdr
+            m_title: qsTr("Exposure & color")
+            m_displayed_value: qsTr("Open controls")
+            function open_controls() {
+                sidebar.update_stack_index(3);
+                sidebar.handover_joystick_control_to_panel(3);
+            }
+            onBase_joy_edit_element_clicked: open_controls()
+            Keys.onPressed: {
+                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Right) {
+                    open_controls(); event.accepted = true;
+                } else if (event.key === Qt.Key_Up) {
+                    arducam_hdr.takeover_control(); event.accepted = true;
+                } else if (event.key === Qt.Key_Down) {
+                    edit_resolution_element.takeover_control(); event.accepted = true;
+                } else if (event.key === Qt.Key_Left) {
+                    sidebar.regain_control_on_sidebar_stack(); event.accepted = true;
+                }
+            }
+        }
         MavlinkChoiceElement2{
             id: edit_resolution_element
             m_title: "Resolution/\nframerate"
@@ -79,21 +101,29 @@ SideBarBasePanel{
             override_takes_string_param: true;
             onGoto_previous: {
                 if (videoPanel.hasReadoutModes) readout_mode.takeover_control();
-                else if (videoPanel.hasArducamHdr) arducam_hdr.takeover_control();
+                else if (videoPanel.hasArducamHdr) camera_controls.takeover_control();
                 else sidebar.regain_control_on_sidebar_stack()
             }
             onGoto_next: {
                //sidebar.regain_control_on_sidebar_stack()
-                rotation_flip.takeover_control();
+                rotation_degree.takeover_control();
             }
         }
         MavlinkChoiceElement2{
+            id: rotation_degree
+            m_title: qsTr("Rotation")
+            m_param_id: "ROTATION_DEG"
+            m_settings_model: _airCameraSettingsModel
+            onGoto_previous: edit_resolution_element.takeover_control()
+            onGoto_next: rotation_flip.takeover_control()
+        }
+        MavlinkChoiceElement2{
             id: rotation_flip
-            m_title: "Rotation"
+            m_title: qsTr("Mirror / flip")
             m_param_id: "ROTATION_FLIP"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
-               edit_resolution_element.takeover_control();
+               rotation_degree.takeover_control();
             }
             onGoto_next: {
                 sidebar.regain_control_on_sidebar_stack()

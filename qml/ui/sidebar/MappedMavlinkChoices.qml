@@ -107,14 +107,14 @@ Item {
     ListModel{
         id: elements_model_camera_rotation_degree
         ListElement {value: 0; verbose:"0°\n(Default)"}
-        ListElement {value: 1; verbose:"180°\n"}
+        ListElement {value: 180; verbose:"180°\n"}
     }
     ListModel{
         id: elements_model_camera_rotation_flip
         ListElement {value: 0; verbose:"0°\n(Default)"}
-        ListElement {value: 1; verbose:"VFLIP\n(mirror)\n"}
-        ListElement {value: 2; verbose:"HFLIP\n(180°)"}
-        ListElement {value: 3; verbose:"BOTH\n"}
+        ListElement {value: 1; verbose:"Horizontal mirror"}
+        ListElement {value: 2; verbose:"Vertical flip"}
+        ListElement {value: 3; verbose:"Both (180°)"}
     }
 
     ListModel{
@@ -352,6 +352,8 @@ Item {
             return elements_model_wifi_mode
         }else if(param_id=="TX_PWR_LVL"){
             return elements_model_tx_power_level
+        }else if(param_id=="ROTATION_DEG"){
+            return elements_model_camera_rotation_degree
         }else if(param_id=="ROTATION_FLIP"){
             return elements_model_camera_rotation_flip
         }else if(param_id=="LIBCAMERA_IMPL"){

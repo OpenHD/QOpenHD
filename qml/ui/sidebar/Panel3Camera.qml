@@ -14,7 +14,9 @@ import "../elements"
 SideBarBasePanel{
     id: cameraPanel
     override_title: "Camera"
-    property bool arducam_camera: _cameraStreamModelPrimary.camera_type === 152
+    property int cameraParamUpdates: _airCameraSettingsModel.update_count
+    property bool arducam_camera: _cameraStreamModelPrimary.camera_type === 152 ||
+        (cameraParamUpdates >= 0 && _airCameraSettingsModel.param_int_exists("ISP_EXPOSURE_US"))
     property bool gx_camera: _cameraStreamModelPrimary.camera_type === 64
 
     // Opening camera controls must request missing parameters even when the
