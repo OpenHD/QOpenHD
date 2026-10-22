@@ -85,6 +85,7 @@ static constexpr int X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90 = 143;
 static constexpr int X_CAM_TYPE_X21_ARDUCAM_IMX462 = 144;
 static constexpr int X_CAM_TYPE_X21_ARDUCAM_IMX519 = 145;
 static constexpr int X_CAM_TYPE_X21_ARDUCAM_IMX708 = 146;
+static constexpr int X_CAM_TYPE_X21_ARDUCAM_PIVARIETY = 152;
 static constexpr int X_CAM_TYPE_LUCKFOX_AURA_IMX662 = 151;
 static constexpr int X_CAM_TYPE_LUCKFOX_AURA_IMX415 = 147;
 static constexpr int X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307 = 148;
@@ -174,6 +175,7 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {144, "X21_ARDUCAM_IMX462"},
   {145, "X21_ARDUCAM_IMX519"},
   {146, "X21_ARDUCAM_IMX708"},
+  {152, "X21_ARDUCAM_PIVARIETY"},
   {151, "LUCKFOX_AURA_IMX662"},
   {147, "LUCKFOX_AURA_IMX415"},
   {148, "LUCKFOX_AURA_VEYE_CSIMX307"},
@@ -624,6 +626,14 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX70
   {1920, 1080, 60},
 };
 
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_PIVARIETY[] = {
+  {1280, 720, 120},
+  {1280, 720, 60},
+  {1280, 720, 30},
+  {1920, 1080, 60},
+  {1920, 1080, 30},
+};
+
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX662[] = {
   {1920, 1080, 30},
   {1920, 1080, 60},
@@ -730,6 +740,7 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_X21_ARDUCAM_IMX462, kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX462, sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX462) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX462[0])},
   {X_CAM_TYPE_X21_ARDUCAM_IMX519, kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX519, sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX519) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX519[0])},
   {X_CAM_TYPE_X21_ARDUCAM_IMX708, kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX708, sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX708) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_IMX708[0])},
+  {X_CAM_TYPE_X21_ARDUCAM_PIVARIETY, kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_PIVARIETY, sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_PIVARIETY) / sizeof(kCameraResolutions_X_CAM_TYPE_X21_ARDUCAM_PIVARIETY[0])},
   {X_CAM_TYPE_LUCKFOX_AURA_IMX662, kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX662, sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX662) / sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX662[0])},
   {X_CAM_TYPE_LUCKFOX_AURA_IMX415, kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX415, sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX415) / sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_IMX415[0])},
   {X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307, kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307, sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307) / sizeof(kCameraResolutions_X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307[0])},
@@ -932,6 +943,7 @@ inline constexpr CameraUiEntry kManufacturer_X21_IMX662_Cameras[] = {
 inline constexpr ManufacturerEntry kManufacturer_X21_IMX662 = {"IMX662 CSI", kManufacturer_X21_IMX662_Cameras, sizeof(kManufacturer_X21_IMX662_Cameras) / sizeof(kManufacturer_X21_IMX662_Cameras[0])};
 
 inline constexpr CameraUiEntry kManufacturer_X21_ARDUCAM_Cameras[] = {
+  {X_CAM_TYPE_X21_ARDUCAM_PIVARIETY, "Pivariety (detected)"},
   {X_CAM_TYPE_X21_ARDUCAM_IMX462, "IMX462"},
   {X_CAM_TYPE_X21_ARDUCAM_IMX519, "IMX519"},
   {X_CAM_TYPE_X21_ARDUCAM_IMX708, "IMX708"},
@@ -1230,6 +1242,7 @@ using openhd::camera_registry::X_CAM_TYPE_X21_HDZERO_RUNCAM_NANO_90;
 using openhd::camera_registry::X_CAM_TYPE_X21_ARDUCAM_IMX462;
 using openhd::camera_registry::X_CAM_TYPE_X21_ARDUCAM_IMX519;
 using openhd::camera_registry::X_CAM_TYPE_X21_ARDUCAM_IMX708;
+using openhd::camera_registry::X_CAM_TYPE_X21_ARDUCAM_PIVARIETY;
 using openhd::camera_registry::X_CAM_TYPE_LUCKFOX_AURA_IMX662;
 using openhd::camera_registry::X_CAM_TYPE_LUCKFOX_AURA_IMX415;
 using openhd::camera_registry::X_CAM_TYPE_LUCKFOX_AURA_VEYE_CSIMX307;
