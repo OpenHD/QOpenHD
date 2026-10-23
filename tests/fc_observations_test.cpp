@@ -28,6 +28,7 @@ static mavlink_message_t identity(int type, int generation=0, int version=0) {
 int main(int argc,char** argv) {
     QApplication app(argc,argv);
     app.setOrganizationName("OpenHDModelRegression");app.setApplicationName("FCObservationsTest");
+    const auto publish_diagnostics=[] { QEventLoop loop;QTimer::singleShot(300,&loop,&QEventLoop::quit);loop.exec(); };
     try {
         FCMavlinkSystem fc;
         fc.set_system_id(1,1);
@@ -36,6 +37,7 @@ int main(int argc,char** argv) {
         mavlink_msg_scaled_pressure_encode(1,1,&msg,&p);fc.process_message(msg);
         CHECK(fc.craft_diagnostics().value("observed").toMap().value("sensorTemperature").toMap().value("value").toDouble()==25);
         p.temperature=2600;mavlink_msg_scaled_pressure_encode(1,1,&msg,&p);fc.process_message(msg);
+        publish_diagnostics();
         CHECK(fc.craft_diagnostics().value("observed").toMap().value("sensorTemperature").toMap().value("value").toDouble()==26);
         // PX4 sends valid messages with no dashboard-specific handler. Keep
         // every packet available in the inspector without per-packet log spam.
@@ -46,6 +48,7 @@ int main(int argc,char** argv) {
             CHECK(fc.process_message(msg));
         }
         qInstallMessageHandler(previous_handler);
+        publish_diagnostics();
         CHECK(captured_messages.isEmpty());
         bool found_imu=false;
         for (const auto& entry : fc.craft_diagnostics().value("messages").toList()) {
@@ -57,6 +60,32 @@ int main(int argc,char** argv) {
             }
         }
         CHECK(found_imu);
+        // A burst must retain every observation without rebuilding all fields
+        // or notifying the menu once per telemetry packet.
+        int snapshots=0;
+        const auto snapshot_connection=QObject::connect(&fc,&FCMavlinkSystem::craft_diagnosticsChanged,
+            [&] { ++snapshots; });
+        QElapsedTimer burst;burst.start();
+        for (int i=0;i<10000;++i) {
+            imu.xacc=float(i);
+            mavlink_msg_highres_imu_encode(1,1,&msg,&imu);
+            CHECK(fc.process_message(msg));
+        }
+        const auto burst_ms=burst.elapsed();
+        CHECK(snapshots==0);
+        publish_diagnostics();
+        CHECK(snapshots>0 && snapshots<=3);
+        bool retained_burst=false;
+        for (const auto& entry:fc.craft_diagnostics().value("messages").toList()) {
+            const auto item=entry.toMap();
+            if(item.value("id").toInt()==MAVLINK_MSG_ID_HIGHRES_IMU) {
+                CHECK(item.value("count").toInt()==10100);
+                retained_burst=true;
+            }
+        }
+        CHECK(retained_burst);
+        QObject::disconnect(snapshot_connection);
+        std::cout<<"10,000 FC packets: "<<burst_ms<<" ms; bounded diagnostics publication passed\n";
         // Timers must age readings, never clear identity or observed fields.
         QEventLoop loop;QTimer::singleShot(11000,&loop,&QEventLoop::quit);loop.exec();
         CHECK(fc.firmware_identity().value("name")=="INAV");
@@ -178,6 +207,6 @@ int main(int argc,char** argv) {
         spin(20);CHECK(!action.remote_id_busy());
         CHECK(global_fc.remote_id_status().value("aircraftParameter").toMap().value("value")=="NEW-TEST-ID");
         transport.terminate();
-        std::cout<<"FC observations: immediate updates, silence retention, session reset and capacity matching passed\n";
+        std::cout<<"FC observations: bounded snapshots, silence retention, session reset and capacity matching passed\n";
     } catch(const std::exception& e) { std::cerr<<e.what()<<'\n';return 1; }
 }

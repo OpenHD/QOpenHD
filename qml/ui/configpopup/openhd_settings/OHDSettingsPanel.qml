@@ -80,7 +80,7 @@ Rectangle {
 
     function user_quidance_animate_channel_scan() {
         currentPage = 0
-        linkPage.item.user_quidance_animate_channel_scan()
+        linkPage.invokeWhenReady("user_quidance_animate_channel_scan")
     }
 
     ColumnLayout {

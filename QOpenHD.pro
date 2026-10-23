@@ -197,6 +197,7 @@ SOURCES += \
     app/util/asynccommandrunner.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
+    app/util/advancedmenudiagnostics.cpp \
     app/util/restartqopenhdmessagebox.cpp \
     app/main.cpp \
 
@@ -220,6 +221,7 @@ HEADERS += \
     app/util/asynccommandrunner.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
+    app/util/advancedmenudiagnostics.h \
     app/util/restartqopenhdmessagebox.h \
     app/util/lqutils_include.h \
 

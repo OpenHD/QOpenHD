@@ -332,6 +332,18 @@ std::optional<XParam::RunningParamCmdGetAll> XParam::find_remove_running_command
                 qWarning()<<"Invalid param index";
                 return std::nullopt;
             }
+            if(!running.server_param_set.empty() && response.param_count!=running.server_param_set.size()){
+                // A changing parameter set must not index outside this fetch's snapshot.
+                return std::nullopt;
+            }
+            if(!running.server_param_set.empty() && running.server_param_set[response.param_index].has_value()){
+                return std::nullopt;
+            }
+            // Retry only after the stream stalls, with a fresh retry budget for
+            // new values. Slow but progressing transfers must not time out or
+            // enqueue repeated full-list broadcasts behind the active stream.
+            running.last_transmission=std::chrono::steady_clock::now();
+            running.n_transmissions=0;
             if(running.server_param_set.empty()){
                 // Size is not yet known
                 running.server_param_set.resize(response.param_count);
@@ -386,17 +398,18 @@ void XParam::send_next_message_running_get_all(RunningParamCmdGetAll& running_cm
         assert(running_cmd.server_param_set.size()>0);
         const int n_missing=get_missing_count(running_cmd.server_param_set);
         qDebug()<<"Still missing:"<<n_missing<<" total:"<<running_cmd.server_param_set.size();
-        if(n_missing>2 && n_missing >= running_cmd.server_param_set.size()/2){
-            // A lot are stil missing, request them all again
-            send_param_ext_request_list(running_cmd.base_cmd);
-        }else{
-            // Request up to X specific missing cmds at a time
-            for(int i=0;i<10 && i<running_cmd.server_param_set.size();i++){
+        {
+            // Once the count is known, recover only missing values. Repeating
+            // full lists fills the link with values that we already have.
+            int requested=0;
+            for(size_t i=0;i<running_cmd.server_param_set.size() && requested<10;i++){
+                if(running_cmd.server_param_set[i].has_value()) continue;
                 mavlink_param_ext_request_read_t cmd{};
                 cmd.param_index=i;
                 cmd.target_system=running_cmd.base_cmd.target_system;
                 cmd.target_component=running_cmd.base_cmd.target_component;
                 send_param_ext_request_read(cmd);
+                ++requested;
             }
         }
     }
@@ -515,7 +528,7 @@ void XParam::check_timeout_param_get_all()
     std::vector<std::pair<RunningParamCmdGetAll,GetAllParamResult>> timed_out_commands{};
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        for (auto it=m_running_get_all.begin(); it!=m_running_get_all.end(); ++it){
+        for (auto it=m_running_get_all.begin(); it!=m_running_get_all.end();){
             RunningParamCmdGetAll& running_cmd=*it;
             const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
             if(elapsed>running_cmd.retransmit_delay){
@@ -527,8 +540,10 @@ void XParam::check_timeout_param_get_all()
                     GetAllParamResult result{false,{}};
                     timed_out_commands.push_back(std::make_pair(running_cmd,result));
                     it=m_running_get_all.erase(it);
+                    continue;
                 }
             }
+            ++it;
         }
     }
     for(auto& timed_out:timed_out_commands){

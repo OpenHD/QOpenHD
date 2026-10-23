@@ -13,10 +13,12 @@ by a family name.
 Tiles appear only for valid, observed fields. Unknown battery temperature,
 invalid throttle and unreported sensors have no tile. Last readings and their
 tiles survive packet loss; age and offline indicators show their freshness.
-New packets update existing tiles immediately. Four firmware palettes and a
+New packets update existing tiles on the next diagnostic snapshot. Four firmware palettes and a
 neutral Unknown palette are provided.
 
-The diagnostic snapshot updates on incoming messages. A timer refreshes ages
+The diagnostic snapshot publishes every 250 ms rather than rebuilding the entire
+MAVLink inspector for every packet. All packets are counted and the latest values
+are retained. The closed craft popup does not create its controls. A timer refreshes ages
 and packet rates without clearing observations. Storage is bounded to 128 message IDs and 20 distinct recent
 status texts. Rates describe packets reaching QOpenHD, not the FC's configured
 transmit rates. Decoded inspector values retain raw MAVLink units and sentinels.
@@ -45,7 +47,7 @@ After building the application, with its Qt/MinGW bin directories on PATH:
 py -3 tests/run_fc_observations_test.py build-qt5-clean-repro
 ```
 
-It checks immediate message-driven updates, retention through an 11-second
+It checks bounded diagnostic publication during a 10,000-packet burst, retention through an 11-second
 outage, explicit session invalidation, matching capacity-parameter senders,
 and ArduPilot's integer capacity type. It performs no FC writes.
 It also checks vehicle type without the heartbeat custom-mode flag and gates

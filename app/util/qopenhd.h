@@ -9,6 +9,7 @@
 #include <QSettings>
 #include "asyncping.h"
 #include "asynccommandrunner.h"
+#include "advancedmenudiagnostics.h"
 
 #ifdef ENABLE_SPEECH
 #include <QTextToSpeech>
@@ -55,6 +56,12 @@ public:
     // only works on linux, dirty helper to get local IP address
     Q_INVOKABLE QString show_local_ip();
     Q_INVOKABLE QString write_local_log();
+    Q_INVOKABLE void advanced_menu_open_started(bool cached, const QString& loaderState);
+    Q_INVOKABLE void advanced_menu_stage(const QString& name, const QString& detail, bool failed = false);
+    Q_INVOKABLE void advanced_menu_ready();
+    Q_INVOKABLE void advanced_menu_cancelled(const QString& reason);
+    Q_PROPERTY(QString advanced_menu_timing_log_path READ advanced_menu_timing_log_path CONSTANT)
+    QString advanced_menu_timing_log_path() const { return m_menuDiagnostics.logPath(); }
     Q_INVOKABLE QString export_color_preview(const QString& json);
     Q_INVOKABLE QString credit_archive_text() const;
     Q_PROPERTY(int qtMajorVersion READ qtMajorVersion CONSTANT)
@@ -132,6 +139,7 @@ signals:
 private:
     void do_not_call_toast_add(QString text,bool long_toast);
     void show_toast_and_add_remove_timer(QString text,bool long_toast);
+    AdvancedMenuDiagnostics m_menuDiagnostics;
 };
 
 #endif // QOPENHD_H

@@ -32,6 +32,14 @@ FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_alive_timer = std::make_unique<QTimer>(this);
     QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
     m_alive_timer->start(1000);
+    // Collect every packet, but publish the full inspector snapshot at a
+    // bounded rate. Rebuilding every decoded field and waking QML for each
+    // ArduPilot packet can starve asynchronous menu creation on embedded CPUs.
+    auto diagnostics_timer = new QTimer(this);
+    connect(diagnostics_timer, &QTimer::timeout, this, [this] {
+        if (!m_diagnostic_messages.isEmpty()) refresh_diagnostics(false);
+    });
+    diagnostics_timer->start(250);
 }
 
 FCMavlinkSystem& FCMavlinkSystem::instance() {
@@ -500,7 +508,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     }
     }
 
-    refresh_diagnostics(false);
+    if (craft_diagnostics().isEmpty()) refresh_diagnostics(false);
     return true;
 }
 

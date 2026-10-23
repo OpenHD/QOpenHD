@@ -13,6 +13,12 @@
 #include <QSaveFile>
 #include <QStandardPaths>
 #include <QDir>
+#include <QGuiApplication>
+#include <QSysInfo>
+#include "telemetry/MavlinkTelemetry.h"
+#include "telemetry/models/aohdsystem.h"
+#include "telemetry/models/fcmavlinksystem.h"
+#include "telemetry/settings/mavlinksettingsmodel.h"
 
 #include<iostream>
 #include <sys/stat.h>
@@ -56,6 +62,30 @@ QString QOpenHD::credit_archive_text() const
 QOpenHD::QOpenHD(QObject *parent)
     : QObject{parent}
 {
+    m_menuDiagnostics.setSnapshotProvider([this] {
+        // Cached getters only. No parameter requests or expensive FC inspection.
+        const auto parameters = [](MavlinkSettingsModel& model) {
+            return QVariantMap{{"busy", model.ui_is_busy()},
+                {"fetched", model.has_params_fetched()},
+                {"progress_percent", model.curr_get_all_progress_perc()}};
+        };
+        auto& telemetry = MavlinkTelemetry::instance();
+        return QVariantMap{{"app_version", version_string()},
+            {"qt_version", QString::fromLatin1(qVersion())},
+            {"qpa", QGuiApplication::platformName()},
+            {"architecture", QSysInfo::currentCpuArchitecture()},
+            {"air_alive", AOHDSystem::instanceAir().is_alive()},
+            {"ground_alive", AOHDSystem::instanceGround().is_alive()},
+            {"fc_alive", FCMavlinkSystem::instance().is_alive()},
+            {"fc_telemetry_active", FCMavlinkSystem::instance().telemetry_active()},
+            {"telemetry_packets_per_second", telemetry.telemetry_pps_in()},
+            {"telemetry_bits_per_second", telemetry.telemetry_bps_in()},
+            {"telemetry_connection", telemetry.telemetry_connection_status()},
+            {"parameters_ground", parameters(MavlinkSettingsModel::instanceGround())},
+            {"parameters_air", parameters(MavlinkSettingsModel::instanceAir())},
+            {"parameters_camera1", parameters(MavlinkSettingsModel::instanceAirCamera())},
+            {"parameters_camera2", parameters(MavlinkSettingsModel::instanceAirCamera2())}};
+    });
     connect(this, &QOpenHD::signal_toast_add, this, &QOpenHD::do_not_call_toast_add);
     connect(&m_ping, &AsyncPing::finished, this, &QOpenHD::pingFinished);
     connect(&m_commands, &AsyncCommandRunner::finished, this, &QOpenHD::systemActionFinished);
@@ -96,6 +126,25 @@ QOpenHD::QOpenHD(QObject *parent)
 void QOpenHD::setEngine(QQmlApplicationEngine *engine) {
     m_engine = engine;
 }
+
+void QOpenHD::advanced_menu_open_started(bool cached, const QString& loaderState) {
+    QQuickWindow* window = nullptr;
+    if (m_engine) {
+        for (auto* root : m_engine->rootObjects()) {
+            window = qobject_cast<QQuickWindow*>(root);
+            if (window) break;
+        }
+    }
+    m_menuDiagnostics.begin(window, cached, loaderState);
+}
+
+void QOpenHD::advanced_menu_stage(const QString& name, const QString& detail, bool failed) {
+    m_menuDiagnostics.stage(name, detail, failed);
+}
+
+void QOpenHD::advanced_menu_ready() { m_menuDiagnostics.ready(); }
+
+void QOpenHD::advanced_menu_cancelled(const QString& reason) { m_menuDiagnostics.cancel(reason); }
 
 bool QOpenHD::loadTranslator(const QString &language, QSettings *settings)
 {

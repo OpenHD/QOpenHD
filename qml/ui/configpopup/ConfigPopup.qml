@@ -5,15 +5,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "connect"
-import "credits"
-import "dev"
-import "log"
-import "qopenhd_settings"
-import "openhd_settings"
-import "rc"
-import "status"
-
 // Shared framework for the advanced menu. Pages are created on first selection;
 // responsive navigation and keyboard ownership live here.
 Rectangle {
@@ -26,6 +17,10 @@ Rectangle {
     readonly property var statusPanel: statusPage.item
     readonly property var ohdSettingsPanel: openhdPage.item
     readonly property var appDeveloperStatsPanel: developerPage.item
+    readonly property bool currentPageReady: {
+        var page = mainStackLayout.children[mainStackLayout.currentIndex]
+        return !!page && page.status === Loader.Ready
+    }
 
     property bool darkMode: advancedThemeSettings.darkMode
     property color pageBackground: darkMode ? "#091827" : "#eef4fa"
@@ -68,13 +63,13 @@ Rectangle {
         openSettings()
         mainStackLayout.currentIndex = 8
         navigation.currentIndex = -1
-        appDeveloperStatsPanel.gainFocus()
+        developerPage.gainFocus()
     }
     function user_guidance_open_openhd_settings_find_air_unit_location() {
         openSettings()
         mainStackLayout.currentIndex = 1
         navigation.currentIndex = 1
-        ohdSettingsPanel.user_quidance_animate_channel_scan()
+        openhdPage.invokeWhenReady("user_quidance_animate_channel_scan")
     }
     function gain_focus() { navigation.forceActiveFocus() }
     function frameworkActionButtons() { return [refreshButton, themeButton] }
@@ -310,16 +305,16 @@ Rectangle {
             text: "\uf2f1"
             font.family: "Font Awesome 5 Free"; font.pixelSize: 15
             onClicked: settings_form.runHeaderRefresh()
-            onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0) statusPanel.syncFocus(refreshButton)
+            onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0 && statusPanel) statusPanel.syncFocus(refreshButton)
             Keys.onPressed: function(event) {
                 if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
-                    if (mainStackLayout.currentIndex === 0)
+                    if (mainStackLayout.currentIndex === 0 && statusPanel)
                         statusPanel.moveFocus(1)
                     else
                         themeButton.forceActiveFocus()
                     event.accepted = true
                 } else if (event.key === Qt.Key_Up) {
-                    if (mainStackLayout.currentIndex === 0)
+                    if (mainStackLayout.currentIndex === 0 && statusPanel)
                         statusPanel.moveFocus(-1)
                     else
                         themeButton.forceActiveFocus()
@@ -345,16 +340,16 @@ Rectangle {
                 darkMode = !darkMode
                 advancedThemeSettings.darkMode = darkMode
             }
-            onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0) statusPanel.syncFocus(themeButton)
+            onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0 && statusPanel) statusPanel.syncFocus(themeButton)
             Keys.onPressed: function(event) {
                 if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
-                    if (mainStackLayout.currentIndex === 0)
+                    if (mainStackLayout.currentIndex === 0 && statusPanel)
                         statusPanel.moveFocus(1)
                     else
                         refreshButton.forceActiveFocus()
                     event.accepted = true
                 } else if (event.key === Qt.Key_Up) {
-                    if (mainStackLayout.currentIndex === 0)
+                    if (mainStackLayout.currentIndex === 0 && statusPanel)
                         statusPanel.moveFocus(-1)
                     else
                         refreshButton.forceActiveFocus()
@@ -368,19 +363,28 @@ Rectangle {
             contentItem: Text { text: themeButton.text; font: themeButton.font; color: primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
         }
 
+        BusyIndicator {
+            anchors.centerIn: parent
+            z: 1
+            running: visible
+            visible: mainStackLayout.children[mainStackLayout.currentIndex].status === Loader.Loading
+        }
+
         StackLayout {
             id: mainStackLayout
             anchors.fill: parent
             currentIndex: 0
-            AdvancedPageLoader { id: statusPage; selected: mainStackLayout.currentIndex === 0; sourceComponent: PanelStatus { } }
-            AdvancedPageLoader { id: openhdPage; selected: mainStackLayout.currentIndex === 1; sourceComponent: OHDSettingsPanel { } }
-            AdvancedPageLoader { id: osdPage; selected: mainStackLayout.currentIndex === 2; sourceComponent: AppSettingsPanel { } }
-            AdvancedPageLoader { id: logPage; selected: mainStackLayout.currentIndex === 3; sourceComponent: LogMessagesStatusView { } }
-            AdvancedPageLoader { id: rcPage; selected: mainStackLayout.currentIndex === 4; sourceComponent: RcInfoPanel { } }
-            AdvancedPageLoader { id: connectPage; selected: mainStackLayout.currentIndex === 5; sourceComponent: ConnectPanel { } }
-            AdvancedPageLoader { id: creditsPage; selected: mainStackLayout.currentIndex === 6; sourceComponent: Credits { } }
-            AdvancedPageLoader { id: mavDebugPage; selected: mainStackLayout.currentIndex === 7; sourceComponent: MavlinkDebugPanel { } }
-            AdvancedPageLoader { id: developerPage; selected: mainStackLayout.currentIndex === 8; sourceComponent: AppDeveloperStatsPanel { } }
+            // URL sources defer parsing/compiling each page's dependency tree.
+            // Inline sourceComponents still resolve every page when this menu loads.
+            AdvancedPageLoader { id: statusPage; selected: mainStackLayout.currentIndex === 0; source: "status/PanelStatus.qml" }
+            AdvancedPageLoader { id: openhdPage; selected: mainStackLayout.currentIndex === 1; source: "openhd_settings/OHDSettingsPanel.qml" }
+            AdvancedPageLoader { id: osdPage; selected: mainStackLayout.currentIndex === 2; source: "qopenhd_settings/AppSettingsPanel.qml" }
+            AdvancedPageLoader { id: logPage; selected: mainStackLayout.currentIndex === 3; source: "log/LogMessagesStatusView.qml" }
+            AdvancedPageLoader { id: rcPage; selected: mainStackLayout.currentIndex === 4; source: "rc/RcInfoPanel.qml" }
+            AdvancedPageLoader { id: connectPage; selected: mainStackLayout.currentIndex === 5; source: "connect/ConnectPanel.qml" }
+            AdvancedPageLoader { id: creditsPage; selected: mainStackLayout.currentIndex === 6; source: "credits/Credits.qml" }
+            AdvancedPageLoader { id: mavDebugPage; selected: mainStackLayout.currentIndex === 7; source: "dev/MavlinkDebugPanel.qml" }
+            AdvancedPageLoader { id: developerPage; selected: mainStackLayout.currentIndex === 8; source: "dev/AppDeveloperStatsPanel.qml" }
         }
     }
 }

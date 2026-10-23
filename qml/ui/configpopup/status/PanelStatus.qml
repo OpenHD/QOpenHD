@@ -128,8 +128,18 @@ Rectangle {
         padding: 0
         closePolicy: Popup.CloseOnEscape
         background: Rectangle { color: settings_form.pageBackground; radius: 14; border.color: settings_form.lineColor }
-        contentItem: CraftDetailsPanel { onCloseRequested: craftDetails.close() }
-        onOpened: { contentItem.gainFocus() }
+        contentItem: Loader {
+            id: craftDetailsLoader
+            active: craftDetails.visible
+            asynchronous: true
+            source: "CraftDetailsPanel.qml"
+            onLoaded: if (craftDetails.opened) item.gainFocus()
+            Connections {
+                target: craftDetailsLoader.item
+                function onCloseRequested() { craftDetails.close() }
+            }
+        }
+        onOpened: if (craftDetailsLoader.item) craftDetailsLoader.item.gainFocus()
         onClosed: if (root.visible) root.gainFocus()
     }
     DialoqueNotAlive { id: dialoqueNotAlive }

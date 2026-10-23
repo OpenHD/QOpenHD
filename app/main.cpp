@@ -224,7 +224,8 @@ LogRateLimiter& log_limiter() {
 void rate_limited_message_handler(QtMsgType type, const QMessageLogContext&,
                                   const QString& msg) {
     if (g_log_warnings_only.load(std::memory_order_relaxed)) {
-        if (type == QtDebugMsg || type == QtInfoMsg) {
+        if ((type == QtDebugMsg || type == QtInfoMsg) &&
+            !msg.startsWith(QStringLiteral("ADVANCED_MENU_TIMING "))) {
             return;
         }
     }
