@@ -74,6 +74,9 @@ Item {
     SignalSpy { id: cardSpy; signalName: "detailsRequested" }
     QtObject {
         id: mock
+        property int diagnosticsViewers: 0
+        function acquire_diagnostics() { diagnosticsViewers++ }
+        function release_diagnostics() { diagnosticsViewers-- }
         property bool is_alive: true
         property bool telemetry_active: true
         property string autopilot_type_str: "Generic"
@@ -123,10 +126,26 @@ Item {
         function set_battery_capacity_async(value) { requestedCapacity = value }
     }
     Status.CraftDetailsPanel { id: panel; anchors.fill: parent; fc: mock; fcAction: mockAction }
+    Component { id: inspectorFactory; Status.CraftDetailsPanel { fc: mock; fcAction: mockAction } }
     SignalSpy { id: closeSpy; target: panel; signalName: "closeRequested" }
     TestCase {
         name: "CraftDetails"
         when: windowShown
+        function test_diagnostic_subscription_lifecycle() {
+            compare(mock.diagnosticsViewers, 1)
+            panel.visible = false
+            compare(mock.diagnosticsViewers, 0)
+            panel.visible = true
+            compare(mock.diagnosticsViewers, 1)
+            var other = inspectorFactory.createObject(scene)
+            compare(mock.diagnosticsViewers, 2)
+            other.visible = false
+            compare(mock.diagnosticsViewers, 1)
+            other.visible = true
+            compare(mock.diagnosticsViewers, 2)
+            other.destroy()
+            tryCompare(mock, "diagnosticsViewers", 1)
+        }
         function test_remote_id_card() {
             mock.telemetry_active=true;mock.armed=false;panel.selectedTab=0
             mock.remote_id_status={aircraftId: "FC-BOARD-ID", idType: 1, locationReceivedMs: 9900}

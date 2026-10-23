@@ -12,11 +12,20 @@ Rectangle {
     property int keyboardIndex: 0
     // A modal popup lives in the window overlay, outside this page's visual
     // hierarchy. Close it when navigating away so it cannot block the menu.
-    onVisibleChanged: if (!visible) craftDetails.close()
+    onVisibleChanged: if (!visible) {
+        craftDetails.close()
+        powerDialog.close()
+        dialoqueNotAlive.close()
+    }
 
     function voltage_as_string(voltage_mv) { return voltage_mv === 0 ? "N/A" : voltage_mv + " mV" }
     function current_as_string(current_ma) { return current_ma === 0 ? "N/A" : current_ma + " mA" }
-    function open_power_action_dialoque(system, reboot) { powerDialog.open_dialoque(system, reboot) }
+    function open_power_action_dialoque(system, reboot) {
+        powerDialog.open("open_dialoque", [system, reboot])
+    }
+    function open_not_alive_dialog(system) {
+        dialoqueNotAlive.open(system === 0 ? "open_ground" : "open_air", [])
+    }
 
     function controls() {
         var all = settings_form.frameworkActionButtons().concat(statusCards.actionButtons())
@@ -115,7 +124,7 @@ Rectangle {
         }
     }
 
-    PowerActionDialoque { id: powerDialog }
+    DeferredStatusDialog { id: powerDialog; source: "PowerActionDialoque.qml" }
     Popup {
         id: craftDetails
         parent: root
@@ -142,5 +151,5 @@ Rectangle {
         onOpened: if (craftDetailsLoader.item) craftDetailsLoader.item.gainFocus()
         onClosed: if (root.visible) root.gainFocus()
     }
-    DialoqueNotAlive { id: dialoqueNotAlive }
+    DeferredStatusDialog { id: dialoqueNotAlive; source: "DialoqueNotAlive.qml" }
 }

@@ -160,6 +160,7 @@
         <file>ui/configpopup/status/StatusCardBodyOpenHD.qml</file>
         <file>ui/configpopup/status/PowerActionDialoque.qml</file>
         <file>ui/configpopup/status/PanelStatus.qml</file>
+        <file>ui/configpopup/status/DeferredStatusDialog.qml</file>
         <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
         <file>ui/configpopup/status/CraftDetailsPanel.qml</file>
         <file>ui/configpopup/log/LogMessagesStatusView.qml</file>

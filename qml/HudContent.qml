@@ -70,11 +70,6 @@ Item {
         active: requested || !applicationWindow.bootSplashEnabled
         asynchronous: applicationWindow.bootSplashEnabled
         source: "ui/configpopup/ConfigPopup.qml"
-        function checkMenuReady() {
-            if (visible && status === Loader.Ready && item.currentPageReady &&
-                    typeof _qopenhd.advanced_menu_ready === "function")
-                _qopenhd.advanced_menu_ready()
-        }
         function openSettings() { visible = true }
         function close_all() {
             if (item) item.close_all()
@@ -83,29 +78,16 @@ Item {
         }
         onVisibleChanged: {
             if (visible) {
-                if (typeof _qopenhd.advanced_menu_open_started === "function")
-                    _qopenhd.advanced_menu_open_started(status === Loader.Ready, String(status))
                 requested = true
                 if (status === Loader.Ready) item.openSettings()
-                checkMenuReady()
-            } else if (typeof _qopenhd.advanced_menu_cancelled === "function") {
-                _qopenhd.advanced_menu_cancelled("menu_closed")
             }
-        }
-        onStatusChanged: {
-            if (visible && typeof _qopenhd.advanced_menu_stage === "function")
-                _qopenhd.advanced_menu_stage("root_loader", String(status), status === Loader.Error)
-            checkMenuReady()
         }
         onLoaded: {
             if (visible) item.openSettings()
             else item.visible = false
-            checkMenuReady()
         }
         Connections {
             target: settings_panel.item
-            ignoreUnknownSignals: true
-            function onCurrentPageReadyChanged() { settings_panel.checkMenuReady() }
             function onVisibleChanged() {
                 settings_panel.visible = settings_panel.item.visible
             }

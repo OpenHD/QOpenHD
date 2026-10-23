@@ -50,6 +50,9 @@ public:
     bool observe_remote_id(const mavlink_message_t& msg);
 public: // Stuff needs to be public for qt
     L_RO_PROP(QVariantMap, craft_diagnostics, set_craft_diagnostics, QVariantMap())
+public:
+    Q_INVOKABLE void acquire_diagnostics();
+    Q_INVOKABLE void release_diagnostics();
     L_RO_PROP(bool, telemetry_active, set_telemetry_active, false)
     L_RO_PROP(QVariantMap, firmware_identity, set_firmware_identity, QVariantMap())
     L_RO_PROP(QVariantMap, remote_id_status, set_remote_id_status, QVariantMap())
@@ -207,7 +210,6 @@ private:
         quint64 previous_count = 0;
         qint64 received_ms = 0;
         int component = 0;
-        QString payload;
         mavlink_message_t latest{};
         double rate = 0;
     };
@@ -215,6 +217,7 @@ private:
     QVariantMap m_diagnostic_state;
     QVariantList m_diagnostic_events;
     qint64 m_diagnostic_refresh_ms = 0;
+    int m_diagnostic_viewers = 0;
     void record_diagnostic_message(const mavlink_message_t& msg);
     void refresh_diagnostics(bool update_rates = true);
     void apply_inav_home_compatibility();

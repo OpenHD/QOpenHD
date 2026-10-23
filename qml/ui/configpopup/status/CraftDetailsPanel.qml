@@ -8,6 +8,23 @@ Rectangle {
     radius: 14
     signal closeRequested()
     property var fc: _fcMavlinkSystem
+    property var diagnosticSource: null
+    property bool subscriptionReady: false
+    function updateDiagnosticSubscription() {
+        var target = subscriptionReady && visible ? fc : null
+        if (diagnosticSource === target) return
+        if (diagnosticSource && typeof diagnosticSource.release_diagnostics === "function")
+            diagnosticSource.release_diagnostics()
+        diagnosticSource = target
+        if (diagnosticSource && typeof diagnosticSource.acquire_diagnostics === "function")
+            diagnosticSource.acquire_diagnostics()
+    }
+    onVisibleChanged: updateDiagnosticSubscription()
+    onFcChanged: updateDiagnosticSubscription()
+    Component.onDestruction: {
+        subscriptionReady = false
+        updateDiagnosticSubscription()
+    }
     property var fcAction: _fcMavlinkAction
     readonly property var remoteId: fc.remote_id_status || ({})
     readonly property bool hasRemoteId: Object.keys(remoteId).length > 0
@@ -49,6 +66,8 @@ Rectangle {
         if (selectedTab === 1 && !hasHealth) selectedTab = 0
     }
     Component.onCompleted: {
+        subscriptionReady = true
+        updateDiagnosticSubscription()
         syncRows(telemetryRows, telemetryCards())
         syncRows(sensorRows, diagnostics.sensors || [])
         syncRows(eventRows, diagnostics.events || [])

@@ -16,11 +16,13 @@ tiles survive packet loss; age and offline indicators show their freshness.
 New packets update existing tiles on the next diagnostic snapshot. Four firmware palettes and a
 neutral Unknown palette are provided.
 
-The diagnostic snapshot publishes every 250 ms rather than rebuilding the entire
-MAVLink inspector for every packet. All packets are counted and the latest values
-are retained. The closed craft popup does not create its controls. A timer refreshes ages
-and packet rates without clearing observations. Storage is bounded to 128 message IDs and 20 distinct recent
-status texts. Rates describe packets reaching QOpenHD, not the FC's configured
+While Craft Details is visible, its full diagnostic snapshot publishes every
+250 ms. With the inspector closed only basic ages and packet totals publish.
+Decoded fields, payload hex, sensor lists and event lists are formatted on
+demand. All packets are counted and the latest values are retained. The closed
+craft popup does not create its controls. A timer refreshes ages and packet
+rates without clearing observations. Storage is bounded to 128 message IDs and
+20 distinct recent status texts. Rates describe packets reaching QOpenHD, not the FC's configured
 transmit rates. Decoded inspector values retain raw MAVLink units and sentinels.
 Sensor health comes from `SYS_STATUS`; it does not imply successful calibration.
 

@@ -963,7 +963,6 @@ void FCMavlinkSystem::record_diagnostic_message(const mavlink_message_t& msg)
     ++entry.count;
     entry.received_ms = now;
     entry.component = msg.compid;
-    entry.payload = QByteArray(_MAV_PAYLOAD(&msg), msg.len).toHex(' ');
     entry.latest = msg;
     // MAVLink 2 trims trailing zeros, including extension fields. Introspection
     // must see those as zero, never as bytes left in the parser's buffer.
@@ -1091,6 +1090,17 @@ void FCMavlinkSystem::record_diagnostic_message(const mavlink_message_t& msg)
     }
 }
 
+void FCMavlinkSystem::acquire_diagnostics()
+{
+    if (++m_diagnostic_viewers == 1) refresh_diagnostics(false);
+}
+
+void FCMavlinkSystem::release_diagnostics()
+{
+    if (m_diagnostic_viewers > 0 && --m_diagnostic_viewers == 0)
+        refresh_diagnostics(false);
+}
+
 void FCMavlinkSystem::refresh_diagnostics(bool update_rates)
 {
     const qint64 now = static_cast<qint64>(QOpenHDMavlinkHelper::getTimeMilliseconds());
@@ -1099,6 +1109,14 @@ void FCMavlinkSystem::refresh_diagnostics(bool update_rates)
     quint64 total = 0;
     for (auto it = m_diagnostic_messages.begin(); it != m_diagnostic_messages.end(); ++it) {
         auto& entry = it.value();
+        total += entry.count;
+        if (update_rates) {
+            entry.rate = elapsed > 0 ? (entry.count - entry.previous_count) * 1000.0 / elapsed : 0.0;
+            entry.previous_count = entry.count;
+        }
+        // Basic status and packet accounting remain available while the full
+        // inspector is closed. Decode/format raw MAVLink fields on demand.
+        if (m_diagnostic_viewers == 0) continue;
         const auto* info = mavlink_get_message_info_by_id(it.key());
         QVariantList fields;
         if (info) {
@@ -1131,17 +1149,22 @@ void FCMavlinkSystem::refresh_diagnostics(bool update_rates)
                 fields.append(QVariantMap{{"name", QString(field.name)}, {"value", values.join(", ")}});
             }
         }
-        if (update_rates) {
-            entry.rate = elapsed > 0 ? (entry.count - entry.previous_count) * 1000.0 / elapsed : 0.0;
-            entry.previous_count = entry.count;
-        }
         messages.append(QVariantMap{{"id", it.key()}, {"name", info ? QString(info->name) : tr("Unknown")},
             {"component", entry.component}, {"count", QVariant::fromValue(entry.count)},
             {"rate", entry.rate},
-            {"age", (now - entry.received_ms) / 1000.0}, {"payload", entry.payload}, {"fields", fields}});
-        total += entry.count;
+            {"age", (now - entry.received_ms) / 1000.0},
+            {"payload", QString::fromLatin1(QByteArray(_MAV_PAYLOAD(&entry.latest), entry.latest.len).toHex(' '))},
+            {"fields", fields}});
     }
     if (update_rates) m_diagnostic_refresh_ms = now;
+    if (m_diagnostic_viewers == 0) {
+        set_craft_diagnostics(QVariantMap{
+            {"total", QVariant::fromValue(total)},
+            {"heartbeatAge", m_last_heartbeat_ms < 0 ? -1.0 : (now - m_last_heartbeat_ms.load()) / 1000.0},
+            {"telemetryAge", m_last_message_ms < 0 ? -1.0 : (now - m_last_message_ms.load()) / 1000.0},
+            {"nowMs", now}});
+        return;
+    }
     QVariantList sensors;
     const auto present = m_diagnostic_state.value("present").toUInt();
     const auto enabled = m_diagnostic_state.value("enabled").toUInt();

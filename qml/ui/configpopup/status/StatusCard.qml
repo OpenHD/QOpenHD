@@ -34,10 +34,10 @@ Item {
     }
     function openWarning() {
         if (systemType === 0) {
-            dialoqueNotAlive.open_ground()
+            statusPanel.open_not_alive_dialog(0)
         } else if (systemType === 1) {
             if (_ohdSystemGround.is_alive)
-                dialoqueNotAlive.open_air()
+                statusPanel.open_not_alive_dialog(1)
             else
                 _messageBoxInstance.set_text_and_show(qsTr("Please make sure your ground unit is alive first."))
         } else {

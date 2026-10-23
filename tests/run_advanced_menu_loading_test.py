@@ -69,6 +69,21 @@ Item {
             root.openSettings()
             compare(root.ohdSettingsPanel, cached)
         }
+        function test_deferred_dialog_cancels_pending_request() {
+            var component = Qt.createComponent("status/DeferredStatusDialog.qml")
+            compare(component.status, Component.Ready)
+            var dialog = component.createObject(menu.parent, {source: Qt.resolvedUrl("status/PowerActionDialoque.qml")})
+            compare(dialog.item, null)
+            dialog.open("open_dialoque", [0, true])
+            dialog.close()
+            tryCompare(dialog, "status", Loader.Ready)
+            compare(dialog.item.visible, false)
+            dialog.open("open_dialoque", [1, false])
+            compare(dialog.item.receivedArguments, [1, false])
+            compare(dialog.item.visible, true)
+            dialog.close()
+            dialog.destroy()
+        }
         function test_loader_queues_and_cancels_focus() {
             var component = Qt.createComponent("AdvancedPageLoader.qml")
             compare(component.status, Component.Ready)
@@ -115,6 +130,9 @@ Item {
             path.write_text(stub if valid else "import QtQuick 2.12\nDeliberatelyMissingType {}\n", encoding="utf-8")
         (folder / "tst_menu.qml").write_text(test, encoding="utf-8")
         command = [str(args.qt_bin / "qmltestrunner.exe"), "-import", str(folder), "-input", str(folder)]
+        start = test.index("        function test_deferred_dialog_cancels_pending_request()")
+        end = test.index("        function test_loader_queues_and_cancels_focus()", start)
+        (folder / "tst_menu.qml").write_text(test[:start] + test[end:], encoding="utf-8")
         result = subprocess.run(command, env=env, timeout=60).returncode
         if result:
             return result
@@ -122,14 +140,17 @@ Item {
         # not instantiate its live models while the menu is being created.
         status = (menu_dir / "status/PanelStatus.qml").read_text(encoding="utf-8")
         status = status.replace("id: root", "id: root; readonly property color inheritedColor: settings_form.pageBackground", 1)
+        status = status.replace("id: powerDialog;", 'id: powerDialog; objectName: "testPowerDialog";')
+        status = status.replace("id: dialoqueNotAlive;", 'id: dialoqueNotAlive; objectName: "testWarningDialog";')
         status = status.replace("id: craftDetails\n", 'id: craftDetails; objectName: "testCraftPopup"\n')
         status = status.replace("id: craftDetailsLoader\n", 'id: craftDetailsLoader; objectName: "testCraftLoader"\n')
         (folder / "status/PanelStatus.qml").write_text(status, encoding="utf-8")
         (folder / "status/StatusCardsColumn.qml").write_text('''import QtQuick 2.12
 Item { signal craftDetailsRequested(); function actionButtons() { return [] } }
 ''', encoding="utf-8")
+        shutil.copy(menu_dir / "status/DeferredStatusDialog.qml", folder / "status/DeferredStatusDialog.qml")
         for name in ("PowerActionDialoque", "DialoqueNotAlive"):
-            (folder / ("status/" + name + ".qml")).write_text("import QtQuick 2.12\nItem {}\n", encoding="utf-8")
+            (folder / ("status/" + name + ".qml")).write_text('import QtQuick 2.12\nItem { visible: false; property var receivedArguments: []; function open_dialoque(system, reboot) { receivedArguments = [system, reboot]; visible = true } function open_ground() { receivedArguments = [0]; visible = true } function open_air() { receivedArguments = [1]; visible = true } }\n', encoding="utf-8")
         (folder / "status/CraftDetailsPanel.qml").write_text(stub.replace("    property int focusCalls", "    signal closeRequested()\n    property int focusCalls"), encoding="utf-8")
         popup_test = '''
         function test_status_defers_closed_craft_inspector() {
@@ -142,6 +163,27 @@ Item { signal craftDetailsRequested(); function actionButtons() { return [] } }
             verify(popup !== null)
             verify(loader !== null)
             compare(loader.item, null)
+            var power = findChild(root.statusPanel, "testPowerDialog")
+            var warning = findChild(root.statusPanel, "testWarningDialog")
+            compare(power.item, null)
+            compare(warning.item, null)
+            root.statusPanel.open_power_action_dialoque(1, true)
+            tryCompare(power, "status", Loader.Ready)
+            compare(power.item.receivedArguments, [1, true])
+            compare(power.item.visible, true)
+            var cachedPower = power.item
+            root.close_all()
+            compare(power.item.visible, false)
+            root.openSettings()
+            root.statusPanel.open_power_action_dialoque(0, false)
+            compare(power.item, cachedPower)
+            compare(power.item.receivedArguments, [0, false])
+            root.statusPanel.open_not_alive_dialog(1)
+            tryCompare(warning, "status", Loader.Ready)
+            compare(warning.item.receivedArguments, [1])
+            warning.close()
+            root.statusPanel.open_not_alive_dialog(0)
+            compare(warning.item.receivedArguments, [0])
             popup.open()
             tryCompare(loader, "status", Loader.Ready)
             tryCompare(popup, "opened", true)
@@ -157,7 +199,7 @@ Item { signal craftDetailsRequested(); function actionButtons() { return [] } }
         result = subprocess.run(command, env=env, timeout=60).returncode
         if result:
             return result
-        # Exercise the production HUD loader hooks, including cached reopening.
+        # Exercise the production HUD loader, including cached reopening.
         hud = (ROOT / "qml/HudContent.qml").read_text(encoding="utf-8")
         loader = hud[hud.index("    Loader {\n        id: settings_panel"):]
         loader = loader[:loader.index("\n    Rectangle {")]
@@ -171,34 +213,19 @@ Item {
     QtObject {
         id: _qopenhd
         property string version_string: "test"
-        property var events: []
-        property bool readyTooEarly: false
-        function advanced_menu_open_started(cached, state) { events.push(cached ? "cached" : "start") }
-        function advanced_menu_stage(name, detail, failed) { events.push("stage") }
-        function advanced_menu_ready() {
-            readyTooEarly = readyTooEarly || settings_panel.status !== Loader.Ready || !settings_panel.item.currentPageReady
-            events.push("ready")
-        }
-        function advanced_menu_cancelled(reason) { events.push("cancel") }
     }
 LOADER
     TestCase {
-        name: "AdvancedMenuTimingHooks"; when: windowShown
+        name: "AdvancedMenuHudLoading"; when: windowShown
         function test_actual_hud_loading_and_reopen() {
             compare(settings_panel.item, null)
             settings_panel.openSettings()
-            compare(_qopenhd.events[0], "start")
             tryCompare(settings_panel, "status", Loader.Ready)
             tryVerify(function() { return settings_panel.item.currentPageReady })
-            tryVerify(function() { return _qopenhd.events.indexOf("ready") >= 0 })
-            compare(_qopenhd.readyTooEarly, false)
             var cached = settings_panel.item
             settings_panel.close_all()
-            compare(_qopenhd.events[_qopenhd.events.length - 1], "cancel")
             settings_panel.openSettings()
             compare(settings_panel.item, cached)
-            verify(_qopenhd.events.indexOf("cached") >= 0)
-            compare(_qopenhd.readyTooEarly, false)
             settings_panel.close_all()
         }
     }

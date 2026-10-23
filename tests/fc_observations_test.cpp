@@ -35,6 +35,10 @@ int main(int argc,char** argv) {
         fc.process_firmware_status(identity(3));
         mavlink_message_t msg{};mavlink_scaled_pressure_t p{};p.temperature=2500;
         mavlink_msg_scaled_pressure_encode(1,1,&msg,&p);fc.process_message(msg);
+        CHECK(!fc.craft_diagnostics().contains("messages"));
+        CHECK(!fc.craft_diagnostics().contains("observed"));
+        CHECK(fc.craft_diagnostics().value("total").toInt()==1);
+        fc.acquire_diagnostics();
         CHECK(fc.craft_diagnostics().value("observed").toMap().value("sensorTemperature").toMap().value("value").toDouble()==25);
         p.temperature=2600;mavlink_msg_scaled_pressure_encode(1,1,&msg,&p);fc.process_message(msg);
         publish_diagnostics();
@@ -84,6 +88,36 @@ int main(int argc,char** argv) {
             }
         }
         CHECK(retained_burst);
+        // Only the last viewer closing removes formatted fields. Packets
+        // received while closed must still be present on reopening.
+        fc.acquire_diagnostics();
+        fc.release_diagnostics();
+        CHECK(!fc.craft_diagnostics().value("messages").toList().isEmpty());
+        fc.release_diagnostics();
+        CHECK(!fc.craft_diagnostics().contains("messages"));
+        CHECK(fc.craft_diagnostics().contains("heartbeatAge"));
+        const auto before_closed=fc.craft_diagnostics().value("total").toULongLong();
+        for(int i=0;i<100;++i) {
+            imu.xacc=42.0f;
+            mavlink_msg_highres_imu_encode(1,1,&msg,&imu);
+            fc.process_message(msg);
+        }
+        publish_diagnostics();
+        CHECK(!fc.craft_diagnostics().contains("messages"));
+        CHECK(fc.craft_diagnostics().value("total").toULongLong()==before_closed+100);
+        fc.acquire_diagnostics();
+        bool resumed=false;
+        for(const auto& entry:fc.craft_diagnostics().value("messages").toList()) {
+            const auto item=entry.toMap();
+            if(item.value("id").toInt()!=MAVLINK_MSG_ID_HIGHRES_IMU) continue;
+            CHECK(item.value("count").toInt()==10200);
+            CHECK(!item.value("payload").toString().isEmpty());
+            for(const auto& field:item.value("fields").toList())
+                if(field.toMap().value("name")=="xacc") {
+                    CHECK(field.toMap().value("value").toString()=="42"); resumed=true;
+                }
+        }
+        CHECK(resumed);
         QObject::disconnect(snapshot_connection);
         std::cout<<"10,000 FC packets: "<<burst_ms<<" ms; bounded diagnostics publication passed\n";
         // Timers must age readings, never clear identity or observed fields.
