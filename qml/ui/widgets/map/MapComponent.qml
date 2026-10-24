@@ -47,14 +47,7 @@ Map {
     }
 
     onSupportedMapTypesChanged: {
-        console.log("Map component: supported map types has changed"+map.supportedMapTypes.length)
-        for (var i = 0; i < map.supportedMapTypes.length; i++)  {
-            //console.log("Map type "+i+" "+map.supportedMapTypes[i]+" "+map.supportedMapTypes[i].description)
-        }
-        variantDropdown.model = map.supportedMapTypes
-        variantDropdown.currentIndex = forceCustomMapType ? Math.max(0, map.supportedMapTypes.length - 1) : settings.selected_map_variant
-        //console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
-        map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
+        setup_map_variant()
     }
 
     Connections {

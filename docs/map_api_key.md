@@ -13,10 +13,21 @@ The Map widget supports Mapbox tiles when you provide an access token. Follow th
 3. **Add the token in QOpenHD**
    - Open the Map widget settings (gear icon) and pick **Mapbox (API key)** as the provider.
    - Paste the token into the **Map API key** field.
-   - Close and reopen the map if prompted; the widget will rebuild the map using your token.
+   - Finish editing the field; the widget rebuilds the map automatically. Use **Reload map** to retry.
 
 4. **Keep your key safe**
    - Do not publish your token in screenshots or videos.
    - If a token is exposed, revoke it from the Mapbox **Tokens** page and create a new one.
 
 Once the token is saved in settings, the Mapbox map should load without the “API key required” notice.
+
+## Recovering an unavailable map
+
+The small-map gear menu includes the provider selector and **Reload map**, even
+when no map canvas could be created. Select **OpenStreetMap** or **OpenHD Offline**
+to switch away from Mapbox without restarting QOpenHD. Offline maps require an
+installed package; online maps require an internet connection.
+
+The Qt 5 `mapboxgl` provider requires the plugin parameter
+`mapboxgl.access_token`. The similarly named `mapbox.access_token` belongs to the
+separate raster provider and is ignored by Mapbox GL.

@@ -20,7 +20,9 @@ MapWidgetForm {
     property bool settingsVisible: false
     property bool followDrone: true
 
-    property variant map
+    property variant map: null
+    property var mapPlugin: null
+    property string mapFailure: ""
     property bool apiKeyMissing: false
     property string activeProviderName: ""
 
@@ -40,7 +42,7 @@ MapWidgetForm {
     }
 
     function configure() {
-        if(settings.selected_map_provider>=pluginModel.count){
+        if(settings.selected_map_provider < 0 || settings.selected_map_provider>=pluginModel.count){
             // Fixup possibly invalid index
             settings.selected_map_provider=0;
         }
@@ -68,93 +70,91 @@ MapWidgetForm {
         setup_map_variant()
     }
 
-    // To create the map, we know the provider.
-    // The map variant (aka street view, terrain view, ...) is set later
-    function createMap(parent, provider) {
-        console.log("createMap(" + provider + ")");
-        apiKeyMissing = false;
-        var plugin
-        if (provider === "mapboxgl") {
-            if (!settings.map_api_key || settings.map_api_key.length === 0) {
-                console.log("MapboxGL provider selected without API key");
-                apiKeyMissing = true;
-                if (map) {
-                    map.destroy();
-                    map = null;
-                }
-                return;
-            }
-            plugin = Qt.createQmlObject(`
-                                        import QtLocation 5.15
-                                        Plugin {
-                                        name: "` + provider + `"
-                                        PluginParameter { name: "mapbox.access_token"; value: "` + settings.map_api_key + `" }
-                                        }
-                                        `, mapWidget);
-        } else if (provider === "openhd_offline") {
-            plugin = Qt.createQmlObject(`
-                                        import QtLocation 5.15
-                                        Plugin {
-                                        name: "osm"
-                                        PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
-                                        PluginParameter { name: "osm.mapping.custom.host"; value: "` + _offlineMapTiles.baseUrl + `" }
-                                        PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "OpenStreetMap contributors" }
-                                        PluginParameter { name: "osm.mapping.custom.datacopyright"; value: "OpenStreetMap contributors" }
-                                        }
-                                        `, mapWidget);
-        } else {
-            plugin = Qt.createQmlObject(`
-                                        import QtLocation 5.15
-                                        Plugin {
-                                        name: "` + provider + `"
-                                        PluginParameter {
-                                        name: "osm.mapping.custom.host";
-                                        value: "https://tile.openstreetmap.org/" }
-                                        }
-                                        `, mapWidget);
+    // Each map owns a fresh plugin: QtLocation cannot switch an existing map's plugin.
+    function clearMap() {
+        if (map) {
+            map.destroy()
+            map = null
         }
-        console.log("Using plugin: " + plugin.name);
+        if (mapPlugin) {
+            mapPlugin.destroy()
+            mapPlugin = null
+        }
+        variantDropdown.model = []
+    }
 
-        if (plugin.supportsMapping()) {
-            // Store previous center for a more fluent transition
-            var previousCenter;
-            // Completely delete any previously created map (the plugin cannot be changed dynamically)
-            if (map) {
-                previousCenter = map.center;
-                map.destroy()
+    function createMap(parent, provider) {
+        var previousCenter = map ? map.center : null
+        clearMap()
+        apiKeyMissing = false
+        mapFailure = ""
+        var token = settings.map_api_key.trim()
+        if (provider === "mapboxgl" && !token) {
+            apiKeyMissing = true
+            return
+        }
+        // Encode values as QML literals so pasted text cannot break component creation.
+        var parameters = provider === "mapboxgl"
+                ? 'PluginParameter { name: "mapboxgl.access_token"; value: ' + JSON.stringify(token) + ' }'
+                : 'PluginParameter { name: "osm.mapping.custom.host"; value: '
+                  + JSON.stringify(provider === "openhd_offline" ? _offlineMapTiles.baseUrl : "https://tile.openstreetmap.org/") + ' }'
+        if (provider === "openhd_offline") {
+            parameters += 'PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }'
+                        + 'PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "OpenStreetMap contributors" }'
+                        + 'PluginParameter { name: "osm.mapping.custom.datacopyright"; value: "OpenStreetMap contributors" }'
+        }
+        try {
+            mapPlugin = Qt.createQmlObject('import QtLocation 5.15; Plugin { name: '
+                                          + JSON.stringify(provider === "openhd_offline" ? "osm" : provider)
+                                          + '; ' + parameters + ' }', mapWidget)
+            if (!mapPlugin.supportsMapping()) {
+                clearMap()
+                mapFailure = qsTr("Map provider unavailable. Choose another provider in map settings.")
+                return
             }
-            var component = Qt.createComponent("qrc:///ui/widgets/map/MapComponent.qml");
-            if (component.status === Component.Ready) {
-                map = component.createObject(parent, {"anchors.fill": parent, "forceCustomMapType": provider === "openhd_offline"});
-                map.plugin = plugin;
-
-                map.gesture.enabled = true;
-
-                if (previousCenter) {
-                    map.center = previousCenter;
-                }
-            } else {
-                console.log(component.errorString())
+            var component = Qt.createComponent("MapComponent.qml")
+            if (component.status !== Component.Ready) {
+                clearMap()
+                mapFailure = qsTr("Unable to load the map. Choose another provider or retry in map settings.")
+                return
             }
-        }else{
-            console.log("Plugin does not support mapping");
+            map = component.createObject(parent, {"anchors.fill": parent,
+                "plugin": mapPlugin, "forceCustomMapType": provider === "openhd_offline"})
+            if (!map) {
+                clearMap()
+                mapFailure = qsTr("Unable to create the map. Choose another provider or retry in map settings.")
+                return
+            }
+            map.gesture.enabled = mapExpanded
+            if (previousCenter && previousCenter.isValid)
+                map.center = previousCenter
+        } catch (error) {
+            // Qt errors may include source text containing the token. Never log it.
+            clearMap()
+            mapFailure = qsTr("Unable to initialize the map. Choose another provider or retry in map settings.")
         }
     }
 
-    function setup_map_variant(){
-        if (map) {
-            variantDropdown.model = map.supportedMapTypes
-            variantDropdown.currentIndex = activeProviderName === "openhd_offline" ? Math.max(0, map.supportedMapTypes.length - 1) : settings.selected_map_variant
-            console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
-            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
+    function setup_map_variant() {
+        var types = map ? map.supportedMapTypes : []
+        variantDropdown.model = types
+        if (!types.length) {
+            variantDropdown.currentIndex = -1
+            return
         }
+        var index = activeProviderName === "openhd_offline" ? types.length - 1 : settings.selected_map_variant
+        if (index < 0 || index >= types.length)
+            index = 0
+        variantDropdown.currentIndex = index
+        map.activeMapType = types[index]
     }
 
     Rectangle {
-        anchors.fill: widgetInnerMap
+        parent: widgetInnerMap
+        anchors.fill: parent
         visible: activeProviderName === "openhd_offline" && !_offlineMapTiles.available
         color: "#d0090e0f"
-        z: 20
+        z: 1
         Text {
             anchors.centerIn: parent
             width: parent.width - 20
@@ -168,7 +168,7 @@ MapWidgetForm {
     Connections {
         target: settings
         function onMap_api_keyChanged() {
-            if (settings.selected_map_provider < pluginModel.count
+            if (settings.selected_map_provider >= 0 && settings.selected_map_provider < pluginModel.count
                     && pluginModel.get(settings.selected_map_provider).name === "mapboxgl") {
                 configure()
             }
@@ -244,7 +244,7 @@ MapWidgetForm {
         if (mapExpanded == false) {
             resetAnchors()
             setAlignment(0, 0, 48, false, false, true)
-            map.gesture.enabled = true
+            if (map) map.gesture.enabled = true
             mapExpanded = !mapExpanded
             scale = 1
         }
@@ -259,7 +259,7 @@ MapWidgetForm {
         loadAlignment()
         followDrone = true
         settingsVisible = false
-        map.gesture.enabled = false
+        if (map) map.gesture.enabled = false
         mapExpanded = !mapExpanded
         //scale = settings.map_size
         //mapWidget.widgetInner.opacity = 0

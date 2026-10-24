@@ -197,6 +197,22 @@ BaseWidget {
                     onCheckedChanged: settings.map_orientation = checked
                 }
             }
+            DarkComboBox {
+                width: 230
+                height: 48
+                model: pluginModel
+                textRole: "description"
+                currentIndex: settings.selected_map_provider
+                onActivated: {
+                    settings.selected_map_provider = index
+                    configure()
+                }
+            }
+            Button {
+                width: 230
+                text: qsTr("Reload map")
+                onClicked: configure()
+            }
             Item {
                 width: 230
                 height: 110
@@ -216,11 +232,7 @@ BaseWidget {
                         placeholderText: qsTr("pk.xxxxx")
                         selectByMouse: true
                         onEditingFinished: {
-                            settings.map_api_key = text
-                            if (providerDropdown.currentIndex >= 0 && providerDropdown.currentIndex < pluginModel.count
-                                    && pluginModel.get(providerDropdown.currentIndex).name === "mapboxgl") {
-                                configure()
-                            }
+                            settings.map_api_key = text.trim()
                         }
                     }
                     Text {
@@ -562,11 +574,7 @@ BaseWidget {
                                 placeholderText: qsTr("pk.xxxxx")
                                 selectByMouse: true
                                 onEditingFinished: {
-                                    settings.map_api_key = text
-                                    if (providerDropdown.currentIndex >= 0 && providerDropdown.currentIndex < pluginModel.count
-                                            && pluginModel.get(providerDropdown.currentIndex).name === "mapboxgl") {
-                                        configure()
-                                    }
+                                    settings.map_api_key = text.trim()
                                 }
                             }
                             Text {
@@ -587,7 +595,7 @@ BaseWidget {
                         model: pluginModel
                         textRole: "description"
 
-                        Component.onCompleted: currentIndex = settings.selected_map_provider
+                        currentIndex: settings.selected_map_provider
 
                     }
 
@@ -691,15 +699,17 @@ BaseWidget {
         Rectangle {
             anchors.fill: parent
             color: "#CC000000"
-            visible: apiKeyMissing
-            z: 3.0
+            visible: apiKeyMissing || mapFailure.length > 0 || (map && map.error !== 0)
+            // Keep the settings/close button above provider errors.
+            z: 1.0
 
             Column {
                 anchors.centerIn: parent
                 spacing: 8
                 width: parent.width * 0.8
                 Text {
-                    text: qsTr("An API key is required for the selected map provider.")
+                    text: apiKeyMissing ? qsTr("A Mapbox API key is required.")
+                          : mapFailure.length > 0 ? mapFailure : qsTr("Map unavailable. Check your connection and API key.")
                     color: "white"
                     font.bold: true
                     wrapMode: Text.WordWrap
@@ -707,7 +717,7 @@ BaseWidget {
                     width: parent.width
                 }
                 Text {
-                    text: qsTr("Add your Mapbox access token in the map settings, then reload the map.")
+                    text: qsTr("Open map settings to reload or choose another provider.")
                     color: "lightgray"
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignHCenter
