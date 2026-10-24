@@ -1,0 +1,172 @@
+#include <QGuiApplication>
+#include <QQmlComponent>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QTimer>
+#include <QThread>
+#include <QDebug>
+#include <optional>
+#include <functional>
+#include <mutex>
+#include <list>
+#include <thread>
+#include <memory>
+#include <vector>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
+#include "telemetry/tutil/mavlink_include.h"
+#include "telemetry/tutil/openhd_defines.hpp"
+#include "telemetry/action/create_cmd_helper.hpp"
+#define private public
+#include "telemetry/action/impl/cmdsender.h"
+#undef private
+
+// Replace only transport/model dependencies of the real CmdSender.
+#define QOPENHDMAVLINKHELPER_H
+namespace QOpenHDMavlinkHelper {
+static uint8_t get_own_sys_id() { return 255; }
+static uint8_t get_own_comp_id() { return MAV_COMP_ID_MISSIONPLANNER; }
+}
+#define MAVLINK_ENUM_TO_STRING_H
+namespace qopenhd {
+static std::string mavlink_command_ack_to_string(const mavlink_command_ack_t&) { return "ack"; }
+}
+#define OHDMAVLINKCONNECTION_H
+class MavlinkTelemetry {
+public:
+    int reply=MAV_RESULT_ACCEPTED;
+    std::vector<mavlink_command_long_t> sent;
+    static MavlinkTelemetry& instance() { static MavlinkTelemetry value; return value; }
+    bool sendMessage(const mavlink_message_t& message) {
+        mavlink_command_long_t command{};
+        mavlink_msg_command_long_decode(&message, &command);
+        sent.push_back(command);
+        if (reply >= 0) {
+            const int result=reply;
+            // The production receive path queues messages onto this GUI thread.
+            QTimer::singleShot(0, [command,result] {
+                mavlink_message_t ack{};
+                mavlink_msg_command_ack_pack(command.target_system,command.target_component,&ack,
+                    command.command,result,255,0,255,MAV_COMP_ID_MISSIONPLANNER);
+                CmdSender::instance().process_message(ack);
+            });
+        }
+        return true;
+    }
+};
+#include "telemetry/action/impl/cmdsender.cpp"
+
+// Keep only the QObject API needed by the production power methods/QML.
+class OHDAction : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(bool powerActionBusy READ powerActionBusy NOTIFY powerActionBusyChanged)
+public:
+    bool powerActionBusy() const { return m_power_action_busy; }
+    Q_INVOKABLE QString request_power_action(bool ground,bool reboot);
+    bool send_command_reboot_air(bool reboot);
+    bool send_command_reboot_gnd(bool reboot);
+signals:
+    void powerActionBusyChanged();
+    void powerActionFinished(bool ground,bool reboot,QString result);
+private:
+    bool m_power_action_busy=false;
+};
+@POWER_ACTION_METHODS@
+
+class Ui : public QObject {
+    Q_OBJECT
+public:
+    int closes=0;
+    QString toast;
+    Q_INVOKABLE void close_all() { ++closes; }
+    Q_INVOKABLE void show_toast(QString message) { toast=message; }
+};
+
+static void require(bool ok,const char* message) {
+    if (!ok) { std::fprintf(stderr,"FAIL: %s\n",message); std::exit(1); }
+}
+static void drain() {
+    for (int i=0;i<10;++i) QCoreApplication::processEvents();
+}
+
+int main(int argc,char** argv) {
+    QGuiApplication app(argc,argv);
+    auto& sender=CmdSender::instance();
+    sender.terminate(); // Drive retry expiry deterministically, without sleeping/rebooting.
+    auto& transport=MavlinkTelemetry::instance();
+    OHDAction action;
+    Ui ui;
+    QQmlEngine engine;
+    engine.rootContext()->setContextProperty("_ohdAction",&action);
+    engine.rootContext()->setContextProperty("_qopenhd",&ui);
+    engine.rootContext()->setContextProperty("settings_panel",&ui);
+    QQmlComponent component(&engine,QUrl::fromLocalFile(argv[1]));
+    std::unique_ptr<QObject> dialog(component.create());
+    if (!dialog) qWarning()<<component.errors();
+    require(bool(dialog),"production power dialog handlers load");
+    auto* submit=dialog->findChild<QObject*>("groundShutdown");
+    auto* cancel=dialog->findChild<QObject*>("groundReboot");
+    require(submit && cancel,"production buttons present");
+    auto open=[&](int system,bool reboot) {
+        require(QMetaObject::invokeMethod(dialog.get(),"open_dialoque",
+            Q_ARG(QVariant,QVariant(system)),Q_ARG(QVariant,QVariant(reboot))),"open power dialog");
+        ui.toast.clear();
+    };
+    auto press=[&] { require(QMetaObject::invokeMethod(submit,"pressed"),"press power button"); };
+
+    // A GUI-thread ACK must be processed before the retry timeout.
+    open(1,true);
+    press();
+    require(action.powerActionBusy() && dialog->property("powerRequestPending").toBool(),"request queued without blocking");
+    require(ui.toast.isEmpty(),"no premature failure/success toast");
+    require(!submit->property("enabled").toBool() && !cancel->property("enabled").toBool(),"pending buttons disabled");
+    require(action.request_power_action(true,true)=="busy","duplicate power request rejected");
+    require(transport.sent.size()==1 && transport.sent.back().target_system==101
+            && transport.sent.back().param2==1,"air companion reboot target preserved");
+    drain();
+    require(!action.powerActionBusy() && !dialog->property("visible").toBool(),"ACK completes and closes dialog");
+    require(ui.toast=="Reboot request accepted" && ui.closes==1,"accepted ACK reports success");
+
+    transport.reply=MAV_RESULT_DENIED;
+    open(0,false);
+    press();
+    require(transport.sent.back().target_system==100 && transport.sent.back().param2==2,"ground shutdown target preserved");
+    drain();
+    require(ui.toast.contains("rejected") && dialog->property("visible").toBool(),"explicit rejection stays an error");
+    require(!action.powerActionBusy() && submit->property("enabled").toBool(),"rejection releases busy state");
+
+    transport.reply=-1;
+    open(0,true);
+    press();
+    for (int retry=0;retry<3;++retry) {
+        for (auto& command:sender.m_running_commands) command.last_transmission-=std::chrono::seconds(2);
+        sender.handle_timeout();
+    }
+    drain();
+    require(sender.m_running_commands.empty(),"last expired command safely removed");
+    require(ui.toast.contains("may already be rebooting") && !dialog->property("visible").toBool(),"missing ACK remains unconfirmed, not failure");
+
+    int expired=0;
+    for (int i=0;i<5;++i) {
+        mavlink_command_long_t command{};
+        command.command=500+i;
+        require(sender.send_command_long_async(command,[&](auto){++expired;},std::chrono::milliseconds(10),1),"fill command queue");
+    }
+    open(1,true);
+    press();
+    require(!action.powerActionBusy() && !dialog->property("powerRequestPending").toBool(),"queue-full releases pending state");
+    require(ui.toast.contains("Could not queue") && dialog->property("visible").toBool(),"queue-full remains an error");
+    for (auto& command:sender.m_running_commands) command.last_transmission-=std::chrono::seconds(2);
+    sender.handle_timeout();
+    require(expired==5 && sender.m_running_commands.empty(),"adjacent expired commands each complete once");
+
+    transport.reply=MAV_RESULT_ACCEPTED;
+    require(action.send_command_reboot_air(true),"legacy boolean API reports queued request");
+    drain();
+    require(!action.powerActionBusy(),"legacy request completes asynchronously");
+    std::puts("PASS: asynchronous air/ground power actions, GUI ACK, rejection, disconnect and queue expiry");
+    return 0;
+}
+#include "power_action_test.moc"

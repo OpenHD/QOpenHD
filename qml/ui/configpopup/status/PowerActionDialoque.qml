@@ -25,6 +25,40 @@ Card {
     Component.onCompleted: visible = false
 
     property bool stateVisible: visible
+    property bool powerRequestPending: false
+    property bool pendingGround: false
+    property bool pendingReboot: false
+
+    function finish_power_action(result, reboot) {
+        if (result === "accepted" || result === "unconfirmed") {
+            settings_panel.close_all()
+            powerDialog.visible = false
+        }
+        var message
+        if (result === "accepted") {
+            message = reboot ? qsTr("Reboot request accepted") : qsTr("Shutdown request accepted")
+        } else if (result === "unconfirmed") {
+            message = reboot ? qsTr("No confirmation received; the unit may already be rebooting")
+                             : qsTr("No confirmation received; the unit may already be shutting down")
+        } else if (result === "denied") {
+            message = qsTr("Reboot/Shutdown request rejected by the unit")
+        } else if (result === "busy") {
+            message = qsTr("A Reboot/Shutdown request is already pending")
+        } else {
+            message = qsTr("Could not queue Reboot/Shutdown request; please try again")
+        }
+        _qopenhd.show_toast(message)
+    }
+
+    Connections {
+        target: _ohdAction
+        function onPowerActionFinished(ground, reboot, result) {
+            if (!powerDialog.powerRequestPending || ground !== powerDialog.pendingGround
+                    || reboot !== powerDialog.pendingReboot) return
+            powerDialog.powerRequestPending = false
+            powerDialog.finish_power_action(result, reboot)
+        }
+    }
 
     function open_dialoque(system,reboot){
         var action=PowerActionDialoque.PowerAction.RebootGround
@@ -89,6 +123,7 @@ Card {
         anchors.fill: parent
         Button {
             id: groundReboot
+            enabled: !powerDialog.powerRequestPending
             width: 96
             height: 48
             text: qsTr("Cancel")
@@ -106,6 +141,7 @@ Card {
 
         Button {
             id: groundShutdown
+            enabled: !powerDialog.powerRequestPending && !_ohdAction.powerActionBusy
             width: 140
             height: 48
             anchors.right: parent.right
@@ -118,6 +154,7 @@ Card {
             highlighted: true
 
             text:  {
+                if (powerDialog.powerRequestPending) return qsTr("Sending...")
                 if (powerAction === PowerActionDialoque.PowerAction.RebootGround) {
                     return qsTr("Reboot Ground")
                 }
@@ -151,26 +188,17 @@ Card {
                         || powerAction === PowerActionDialoque.PowerAction.RebootFC
                 var result
                 if (isGround || isAir) {
+                    powerDialog.pendingGround = isGround
+                    powerDialog.pendingReboot = reboot
                     result = _ohdAction.request_power_action(isGround, reboot)
+                    if (result === "queued") {
+                        powerDialog.powerRequestPending = true
+                        return
+                    }
                 } else {
                     result = _fcMavlinkAction.send_command_reboot(reboot) ? "accepted" : "unconfirmed"
                 }
-                if (result === "accepted" || result === "unconfirmed") {
-                    settings_panel.close_all()
-                    powerDialog.visible = false
-                }
-                var message
-                if (result === "accepted") {
-                    message = reboot ? qsTr("Reboot request accepted") : qsTr("Shutdown request accepted")
-                } else if (result === "unconfirmed") {
-                    message = reboot ? qsTr("No confirmation received; the unit may already be rebooting")
-                                     : qsTr("No confirmation received; the unit may already be shutting down")
-                } else if (result === "denied") {
-                    message = qsTr("Reboot/Shutdown request rejected by the unit")
-                } else {
-                    message = qsTr("Could not queue Reboot/Shutdown request; please try again")
-                }
-                _qopenhd.show_toast(message)
+                powerDialog.finish_power_action(result, reboot)
             }
         }
     }

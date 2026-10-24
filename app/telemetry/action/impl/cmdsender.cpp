@@ -144,7 +144,7 @@ void CmdSender::handle_timeout()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         //qDebug()<<"CmdSender::handle_timeou::CommandQueue"<<m_running_commands.size();
-        for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
+        for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ){
             RunningCommand& running_cmd=*it;
             const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
             //qDebug()<<"Elapsed:"<<elapsed.count();
@@ -158,8 +158,10 @@ void CmdSender::handle_timeout()
                     RunCommandResult result{std::nullopt,running_cmd.n_transmissions};
                     timed_out_commands.push_back(std::make_pair(running_cmd,result));
                     it=m_running_commands.erase(it);
+                    continue;
                 }
             }
+            ++it;
         }
     }
     for(auto& timed_out:timed_out_commands){

@@ -27,26 +27,39 @@ OHDAction& OHDAction::instance()
 
 bool OHDAction::send_command_reboot_air(bool reboot)
 {
-    return request_power_action(false, reboot) == "accepted";
+    return request_power_action(false, reboot) == "queued";
 }
 
 bool OHDAction::send_command_reboot_gnd(bool reboot)
 {
-    return request_power_action(true, reboot) == "accepted";
+    return request_power_action(true, reboot) == "queued";
 }
 
 QString OHDAction::request_power_action(bool ground, bool reboot)
 {
+    if (m_power_action_busy) return "busy";
     const auto system = ground ? OHD_SYS_ID_GROUND : OHD_SYS_ID_AIR;
     const auto command=cmd::helper::create_cmd_reboot(system,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
-    const auto res=CmdSender::instance().send_command_long_blocking(command);
-    switch (res) {
-    case CmdSender::CMD_SUCCESS: return "accepted";
-    case CmdSender::NO_RESPONSE: return "unconfirmed";
-    case CmdSender::CMD_DENIED: return "denied";
-    case CmdSender::QUEUE_FULL: return "queue_full";
+    m_power_action_busy=true;
+    emit powerActionBusyChanged();
+    // ACK reception runs on the GUI thread too. Waiting here would prevent
+    // processing the ACK until after the timeout (and possibly the reboot).
+    const bool queued=CmdSender::instance().send_command_long_async(
+        command,[this,ground,reboot](CmdSender::RunCommandResult reply) {
+            const QString result=!reply.opt_ack.has_value() ? "unconfirmed"
+                : reply.opt_ack->result==MAV_RESULT_ACCEPTED ? "accepted" : "denied";
+            QMetaObject::invokeMethod(this,[this,ground,reboot,result]() {
+                m_power_action_busy=false;
+                emit powerActionBusyChanged();
+                emit powerActionFinished(ground,reboot,result);
+            },Qt::QueuedConnection);
+        });
+    if (!queued) {
+        m_power_action_busy=false;
+        emit powerActionBusyChanged();
+        return "queue_full";
     }
-    return "unconfirmed";
+    return "queued";
 }
 
 bool OHDAction::send_command_format_air_sd_card()

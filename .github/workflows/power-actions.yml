@@ -1,0 +1,43 @@
+name: Power action regression
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - app/telemetry/action/ohdaction.*
+      - app/telemetry/action/impl/cmdsender.*
+      - app/telemetry/MavlinkTelemetry.cpp
+      - qml/ui/configpopup/status/PowerActionDialoque.qml
+      - tests/run_power_action_test.py
+      - tests/power_action_test.cpp.in
+      - .github/workflows/power-actions.yml
+  pull_request:
+    paths:
+      - app/telemetry/action/ohdaction.*
+      - app/telemetry/action/impl/cmdsender.*
+      - app/telemetry/MavlinkTelemetry.cpp
+      - qml/ui/configpopup/status/PowerActionDialoque.qml
+      - tests/run_power_action_test.py
+      - tests/power_action_test.cpp.in
+      - .github/workflows/power-actions.yml
+
+permissions:
+  contents: read
+
+jobs:
+  power-actions:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Qt test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential python3 qtbase5-dev qtdeclarative5-dev \
+            qml-module-qtquick2 qml-module-qtquick-controls2 \
+            qml-module-qtquick-window2 qml-module-qtquick-layouts \
+            qml-module-qtgraphicaleffects
+      - name: Exercise power requests through the GUI event loop
+        run: python3 tests/run_power_action_test.py --qt-bin /usr/lib/qt5/bin
