@@ -50,9 +50,10 @@ This permits different HUD and video update rates; it does not guarantee an
 HDMI refresh rate, decoder throughput for every stream, or a latency bound.
 
 The target modes are 1280x720 at 120 fps and 1920x1080 at 60 fps. The output
-profiles in `deployment/nxp/` request those HDMI modes and a 1 ms repaint
-window. They still require testing with a connected monitor and the matching
-NXP compositor/graphics stack. Do not interpret a configuration file as proof
+profiles in `deployment/nxp/` request those HDMI modes. The 1080p60 and
+preferred-mode profiles allow 16 ms for composition; the experimental 720p120
+profile allows 7 ms. A 1 ms window missed refresh deadlines on the live BSP.
+The 120 Hz profile still requires testing with a compatible monitor. Do not interpret a configuration file as proof
 that a mode is supported by the attached sink.
 
 The queue limits are two complete compressed access units, one replaceable
@@ -78,6 +79,41 @@ and presentation feedback are separate counters. The timing diagnostic measures
 completed-access-unit reception to receipt of presentation feedback, including
 callback delivery. It excludes capture, RF/FEC and the time spent receiving
 the access unit, and is not a glass-to-glass measurement.
+
+## Native secondary QML video
+
+With two cameras selected, `SecondaryVideoNxp.qml` loads `NxpVideoItem` into
+QOpenHD's existing secondary panel. It uses its own Hantro decoder and bounded
+RTP queue on UDP 5601, then imports linear NV12 as an external EGL texture in
+Qt's render thread. The existing minimize/maximize and sizing controls apply.
+Switching primary and secondary swaps the configured ports/codecs for both
+receivers. Both support H.264 and H.265, without GStreamer or FFmpeg.
+
+The secondary follows Qt's scene graph rate. The primary still commits its
+independent Wayland surface. Secondary framebuffer leases are retained until their Qt render fence
+signals, so the VPU cannot reuse that memory while Qt samples it. At most
+two retired textures are held; later updates are dropped while the GPU is
+late. Unsupported fence APIs use a synchronous Qt-context fallback. Hantro libraries remain locally loaded
+to avoid the CRC symbol collision described below.
+
+## Vivante scanout synchronization
+
+The checked-in `tools/nxp-weston-scanout-fence.patch` makes the compositor
+export its native render fence after `eglSwapBuffers`, including the native
+window resolve, and pass it to the atomic primary plane's `IN_FENCE_FD`.
+The output owns that fd until the next render or output teardown. No per-draw
+`glFinish` is used by the primary compositor. The NV12 child advertises an
+opaque visible region, avoiding a redundant fullscreen background draw and
+unnecessary video alpha blending. Its initial stacking state is committed
+after the first video buffer exists, even when the HUD is static.
+
+On the live NXP BSP, missing scanout synchronization caused gray bands and
+misplaced HUD graphics despite near-60 presentation callbacks per second.
+Serializing every GPU draw improved correctness but missed display deadlines.
+The explicit KMS fence and opaque video region corrected this path; the user
+confirmed the resulting motion looked and felt good. Source-built ORQA bundles
+apply this patch, ship it with the compositor license/source information, and
+record `compositor_patch_sha256` alongside the upstream source checksum.
 
 ## Why this does not add DRM overlay planes
 
@@ -140,9 +176,9 @@ replaced. The runtime's `run-qopenhd.sh` selects Qt Wayland. OpenHD's normal
 input is loopback UDP 5600; codec, port, primary/secondary selection, rotation
 and aspect-ratio settings are read from QOpenHD settings.
 
-The current headless deployment uses transient services `qopenhd-nxp` and
-`qopenhd-nxp-compositor`. They remain running until stopped or rebooted;
-they do not install boot-time units. The default selected input is H.264 on
+The initial headless deployment used transient services `qopenhd-nxp` and
+`qopenhd-nxp-compositor`. Those diagnostics ran until stopped or rebooted;
+production images install the persistent units described above. The default selected input is H.264 on
 loopback UDP 5600. The test-only EGLDevice adapter is enabled solely for this
 headless compositor; remove it when starting the normal DRM/HDMI backend.
 
@@ -222,7 +258,41 @@ can cause systemd-tmpfiles to reject unsafe path transitions on the next boot,
 leaving logind and the compositor stopped. This was reproduced and corrected
 during live bring-up; the HUD was then confirmed visible on the attached monitor.
 
-Remaining physical validation: stable monitor output and 720p120 mode selection,
+Live 1080p60 HDMI was subsequently confirmed visible. The temporary FPS overlay
+was removed. Big Buck Bunny was decoded and re-encoded on Hantro for the final
+movie test; an encoder-input NV12 chroma stride mismatch was corrected. The
+movie and RTP generators are diagnostics, not production services or image
+assets. A B-frame movie must be reordered before preparing an IPPP fixture;
+feeding it directly into the no-reorder flight decoder is not a smoothness test.
+
+Remaining physical validation: 720p120 mode selection,
 120 Hz scanout, vblank/presentation timing under sustained RF video, GPU load,
 visible color/rotation/overlay correctness, recovery with the real Air stream,
 and glass-to-glass latency. The initial decoder/compositor tests were headless.
+
+## OpenHD input and deployment checks
+
+SysUtils owns the persistent `run_mode` setting. In Ground mode it starts
+`qopenhd.service`, which requires the native compositor. OpenHD Ground forwards
+stream 0 to localhost UDP 5600 and stream 1 to 5601. No separate ground decoder
+service is needed. The connected FRDM was changed to Ground through the
+SysUtils settings socket and OpenHD confirmed `Ground Unit` at startup.
+
+The live integration test fed both streams into OpenHD's Ethernet ingress,
+not directly into the UI sockets:
+
+```sh
+python3 tools/nxp-send-rtp.py primary.h264 127.0.0.1 --port 5910 --openhd-stream 0 --fps 60
+python3 tools/nxp-send-rtp.py secondary.h265 127.0.0.1 --port 5910 --openhd-stream 1 --fps 30
+```
+
+H.264 and H.265 secondary pictures were inspected in DRM scanout captures with
+the primary visible. Decode errors and input queue drops remained zero in
+these paired-stream tests. Secondary rendering follows the available Qt/GPU
+rate; simultaneous maximum-rate streams and 120 Hz output are not established
+by these tests. RF reception and glass-to-glass latency remain separate checks.
+
+The HDMI regression also exercised H.265 1080p60 primary with H.264 secondary
+through OpenHD. During a deliberate two-second Qt GUI block, the independent
+primary received 120 presentation callbacks; both decoders reported zero errors
+and zero input queue drops.

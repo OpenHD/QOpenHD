@@ -1,0 +1,75 @@
+--- a/libweston/renderer-gl/gl-renderer.c
++++ b/libweston/renderer-gl/gl-renderer.c
+@@ -1482,7 +1482,6 @@
+ 
+ 	wl_signal_emit(&output->frame_signal, output_damage);
+ 
+-	go->end_render_sync = create_render_sync(gr);
+ 
+ 	if (gr->swap_buffers_with_damage && !gr->fan_debug) {
+ 		int n_egl_rects;
+@@ -1500,6 +1499,10 @@
+ 	} else {
+ 		ret = eglSwapBuffers(gr->egl_display, go->egl_surface);
+ 	}
++
++	/* Include the native window resolve performed by SwapBuffers. */
++	go->end_render_sync = create_render_sync(gr);
++	glFlush();
+ 
+ 	if (ret == EGL_FALSE && !errored) {
+ 		errored = 1;
+--- a/libweston/backend-drm/drm-gbm.c
++++ b/libweston/backend-drm/drm-gbm.c
+@@ -193,6 +193,7 @@
+ 	struct drm_plane *plane = output->scanout_plane;
+ 	unsigned int i;
+ 
++	output->render_fence_fd = -1;
+ 	assert(output->gbm_surface == NULL);
+ 
+ 	for (i = 0; i < plane->count_formats; i++) {
+@@ -263,6 +264,10 @@
+ 		drm_plane_reset_state(output->scanout_plane);
+ 	}
+ 
++	if (output->render_fence_fd >= 0) {
++		close(output->render_fence_fd);
++		output->render_fence_fd = -1;
++	}
+ 	gl_renderer->output_destroy(&output->base);
+ 	gbm_surface_destroy(output->gbm_surface);
+ 	output->gbm_surface = NULL;
+@@ -295,6 +300,22 @@
+ 		return NULL;
+ 	}
+ 	ret->gbm_surface = output->gbm_surface;
++	/* Vivante DMA-BUFs do not reliably provide implicit scanout sync.
++	 * Pass the completed native-window render fence to atomic KMS. */
++	if (b->atomic_modeset && output->scanout_plane->props[WDRM_PLANE_IN_FENCE_FD].prop_id) {
++		struct drm_plane_state *ps = drm_output_state_get_plane(state, output->scanout_plane);
++		int fence_fd = gl_renderer->create_fence_fd(&output->base);
++		if (fence_fd < 0) {
++			weston_log("NXP: native render fence unavailable\n");
++			drm_fb_unref(ret);
++			return NULL;
++		}
++		if (output->render_fence_fd >= 0)
++			close(output->render_fence_fd);
++		output->render_fence_fd = fence_fd;
++		ps->in_fence_fd = output->render_fence_fd;
++	}
++
+ 
+ 	return ret;
+ }
+--- a/libweston/backend-drm/drm-internal.h
++++ b/libweston/backend-drm/drm-internal.h
+@@ -506,6 +506,7 @@
+ 	int current_cursor;
+ 
+ 	struct gbm_surface *gbm_surface;
++	int render_fence_fd; /* Owned by output; plane state borrows it. */
+ 	uint32_t gbm_format;
+ 	uint32_t gbm_bo_flags;
+ 

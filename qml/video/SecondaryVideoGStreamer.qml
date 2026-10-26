@@ -7,10 +7,9 @@ import OpenHD 1.0
 
 import "../ui/elements"
 
-// R.n the only impl. for secondar video we have is using gstreamer & qmlglsink.
-// This probably won't change - qmlglsink is easier to use, and the latency on the seconadry
-// stream doesn't matter as much, since most of the time it is a thermal camera or similar
-// Also, it is nice to automatically have all features needed for the secondary video like scaling, resizing ...
+// The platform backend renders inside this shared secondary video panel.
+// NXP uses native Hantro/EGL; the other platform renderers keep their existing
+// sizing, minimize/maximize and settings controls here.
 
 Item {
     id: secondary_video_item
@@ -77,9 +76,9 @@ Item {
 
     Text{
         anchors.fill: video_holder
-        visible: !QOPENHD_ENABLE_VIDEO_VIA_AVCODEC || !_decodingStatistics.secondary_video_active
+        visible: !(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC || QOPENHD_ENABLE_NXP_VIDEO) || !_decodingStatistics.secondary_video_active
         text: {
-            if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK || QOPENHD_ENABLE_VIDEO_VIA_AVCODEC){
+            if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK || QOPENHD_ENABLE_VIDEO_VIA_AVCODEC || QOPENHD_ENABLE_NXP_VIDEO){
                 return qsTr("WAITING FOR\nSECONDARY VIDEO");
             }
             return qsTr("SECONDARY VIDEO\nNOT AVAILABLE\nON THIS PLATFORM");
@@ -95,6 +94,8 @@ Item {
         anchors.fill: video_holder
         source: {
             if(settings.dev_qopenhd_n_cameras>1){
+                if (QOPENHD_ENABLE_NXP_VIDEO)
+                    return "SecondaryVideoNxp.qml";
                 if (QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
                     return "SecondaryVideoAndroid.qml";
                 }

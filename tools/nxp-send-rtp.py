@@ -15,6 +15,8 @@ p.add_argument("--fps", type=int, default=120)
 p.add_argument("--loops", type=int, default=5)
 p.add_argument("--start-delay", type=float, default=0)
 p.add_argument("--drop-every", type=int, default=0, help="drop one RTP fragment every N pictures")
+p.add_argument("--openhd-stream", type=int, choices=(0, 1),
+               help="wrap RTP for OpenHD Ethernet ingress (use --port 5910)")
 args = p.parse_args()
 hevc = args.file.suffix == ".h265"
 nals = [n for n in re.split(b"\x00\x00\x00?\x01", args.file.read_bytes()) if n]
@@ -56,7 +58,10 @@ for _ in range(args.loops):
             header = struct.pack("!BBHII", 0x80, 96 | (128 if i == len(payloads)-1 else 0), sequence, timestamp, source)
             sequence = (sequence + 1) & 0xffff
             if not (args.drop_every and pictures % args.drop_every == args.drop_every-1 and i == len(payloads)//2):
-                sock.sendto(header + payload, (args.host, args.port))
+                packet = header + payload
+                if args.openhd_stream is not None:
+                    packet = b'OHDV\x01' + bytes([args.openhd_stream]) + packet
+                sock.sendto(packet, (args.host, args.port))
         pictures += 1
         time.sleep(max(0, start + pictures / args.fps - time.monotonic()))
 print(f"Sent {pictures} access units in {time.monotonic()-start:.3f}s")

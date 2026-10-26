@@ -6,6 +6,7 @@ CONFIG += link_pkgconfig
 PKGCONFIG += wayland-client libdrm
 DEFINES += QOPENHD_ENABLE_NXP_VIDEO IS_PLATFORM_NXP
 LIBS += -ldl -pthread
+LIBS += -lEGL
 INCLUDEPATH += $$OUT_PWD/nxp-protocols
 protocol_dir = $$OUT_PWD/nxp-protocols
 mkpath($$protocol_dir)
@@ -24,3 +25,5 @@ SOURCES += $$protocol_dir/linux-dmabuf-protocol.c $$protocol_dir/viewporter-prot
 SOURCES += $$protocol_dir/presentation-time-protocol.c
 SOURCES += $$PWD/VpuApi.cpp $$PWD/HantroDecoder.cpp $$PWD/UdpVideo.cpp $$PWD/WaylandVideo.cpp $$PWD/NxpVideoController.cpp
 HEADERS += $$PWD/VpuApi.hpp $$PWD/HantroDecoder.hpp $$PWD/UdpVideo.hpp $$PWD/WaylandVideo.hpp $$PWD/NxpVideoController.hpp $$PWD/RtpAccessUnit.hpp
+SOURCES += $$PWD/NxpVideoItem.cpp
+HEADERS += $$PWD/NxpVideoItem.hpp

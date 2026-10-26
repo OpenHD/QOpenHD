@@ -176,6 +176,13 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
                     dw = std::max(1, int(sw * scale)); dh = std::max(1, int(sh * scale));
                 }
                 wp_viewport_set_destination(viewport, dw, dh);
+                // NV12 has no alpha. Advertise its visible extent so the
+                // compositor can skip the fullscreen background underneath
+                // and render the video without unnecessary alpha blending.
+                auto opaque = wl_compositor_create_region(g.compositor);
+                wl_region_add(opaque, 0, 0, dw, dh);
+                wl_surface_set_opaque_region(surface, opaque);
+                wl_region_destroy(opaque);
                 wl_subsurface_set_position(sub, (width-dw)/2, (height-dh)/2);
                 wl_surface_attach(surface, buffer->proxy, 0, 0);
                 wl_surface_damage(surface, 0, 0, dw, dh);

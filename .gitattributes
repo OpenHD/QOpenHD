@@ -1,0 +1,2 @@
+# Unified diff context includes intentional spaces before tabs and blank lines.
+tools/nxp-weston-scanout-fence.patch text eol=lf -whitespace

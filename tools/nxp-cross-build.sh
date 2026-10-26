@@ -39,7 +39,7 @@ cd "$work/build-qopenhd-native"
     "QMAKE_CC=$cross_cc" "QMAKE_CXX=$cross_cxx" \
     "QMAKE_LINK=$cross_cxx" "QMAKE_AR=$cross_ar cqs" \
     "QMAKE_CFLAGS+=--sysroot=$sdk -idirafter $qt/usr/include" "QMAKE_CXXFLAGS+=--sysroot=$sdk -idirafter $qt/usr/include" \
-    "QMAKE_LFLAGS+=--sysroot=$sdk -L$sdk/usr/lib -Wl,-rpath-link,$sdk/usr/lib -Wl,-rpath-link,$sdk/lib -Wl,-rpath-link,$qt/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,$qt/lib/aarch64-linux-gnu" \
+    "QMAKE_LFLAGS+=--sysroot=$sdk -L$sdk/usr/lib -L$qt/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,$sdk/usr/lib -Wl,-rpath-link,$sdk/lib -Wl,-rpath-link,$qt/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,$qt/lib/aarch64-linux-gnu" \
     "WAYLAND_PROTOCOLS_DIR=$qt/usr/share/wayland-protocols"
 make -j"${NXP_JOBS:-4}" > "$work/qopenhd-build.log" 2>&1 || { tail -80 "$work/qopenhd-build.log"; exit 1; }
 echo "Built: $work/build-qopenhd-native/release/QOpenHD"

@@ -63,6 +63,7 @@ repo, runtime = map(Path, sys.argv[1:])
 manifest = dict(schema_version=1, qopenhd_commit=subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip(),
                 compositor='Weston 9.0.0 / EGL-GLES', backend='hantro-wayland-dmabuf', media_frameworks=[],
                 compositor_source_sha256='5cf5d6ce192e0eb15c1fc861a436bf21b5bb3b91dbdabbdebe83e1f83aa098fe')
+manifest['compositor_patch_sha256'] = hashlib.sha256((repo/'tools/nxp-weston-scanout-fence.patch').read_bytes()).hexdigest()
 manifest['files'] = {p.relative_to(runtime).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                      for p in runtime.rglob('*') if p.is_file() and p.name != 'manifest.json'}
 (runtime/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')

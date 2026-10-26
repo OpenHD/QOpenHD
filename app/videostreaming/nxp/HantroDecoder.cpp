@@ -77,6 +77,11 @@ void HantroDecoder::push(std::vector<uint8_t>& bytes, uint64_t receivedUs,
             std::fprintf(stderr, "NXP stream: %zux%zu NV12, minimum buffers=%zu\n",
                          info_.decoded_frame_framebuffer_metrics.actual_frame_width,
                          info_.decoded_frame_framebuffer_metrics.actual_frame_height, info_.min_num_required_framebuffers);
+            std::fprintf(stderr, "NXP geometry: aligned=%zux%zu crop=%zu,%zu %zux%zu stride=%zu/%zu\n",
+                info_.decoded_frame_framebuffer_metrics.aligned_frame_width,
+                info_.decoded_frame_framebuffer_metrics.aligned_frame_height,
+                info_.crop_left, info_.crop_top, info_.crop_width, info_.crop_height,
+                info_.decoded_frame_framebuffer_metrics.y_stride, info_.decoded_frame_framebuffer_metrics.uv_stride);
             addBuffers(info_.min_num_required_framebuffers);
             break;
         case IMX_VPU_API_DEC_OUTPUT_CODE_NEED_ADDITIONAL_FRAMEBUFFER: addBuffers(1); break;

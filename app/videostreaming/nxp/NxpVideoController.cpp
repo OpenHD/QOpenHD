@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QPlatformSurfaceEvent>
 #include <QThread>
+#include <wayland-client.h>
 
 NxpVideoController::NxpVideoController(QQuickWindow* window) : window_(window) {
     window->installEventFilter(this);
@@ -53,9 +54,16 @@ void NxpVideoController::refresh() {
         return;
     }
     if (presenter_->state == 0) return;
-    if (!parentUpdateRequested_) {
-        // The native child must exist before asking Qt to commit the initial
-        // stacking state. Subsequent video commits are desynchronized.
+    if (!parentUpdateRequested_ && presenter_->committed.load() > 0) {
+        // Subsurface stacking/position is applied by a parent wl_surface commit,
+        // even for a desynchronized child. QQuickWindow::update() may be elided
+        // when the static HUD has no scene-graph damage, leaving video unmapped.
+        // This timer runs on Qt's GUI thread, alongside its Wayland surface use.
+        auto native = QGuiApplication::platformNativeInterface();
+        auto surface = static_cast<wl_surface*>(native->nativeResourceForWindow("surface", window_));
+        if (!surface) return;
+        wl_surface_commit(surface);
+        wl_display_flush(static_cast<wl_display*>(native->nativeResourceForIntegration("wl_display")));
         window_->update(); parentUpdateRequested_ = true;
     }
     if (input_) {

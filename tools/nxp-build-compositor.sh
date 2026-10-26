@@ -1,6 +1,7 @@
 #!/bin/bash
 # Source-build the same Weston GL compositor used by the native NXP port.
 set -euo pipefail
+repo=$(cd "$(dirname "$0")/.." && pwd)
 work=${1:?Usage: nxp-build-compositor.sh WORKDIR}
 sdk=${NXP_SYSROOT:?Set NXP_SYSROOT to the matching NXP target sysroot}
 qt="$work/sysroot"
@@ -14,6 +15,14 @@ fi
 echo "$sha  $archive" | sha256sum -c -
 if [[ ! -d $work/compositor/weston-$version ]]; then
     tar -xf "$archive" -C "$work/compositor"
+fi
+source_dir="$work/compositor/weston-$version"
+scanout_patch="$repo/tools/nxp-weston-scanout-fence.patch"
+if patch --silent --batch --dry-run -d "$source_dir" -p1 --forward < "$scanout_patch"; then
+    patch --silent --batch -d "$source_dir" -p1 --forward < "$scanout_patch"
+elif ! patch --silent --batch --dry-run -d "$source_dir" -p1 --reverse < "$scanout_patch"; then
+    echo "NXP scanout fence patch does not match the compositor source" >&2
+    exit 1
 fi
 export NXP_CC=${NXP_CC:-aarch64-linux-gnu-gcc}
 export NXP_AR=${NXP_AR:-aarch64-linux-gnu-ar}
@@ -65,4 +74,7 @@ mkdir -p "$prefix/share/licenses/weston"
 cp "$work/compositor/weston-$version/COPYING" "$prefix/share/licenses/weston/COPYING"
 printf '%s\n' "Weston $version" "Source: https://wayland.freedesktop.org/releases/weston-$version.tar.xz" \
     "SHA256: $sha" > "$prefix/share/licenses/weston/SOURCE"
+cp "$scanout_patch" "$prefix/share/licenses/weston/"
+printf '%s\n' "Patch: nxp-weston-scanout-fence.patch" \
+    "Patch SHA256: $(sha256sum "$scanout_patch" | cut -d' ' -f1)" >> "$prefix/share/licenses/weston/SOURCE"
 echo "NXP compositor built at $prefix"
