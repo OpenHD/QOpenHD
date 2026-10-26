@@ -4,6 +4,10 @@ set -euo pipefail
 abi=${1:?Usage: build-android-openssl.sh ABI OUTPUT_DIR}
 output=$(realpath -m "${2:?Missing output directory}")
 : "${ANDROID_NDK_ROOT:?Set ANDROID_NDK_ROOT}"
+# OpenSSL 1.1 reads HOME/NDK, not ROOT, and compares canonical compiler paths.
+export ANDROID_NDK_ROOT=$(realpath "$ANDROID_NDK_ROOT")
+export ANDROID_NDK_HOME="$ANDROID_NDK_ROOT"
+export ANDROID_NDK="$ANDROID_NDK_ROOT"
 case "$abi" in
     armeabi-v7a) target=android-arm ;;
     arm64-v8a) target=android-arm64 ;;
