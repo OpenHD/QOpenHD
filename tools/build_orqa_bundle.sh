@@ -67,5 +67,5 @@ manifest['files'] = {p.relative_to(runtime).as_posix(): hashlib.sha256(p.read_by
                      for p in runtime.rglob('*') if p.is_file() and p.name != 'manifest.json'}
 (runtime/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
 PY
-tar -czf "$output/qopenhd-nxp-runtime.tar.gz" -C "$output/deploy" .
+bash "$repo/tools/nxp-pack-deploy.sh" "$output/deploy" "$output/qopenhd-nxp-runtime.tar.gz"
 echo "ORQA QOpenHD/compositor bundle: $output/qopenhd-nxp-runtime.tar.gz"

@@ -22,3 +22,5 @@ jobs:
           PY
       - name: PAM runtime directory and compositor readiness regression
         run: python3 tests/nxp_startup_test.py
+      - name: Deployment archive ownership regression
+        run: python3 tests/nxp_bundle_test.py

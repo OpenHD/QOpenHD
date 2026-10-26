@@ -216,6 +216,11 @@ PAM/logind can overwrite `XDG_RUNTIME_DIR` with `/run/user/0` when opening the
 compositor's tty session. Qt waits for the shared socket before starting.
 Install the runtime and units persistently; copies under `/run` disappear on
 reboot. Check available root filesystem space before deployment.
+Deployment archives normalize all entries to UID/GID 0, including `.` and
+parent directories. Extracting an archive with build-user-owned root directories
+can cause systemd-tmpfiles to reject unsafe path transitions on the next boot,
+leaving logind and the compositor stopped. This was reproduced and corrected
+during live bring-up; the HUD was then confirmed visible on the attached monitor.
 
 Remaining physical validation: stable monitor output and 720p120 mode selection,
 120 Hz scanout, vblank/presentation timing under sustained RF video, GPU load,
