@@ -72,6 +72,7 @@ Item {
         property string baseUrl: "http://127.0.0.1:9/"
         property string mapboxBaseUrl: "http://127.0.0.1:9/"
         property string mapboxCacheDirectory: "CACHE_DIRECTORY"
+        function tileCacheDirectory(provider) { return "CACHE_DIRECTORY/" + provider }
         function setMapboxKey(key) {}
         function reload() {}
     }

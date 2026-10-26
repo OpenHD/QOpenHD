@@ -9,6 +9,11 @@
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
     OfflineMapTileProvider provider;
+    if (provider.tileCacheDirectory("osm") == provider.mapboxCacheDirectory()
+        || provider.tileCacheDirectory("openhd_offline") == provider.tileCacheDirectory("osm")) {
+        std::cerr << "Map provider caches must be separate\n";
+        return 1;
+    }
     QNetworkAccessManager network;
     // These requests must be rejected locally, without an upstream request or key.
     for (const auto& path : {"0/0/0.png", "23/0/0.png", "1/2/0.png", "1/0/4294967296.png", "../settings"}) {

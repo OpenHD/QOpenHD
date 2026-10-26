@@ -34,6 +34,7 @@ public:
     QString activePackageName() const;
     int packageCount() const { return m_packages.size(); }
 
+    Q_INVOKABLE QString tileCacheDirectory(const QString& provider) const;
     Q_INVOKABLE void reload();
     Q_INVOKABLE void setPosition(double latitude, double longitude);
 

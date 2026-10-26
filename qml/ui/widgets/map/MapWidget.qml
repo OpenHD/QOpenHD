@@ -104,6 +104,7 @@ MapWidgetForm {
                   + JSON.stringify(provider === "openhd_offline" ? _offlineMapTiles.baseUrl : "https://tile.openstreetmap.org/") + ' }'
         if (provider !== "mapboxgl") {
             parameters += 'PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }'
+                        + 'PluginParameter { name: "osm.mapping.cache.directory"; value: ' + JSON.stringify(_offlineMapTiles.tileCacheDirectory(provider)) + ' }'
                         + 'PluginParameter { name: "osm.useragent"; value: "QOpenHD/3.0 (+https://openhd.org)" }'
                         + 'PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "OpenStreetMap contributors" }'
                         + 'PluginParameter { name: "osm.mapping.custom.datacopyright"; value: "OpenStreetMap contributors" }'

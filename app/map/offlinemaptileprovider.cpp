@@ -75,6 +75,13 @@ QString OfflineMapTileProvider::mapboxCacheDirectory() const
     return QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(QStringLiteral("mapbox-raster"));
 }
 
+QString OfflineMapTileProvider::tileCacheDirectory(const QString& provider) const
+{
+    const auto directory = provider == QStringLiteral("openhd_offline")
+        ? QStringLiteral("offline-map-tiles") : QStringLiteral("openstreetmap-tiles");
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(directory);
+}
+
 void OfflineMapTileProvider::consumeMapboxRequest(QTcpSocket* socket)
 {
     if (socket->property("handled").toBool()) return;
