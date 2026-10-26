@@ -24,6 +24,7 @@ Item {
     property bool m_show_vertical_center_indicator: false
     property bool m_show_horizontal_center_indicator: false
     property Item colorPicker: null
+    readonly property alias mapSettingsTarget: mapWidget
 
     //scale: settings.dev_some_scale
 

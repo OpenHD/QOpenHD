@@ -18,8 +18,8 @@ ApplicationWindow {
     id: applicationWindow
     visible: true
 
-    // Position priority used by map/ADS-B consumers. The network provider is
-    // deliberately only a rough fallback; a valid FC fix always wins.
+    // Map/ADS-B position priority: craft GPS, ground-device location, then IP.
+    // The internet fallback is automatic and never becomes aircraft telemetry.
     readonly property bool fcPositionValid: _fcMavlinkSystem.is_alive && _fcMavlinkSystem.gps_fix_type >= 2
                                             && isFinite(_fcMavlinkSystem.lat)
                                             && isFinite(_fcMavlinkSystem.lon)
@@ -45,9 +45,8 @@ ApplicationWindow {
                                              && ipLocationLongitude <= 180.0
                                              && !(ipLocationLatitude === 0.0
                                                   && ipLocationLongitude === 0.0)
-    readonly property bool internetPositionEstimateEnabled: settings.adsb_estimate_position_from_internet
-    readonly property bool roughPositionValid: internetPositionEstimateEnabled
-                                                && (osPositionValid || ipPositionValid)
+    readonly property bool locationFallbackEnabled: settings.show_map || settings.adsb_enable
+    readonly property bool roughPositionValid: osPositionValid || ipPositionValid
     readonly property bool referencePositionValid: fcPositionValid || roughPositionValid
     readonly property double referenceLatitude: fcPositionValid
                                                 ? _fcMavlinkSystem.lat
@@ -73,14 +72,17 @@ ApplicationWindow {
 
     PositionSource {
         id: networkPositionSource
-        active: applicationWindow.internetPositionEstimateEnabled
-                && !applicationWindow.fcPositionValid
+        active: applicationWindow.locationFallbackEnabled && !applicationWindow.fcPositionValid
         updateInterval: 60000
-        preferredPositioningMethods: PositionSource.NonSatellitePositioningMethods
+        preferredPositioningMethods: PositionSource.AllPositioningMethods
+    }
+
+    onOsPositionValidChanged: {
+        if (!osPositionValid) requestIpLocation()
     }
 
     function requestIpLocation() {
-        if (!internetPositionEstimateEnabled || fcPositionValid
+        if (!locationFallbackEnabled || fcPositionValid
                 || osPositionValid || ipLocationRequestActive) return
         ipLocationRequestActive = true
         var request = new XMLHttpRequest()
@@ -96,9 +98,10 @@ ApplicationWindow {
             }
             try {
                 var response = JSON.parse(request.responseText)
-                var latitude = Number(response.latitude)
-                var longitude = Number(response.longitude)
-                if (response.success === true && isFinite(latitude) && isFinite(longitude)
+                var latitude = response.latitude
+                var longitude = response.longitude
+                if (response.success === true && typeof latitude === "number" && typeof longitude === "number"
+                        && isFinite(latitude) && isFinite(longitude)
                         && latitude >= -90.0 && latitude <= 90.0
                         && longitude >= -180.0 && longitude <= 180.0
                         && !(latitude === 0.0 && longitude === 0.0)) {
@@ -135,8 +138,7 @@ ApplicationWindow {
         // Retry promptly while unavailable; refresh occasionally in case the
         // public IP/network changes while QOpenHD remains open.
         interval: applicationWindow.ipPositionValid ? 1800000 : 300000
-        running: applicationWindow.internetPositionEstimateEnabled
-                 && !applicationWindow.fcPositionValid
+        running: applicationWindow.locationFallbackEnabled && !applicationWindow.fcPositionValid
         repeat: true
         triggeredOnStart: true
         onTriggered: applicationWindow.requestIpLocation()

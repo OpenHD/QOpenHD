@@ -34,6 +34,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/util/asynccommandrunner.cpp
     app/util/qrenderstats.cpp
     app/map/offlinemaptileprovider.cpp
+    app/map/offlinemapbuilder.cpp
     app/fleetcontrol/fleetcontrollte.cpp
     app/util/restartqopenhdmessagebox.cpp
     #

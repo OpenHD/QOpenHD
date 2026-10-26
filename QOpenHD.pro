@@ -194,6 +194,7 @@ SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
     app/map/offlinemaptileprovider.cpp \
+    app/map/offlinemapbuilder.cpp \
     app/fleetcontrol/fleetcontrollte.cpp \
     app/util/mousehelper.cpp \
     app/util/qopenhd.cpp \
@@ -217,6 +218,7 @@ HEADERS += \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
     app/map/offlinemaptileprovider.h \
+    app/map/offlinemapbuilder.h \
     app/fleetcontrol/fleetcontrollte.h \
     app/util/mousehelper.h \
     app/util/qopenhd.h \

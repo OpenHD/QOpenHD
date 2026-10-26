@@ -293,15 +293,7 @@ AdvancedPage {
                             Label {
                                 visible: settings.adsb_source === 0
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Internet traffic requires no SDR. Uses GPS or the optional approximate internet position. Enable position estimation below if no GPS is available.")
-                            }
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Label { text: qsTr("Estimate position from internet"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
-                                    checked: settings.adsb_estimate_position_from_internet
-                                    onToggled: settings.adsb_estimate_position_from_internet = checked
-                                }
+                                text: qsTr("Internet traffic requires no SDR. Uses craft GPS, ground-device location, or an automatic approximate internet position when GPS is unavailable.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true

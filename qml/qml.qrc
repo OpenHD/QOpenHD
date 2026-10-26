@@ -136,9 +136,9 @@
         <file>ui/configpopup/qopenhd_settings/AppSettingsPanel.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppSettingsPageFrame.qml</file>
         <file>ui/configpopup/qopenhd_settings/StyledText.qml</file>
-        <file>ui/configpopup/qopenhd_settings/AppScreenSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppMapSettingsView.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/openhd_settings/OHDSettingsPanel.qml</file>
@@ -176,6 +176,9 @@
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapWidget.qml</file>
+        <file>ui/widgets/map/OfflineMapDialog.qml</file>
+        <file>ui/widgets/map/OfflineMapSelection.qml</file>
+        <file>ui/widgets/map/MapboxLogo.png</file>
         <file>ui/configpopup/status/PingUtilColumn.qml</file>
         <file>ui/elements/ButtonRed.qml</file>
         <file>ui/elements/ButtonOrange.qml</file>

@@ -76,6 +76,7 @@
 
 #include "util/qrenderstats.h"
 #include "map/offlinemaptileprovider.h"
+#include "map/offlinemapbuilder.h"
 #include "fleetcontrol/fleetcontrollte.h"
 
 #if defined(__ios__)
@@ -526,9 +527,11 @@ int main(int argc, char *argv[]) {
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     OfflineMapTileProvider offlineMapTiles;
+    OfflineMapBuilder offlineMapBuilder;
     FleetControlLte fleetControlLte;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     engine.rootContext()->setContextProperty("_offlineMapTiles", &offlineMapTiles);
+    engine.rootContext()->setContextProperty("_offlineMapBuilder", &offlineMapBuilder);
     engine.rootContext()->setContextProperty("_fleetControlLte", &fleetControlLte);
     QOpenHD::instance().setEngine(&engine);
     write_platform_context_properties(engine);

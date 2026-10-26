@@ -14,29 +14,18 @@ FORM = '''import QtQuick 2.12
 import QtQuick.Controls 2.12
 Item {
     property bool useDragHandle
-    property bool hasWidgetDetail
-    property alias widgetDetail: popup
-    Popup { id: popup }
     property alias pluginModel: providers
     ListModel { id: providers
-        ListElement { name: "osm" }
-        ListElement { name: "mapboxgl" }
-        ListElement { name: "openhd_offline" }
+        ListElement { name: "osm"; description: "OpenStreetMap" }
+        ListElement { name: "mapboxgl"; description: "Mapbox" }
+        ListElement { name: "openhd_offline"; description: "Offline" }
     }
     property alias widgetInnerMap: canvas
     Item { id: canvas; anchors.fill: parent }
-    property alias mini_zoomSlider: zoom
-    Slider { id: zoom }
-    property alias mini_sizeSlider: size
-    Slider { id: size }
     property alias openclose_button: button
     Button { id: button }
     property alias sidebar_wrapper: sidebar
     Item { id: sidebar }
-    property alias variantDropdown: variants
-    ComboBox { id: variants }
-    property alias providerDropdown: provider
-    ComboBox { id: provider }
     function resetAnchors() {}
     function setAlignment() {}
     function loadAlignment() {}
@@ -57,6 +46,19 @@ TEST = '''import QtQuick 2.12
 import QtTest 1.2
 Item {
     width: 800; height: 480
+    property int rowHeight: 64
+    property int elementHeight: 48
+    QtObject {
+        id: hudOverlayGrid
+        readonly property alias mapSettingsTarget: widget
+    }
+    QtObject {
+        id: settings_form
+        property color panelBackgroundRaised: "#ffffff"
+        property color lineColor: "#cccccc"
+        property color primaryText: "#111111"
+        property color secondaryText: "#555555"
+    }
     QtObject {
         id: settings
         property bool show_map: false
@@ -65,18 +67,28 @@ Item {
         property string map_api_key: ""
         property real map_zoom: 8
         property real map_size: 1
+        property real map_opacity_minimized: 1
+        property real map_opacity_maximized: 1
+        property bool map_orientation: false
+        property bool map_drone_track: true
+        property bool map_show_mission_waypoints: true
+        property bool adsb_enable: false
+        property int adsb_source: 0
+        property int adsb_radius: 10000
     }
     QtObject {
         id: _offlineMapTiles
         property bool available: true
+        property int packageCount: 1
         property string baseUrl: "http://127.0.0.1:9/"
-        property string mapboxBaseUrl: "http://127.0.0.1:9/"
-        property string mapboxCacheDirectory: "CACHE_DIRECTORY"
-        function tileCacheDirectory(provider) { return "CACHE_DIRECTORY/" + provider }
-        function setMapboxKey(key) {}
         function reload() {}
     }
+    QtObject {
+        id: _offlineMapBuilder
+        function mapCacheDirectory(source) { return "CACHE_DIRECTORY/" + source }
+    }
     MapWidget { id: widget }
+    AppMapSettingsView { id: mapSettings; anchors.fill: parent }
     TestCase {
         name: "MapProviderRecovery"; when: windowShown
         function test_late_settings_restore() {
@@ -94,34 +106,44 @@ Item {
             settings.map_api_key = ""
         }
         function test_recovery() {
+            compare(widget.map, null)
             settings.show_map = true
-            widget.configure()
+            tryVerify(function() { return widget.map !== null })
             verify(widget.map !== null)
             compare(widget.map.activeMapType, "satellite")
+            var parameters = {}
+            for (var i = 0; i < widget.mapPlugin.parameters.length; ++i)
+                parameters[widget.mapPlugin.parameters[i].name] = widget.mapPlugin.parameters[i].value
+            compare(parameters["osm.mapping.custom.host"], "https://tile.openstreetmap.org/")
+            compare(parameters["osm.useragent"], "OpenHD-OfflineMaps/1.0 (+https://openhd.org)")
+            compare(parameters["osm.mapping.prefetching_style"], "NoPrefetching")
             widget.map.supportedMapTypes = []
             widget.setup_map_variant()
-            compare(widget.variantDropdown.currentIndex, -1)
+            compare(widget.activeMapTypeIndex, -1)
             settings.selected_map_provider = 1
-            widget.configure()
+            tryCompare(widget, "apiKeyMissing", true)
             verify(widget.apiKeyMissing)
             compare(widget.map, null)
             widget.configureSmallMap()
             settings.map_api_key = '  pk.test"\\\\token  '
             tryVerify(function() { return widget.map !== null })
+            verify(widget.map !== null)
             compare(widget.mapPlugin.parameters[0].name, "mapboxgl.access_token")
             compare(widget.mapPlugin.parameters[0].value, settings.map_api_key.trim())
             var previous = widget.map
             settings.selected_map_provider = 0
-            widget.configure()
+            tryVerify(function() { return widget.map !== null && widget.map !== previous })
             verify(widget.map !== null && widget.map !== previous)
             compare(widget.apiKeyMissing, false)
             compare(widget.mapFailure, "")
             compare(widget.map.activeMapType, "satellite")
+            settings.selected_map_variant = 1
+            compare(widget.map.activeMapType, "satellite")
             settings.selected_map_provider = 2
-            widget.configure()
+            tryCompare(widget, "activeProviderName", "openhd_offline")
             compare(widget.map.activeMapType, "satellite")
             settings.selected_map_provider = -1
-            widget.configure()
+            tryCompare(settings, "selected_map_provider", 0)
             compare(settings.selected_map_provider, 0)
             verify(widget.map !== null)
             widget.createMap(widget.widgetInnerMap, "unavailable_test_provider")
@@ -130,6 +152,29 @@ Item {
             widget.configure()
             verify(widget.map !== null)
             compare(widget.mapFailure, "")
+            compare(mapSettings.mapTarget, widget)
+            var provider = findChild(mapSettings, "mapProvider")
+            verify(provider !== null)
+            compare(provider.count, 3)
+            provider.currentIndex = 1
+            provider.activated(1)
+            tryVerify(function() { return widget.mapPlugin && widget.mapPlugin.name === "mapboxgl" })
+            compare(settings.selected_map_provider, 1)
+            compare(widget.mapPlugin.parameters[0].name, "mapboxgl.access_token")
+            var size = findChild(mapSettings, "mapSize")
+            size.value = 2
+            size.moved()
+            compare(settings.map_size, 2)
+            compare(widget.width, 400)
+            compare(widget.height, 270)
+            widget.configureLargeMap()
+            settings.map_size = 3
+            widget.configureSmallMap()
+            compare(widget.width, 600)
+            compare(widget.height, 405)
+            var oldMap = widget.map
+            findChild(mapSettings, "reloadMap").clicked()
+            verify(widget.map !== oldMap)
         }
     }
 }
@@ -147,7 +192,11 @@ def main():
         (folder / "MapWidget.qml").write_text(source.replace('import "../../elements";', ''), encoding="utf-8")
         (folder / "MapWidgetForm.qml").write_text(FORM, encoding="utf-8")
         (folder / "MapComponent.qml").write_text(CANVAS, encoding="utf-8")
-        (folder / "tst_map.qml").write_text(TEST, encoding="utf-8")
+        view = (ROOT / "qml/ui/configpopup/qopenhd_settings/AppMapSettingsView.qml").read_text(encoding="utf-8")
+        (folder / "AppMapSettingsView.qml").write_text(view.replace('import "../../elements"', ''), encoding="utf-8")
+        (folder / "SettingBaseElement.qml").write_text(
+            (ROOT / "qml/ui/elements/SettingBaseElement.qml").read_text(encoding="utf-8"), encoding="utf-8")
+        (folder / "tst_map.qml").write_text(TEST.replace("CACHE_DIRECTORY", folder.as_posix()), encoding="utf-8")
         env = os.environ.copy()
         env["PATH"] = str(args.qt_bin) + os.pathsep + env.get("PATH", "")
         env["QT_QPA_PLATFORM"] = "offscreen"

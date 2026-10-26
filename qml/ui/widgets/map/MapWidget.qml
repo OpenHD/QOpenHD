@@ -17,7 +17,6 @@ MapWidgetForm {
 
     property bool mapExpanded: false
 
-    property bool settingsVisible: false
     property bool followDrone: true
 
     property variant map: null
@@ -25,6 +24,8 @@ MapWidgetForm {
     property string mapFailure: ""
     property bool apiKeyMissing: false
     property string activeProviderName: ""
+    property var supportedMapTypes: []
+    property int activeMapTypeIndex: -1
 
     // Qt.labs.settings restores values after child components complete.
     // Coalesce changes so the provider and token are restored before creating a map.
@@ -84,7 +85,8 @@ MapWidgetForm {
             mapPlugin.destroy()
             mapPlugin = null
         }
-        variantDropdown.model = []
+        supportedMapTypes = []
+        activeMapTypeIndex = -1
     }
 
     function createMap(parent, provider) {
@@ -104,8 +106,10 @@ MapWidgetForm {
                   + JSON.stringify(provider === "openhd_offline" ? _offlineMapTiles.baseUrl : "https://tile.openstreetmap.org/") + ' }'
         if (provider !== "mapboxgl") {
             parameters += 'PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }'
-                        + 'PluginParameter { name: "osm.mapping.cache.directory"; value: ' + JSON.stringify(_offlineMapTiles.tileCacheDirectory(provider)) + ' }'
-                        + 'PluginParameter { name: "osm.useragent"; value: "QOpenHD/3.0 (+https://openhd.org)" }'
+                        + 'PluginParameter { name: "osm.useragent"; value: "OpenHD-OfflineMaps/1.0 (+https://openhd.org)" }'
+                        + 'PluginParameter { name: "osm.mapping.prefetching_style"; value: "NoPrefetching" }'
+                        + 'PluginParameter { name: "osm.mapping.cache.directory"; value: '
+                        + JSON.stringify(_offlineMapBuilder.mapCacheDirectory(provider)) + ' }'
                         + 'PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "OpenStreetMap contributors" }'
                         + 'PluginParameter { name: "osm.mapping.custom.datacopyright"; value: "OpenStreetMap contributors" }'
         }
@@ -122,8 +126,11 @@ MapWidgetForm {
                     + JSON.stringify(_offlineMapTiles.mapboxBaseUrl) + ' }'
                     + 'PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }'
                     + 'PluginParameter { name: "osm.mapping.prefetching_style"; value: "NoPrefetching" }'
-                    + 'PluginParameter { name: "osm.mapping.cache.directory"; value: ' + JSON.stringify(_offlineMapTiles.mapboxCacheDirectory) + ' }'
-                    + 'PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "Mapbox / OpenStreetMap contributors" }'
+                    + 'PluginParameter { name: "osm.useragent"; value: "OpenHD-OfflineMaps/1.0 (+https://openhd.org)" }'
+                    + 'PluginParameter { name: "osm.mapping.cache.directory"; value: '
+                    + JSON.stringify(_offlineMapBuilder.mapCacheDirectory("mapbox_raster")) + ' }'
+                    + 'PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: '
+                    + JSON.stringify('<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://apps.mapbox.com/feedback/">Improve this map</a>') + ' }'
                 mapPlugin = Qt.createQmlObject('import QtLocation 5.15; Plugin { name: "osm"; ' + rasterParameters + ' }', mapWidget)
             }
             if (!mapPlugin.supportsMapping()) {
@@ -145,7 +152,7 @@ MapWidgetForm {
                 return
             }
             map.gesture.enabled = mapExpanded
-            if (previousCenter && previousCenter.isValid)
+            if (!followDrone && previousCenter && previousCenter.isValid)
                 map.center = previousCenter
         } catch (error) {
             // Qt errors may include source text containing the token. Never log it.
@@ -156,15 +163,17 @@ MapWidgetForm {
 
     function setup_map_variant() {
         var types = map ? map.supportedMapTypes : []
-        variantDropdown.model = types
+        supportedMapTypes = types
         if (!types.length) {
-            variantDropdown.currentIndex = -1
+            activeMapTypeIndex = -1
             return
         }
-        var index = activeProviderName !== "mapboxgl" ? types.length - 1 : settings.selected_map_variant
+        // OSM's built-in Qt 5 styles include retired HTTP endpoints. Our custom
+        // style uses the explicit HTTPS (or localhost offline) endpoint above.
+        var index = activeProviderName === "mapboxgl" ? settings.selected_map_variant : types.length - 1
         if (index < 0 || index >= types.length)
             index = 0
-        variantDropdown.currentIndex = index
+        activeMapTypeIndex = index
         map.activeMapType = types[index]
     }
 
@@ -186,9 +195,17 @@ MapWidgetForm {
 
     Connections {
         target: settings
-        function onShow_mapChanged() { scheduleMapConfigure() }
+        function onShow_mapChanged() {
+            scheduleMapConfigure()
+        }
         function onSelected_map_providerChanged() { scheduleMapConfigure() }
-        function onSelected_map_variantChanged() { if (map) setup_map_variant() }
+        function onSelected_map_variantChanged() { setup_map_variant() }
+        function onMap_sizeChanged() {
+            if (!mapExpanded) {
+                mapWidget.width = 200 * settings.map_size
+                mapWidget.height = 135 * settings.map_size
+            }
+        }
         function onMap_api_keyChanged() {
             if (settings.selected_map_provider >= 0 && settings.selected_map_provider < pluginModel.count
                     && pluginModel.get(settings.selected_map_provider).name === "mapboxgl") {
@@ -197,69 +214,10 @@ MapWidgetForm {
         }
     }
 
-    /*function getPlugins() {
-        var plugin = Qt.createQmlObject ('import QtLocation 5.12; Plugin {}', page)
-        var tempPlugin
-        var myArray = new Array()
-        for (var i = 0; i<plugin.availableServiceProviders.length; i++){
-            tempPlugin = Qt.createQmlObject ('import QtLocation 5.12; Plugin {name: "' + plugin.availableServiceProviders[i]+ '"}', page)
-
-            if (tempPlugin.supportsMapping()
-             && tempPlugin.supportsGeocoding(Plugin.ReverseGeocodingFeature)
-             && tempPlugin.supportsRouting()) {
-                myArray.push(tempPlugin.name)
-            }
-        }
-
-        return myArray
-    }*/
-
-    mini_zoomSlider.onValueChanged: {
-        settings.map_zoom = mini_zoomSlider.value
-    }
-
-    mini_sizeSlider.onValueChanged: {
-        settings.map_size = mini_sizeSlider.value
-        // mapWidget.scale = mini_sizeSlider.value
-        mapWidget.height = 135*mini_sizeSlider.value
-        mapWidget.width = 200*mini_sizeSlider.value
-    }
-
     openclose_button.onClicked: {
-        if (mapExpanded) {
-            console.log("X button clicked")
-            configureSmallMap()
-        } else {
-            console.log("gear button clicked")
-            launchPopup()
-        }
+        if (mapExpanded) configureSmallMap()
+        else configureLargeMap()
     }
-
-    Behavior on sidebar_wrapper.width {
-        NumberAnimation {
-            duration: 200
-        }
-    }
-
-    Behavior on sidebar_wrapper.height {
-        NumberAnimation {
-            duration: 200
-        }
-    }
-
-    // Changing the provider needs destroy and reconstruct
-    providerDropdown.onActivated: {
-        settings.selected_map_provider = index
-        scheduleMapConfigure()
-    }
-
-    // Changing the variant can happen dynamically
-    variantDropdown.onActivated: {
-        console.log("variantDropdown.onActivated:"+index);
-        settings.selected_map_variant = index
-        setup_map_variant();
-    }
-
 
     function configureLargeMap() {
         console.log("configureLargeMap()")
@@ -267,7 +225,7 @@ MapWidgetForm {
             resetAnchors()
             setAlignment(0, 0, 48, false, false, true)
             if (map) map.gesture.enabled = true
-            mapExpanded = !mapExpanded
+            mapExpanded = true
             scale = 1
         }
     }
@@ -277,18 +235,10 @@ MapWidgetForm {
         resetAnchors()
         mapWidget.width = 200*settings.map_size
         mapWidget.height = 135*settings.map_size
-        //mapWidget.map
         loadAlignment()
         followDrone = true
-        settingsVisible = false
         if (map) map.gesture.enabled = false
-        mapExpanded = !mapExpanded
-        //scale = settings.map_size
-        //mapWidget.widgetInner.opacity = 0
+        mapExpanded = false
     }
 
-    function launchPopup() {
-        mapWidget.hasWidgetDetail = true
-        widgetDetail.open()
-    }
 }

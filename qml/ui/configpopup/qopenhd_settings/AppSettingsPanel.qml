@@ -26,8 +26,8 @@ Rectangle {
         ListElement { title: qsTr("STYLE"); icon: "\uf53f" }
         ListElement { title: qsTr("GENERAL"); icon: "\uf013" }
         ListElement { title: qsTr("VEHICLE"); icon: "\uf1b9" }
-        ListElement { title: qsTr("SCREEN"); icon: "\uf108" }
         ListElement { title: qsTr("VIDEO"); icon: "\uf03d" }
+        ListElement { title: qsTr("MAP"); icon: "\uf279" }
         ListElement { title: qsTr("DEV"); icon: "\uf0ad" }
     }
 
@@ -176,8 +176,8 @@ Rectangle {
                 AdvancedPageLoader { selected: root.currentPage === 1; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppWidgetStyleSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 2; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppGeneralSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 3; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVehicleSettingsView { anchors.fill: parent } } }
-                AdvancedPageLoader { selected: root.currentPage === 4; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppScreenSettingsView { anchors.fill: parent } } }
-                AdvancedPageLoader { selected: root.currentPage === 5; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVideoSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 4; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVideoSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 5; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppMapSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 6; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppDevSettingsView { anchors.fill: parent } } }
             }
         }

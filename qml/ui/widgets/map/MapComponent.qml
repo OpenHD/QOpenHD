@@ -19,13 +19,12 @@ Map {
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
-    bearing: settings.map_orientation ? _fcMavlinkSystem.hdg : 360
+    bearing: settings.map_orientation && hasValidDroneCoordinate ? _fcMavlinkSystem.hdg : 0
 
     // Neutral map center while neither the FC nor the network provider has a
     // usable position. Never use this coordinate for an ADS-B request.
     readonly property var defaultCoordinate: QtPositioning.coordinate(0.0, 0.0)
-    property bool hasValidDroneCoordinate: _fcMavlinkSystem.gps_fix_type >= 2
-                                            && !(_fcMavlinkSystem.lat === 0.0 && _fcMavlinkSystem.lon === 0.0)
+    readonly property bool hasValidDroneCoordinate: applicationWindow.fcPositionValid
     readonly property bool hasReferenceCoordinate: applicationWindow.referencePositionValid
     readonly property var referenceCoordinate: hasReferenceCoordinate
                                                ? QtPositioning.coordinate(applicationWindow.referenceLatitude,
@@ -142,6 +141,7 @@ Map {
     }
     // Visualizes the GPS hdop
     MapCircle {
+        visible: hasValidDroneCoordinate
         center: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
         radius: _fcMavlinkSystem.gps_hdop
         color: 'red'
@@ -457,6 +457,7 @@ Map {
     // Arrow indicating the drone position
     MapQuickItem {
         id: dronemarker
+        visible: hasValidDroneCoordinate
         coordinate: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
 
         onCoordinateChanged: {

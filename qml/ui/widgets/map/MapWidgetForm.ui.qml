@@ -17,18 +17,12 @@ import OpenHD 1.0
 BaseWidget {
     id: mapWidget
 
-    width: 200
-    height: 135
+    width: 200 * settings.map_size
+    height: 135 * settings.map_size
 
 
     visible: settings.show_map
-    property alias mapSettingsColumn: mapSettingsColumn
-    property alias switch1: switch1
-    property alias mini_zoomSlider: mini_zoomSlider
-    property alias mini_sizeSlider: mini_sizeSlider
     property alias openclose_button: openclose_button
-    property alias providerDropdown: providerDropdown
-    property alias variantDropdown: variantDropdown
     property alias widgetInnerMap: widgetInnerMap
     property alias sidebar_wrapper: sidebar_wrapper
     property alias pluginModel: pluginModel
@@ -39,7 +33,7 @@ BaseWidget {
 
     widgetIdentifier: "map_widget"
 
-    hasWidgetDetail: mapExpanded ? true : false
+    hasWidgetDetail: false
 
     z: mapExpanded ? 2.0 : 1.0
 
@@ -61,304 +55,6 @@ BaseWidget {
     }
 
 
-    //----------------------------- Widget Detail (popup options)------------------------
-    widgetDetailComponent: ScrollView {
-
-        contentHeight: popupmapSettingsColumn.height
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
-        Column {
-            id: popupmapSettingsColumn
-            Item {
-                width: 230
-                height: 42
-                Text {
-                    id: popupmapSettingsTitle
-                    text: qsTr("MAP")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: popupmapSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-
-                Text {
-                    id: mini_zoomTitle
-                    height: parent.height
-                    text: qsTr("Zoom")
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                Slider {
-                    id: mini_zoomSlider
-                    orientation: Qt.Horizontal
-                    from: 1
-                    value: settings.map_zoom
-                    to: 30
-                    stepSize: 1
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    anchors.leftMargin: 32
-                    anchors.left: mini_zoomTitle.right
-                    height: parent.height
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-
-                Text {
-                    id: mini_sizeTitle
-                    height: parent.height
-                    text: qsTr("Size")
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                Slider {
-                    id: mini_sizeSlider
-                    orientation: Qt.Horizontal
-                    from: 0.25
-                    value: settings.map_size
-                    to: 8
-                    stepSize: .05
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    anchors.leftMargin: 32
-                    anchors.left: mini_sizeTitle.right
-                    height: parent.height
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    id: mini_opacityTitle
-                    text: qsTr("Transparency(S)") // Small / minimized transparency
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.map_opacity_minimized
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-                    onValueChanged: settings.map_opacity_minimized = value
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock map to drone direction")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.map_orientation
-                    onCheckedChanged: settings.map_orientation = checked
-                }
-            }
-            DarkComboBox {
-                width: 230
-                height: 48
-                model: pluginModel
-                textRole: "description"
-                currentIndex: settings.selected_map_provider
-                onActivated: {
-                    settings.selected_map_provider = index
-                    configure()
-                }
-            }
-            Button {
-                width: 230
-                text: qsTr("Reload map")
-                onClicked: configure()
-            }
-            Item {
-                width: 230
-                height: 110
-                Column {
-                    spacing: 4
-                    anchors.fill: parent
-                    Text {
-                        text: qsTr("Map API key (for Mapbox)")
-                        color: "white"
-                        font.bold: true
-                        font.pixelSize: detailPanelFontPixels
-                    }
-                    TextField {
-                        id: popupMapApiKeyField
-                        width: parent.width
-                        text: settings.map_api_key
-                        placeholderText: qsTr("pk.xxxxx")
-                        selectByMouse: true
-                        onEditingFinished: {
-                            settings.map_api_key = text.trim()
-                        }
-                    }
-                    Text {
-                        width: parent.width
-                        wrapMode: Text.WordWrap
-                        text: qsTr("Get a free Mapbox access token at account.mapbox.com -> Tokens, then paste it above.")
-                        color: "lightgray"
-                        font.pixelSize: detailPanelFontPixels - 2
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Show Drone Track")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.map_drone_track
-                    onCheckedChanged: settings.map_drone_track = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Show Mission waypoints")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.map_show_mission_waypoints
-                    onCheckedChanged: settings.map_show_mission_waypoints = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Enable ADSB")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.adsb_enable
-                    onCheckedChanged: settings.adsb_enable = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                visible: settings.adsb_enable
-                Text {
-                    text: qsTr("ADSB SDR Source")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.adsb_source === 1
-                    onToggled: settings.adsb_source = checked ? 1 : 0
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                visible: settings.adsb_enable
-                Text {
-                    id: adsb_radiusTitle
-                    text: qsTr("ADSB Radius")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                // Consti10: I think this is in metres
-                NewSlider {
-                    orientation: Qt.Horizontal
-                    from: (5*1000)
-                    value: settings.adsb_radius
-                    to: (100*1000)
-                    stepSize: 1000
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-                    onValueChanged: settings.adsb_radius = value
-                }
-            }
-        }
-    }
 //--- widgetInner only used to have something to shake ---
     Item {
         id: widgetInner
@@ -383,61 +79,6 @@ BaseWidget {
         id: widgetInnerMap
         anchors.fill: parent
         opacity: mapExpanded ? settings.map_opacity_maximized : settings.map_opacity_minimized
-/*
-        Behavior on width {
-            NumberAnimation {
-                duration: 200
-            }
-        }
-
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-            }
-        }
-*/
-
-        /*Button {
-            id: openclose_button_overlay
-            width: 48
-            height: 48
-            z: 3.0
-
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            flat: true
-
-            visible: true
-
-            checkable: false
-
-            Text {
-                id : openclose_text_overlay
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                font.family: "Font Awesome 5 Free"
-                color: "white"
-                text: "\uf31e"
-                font.pixelSize: 20
-            }
-
-            onClicked: {
-                if (mapExpanded) {
-                    resetAnchors();
-                    mapWidget.width = 200;
-                    mapWidget.height = 135;
-                    loadAlignment();
-                    settingsVisible = false;
-                } else {
-                    resetAnchors();
-                    setAlignment(0, 0, 48, false, false, true);
-                }
-                mapExpanded = !mapExpanded;
-            }
-        }*/
-
         //----------------------------- Expanded map Sidebar Menu----------------------------
         Rectangle {
             id: sidebar_wrapper
@@ -451,8 +92,8 @@ BaseWidget {
             radius: 12
             color: mapExpanded ? "#ff000000" : "#00000000"
 
-            height: mapExpanded ? 155 : 48
-            width: settingsVisible ? 548 : 48
+            height: mapExpanded ? 96 : 48
+            width: 48
             clip: true
 
             Button {
@@ -473,7 +114,7 @@ BaseWidget {
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free"
                     color: "white"
-                    text: mapExpanded ? "\uf057" : "\uf085"
+                    text: mapExpanded ? "\uf057" : "\uf31e"
                     font.pixelSize: 20
                 }
             }
@@ -505,202 +146,37 @@ BaseWidget {
                 onClicked: followDrone = !followDrone
             }
 
-            Button {
-                id: settings_button
+        }
 
-                width: 48
-                height: 48
-                anchors.top: parent.top
-                anchors.topMargin: 96
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-
-                flat: true
-                checkable: false
-
-                visible: mapExpanded
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.family: "Font Awesome 5 Free"
-                    color: settingsVisible ? "#ff00aeef" : "white"
-                    text: "\uf085"
-                    font.pixelSize: 20
-                }
-
-                onClicked: settingsVisible = !settingsVisible
-            }
-
-            ScrollView {
-                contentHeight: mapSettingsColumn.height
-                clip: true
-
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.leftMargin: 48
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.bottom: parent.bottom
-
-                topPadding: 6
-                leftPadding: 6
-                rightPadding: 6
-                bottomPadding: 6
-
-                visible: mapExpanded
-
-                Column {
-                    id: mapSettingsColumn
-                    spacing: 6
-                    width: settingsVisible ? 488 : 0
-
-                    Item {
-                        width: parent.width
-                        height: 96
-                        Column {
-                            spacing: 4
-                            anchors.fill: parent
-                            Text {
-                                text: qsTr("Map API key (Mapbox)")
-                                color: "white"
-                                font.bold: true
-                                font.pixelSize: detailPanelFontPixels
-                            }
-                            TextField {
-                                id: sidebarMapApiKeyField
-                                width: parent.width
-                                text: settings.map_api_key
-                                placeholderText: qsTr("pk.xxxxx")
-                                selectByMouse: true
-                                onEditingFinished: {
-                                    settings.map_api_key = text.trim()
-                                }
-                            }
-                            Text {
-                                width: parent.width
-                                wrapMode: Text.WordWrap
-                                text: qsTr("How to get a key: 1) Sign up at account.mapbox.com. 2) Open Tokens. 3) Copy your Default public token and paste it above.")
-                                color: "lightgray"
-                                font.pixelSize: detailPanelFontPixels - 2
-                            }
-                        }
-                    }
-
-                    DarkComboBox {
-                        id: providerDropdown
-                        height: 48
-                        width: parent.width
-
-                        model: pluginModel
-                        textRole: "description"
-
-                        currentIndex: settings.selected_map_provider
-
-                    }
-
-                    DarkComboBox {
-                        id: variantDropdown
-                        height: 48
-                        width: parent.width
-
-                        textRole: "description"
-                    }
-
-                    Item {
-                        width: parent.width
-                        height: 32
-
-                        Text {
-                            id: zoomTitle
-                            height: parent.height
-                            text: qsTr("Zoom")
-                            color: "white"
-                            font.bold: true
-                            font.pixelSize: detailPanelFontPixels
-                            anchors.left: parent.left
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        Slider {
-                            id: zoomSlider
-                            orientation: Qt.Horizontal
-                            from: 1
-                            value: settings.map_zoom
-                            to: 30
-                            stepSize: 1
-                            height: parent.height
-                            anchors.rightMargin: 0
-                            anchors.right: parent.right
-                            width: parent.width - 96
-
-                            onValueChanged: settings.map_zoom = zoomSlider.value
-                        }
-                    }
-
-                    Item {
-                        width: parent.width
-                        height: 32
-
-                        Text {
-                            id: opacityTitle
-                            text: qsTr("Transparency(B)") // opacity big (maximized)
-                            color: "white"
-                            height: parent.height
-                            font.bold: true
-                            font.pixelSize: detailPanelFontPixels
-                            anchors.left: parent.left
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        Slider {
-                            orientation: Qt.Horizontal
-                            from: .1
-                            value: settings.map_opacity_maximized
-                            to: 1
-                            stepSize: .1
-                            height: parent.height
-                            anchors.rightMargin: 0
-                            anchors.right: parent.right
-                            width: parent.width - 96
-
-                            onValueChanged: settings.map_opacity_maximized = value
-                        }
-                    }
-
-                    Item {
-                        width: parent.width
-                        height: 32
-
-                        Text {
-                            text: qsTr("Lock map to drone direction")
-                            color: "white"
-                            height: parent.height
-                            font.bold: true
-                            font.pixelSize: detailPanelFontPixels
-                            anchors.left: parent.left
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        Switch {
-                            id: switch1
-                            width: 32
-                            height: parent.height
-                            anchors.rightMargin: 12
-                            anchors.right: parent.right
-                            checked: settings.map_orientation
-                            onCheckedChanged: settings.map_orientation = checked
-                        }
-                    }
-                }
-            }
+        Text {
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 4
+            visible: activeProviderName === "openhd_offline"
+            text: "? OpenStreetMap contributors"
+            color: "white"
+            style: Text.Outline
+            styleColor: "black"
+            font.pixelSize: 10
+            z: 2
+        }
+        Image {
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.margins: 5
+            width: Math.min(88, parent.width * 0.4)
+            height: 23
+            fillMode: Image.PreserveAspectFit
+            visible: activeProviderName === "mapbox_raster"
+            source: visible ? "MapboxLogo.png" : ""
+            z: 2
         }
 
         Rectangle {
             anchors.fill: parent
             color: "#CC000000"
             visible: apiKeyMissing || mapFailure.length > 0 || (map && map.error !== 0)
-            // Keep the settings/close button above provider errors.
+            // Keep expand/collapse controls above provider errors.
             z: 1.0
 
             Column {
@@ -717,7 +193,7 @@ BaseWidget {
                     width: parent.width
                 }
                 Text {
-                    text: qsTr("Open map settings to reload or choose another provider.")
+                    text: qsTr("Open OSD & Application > Map to reload or choose another provider.")
                     color: "lightgray"
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignHCenter
