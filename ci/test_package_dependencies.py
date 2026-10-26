@@ -25,6 +25,8 @@ class PackageDependencyTests(unittest.TestCase):
                 self.assertIn(f"libavformat{abi}", packages)
                 self.assertIn("ca-certificates", packages)
                 self.assertFalse([p for p in packages if "-dev" in p or "qmake" in p], packages)
+                if distro == "raspbian" and release == "bullseye":
+                    self.assertIn("libssl1.1", packages)
                 if not (distro == "raspbian" and release == "bullseye"):
                     self.assertIn("libgstreamer-plugins-base1.0-0", packages)
                     self.assertIn("libqt5location5-plugin-mapboxgl", packages)
