@@ -34,7 +34,7 @@ jobs:
       - name: Install Qt map test runtime
         run: |
           sudo apt-get update
-          sudo apt-get install -y qtbase5-dev qtdeclarative5-dev-tools qml-module-qttest qml-module-qtquick-controls2 qml-module-qtlocation qml-module-qtpositioning libqt5location5-plugin-mapboxgl
+          sudo apt-get install -y qtbase5-dev qtdeclarative5-dev-tools qml-module-qttest qml-module-qtquick-controls2 qml-module-qtquick-layouts qml-module-qtlocation qml-module-qtpositioning libqt5location5-plugin-mapboxgl
       - name: Saved map settings restore after widget construction
         run: python3 tests/run_map_provider_test.py --qt-bin /usr/lib/qt5/bin
       - name: Offline map generation and playback
