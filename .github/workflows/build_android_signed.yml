@@ -110,6 +110,7 @@ jobs:
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
           qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer QOPENHD_ANDROID_OPENSSL_DIR="${RUNNER_TEMP}/android-openssl" ANDROID_ABIS="${{ matrix.eabi }}" BUILD_TYPE=Release
+          python3 "${SOURCE_DIR}/ci/check_android_tls.py" android-QOpenHD-deployment-settings.json
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
@@ -120,6 +121,8 @@ jobs:
             echo "Release bundle not found in android/build/outputs/bundle/release" >&2
             exit 1
           fi
+
+          python3 "${SOURCE_DIR}/ci/check_android_tls.py" "${AAB_PATH}"
 
           echo "Signing Android App Bundle: ${AAB_PATH}"
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \

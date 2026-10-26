@@ -100,10 +100,17 @@ jobs:
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
           qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer QOPENHD_ANDROID_OPENSSL_DIR="${RUNNER_TEMP}/android-openssl" ANDROID_ABIS="${{ matrix.eabi }}"
+          python3 "${SOURCE_DIR}/ci/check_android_tls.py" android-QOpenHD-deployment-settings.json
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
           androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-34 --gradle
+
+      - name: Verify HTTPS libraries in APK
+        run: |
+          for package in "${RUNNER_TEMP}"/shadow_build_dir/android/build/outputs/apk/debug/*.apk; do
+            python3 ci/check_android_tls.py "$package"
+          done
 
       - name: ccache post-run
         run:  ccache -s
