@@ -1,4 +1,4 @@
-﻿"""Exercise production map lifecycle with real Qt 5 Location plugins and a headless canvas.
+"""Exercise production map lifecycle with real Qt 5 Location plugins and a headless canvas.
 Run: python tests/run_map_provider_test.py --qt-bin C:/Qt/5.15.19/mingw81_64/bin
 No real access token or tile downloads are needed; rendering on a Pi is a separate check.
 """
@@ -70,15 +70,33 @@ Item {
         id: _offlineMapTiles
         property bool available: true
         property string baseUrl: "http://127.0.0.1:9/"
+        property string mapboxBaseUrl: "http://127.0.0.1:9/"
+        property string mapboxCacheDirectory: "CACHE_DIRECTORY"
+        function setMapboxKey(key) {}
         function reload() {}
     }
     MapWidget { id: widget }
     TestCase {
         name: "MapProviderRecovery"; when: windowShown
+        function test_late_settings_restore() {
+            compare(widget.map, null)
+            // Match Qt.labs.settings: show_map arrives before provider/key.
+            settings.show_map = true
+            settings.selected_map_provider = 1
+            settings.map_api_key = "pk.test-restored"
+            tryVerify(function() { return widget.map !== null })
+            compare(widget.mapPlugin.name, "mapboxgl")
+            compare(widget.mapPlugin.parameters[0].value, "pk.test-restored")
+            settings.show_map = false
+            tryCompare(widget, "map", null)
+            settings.selected_map_provider = 0
+            settings.map_api_key = ""
+        }
         function test_recovery() {
+            settings.show_map = true
             widget.configure()
             verify(widget.map !== null)
-            compare(widget.map.activeMapType, "street")
+            compare(widget.map.activeMapType, "satellite")
             widget.map.supportedMapTypes = []
             widget.setup_map_variant()
             compare(widget.variantDropdown.currentIndex, -1)
@@ -88,7 +106,7 @@ Item {
             compare(widget.map, null)
             widget.configureSmallMap()
             settings.map_api_key = '  pk.test"\\\\token  '
-            verify(widget.map !== null)
+            tryVerify(function() { return widget.map !== null })
             compare(widget.mapPlugin.parameters[0].name, "mapboxgl.access_token")
             compare(widget.mapPlugin.parameters[0].value, settings.map_api_key.trim())
             var previous = widget.map
@@ -97,7 +115,7 @@ Item {
             verify(widget.map !== null && widget.map !== previous)
             compare(widget.apiKeyMissing, false)
             compare(widget.mapFailure, "")
-            compare(widget.map.activeMapType, "street")
+            compare(widget.map.activeMapType, "satellite")
             settings.selected_map_provider = 2
             widget.configure()
             compare(widget.map.activeMapType, "satellite")
@@ -134,7 +152,7 @@ def main():
         env["QT_QPA_PLATFORM"] = "offscreen"
         env["QT_QUICK_BACKEND"] = "software"
         log = folder / "results.txt"
-        result = subprocess.run([str(args.qt_bin / "qmltestrunner.exe"), "-input", str(folder),
+        result = subprocess.run([str(args.qt_bin / ("qmltestrunner.exe" if os.name == "nt" else "qmltestrunner")), "-input", str(folder),
                                  "-o", str(log) + ",txt"], env=env, timeout=45)
         output = log.read_text(encoding="utf-8") if log.exists() else "No Qt test results produced"
         print(output)

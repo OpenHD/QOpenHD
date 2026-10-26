@@ -122,6 +122,9 @@ jobs:
           qmake -v
           & $mingwMake.FullName --version
 
+      - name: Test saved map settings and provider recovery
+        run: python tests/run_map_provider_test.py --qt-bin (Split-Path (Get-Command qmake).Source)
+
       - name: Test Internet ADS-B without SDR
         run: |
           $env:Path = "$env:QT_MINGW_BIN;$env:Path"

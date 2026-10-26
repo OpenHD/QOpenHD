@@ -26,19 +26,23 @@ MapWidgetForm {
     property bool apiKeyMissing: false
     property string activeProviderName: ""
 
+    // Qt.labs.settings restores values after child components complete.
+    // Coalesce changes so the provider and token are restored before creating a map.
+    property bool mapSettingsReady: false
     Component.onCompleted: {
-        // TODO: Figure out how we can get better (terrain) maps
-        if(false){
-            pluginModel.append({
-                                   "name": "mapboxgl",
-                                   "description": "MapboxGL"
-                               })
+        mapSettingsReady = true
+        mapReconfigure.restart()
+    }
+    Timer {
+        id: mapReconfigure
+        interval: 0
+        onTriggered: {
+            if (settings.show_map) configure()
+            else clearMap()
         }
-        // Consti10: This way we need a restart of QOpenHD when the map is enabled, but we
-        // save some performance in case the map is not enabled
-        if(settings.show_map){
-            configure()
-        }
+    }
+    function scheduleMapConfigure() {
+        if (mapSettingsReady) mapReconfigure.restart()
     }
 
     function configure() {
@@ -98,8 +102,9 @@ MapWidgetForm {
                 ? 'PluginParameter { name: "mapboxgl.access_token"; value: ' + JSON.stringify(token) + ' }'
                 : 'PluginParameter { name: "osm.mapping.custom.host"; value: '
                   + JSON.stringify(provider === "openhd_offline" ? _offlineMapTiles.baseUrl : "https://tile.openstreetmap.org/") + ' }'
-        if (provider === "openhd_offline") {
+        if (provider !== "mapboxgl") {
             parameters += 'PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }'
+                        + 'PluginParameter { name: "osm.useragent"; value: "QOpenHD/3.0 (+https://openhd.org)" }'
                         + 'PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "OpenStreetMap contributors" }'
                         + 'PluginParameter { name: "osm.mapping.custom.datacopyright"; value: "OpenStreetMap contributors" }'
         }
@@ -107,6 +112,19 @@ MapWidgetForm {
             mapPlugin = Qt.createQmlObject('import QtLocation 5.15; Plugin { name: '
                                           + JSON.stringify(provider === "openhd_offline" ? "osm" : provider)
                                           + '; ' + parameters + ' }', mapWidget)
+            if (provider === "mapboxgl" && !mapPlugin.supportsMapping()) {
+                mapPlugin.destroy()
+                mapPlugin = null
+                _offlineMapTiles.setMapboxKey(token)
+                activeProviderName = "mapbox_raster"
+                var rasterParameters = 'PluginParameter { name: "osm.mapping.custom.host"; value: '
+                    + JSON.stringify(_offlineMapTiles.mapboxBaseUrl) + ' }'
+                    + 'PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }'
+                    + 'PluginParameter { name: "osm.mapping.prefetching_style"; value: "NoPrefetching" }'
+                    + 'PluginParameter { name: "osm.mapping.cache.directory"; value: ' + JSON.stringify(_offlineMapTiles.mapboxCacheDirectory) + ' }'
+                    + 'PluginParameter { name: "osm.mapping.custom.mapcopyright"; value: "Mapbox / OpenStreetMap contributors" }'
+                mapPlugin = Qt.createQmlObject('import QtLocation 5.15; Plugin { name: "osm"; ' + rasterParameters + ' }', mapWidget)
+            }
             if (!mapPlugin.supportsMapping()) {
                 clearMap()
                 mapFailure = qsTr("Map provider unavailable. Choose another provider in map settings.")
@@ -142,7 +160,7 @@ MapWidgetForm {
             variantDropdown.currentIndex = -1
             return
         }
-        var index = activeProviderName === "openhd_offline" ? types.length - 1 : settings.selected_map_variant
+        var index = activeProviderName !== "mapboxgl" ? types.length - 1 : settings.selected_map_variant
         if (index < 0 || index >= types.length)
             index = 0
         variantDropdown.currentIndex = index
@@ -167,10 +185,13 @@ MapWidgetForm {
 
     Connections {
         target: settings
+        function onShow_mapChanged() { scheduleMapConfigure() }
+        function onSelected_map_providerChanged() { scheduleMapConfigure() }
+        function onSelected_map_variantChanged() { if (map) setup_map_variant() }
         function onMap_api_keyChanged() {
             if (settings.selected_map_provider >= 0 && settings.selected_map_provider < pluginModel.count
                     && pluginModel.get(settings.selected_map_provider).name === "mapboxgl") {
-                configure()
+                scheduleMapConfigure()
             }
         }
     }
@@ -228,7 +249,7 @@ MapWidgetForm {
     // Changing the provider needs destroy and reconstruct
     providerDropdown.onActivated: {
         settings.selected_map_provider = index
-        configure()
+        scheduleMapConfigure()
     }
 
     // Changing the variant can happen dynamically

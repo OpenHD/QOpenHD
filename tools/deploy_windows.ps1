@@ -77,6 +77,7 @@ $qtDlls = @(
     "Qt5MultimediaQuick.dll",
     "Qt5Charts.dll",
     "Qt5Location.dll",
+    "Qt5Sql.dll",
     "Qt5Positioning.dll",
     "Qt5PositioningQuick.dll",
     "Qt5OpenGL.dll",
@@ -118,7 +119,7 @@ if ($FfmpegBin -and (Test-Path -LiteralPath $FfmpegBin -PathType Container)) {
         Copy-Item -Destination $TargetDir -Force
 }
 
-foreach ($pluginDir in @("platforms", "imageformats", "styles", "iconengines", "geoservices", "position", "bearer", "audio")) {
+foreach ($pluginDir in @("platforms", "imageformats", "styles", "iconengines", "geoservices", "sqldrivers", "position", "bearer", "audio")) {
     Copy-ExistingDirectory (Join-Path $qtPlugins $pluginDir) (Join-Path $TargetDir $pluginDir)
 }
 
@@ -126,4 +127,10 @@ foreach ($qmlImport in @("Qt", "QtCharts", "QtGraphicalEffects", "QtLocation", "
     Copy-ExistingDirectory (Join-Path $qtQml $qmlImport) (Join-Path (Join-Path $TargetDir "qml") $qmlImport)
 }
 
+foreach ($required in @("geoservices/qtgeoservices_osm.dll", "sqldrivers/qsqlite.dll",
+                         "Qt5Sql.dll", "qml/QtLocation/qmldir", "qml/QtPositioning/qmldir")) {
+    if (!(Test-Path -LiteralPath (Join-Path $TargetDir $required) -PathType Leaf)) {
+        throw "Missing deployed map runtime: $required"
+    }
+}
 Write-Host "Windows deployment files copied to $TargetDir"

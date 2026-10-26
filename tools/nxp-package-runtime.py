@@ -69,11 +69,25 @@ for unwanted in ["mediaservice", "audio", "texttospeech", "bearer", "xcbglintegr
     shutil.rmtree(runtime / "plugins" / unwanted, ignore_errors=True)
 if args.production:
     allowed = {"platforms", "imageformats", "iconengines", "platforminputcontexts",
-               "geoservices", "position", "generic", "wayland-decoration-client",
+               "geoservices", "sqldrivers", "position", "generic", "wayland-decoration-client",
                "wayland-shell-integration", "wayland-graphics-integration-client"}
     for directory in (runtime / "plugins").iterdir():
         if directory.is_dir() and directory.name not in allowed:
             shutil.rmtree(directory)
+# QtNetwork dlopens OpenSSL; its ABI is not discoverable through DT_NEEDED.
+# Bundle the version matching this isolated Qt rather than the BSP's OpenSSL 3.
+for name in ["libssl.so.1.1", "libcrypto.so.1.1"]:
+    source = next((d / name for d in library_dirs if (d / name).exists()), None)
+    if source is None:
+        raise RuntimeError(f"Missing Qt TLS runtime: {name}")
+    copy_file(source, lib / name)
+if args.production:
+    for name in ["plugins/geoservices/libqtgeoservices_mapboxgl.so",
+                 "plugins/geoservices/libqtgeoservices_osm.so",
+                 "plugins/sqldrivers/libqsqlite.so", "qml/QtLocation/qmldir",
+                 "qml/QtPositioning/qmldir"]:
+        if not (runtime / name).is_file():
+            raise RuntimeError(f"Missing map runtime: {name}")
 files = [f for f in files if f.exists()]
 done = set()
 while files:
@@ -97,6 +111,13 @@ while files:
         if source is None:
             raise RuntimeError(f"Unresolved dependency {name} from {f}")
         copy_file(source, lib / name)
+
+# download-only APT does not run update-ca-certificates on the target sysroot.
+certificates = sorted((root / "usr/share/ca-certificates").rglob("*.crt"))
+if not certificates:
+    raise RuntimeError("Missing map HTTPS root certificates")
+(runtime / "certs").mkdir(exist_ok=True)
+(runtime / "certs/ca-certificates.crt").write_bytes(b"\n".join(p.read_bytes() for p in certificates))
 
 (runtime / "qt.conf").write_text("[Paths]\nPrefix=.\nPlugins=plugins\nQml2Imports=qml\n")
 shutil.copytree(root / "usr/share/X11/xkb", runtime / "xkb", dirs_exist_ok=True)

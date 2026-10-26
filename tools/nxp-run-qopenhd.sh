@@ -2,6 +2,8 @@
 set -eu
 base=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export LD_LIBRARY_PATH="$base/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export SSL_CERT_FILE="$base/certs/ca-certificates.crt"
+export CURL_CA_BUNDLE="$SSL_CERT_FILE"
 export QT_PLUGIN_PATH="$base/plugins"
 export QML2_IMPORT_PATH="$base/qml"
 export QT_QPA_PLATFORM=${QT_QPA_PLATFORM:-wayland}

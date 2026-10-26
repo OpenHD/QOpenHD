@@ -26,3 +26,18 @@ jobs:
         run: python3 tests/nxp_bundle_test.py
       - name: Native boot movie timing and bounds regression
         run: python3 tests/nxp_boot_video_test.py
+
+  maps:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Qt map test runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qtbase5-dev qtdeclarative5-dev-tools qml-module-qttest qml-module-qtquick-controls2 qml-module-qtlocation qml-module-qtpositioning libqt5location5-plugin-mapboxgl
+      - name: Saved map settings restore after widget construction
+        run: python3 tests/run_map_provider_test.py --qt-bin /usr/lib/qt5/bin
+      - name: Map tile adapter rejects invalid and unconfigured requests
+        run: bash ci/test-map-raster.sh
+      - name: Supported distro runtime dependencies
+        run: python3 ci/test_package_dependencies.py

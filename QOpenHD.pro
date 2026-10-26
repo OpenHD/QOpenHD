@@ -362,6 +362,12 @@ EnableSpeech:!contains(CONFIG, nxp_native) {
 
 
 android{
+    !isEmpty(QOPENHD_ANDROID_OPENSSL_DIR) {
+        for(tlsLibrary, libcrypto_1_1.so libssl_1_1.so) {
+            !exists($$QOPENHD_ANDROID_OPENSSL_DIR/$$tlsLibrary): error("Missing Android TLS library: $$tlsLibrary")
+            ANDROID_EXTRA_LIBS += $$QOPENHD_ANDROID_OPENSSL_DIR/$$tlsLibrary
+        }
+    }
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }

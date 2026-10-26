@@ -55,6 +55,11 @@ jobs:
           ndk-version: r21e
           add-to-path: false
 
+      - name: Build matching Android TLS runtime
+        env:
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: bash ci/build-android-openssl.sh "${{ matrix.eabi }}" "${RUNNER_TEMP}/android-openssl"
+
       - name: Prepare ccache timestamp
         id: ccache_cache_timestamp
         run: echo "timestamp=$(date -u +'%Y-%m-%d-%H-%M-%S')" >> "$GITHUB_OUTPUT"
@@ -93,7 +98,7 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-          qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}"
+          qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer QOPENHD_ANDROID_OPENSSL_DIR="${RUNNER_TEMP}/android-openssl" ANDROID_ABIS="${{ matrix.eabi }}"
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android

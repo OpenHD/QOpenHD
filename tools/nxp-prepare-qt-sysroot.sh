@@ -17,6 +17,7 @@ apt-get "${opts[@]}" --download-only --no-install-recommends -y install \
     qml-module-qtquick-shapes qml-module-qtquick-dialogs \
     qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel qml-module-qtgraphicaleffects \
     qml-module-qtpositioning qml-module-qtlocation qml-module-qtcharts libdrm-dev libgbm-dev \
+    libqt5location5-plugin-mapboxgl libqt5sql5-sqlite libssl1.1 ca-certificates \
     qtwayland5 wayland-protocols libwayland-dev weston gdbserver \
     libpixman-1-dev libudev-dev libsystemd-dev libdbus-1-dev libpng-dev libcairo2-dev libgles2-mesa-dev
 for deb in "$work"/apt/archives/*.deb; do dpkg-deb -x "$deb" "$work/sysroot"; done

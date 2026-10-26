@@ -23,9 +23,15 @@ class PackageDependencyTests(unittest.TestCase):
                 packages = result.stdout.splitlines()[1::2]
                 self.assertIn(f"libavcodec{abi}", packages)
                 self.assertIn(f"libavformat{abi}", packages)
+                self.assertIn("ca-certificates", packages)
                 self.assertFalse([p for p in packages if "-dev" in p or "qmake" in p], packages)
                 if not (distro == "raspbian" and release == "bullseye"):
                     self.assertIn("libgstreamer-plugins-base1.0-0", packages)
+                    self.assertIn("libqt5location5-plugin-mapboxgl", packages)
+                    self.assertIn("qml-module-qtlocation", packages)
+                    self.assertIn("qml-module-qtpositioning", packages)
+                    self.assertIn("libqt5sql5-sqlite", packages)
+                    self.assertIn("ca-certificates", packages)
                     self.assertIn("libqt5opengl5", packages)
                     self.assertIn("libqt5texttospeech5", packages)
                     self.assertIn("qml-module-qtquick-controls2", packages)

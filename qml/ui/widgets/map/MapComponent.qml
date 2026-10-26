@@ -9,7 +9,7 @@ import OpenHD 1.0
 // This is the actual Map "canvas" file - the other 2 .qml files are just handling resizing and integration with BaseWidget
 Map {
     id: map
-    copyrightsVisible: false
+    copyrightsVisible: true
     zoomLevel: settings.map_zoom
 
     /* Enable pan, flick, and pinch gestures to zoom in and out

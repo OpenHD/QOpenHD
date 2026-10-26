@@ -10,6 +10,10 @@
 #include <QSet>
 #include <QStandardPaths>
 #include <QTcpSocket>
+#include <QNetworkReply>
+#include <QPointer>
+#include <QTimer>
+#include <QUrlQuery>
 
 #include <cstring>
 
@@ -43,12 +47,84 @@ OfflineMapTileProvider::OfflineMapTileProvider(QObject* parent)
     if (!m_server.listen(QHostAddress::LocalHost, 0)) {
         qWarning() << "Offline map tile server could not listen:" << m_server.errorString();
     }
+    connect(&m_mapboxServer, &QTcpServer::newConnection, this, [this] {
+        while (auto* socket = m_mapboxServer.nextPendingConnection()) {
+            connect(socket, &QTcpSocket::readyRead, this, [this, socket] { consumeMapboxRequest(socket); });
+            connect(socket, &QTcpSocket::disconnected, socket, &QObject::deleteLater);
+            QTimer::singleShot(15000, socket, &QTcpSocket::disconnectFromHost);
+        }
+    });
+    m_mapboxServer.listen(QHostAddress::LocalHost, 0);
     reload();
 }
 
 QString OfflineMapTileProvider::baseUrl() const
 {
     return QStringLiteral("http://127.0.0.1:%1/").arg(m_server.serverPort());
+}
+
+// The OSM plugin is present even in the static Pi Qt kit, which omits Mapbox GL.
+// Expose modern Mapbox raster tiles locally without putting the access token in QML URLs.
+QString OfflineMapTileProvider::mapboxBaseUrl() const
+{
+    return QStringLiteral("http://127.0.0.1:%1/").arg(m_mapboxServer.serverPort());
+}
+
+QString OfflineMapTileProvider::mapboxCacheDirectory() const
+{
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).filePath(QStringLiteral("mapbox-raster"));
+}
+
+void OfflineMapTileProvider::consumeMapboxRequest(QTcpSocket* socket)
+{
+    if (socket->property("handled").toBool()) return;
+    auto input = socket->property("request").toByteArray() + socket->readAll();
+    socket->setProperty("request", input);
+    if (input.size() > 8192) {
+        socket->setProperty("handled", true);
+        sendResponse(socket, 404, "Invalid tile request");
+        return;
+    }
+    if (!input.contains("\r\n\r\n")) return;
+    socket->setProperty("handled", true);
+    static const QRegularExpression path(QStringLiteral("^GET /([0-9]{1,2})/([0-9]{1,10})/([0-9]{1,10})\\.png(?:\\?[^ ]*)? HTTP/"));
+    const auto match = path.match(QString::fromLatin1(input.left(input.indexOf("\r\n"))));
+    bool xOk = false, yOk = false;
+    const int z = match.captured(1).toInt();
+    const auto x = match.captured(2).toULongLong(&xOk);
+    const auto y = match.captured(3).toULongLong(&yOk);
+    if (!match.hasMatch() || z > 22 || !xOk || !yOk || x >= (1ULL << z) || y >= (1ULL << z)
+        || m_mapboxKey.isEmpty() || m_mapboxRequests >= 32) {
+        sendResponse(socket, 404, "Tile unavailable");
+        return;
+    }
+    QUrl url(QStringLiteral("https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/%1/%2/%3")
+             .arg(z).arg(x).arg(y));
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("access_token"), m_mapboxKey);
+    url.setQuery(query);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("QOpenHD/3.0"));
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
+    auto* reply = m_mapboxNetwork.get(request);
+    ++m_mapboxRequests;
+    QTimer::singleShot(12000, reply, &QNetworkReply::abort);
+    connect(socket, &QTcpSocket::disconnected, reply, &QNetworkReply::abort);
+    QPointer<QTcpSocket> client(socket);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, client] {
+        --m_mapboxRequests;
+        const auto bytes = reply->readAll();
+        if (client && client->state() == QAbstractSocket::ConnectedState) {
+            if (reply->error() == QNetworkReply::NoError && bytes.startsWith("\x89PNG"))
+                sendResponse(client, 200, bytes, "image/png");
+            else {
+                qWarning() << "Mapbox raster tile failed: HTTP" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+                           << "network error" << int(reply->error()) << "bytes" << bytes.size();
+                sendResponse(client, 404, "Tile unavailable");
+            }
+        }
+        reply->deleteLater();
+    });
 }
 
 QString OfflineMapTileProvider::activePackageName() const
@@ -195,7 +271,8 @@ void OfflineMapTileProvider::sendResponse(QTcpSocket* socket, int status, const 
     QByteArray response = "HTTP/1.1 " + QByteArray::number(status) + " " + reason + "\r\n"
         "Content-Type: " + contentType + "\r\n"
         "Content-Length: " + QByteArray::number(body.size()) + "\r\n"
-        "Cache-Control: public, max-age=31536000, immutable\r\n"
+        + (status == 200 ? QByteArray("Cache-Control: public, max-age=31536000, immutable\r\n")
+                         : QByteArray("Cache-Control: no-store\r\n")) +
         "Connection: close\r\n\r\n" + body;
     socket->write(response);
     socket->disconnectFromHost();
