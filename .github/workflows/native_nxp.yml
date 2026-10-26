@@ -42,10 +42,8 @@ jobs:
           cmake -S tests/offline-map-builder -B /tmp/offline-map-tests -DCMAKE_BUILD_TYPE=Release
           cmake --build /tmp/offline-map-tests -j2
           /tmp/offline-map-tests/offline-map-builder-test
-      - name: Offline map picker and automatic position fallback
-        run: |
-          python3 tests/run_offline_map_ui_test.py --qt-bin /usr/lib/qt5/bin --screenshot /tmp/offline-picker.png
-          python3 tests/run_position_fallback_test.py --qt-bin /usr/lib/qt5/bin
+      - name: Automatic position fallback
+        run: python3 tests/run_position_fallback_test.py --qt-bin /usr/lib/qt5/bin
       - name: Map tile adapter rejects invalid and unconfigured requests
         run: bash ci/test-map-raster.sh
       - name: Supported distro runtime dependencies

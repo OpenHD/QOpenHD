@@ -125,6 +125,14 @@ jobs:
       - name: Test saved map settings and provider recovery
         run: python tests/run_map_provider_test.py --qt-bin (Split-Path (Get-Command qmake).Source)
 
+      - name: Test offline map picker and position fallback
+        run: |
+          $qtBin = Split-Path (Get-Command qmake).Source
+          python tests/run_offline_map_ui_test.py --qt-bin $qtBin --screenshot "$env:RUNNER_TEMP/offline-map-picker.png"
+          if ($LASTEXITCODE -ne 0) { throw "Offline map picker failed" }
+          python tests/run_position_fallback_test.py --qt-bin $qtBin
+          if ($LASTEXITCODE -ne 0) { throw "Position fallback failed" }
+
       - name: Test Internet ADS-B without SDR
         run: |
           $env:Path = "$env:QT_MINGW_BIN;$env:Path"

@@ -153,12 +153,16 @@ def main():
             if source.exists(): shutil.copyfile(source, fonts / name)
         env = os.environ.copy()
         env["PATH"] = str(args.qt_bin) + os.pathsep + env.get("PATH", "")
-        env["QT_QPA_PLATFORM"] = "offscreen"
+        env.setdefault("QT_QPA_PLATFORM", "offscreen")
         env["QT_QPA_FONTDIR"] = str(fonts)
         env.setdefault("QT_QUICK_BACKEND", "software")
         log = folder / "results.txt"
-        result = subprocess.run([str(args.qt_bin / ("qmltestrunner.exe" if os.name == "nt" else "qmltestrunner")), "-input", str(folder),
-                                 "-o", str(log) + ",txt"], env=env, timeout=45)
+        try:
+            result = subprocess.run([str(args.qt_bin / ("qmltestrunner.exe" if os.name == "nt" else "qmltestrunner")), "-input", str(folder),
+                                     "-o", str(log) + ",txt"], env=env, timeout=45)
+        except subprocess.TimeoutExpired:
+            print(log.read_text(encoding="utf-8") if log.exists() else "No Qt test output", flush=True)
+            raise
         output = log.read_text(encoding="utf-8") if log.exists() else "No test results"
         print(output)
         assert requests, "Map preview did not request fixture tiles"
