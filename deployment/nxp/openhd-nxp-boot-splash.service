@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenHD NXP early boot logo and animation
+DefaultDependencies=no
+After=systemd-udev-trigger.service systemd-remount-fs.service
+Before=sysinit.target shutdown.target
+Conflicts=shutdown.target
+ConditionPathExists=/usr/local/share/qopenhd-nxp/boot-logo.png
+
+[Service]
+Type=simple
+Environment=LD_LIBRARY_PATH=/usr/local/share/qopenhd-nxp/lib
+ExecStart=/usr/local/share/qopenhd-nxp/nxp-boot-splash /usr/local/share/qopenhd-nxp/boot-logo.png
+StandardOutput=journal
+StandardError=journal
+TimeoutStopSec=2

@@ -19,6 +19,7 @@
         <file>HudContent.qml</file>
         <file>BootSplash.qml</file>
         <file>BootVideo.qml</file>
+        <file>BootVideoNxp.qml</file>
         <file>boot-video.mp4</file>
         <file>boot-video-last.png</file>
         <file>PiStartupWindow.qml</file>

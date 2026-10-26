@@ -36,6 +36,8 @@ def copy_file(src, dest):
     files.append(dest)
 
 copy_file(args.work / "build-qopenhd-native/release/QOpenHD", runtime / "QOpenHD")
+copy_file(args.work / "build/nxp-boot-splash", runtime / "nxp-boot-splash")
+copy_file(Path(__file__).resolve().parent.parent / "icons/round.png", runtime / "boot-logo.png")
 if args.production and not compositor:
     raise RuntimeError("Production bundles require a source-built compositor")
 if args.production:

@@ -24,3 +24,5 @@ jobs:
         run: python3 tests/nxp_startup_test.py
       - name: Deployment archive ownership regression
         run: python3 tests/nxp_bundle_test.py
+      - name: Native boot movie timing and bounds regression
+        run: python3 tests/nxp_boot_video_test.py

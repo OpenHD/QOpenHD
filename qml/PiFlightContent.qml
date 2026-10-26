@@ -158,7 +158,7 @@ Item {
     }
 
     readonly property int screenRotation: settings.general_screen_rotation
-    readonly property color windowColor: settings.app_background_transparent ? "transparent" : "#2C3E50"
+    readonly property color windowColor: (QOPENHD_ENABLE_NXP_VIDEO || settings.app_background_transparent) ? "transparent" : "#2C3E50"
     readonly property bool hudReady: flightUi.status === Loader.Ready
     readonly property bool hudFailed: flightUi.status === Loader.Error
 

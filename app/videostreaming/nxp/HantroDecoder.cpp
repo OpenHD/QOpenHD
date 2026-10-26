@@ -11,7 +11,7 @@ static void check(ImxVpuApiDecReturnCodes result) {
 }
 DecodedFrame::~DecodedFrame() { if (owner) owner->release(raw.fb_dma_buffer); }
 int DecodedFrame::dmaFd() const { return vpu().imx_dma_buffer_get_fd(raw.fb_dma_buffer); }
-HantroDecoder::HantroDecoder(bool hevc) {
+HantroDecoder::HantroDecoder(bool hevc, bool reorder) {
     try {
         int error = 0;
         allocator_ = vpu().imx_dma_buffer_allocator_new(&error);
@@ -26,8 +26,10 @@ HantroDecoder::HantroDecoder(bool hevc) {
         }
         ImxVpuApiDecOpenParams params{};
         params.compression_format = hevc ? IMX_VPU_API_COMPRESSION_FORMAT_H265 : IMX_VPU_API_COMPRESSION_FORMAT_H264;
-        // No frame reordering, tiled output, or 10-bit output. Request linear NV12.
+        // Request linear NV12. Only the local boot movie enables reordering;
+        // live flight streams retain immediate decode-order output.
         params.flags = IMX_VPU_API_DEC_OPEN_PARAMS_FLAG_USE_SEMI_PLANAR_COLOR_FORMAT;
+        if (reorder) params.flags |= IMX_VPU_API_DEC_OPEN_PARAMS_FLAG_ENABLE_FRAME_REORDERING;
         check(vpu().imx_vpu_api_dec_open(&decoder_, &params, stream_));
     } catch (...) {
         if (decoder_) vpu().imx_vpu_api_dec_close(decoder_);
@@ -60,15 +62,31 @@ void HantroDecoder::addBuffers(size_t count) {
 }
 void HantroDecoder::push(std::vector<uint8_t>& bytes, uint64_t receivedUs,
                         const std::function<void(std::shared_ptr<DecodedFrame>)>& output) {
-    std::unique_lock<std::mutex> lock(mutex_);
     ImxVpuApiEncodedFrame encoded{};
     encoded.data = bytes.data(); encoded.data_size = bytes.size(); encoded.pts = receivedUs;
-    check(vpu().imx_vpu_api_dec_push_encoded_frame(decoder_, &encoded));
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        check(vpu().imx_vpu_api_dec_push_encoded_frame(decoder_, &encoded));
+    }
+    readOutput(output, false);
+}
+void HantroDecoder::drain(const std::function<void(std::shared_ptr<DecodedFrame>)>& output) {
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        vpu().imx_vpu_api_dec_enable_drain_mode(decoder_);
+    }
+    readOutput(output, true);
+}
+void HantroDecoder::readOutput(const std::function<void(std::shared_ptr<DecodedFrame>)>& output, bool draining) {
+    std::unique_lock<std::mutex> lock(mutex_);
     for (unsigned steps = 0; steps < 256; ++steps) {
         ImxVpuApiDecOutputCodes code;
         check(vpu().imx_vpu_api_dec_decode(decoder_, &code));
         switch (code) {
         case IMX_VPU_API_DEC_OUTPUT_CODE_MORE_INPUT_DATA_NEEDED: return;
+        case IMX_VPU_API_DEC_OUTPUT_CODE_EOS:
+            if (draining) return;
+            throw std::runtime_error("unexpected VPU end of stream");
         case IMX_VPU_API_DEC_OUTPUT_CODE_NEW_STREAM_INFO_AVAILABLE:
             info_ = *vpu().imx_vpu_api_dec_get_stream_info(decoder_);
             if (info_.color_format != IMX_VPU_API_COLOR_FORMAT_SEMI_PLANAR_YUV420_8BIT ||

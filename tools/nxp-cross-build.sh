@@ -17,6 +17,8 @@ if [[ ${NXP_SKIP_STAGE:-0} != 1 ]]; then
         "$repo/app" "$repo/qml" "$repo/lib" "$repo/translations" "$repo/icons" "$work/source/"
 fi
 cp "$repo"/*.pri "$repo"/*.pro "$work/source/"
+mkdir -p "$work/source/tools"
+cp "$repo/tools/nxp-prepare-boot-video.py" "$repo/tools/nxp-boot-splash.cpp" "$work/source/tools/"
 repo="$work/source"
 mkdir -p "$work/build-qopenhd-native"
 cat > "$work/qt.conf" <<EOF
@@ -43,3 +45,7 @@ cd "$work/build-qopenhd-native"
     "WAYLAND_PROTOCOLS_DIR=$qt/usr/share/wayland-protocols"
 make -j"${NXP_JOBS:-4}" > "$work/qopenhd-build.log" 2>&1 || { tail -80 "$work/qopenhd-build.log"; exit 1; }
 echo "Built: $work/build-qopenhd-native/release/QOpenHD"
+mkdir -p "$work/build"
+$cross_cxx --sysroot="$sdk" -std=c++17 -O2 -pthread \
+    "$repo/tools/nxp-boot-splash.cpp" -L"$sdk/usr/lib" \
+    -Wl,-rpath-link,"$sdk/usr/lib" -lpng16 -o "$work/build/nxp-boot-splash"

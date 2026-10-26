@@ -8,8 +8,9 @@ Window {
     // BootSplash supplies the black background without making the EGL surface opaque.
     color: hudPresented && flightContent.item ? flightContent.item.windowColor : "transparent"
     title: "QOpenHD EVO"
+    readonly property bool nativeVideo: typeof QOPENHD_ENABLE_NXP_VIDEO !== "undefined" && QOPENHD_ENABLE_NXP_VIDEO
     contentItem.rotation: flightContent.item ? flightContent.item.screenRotation : 0
-    contentOrientation: flightContent.item && flightContent.item.screenRotation !== 0
+    contentOrientation: nativeVideo ? Qt.PrimaryOrientation : flightContent.item && flightContent.item.screenRotation !== 0
                         ? Qt.LandscapeOrientation : Qt.PortraitOrientation
     readonly property bool hudReady: flightContent.item !== null && flightContent.item.hudReady
     readonly property bool videoFinished: videoSplash.item !== null && videoSplash.item.finished
@@ -50,7 +51,7 @@ Window {
         z: 10001
         active: false
         visible: !startupWindow.hudPresented
-        source: "BootVideo.qml"
+        source: startupWindow.nativeVideo ? "BootVideoNxp.qml" : "BootVideo.qml"
         onVisibleChanged: if (!visible && item) item.running = false
     }
     BootSplash {

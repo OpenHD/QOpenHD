@@ -27,3 +27,6 @@ SOURCES += $$PWD/VpuApi.cpp $$PWD/HantroDecoder.cpp $$PWD/UdpVideo.cpp $$PWD/Way
 HEADERS += $$PWD/VpuApi.hpp $$PWD/HantroDecoder.hpp $$PWD/UdpVideo.hpp $$PWD/WaylandVideo.hpp $$PWD/NxpVideoController.hpp $$PWD/RtpAccessUnit.hpp
 SOURCES += $$PWD/NxpVideoItem.cpp
 HEADERS += $$PWD/NxpVideoItem.hpp
+boot_dir = $$OUT_PWD/nxp-boot-video
+!system(python3 $$shell_quote($$PWD/../../../tools/nxp-prepare-boot-video.py) $$shell_quote($$PWD/../../../qml/boot-video.mp4) $$shell_quote($$boot_dir)): error(NXP boot movie preparation failed)
+RESOURCES += $$boot_dir/boot-video.qrc

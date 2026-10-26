@@ -73,3 +73,14 @@
  	uint32_t gbm_format;
  	uint32_t gbm_bo_flags;
  
+--- a/kiosk-shell/kiosk-shell.c
++++ b/kiosk-shell/kiosk-shell.c
+@@ -426,7 +426,7 @@
+ 
+ 	shoutput->background_view =
+ 			create_colored_surface(shoutput->shell->compositor,
+-					       0.5, 0.5, 0.5,
++					       0.0, 0.0, 0.0,
+ 					       output->x, output->y,
+ 					       output->width,
+ 			                       output->height);

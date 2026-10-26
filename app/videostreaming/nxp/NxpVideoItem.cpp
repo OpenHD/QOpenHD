@@ -11,12 +11,15 @@
 #include <QSGMaterial>
 #include <QSGMaterialShader>
 #include <QSettings>
+#include <QFile>
+#include <QDataStream>
 #include <QtQml>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <drm_fourcc.h>
 #include <algorithm>
 #include <deque>
+#include <chrono>
 #include <stdexcept>
 
 namespace nxp {
@@ -184,10 +187,84 @@ NxpVideoItem::NxpVideoItem(QQuickItem* parent) : QQuickItem(parent) {
     timer_.start();
 }
 NxpVideoItem::~NxpVideoItem() {
+    setRunning(false);
     timer_.stop(); input_.reset();
-    DecodingStatistcs::instance().set_secondary_video_active(false);
+    if (!bootAnimation_) DecodingStatistcs::instance().set_secondary_video_active(false);
+}
+void NxpVideoItem::componentComplete() {
+    QQuickItem::componentComplete();
+    if (bootAnimation_) { timer_.stop(); startBootAnimation(); }
+}
+void NxpVideoItem::setRunning(bool running) {
+    if (running || !bootAnimation_) return;
+    bootStop_ = true; bootWake_.notify_all();
+    if (bootThread_.joinable()) bootThread_.join();
+}
+void NxpVideoItem::submitFrame(std::shared_ptr<DecodedFrame> frame) {
+    { std::lock_guard<std::mutex> lock(mutex_);
+      if (latest_) ++replaced_;
+      latest_ = std::move(frame); }
+    if (!updatePending_.exchange(true))
+        QMetaObject::invokeMethod(this, [this] {
+            updatePending_ = false;
+            update();
+        }, Qt::QueuedConnection);
+}
+void NxpVideoItem::startBootAnimation() {
+    bootThread_ = std::thread([this] {
+        try {
+            QFile file(QStringLiteral(":/nxp/boot-video.bin"));
+            if (!file.open(QIODevice::ReadOnly) || file.size() > 16 * 1024 * 1024 || file.read(8) != "NXPBOOT1")
+                throw std::runtime_error("invalid bundled NXP boot movie");
+            QDataStream stream(&file);
+            quint32 count = 0; stream >> count;
+            if (!count || count > 10000) throw std::runtime_error("invalid boot sample count");
+            auto decoder = std::make_shared<HantroDecoder>(false, true);
+            std::chrono::steady_clock::time_point start;
+            uint64_t endUs = 0;
+            unsigned decoded = 0;
+            auto wait = [this, &start](uint64_t timeUs) {
+                std::unique_lock<std::mutex> lock(bootMutex_);
+                return !bootWake_.wait_until(lock, start + std::chrono::microseconds(timeUs),
+                    [this] { return bootStop_.load(); });
+            };
+            auto output = [&, this](std::shared_ptr<DecodedFrame> frame) {
+                if (bootStop_) return;
+                if (!decoded++) {
+                    start = std::chrono::steady_clock::now();
+                    qWarning() << "QOpenHD NXP boot video: playing (Hantro)";
+                }
+                if (frame->raw.pts > 30000000) throw std::runtime_error("invalid boot picture timestamp");
+                if (wait(frame->raw.pts)) submitFrame(std::move(frame));
+            };
+            for (quint32 sample = 0; sample < count && !bootStop_; ++sample) {
+                quint32 size = 0, duration = 0; quint64 pts = 0;
+                stream >> size >> pts >> duration;
+                if (stream.status() != QDataStream::Ok || !size || size > 4 * 1024 * 1024 ||
+                    pts > 30000000 || duration > 1000000 || file.bytesAvailable() < size)
+                    throw std::runtime_error("invalid boot sample");
+                auto data = file.read(size);
+                if (data.size() != int(size)) throw std::runtime_error("truncated boot sample");
+                std::vector<uint8_t> bytes(data.begin(), data.end());
+                endUs = std::max<uint64_t>(endUs, pts + duration);
+                decoder->push(bytes, pts, output);
+            }
+            if (!bootStop_) decoder->drain(output);
+            if (!bootStop_ && (!decoded || decoded != count))
+                throw std::runtime_error("boot decoder did not output all pictures");
+            if (!bootStop_) wait(endUs);
+            qWarning() << "QOpenHD NXP boot video: decoded" << decoded << "pictures";
+        } catch (const std::exception& error) {
+            qWarning() << "QOpenHD NXP boot video unavailable:" << error.what();
+        }
+        if (!bootStop_) QMetaObject::invokeMethod(this, [this] {
+            finished_ = true; emit finishedChanged();
+            qWarning() << "QOpenHD NXP boot video: finished";
+        }, Qt::QueuedConnection);
+    });
 }
 void NxpVideoItem::refresh() {
+    if (bootAnimation_) return;
     auto settings = QOpenHDVideoHelper::read_config_from_settings();
     const auto stream = settings.generic.qopenhd_switch_primary_secondary ? settings.primary_stream_config : settings.secondary_stream_config;
     const auto config = QString("%1:%2:%3").arg(QString::fromStdString(stream.udp_rtp_input_ip_address))
@@ -205,16 +282,8 @@ void NxpVideoItem::refresh() {
     if (stream.video_codec != QOpenHDVideoHelper::VideoCodecH264 && stream.video_codec != QOpenHDVideoHelper::VideoCodecH265) return;
     try {
         input_ = std::make_unique<UdpVideo>(stream.video_codec == QOpenHDVideoHelper::VideoCodecH265,
-            stream.udp_rtp_input_ip_address, stream.udp_rtp_input_port, [this](auto frame) {
-                { std::lock_guard<std::mutex> lock(mutex_);
-                  if (latest_) ++replaced_;
-                  latest_ = std::move(frame); }
-                if (!updatePending_.exchange(true))
-                    QMetaObject::invokeMethod(this, [this] {
-                        updatePending_ = false;
-                        update();
-                    }, Qt::QueuedConnection);
-            });
+            stream.udp_rtp_input_ip_address, stream.udp_rtp_input_port,
+            [this](auto frame) { submitFrame(std::move(frame)); });
         config_ = config;
         qWarning() << "NXP secondary Hantro/QML listening" << config;
     } catch (const std::exception& error) { qWarning() << "NXP secondary:" << error.what(); }

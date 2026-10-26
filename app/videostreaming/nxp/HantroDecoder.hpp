@@ -18,12 +18,14 @@ struct DecodedFrame {
 // that generation alive across resolution/codec changes, including GPU use.
 class HantroDecoder : public std::enable_shared_from_this<HantroDecoder> {
 public:
-    explicit HantroDecoder(bool hevc);
+    explicit HantroDecoder(bool hevc, bool reorder = false);
     ~HantroDecoder();
     void push(std::vector<uint8_t>& bytes, uint64_t receivedUs,
               const std::function<void(std::shared_ptr<DecodedFrame>)>& output);
     void release(ImxDmaBuffer* buffer);
+    void drain(const std::function<void(std::shared_ptr<DecodedFrame>)>& output);
 private:
+    void readOutput(const std::function<void(std::shared_ptr<DecodedFrame>)>& output, bool draining);
     void addBuffers(size_t count);
     std::mutex mutex_;
     ImxDmaBufferAllocator* allocator_ = nullptr;

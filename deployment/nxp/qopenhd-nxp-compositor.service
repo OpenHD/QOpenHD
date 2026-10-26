@@ -1,7 +1,7 @@
 [Unit]
 Description=OpenHD NXP independent video and HUD compositor
 Requires=systemd-logind.service
-After=systemd-user-sessions.service systemd-logind.service dbus.service
+After=systemd-user-sessions.service systemd-logind.service dbus.service openhd-nxp-boot-splash.service
 Conflicts=weston.service display-manager.service getty@tty7.service
 Before=qopenhd.service
 
@@ -22,6 +22,9 @@ TTYVTDisallocate=yes
 StandardInput=tty-fail
 StandardOutput=journal
 StandardError=journal
+# A Conflicts= relationship would drop the weak early-splash start job from
+# the initial boot transaction. Stop it here after it has actually started.
+ExecStartPre=-/bin/systemctl stop openhd-nxp-boot-splash.service
 ExecStart=/bin/sh /usr/local/share/qopenhd-nxp/run-weston.sh --tty=7 --continue-without-input
 Restart=on-failure
 RestartSec=2

@@ -48,13 +48,17 @@ mkdir -p "$runtime"
 cp -a "$work/runtime-production/." "$runtime/"
 # Shell scripts and profiles are data in git; explicitly install executables.
 chmod 0755 "$runtime/QOpenHD" "$runtime/weston" "$runtime/run-qopenhd.sh" "$runtime/run-weston.sh"
-for binary in "$runtime/QOpenHD" "$runtime/weston"; do
+chmod 0755 "$runtime/nxp-boot-splash"
+for binary in "$runtime/QOpenHD" "$runtime/weston" "$runtime/nxp-boot-splash"; do
     "$NXP_READELF" -h "$binary" | grep -q 'Machine:.*AArch64'
     "$NXP_STRIP" --strip-unneeded "$binary"
 done
 mkdir -p "$output/deploy/usr/lib/systemd/system" "$output/deploy/etc/qopenhd-nxp"
 install -m 0644 "$repo/deployment/nxp/qopenhd.service" "$output/deploy/usr/lib/systemd/system/"
 install -m 0644 "$repo/deployment/nxp/qopenhd-nxp-compositor.service" "$output/deploy/usr/lib/systemd/system/"
+install -m 0644 "$repo/deployment/nxp/openhd-nxp-boot-splash.service" "$output/deploy/usr/lib/systemd/system/"
+mkdir -p "$output/deploy/usr/lib/systemd/system/sysinit.target.wants"
+ln -sfn ../openhd-nxp-boot-splash.service "$output/deploy/usr/lib/systemd/system/sysinit.target.wants/"
 install -m 0644 "$repo/deployment/nxp/weston-preferred.ini" "$output/deploy/etc/qopenhd-nxp/weston.ini"
 "$host_python" - "$repo" "$runtime" <<'PY'
 import hashlib, json, subprocess, sys

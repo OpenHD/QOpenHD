@@ -296,3 +296,39 @@ The HDMI regression also exercised H.265 1080p60 primary with H.264 secondary
 through OpenHD. During a deliberate two-second Qt GUI block, the independent
 primary received 120 presentation callbacks; both decoders reported zero errors
 and zero input queue drops.
+
+## Boot splash and animation
+
+The NXP runtime mirrors the Pi sequence without QtMultimedia: an early
+OpenHD logo with three pulsing blue dots, then the same bundled six-second
+movie, then the HUD. `openhd-nxp-boot-splash.service` starts from the vendor
+`sysinit.target.wants` directory and writes only the DRM fbdev-emulation
+framebuffer. It retries a missing framebuffer for three seconds, validates
+geometry/pixel bounds, and exits after 25 seconds if no compositor starts.
+It neither becomes DRM master nor waits for network/OpenHD initialization.
+
+The compositor orders after the splash service and explicitly stops it in
+`ExecStartPre`, before Weston accesses the display. A startup `Conflicts=`
+would suppress the weak splash start job from the initial boot transaction. This covers
+early userspace; firmware/U-Boot and the kernel's initial display setup precede
+it. The mode change into Weston can still briefly blank HDMI.
+
+QOpenHD reuses the Pi's permanent startup window. On NXP it selects
+`BootVideoNxp.qml`, decodes with Hantro, imports NV12 through the native QML
+renderer, holds the last image while the HUD loads, and then reveals the
+transparent HUD above the independent live video surface. Boot playback uses
+frame reordering and drains all pictures at EOF; live flight video keeps
+reordering disabled. A 12-second boot-movie watchdog allows the HUD to load
+if playback fails. The early service and the movie require neither FFmpeg
+nor GStreamer.
+
+`tools/nxp-prepare-boot-video.py` reads the bundled non-fragmented AVC MP4 at
+build time and embeds Annex B samples with their composition timestamps.
+The movie has 141 pictures at 24 fps and contains B-frames: preserving the
+`ctts` offsets avoids decode-order judder. Timing/bounds tests run in native
+NXP CI. The early framebuffer helper and logo travel in the same ORQA runtime;
+its PNG dependency is included by the runtime dependency closure.
+
+The kiosk-shell background is black, matching both startup stages and the
+no-video HUD. The compositor patch changes the upstream gray fallback rather
+than placing an opaque Qt rectangle over the independent live video surface.

@@ -441,7 +441,11 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
-    const bool earlyPiSplash = QOpenHD::instance().is_platform_rpi();
+#ifdef QOPENHD_ENABLE_NXP_VIDEO
+    const bool earlyBootSplash = true;
+#else
+    const bool earlyBootSplash = QOpenHD::instance().is_platform_rpi();
+#endif
 #ifdef QOPENHD_ENABLE_NXP_VIDEO
     QQuickWindow::setDefaultAlphaBuffer(true);
     QSurfaceFormat nxpFormat;
@@ -450,13 +454,13 @@ int main(int argc, char *argv[]) {
     nxpFormat.setAlphaBufferSize(8);
     QSurfaceFormat::setDefaultFormat(nxpFormat);
 #endif
-    if (earlyPiSplash) {
+    if (earlyBootSplash) {
         // The startup window also hosts the HUD above the external video plane.
         // EGL's alpha format must be selected before this window is created.
         QQuickWindow::setDefaultAlphaBuffer(true);
     }
 #if defined(__linux__) && !defined(__android__)
-    if (earlyPiSplash && (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM") ||
+    if (earlyBootSplash && (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM") ||
                           qEnvironmentVariable("QT_QPA_PLATFORM").startsWith("eglfs"))) {
         // Keep Plymouth running throughout initialization before Qt claims DRM.
         QProcess plymouth;
@@ -466,8 +470,13 @@ int main(int argc, char *argv[]) {
 #endif
     QApplication app(argc, argv);
     QQmlApplicationEngine engine;
-    if (earlyPiSplash) {
-        // Create the permanent EGLFS window before fonts and telemetry models.
+#ifdef QOPENHD_ENABLE_NXP_VIDEO
+    // The permanent startup window selects native Hantro movie playback before
+    // the other models and platform context properties have been initialized.
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_NXP_VIDEO", true);
+#endif
+    if (earlyBootSplash) {
+        // Create the permanent startup window before fonts and telemetry models.
         // Replacing this window later would clear the display a second time.
         engine.load(QUrl(QStringLiteral("qrc:/PiStartupWindow.qml")));
         if (engine.rootObjects().isEmpty()) return 1;
@@ -668,7 +677,7 @@ int main(int argc, char *argv[]) {
     //const QUrl url(QStringLiteral("qrc:/qt/qml/main.qml"));
     //const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     const QUrl url(QStringLiteral("qrc:/main.qml"));
-    if (earlyPiSplash) {
+    if (earlyBootSplash) {
         if (!QMetaObject::invokeMethod(engine.rootObjects().first(), "loadFlightUi")) return 1;
     } else {
         engine.load(url);

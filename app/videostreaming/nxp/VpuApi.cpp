@@ -19,6 +19,7 @@ VpuApi::VpuApi() {
         NXP_API(imx_vpu_api_dec_add_framebuffers_to_pool)
         NXP_API(imx_vpu_api_dec_push_encoded_frame)
         NXP_API(imx_vpu_api_dec_decode)
+        NXP_API(imx_vpu_api_dec_enable_drain_mode)
         NXP_API(imx_vpu_api_dec_get_decoded_frame)
         NXP_API(imx_vpu_api_dec_return_framebuffer_to_decoder)
         NXP_API(imx_vpu_api_dec_get_skipped_frame_info)
