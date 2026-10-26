@@ -10,6 +10,7 @@ Type=simple
 User=root
 Environment=QT_QPA_PLATFORM=wayland
 Environment=XDG_RUNTIME_DIR=/run/qopenhd-nxp
+Environment=NXP_RUNTIME_DIR=/run/qopenhd-nxp
 Environment=WAYLAND_DISPLAY=wayland-qopenhd
 EnvironmentFile=-/etc/default/qopenhd-nxp
 ExecStart=/bin/sh /usr/local/share/qopenhd-nxp/run-qopenhd.sh

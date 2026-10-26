@@ -2,7 +2,9 @@
 set -eu
 base=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export LD_LIBRARY_PATH="$base/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/qopenhd-wayland}
+# PAM/logind may replace XDG_RUNTIME_DIR with /run/user/0 after systemd
+# applies Environment=. Keep the compositor socket in its owned service dir.
+export XDG_RUNTIME_DIR=${NXP_RUNTIME_DIR:-${RUNTIME_DIRECTORY:-${XDG_RUNTIME_DIR:-/run/qopenhd-wayland}}}
 export XKB_CONFIG_ROOT="$base/xkb"
 mkdir -p "$XDG_RUNTIME_DIR"
 chmod 700 "$XDG_RUNTIME_DIR"

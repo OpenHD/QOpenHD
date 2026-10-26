@@ -55,7 +55,7 @@ done
 mkdir -p "$output/deploy/usr/lib/systemd/system" "$output/deploy/etc/qopenhd-nxp"
 install -m 0644 "$repo/deployment/nxp/qopenhd.service" "$output/deploy/usr/lib/systemd/system/"
 install -m 0644 "$repo/deployment/nxp/qopenhd-nxp-compositor.service" "$output/deploy/usr/lib/systemd/system/"
-install -m 0644 "$repo/deployment/nxp/weston-720p120.ini" "$output/deploy/etc/qopenhd-nxp/weston.ini"
+install -m 0644 "$repo/deployment/nxp/weston-preferred.ini" "$output/deploy/etc/qopenhd-nxp/weston.ini"
 "$host_python" - "$repo" "$runtime" <<'PY'
 import hashlib, json, subprocess, sys
 from pathlib import Path

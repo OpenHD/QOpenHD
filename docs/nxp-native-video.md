@@ -14,8 +14,10 @@ The image includes `qopenhd.service` and its required
 `qopenhd-nxp-compositor.service`. SysUtils starts `qopenhd.service` in Ground
 mode; Air images retain the UI binaries without starting a display server.
 The production runtime uses DRM/HDMI, selects the display-subsystem DRM card,
-and never loads the headless EGL adapter. Its default output profile requests
-720p120; the 1080p60 profile is included. Override the config/device using
+and never loads the headless EGL adapter. Its default output profile selects
+the monitor's preferred mode. Explicit 720p120 and 1080p60 profiles are included;
+select 720p120 only when the connected HDMI sink advertises/supports it.
+Override the config/device using
 `NXP_WESTON_CONFIG` / `NXP_DRM_DEVICE` in `/etc/default/qopenhd-nxp`.
 
 The runtime preserves the NXP EGL/GLES/GBM/Hantro libraries. Image assembly
@@ -203,7 +205,19 @@ Diagnostics are opt-in environment variables:
   seconds after controller initialization, and report video presentations
   during the block. Values above 10000 ms are ignored.
 
-Remaining physical validation: monitor EDID and 720p120 mode selection,
+On the later live HDMI bring-up, a BenQ XL2411T advertised 1080p60 and 720p60,
+but no 720p120 HDMI mode. The actual DRM scanout framebuffer contained the
+QOpenHD HUD with both Vivante GL and software rendering. The monitor still
+reported black/no signal, so physical HDMI output remained unproven even though
+the services and rendered framebuffer were correct.
+
+Production startup explicitly shares `NXP_RUNTIME_DIR` between Weston and Qt:
+PAM/logind can overwrite `XDG_RUNTIME_DIR` with `/run/user/0` when opening the
+compositor's tty session. Qt waits for the shared socket before starting.
+Install the runtime and units persistently; copies under `/run` disappear on
+reboot. Check available root filesystem space before deployment.
+
+Remaining physical validation: stable monitor output and 720p120 mode selection,
 120 Hz scanout, vblank/presentation timing under sustained RF video, GPU load,
 visible color/rotation/overlay correctness, recovery with the real Air stream,
-and glass-to-glass latency. HDMI was disconnected/failing during this work.
+and glass-to-glass latency. The initial decoder/compositor tests were headless.

@@ -11,6 +11,7 @@ User=root
 PAMName=login
 Environment=XDG_SESSION_TYPE=wayland
 Environment=XDG_RUNTIME_DIR=/run/qopenhd-nxp
+Environment=NXP_RUNTIME_DIR=/run/qopenhd-nxp
 EnvironmentFile=-/etc/default/qopenhd-nxp
 RuntimeDirectory=qopenhd-nxp
 RuntimeDirectoryMode=0700

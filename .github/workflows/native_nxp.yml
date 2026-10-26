@@ -14,9 +14,11 @@ jobs:
           /tmp/nxp-rtp-test
       - name: Validate native build scripts
         run: |
-          bash -n tools/nxp-*.sh tools/build_orqa_bundle.sh
+          for script in tools/nxp-*.sh tools/build_orqa_bundle.sh; do bash -n "$script"; done
           python3 - <<'PY'
           import ast, pathlib
           for path in pathlib.Path('tools').glob('nxp-*.py'):
               ast.parse(path.read_text())
           PY
+      - name: PAM runtime directory and compositor readiness regression
+        run: python3 tests/nxp_startup_test.py
