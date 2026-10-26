@@ -3,7 +3,7 @@
 #include <qapplication.h>
 #include <QSettings>
 
-#if defined(__linux__) && !defined(__android__)
+#if defined(__linux__) && !defined(__android__) && defined(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)
 #include "videostreaming/avcodec/drm_kms/kms_renderer.h"
 #include <QSettings>
 #endif
@@ -34,7 +34,7 @@ void QRenderStats::register_to_root_window(QQmlApplicationEngine& engine)
 void QRenderStats::registerOnWindow(QQuickWindow *window)
 {
     QSettings settings;
-#if defined(__linux__) && !defined(__android__)
+#if defined(__linux__) && !defined(__android__) && defined(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)
 #if defined(IS_PLATFORM_ROCK)
     // Rock 5 displays FPVUE's DMA-BUF frames through the KMS overlay.
     // This is the release renderer and must not depend on a user setting.

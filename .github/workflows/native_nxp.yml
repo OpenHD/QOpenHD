@@ -1,0 +1,22 @@
+name: Native NXP video checks
+on:
+  push:
+    branches: [dev-release]
+  pull_request:
+jobs:
+  parser-and-packaging:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: RTP bounds, loss and restart regression
+        run: |
+          g++ -std=c++17 -g -fsanitize=address,undefined -Iapp tests/nxp_rtp_test.cpp -o /tmp/nxp-rtp-test
+          /tmp/nxp-rtp-test
+      - name: Validate native build scripts
+        run: |
+          bash -n tools/nxp-*.sh tools/build_orqa_bundle.sh
+          python3 - <<'PY'
+          import ast, pathlib
+          for path in pathlib.Path('tools').glob('nxp-*.py'):
+              ast.parse(path.read_text())
+          PY

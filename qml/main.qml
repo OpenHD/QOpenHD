@@ -160,7 +160,8 @@ ApplicationWindow {
         _qrenderstats.set_window_height(height)
     }
 
-    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
+    contentOrientation: QOPENHD_ENABLE_NXP_VIDEO ? Qt.PrimaryOrientation :
+                        (settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation)
     contentItem.rotation: settings.general_screen_rotation
 
     //minimumWidth: 850
@@ -170,12 +171,12 @@ ApplicationWindow {
     // but rather done independently by using a pipeline that directly goes to the HW composer (e.g. mmal on pi).
     //color: "transparent" //Consti10 transparent background
     //color : "#2C3E50" // reduce KREBS
-    color: settings.app_background_transparent ? "transparent" : "#2C3E50"
+    color: (QOPENHD_ENABLE_NXP_VIDEO || settings.app_background_transparent) ? "transparent" : "#2C3E50"
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
     //visibility: "FullScreen"
     // android / ios - specifc: We need to explicitly say full screen, otherwise things might be "cut off"
-    visibility: (settings.dev_force_show_full_screen || QOPENHD_IS_MOBILE) ? "FullScreen" : "AutomaticVisibility"
+    visibility: (QOPENHD_ENABLE_NXP_VIDEO || settings.dev_force_show_full_screen || QOPENHD_IS_MOBILE) ? "FullScreen" : "AutomaticVisibility"
 
     // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
     // and equivalent settings systems on Linux and Android

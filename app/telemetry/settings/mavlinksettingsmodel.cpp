@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QVariant>
 #include <algorithm>
+#include <cmath>
 
 #include "../action/impl/xparam.h"
 // Dirty

@@ -51,6 +51,9 @@
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
 #include "decodingstatistcs.h"
+#ifdef QOPENHD_ENABLE_NXP_VIDEO
+#include "videostreaming/nxp/NxpVideoController.hpp"
+#endif
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
 #include "QSGVideoTextureItem.h"
 #endif
@@ -439,6 +442,14 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
     const bool earlyPiSplash = QOpenHD::instance().is_platform_rpi();
+#ifdef QOPENHD_ENABLE_NXP_VIDEO
+    QQuickWindow::setDefaultAlphaBuffer(true);
+    QSurfaceFormat nxpFormat;
+    nxpFormat.setRenderableType(QSurfaceFormat::OpenGLES);
+    nxpFormat.setVersion(2, 0);
+    nxpFormat.setAlphaBufferSize(8);
+    QSurfaceFormat::setDefaultFormat(nxpFormat);
+#endif
     if (earlyPiSplash) {
         // The startup window also hosts the HUD above the external video plane.
         // EGL's alpha format must be selected before this window is created.
@@ -603,6 +614,13 @@ int main(int argc, char *argv[]) {
         false
 #endif
     ));
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_NXP_VIDEO", QVariant(
+#ifdef QOPENHD_ENABLE_NXP_VIDEO
+        true
+#else
+        false
+#endif
+    ));
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
     // QT doesn't have the define(s) from c++
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(true));
@@ -665,6 +683,12 @@ int main(int argc, char *argv[]) {
 #endif
 
     qDebug() << "QML loaded";
+#ifdef QOPENHD_ENABLE_NXP_VIDEO
+    if (engine.rootObjects().isEmpty()) return 1;
+    auto nxpWindow = qobject_cast<QQuickWindow*>(engine.rootObjects().first());
+    if (!nxpWindow) return 1;
+    NxpVideoController nxpVideo(nxpWindow);
+#endif
     // Now we start mavlink for the first time
     MavlinkTelemetry::instance().start();
 

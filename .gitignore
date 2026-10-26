@@ -52,6 +52,7 @@ ui_*.h
 Makefile*
 *build-*
 !ci/build-windows-openssl.sh
+!tools/nxp-build-compositor.sh
 *.qm
 *.prl
 

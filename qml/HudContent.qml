@@ -26,6 +26,7 @@ Item {
         anchors.fill: parent
         z: 1.0
         source: {
+            if (QOPENHD_ENABLE_NXP_VIDEO) return "" // Native Wayland surface below the HUD.
             if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
                 return "../video/ExpMainVideoAndroid.qml"
             }

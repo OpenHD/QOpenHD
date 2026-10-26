@@ -1,0 +1,21 @@
+[Unit]
+Description=QOpenHD native NXP ground display
+Requires=qopenhd-nxp-compositor.service
+After=qopenhd-nxp-compositor.service
+# SysUtils starts this unit only in Ground mode. Do not order it after
+# SysUtils: its initial synchronous UI start must not wait on its own socket.
+
+[Service]
+Type=simple
+User=root
+Environment=QT_QPA_PLATFORM=wayland
+Environment=XDG_RUNTIME_DIR=/run/qopenhd-nxp
+Environment=WAYLAND_DISPLAY=wayland-qopenhd
+EnvironmentFile=-/etc/default/qopenhd-nxp
+ExecStart=/bin/sh /usr/local/share/qopenhd-nxp/run-qopenhd.sh
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

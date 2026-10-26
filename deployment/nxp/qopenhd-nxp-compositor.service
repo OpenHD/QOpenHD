@@ -1,0 +1,30 @@
+[Unit]
+Description=OpenHD NXP independent video and HUD compositor
+Requires=systemd-logind.service
+After=systemd-user-sessions.service systemd-logind.service dbus.service
+Conflicts=weston.service display-manager.service getty@tty7.service
+Before=qopenhd.service
+
+[Service]
+Type=simple
+User=root
+PAMName=login
+Environment=XDG_SESSION_TYPE=wayland
+Environment=XDG_RUNTIME_DIR=/run/qopenhd-nxp
+EnvironmentFile=-/etc/default/qopenhd-nxp
+RuntimeDirectory=qopenhd-nxp
+RuntimeDirectoryMode=0700
+TTYPath=/dev/tty7
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+StandardInput=tty-fail
+StandardOutput=journal
+StandardError=journal
+ExecStart=/bin/sh /usr/local/share/qopenhd-nxp/run-weston.sh --tty=7 --continue-without-input
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

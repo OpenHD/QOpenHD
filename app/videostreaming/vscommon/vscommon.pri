@@ -29,7 +29,7 @@ SOURCES += \
     $$PWD/audio_playback.cpp \
     $$PWD/custom/rawreceiver.cpp
 
-qtHaveModule(multimedia) {
+!contains(CONFIG, nxp_native):qtHaveModule(multimedia) {
     QT += multimedia
     DEFINES += QOPENHD_ENABLE_QT_AUDIO
     HEADERS += $$PWD/qt_audio_player.h

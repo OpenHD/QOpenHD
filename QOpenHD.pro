@@ -145,7 +145,7 @@ LinuxBuild {
 # dependencies are added such that you can easily compile the project even on systems that might lack some of those qt functionalities
 QT +=core quick qml gui \
     widgets network
-QT += opengl
+!contains(CONFIG, nxp_native): QT += opengl
 QT += charts
 #QT += gui-private
 #LIBS += Ldrm
@@ -162,7 +162,7 @@ include(app/telemetry/telemetry.pri)
 include(app/videostreaming/vscommon/vscommon.pri)
 
 # Video is quite platform dependent, if you have compile issues, try compiling without any videostreaming enabled first ;)
-LinuxBuild {
+LinuxBuild:!contains(CONFIG, nxp_native) {
     # Avcodec decode and display, all sources
     # Replaced gstreamer for now
     # Comment the line below to build without avcodec (you won't have any video decoding capabilities in this case though)
@@ -174,6 +174,10 @@ LinuxBuild {
     # Gstreamer / qmlglsink decode and display, all sources
     # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
     include(app/videostreaming/gstreamer/gst_video.pri)
+}
+
+contains(CONFIG, nxp_native) {
+    include(app/videostreaming/nxp/nxp_video.pri)
 }
 
 # gst Qt plugins in windows is hard
@@ -350,7 +354,7 @@ AndroidBuild {
     QMAKE_PROJECT_DEPTH = 0
 }
 
-EnableSpeech {
+EnableSpeech:!contains(CONFIG, nxp_native) {
     message("EnableSpeech")
     DEFINES += ENABLE_SPEECH
     QT += texttospeech
