@@ -228,11 +228,12 @@ void TCPConnection::process_data(const uint8_t* data, int data_len) {
     m_last_data_ms = QOpenHDMavlinkHelper::getTimeMilliseconds();
     mavlink_message_t msg;
     for (int i = 0; i < data_len; i++) {
-        uint8_t res = mavlink_parse_char(m_mav_channel, data[i], &msg, &m_recv_status);
+        const bool res = m_diagnostics.parse(data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);
         }
     }
+    m_diagnostics.log(QString::fromStdString(m_remote_ip));
 }
 
 void TCPConnection::process_mavlink_message(mavlink_message_t message) {

@@ -112,11 +112,12 @@ void UDPConnection::process_data(const uint8_t *data, int data_len)
 {
     mavlink_message_t msg;
     for (int i = 0; i < data_len; i++) {
-        uint8_t res = mavlink_parse_char(m_mav_channel, (uint8_t)data[i], &msg, &m_recv_status);
+        const bool res = m_diagnostics.parse(data[i], &msg, &m_recv_status);
         if (res) {
             process_mavlink_message(msg);
         }
     }
+    m_diagnostics.log(QStringLiteral("UDP"));
 }
 
 void UDPConnection::process_mavlink_message(mavlink_message_t message)

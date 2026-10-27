@@ -227,7 +227,11 @@ LogRateLimiter& log_limiter() {
 
 void rate_limited_message_handler(QtMsgType type, const QMessageLogContext&,
                                   const QString& msg) {
-    if (g_log_warnings_only.load(std::memory_order_relaxed)) {
+    // Bounded telemetry diagnostics must survive the normal warnings-only
+    // setting in the debug image; they contain counters, never raw payloads.
+    const bool telemetry_diagnostic = type == QtInfoMsg &&
+        (msg.startsWith("telemetry-receive-v1") || msg.startsWith("telemetry-model-v1"));
+    if (!telemetry_diagnostic && g_log_warnings_only.load(std::memory_order_relaxed)) {
         if (type == QtDebugMsg || type == QtInfoMsg) {
             return;
         }

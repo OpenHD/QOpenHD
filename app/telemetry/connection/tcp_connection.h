@@ -2,6 +2,7 @@
 #define TCPCONNECTION2_H
 
 #include "../tutil/mavlink_include.h"
+#include "receivediagnostics.h"
 
 #include <thread>
 #include <memory.h>
@@ -41,6 +42,7 @@ private:
     MAV_MSG_CB m_cb;
     std::atomic<int> m_socket_fd=-1;
     mavlink_status_t m_recv_status{};
+    ReceiveDiagnostics m_diagnostics;
     std::unique_ptr<std::thread> m_receive_thread=nullptr;
     std::atomic_int32_t m_last_data_ms=0;
 public:

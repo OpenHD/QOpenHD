@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QElapsedTimer>
 #include <cstdio>
+#include <cstring>
 #include <thread>
 int main(int argc, char** argv) {
     QApplication app(argc,argv);
@@ -117,6 +118,41 @@ ApplicationWindow {
         sender.writeDatagram(reinterpret_cast<char*>(buffer),length,QHostAddress::LocalHost,14550);
     };
     telemetry.start();
+    // Exercise the firmware-identity discovery path before any FC heartbeat.
+    // The firmware hint must not consume OpenHD radio statistics.
+    auto sendPacket = [&](const mavlink_message_t& message) {
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        const auto length = mavlink_msg_to_send_buffer(buffer, &message);
+        sender.writeDatagram(reinterpret_cast<char*>(buffer), length, QHostAddress::LocalHost, 14550);
+    };
+    QTimer::singleShot(50, &app, [&] {
+        mavlink_message_t message{};
+        mavlink_param_ext_value_t identity{};
+        std::strcpy(identity.param_id, "FC_FW_INFO");
+        std::strcpy(identity.param_value, "{\"type\":1,\"sys\":9,\"comp\":1,\"gen\":0,\"ver\":67503103}");
+        identity.param_type = MAV_PARAM_EXT_TYPE_CUSTOM;
+        mavlink_msg_param_ext_value_encode(OHD_SYS_ID_AIR, MAV_COMP_ID_ONBOARD_COMPUTER, &message, &identity);
+        sendPacket(message);
+        mavlink_openhd_stats_monitor_mode_wifi_card_t card{};
+        card.rx_rssi = -54;
+        mavlink_msg_openhd_stats_monitor_mode_wifi_card_encode(OHD_SYS_ID_GROUND, 191, &message, &card);
+        // CRC rejection, recovery and split input must behave like the generated parser.
+        ReceiveDiagnostics parser;
+        mavlink_message_t parsed{}; mavlink_status_t status{};
+        uint8_t bytes[MAVLINK_MAX_PACKET_LEN];
+        const auto size = mavlink_msg_to_send_buffer(bytes, &message);
+        unsigned accepted = 0;
+        for (unsigned i = 0; i < size; ++i) accepted += parser.parse(bytes[i], &parsed, &status);
+        bytes[12] ^= 1;
+        for (unsigned i = 0; i < size; ++i) accepted += parser.parse(bytes[i], &parsed, &status);
+        bytes[12] ^= 1;
+        for (unsigned i = 0; i < size; ++i) accepted += parser.parse(bytes[i], &parsed, &status);
+        if (accepted != 2) { telemetry.terminate(); app.exit(8); return; }
+        sendPacket(message);
+        card.rx_rssi = -62;
+        mavlink_msg_openhd_stats_monitor_mode_wifi_card_encode(OHD_SYS_ID_AIR, 191, &message, &card);
+        sendPacket(message);
+    });
     QTimer feed;
     feed.setInterval(10);
     QObject::connect(&feed,&QTimer::timeout,&app,[&] {
@@ -131,9 +167,12 @@ ApplicationWindow {
                 telemetry.terminate();
                 QCoreApplication::processEvents();
                 bool stale=received!=before;
+                const bool radio = AOHDSystem::instanceGround().current_rx_rssi() == -54 &&
+                    AOHDSystem::instanceAir().current_rx_rssi() == -62;
+                std::fprintf(stderr,"FIRMWARE DISCOVERY WITH AIR/GROUND RSSI: %s\n", radio ? "PASS" : "FAIL");
                 std::fprintf(stderr,"sent=%d received=%d owner_thread=%s max_delivery_ms=%lld stale_after_stop=%s\n",
                     sent,before,wrongThread?"FAIL":"PASS",static_cast<long long>(maxDelay),stale?"FAIL":"PASS");
-                app.exit(before==40&&!wrongThread&&!stale&&maxDelay<100 ? 0:1);
+                app.exit(before==40&&!wrongThread&&!stale&&radio&&maxDelay<100 ? 0:1);
             });
         }
     });

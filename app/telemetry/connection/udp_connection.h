@@ -2,6 +2,7 @@
 #define MUDPLINK_H
 
 #include "../tutil/mavlink_include.h"
+#include "receivediagnostics.h"
 
 #include <thread>
 #include <memory.h>
@@ -59,6 +60,7 @@ private:
     const MAV_MSG_CB m_cb;
     int m_socket_fd=-1;
     mavlink_status_t m_recv_status{};
+    ReceiveDiagnostics m_diagnostics;
     std::unique_ptr<std::thread> m_receive_thread=nullptr;
     std::atomic<bool> m_keep_receiving=false;
     std::mutex m_remote_nutex;

@@ -22,6 +22,20 @@ Q_LOGGING_CATEGORY(mavlinkRoutingLog, "qopenhd.mavlink.unhandled.routing", QtWar
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
+    auto diagnostics = new QTimer(this);
+    connect(diagnostics, &QTimer::timeout, this, [this] {
+        if (!m_udp_connection) return;
+        const auto& air = AOHDSystem::instanceAir();
+        const auto& ground = AOHDSystem::instanceGround();
+        qInfo() << "telemetry-model-v1 packets=" << m_tele_received_packets
+                << "gui_delay_max_ms=" << m_diagnostic_max_delivery_ms
+                << "ground_cards=" << m_diagnostic_card_messages[0]
+                << "air_cards=" << m_diagnostic_card_messages[1]
+                << "ground_alive=" << ground.is_alive() << "ground_rssi=" << ground.current_rx_rssi()
+                << "air_alive=" << air.is_alive() << "air_rssi=" << air.current_rx_rssi();
+        m_diagnostic_max_delivery_ms = 0;
+    });
+    diagnostics->start(5000);
 }
 
 void MavlinkTelemetry::start()
@@ -133,7 +147,12 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
     // Publish immediately through the event loop, without an update timer or
     // rate limit. All QML-visible receive state belongs to this (GUI) thread.
     if (QThread::currentThread() != thread()) {
-        QMetaObject::invokeMethod(this, [this, msg, generation] {
+        const auto queued = std::chrono::steady_clock::now();
+        QMetaObject::invokeMethod(this, [this, msg, generation, queued] {
+            if (generation != m_receive_generation.load()) return;
+            m_diagnostic_max_delivery_ms = std::max<int64_t>(m_diagnostic_max_delivery_ms,
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now() - queued).count());
             process_mavlink_message(msg, generation);
         }, Qt::QueuedConnection);
         return;
@@ -161,6 +180,9 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
     //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
     const int source_sysid=msg.sysid;
     const int source_compid=msg.compid;
+    if (msg.msgid == MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD &&
+        (source_sysid == OHD_SYS_ID_GROUND || source_sysid == OHD_SYS_ID_AIR))
+        ++m_diagnostic_card_messages[source_sysid == OHD_SYS_ID_AIR ? 1 : 0];
     // mLRS is its own MAVLink system, not a flight controller. Consume its
     // radio component before the generic FC discovery/routing below.
     if (MLRSController::instance().process_message(msg)) {

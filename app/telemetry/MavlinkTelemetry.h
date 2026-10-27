@@ -76,6 +76,8 @@ private:
     void process_mavlink_message(const mavlink_message_t& msg, uint64_t generation);
     void publish_connection_status(QString status);
     std::atomic<uint64_t> m_receive_generation{0};
+    int64_t m_diagnostic_max_delivery_ms = 0;
+    uint64_t m_diagnostic_card_messages[2]{};
     void process_broadcast_message_openhd_air(const mavlink_message_t& msg);
     void process_broadcast_message_openhd_gnd(const mavlink_message_t& msg);
     void process_broadcast_message_fc(const mavlink_message_t& msg);
