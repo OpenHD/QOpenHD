@@ -4,7 +4,6 @@
 #include "presentation-time-client-protocol.h"
 #include "UdpVideo.hpp"
 #include <wayland-client.h>
-#include <imxdmabuffer/imxdmabuffer.h>
 #include <drm_fourcc.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
@@ -14,6 +13,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <cerrno>
+#include <vector>
 
 namespace nxp {
 namespace {
@@ -128,7 +128,7 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
         viewport = wp_viewporter_get_viewport(g.viewporter, surface);
         auto region = wl_compositor_create_region(g.compositor);
         wl_surface_set_input_region(surface, region); wl_region_destroy(region);
-        std::fprintf(stderr, "NXP video: independent desynchronized DMA-BUF subsurface ready\n");
+        std::fprintf(stderr, "Native video: independent desynchronized DMA-BUF subsurface ready\n");
         state = 1;
         hasPresentationFeedback = g.presentation != nullptr;
         while (!stop_) {
@@ -147,15 +147,15 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
                 width = width_; height = height_; rotation = rotation_; stretch = stretch_;
             }
             if (next && width > 0 && height > 0) {
-                auto& m = next->info.decoded_frame_framebuffer_metrics;
+                const auto& m = *next;
                 int fd = next->dmaFd();
                 if (fd < 0) throw std::runtime_error("VPU allocator did not export a DMA-BUF fd");
                 auto params = zwp_linux_dmabuf_v1_create_params(g.dmabuf);
-                zwp_linux_buffer_params_v1_add(params, fd, 0, m.y_offset, m.y_stride, 0, 0);
-                zwp_linux_buffer_params_v1_add(params, fd, 1, m.u_offset, m.uv_stride, 0, 0);
+                zwp_linux_buffer_params_v1_add(params, fd, 0, m.yOffset, m.yStride, 0, 0);
+                zwp_linux_buffer_params_v1_add(params, fd, 1, m.uvOffset, m.uvStride, 0, 0);
                 auto buffer = std::make_unique<Buffer>(); buffer->frame = next;
-                buffer->proxy = zwp_linux_buffer_params_v1_create_immed(params, m.aligned_frame_width,
-                    m.aligned_frame_height, DRM_FORMAT_NV12, 0);
+                buffer->proxy = zwp_linux_buffer_params_v1_create_immed(params, m.paddedWidth,
+                    m.paddedHeight, DRM_FORMAT_NV12, 0);
                 zwp_linux_buffer_params_v1_destroy(params);
                 wl_buffer_add_listener(buffer->proxy, &bufferListener, buffer.get());
                 int transform = rotation == 90 ? WL_OUTPUT_TRANSFORM_90 : rotation == 180 ? WL_OUTPUT_TRANSFORM_180 :
@@ -163,11 +163,11 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
                 wl_surface_set_buffer_transform(surface, transform);
                 // Source coordinates are expressed after buffer transform. Use actual
                 // visible size; padding is excluded by the viewport source rectangle.
-                double sw = next->info.crop_width, sh = next->info.crop_height;
-                double sx = next->info.crop_left, sy = next->info.crop_top;
-                if (rotation == 90) { std::swap(sw, sh); std::swap(sx, sy); sy = m.aligned_frame_width - next->info.crop_left - next->info.crop_width; }
-                else if (rotation == 180) { sx = m.aligned_frame_width - sx - sw; sy = m.aligned_frame_height - sy - sh; }
-                else if (rotation == 270) { std::swap(sw, sh); std::swap(sx, sy); sx = m.aligned_frame_height - next->info.crop_top - next->info.crop_height; }
+                double sw = next->width, sh = next->height;
+                double sx = next->cropLeft, sy = next->cropTop;
+                if (rotation == 90) { std::swap(sw, sh); std::swap(sx, sy); sy = m.paddedWidth - next->cropLeft - next->width; }
+                else if (rotation == 180) { sx = m.paddedWidth - sx - sw; sy = m.paddedHeight - sy - sh; }
+                else if (rotation == 270) { std::swap(sw, sh); std::swap(sx, sy); sx = m.paddedHeight - next->cropTop - next->height; }
                 wp_viewport_set_source(viewport, wl_fixed_from_double(sx), wl_fixed_from_double(sy),
                                        wl_fixed_from_double(sw), wl_fixed_from_double(sh));
                 int dw = width, dh = height;
@@ -188,7 +188,7 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
                 wl_surface_damage(surface, 0, 0, dw, dh);
                 if (g.presentation && feedbacks.size() < 16) {
                     auto feedback = std::make_unique<Feedback>();
-                    feedback->video = this; feedback->receivedUs = next->raw.pts;
+                    feedback->video = this; feedback->receivedUs = next->receivedUs;
                     feedback->proxy = wp_presentation_feedback(g.presentation, surface);
                     wp_presentation_feedback_add_listener(feedback->proxy, &feedbackListener, feedback.get());
                     feedbacks.push_back(std::move(feedback));
@@ -213,7 +213,7 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
                 throw std::runtime_error("Wayland connection closed");
             if (fds[1].revents & POLLIN) { uint64_t value; (void)read(wake_, &value, sizeof(value)); }
         }
-    } catch (const std::exception& error) { std::fprintf(stderr, "NXP presentation: %s\n", error.what()); }
+    } catch (const std::exception& error) { std::fprintf(stderr, "Native presentation: %s\n", error.what()); }
     state = -1;
     if (surface) { wl_surface_attach(surface, nullptr, 0, 0); wl_surface_commit(surface); }
     if (viewport) wp_viewport_destroy(viewport);

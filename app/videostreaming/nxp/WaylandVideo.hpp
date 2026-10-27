@@ -1,5 +1,7 @@
 #pragma once
-#include "HantroDecoder.hpp"
+#include "DecodedFrame.hpp"
+#include <memory>
+#include <mutex>
 #include <atomic>
 #include <thread>
 

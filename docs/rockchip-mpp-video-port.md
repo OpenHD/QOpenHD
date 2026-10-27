@@ -1,7 +1,9 @@
 # QOpenHD native Rockchip MPP port investigation
 
-Status: source investigation on 26 October 2026. The NXP port is implemented;
-this document does not claim an implemented or hardware-tested Rockchip port.
+Historical source investigation on 26 October 2026. The native port was later
+implemented and tested on RK3588S/ROCK 5A; see
+[Rockchip native video](rockchip-native-video.md) for the implementation and
+hardware evidence. The ZERO 3W target below remains untested.
 Target: Radxa ZERO 3W (RK3566), initially 1920x1080 at 60 Hz.
 
 ## Reference revisions

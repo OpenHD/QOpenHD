@@ -1,6 +1,11 @@
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#include "videostreaming/rockchip/MppDecoder.hpp"
+using NativeDecoder = nxp::MppDecoder;
+#else
 #include "videostreaming/nxp/HantroDecoder.hpp"
+using NativeDecoder = nxp::HantroDecoder;
+#endif
 #include "videostreaming/nxp/UdpVideo.hpp"
-#include <imxdmabuffer/imxdmabuffer.h>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -46,27 +51,34 @@ int main(int argc, char** argv) {
             if (!au.empty() && (aud || (picture && (first || config)))) {
                 units.push_back(std::move(au)); au.clear(); picture=false;
             }
-            au.insert(au.end(), bytes.begin()+pos, bytes.begin()+end); picture |= vcl; pos=end;
+            au.insert(au.end(), {0,0,0,1});
+            au.insert(au.end(), bytes.begin()+pos+start, bytes.begin()+end); picture |= vcl; pos=end;
         }
         if (!au.empty()) units.push_back(std::move(au));
         unsigned loops=argc>3 ? std::max(1, std::atoi(argv[3])) : 1;
         uint64_t frames=0, totalUs=0, maxUs=0;
+        // Keep display-like leases across decoder generation teardown.
+        std::vector<std::shared_ptr<nxp::DecodedFrame>> retained;
         uint64_t start=nxp::monotonicUs();
         for (unsigned loop=0; loop<loops; ++loop) {
-            auto decoder=std::make_shared<nxp::HantroDecoder>(hevc);
+            auto decoder=std::make_shared<NativeDecoder>(hevc);
+            auto output = [&](auto frame) {
+                auto elapsed=nxp::monotonicUs()-frame->receivedUs;
+                totalUs+=elapsed; maxUs=std::max(maxUs, elapsed); ++frames;
+                if (frames==1) {
+                    auto& m=*frame;
+                    std::printf("First frame: %zux%zu DMA-BUF fd=%d strides=%zu/%zu offsets=%zu/%zu\n",
+                        m.width, m.height, frame->dmaFd(),
+                        m.yStride,m.uvStride,m.yOffset,m.uvOffset);
+                }
+                retained.push_back(frame);
+                if (retained.size() > 2) retained.erase(retained.begin());
+            };
             for (auto& unit: units) {
                 auto pushed=nxp::monotonicUs();
-                decoder->push(unit, pushed, [&](auto frame) {
-                    auto elapsed=nxp::monotonicUs()-frame->raw.pts;
-                    totalUs+=elapsed; maxUs=std::max(maxUs, elapsed); ++frames;
-                    if (frames==1) {
-                        auto& m=frame->info.decoded_frame_framebuffer_metrics;
-                        std::printf("First frame: %zux%zu DMA-BUF fd=%d strides=%zu/%zu offsets=%zu/%zu\n",
-                            m.actual_frame_width, m.actual_frame_height, frame->dmaFd(),
-                            m.y_stride,m.uv_stride,m.y_offset,m.u_offset);
-                    }
-                });
+                decoder->push(unit, pushed, output);
             }
+            decoder->drain(output);
         }
         auto elapsed=nxp::monotonicUs()-start;
         std::printf("decoded=%llu throughput_fps=%.2f mean_submit_to_decode_us=%.1f max_us=%llu\n",

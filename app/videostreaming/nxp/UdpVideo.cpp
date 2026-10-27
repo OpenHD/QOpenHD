@@ -1,6 +1,8 @@
 #include "UdpVideo.hpp"
 #include "RtpAccessUnit.hpp"
+#ifndef QOPENHD_ENABLE_ROCKCHIP_VIDEO
 #include "VpuApi.hpp"
+#endif
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <poll.h>
@@ -19,16 +21,18 @@ UdpVideo::UdpVideo(bool hevc, const std::string& bindAddress, int port, Output o
     : hevc_(hevc), output_(std::move(output)) {
     // Resolve the vendor dependency tree before accepting packets, so loader
     // startup cannot turn the first keyframe into an input-queue overrun.
+#ifndef QOPENHD_ENABLE_ROCKCHIP_VIDEO
     (void)vpu();
+#endif
     socket_ = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
-    if (socket_ < 0) throw std::runtime_error("NXP UDP socket failed");
+    if (socket_ < 0) throw std::runtime_error("Native UDP socket failed");
     sockaddr_in addr{}; addr.sin_family = AF_INET; addr.sin_port = htons(port);
     int size = 256 * 1024;
     setsockopt(socket_, SOL_SOCKET, SO_RCVBUF, &size, sizeof(size));
     if (port < 1 || port > 65535 || inet_pton(AF_INET, bindAddress.c_str(), &addr.sin_addr) != 1 ||
         ::bind(socket_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
         ::close(socket_); socket_ = -1;
-        throw std::runtime_error("NXP UDP bind failed (address or port already in use)");
+        throw std::runtime_error("Native UDP bind failed (address or port already in use)");
     }
     try {
         decodeThread_ = std::thread([this] { decode(); });
@@ -92,24 +96,36 @@ void UdpVideo::receive(bool hevc) {
     }
 }
 void UdpVideo::decode() {
-    std::shared_ptr<HantroDecoder> decoder;
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+    using NativeDecoder = MppDecoder;
+#else
+    using NativeDecoder = HantroDecoder;
+#endif
+    std::shared_ptr<NativeDecoder> decoder;
+    auto output = [this](std::shared_ptr<DecodedFrame> frame) { ++decoded; output_(std::move(frame)); };
     while (!stop_) {
         Input input;
         {
             std::unique_lock<std::mutex> lock(mutex_);
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+            ready_.wait_for(lock, std::chrono::milliseconds(2), [&] { return stop_ || !queue_.empty(); });
+#else
             ready_.wait(lock, [&] { return stop_ || !queue_.empty(); });
+#endif
             if (stop_) return;
-            input = std::move(queue_.front()); queue_.pop_front();
+            if (!queue_.empty()) { input = std::move(queue_.front()); queue_.pop_front(); }
         }
         try {
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+            if (decoder) decoder->poll(output);
+#endif
+            if (input.data.empty()) continue;
             if (input.reset) decoder.reset();
-            if (!decoder && input.key) decoder = std::make_shared<HantroDecoder>(hevc_);
+            if (!decoder && input.key) decoder = std::make_shared<NativeDecoder>(hevc_);
             if (!decoder) continue;
-            decoder->push(input.data, input.receivedUs, [this](std::shared_ptr<DecodedFrame> frame) {
-                ++decoded; output_(std::move(frame));
-            });
+            decoder->push(input.data, input.receivedUs, output);
         } catch (const std::exception& error) {
-            ++errors; std::fprintf(stderr, "NXP decode: %s\n", error.what());
+            ++errors; std::fprintf(stderr, "Native decode: %s\n", error.what());
             decoder.reset();
             std::lock_guard<std::mutex> lock(mutex_);
             queue_.clear(); discontinuity_ = true;

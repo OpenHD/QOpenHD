@@ -1,19 +1,12 @@
 #pragma once
 #include <imxvpuapi2/imxvpuapi2.h>
+#include "DecodedFrame.hpp"
 #include <functional>
 #include <memory>
 #include <mutex>
 #include <vector>
 
 namespace nxp {
-class HantroDecoder;
-struct DecodedFrame {
-    std::shared_ptr<HantroDecoder> owner;
-    ImxVpuApiRawFrame raw{};
-    ImxVpuApiDecStreamInfo info{};
-    int dmaFd() const;
-    ~DecodedFrame();
-};
 // Each generation owns its own VPU session and buffers. Displayed frames keep
 // that generation alive across resolution/codec changes, including GPU use.
 class HantroDecoder : public std::enable_shared_from_this<HantroDecoder> {

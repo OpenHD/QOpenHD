@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
         pixel(left+x, top+y, unsigned(p[0])*p[3]/255, unsigned(p[1])*p[3]/255, unsigned(p[2])*p[3]/255);
     }
     png_image_free(&image);
-    fprintf(stderr, "OpenHD early NXP splash: %ux%u framebuffer ready\n", var.xres, var.yres);
+    fprintf(stderr, "OpenHD early framebuffer splash: %ux%u framebuffer ready\n", var.xres, var.yres);
     // Match the Pi's 6-pixel dots and 10-pixel spacing. A bounded lifetime also
     // leaves Air/headless boots independent of any later UI service.
     for (unsigned frame = 0; frame < 500 && !stopping; ++frame) {

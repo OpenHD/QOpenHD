@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends build-essential perl curl git \
-            dpkg-dev mmdebstrap debian-archive-keyring gnupg python3-pip pkg-config ruby-dev
+            dpkg-dev mmdebstrap debian-archive-keyring gnupg python3-pip pkg-config ruby-dev cmake ninja-build libwayland-bin
           sudo gem install fpm --version 1.16.0 --no-document
       - name: Cache native Qt tools shared by ARM targets
         id: host-qt-cache
@@ -51,8 +51,13 @@ jobs:
           CROSS_TARGET: ${{ inputs.target }}
         run: bash ci/cross-build.sh "$CROSS_TARGET"
       - name: Verify runtime package dependencies
+        env:
+          CROSS_TARGET: ${{ inputs.target }}
         run: |
           python3 ci/test_package_dependencies.py
+          python3 ci/test_rockchip_native_package.py
+          python3 tests/native_rtp_sender_test.py
+          python3 tests/rockchip_display_role_test.py
           for package in ./*.deb; do
             dependencies=$(dpkg-deb -f "$package" Depends)
             echo "$package: $dependencies"

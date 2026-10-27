@@ -9,8 +9,6 @@ static void check(ImxVpuApiDecReturnCodes result) {
     if (result != IMX_VPU_API_DEC_RETURN_CODE_OK)
         throw std::runtime_error(vpu().imx_vpu_api_dec_return_code_string(result));
 }
-DecodedFrame::~DecodedFrame() { if (owner) owner->release(raw.fb_dma_buffer); }
-int DecodedFrame::dmaFd() const { return vpu().imx_dma_buffer_get_fd(raw.fb_dma_buffer); }
 HantroDecoder::HantroDecoder(bool hevc, bool reorder) {
     try {
         int error = 0;
@@ -105,8 +103,17 @@ void HantroDecoder::readOutput(const std::function<void(std::shared_ptr<DecodedF
         case IMX_VPU_API_DEC_OUTPUT_CODE_NEED_ADDITIONAL_FRAMEBUFFER: addBuffers(1); break;
         case IMX_VPU_API_DEC_OUTPUT_CODE_DECODED_FRAME_AVAILABLE: {
             auto frame = std::make_shared<DecodedFrame>();
-            check(vpu().imx_vpu_api_dec_get_decoded_frame(decoder_, &frame->raw));
-            frame->owner = shared_from_this(); frame->info = info_;
+            ImxVpuApiRawFrame raw{};
+            check(vpu().imx_vpu_api_dec_get_decoded_frame(decoder_, &raw));
+            frame->release = [owner = shared_from_this(), buffer = raw.fb_dma_buffer] { owner->release(buffer); };
+            const auto& m = info_.decoded_frame_framebuffer_metrics;
+            frame->fd = vpu().imx_dma_buffer_get_fd(raw.fb_dma_buffer);
+            frame->receivedUs = raw.pts;
+            frame->width = info_.crop_width; frame->height = info_.crop_height;
+            frame->cropLeft = info_.crop_left; frame->cropTop = info_.crop_top;
+            frame->paddedWidth = m.aligned_frame_width; frame->paddedHeight = m.aligned_frame_height;
+            frame->yOffset = m.y_offset; frame->uvOffset = m.u_offset;
+            frame->yStride = m.y_stride; frame->uvStride = m.uv_stride;
             // Output can release an older frame; never invoke it under the VPU lock.
             lock.unlock(); output(std::move(frame)); lock.lock();
             break;

@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenHD Rockchip early logo and boot animation
+DefaultDependencies=no
+After=systemd-udev-trigger.service systemd-remount-fs.service
+Before=sysinit.target shutdown.target
+Conflicts=shutdown.target
+ConditionPathExists=/etc/qopenhd-rockchip/native-video-enabled
+
+[Service]
+Type=simple
+ExecStart=/usr/local/share/qopenhd-rockchip/openhd-boot-splash /usr/local/share/qopenhd-rockchip/boot-logo.png
+StandardOutput=journal
+StandardError=journal
+TimeoutStopSec=2
+
+[Install]
+WantedBy=sysinit.target

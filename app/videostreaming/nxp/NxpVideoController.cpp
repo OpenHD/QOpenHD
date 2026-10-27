@@ -21,9 +21,9 @@ NxpVideoController::NxpVideoController(QQuickWindow* window) : window_(window) {
     if (blockMs > 0 && blockMs <= 10000) QTimer::singleShot(4000, this, [this, blockMs] {
         if (!presenter_) return;
         const auto before = presenter_->presented.load();
-        qWarning() << "NXP test: blocking GUI for" << blockMs << "ms";
+        qWarning() << "Native test: blocking GUI for" << blockMs << "ms";
         QThread::msleep(blockMs);
-        qWarning() << "NXP test: video presentations while GUI blocked:" << (presenter_->presented.load() - before);
+        qWarning() << "Native test: video presentations while GUI blocked:" << (presenter_->presented.load() - before);
     });
 }
 NxpVideoController::~NxpVideoController() { input_.reset(); presenter_.reset(); }
@@ -38,7 +38,7 @@ void NxpVideoController::refresh() {
     if (!window_) return;
     if (!presenter_) {
         if (!QGuiApplication::platformName().startsWith("wayland")) {
-            qWarning() << "NXP video requires the Qt Wayland platform; no software decoder fallback";
+            qWarning() << "Native video requires the Qt Wayland platform; no software decoder fallback";
             timer_.stop(); return;
         }
         auto native = QGuiApplication::platformNativeInterface();
@@ -50,7 +50,7 @@ void NxpVideoController::refresh() {
     auto settings = QOpenHDVideoHelper::read_config_from_settings();
     if (presenter_->state < 0) {
         input_.reset();
-        DecodingStatistcs::instance().set_decoding_type("NXP presentation unavailable: check compositor log");
+        DecodingStatistcs::instance().set_decoding_type("Native presentation unavailable: check compositor log");
         return;
     }
     if (presenter_->state == 0) return;
@@ -72,7 +72,7 @@ void NxpVideoController::refresh() {
         DecodingStatistcs::instance().set_n_renderer_dropped_frames(int(presenter_->replaced.load()));
         if (qEnvironmentVariableIntValue("QOPENHD_NXP_VIDEO_STATS")) {
             const auto shown = presenter_->presented.load();
-            qWarning() << "NXP stats: decoded" << input_->decoded.load() << "input-dropped" << input_->dropped.load()
+            qWarning() << "Native stats: decoded" << input_->decoded.load() << "input-dropped" << input_->dropped.load()
                        << "errors" << input_->errors.load() << "submitted" << presenter_->committed.load()
                        << "presented" << shown << "superseded" << presenter_->replaced.load()
                        << "compositor-discarded" << presenter_->discarded.load()
@@ -89,14 +89,18 @@ void NxpVideoController::refresh() {
     input_.reset();
     if (settings.generic.dev_disable_primary_video) { config_ = config; return; }
     if (stream.video_codec != QOpenHDVideoHelper::VideoCodecH264 && stream.video_codec != QOpenHDVideoHelper::VideoCodecH265) {
-        qWarning() << "NXP native video supports H.264 and H.265"; config_ = config; return;
+        qWarning() << "Native video supports H.264 and H.265"; config_ = config; return;
     }
     try {
         input_ = std::make_unique<nxp::UdpVideo>(stream.video_codec == QOpenHDVideoHelper::VideoCodecH265,
             stream.udp_rtp_input_ip_address, stream.udp_rtp_input_port,
             [this](std::shared_ptr<nxp::DecodedFrame> frame) { presenter_->submit(std::move(frame)); });
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+        DecodingStatistcs::instance().set_decoding_type("Rockchip MPP / independent Wayland DMA-BUF");
+#else
         DecodingStatistcs::instance().set_decoding_type("NXP Hantro / independent Wayland DMA-BUF");
+#endif
         config_ = config;
-        qWarning() << "NXP native video listening" << config;
-    } catch (const std::exception& error) { qWarning() << "NXP video:" << error.what(); }
+        qWarning() << "Native video listening" << config;
+    } catch (const std::exception& error) { qWarning() << "Native video:" << error.what(); }
 }

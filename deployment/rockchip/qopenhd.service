@@ -1,0 +1,21 @@
+[Unit]
+Description=QOpenHD native Rockchip ground display
+Requires=qopenhd-rockchip-compositor.service
+After=qopenhd-rockchip-compositor.service
+# SysUtils starts the UI in Ground mode. It must not wait on its own socket.
+
+[Service]
+Type=simple
+User=root
+ExecCondition=/usr/local/share/qopenhd-rockchip/display-enabled.py
+Environment=ROCKCHIP_RUNTIME_DIR=/run/qopenhd-rockchip
+EnvironmentFile=-/etc/default/qopenhd-rockchip
+ExecStart=/bin/sh /usr/local/share/qopenhd-rockchip/run-qopenhd.sh
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

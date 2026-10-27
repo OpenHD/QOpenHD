@@ -1,5 +1,9 @@
 #pragma once
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#include "../rockchip/MppDecoder.hpp"
+#else
 #include "HantroDecoder.hpp"
+#endif
 #include <atomic>
 #include <condition_variable>
 #include <deque>

@@ -124,15 +124,15 @@ struct VideoMaterial : QSGMaterial {
         // Retain GPU-owned framebuffer leases without growing a display queue.
         // When the GPU is late, keep the last picture and drop this update.
         if (retired.size() >= 2) return true;
-        const auto& m = next->info.decoded_frame_framebuffer_metrics;
+        const auto& m = *next;
         const auto fd = next->dmaFd();
         const EGLint attrs[] = {
-            EGL_WIDTH, EGLint(m.aligned_frame_width), EGL_HEIGHT, EGLint(m.aligned_frame_height),
+            EGL_WIDTH, EGLint(m.paddedWidth), EGL_HEIGHT, EGLint(m.paddedHeight),
             EGL_LINUX_DRM_FOURCC_EXT, DRM_FORMAT_NV12,
-            EGL_DMA_BUF_PLANE0_FD_EXT, fd, EGL_DMA_BUF_PLANE0_OFFSET_EXT, EGLint(m.y_offset),
-            EGL_DMA_BUF_PLANE0_PITCH_EXT, EGLint(m.y_stride),
-            EGL_DMA_BUF_PLANE1_FD_EXT, fd, EGL_DMA_BUF_PLANE1_OFFSET_EXT, EGLint(m.u_offset),
-            EGL_DMA_BUF_PLANE1_PITCH_EXT, EGLint(m.uv_stride), EGL_NONE
+            EGL_DMA_BUF_PLANE0_FD_EXT, fd, EGL_DMA_BUF_PLANE0_OFFSET_EXT, EGLint(m.yOffset),
+            EGL_DMA_BUF_PLANE0_PITCH_EXT, EGLint(m.yStride),
+            EGL_DMA_BUF_PLANE1_FD_EXT, fd, EGL_DMA_BUF_PLANE1_OFFSET_EXT, EGLint(m.uvOffset),
+            EGL_DMA_BUF_PLANE1_PITCH_EXT, EGLint(m.uvStride), EGL_NONE
         };
         auto dpy = eglGetCurrentDisplay();
         auto imported = api.create(dpy, EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT, nullptr, attrs);
@@ -219,7 +219,11 @@ void NxpVideoItem::startBootAnimation() {
             QDataStream stream(&file);
             quint32 count = 0; stream >> count;
             if (!count || count > 10000) throw std::runtime_error("invalid boot sample count");
+            #ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+            auto decoder = std::make_shared<MppDecoder>(false, true);
+#else
             auto decoder = std::make_shared<HantroDecoder>(false, true);
+#endif
             std::chrono::steady_clock::time_point start;
             uint64_t endUs = 0;
             unsigned decoded = 0;
@@ -232,10 +236,10 @@ void NxpVideoItem::startBootAnimation() {
                 if (bootStop_) return;
                 if (!decoded++) {
                     start = std::chrono::steady_clock::now();
-                    qWarning() << "QOpenHD NXP boot video: playing (Hantro)";
+                    qWarning() << "QOpenHD native boot video: playing (hardware decoder)";
                 }
-                if (frame->raw.pts > 30000000) throw std::runtime_error("invalid boot picture timestamp");
-                if (wait(frame->raw.pts)) submitFrame(std::move(frame));
+                if (frame->receivedUs > 30000000) throw std::runtime_error("invalid boot picture timestamp");
+                if (wait(frame->receivedUs)) submitFrame(std::move(frame));
             };
             for (quint32 sample = 0; sample < count && !bootStop_; ++sample) {
                 quint32 size = 0, duration = 0; quint64 pts = 0;
@@ -253,13 +257,13 @@ void NxpVideoItem::startBootAnimation() {
             if (!bootStop_ && (!decoded || decoded != count))
                 throw std::runtime_error("boot decoder did not output all pictures");
             if (!bootStop_) wait(endUs);
-            qWarning() << "QOpenHD NXP boot video: decoded" << decoded << "pictures";
+            qWarning() << "QOpenHD native boot video: decoded" << decoded << "pictures";
         } catch (const std::exception& error) {
-            qWarning() << "QOpenHD NXP boot video unavailable:" << error.what();
+            qWarning() << "QOpenHD native boot video unavailable:" << error.what();
         }
         if (!bootStop_) QMetaObject::invokeMethod(this, [this] {
             finished_ = true; emit finishedChanged();
-            qWarning() << "QOpenHD NXP boot video: finished";
+            qWarning() << "QOpenHD native boot video: finished";
         }, Qt::QueuedConnection);
     });
 }
@@ -272,7 +276,7 @@ void NxpVideoItem::refresh() {
     if (input_) {
         DecodingStatistcs::instance().set_secondary_video_active(input_->decoded.load() > 0);
         if (qEnvironmentVariableIntValue("QOPENHD_NXP_VIDEO_STATS"))
-            qWarning() << "NXP secondary stats: decoded" << input_->decoded.load()
+            qWarning() << "Native secondary stats: decoded" << input_->decoded.load()
                        << "rendered" << rendered_.load() << "superseded" << replaced_.load()
                        << "input-dropped" << input_->dropped.load() << "errors" << input_->errors.load();
     }
@@ -285,8 +289,8 @@ void NxpVideoItem::refresh() {
             stream.udp_rtp_input_ip_address, stream.udp_rtp_input_port,
             [this](auto frame) { submitFrame(std::move(frame)); });
         config_ = config;
-        qWarning() << "NXP secondary Hantro/QML listening" << config;
-    } catch (const std::exception& error) { qWarning() << "NXP secondary:" << error.what(); }
+        qWarning() << "Native secondary Hantro/QML listening" << config;
+    } catch (const std::exception& error) { qWarning() << "Native secondary:" << error.what(); }
 }
 QSGNode* NxpVideoItem::updatePaintNode(QSGNode* old, UpdatePaintNodeData*) {
     auto node = static_cast<VideoNode*>(old);
@@ -297,20 +301,20 @@ QSGNode* NxpVideoItem::updatePaintNode(QSGNode* old, UpdatePaintNodeData*) {
     if (next) {
         bool updated = false;
         if (!node->material.import(std::move(next), updated)) {
-            qWarning() << "NXP secondary NV12 EGL import failed";
+            qWarning() << "Native secondary NV12 EGL import failed";
             delete node; return nullptr;
         }
         if (updated) ++rendered_;
         else ++replaced_;
     }
     if (!node->material.current) return node;
-    const auto& info = node->material.current->frame->info;
-    const auto& m = info.decoded_frame_framebuffer_metrics;
-    const auto scale = std::min(width() / info.crop_width, height() / info.crop_height);
-    const QRectF rect((width() - info.crop_width * scale)/2, (height() - info.crop_height * scale)/2,
-                      info.crop_width * scale, info.crop_height * scale);
-    const QRectF source(double(info.crop_left)/m.aligned_frame_width, double(info.crop_top)/m.aligned_frame_height,
-                        double(info.crop_width)/m.aligned_frame_width, double(info.crop_height)/m.aligned_frame_height);
+    const auto& info = *node->material.current->frame;
+    const auto& m = info;
+    const auto scale = std::min(width() / info.width, height() / info.height);
+    const QRectF rect((width() - info.width * scale)/2, (height() - info.height * scale)/2,
+                      info.width * scale, info.height * scale);
+    const QRectF source(double(info.cropLeft)/m.paddedWidth, double(info.cropTop)/m.paddedHeight,
+                        double(info.width)/m.paddedWidth, double(info.height)/m.paddedHeight);
     QSGGeometry::updateTexturedRectGeometry(&node->geometry, rect, source);
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     return node;

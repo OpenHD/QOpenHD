@@ -1,0 +1,33 @@
+[Unit]
+Description=QOpenHD Rockchip Wayland compositor
+After=systemd-user-sessions.service
+Requires=systemd-logind.service
+After=systemd-logind.service dbus.service openhd-rockchip-boot-splash.service
+Conflicts=weston.service display-manager.service getty@tty7.service
+Before=qopenhd.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+PAMName=login
+Environment=XDG_SESSION_TYPE=wayland
+TTYPath=/dev/tty7
+StandardInput=tty
+StandardOutput=journal
+StandardError=journal
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+RuntimeDirectory=qopenhd-rockchip
+RuntimeDirectoryMode=0700
+Environment=ROCKCHIP_RUNTIME_DIR=/run/qopenhd-rockchip
+EnvironmentFile=-/etc/default/qopenhd-rockchip
+ExecCondition=/usr/local/share/qopenhd-rockchip/display-enabled.py
+ExecStartPre=-/bin/systemctl stop openhd-rockchip-boot-splash.service
+ExecStart=/usr/local/share/qopenhd-rockchip/run-compositor.sh --tty=7
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

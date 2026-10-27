@@ -53,7 +53,9 @@ if [[ ! -x "$gcc/bin/$compiler-g++" ]]; then
   tar -xf "$work/$name" -C "$gcc" --strip-components=1
 fi
 
-if [[ ! -f "$sysroot/.complete" ]]; then
+complete_marker="$sysroot/.complete"
+[[ "$target" == rock-* ]] && complete_marker="$sysroot/.complete-native-v2"
+if [[ ! -f "$complete_marker" ]]; then
   sources="$work/$target.sources.list"
   keys="$work/keys"
   mkdir -p "$keys"
@@ -88,6 +90,10 @@ EOF
     fi
   fi
   deps="$qt_deps,libc6-dev,libavcodec-dev,libavformat-dev,libavutil-dev,libgstreamer1.0-dev,libgstreamer-plugins-base1.0-dev,libdrm-dev,libgles-dev,libegl-dev"
+  if [[ "$target" == rock-* ]]; then
+    deps="$qt_deps,libc6-dev,libdrm-dev,libgles-dev,libegl-dev,libwayland-dev,wayland-protocols,libpng-dev"
+    [[ "$release" != bullseye ]] || deps+=",libweston-9-dev"
+  fi
   # APT's sandbox user cannot traverse the runner's private workspace. Put
   # the public signing keys in an accessible file, without weakening checks.
   apt_keyring=$(mktemp /tmp/qopenhd-archive-keys.XXXXXX.gpg)
@@ -105,7 +111,7 @@ EOF
   sudo tar --exclude=./dev -xf "$work/sysroot-$target.tar" -C "$sysroot"
   sudo chown -R "$(id -u):$(id -g)" "$sysroot"
   python3 "$source_dir/ci/relativize-sysroot.py" "$sysroot"
-  touch "$sysroot/.complete"
+  touch "$complete_marker"
 fi
 
 # Build native tools once, matching the custom Pi Qt kit. The same Qt 5.15
@@ -214,11 +220,18 @@ export PATH="$tools/bin:$gcc/bin:$PATH"
 export PKG_CONFIG_SYSROOT_DIR="$sysroot"
 export PKG_CONFIG_LIBDIR="$sysroot/usr/lib/$triplet/pkgconfig:$sysroot/usr/lib/pkgconfig:$sysroot/usr/share/pkgconfig"
 unset PKG_CONFIG_PATH
+native_args=()
+if [[ "$target" == rock-* ]]; then
+  bash "$source_dir/ci/prepare-rockchip-mpp.sh" "$sysroot" "$work" "$gcc/bin/$compiler-gcc" "$gcc/bin/$compiler-g++"
+  native_args+=(CONFIG+=rockchip_native CONFIG-=ltcg
+    "ROCKCHIP_MPP_INCLUDE=$sysroot/usr/include/rockchip"
+    "WAYLAND_PROTOCOLS_DIR=$sysroot/usr/share/wayland-protocols")
+fi
 (
   cd "$build"
   platform_define=IS_PLATFORM_ROCK
   [[ "$target" == pi-* ]] && platform_define=IS_PLATFORM_RPI
-  qmake "$source_dir/QOpenHD.pro" -spec devices/linux-rpi4-v3d-g++ CONFIG+=release "DEFINES+=$platform_define"
+  qmake "$source_dir/QOpenHD.pro" -spec devices/linux-rpi4-v3d-g++ CONFIG+=release "DEFINES+=$platform_define" "${native_args[@]}"
   make -j"$jobs"
 )
 binary="$build/release/QOpenHD"
@@ -233,5 +246,23 @@ fi
 "$gcc/bin/$compiler-readelf" --version-info "$binary" > "$build/elf-versions.txt"
 (
   cd "$source_dir"
-  PREBUILT_QOPENHD="$binary" bash ./package.sh standard "$arch" "$distro" "$release"
+  if [[ "$target" == rock-* ]]; then
+    "$gcc/bin/$compiler-g++" --sysroot="$sysroot" -O2 -std=c++17 -pthread \
+      -I"$sysroot/usr/include" -I"$sysroot/usr/include/$triplet" \
+      tools/nxp-boot-splash.cpp -L"$sysroot/usr/lib/$triplet" \
+      -Wl,-rpath-link,"$sysroot/usr/lib/$triplet" -lpng16 -o "$build/openhd-boot-splash"
+    "$gcc/bin/$compiler-gcc" --sysroot="$sysroot" -O2 -shared -fPIC \
+      deployment/rockchip/egl-platform-compat.c -L"$sysroot/usr/lib/$triplet" -lEGL -o "$build/egl-platform-compat.so"
+    kiosk=""
+    if [[ "$release" == bullseye ]]; then
+      kiosk="$build/kiosk-shell-black.so"
+      CC="$gcc/bin/$compiler-gcc" CFLAGS="--sysroot=$sysroot" \
+        LDFLAGS="--sysroot=$sysroot -L$sysroot/usr/lib/$triplet -Wl,-rpath-link,$sysroot/usr/lib/$triplet" \
+        bash ci/prepare-rockchip-kiosk.sh "$work/kiosk-$target" "$kiosk"
+    fi
+    PREBUILT_QOPENHD="$binary" PREBUILT_BOOT_SPLASH="$build/openhd-boot-splash" \
+      PREBUILT_EGL_COMPAT="$build/egl-platform-compat.so" PREBUILT_KIOSK_SHELL="$kiosk" bash ci/package-rockchip-native.sh "$release"
+  else
+    PREBUILT_QOPENHD="$binary" bash ./package.sh standard "$arch" "$distro" "$release"
+  fi
 )
