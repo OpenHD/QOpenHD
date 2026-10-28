@@ -1,0 +1,26 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "advancedSettings": true,
+  "conditionalSettings": "All conditional candidates shown together; no connected-device simulation",
+  "captures": [
+    {
+      "surface": "advanced",
+      "height": 339351,
+      "width": 1280,
+      "rows": 1031,
+      "open": true,
+      "overviewHeight": 38823
+    },
+    {
+      "surface": "sidebar",
+      "height": 19571,
+      "width": 1280,
+      "rows": 94,
+      "open": true,
+      "overviewHeight": 4278
+    }
+  ]
+}

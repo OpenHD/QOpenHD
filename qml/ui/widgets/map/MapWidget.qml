@@ -13,11 +13,13 @@ import "../../elements";
 MapWidgetForm {
     id: mapWidget
 
-    useDragHandle: true
+    useDragHandle: false
+    disable_dragging: true // The edge moves the widget; the centre pans the map.
 
     property bool mapExpanded: false
 
     property bool followDrone: true
+    property bool demoFlight: false
 
     property variant map: null
     property var mapPlugin: null
@@ -73,6 +75,10 @@ MapWidgetForm {
         }
         }
         setup_map_variant()
+        if (map && pendingOfflineRegion) {
+            map.showOfflineRegion(pendingOfflineRegion)
+            pendingOfflineRegion = null
+        }
     }
 
     // Each map owns a fresh plugin: QtLocation cannot switch an existing map's plugin.
@@ -145,13 +151,30 @@ MapWidgetForm {
                 return
             }
             map = component.createObject(parent, {"anchors.fill": parent,
-                "plugin": mapPlugin, "forceCustomMapType": provider === "openhd_offline"})
+                "plugin": mapPlugin, "forceCustomMapType": provider === "openhd_offline",
+                "compassMode": Qt.binding(function() { return mapWidget.roundMap }),
+                "demoFlight": Qt.binding(function() { return mapWidget.demoFlight })})
             if (!map) {
                 clearMap()
                 mapFailure = qsTr("Unable to create the map. Choose another provider or retry in map settings.")
                 return
             }
-            map.gesture.enabled = mapExpanded
+            if (provider === "openhd_offline" && _offlineMapTiles.packages.length) {
+                var packages = _offlineMapTiles.packages
+                var minZoom = 30, maxZoom = 0
+                for (var i = 0; i < packages.length; ++i) {
+                    minZoom = Math.min(minZoom, packages[i].minZoom)
+                    maxZoom = Math.max(maxZoom, packages[i].maxZoom)
+                }
+                map.minimumZoomLevel = minZoom
+                map.maximumZoomLevel = maxZoom
+                map.zoomLevel = Math.max(minZoom, Math.min(maxZoom, settings.map_zoom))
+            }
+            map.expandRequested.connect(function() {
+                if (mapExpanded) configureSmallMap()
+                else configureLargeMap()
+            })
+            map.gesture.enabled = true
             if (!followDrone && previousCenter && previousCenter.isValid)
                 map.center = previousCenter
         } catch (error) {
@@ -159,6 +182,19 @@ MapWidgetForm {
             clearMap()
             mapFailure = qsTr("Unable to initialize the map. Choose another provider or retry in map settings.")
         }
+    }
+
+    property var pendingOfflineRegion: null
+    function jumpToOfflineMap(region) {
+        if (!region) return
+        followDrone = false
+        pendingOfflineRegion = region
+        settings.show_map = true
+        settings.selected_map_provider = 2
+        mapReconfigure.restart()
+    }
+    function zoomMap(delta) {
+        if (map) map.zoomLevel = Math.max(map.minimumZoomLevel, Math.min(map.maximumZoomLevel, map.zoomLevel + delta))
     }
 
     function setup_map_variant() {
@@ -200,23 +236,14 @@ MapWidgetForm {
         }
         function onSelected_map_providerChanged() { scheduleMapConfigure() }
         function onSelected_map_variantChanged() { setup_map_variant() }
-        function onMap_sizeChanged() {
-            if (!mapExpanded) {
-                mapWidget.width = 200 * settings.map_size
-                mapWidget.height = 135 * settings.map_size
-            }
-        }
+        function onMap_sizeChanged() { if (!mapExpanded) resizeSmallMap() }
+        function onMap_roundChanged() { if (!mapExpanded) resizeSmallMap() }
         function onMap_api_keyChanged() {
             if (settings.selected_map_provider >= 0 && settings.selected_map_provider < pluginModel.count
                     && pluginModel.get(settings.selected_map_provider).name === "mapboxgl") {
                 scheduleMapConfigure()
             }
         }
-    }
-
-    openclose_button.onClicked: {
-        if (mapExpanded) configureSmallMap()
-        else configureLargeMap()
     }
 
     function configureLargeMap() {
@@ -230,15 +257,19 @@ MapWidgetForm {
         }
     }
 
+    onFooterHeightChanged: if (!mapExpanded) resizeSmallMap()
+
+    function resizeSmallMap() {
+        mapWidget.width = compactWidth
+        mapWidget.height = compactHeight
+    }
     function configureSmallMap() {
         console.log("configureSmallMap()")
         resetAnchors()
-        mapWidget.width = 200*settings.map_size
-        mapWidget.height = 135*settings.map_size
-        loadAlignment()
-        followDrone = true
-        if (map) map.gesture.enabled = false
         mapExpanded = false
+        resizeSmallMap()
+        loadAlignment()
+        if (map) map.gesture.enabled = true
     }
 
 }

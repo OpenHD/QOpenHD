@@ -1159,6 +1159,11 @@ void FCMavlinkSystem::refresh_diagnostics(bool update_rates)
     if (update_rates) m_diagnostic_refresh_ms = now;
     if (m_diagnostic_viewers == 0) {
         set_craft_diagnostics(QVariantMap{
+            {"present", m_diagnostic_state.value("present")},
+            {"enabled", m_diagnostic_state.value("enabled")},
+            {"healthy", m_diagnostic_state.value("healthy")},
+            {"statusAge", m_diagnostic_state.contains("statusReceivedMs")
+                ? (now - m_diagnostic_state.value("statusReceivedMs").toLongLong()) / 1000.0 : -1.0},
             {"total", QVariant::fromValue(total)},
             {"heartbeatAge", m_last_heartbeat_ms < 0 ? -1.0 : (now - m_last_heartbeat_ms.load()) / 1000.0},
             {"telemetryAge", m_last_message_ms < 0 ? -1.0 : (now - m_last_message_ms.load()) / 1000.0},

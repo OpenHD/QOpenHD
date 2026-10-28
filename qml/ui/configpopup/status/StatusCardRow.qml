@@ -1,65 +1,74 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
 
 Item {
     id: row
     width: parent ? parent.width : 0
-    height: visible ? 34 : 0
-
-    property string m_left_text: qsTr("LEFT")
-    property string m_right_text: qsTr("RIGHT")
+    height: visible ? 56 : 0
+    property string m_left_text: ""
+    property string m_right_text: ""
+    property string m_icon: "\uf2db"
+    property string m_value_icon: ""
+    property bool m_status_dot: false
+    property bool m_separator: true
     property bool m_has_error: false
-    property color m_right_text_color: settings_form.primaryText
+    property color m_right_text_color: "#dce6ef"
     property color m_right_text_color_error: settings_form.errorColor
-    property string m_error_text: qsTr("NONE")
+    property string m_error_text: ""
     property bool m_error_view: false
-
-    function iconForLabel(label) {
-        var value = label.toLowerCase()
-        if (value.indexOf("platform") >= 0 || value.indexOf("firmware") >= 0) return "\uf1b3"
-        if (value.indexOf("version") >= 0) return "\uf013"
-        if (value.indexOf("link") >= 0) return "\uf0c1"
-        if (value.indexOf("health") >= 0) return "\uf2db"
-        if (value.indexOf("state") >= 0) return "\uf023"
-        if (value.indexOf("mode") >= 0) return "\uf124"
-        if (value.indexOf("wifi") >= 0) return "\uf1eb"
-        if (value.indexOf("sys") >= 0) return "\uf2db"
-        if (value.indexOf("ping") >= 0) return "\uf1eb"
-        if (value.indexOf("type") >= 0) return "\uf2d2"
-        if (value.indexOf("alive") >= 0) return "\uf2f2"
-        if (value.indexOf("shared") >= 0) return "\uf0fe"
-        return "\uf111"
-    }
-
     Rectangle {
-        anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-        height: 1; color: settings_form.lineColor; opacity: 0.72
+        visible: row.m_separator
+        anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+        anchors.leftMargin: 22; anchors.rightMargin: 22
+        height: 1; color: "#15384c"
     }
     Text {
         id: icon
-        anchors.left: parent.left; anchors.leftMargin: row.width < 260 ? 10 : 19; anchors.verticalCenter: parent.verticalCenter
-        width: row.width < 260 ? 15 : 18
-        text: iconForLabel(m_left_text)
-        color: m_has_error ? settings_form.errorColor : settings_form.secondaryText
-        font.family: "Font Awesome 5 Free"; font.pixelSize: row.width < 260 ? 10 : 12
+        anchors.left: parent.left; anchors.leftMargin: 28; anchors.verticalCenter: parent.verticalCenter
+        width: 24
+        text: row.m_icon; color: "#d9e9f6"
+        font.family: "Font Awesome 5 Free"; font.pixelSize: 23
         horizontalAlignment: Text.AlignHCenter
     }
     Text {
         id: label
-        anchors.left: icon.right; anchors.leftMargin: row.width < 260 ? 6 : 10; anchors.verticalCenter: parent.verticalCenter
-        width: Math.max(56, row.width * 0.34)
-        text: m_left_text.replace(":", "")
-        color: settings_form.primaryText
-        font.pixelSize: row.width < 260 ? 10 : 12
+        anchors.left: icon.right; anchors.leftMargin: 24
+        anchors.verticalCenter: parent.verticalCenter
+        text: row.m_left_text.replace(":", ""); color: "#dce6ef"
+        font.family: "Archivo"; font.pixelSize: 18
+        width: row.width * 0.35
         elide: Text.ElideRight
     }
-    Text {
-        anchors.left: label.right; anchors.right: parent.right; anchors.rightMargin: row.width < 260 ? 10 : 19
-        anchors.verticalCenter: parent.verticalCenter
-        text: m_right_text
-        color: m_has_error ? m_right_text_color_error : m_right_text_color
-        font.pixelSize: row.width < 260 ? 10 : 12
-        horizontalAlignment: Text.AlignRight
-        elide: Text.ElideRight
+    Item {
+        id: valueColumn
+        anchors.left: label.right; anchors.leftMargin: 10
+        anchors.right: parent.right; anchors.rightMargin: 30
+        height: parent.height
+        Row {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 12
+            Rectangle {
+                visible: row.m_status_dot
+                anchors.verticalCenter: parent.verticalCenter
+                width: visible ? 20 : 0; height: width; radius: width / 2
+                color: value.color
+            }
+            Text {
+                visible: row.m_value_icon !== ""
+                anchors.verticalCenter: parent.verticalCenter
+                text: row.m_value_icon; color: "#38a5ff"
+                font.family: "Font Awesome 5 Free"; font.pixelSize: 26
+            }
+            Text {
+                id: value
+                objectName: "statusRowValue"
+                anchors.verticalCenter: parent.verticalCenter
+                width: Math.min(implicitWidth, Math.max(0, valueColumn.width - (row.m_status_dot ? 32 : 0) - (row.m_value_icon !== "" ? 42 : 0)))
+                text: row.m_right_text
+                color: row.m_has_error ? row.m_right_text_color_error : row.m_right_text_color
+                font.family: "Archivo"; font.pixelSize: 18
+                horizontalAlignment: Text.AlignRight; elide: Text.ElideRight
+            }
+        }
     }
 }

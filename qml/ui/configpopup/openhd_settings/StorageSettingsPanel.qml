@@ -10,8 +10,13 @@ FocusScope {
     id: root
     signal backRequested()
 
-    readonly property bool canOperate: _ohdSystemAir.is_alive && !_ohdAction.formatAirSdCardBusy
-    readonly property var devices: _ohdAction.airStorageDevices
+    readonly property bool canOperate: !_qopenhd.debugMenuPreview && _ohdSystemAir.is_alive && !_ohdAction.formatAirSdCardBusy
+    readonly property var devices: _qopenhd.debugMenuPreview ? [
+        {kind: "disk", device: "/dev/preview", internal: false, totalMiB: 32768, freeMiB: 8192},
+        {kind: "partition", device: "/dev/preview1", mountedAtVideo: true, formatted: true, canMount: true, canFormat: true, totalMiB: 8192, freeMiB: 4096},
+        {kind: "partition", device: "/dev/preview2", mountedAtVideo: false, formatted: true, canMount: true, canFormat: true, totalMiB: 8192, freeMiB: 4096},
+        {kind: "partition", device: "/dev/preview3", mountedAtVideo: false, formatted: false, canMount: false, canFormat: true, totalMiB: 8192, freeMiB: 8192}
+    ] : _ohdAction.airStorageDevices
 
     function sizeText(mib) {
         var value = Number(mib)

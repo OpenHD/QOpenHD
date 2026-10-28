@@ -4,6 +4,7 @@
 #include <QHash>
 #include <QHostAddress>
 #include <QList>
+#include <QVariantList>
 #include <QString>
 #include <QTcpServer>
 #include <QNetworkAccessManager>
@@ -21,6 +22,7 @@ class OfflineMapTileProvider final : public QObject
     Q_PROPERTY(QString mapboxBaseUrl READ mapboxBaseUrl CONSTANT)
     Q_PROPERTY(QString mapboxCacheDirectory READ mapboxCacheDirectory CONSTANT)
     Q_PROPERTY(QString activePackageName READ activePackageName NOTIFY activePackageChanged)
+    Q_PROPERTY(QVariantList packages READ packages NOTIFY packagesChanged)
     Q_PROPERTY(int packageCount READ packageCount NOTIFY packagesChanged)
 
 public:
@@ -32,6 +34,7 @@ public:
     QString mapboxCacheDirectory() const;
     Q_INVOKABLE void setMapboxKey(const QString& key) { m_mapboxKey = key.trimmed(); }
     QString activePackageName() const;
+    QVariantList packages() const;
     int packageCount() const { return m_packages.size(); }
 
     Q_INVOKABLE QString tileCacheDirectory(const QString& provider) const;

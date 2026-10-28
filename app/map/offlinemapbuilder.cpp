@@ -21,7 +21,7 @@
 
 namespace {
 constexpr double pi = 3.14159265358979323846;
-constexpr qint64 maxBytes = 100 * 1024 * 1024;
+constexpr qint64 maxBytes = 1024LL * 1024 * 1024;
 QPointF project(double lat, double lon, int zoom) {
     const double n = double(1 << zoom);
     return {(lon + 180.0) / 360.0 * n,
@@ -172,32 +172,40 @@ void OfflineMapBuilder::search(const QString& input) {
 int OfflineMapBuilder::tileCount(double s, double w, double n, double e, int maxZoom) const {
     if (!validBounds(s, w, n, e) || maxZoom < 10 || maxZoom > 16) return -1;
     qint64 count = 0;
-    for (int z = 10; z <= maxZoom; ++z) {
+    for (int z = 0; z <= maxZoom; ++z) {
         const auto b = tileBounds(s, w, n, e, z);
         count += qint64(b.width()) * b.height();
-        if (count > 4096) return -1;
+        if (count > 262144) return -1;
     }
-    // Keep interactive public Overpass requests to small flying areas.
+    // Allow the bounding rectangle of a 50 km radius, including projection rounding.
     const double area = (n-s) * 111.2 * (e-w) * 111.2 * std::cos((s+n) * 0.5 * pi / 180.0);
-    return area <= 400.0 ? int(count) : -1;
+    return area <= 11000.0 ? int(count) : -1;
 }
 
 void OfflineMapBuilder::generate(const QString& name, double s, double w, double n, double e, int maxZoom) {
     if (m_busy || m_searching) return;
     const int count = tileCount(s, w, n, e, maxZoom);
-    if (count < 1) { fail(tr("Choose a smaller area (up to 400 km² and 4096 tiles).")); return; }
+    if (count < 1) { fail(tr("Choose a smaller area (up to 11000 km² and 262144 tiles).")); return; }
     m_name = name.trimmed().left(60);
     if (m_name.isEmpty()) m_name = tr("Offline map");
     m_south = s; m_west = w; m_north = n; m_east = e; m_maxZoom = maxZoom;
     m_total = count; m_progress = 0; m_busy = true; ++m_job;
     m_ways.clear(); m_tiles.clear();
+    m_geometryRegions.clear(); m_geometryRegion = 0; m_geometryPoints = 0; m_geometryIds.clear();
+    const int rows = qMax(1, int(std::ceil((n - s) * 111.2 / 25.0)));
+    const int columns = qMax(1, int(std::ceil((e - w) * 111.2 * std::cos((s+n) * 0.5 * pi / 180.0) / 25.0)));
+    for (int row = 0; row < rows; ++row)
+        for (int column = 0; column < columns; ++column)
+            m_geometryRegions.append(QRectF(w + (e-w) * column / columns, s + (n-s) * row / rows,
+                                           (e-w) / columns, (n-s) / rows));
     m_status = tr("Downloading road geometry..."); emit changed(); fetchGeometry(0);
 }
 
 void OfflineMapBuilder::fetchGeometry(int layer, int attempt) {
+    const auto region = m_geometryRegions[m_geometryRegion];
     const QString query = QStringLiteral("[out:json][timeout:90];way[\"%1\"](%2,%3,%4,%5);out geom;")
-        .arg(layer == 0 ? "highway" : "waterway").arg(m_south, 0, 'f', 7).arg(m_west, 0, 'f', 7)
-        .arg(m_north, 0, 'f', 7).arg(m_east, 0, 'f', 7);
+        .arg(layer == 0 ? "highway" : "waterway").arg(region.top(), 0, 'f', 7).arg(region.left(), 0, 'f', 7)
+        .arg(region.bottom(), 0, 'f', 7).arg(region.right(), 0, 'f', 7);
     QUrlQuery form; form.addQueryItem("data", query);
     auto url = endpoint("OPENHD_MAP_DATA_URL", "https://overpass-api.de/api/interpreter");
     if (attempt == 1 && qEnvironmentVariable("OPENHD_MAP_DATA_URL").isEmpty())
@@ -225,9 +233,11 @@ void OfflineMapBuilder::fetchGeometry(int layer, int attempt) {
             if (retry()) return;
             fail(tr("Map service returned incomplete data. Try again later.")); return;
         }
-        int points = 0;
         for (const auto& element : document.object().value("elements").toArray()) {
             const auto row = element.toObject(); const auto tags = row.value("tags").toObject();
+            const auto id = qint64(row.value("id").toDouble());
+            if (id && m_geometryIds.contains(id)) continue;
+            if (id) m_geometryIds.insert(id);
             Way way; const auto highway = tags.value("highway").toString();
             way.color = layer ? QColor("#71b4d5") : QColor("#eef0df");
             way.width = layer ? 2.0 : (highway == "motorway" || highway == "trunk") ? 4.0
@@ -239,14 +249,22 @@ void OfflineMapBuilder::fetchGeometry(int layer, int attempt) {
                 const double lat = p.value("lat").toDouble(), lon = p.value("lon").toDouble();
                 if (!std::isfinite(lat) || !std::isfinite(lon) || std::abs(lat) > 85 || std::abs(lon) > 180) continue;
                 way.points.append(project(lat, lon, m_maxZoom) * 256.0);
-                if (++points > 500000) { fail(tr("Too much map detail. Choose a smaller rectangle.")); return; }
+                if (++m_geometryPoints > 2000000) { fail(tr("Too much map detail. Choose a smaller rectangle.")); return; }
             }
             if (way.points.size() > 1) { way.bounds = way.points.boundingRect(); m_ways.append(way); }
         }
-        if (layer == 0) { m_status = tr("Downloading waterways..."); emit changed(); fetchGeometry(1); return; }
+        if (++m_geometryRegion < m_geometryRegions.size()) {
+            m_status = tr("Downloading map data: part %1 of %2...")
+                .arg(layer * m_geometryRegions.size() + m_geometryRegion + 1).arg(2 * m_geometryRegions.size());
+            emit changed(); fetchGeometry(layer); return;
+        }
+        if (layer == 0) {
+            m_geometryRegion = 0; m_geometryIds.clear();
+            m_status = tr("Downloading waterways..."); emit changed(); fetchGeometry(1); return;
+        }
         m_payload.reset(new QTemporaryFile);
         if (!m_payload->open()) { fail(tr("Cannot create the map download file.")); return; }
-        m_z = 10; const auto bounds = tileBounds(m_south, m_west, m_north, m_east, m_z);
+        m_z = 0; const auto bounds = tileBounds(m_south, m_west, m_north, m_east, m_z);
         m_x = bounds.left(); m_y = bounds.top();
         m_status = tr("Creating offline map..."); emit changed();
         QTimer::singleShot(0, this, [this, job] { if (job == m_job && m_busy) renderNext(); });
@@ -254,29 +272,41 @@ void OfflineMapBuilder::fetchGeometry(int layer, int attempt) {
 }
 
 void OfflineMapBuilder::renderNext() {
-    QImage image(256, 256, QImage::Format_RGB32); image.fill(QColor("#263735"));
-    QPainter painter(&image); painter.setRenderHint(QPainter::Antialiasing);
-    const double scale = std::pow(2.0, m_z - m_maxZoom);
-    const QRectF viewport(m_x * 256.0 / scale, m_y * 256.0 / scale, 256.0 / scale, 256.0 / scale);
-    painter.translate(-m_x * 256.0, -m_y * 256.0); painter.scale(scale, scale);
-    for (const auto& way : m_ways) {
-        if (!way.bounds.adjusted(-5/scale, -5/scale, 5/scale, 5/scale).intersects(viewport)) continue;
-        painter.setPen(QPen(way.color, way.width / scale, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-        painter.drawPolyline(way.points);
-    }
-    painter.end();
-    QByteArray bytes; QBuffer buffer(&bytes); buffer.open(QIODevice::WriteOnly);
-    if (!image.save(&buffer, "PNG") || m_payload->size() + bytes.size() > maxBytes) { fail(tr("Map exceeds the 100 MB limit. Select a smaller area.")); return; }
-    const quint64 offset = quint64(m_payload->pos());
-    if (m_payload->write(bytes) != bytes.size()) { fail(tr("Not enough storage to create the map.")); return; }
-    m_tiles.append({m_z, m_x, m_y, offset, quint32(bytes.size())});
-    m_progress = double(m_tiles.size()) / m_total; emit changed();
-    const auto bounds = tileBounds(m_south, m_west, m_north, m_east, m_z);
-    if (++m_x > bounds.right()) { m_x = bounds.left(); ++m_y; }
-    if (m_y > bounds.bottom()) {
-        if (++m_z > m_maxZoom) { finishPackage(); return; }
-        const auto next = tileBounds(m_south, m_west, m_north, m_east, m_z);
-        m_x = next.left(); m_y = next.top();
+    for (int batch = 0; batch < 16; ++batch) {
+        QImage image(256, 256, QImage::Format_RGB32); image.fill(QColor("#263735"));
+        QPainter painter(&image); painter.setRenderHint(QPainter::Antialiasing);
+        const double scale = std::pow(2.0, m_z - m_maxZoom);
+        const QRectF viewport(m_x * 256.0 / scale, m_y * 256.0 / scale, 256.0 / scale, 256.0 / scale);
+        painter.translate(-m_x * 256.0, -m_y * 256.0); painter.scale(scale, scale);
+        // Filter once per tile row so a large package does not scan every road for every tile.
+        if (m_x == tileBounds(m_south, m_west, m_north, m_east, m_z).left()) {
+            m_rowWays.clear();
+            for (int i = 0; i < m_ways.size(); ++i) {
+                const auto bounds = m_ways[i].bounds.adjusted(-5/scale, -5/scale, 5/scale, 5/scale);
+                if (bounds.bottom() >= viewport.top() && bounds.top() <= viewport.bottom()) m_rowWays.append(i);
+            }
+        }
+        for (const auto index : m_rowWays) {
+            const auto& way = m_ways[index];
+            if (!way.bounds.adjusted(-5/scale, -5/scale, 5/scale, 5/scale).intersects(viewport)) continue;
+            painter.setPen(QPen(way.color, way.width / scale, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            painter.drawPolyline(way.points);
+        }
+        painter.end();
+        QByteArray bytes; QBuffer buffer(&bytes); buffer.open(QIODevice::WriteOnly);
+        if (!image.save(&buffer, "PNG") || m_payload->size() + bytes.size() > maxBytes) { fail(tr("Map exceeds the 1 GB limit. Select a smaller area.")); return; }
+        const quint64 offset = quint64(m_payload->pos());
+        if (m_payload->write(bytes) != bytes.size()) { fail(tr("Not enough storage to create the map.")); return; }
+        m_tiles.append({m_z, m_x, m_y, offset, quint32(bytes.size())});
+        m_progress = double(m_tiles.size()) / m_total; emit changed();
+        if (!m_busy) return;
+        const auto bounds = tileBounds(m_south, m_west, m_north, m_east, m_z);
+        if (++m_x > bounds.right()) { m_x = bounds.left(); ++m_y; }
+        if (m_y > bounds.bottom()) {
+            if (++m_z > m_maxZoom) { finishPackage(); return; }
+            const auto next = tileBounds(m_south, m_west, m_north, m_east, m_z);
+            m_x = next.left(); m_y = next.top();
+        }
     }
     const auto job = m_job;
     QTimer::singleShot(0, this, [this, job] { if (job == m_job && m_busy) renderNext(); });
@@ -294,10 +324,10 @@ void OfflineMapBuilder::finishPackage() {
     if (!output.open(QIODevice::WriteOnly)) { fail(tr("Cannot save the offline map.")); return; }
     const auto name = m_name.toUtf8(); const QByteArray attribution("OpenStreetMap contributors (ODbL) | openstreetmap.org/copyright");
     const quint64 dataOffset = 56 + name.size() + attribution.size() + quint64(m_tiles.size()) * 21;
-    if (dataOffset + quint64(m_payload->size()) > quint64(maxBytes)) { fail(tr("Map exceeds the 100 MB limit. Select a smaller area.")); return; }
+    if (dataOffset + quint64(m_payload->size()) > quint64(maxBytes)) { fail(tr("Map exceeds the 1 GB limit. Select a smaller area.")); return; }
     output.write("GLDMAP1\0", 8);
     QDataStream stream(&output); stream.setByteOrder(QDataStream::LittleEndian); stream.setFloatingPointPrecision(QDataStream::DoublePrecision);
-    stream << quint32(1) << quint16(256) << quint8(10) << quint8(m_maxZoom)
+    stream << quint32(1) << quint16(256) << quint8(0) << quint8(m_maxZoom)
            << m_south << m_west << m_north << m_east << quint16(name.size()) << quint16(attribution.size()) << quint32(m_tiles.size());
     output.write(name); output.write(attribution);
     for (const auto& tile : m_tiles) stream << quint8(tile.z) << quint32(tile.x) << quint32(tile.y) << quint64(dataOffset + tile.offset) << tile.size;

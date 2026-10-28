@@ -139,6 +139,16 @@ QString OfflineMapTileProvider::activePackageName() const
     return m_activePackage >= 0 && m_activePackage < m_packages.size() ? m_packages[m_activePackage].name : QString();
 }
 
+QVariantList OfflineMapTileProvider::packages() const
+{
+    QVariantList result;
+    for (const auto& p : m_packages)
+        result.append(QVariantMap{{"name", p.name}, {"south", p.south}, {"west", p.west},
+                                  {"north", p.north}, {"east", p.east},
+                                  {"minZoom", int(p.minZoom)}, {"maxZoom", int(p.maxZoom)}});
+    return result;
+}
+
 bool OfflineMapTileProvider::Package::contains(double latitude, double longitude) const
 {
     return latitude >= south && latitude <= north && longitude >= west && longitude <= east;

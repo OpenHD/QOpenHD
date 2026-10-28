@@ -96,6 +96,7 @@
         <file>ui/widgets/RetransmissionStarsWidget.qml</file>
         <file>ui/widgets/QRenderStatsWidget.qml</file>
         <file>ui/widgets/map/MapComponent.qml</file>
+        <file>ui/widgets/map/PlaneMapMarker.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
         <file>ui/configpopup/AdvancedPage.qml</file>
         <file>ui/configpopup/AdvancedPageLoader.qml</file>
@@ -148,6 +149,8 @@
         <file>ui/configpopup/openhd_settings/WifiBroadcastLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/SimulatedLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/LinkUsageMeter.qml</file>
+        <file>ui/configpopup/openhd_settings/LinkAllocationPopup.qml</file>
+        <file>ui/configpopup/openhd_settings/LinkSegmentsBar.qml</file>
         <file>ui/configpopup/openhd_settings/MicrohardLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/ArtosynLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/MLRSLinkCard.qml</file>
@@ -163,6 +166,8 @@
         <file>ui/configpopup/status/PowerActionDialoque.qml</file>
         <file>ui/configpopup/status/PanelStatus.qml</file>
         <file>ui/configpopup/status/DeferredStatusDialog.qml</file>
+        <file>ui/configpopup/status/UnitDetailsDialog.qml</file>
+        <file>ui/configpopup/status/GroundStationDetails.qml</file>
         <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
         <file>ui/configpopup/status/CraftDetailsPanel.qml</file>
         <file>ui/configpopup/log/LogMessagesStatusView.qml</file>
@@ -176,7 +181,9 @@
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/widgets/map/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/map/MapWidget.qml</file>
+        <file>ui/widgets/map/MapControlButton.qml</file>
         <file>ui/widgets/map/OfflineMapDialog.qml</file>
+        <file>ui/widgets/map/OfflineMapButton.qml</file>
         <file>ui/widgets/map/OfflineMapSelection.qml</file>
         <file>ui/widgets/map/MapboxLogo.png</file>
         <file>ui/configpopup/status/PingUtilColumn.qml</file>
@@ -210,6 +217,7 @@
         <file>ui/configpopup/connect/PaneConnectionMode.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget2.qml</file>
         <file>ui/configpopup/status/StatusCardsColumn.qml</file>
+        <file>ui/configpopup/status/StatusOverviewHeader.qml</file>
         <file>ui/elements/SimpleLeftRightText.qml</file>
         <file>video/SecondaryVideoGstreamerPane.qml</file>
         <file>ui/elements/SettingsHeaderElement.qml</file>

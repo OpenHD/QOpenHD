@@ -2,6 +2,7 @@
 #define QOPENHD_H
 
 #include <QFont>
+#include <atomic>
 #include <QObject>
 #include <QQmlApplicationEngine>
 #include <QTranslator>
@@ -24,9 +25,15 @@
 class QOpenHD : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool launchedFromQtCreator READ launchedFromQtCreator CONSTANT)
+    Q_PROPERTY(bool debugMenuPreview READ debugMenuPreview WRITE setDebugMenuPreview NOTIFY debugMenuPreviewChanged)
 public:
     explicit QOpenHD(QObject *parent = nullptr);
     static QOpenHD& instance();
+    bool launchedFromQtCreator() const { return m_launchedFromQtCreator; }
+    bool debugMenuPreview() const { return m_debugMenuPreview.load(); }
+    void setDebugMenuPreview(bool enabled);
+
     Q_INVOKABLE void switchToLanguage(const QString &language);
     void setEngine(QQmlApplicationEngine *engine);
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
@@ -102,9 +109,12 @@ public:
  public:
  signals:
     void fontFamilyChanged(QString fontFamily);
+    void debugMenuPreviewChanged();
     void pingFinished(QString ip, bool reachable);
     void systemActionFinished(QString id, QString result, bool success);
 private:
+    const bool m_launchedFromQtCreator;
+    std::atomic_bool m_debugMenuPreview{false};
      AsyncPing m_ping;
      AsyncCommandRunner m_commands;
      QQmlApplicationEngine *m_engine = nullptr;

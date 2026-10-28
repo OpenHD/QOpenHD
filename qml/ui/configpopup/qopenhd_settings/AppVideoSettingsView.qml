@@ -120,7 +120,7 @@ ScrollView {
                 }
                 SettingBaseElement{
                     m_short_description: qsTr("Use low latency RTP parser")
-                    visible: _qopenhd.is_platform_nxp()
+                    visible: _qopenhd.debugMenuPreview || (_qopenhd.is_platform_nxp())
                     Switch {
                         width: 32
                         height: elementHeight
@@ -181,7 +181,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Secondary video codec")
                     // only show to dualcam users
-                    visible: settings.dev_qopenhd_n_cameras==2
+                    visible: _qopenhd.debugMenuPreview || (settings.dev_qopenhd_n_cameras==2)
                     CompactLinkComboBox {
                         id: selectVideoCodecSecondary
                         width: 320
@@ -222,7 +222,7 @@ ScrollView {
                 // }
                 SettingBaseElement{
                     m_short_description: qsTr("Secondary video udp port")
-                    visible: settings.dev_qopenhd_n_cameras==2
+                    visible: _qopenhd.debugMenuPreview || (settings.dev_qopenhd_n_cameras==2)
                     SpinBox {
                         height: elementHeight
                         width: 210
@@ -241,7 +241,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Secondary video input (Android dev)")
-                    visible: _qopenhd.is_android()
+                    visible: _qopenhd.debugMenuPreview || (_qopenhd.is_android())
                     CompactLinkComboBox {
                         width: 320
                         height: elementHeight
@@ -266,7 +266,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Disable primary video (Android)")
                     m_long_description: qsTr("Stops rendering the primary stream on Android to debug the secondary feed. Requires restart.")
-                    visible: _qopenhd.is_android()
+                    visible: _qopenhd.debugMenuPreview || (_qopenhd.is_android())
                     Switch {
                         width: 32
                         height: elementHeight

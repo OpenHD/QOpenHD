@@ -24,8 +24,10 @@ The package format is `GLDMAP1`, shared with OpenHD Glide and FleetControl.
 
 Open **OSD & Application > Map > Create offline map**. Enter a town or region,
 press **Find region**, select a result, then pan/zoom the preview. Press
-**Draw rectangle** and drag across your flying area. Choose standard or high
-detail and press **Create map**. Download status, rendering progress and a Cancel
+**50 km radius** to select the map centre, or tap a point on the preview.
+The circle always has a 50 km radius (100 km across); its enclosing rectangle
+is saved so the entire circle is covered. Alternatively, press **Draw rectangle**
+and drag across your flying area. Choose detail and press **Create map**. Download status, rendering progress and a Cancel
 button remain available while it runs. After a successful save, QOpenHD selects
 **OpenHD Offline** automatically. No restart, account, paid key or Python runtime
 is needed on the board.
@@ -38,16 +40,57 @@ OpenStreetMap attribution is displayed in the UI, without a watermark across the
 saved tiles. Search uses Nominatim only on an explicit submitted search, with a
 one-second throttle and an in-memory results cache.
 
-Each package covers one rectangle, zooms 10 through 15 (standard) or 16 (high),
-and is limited to 400 square kilometres, 4096 tiles and 100 MB. Choose a smaller
-rectangle if the selected area exceeds a limit. Downloads require an internet
-connection. A failed or cancelled generation never installs a partial package;
-existing packages stay available.
+Each package covers one rectangle, with zooms 0 through 13 (overview), 14
+(standard), 15 (high) or 16 (maximum). Limits are 11,000 square kilometres,
+262,144 tiles, 1 GiB per package and two million geometry points. Geometry is
+fetched in sections of at most approximately 25 km per side. Higher detail takes
+more time and storage. Polar areas beyond 85 degrees and date-line crossings are
+not supported. Downloads require an internet connection. A failed or cancelled
+generation never installs a partial package; existing packages stay available.
+
+In Map settings, choose an installed package and press **Jump to map** to frame
+its coverage, even when your current position is elsewhere or unavailable. This
+disables following without changing GPS or reference position, and never creates
+a location marker at the package centre. Use the follow button to return to your
+real reference position. Small and expanded maps support pan, pinch/wheel zoom
+and the + / - controls; the separate hand handle still moves the HUD widget.
+
+## Map widget appearance
+
+The small map defaults to **Round**. Under **OSD & Application > Map > Small map
+shape**, you can also select **Rounded rectangle**. Saved shape preferences are
+retained. Round maps have a 30% smaller diameter at the same size setting.
+N/E/S/W labels sit outside the circle and follow the live map bearing while
+staying upright. While following a connected aircraft, the round map uses
+heading-up orientation so the map, aircraft symbol and compass stay aligned.
+
+Drag in the centre to pan the map; drag the outer 18-pixel rim to move the widget
+and save its position. The circular rim follows the circle. Double-click to
+expand or collapse. Only small 24-pixel + / - zoom buttons remain; there is no
+expand button, toolbar, hand handle or tooltip. Wheel and pinch zoom still work.
+The GPS position uses the same plane symbol as the demo. Click either plane
+to resume following immediately. You can also use **Follow aircraft** in Map
+settings to resume following after panning or
+jumping to an offline area. Expanded maps stay rectangular. Zoom controls overlay the map without reserving extra space. OpenStreetMap
+attribution appears in Map settings and the expanded map, keeping the small
+widget clear. Round masking uses
+the normal OpenGL renderer; software rendering keeps the map visible without
+the GPU mask.
+
+## Debug flight
+
+Use **OSD & Application > Map > Debug: circling plane** to start a map-only demo.
+A fixed-wing symbol flies a 250 m radius circle once per minute, leaving a cyan
+trail. Its simulated position and heading drive the map and compass; the widget
+is labelled **DEMO FLIGHT**. The current map centre is used as the orbit centre
+(or 50 N, 8 E if there is no usable position). Use **Stop demo flight** in the same
+menu to return to real telemetry. This temporary toggle is not saved across app
+restarts and never changes the flight controller or global position/ADS-B data.
 
 ## Include a map when flashing with ImageWriter
 
 Configure a **Ground** image, then use **Create offline map** on the flash review
-page. The same region search and rectangle picker creates a local `.glidemap`
+page. The same region search and radius/rectangle picker creates a local `.glidemap`
 package and stages it for that flash. ImageWriter's existing customization path
 copies it to **openhd/maps** on the Config/boot partition. QOpenHD discovers it
 at `/Config/openhd/maps` on the board. Air images do not receive maps. Generation

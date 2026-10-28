@@ -10,6 +10,25 @@ Item {
     property string tileHost: "https://tile.openstreetmap.org/"
     property bool usingMapbox: false
     property bool drawing: false
+    property bool radiusMode: true
+    property var radiusCenter: QtPositioning.coordinate(initialLatitude, initialLongitude)
+    function selectRadius(coordinate) {
+        if (!coordinate || !coordinate.isValid) return
+        drawing = false
+        radiusCenter = coordinate
+        var angular = 50000 / 6371007.2
+        var latitude = coordinate.latitude * Math.PI / 180
+        var deltaLon = Math.asin(Math.sin(angular) / Math.cos(latitude)) * 180 / Math.PI
+        south = coordinate.latitude - angular * 180 / Math.PI
+        north = coordinate.latitude + angular * 180 / Math.PI
+        west = coordinate.longitude - deltaLon
+        east = coordinate.longitude + deltaLon
+        selectionValid = isFinite(deltaLon) && south >= -85 && north <= 85 && west >= -180 && east <= 180
+    }
+    function selectCenterRadius() {
+        radiusMode = true
+        selectRadius(map.center)
+    }
     property bool selectionValid: false
     property real south: 0
     property real west: 0
@@ -21,7 +40,13 @@ Item {
         selectionValid = false
         map.visibleRegion = QtPositioning.rectangle(QtPositioning.coordinate(region.north, region.west),
                                                    QtPositioning.coordinate(region.south, region.east))
+        if (radiusMode) {
+            selectRadius(QtPositioning.coordinate((Number(region.north) + Number(region.south)) / 2,
+                                                  (Number(region.west) + Number(region.east)) / 2))
+            map.visibleRegion = QtPositioning.rectangle(QtPositioning.coordinate(north, west), QtPositioning.coordinate(south, east))
+        }
     }
+    Component.onCompleted: selectRadius(radiusCenter)
     onInitialLatitudeChanged: map.center = QtPositioning.coordinate(initialLatitude, initialLongitude)
     onInitialLongitudeChanged: map.center = QtPositioning.coordinate(initialLatitude, initialLongitude)
 
@@ -48,13 +73,30 @@ Item {
         center: QtPositioning.coordinate(root.initialLatitude, root.initialLongitude)
         zoomLevel: 10
         copyrightsVisible: true
+        onMapReadyChanged: {
+            if (mapReady && root.radiusMode && root.selectionValid)
+                visibleRegion = QtPositioning.rectangle(QtPositioning.coordinate(root.north, root.west),
+                                                       QtPositioning.coordinate(root.south, root.east))
+        }
         gesture.enabled: !root.drawing
         gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture
         onSupportedMapTypesChanged: {
             if (supportedMapTypes.length) activeMapType = supportedMapTypes[supportedMapTypes.length - 1]
         }
+        MapCircle {
+            visible: root.selectionValid && root.radiusMode
+            center: root.radiusCenter
+            radius: 50000
+            color: "#4030a8ff"
+            border.color: "#30a8ff"; border.width: 2
+        }
+        MouseArea {
+            anchors.fill: parent
+            enabled: root.radiusMode && !root.drawing
+            onClicked: root.selectRadius(map.toCoordinate(Qt.point(mouse.x, mouse.y), false))
+        }
         MapRectangle {
-            visible: root.selectionValid
+            visible: root.selectionValid && !root.radiusMode
             topLeft: QtPositioning.coordinate(root.north, root.west)
             bottomRight: QtPositioning.coordinate(root.south, root.east)
             color: "#4030a8ff"

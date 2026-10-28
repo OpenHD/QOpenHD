@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Controls.Material 2.12
 
 // The map canvas is loaded only when requested, keeping QtLocation off the boot path.
 Popup {
@@ -9,8 +10,12 @@ Popup {
     property real initialLatitude: 0
     property real initialLongitude: 0
     property string mapboxApiKey: ""
-    property color panelColor: "#182732"
-    property color textColor: "#eef3f6"
+    property color panelColor: typeof settings_form !== "undefined" ? settings_form.panelBackgroundRaised : "#15283b"
+    property color textColor: typeof settings_form !== "undefined" ? settings_form.primaryText : "#f2f6fb"
+    Material.theme: typeof settings_form !== "undefined" && !settings_form.darkMode ? Material.Light : Material.Dark
+    Material.accent: typeof settings_form !== "undefined" ? settings_form.accentColor : "#278cff"
+    Material.foreground: textColor
+    Material.background: panelColor
     signal mapReady(string filePath)
     parent: Overlay.overlay
     width: Math.min(parent.width - 24, 1000)
@@ -52,7 +57,7 @@ Popup {
         Label { text: qsTr("Create an offline map"); color: root.textColor; font.bold: true; font.pixelSize: 20 }
         Label {
             Layout.fillWidth: true
-            text: qsTr("1. Find a region   2. Draw a rectangle   3. Create map")
+            text: qsTr("1. Find a place   2. Tap a centre for a 50 km radius, or draw an area   3. Create map")
             color: root.textColor; wrapMode: Text.WordWrap
         }
         RowLayout {
@@ -66,7 +71,7 @@ Popup {
                 selectByMouse: true
                 onAccepted: root.builder.search(text)
             }
-            Button {
+            OfflineMapButton {
                 text: root.builder.searching ? qsTr("Searching...") : qsTr("Find region")
                 enabled: region.text.trim().length > 0 && !root.builder.busy && !root.builder.searching
                 onClicked: root.builder.search(region.text)
@@ -95,6 +100,7 @@ Popup {
         Loader {
             id: canvas
             objectName: "offlineMapCanvas"
+            enabled: !root.builder.busy && !root.builder.searching
             Layout.fillWidth: true; Layout.fillHeight: true
             Layout.minimumHeight: 120
             active: false
@@ -106,24 +112,31 @@ Popup {
         }
         RowLayout {
             Layout.fillWidth: true
-            Button {
+            OfflineMapButton {
+                objectName: "selectRadius"
+                text: qsTr("50 km radius")
+                enabled: canvas.item !== null && !root.builder.busy
+                onClicked: canvas.item.selectCenterRadius()
+            }
+            OfflineMapButton {
                 text: canvas.item && canvas.item.drawing ? qsTr("Move map") : qsTr("Draw rectangle")
                 enabled: canvas.item !== null && !root.builder.busy
-                onClicked: canvas.item.drawing = !canvas.item.drawing
+                onClicked: { canvas.item.radiusMode = false; canvas.item.drawing = !canvas.item.drawing }
             }
             ComboBox {
                 id: detail
                 Layout.preferredWidth: 180
-                model: [qsTr("Standard detail"), qsTr("High detail")]
+                model: [qsTr("Overview"), qsTr("Standard detail"), qsTr("High detail"), qsTr("Maximum detail")]
+                currentIndex: 1
                 enabled: !root.builder.busy
             }
             Label {
                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: root.textColor
                 readonly property int count: canvas.item && canvas.item.selectionValid
-                    ? root.builder.tileCount(canvas.item.south, canvas.item.west, canvas.item.north, canvas.item.east, detail.currentIndex === 0 ? 15 : 16) : 0
-                text: count < 0 ? qsTr("Area too large. Draw a smaller rectangle.")
+                    ? root.builder.tileCount(canvas.item.south, canvas.item.west, canvas.item.north, canvas.item.east, 13 + detail.currentIndex) : 0
+                text: count < 0 ? qsTr("Area exceeds limits or crosses a polar / date-line boundary. Lower detail or choose another area.")
                       : count > 0 ? qsTr("%1 tiles · size depends on map detail").arg(count)
-                                  : qsTr("Move and zoom the map, then draw your area.")
+                                  : qsTr("Move and zoom, then tap a centre or draw your area.")
                 id: estimate
             }
         }
@@ -144,7 +157,7 @@ Popup {
                 Layout.fillWidth: true; color: root.textColor; font.pixelSize: 11; wrapMode: Text.WordWrap
                 text: qsTr("Free road and waterway map · © OpenStreetMap contributors")
             }
-            Button {
+            OfflineMapButton {
                 objectName: "cancelOfflineMap"
                 text: root.builder.busy || root.builder.searching ? qsTr("Cancel") : qsTr("Close")
                 onClicked: {
@@ -152,13 +165,14 @@ Popup {
                     else root.close()
                 }
             }
-            Button {
+            OfflineMapButton {
                 objectName: "createOfflineMap"
+                primary: true
                 text: qsTr("Create map")
                 enabled: canvas.item !== null && canvas.item.selectionValid && estimate.count > 0
                          && !root.builder.busy && !root.builder.searching
                 onClicked: root.builder.generate(region.text, canvas.item.south, canvas.item.west,
-                                                canvas.item.north, canvas.item.east, detail.currentIndex === 0 ? 15 : 16)
+                                                canvas.item.north, canvas.item.east, 13 + detail.currentIndex)
             }
         }
     }

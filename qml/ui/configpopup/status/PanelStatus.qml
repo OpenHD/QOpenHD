@@ -13,6 +13,8 @@ Rectangle {
     // A modal popup lives in the window overlay, outside this page's visual
     // hierarchy. Close it when navigating away so it cannot block the menu.
     onVisibleChanged: if (!visible) {
+        groundDetails.close()
+        unitDetails.close()
         craftDetails.close()
         powerDialog.close()
         dialoqueNotAlive.close()
@@ -80,11 +82,20 @@ Rectangle {
     Flickable {
         id: content
         anchors.fill: parent
-        anchors.leftMargin: settings_form.compactSidebar ? 13 : Math.max(16, Math.min(32, width * 0.025))
-        anchors.rightMargin: settings_form.compactSidebar ? 13 : Math.max(16, Math.min(32, width * 0.025))
+        anchors.topMargin: 12
+        anchors.bottomMargin: 16
+        anchors.leftMargin: root.width < 900 ? 13 : Math.min(54, root.width * 0.035)
+        anchors.rightMargin: root.width < 900 ? 13 : Math.min(54, root.width * 0.035)
         clip: true
         contentWidth: width
-        contentHeight: page.implicitHeight + 36
+        // Defer the extent update until the responsive grid has settled.
+        // Qt 5 can re-enter a contentHeight binding while GridLayout relayouts.
+        function updateExtent() {
+            statusCards.y = Math.max(0, Math.round((height - statusCards.implicitHeight) / 2))
+            contentHeight = Math.max(height, statusCards.implicitHeight + 24)
+        }
+        onHeightChanged: Qt.callLater(updateExtent)
+        Component.onCompleted: Qt.callLater(updateExtent)
         boundsBehavior: Flickable.StopAtBounds
         flickableDirection: Flickable.VerticalFlick
 
@@ -98,32 +109,23 @@ Rectangle {
 
         ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
 
-        ColumnLayout {
-            id: page
-            width: content.width
-            spacing: 13
-
-            Item { Layout.fillWidth: true; Layout.preferredHeight: 14 }
-            RowLayout {
-                id: pageHeader
-                Layout.fillWidth: true
-                Layout.rightMargin: content.width > 420 ? 150 : 0
-                spacing: 13
-                Text { text: "\uf21e"; color: "#67aaff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 27 }
-                ColumnLayout {
-                    spacing: 2
-                    Text { text: qsTr("SYSTEM STATUS"); color: settings_form.primaryText; font.pixelSize: Math.max(17, Math.min(22, content.width / 45)); font.bold: true }
-                    Text { text: qsTr("Overview of all system components"); color: settings_form.secondaryText; font.pixelSize: 12 }
-                }
-            }
-            StatusCardsColumn {
-                id: statusCards
-                onCraftDetailsRequested: craftDetails.open()
-                Layout.fillWidth: true
+        StatusCardsColumn {
+            id: statusCards
+            objectName: "statusOverviewCards"
+            width: Math.min(content.width, 1600)
+            x: Math.round((content.width - width) / 2)
+            availableHeight: content.height
+            onImplicitHeightChanged: Qt.callLater(content.updateExtent)
+            onCraftDetailsRequested: craftDetails.open()
+            onUnitDetailsRequested: function(systemType) {
+                if (systemType === 0) groundDetails.open("open_dialoque", [0])
+                else unitDetails.open("open_dialoque", [systemType])
             }
         }
     }
 
+    DeferredStatusDialog { id: groundDetails; source: "GroundStationDetails.qml" }
+    DeferredStatusDialog { id: unitDetails; source: "UnitDetailsDialog.qml" }
     DeferredStatusDialog { id: powerDialog; source: "PowerActionDialoque.qml" }
     Popup {
         id: craftDetails

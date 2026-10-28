@@ -113,8 +113,14 @@ Rectangle {
                  kind === "artosyn" ? 5 : kind === "fleetcontrol" ? 6 : 7
         if (id === 1 && settings.dev_simulate_wifibroadcast_link)
             return fixture(1, 40000000, [12000000, 2000000, 1000000, 400000, 0, 0])
-        if (id === 2 && settings.dev_simulate_ethernet_link)
-            return fixture(2, 1000000000, [0, 0, 0, 0, 0, 0])
+        if (id === 2 && settings.dev_simulate_ethernet_link) {
+            var ethernet = fixture(2, 1000000000, [12300000, 0, 0, 200000, 0, 0])
+            ethernet.tx_bps = ethernet.total_bps; ethernet.rx_bps = 64000
+            ethernet.tx_pps = 1400; ethernet.rx_pps = 55
+            ethernet.rtt_us = 2200; ethernet.jitter_us = 300
+            ethernet.probe_loss_permille = 0; ethernet.send_errors = 0
+            return ethernet
+        }
         if (id === 3 && settings.dev_simulate_uart_link)
             return fixture(3, 2000000, [0, 0, 0, 400000, 200000, 200000])
         for (var i = 0; i < reportedUsage.length; ++i)
@@ -149,6 +155,12 @@ Rectangle {
     function rebuildLinks() {
         expandedCardIndex = -1
         activeLinks.clear()
+        if (_qopenhd.debugMenuPreview) {
+            var kinds = ["wifi", "ethernet", "uart", "microhard", "artosyn", "mlrs", "fleetcontrol"]
+            for (var debugIndex = 0; debugIndex < kinds.length; ++debugIndex)
+                activeLinks.append({kind: kinds[debugIndex]})
+            return
+        }
         if (wifiActive()) activeLinks.append({kind: "wifi"})
         if (ethernetActive()) activeLinks.append({kind: "ethernet"})
         if (uartActive()) activeLinks.append({kind: "uart"})
@@ -157,6 +169,11 @@ Rectangle {
         if (_mlrsController.alive || hasReportedUsage(7)) activeLinks.append({kind: "mlrs"})
         if (fleetConfigured) activeLinks.append({kind: "fleetcontrol"})
     }
+    Connections {
+        target: _qopenhd
+        function onDebugMenuPreviewChanged() { root.rebuildLinks() }
+    }
+
     function rebuildFrequencies() {
         var list = _frequencyHelper.get_frequencies(settings.qopenhd_frequency_filter_selection)
         // Always retain the currently reported channel, even when it sits
@@ -298,7 +315,7 @@ Rectangle {
         spacing: 9
 
         Rectangle {
-            visible: settings.dev_show_link_routing
+            visible: _qopenhd.debugMenuPreview || settings.dev_show_link_routing
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? (modeLayout.implicitHeight + 18) : 0
             radius: 10
@@ -355,86 +372,97 @@ Rectangle {
 
         Flickable {
             id: linksFlickable
+            objectName: "linkPageScroll"
             Layout.fillWidth: true; Layout.fillHeight: true
-            contentWidth: width; contentHeight: Math.max(height, cardsFlow.height)
+            contentWidth: width; contentHeight: Math.max(height, linkContents.implicitHeight)
             clip: true; boundsBehavior: Flickable.StopAtBounds
             Behavior on contentY { NumberAnimation { duration: 130; easing.type: Easing.OutCubic } }
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
-            Flow {
-                id: cardsFlow
-                width: parent.width; spacing: 10
-                Repeater {
-                id: cards
-                model: activeLinks
-                delegate: FocusScope {
-                    id: cell
-                    property var loadedCard: loader.item
-                    width: root.expandedCardIndex === index ? cardsFlow.width : root.collapsedCardWidth
-                    // WiFi configuration sizes itself to its visible controls.
-                    height: kind === "wifi" && loadedCard ? loadedCard.implicitHeight : 570
-                    z: root.expandedCardIndex === index ? 2 : 1
-                    Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-                    Loader {
-                        id: loader; anchors.fill: parent
-                        sourceComponent: kind === "wifi" ? wifiCard
-                                         : (kind === "ethernet" ? ethernetCard
-                                         : (kind === "uart" ? uartCard
-                                         : (kind === "microhard" ? microhardCard
-                                         : (kind === "artosyn" ? artosynCard
-                                         : (kind === "fleetcontrol" ? fleetControlCard : mlrsCard)))))
-                        onLoaded: {
-                            item.host = root
-                            item.cardIndex = index
-                            item.keyboardSelected = Qt.binding(function() { return cell.activeFocus })
+            Column {
+                id: linkContents
+                width: linksFlickable.width
+                spacing: 10
+                Flow {
+                    id: cardsFlow
+                    objectName: "linkTransportCards"
+                    width: parent.width; spacing: 10
+                    Repeater {
+                    id: cards
+                    model: activeLinks
+                    delegate: FocusScope {
+                        id: cell
+                        property var loadedCard: loader.item
+                        width: root.expandedCardIndex === index ? cardsFlow.width : root.collapsedCardWidth
+                        // Transport cards size themselves to their actual visible controls.
+                        height: loadedCard && (kind === "wifi" || kind === "ethernet" || kind === "uart") ? loadedCard.implicitHeight : 570
+                        z: root.expandedCardIndex === index ? 2 : 1
+                        Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                        Loader {
+                            id: loader; anchors.fill: parent
+                            sourceComponent: kind === "wifi" ? wifiCard
+                                             : (kind === "ethernet" ? ethernetCard
+                                             : (kind === "uart" ? uartCard
+                                             : (kind === "microhard" ? microhardCard
+                                             : (kind === "artosyn" ? artosynCard
+                                             : (kind === "fleetcontrol" ? fleetControlCard : mlrsCard)))))
+                            onLoaded: {
+                                item.host = root
+                                item.cardIndex = index
+                                item.keyboardSelected = Qt.binding(function() { return cell.activeFocus })
+                            }
+                        }
+                        Keys.onPressed: function(event) {
+                            if (event.key === Qt.Key_Escape && root.expandedCardIndex === index) {
+                                root.collapseCard(index); event.accepted = true
+                            } else if (root.expandedCardIndex >= 0) {
+                                event.accepted = true
+                            } else if (event.key === Qt.Key_Right) { root.focusCard(index + 1); event.accepted = true }
+                            else if (event.key === Qt.Key_Left) { root.focusCard(index - 1); event.accepted = true }
+                            else if (event.key === Qt.Key_Down) { root.focusCard(index + root.cardColumns); event.accepted = true }
+                            else if (event.key === Qt.Key_Up) {
+                                if (index < root.cardColumns) settings_form.side_bar_regain_focus(); else root.focusCard(index - root.cardColumns)
+                                event.accepted = true
+                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                root.enterCard(index); event.accepted = true
+                            } else if (event.key === Qt.Key_Escape) { root.backRequested(); event.accepted = true }
                         }
                     }
-                    Keys.onPressed: function(event) {
-                        if (event.key === Qt.Key_Escape && root.expandedCardIndex === index) {
-                            root.collapseCard(index); event.accepted = true
-                        } else if (root.expandedCardIndex >= 0) {
-                            event.accepted = true
-                        } else if (event.key === Qt.Key_Right) { root.focusCard(index + 1); event.accepted = true }
-                        else if (event.key === Qt.Key_Left) { root.focusCard(index - 1); event.accepted = true }
-                        else if (event.key === Qt.Key_Down) { root.focusCard(index + root.cardColumns); event.accepted = true }
-                        else if (event.key === Qt.Key_Up) {
-                            if (index < root.cardColumns) settings_form.side_bar_regain_focus(); else root.focusCard(index - root.cardColumns)
-                            event.accepted = true
-                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            root.enterCard(index); event.accepted = true
-                        } else if (event.key === Qt.Key_Escape) { root.backRequested(); event.accepted = true }
+                }
+                    Rectangle {
+                        visible: activeLinks.count === 0; width: cardsFlow.width; height: 150; radius: 10
+                        color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor
+                        Column {
+                            anchors.centerIn: parent; spacing: 8
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: 22; color: settings_form.secondaryText }
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("No active links yet"); color: settings_form.primaryText; font.pixelSize: 11; font.bold: true }
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Connect an OpenHD unit or add an optional Air link above."); color: settings_form.secondaryText; font.pixelSize: 9 }
+                        }
                     }
                 }
-            }
                 Rectangle {
-                    visible: activeLinks.count === 0; width: cardsFlow.width; height: 150; radius: 10
-                    color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor
-                    Column {
-                        anchors.centerIn: parent; spacing: 8
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: 22; color: settings_form.secondaryText }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("No active links yet"); color: settings_form.primaryText; font.pixelSize: 11; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Connect an OpenHD unit or add an optional Air link above."); color: settings_form.secondaryText; font.pixelSize: 9 }
+                    objectName: "totalLinkUsageSection"
+                    visible: _qopenhd.debugMenuPreview || settings.dev_show_link_usage || root.wifiActive()
+                    width: parent.width
+                    height: visible ? totalUsageMeter.implicitHeight + 24 : 0
+                    radius: 10
+                    color: settings_form.panelBackgroundRaised
+                    border.color: settings_form.lineColor
+                    LinkUsageMeter {
+                        id: totalUsageMeter
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        usage: root.wifiActive() ? root.usageFor("wifi") : root.totalUsage
+                        title: qsTr("Total Link Usage")
+                        allocationControls: root.wifiActive()
+                        onAllocationRequested: allocationPopup.open()
                     }
                 }
             }
         }
-        Rectangle {
-            visible: settings.dev_show_link_usage
-            Layout.fillWidth: true
-            Layout.preferredHeight: totalUsageMeter.implicitHeight + 18
-            Layout.maximumHeight: Layout.preferredHeight
-            radius: 10
-            color: settings_form.panelBackgroundRaised
-            border.color: settings_form.lineColor
-            LinkUsageMeter {
-                id: totalUsageMeter
-                anchors.fill: parent
-                anchors.margins: 9
-                usage: root.totalUsage
-                title: qsTr("Total Link Usage")
-            }
-        }
-
     }
+
+    LinkAllocationPopup { id: allocationPopup; usage: root.usageFor("wifi") }
+    onVisibleChanged: if (!visible) allocationPopup.close()
 
     Component { id: wifiCard; WifiBroadcastLinkCard {} }
     Component { id: ethernetCard; SimulatedLinkCard { linkKind: "ethernet" } }

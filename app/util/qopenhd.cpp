@@ -1,4 +1,5 @@
 #include "qopenhd.h"
+#include "qtcreatorlaunch.h"
 #include "qpixmap.h"
 #include <QCoreApplication>
 #include <QSettings>
@@ -53,8 +54,16 @@ QString QOpenHD::credit_archive_text() const
     return QString::fromUtf8(qUncompress(report.readAll()));
 }
 
+void QOpenHD::setDebugMenuPreview(bool enabled)
+{
+    // The setter is guarded as well as the button; production QML cannot opt in.
+    enabled = enabled && m_launchedFromQtCreator;
+    if (m_debugMenuPreview.exchange(enabled) == enabled) return;
+    emit debugMenuPreviewChanged();
+}
+
 QOpenHD::QOpenHD(QObject *parent)
-    : QObject{parent}
+    : QObject{parent}, m_launchedFromQtCreator(qopenhd::launchedFromQtCreator())
 {
     connect(this, &QOpenHD::signal_toast_add, this, &QOpenHD::do_not_call_toast_add);
     connect(&m_ping, &AsyncPing::finished, this, &QOpenHD::pingFinished);

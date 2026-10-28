@@ -43,25 +43,52 @@ Item {
 import QtTest 1.2
 Item {
     width: 850; height: 480
-    QtObject { id: _qopenhd; property string version_string: "test" }
+    QtObject { id: _qopenhd; property string version_string: "test"; property bool launchedFromQtCreator: false; property bool debugMenuPreview: false }
     QtObject { id: hudOverlayGrid; function regain_focus() {} }
     Loader { id: menu; anchors.fill: parent; source: "ConfigPopup.qml" }
     TestCase {
         name: "AdvancedMenuLoading"; when: windowShown
+        function test_creator_only_preview_button() {
+            tryCompare(menu, "status", Loader.Ready)
+            var button = findChild(menu.item, "debugMenuPreviewButton")
+            verify(button !== null)
+            compare(button.visible, false)
+            _qopenhd.launchedFromQtCreator = true
+            tryCompare(button, "visible", true)
+            mouseClick(button)
+            compare(_qopenhd.debugMenuPreview, true)
+            compare(button.checked, true)
+            mouseClick(button)
+            compare(_qopenhd.debugMenuPreview, false)
+            compare(button.checked, false)
+            _qopenhd.launchedFromQtCreator = false
+            tryCompare(button, "visible", false)
+        }
         function test_dependency_isolation_and_navigation() {
             tryCompare(menu, "status", Loader.Ready)
             var root = menu.item
             tryVerify(function() { return root.statusPanel !== null })
             compare(root.statusPanel.inheritedColor, root.pageBackground)
+            compare(root.compactSidebar, true)
+            compare(root.menuPageTitle, "SYSTEM STATUS")
+            var headerTitle = findChild(root, "menuHeaderTitle")
+            tryVerify(function() { return headerTitle !== null })
+            compare(headerTitle.text, "SYSTEM STATUS")
             compare(root.ohdSettingsPanel, null)
             compare(root.appDeveloperStatsPanel, null)
             root.user_guidance_open_openhd_settings_find_air_unit_location()
             tryVerify(function() { return root.ohdSettingsPanel !== null })
             tryCompare(root.ohdSettingsPanel, "guidanceCalls", 1)
+            compare(root.menuPageTitle, "OPENHD")
+            compare(headerTitle.text, "OPENHD")
+            verify(findChild(root,"statusSoundButton").visible)
             var cached = root.ohdSettingsPanel
             root.openDeveloperTools()
             tryVerify(function() { return root.appDeveloperStatsPanel !== null })
             tryCompare(root.appDeveloperStatsPanel, "focusCalls", 1)
+            compare(root.menuPageTitle, "DEVELOPER TOOLS")
+            compare(headerTitle.text, "DEVELOPER TOOLS")
+            verify(findChild(root,"statusSoundButton").visible)
             root.user_guidance_open_openhd_settings_find_air_unit_location()
             compare(root.ohdSettingsPanel, cached)
             compare(cached.guidanceCalls, 2)
@@ -128,6 +155,7 @@ Item {
             path.parent.mkdir(exist_ok=True)
             valid = name.startswith("status/") or name.endswith(("OHDSettingsPanel.qml", "AppDeveloperStatsPanel.qml"))
             path.write_text(stub if valid else "import QtQuick 2.12\nDeliberatelyMissingType {}\n", encoding="utf-8")
+        shutil.copy(menu_dir / "status/StatusOverviewHeader.qml", folder / "status/StatusOverviewHeader.qml")
         (folder / "tst_menu.qml").write_text(test, encoding="utf-8")
         command = [str(args.qt_bin / "qmltestrunner.exe"), "-import", str(folder), "-input", str(folder)]
         start = test.index("        function test_deferred_dialog_cancels_pending_request()")
@@ -146,7 +174,7 @@ Item {
         status = status.replace("id: craftDetailsLoader\n", 'id: craftDetailsLoader; objectName: "testCraftLoader"\n')
         (folder / "status/PanelStatus.qml").write_text(status, encoding="utf-8")
         (folder / "status/StatusCardsColumn.qml").write_text('''import QtQuick 2.12
-Item { signal craftDetailsRequested(); function actionButtons() { return [] } }
+Item { property real availableHeight: 0; signal craftDetailsRequested(); signal unitDetailsRequested(int systemType); function actionButtons() { return [] } }
 ''', encoding="utf-8")
         shutil.copy(menu_dir / "status/DeferredStatusDialog.qml", folder / "status/DeferredStatusDialog.qml")
         for name in ("PowerActionDialoque", "DialoqueNotAlive"):

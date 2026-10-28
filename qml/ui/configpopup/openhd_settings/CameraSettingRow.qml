@@ -449,7 +449,7 @@ FocusScope {
                 }
                 CompactLinkComboBox {
                     id: fpsBox
-                    visible: settings.dev_show_advanced_button
+                    visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button)
                     Layout.preferredWidth: 96
                     Layout.preferredHeight: 38
                     model: root.fpsForResolution(formatEditor.selectedResolution)

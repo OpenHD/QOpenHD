@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 
 Rectangle {
     id: root
+    implicitHeight: content.implicitHeight + 24
     property var host
     property int cardIndex: -1
     property bool keyboardSelected: false
@@ -15,16 +16,24 @@ Rectangle {
     readonly property bool linkRoutingEnabled: !linkSwitchAvailable || _ohdSystemGroundSettings.get_cached_int("ETH_LINK_EN") !== 0
     readonly property string title: ethernet ? qsTr("Ethernet Link") : qsTr("UART Link")
     readonly property string icon: ethernet ? "\uf796" : "\uf120"
-    readonly property string endpoint: simulated ? (ethernet ? "192.168.2.2:5600" : "/dev/ttyS1") : qsTr("Reported by OpenHD")
+    readonly property var usage: host ? host.usageFor(linkKind) : null
+    function metric(name, divisor, suffix, decimals) {
+        var value = usage ? usage[name] : undefined
+        return value !== undefined && value !== null ? (Number(value) / divisor).toFixed(decimals) + suffix : qsTr("N/A")
+    }
+    function bitrate(name) { return metric(name, 1000000, " Mbit/s", 2) }
+
     radius: 10
     color: settings_form.panelBackgroundRaised
     border.color: keyboardSelected ? settings_form.accentColor : settings_form.lineColor
     border.width: keyboardSelected ? 2 : 1
 
-    function gainFocus() { if (linkSwitch.visible) linkSwitch.forceActiveFocus(); else details.forceActiveFocus() }
+    function gainFocus() { if (linkSwitch.visible) linkSwitch.forceActiveFocus(); else root.forceActiveFocus() }
     function leaveCard() { if (host) host.collapseCard(cardIndex) }
 
+    Keys.onPressed: function(event) { if (event.key === Qt.Key_Escape) { root.leaveCard(); event.accepted = true } }
     ColumnLayout {
+        id: content
         anchors.fill: parent; anchors.margins: 12; spacing: 10
         RowLayout {
             Layout.fillWidth: true
@@ -35,8 +44,6 @@ Rectangle {
                 visible: root.linkSwitchAvailable && !root.simulated && root.host && root.host.bothMultiEnabled
                 enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
                 text: checked ? qsTr("ENABLED") : qsTr("DISABLED")
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Toggle ground Ethernet data routing. Resets on OpenHD restart.")
                 onClicked: _ohdSystemGroundSettings.try_set_param_int_async("ETH_LINK_EN", checked ? 1 : 0, true)
                 Keys.onPressed: function(event) { if (event.key === Qt.Key_Escape) { root.leaveCard(); event.accepted = true } }
             }
@@ -61,32 +68,29 @@ Rectangle {
             title: qsTr("Link Usage")
         }
         GridLayout {
-            Layout.fillWidth: true; Layout.preferredHeight: 58; columns: 3
+            Layout.fillWidth: true; Layout.preferredHeight: root.ethernet ? 174 : 58; columns: 3
             Repeater {
                 model: ethernet
-                       ? [{label: qsTr("CAPACITY"), value: root.host && root.host.usageFor("ethernet") && root.host.usageFor("ethernet").capacity_bps > 0 ? root.host.usageFor("ethernet").capacity_bps / 1000000 + " Mbit/s" : qsTr("N/A")}, {label: qsTr("LATENCY"), value: root.simulated ? "2 ms" : qsTr("N/A")}, {label: qsTr("LOSS"), value: root.simulated ? "0%" : qsTr("N/A")}]
+                       ? [
+                             {label: qsTr("PORT SPEED"), value: root.usage && root.usage.capacity_bps > 0 ? root.bitrate("capacity_bps") : qsTr("N/A")},
+                             {label: qsTr("TX THROUGHPUT"), value: root.bitrate("tx_bps")},
+                             {label: qsTr("RX THROUGHPUT"), value: root.bitrate("rx_bps")},
+                             {label: qsTr("ROUND TRIP"), value: root.metric("rtt_us", 1000, " ms", 1)},
+                             {label: qsTr("RTT JITTER"), value: root.metric("jitter_us", 1000, " ms", 1)},
+                             {label: qsTr("PROBE LOSS"), value: root.metric("probe_loss_permille", 10, " %", 1)},
+                             {label: qsTr("TX PACKETS"), value: root.metric("tx_pps", 1, " pps", 0)},
+                             {label: qsTr("RX PACKETS"), value: root.metric("rx_pps", 1, " pps", 0)},
+                             {label: qsTr("SEND ERRORS"), value: root.metric("send_errors", 1, "", 0)}
+                         ]
                        : [{label: qsTr("CAPACITY"), value: root.host && root.host.usageFor("uart") && root.host.usageFor("uart").capacity_bps > 0 ? root.host.usageFor("uart").capacity_bps / 1000 + " kbit/s" : qsTr("N/A")}, {label: qsTr("PROTOCOL"), value: "MAVLink 2"}, {label: qsTr("LOSS"), value: root.simulated ? "0%" : qsTr("N/A")}]
                 delegate: Rectangle { Layout.fillWidth: true; Layout.fillHeight: true; color: settings_form.panelBackground; border.color: settings_form.lineColor
                     Column { anchors.centerIn: parent; spacing: 2
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 7; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
                     }
                 }
             }
         }
-        Rectangle {
-            id: details
-            Layout.fillWidth: true; Layout.preferredHeight: 80; radius: 7
-            color: settings_form.panelBackground; border.color: settings_form.lineColor
-            focus: true
-            Keys.onPressed: function(event) { if (event.key === Qt.Key_Escape) { root.leaveCard(); event.accepted = true } }
-            ColumnLayout { anchors.fill: parent; anchors.margins: 9; spacing: 4
-                Text { text: root.simulated ? qsTr("FIXTURE DETAILS") : qsTr("LINK DETAILS"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
-                Text { text: root.endpoint; color: settings_form.primaryText; font.pixelSize: 11; font.bold: true }
-                Text { text: ethernet ? qsTr("Air video and telemetry transport") : qsTr("Air flight-controller telemetry transport"); color: settings_form.secondaryText; font.pixelSize: 9; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            }
-        }
-        Item { Layout.fillHeight: true }
-        Text { Layout.fillWidth: true; text: root.simulated ? qsTr("Developer fixture - no physical link is created.") : qsTr("Usage reported by OpenHD telemetry."); color: settings_form.secondaryText; font.pixelSize: 8; horizontalAlignment: Text.AlignRight }
+        Text { Layout.fillWidth: true; visible: root.simulated; text: qsTr("Developer fixture - no physical link is created."); color: settings_form.secondaryText; font.pixelSize: 8; horizontalAlignment: Text.AlignRight }
     }
 }

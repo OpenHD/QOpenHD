@@ -1152,7 +1152,7 @@ ScrollView {
                 }
 
                 Loader {
-                    active: settings.dev_show_advanced_button
+                    active: _qopenhd.debugMenuPreview || settings.dev_show_advanced_button
                     sourceComponent: SettingBaseElement{
                         m_short_description: qsTr("Show Retransmission Stats")
                         m_long_description: qsTr("Shows packet loss and retransmission activity for video.")

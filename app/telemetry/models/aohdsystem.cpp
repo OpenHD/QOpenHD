@@ -915,6 +915,33 @@ void AOHDSystem::process_link_usage(const mavlink_data96_t& msg)
                       {"total_bps", static_cast<qulonglong>(link_usage_u32(msg.data, 8))},
                       {"capacity_bps", static_cast<qulonglong>(link_usage_u32(msg.data, 12))},
                       {"categories", categories}};
+    const int trailer = 16 + count * 5;
+    if (id == 2 && msg.len >= trailer + 36 &&
+            std::memcmp(msg.data + trailer, "ETH1", 4) == 0) {
+        const char* fields[] = {"tx_bps", "rx_bps", "tx_pps", "rx_pps",
+                                "rtt_us", "jitter_us", "probe_loss_permille", "send_errors"};
+        for (int i = 0; i < 8; ++i) {
+            const auto value = link_usage_u32(msg.data, trailer + 4 + i * 4);
+            usage[fields[i]] = value == UINT32_MAX ? QVariant() : QVariant::fromValue<qulonglong>(value);
+        }
+    }
+    if (id == 1 && msg.len >= trailer + 44 && std::memcmp(msg.data + trailer, "BWA1", 4) == 0) {
+        QVariantMap allocation;
+        const char* names[] = {"capacity_kbits", "priority_kbits", "fixed_kbits", "safety_kbits", "pool_kbits", "fixed_measured_kbits"};
+        for (int i = 0; i < 6; ++i) allocation[names[i]] = link_usage_u32(msg.data, trailer + 4 + i * 4);
+        const auto flags = link_usage_u32(msg.data, trailer + 28);
+        allocation["available"] = bool(flags & 1); allocation["overcommitted"] = bool(flags & 2);
+        allocation["waiting"] = bool(flags & 4); allocation["enabled"] = bool(flags & 8);
+        QVariantList streams;
+        for (int i = 0; i < 2; ++i) {
+            const int offset = trailer + 32 + i * 6;
+            streams.append(QVariantMap{{"id", i}, {"active", bool(msg.data[offset] & 1)},
+                {"controllable", bool(msg.data[offset] & 2)}, {"percent", int(msg.data[offset + 1])},
+                {"budget_kbits", link_usage_u32(msg.data, offset + 2)}});
+        }
+        allocation["streams"] = streams;
+        usage["allocation"] = allocation;
+    }
     bool replaced = false;
     for(int i = 0; i < m_link_usage.size(); ++i) {
         if(m_link_usage[i].toMap().value("id").toInt() == id) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QSet>
 #include <QNetworkAccessManager>
 #include <QPointer>
 #include <QElapsedTimer>
@@ -64,6 +65,10 @@ private:
     double m_progress = 0, m_south = 0, m_west = 0, m_north = 0, m_east = 0;
     int m_maxZoom = 15, m_total = 0, m_z = 10, m_x = 0, m_y = 0;
     quint64 m_job = 0;
+    QVector<QRectF> m_geometryRegions;
+    int m_geometryRegion = 0, m_geometryPoints = 0;
+    QSet<qint64> m_geometryIds;
+    QVector<int> m_rowWays;
     QVector<Way> m_ways;
     QVector<Tile> m_tiles;
     std::unique_ptr<QTemporaryFile> m_payload;

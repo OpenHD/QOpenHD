@@ -34,8 +34,12 @@ Rectangle {
     property color errorColor: darkMode ? "#ff4e5d" : "#c6283d"
     // Compact rail keeps the complete status overview on portrait/embedded
     // displays while retaining the labelled sidebar on desktop.
-    property bool compactSidebar: width < 1050
+    property bool compactSidebar: true
     property int sidebarWidth: compactSidebar ? 72 : Math.max(160, Math.min(210, width * 0.17))
+
+    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD & APPLICATION"), qsTr("SYSTEM LOGS"), qsTr("RC CONTROL"), qsTr("CONNECT"), qsTr("CREDITS"), qsTr("MAVLINK DEBUG"), qsTr("DEVELOPER TOOLS")][mainStackLayout.currentIndex]
+    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Display, widgets and vehicle presentation"), qsTr("Live system messages"), qsTr("Configure and monitor RC over OpenHD"), qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("Inspect incoming MAVLink messages"), qsTr("Diagnostics and system information")][mainStackLayout.currentIndex]
+    readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf0ad"][mainStackLayout.currentIndex]
 
     Settings {
         id: advancedThemeSettings
@@ -72,8 +76,9 @@ Rectangle {
         openhdPage.invokeWhenReady("user_quidance_animate_channel_scan")
     }
     function gain_focus() { navigation.forceActiveFocus() }
-    function frameworkActionButtons() { return [refreshButton, themeButton] }
+    function frameworkActionButtons() { return debugPreviewButton.visible ? [debugPreviewButton, refreshButton, themeButton] : [refreshButton, themeButton] }
     function runHeaderRefresh() {
+        if (_qopenhd.debugMenuPreview) return;
         if (mainStackLayout.currentIndex === 0) {
             _mavlinkTelemetry.ping_all_systems()
             return
@@ -293,17 +298,67 @@ Rectangle {
 
     Item {
         id: contentFrame
+        readonly property real statusHeaderInset: statusHeader.item ? Math.ceil(24 + statusHeader.item.contentHeight) : 76
+        readonly property real toolbarScale: statusHeader.item ? statusHeader.item.headerScale : 1
         anchors.top: parent.top; anchors.bottom: parent.bottom
         anchors.left: sidebar.right; anchors.right: parent.right
+
+        Rectangle {
+            visible: true
+            anchors.left: parent.left; anchors.right: parent.right
+            y: contentFrame.statusHeaderInset - 1
+            height: 1
+            color: "#153447"
+        }
+
+        Loader {
+            id: statusHeader
+            anchors.left: parent.left; anchors.right: parent.right
+            anchors.leftMargin: settings_form.compactSidebar ? 13 : Math.max(16, Math.min(32, contentFrame.width * 0.025))
+            anchors.rightMargin: anchors.leftMargin
+            anchors.top: parent.top
+            anchors.topMargin: 16
+            height: 64
+            active: true
+            visible: true
+            source: "status/StatusOverviewHeader.qml"
+        }
+
+        Button {
+            id: debugPreviewButton
+            objectName: "debugMenuPreviewButton"
+            hoverEnabled: true
+            z: 10
+            anchors.top: parent.top; anchors.right: refreshButton.left
+            anchors.topMargin: 16; anchors.rightMargin: 10 * contentFrame.toolbarScale
+            width: 90 * contentFrame.toolbarScale; height: 56 * contentFrame.toolbarScale
+            visible: _qopenhd.launchedFromQtCreator === true
+            checkable: true
+            checked: _qopenhd.debugMenuPreview === true
+            text: "\uf188"
+            font.family: "Font Awesome 5 Free"; font.pixelSize: 23 * contentFrame.toolbarScale
+            Accessible.name: qsTr("Debug: show all menu settings")
+            onClicked: _qopenhd.debugMenuPreview = checked
+            KeyNavigation.right: refreshButton
+            Keys.onEscapePressed: settings_form.side_bar_regain_focus()
+            onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0 && statusPanel) statusPanel.syncFocus(debugPreviewButton)
+            background: Rectangle {
+                radius: 20
+                color: debugPreviewButton.checked ? "#805c20" : panelBackground
+                border.color: debugPreviewButton.activeFocus ? accentColor : lineColor
+                border.width: debugPreviewButton.activeFocus ? 2 : 1
+            }
+            contentItem: Text { text: debugPreviewButton.text; font: debugPreviewButton.font; color: primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+        }
 
         Button {
             id: refreshButton
             z: 10
             anchors.top: parent.top; anchors.right: themeButton.left
-            anchors.topMargin: 20; anchors.rightMargin: 9
-            width: 62; height: 40
+            anchors.topMargin: 16; anchors.rightMargin: 10 * contentFrame.toolbarScale
+            width: 90 * contentFrame.toolbarScale; height: 56 * contentFrame.toolbarScale
             text: "\uf2f1"
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 15
+            font.family: "Font Awesome 5 Free"; font.pixelSize: 23 * contentFrame.toolbarScale
             onClicked: settings_form.runHeaderRefresh()
             onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0 && statusPanel) statusPanel.syncFocus(refreshButton)
             Keys.onPressed: function(event) {
@@ -332,10 +387,10 @@ Rectangle {
             id: themeButton
             z: 10
             anchors.top: parent.top; anchors.right: parent.right
-            anchors.topMargin: 20; anchors.rightMargin: 20
-            width: 62; height: 40
+            anchors.topMargin: 16; anchors.rightMargin: statusHeader.anchors.rightMargin
+            width: 90 * contentFrame.toolbarScale; height: 56 * contentFrame.toolbarScale
             text: darkMode ? "\uf185" : "\uf186"
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 15
+            font.family: "Font Awesome 5 Free"; font.pixelSize: 23 * contentFrame.toolbarScale
             onClicked: {
                 darkMode = !darkMode
                 advancedThemeSettings.darkMode = darkMode
@@ -373,6 +428,8 @@ Rectangle {
         StackLayout {
             id: mainStackLayout
             anchors.fill: parent
+            // Keep the Status heading, telemetry and toolbar clear of the cards.
+            anchors.topMargin: contentFrame.statusHeaderInset
             currentIndex: 0
             // URL sources defer parsing/compiling each page's dependency tree.
             // Inline sourceComponents still resolve every page when this menu loads.

@@ -387,7 +387,7 @@ FocusScope {
                         id: pipelineField
                         Layout.fillWidth: true
                         Layout.preferredHeight: 42
-                        visible: expertPipeline.checked
+                        visible: _qopenhd.debugMenuPreview || (expertPipeline.checked)
                         maximumLength: 127
                         selectByMouse: true
                         color: settings_form.primaryText
@@ -408,7 +408,7 @@ FocusScope {
                 Layout.fillWidth: true
                 visible: {
                     var revision = root.airParamRevision
-                    return _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS")
+                    return _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") && (!_ohdSystemAirSettingsModel.param_int_exists("VARIABLE_BITRATE") || _ohdSystemAirSettingsModel.get_cached_int("VARIABLE_BITRATE") === 0)
                 }
                 implicitHeight: reservationLayout.implicitHeight + 32
                 radius: 10

@@ -89,42 +89,7 @@ Rectangle {
         anchors.rightMargin: settings_form.compactSidebar ? 14 : 24
         spacing: 10
 
-        Item { Layout.fillWidth: true; Layout.preferredHeight: 18 }
-
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.rightMargin: root.width > 420 ? 150 : 0
-            spacing: 13
-            Rectangle {
-                Layout.preferredWidth: 44
-                Layout.preferredHeight: 44
-                radius: 11
-                color: settings_form.darkMode ? "#173b61" : "#dcecff"
-                Text {
-                    anchors.centerIn: parent
-                    text: "\uf1eb"
-                    color: settings_form.accentColor
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 21
-                }
-            }
-            ColumnLayout {
-                spacing: 1
-                Text {
-                    text: qsTr("OPENHD")
-                    color: settings_form.primaryText
-                    font.pixelSize: Math.max(17, Math.min(22, root.width / 45))
-                    font.bold: true
-                }
-                Text {
-                    text: qsTr("Configure the video link, recording storage, cameras and OpenHD systems")
-                    color: settings_form.secondaryText
-                    font.pixelSize: 12
-                    elide: Text.ElideRight
-                    Layout.maximumWidth: Math.max(100, root.width - 250)
-                }
-            }
-        }
+        Item { Layout.fillWidth: true; Layout.preferredHeight: 12 }
 
         Flickable {
             id: tabScroller

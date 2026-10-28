@@ -149,11 +149,9 @@ Rectangle {
             Text { text: qsTr("WiFiBroadcast Link"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
             Switch {
                 id: linkSwitch
-                visible: root.linkSwitchAvailable && !root.simulated && root.host && root.host.bothMultiEnabled
+                visible: _qopenhd.debugMenuPreview || (root.linkSwitchAvailable && !root.simulated && root.host && root.host.bothMultiEnabled)
                 enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
                 text: checked ? qsTr("ENABLED") : qsTr("DISABLED")
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Toggle ground WiFiBroadcast data routing. Resets on OpenHD restart.")
                 onClicked: _ohdSystemGroundSettings.try_set_param_int_async("WFB_LINK_EN", checked ? 1 : 0, true)
                 Keys.onPressed: root.keyNav(event)
             }
@@ -175,9 +173,6 @@ Rectangle {
                 ]
                 delegate: Rectangle {
                     Layout.fillWidth: true; Layout.fillHeight: true; Layout.minimumHeight: 40; radius: 5; color: settings_form.panelBackground; border.color: settings_form.lineColor
-                    ToolTip.visible: metricHover.containsMouse && !!modelData.details
-                    ToolTip.text: modelData.details || ""
-                    MouseArea { id: metricHover; anchors.fill: parent; hoverEnabled: true; acceptedButtons: Qt.NoButton }
                     Column { anchors.centerIn: parent; spacing: 1
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
                         Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: modelData.bad ? settings_form.errorColor : settings_form.primaryText; font.pixelSize: 12; font.bold: true }
@@ -301,7 +296,7 @@ Rectangle {
                     id: pitMode
                     Layout.preferredWidth: Math.min(220, parent.width * 0.24)
                     Layout.fillHeight: true
-                    visible: root.pitModeAvailable
+                    visible: _qopenhd.debugMenuPreview || (root.pitModeAvailable)
                     editorEnabled: root.pitModeAvailable
                     settingsModel: _ohdSystemAirSettingsModel
                     paramId: "WB_PIT_MODE"
@@ -318,8 +313,8 @@ Rectangle {
                     Layout.fillWidth: true; Layout.fillHeight: true; spacing: 1
                     Text { text: qsTr("TX POWER"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
                     RowLayout { Layout.fillWidth: true; spacing: 14
-                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: settings.dev_show_advanced_button ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: settings.dev_show_advanced_button ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings.dev_show_advanced_button || _qopenhd.debugMenuPreview) ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings.dev_show_advanced_button || _qopenhd.debugMenuPreview) ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                     }
                 }
             }
@@ -327,13 +322,13 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true
-            visible: settings.dev_show_advanced_button && root.settingsRevision >= 0 &&
+            visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button && root.settingsRevision >= 0 &&
                      (_ohdSystemAirSettingsModel.param_int_exists("ESP_ANALYSE") ||
-                      _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE"))
+                      _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE")))
             DynamicLinkSetting {
                 id: espAnalyseAir
                 Layout.fillWidth: true
-                visible: root.settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("ESP_ANALYSE")
+                visible: _qopenhd.debugMenuPreview || (root.settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("ESP_ANALYSE"))
                 settingsModel: _ohdSystemAirSettingsModel
                 paramId: "ESP_ANALYSE"
                 label: qsTr("ESP analysis (Air)")
@@ -344,7 +339,7 @@ Rectangle {
             DynamicLinkSetting {
                 id: espAnalyseGround
                 Layout.fillWidth: true
-                visible: root.settingsRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE")
+                visible: _qopenhd.debugMenuPreview || (root.settingsRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE"))
                 settingsModel: _ohdSystemGroundSettings
                 paramId: "ESP_ANALYSE"
                 label: qsTr("ESP analysis (Ground)")
@@ -355,28 +350,28 @@ Rectangle {
         }
 
         Rectangle {
-            visible: root.adaptiveAvailable || (settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable))
+            visible: _qopenhd.debugMenuPreview || (root.adaptiveAvailable || (settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable)))
             Layout.fillWidth: true; Layout.preferredHeight: visible ? 66 : 0
             radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
             RowLayout { anchors.fill: parent; anchors.margins: 7; spacing: 10
-                DynamicLinkSetting { id: adaptive; Layout.fillWidth: true; visible: root.adaptiveAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "WB_ADAPT_CH"; label: qsTr("Adaptive Link"); preferRadioToggle: true; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                DynamicLinkSetting { id: adaptive; Layout.fillWidth: true; visible: _qopenhd.debugMenuPreview || (root.adaptiveAvailable); settingsModel: _ohdSystemAirSettingsModel; paramId: "WB_ADAPT_CH"; label: qsTr("Adaptive Link"); preferRadioToggle: true; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                 ColumnLayout {
-                    visible: settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable)
+                    visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable))
                     Layout.fillWidth: true
                     Layout.minimumWidth: root.dwellAvailable ? 210 : 120
                     spacing: 1
                     Text { text: qsTr("FHSS"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 10
-                        DynamicLinkSetting { id: fhss; Layout.preferredWidth: 190; visible: root.fhssAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "WB_FHSS"; label: qsTr("Enable"); preferRadioToggle: true; commitHandler: function(value) { host.setFhss(value !== 0) }; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                        DynamicLinkSetting { id: dwell; Layout.fillWidth: true; visible: root.dwellAvailable; settingsModel: _ohdSystemGroundSettings.param_int_exists("WB_FHSS_SLOT") ? _ohdSystemGroundSettings : _ohdSystemAirSettingsModel; paramId: "WB_FHSS_SLOT"; label: qsTr("Dwell"); commitHandler: function(value) { host.setBoth("WB_FHSS_SLOT", value) }; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: fhss; Layout.preferredWidth: 190; visible: _qopenhd.debugMenuPreview || (root.fhssAvailable); settingsModel: _ohdSystemGroundSettings; paramId: "WB_FHSS"; label: qsTr("Enable"); preferRadioToggle: true; commitHandler: function(value) { host.setFhss(value !== 0) }; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: dwell; Layout.fillWidth: true; visible: _qopenhd.debugMenuPreview || (root.dwellAvailable); settingsModel: _ohdSystemGroundSettings.param_int_exists("WB_FHSS_SLOT") ? _ohdSystemGroundSettings : _ohdSystemAirSettingsModel; paramId: "WB_FHSS_SLOT"; label: qsTr("Dwell"); commitHandler: function(value) { host.setBoth("WB_FHSS_SLOT", value) }; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                     }
                 }
             }
         }
 
         LinkUsageMeter {
-            visible: settings.dev_show_advanced_button
+            visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button)
             Layout.fillWidth: true
             Layout.preferredHeight: implicitHeight
             usage: root.host ? root.host.usageFor("wifi") : null

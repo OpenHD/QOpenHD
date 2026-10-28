@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QOpenHD menu & visibility explorer</title>
+<style>
+:root{color-scheme:dark;--bg:#0a1220;--panel:#101d2f;--raised:#17273b;--text:#e5edf8;--muted:#a0b2ca;--line:#293b53;--accent:#82baff;--amber:#f6c878;--green:#97dfba}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 system-ui,sans-serif}button,input{font:inherit}button{color:var(--text);background:var(--raised);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}button:hover{border-color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}header{max-width:1500px;margin:auto;padding:28px 26px 14px}h1{font-size:27px;letter-spacing:-.6px;margin:0 0 5px}.intro{color:var(--muted);max-width:1000px;margin:0}.toolbar{position:sticky;top:0;background:#0a1220f5;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:5;padding:14px 26px}.controls,.filters,.tabs{max-width:1448px;margin:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.controls{margin-bottom:12px}.controls>input{flex:1;min-width:220px;padding:10px 13px;border:1px solid var(--line);background:var(--panel);border-radius:8px;color:var(--text)}.switch-label{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:9px;white-space:nowrap}.switch-label input{appearance:none;width:38px;height:22px;border-radius:15px;background:#41516a;position:relative;cursor:pointer;margin:0}.switch-label input:before{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:100%;background:white;transition:transform .15s}.switch-label input:checked{background:#258358}.switch-label input:checked:before{transform:translateX(16px)}.filters{color:var(--muted);font-size:13px}.filters label{display:flex;gap:6px;align-items:center;cursor:pointer}.filters input{accent-color:#65a8ff}.mode{color:var(--green);min-width:130px;font-weight:600}.layout{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:210px minmax(0,1fr);gap:28px;padding:22px 26px 65px}aside{position:sticky;top:153px;align-self:start;max-height:calc(100vh - 175px);overflow:auto}aside p{font-size:11px;letter-spacing:1.3px;color:var(--muted);font-weight:bold;margin:0 0 10px}.tabs{margin-bottom:18px;gap:7px}.tabs button{background:transparent;border-color:transparent;color:var(--muted);padding:7px 10px}.tabs button[aria-selected=true]{background:#203d60;color:#c6e1ff;border-color:#41658c}.rail button{display:block;text-align:left;width:100%;margin:3px 0;background:transparent;border-color:transparent;color:var(--muted)}.rail button:hover{color:var(--text);background:var(--raised)}.legend{border-top:1px solid var(--line);padding-top:14px;margin-top:18px;color:var(--muted);font-size:12px}.legend div{margin:9px 0}h2{font-size:21px;margin:0 0 7px}.description{color:var(--muted);margin:0 0 15px;max-width:1100px}.hint{padding:11px 14px;background:#16283a;border:1px solid var(--line);border-radius:8px;margin:12px 0 18px;color:#b7c9df;font-size:13px}.stats{font-size:12px;color:var(--muted);margin-bottom:14px}#tree>.node{border:1px solid var(--line);background:var(--panel);border-radius:11px;margin:10px 0;padding:9px 13px;scroll-margin-top:170px}summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:7px 3px;overflow-wrap:anywhere}summary:before{content:'▸';color:var(--accent);width:12px;flex-shrink:0}details[open]>.row:before{content:'▾'}summary:hover>.title{color:var(--accent)}.title{font-weight:500}.parameter{font:11px ui-monospace,Consolas,monospace;color:var(--muted)}.badge{display:inline-block;border-radius:5px;padding:1px 6px;font-size:10px;white-space:nowrap;background:#25384e;color:#c4d3e6}.advanced{background:#4a3824;color:var(--amber)}.conditional{background:#25364a;color:#b8c9df}.changed{background:#193f34;color:var(--green)}.count{font-size:10px;color:var(--muted);margin-left:auto;padding-right:5px}.children{margin-left:9px;padding-left:16px;border-left:1px solid var(--line)}.leaf{padding:5px 0}.ghost>.row{opacity:.48}.ghost{border-left-color:#735c3f}.body{padding:2px 12px 13px 24px}.facts{display:grid;grid-template-columns:135px minmax(0,1fr);gap:8px 14px;font-size:12px;margin:8px 0 0}.facts dt{color:var(--muted)}.facts dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.value{font:12px/1.7 ui-monospace,Consolas,monospace;background:#0c1727;border:1px solid var(--line);padding:9px 12px;border-radius:6px;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}.caption{font-size:11px;color:var(--muted)}.source{font:11px ui-monospace,Consolas,monospace;color:var(--muted);overflow-wrap:anywhere}.state-note{color:var(--amber);font-size:12px;margin:0 0 6px}.condition-note{font-size:12px;color:var(--muted);margin-bottom:8px}.empty{color:var(--muted);padding:20px 0}footer{margin-top:28px;color:var(--muted);font-size:12px}a{color:var(--accent)}[hidden]{display:none!important}@media(max-width:800px){.layout{display:block;padding:18px 12px}header{padding:20px 12px 12px}.toolbar{padding:12px}aside{position:static;max-height:none;margin-bottom:18px}.rail{display:none}.legend{display:none}.children{margin-left:3px;padding-left:10px}.facts{grid-template-columns:1fr;gap:2px}.facts dd{margin-bottom:7px}.controls{gap:7px}.controls>input{flex-basis:100%}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header><h1>QOpenHD menu & visibility explorer</h1><p class="intro">Settings in their Advanced menu and flight-sidebar locations. Switch advanced settings on or off to compare visibility and available options.</p></header>
+<div class="toolbar"><div class="controls"><label class="switch-label"><input id="advanced" type="checkbox" role="switch"><span>Advanced settings</span></label><span id="mode" class="mode">OFF · normal view</span><input id="search" type="search" aria-label="Search settings, parameters and options" placeholder="Search a setting, parameter or option…"><button id="expand">Expand all</button><button id="collapse">Collapse all</button></div><div class="filters"><label><input id="hidden" type="checkbox">Show hidden rows dimmed</label><label><input id="changes" type="checkbox">Only settings affected by advanced mode</label><button id="clear">Clear filters</button></div></div>
+<div class="layout"><aside><p>LOCATION</p><div class="tabs" role="tablist" aria-label="Menu surface"><button role="tab" id="tab-advanced" aria-controls="content" aria-selected="true" data-surface="advanced">Advanced menu</button><button role="tab" id="tab-sidebar" aria-controls="content" aria-selected="false" data-surface="sidebar">Flight sidebar</button><button role="tab" id="tab-reference" aria-controls="content" aria-selected="false" data-surface="reference">Parameter reference</button></div><p>MENUS</p><nav class="rail" id="rail" aria-label="Menu destinations"></nav><div class="legend"><div><span class="badge advanced">Advanced only</span> Hidden in normal mode.</div><div><span class="badge changed">Options change</span> Same control, different options.</div><div><span class="badge conditional">Conditional</span> Hardware, platform or another setting also affects it.</div></div></aside><main id="content" role="tabpanel" aria-labelledby="tab-advanced"><h2 id="heading">Advanced menu</h2><p id="description" class="description"></p><div id="hint" class="hint"></div><div id="stats" class="stats" role="status" aria-live="polite"></div><section id="tree" aria-label="Menu hierarchy"></section><p id="empty" class="empty" hidden>No matching settings in this view.</p><footer>Source inventory, not a connected-device snapshot. Shared transport parameters are shown as conditional candidates under Air/Ground; firmware metadata determines actual endpoint membership, groups and choices. The advanced switch models the two developer flags; it does not simulate hardware or automatically turn on other settings.<br>Offline file · <a href="advanced_menu_tree.txt">Text</a> · <a href="advanced_menu_tree.yaml">YAML</a> · <a href="advanced_menu_tree.json">JSON</a></footer></main></div>
+<script id="menu-data" type="application/json">__MENU_DATA__</script>
+<script>
+'use strict';
+const DATA=JSON.parse(document.getElementById('menu-data').textContent);
+const $=id=>document.getElementById(id);
+const tree=$('tree'), search=$('search'), advanced=$('advanced'), showHidden=$('hidden'), changes=$('changes');
+let surface='advanced', serial=0, priorQuery='';
+const expanded=new Set(), collapsed=new Set();
+const labels={advanced:'Advanced menu',sidebar:'Flight sidebar',reference:'Parameter reference'};
+const descriptions={advanced:'The same top-level navigation and tabs as the Advanced menu. OpenHD camera settings are grouped beneath Camera 1 / Camera 2; raw Air/Ground parameters are expanded inside their groups.',sidebar:'The flight-screen sidebar, in its source order. Quick settings remain available independently of the advanced-only filter on raw parameter lists.',reference:'All fallback definitions plus additional firmware parameters. This is a reference view, not another application menu.'};
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e;}
+function format(v){
+ if(v===null||v===undefined)return '';
+ if(Array.isArray(v))return v.map(format).join('\n');
+ if(typeof v==='object'){
+  const text=v.label??v.verbose??v.title??v.text;
+  if(text!==undefined)return String(text).replace(/\n/g,' ') + (v.value!==undefined?' = '+v.value:'');
+  return Object.entries(v).map(([k,x])=>k+': '+format(x)).join('\n');
+ }
+ if(typeof v==='boolean')return v?'On':'Off';
+ return String(v);
+}
+function affected(n){return n.mode==='advanced'||n.mode==='normal'||!!n.optionsByMode;}
+function modeAllowed(n){return !n.mode||n.mode==='both'||(advanced.checked?n.mode==='advanced':n.mode==='normal');}
+function ownMatches(n,q){return !q||[n.name,n.parameter,format(n.details),format(n.optionsByMode)].filter(Boolean).join(' ').toLowerCase().includes(q);}
+function project(n,q,inheritedSearch=false,parentAllowed=true){
+ const allowed=parentAllowed&&modeAllowed(n);
+ const own=ownMatches(n,q);
+ const kids=n.children.map(c=>project(c,q,inheritedSearch||(!!q&&own),allowed)).filter(Boolean);
+ const self=(n.kind!=='menu'||!n.children.length)&&(!changes.checked||affected(n))&&(own||inheritedSearch);
+ if(!allowed&&!showHidden.checked)return null;
+ if(!self&&!kids.length)return null;
+ return {n,kids,allowed};
+}
+function badge(text,kind){return el('span','badge '+(kind||''),text);}
+function selectedOptions(n){if(n.optionsByMode)return n.optionsByMode[advanced.checked?'advanced':'normal'];return n.details?.options??n.details?.choices??n.details?.parameter_choices??n.details?.range??n.details?.catalog_range??null;}
+function metadata(n,container){
+ if(!modeAllowed(n))container.append(el('p','state-note','Hidden with advanced settings '+(advanced.checked?'on':'off')+'.'));
+ if(n.conditional)container.append(el('p','condition-note','Also conditional on platform, reported parameters, connection or other settings. See conditions below.'));
+ const options=selectedOptions(n);
+ if(options!==null){container.append(el('div','caption','Options / range in this mode'));container.append(el('div','value',format(options)));}
+ const fields={...(n.details||{})};
+ for(const k of ['name','options','choices','parameter_choices','range','catalog_range','control'])delete fields[k];
+ if(n.parameter)fields.parameter_id=n.parameter;
+ const dl=el('dl','facts');
+ for(const [k,v]of Object.entries(fields)){
+  if(v===null||v===undefined||v===''||(Array.isArray(v)&&!v.length))continue;
+  dl.append(el('dt','',k.replaceAll('_',' ')),el('dd',k==='source'?'source':'',format(v)));
+ }
+ if(dl.children.length)container.append(dl);
+}
+function draw(p,path){
+ const {n,kids,allowed}=p;
+ const box=el('details','node '+(kids.length?'branch':'leaf')+(!allowed?' ghost':''));box.dataset.id=n.id;box.dataset.name=n.name;
+ box.id='entry-'+n.id.replaceAll('/','-');
+ const row=el('summary','row');row.append(el('span','title',n.name));
+ if(n.parameter&&n.parameter!==n.name)row.append(el('span','parameter',n.parameter));
+ if(n.mode==='advanced')row.append(badge('Advanced only','advanced'));
+ if(n.mode==='normal')row.append(badge('Normal only','advanced'));
+ if(n.optionsByMode)row.append(badge('Options change','changed'));
+ if(n.conditional)row.append(badge('Conditional','conditional'));
+ if(!allowed)row.append(badge('Hidden now','advanced'));
+ if(kids.length)row.append(el('span','count',kids.length));
+ box.append(row);
+ const body=el('div','body');
+ if(Object.keys(n.details||{}).length||n.optionsByMode||!allowed)metadata(n,body);
+ if(body.children.length)box.append(body);
+ if(kids.length){const list=el('div','children');for(const child of kids)list.append(draw(child,[...path,n.name]));box.append(list);}
+ const searching=!!search.value.trim()||changes.checked;
+ box.open=searching&&!collapsed.has(n.id)||expanded.has(n.id)||(!path.length&&!collapsed.has(n.id)&&n===DATA[surface][0]);
+ box.addEventListener('toggle',()=>{
+  if(box.open){expanded.add(n.id);collapsed.delete(n.id);}else{expanded.delete(n.id);collapsed.add(n.id);}
+ });
+ return box;
+}
+function counts(projected){let visible=0,hidden=0,changing=0;function visit(p){if(p.n.kind!=='menu'){p.allowed?visible++:hidden++;if(affected(p.n))changing++;}p.kids.forEach(visit);}projected.forEach(visit);return {visible,hidden,changing};}
+function render(){
+ serial++;
+ const q=search.value.trim().toLowerCase();
+ if(q!==priorQuery){collapsed.clear();priorQuery=q;}
+ const projected=DATA[surface].map(n=>project(n,q)).filter(Boolean);
+ $('heading').textContent=labels[surface];$('description').textContent=descriptions[surface];
+ $('content').setAttribute('aria-labelledby','tab-'+surface);
+ $('mode').textContent=advanced.checked?'ON · advanced view':'OFF · normal view';
+ $('hint').textContent=advanced.checked?'Advanced mode: raw hidden parameters, sensor/backend overrides, FPS selector and extended TX power are included. Hardware conditions still apply.':'Normal mode: advanced-only raw parameters and controls are hidden. Quick controls such as bitrate and power remain available; TX power stops at 100%.';
+ const fragment=document.createDocumentFragment();for(const p of projected)fragment.append(draw(p,[]));tree.replaceChildren(fragment);
+ const c=counts(projected);$('stats').textContent=c.visible+' settings/actions in this view'+(c.hidden?' · '+c.hidden+' hidden rows shown dimmed':'')+' · '+c.changing+' affected by advanced mode';
+ $('empty').hidden=projected.length!==0;
+ const rail=document.createDocumentFragment();
+ for(const p of projected){const b=el('button','',p.n.name);b.type='button';b.addEventListener('click',()=>{const target=document.getElementById('entry-'+p.n.id.replaceAll('/','-'));target.open=true;target.scrollIntoView({behavior:'smooth',block:'start'});});rail.append(b);}
+ $('rail').replaceChildren(rail);
+ document.querySelectorAll('[data-surface]').forEach(b=>{const active=b.dataset.surface===surface;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
+}
+for(const input of [advanced,showHidden,changes])input.addEventListener('change',render);
+search.addEventListener('input',render);
+search.addEventListener('keydown',e=>{if(e.key==='Escape'){search.value='';render();}});
+document.querySelectorAll('[data-surface]').forEach(b=>{
+ b.addEventListener('click',()=>{surface=b.dataset.surface;render();});
+ b.addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const keys=Object.keys(labels);surface=keys[(keys.indexOf(surface)+(['ArrowDown','ArrowRight'].includes(e.key)?1:2))%3];render();$('tab-'+surface).focus();}});
+});
+$('expand').addEventListener('click',()=>tree.querySelectorAll('details').forEach(d=>{d.open=true;expanded.add(d.dataset.id);collapsed.delete(d.dataset.id);}));
+$('collapse').addEventListener('click',()=>tree.querySelectorAll('details').forEach(d=>{d.open=false;expanded.delete(d.dataset.id);collapsed.add(d.dataset.id);}));
+$('clear').addEventListener('click',()=>{search.value='';showHidden.checked=false;changes.checked=false;render();});
+render();
+// Read-only data/state helpers support local validation without a server.
+window.menuExplorer={data:DATA,project,modeAllowed,selectedOptions,get surface(){return surface;},render};
+</script>
+</body></html>

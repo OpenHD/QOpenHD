@@ -146,8 +146,6 @@ ScrollView {
                         to: 15
                         editable: true
                         Keys.onPressed: root.handleKeys(event, txPower)
-                        ToolTip.visible: hovered
-                        ToolTip.text: qsTr("mLRS power index. The actual mW/dBm depends on the transmitter hardware.")
                     }
                     Label { text: qsTr("Receiver step") }
                     SpinBox {
@@ -156,8 +154,6 @@ ScrollView {
                         to: 15
                         editable: true
                         Keys.onPressed: root.handleKeys(event, rxPower)
-                        ToolTip.visible: hovered
-                        ToolTip.text: qsTr("mLRS power index. The actual mW/dBm depends on the receiver hardware.")
                     }
                 }
             }

@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Shapes 1.0
+import QtQml 2.15
 
 import QtLocation 5.15
 import QtPositioning 5.15
@@ -9,30 +10,79 @@ import OpenHD 1.0
 // This is the actual Map "canvas" file - the other 2 .qml files are just handling resizing and integration with BaseWidget
 Map {
     id: map
-    copyrightsVisible: true
+    copyrightsVisible: false // Attribution stays visible outside both widget shapes.
     zoomLevel: settings.map_zoom
 
-    /* Enable pan, flick, and pinch gestures to zoom in and out
-       gesture is false because openhd starts with small map up
-    */
-    gesture.enabled: false
+    gesture.enabled: true
+    gesture.onPanStarted: followDrone = false
+    gesture.onPinchStarted: followDrone = false
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
-    bearing: settings.map_orientation && hasValidDroneCoordinate ? _fcMavlinkSystem.hdg : 0
+    property bool compassMode: false
+    property bool demoFlight: false
+    property var demoOrigin: QtPositioning.coordinate(50, 8)
+    property real demoPhase: 0
+    property double demoStarted: 0
+    readonly property var demoCoordinate: demoOrigin.atDistanceAndAzimuth(250, demoPhase)
+    readonly property real craftHeading: demoFlight ? (demoPhase + 90) % 360 : _fcMavlinkSystem.hdg
+    readonly property var craftCoordinate: demoFlight ? demoCoordinate
+        : QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+    readonly property bool headingUpActive: followDrone && (demoFlight || (compassMode
+        ? _fcMavlinkSystem.is_alive && isFinite(craftHeading)
+        : settings.map_orientation && hasValidDroneCoordinate))
+    bearing: headingUpActive ? ((craftHeading % 360) + 360) % 360 : 0
 
-    // Neutral map center while neither the FC nor the network provider has a
-    // usable position. Never use this coordinate for an ADS-B request.
     readonly property var defaultCoordinate: QtPositioning.coordinate(0.0, 0.0)
-    readonly property bool hasValidDroneCoordinate: applicationWindow.fcPositionValid
-    readonly property bool hasReferenceCoordinate: applicationWindow.referencePositionValid
-    readonly property var referenceCoordinate: hasReferenceCoordinate
-                                               ? QtPositioning.coordinate(applicationWindow.referenceLatitude,
-                                                                          applicationWindow.referenceLongitude)
-                                               : defaultCoordinate
+    readonly property bool hasValidDroneCoordinate: demoFlight || applicationWindow.fcPositionValid
+    readonly property bool hasReferenceCoordinate: demoFlight || applicationWindow.referencePositionValid
+    readonly property var referenceCoordinate: demoFlight ? demoCoordinate
+        : hasReferenceCoordinate ? QtPositioning.coordinate(applicationWindow.referenceLatitude,
+                                                           applicationWindow.referenceLongitude) : defaultCoordinate
+    onDemoFlightChanged: {
+        if (demoFlight) {
+            demoOrigin = center.isValid && (center.latitude !== 0 || center.longitude !== 0)
+                ? QtPositioning.coordinate(center.latitude, center.longitude) : QtPositioning.coordinate(50, 8)
+            demoPhase = 0
+            demoStarted = Date.now()
+            if (demoTrack) demoTrack.path = []
+            followDrone = true
+            zoomLevel = Math.max(minimumZoomLevel, Math.min(maximumZoomLevel, 16))
+        }
+        updateOfflinePosition()
+    }
+    Timer {
+        interval: 50
+        running: map.demoFlight
+        repeat: true
+        onTriggered: {
+            // One 250 m orbit per minute, approximately 26 m/s.
+            map.demoPhase = ((Date.now() - map.demoStarted) * 0.006) % 360
+            demoTrack.addCoordinate(map.demoCoordinate)
+            if (demoTrack.pathLength() > 1200) demoTrack.removeCoordinate(0)
+        }
+    }
+    MapPolyline {
+        id: demoTrack
+        visible: map.demoFlight
+        line.color: "#62d8ff"
+        line.width: 2
+    }
+    MapQuickItem {
+        visible: map.demoFlight
+        coordinate: map.demoCoordinate
+        anchorPoint: Qt.point(22, 22)
+        z: 3
+        sourceItem: PlaneMapMarker {
+            hitObjectName: "demoPlaneFollow"
+            heading: map.craftHeading - map.bearing
+            onActivated: followDrone = true
+        }
+    }
+
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
-    property var center_coord
+    property var center_coord: defaultCoordinate
     property bool forceCustomMapType: false
 
     property int track_limit: 200; //max number of drone track points before it starts averaging
@@ -40,9 +90,23 @@ Map {
     property int min_distance_between_points_m: 3.0
 
 
-    center {
-        latitude: hasReferenceCoordinate ? followDrone ? referenceCoordinate.latitude : 9000 : defaultCoordinate.latitude
-        longitude: hasReferenceCoordinate ? followDrone ? referenceCoordinate.longitude : 9000 : defaultCoordinate.longitude
+    Binding {
+        target: map
+        property: "center"
+        when: followDrone
+        value: map.referenceCoordinate
+        restoreMode: Binding.RestoreNone
+    }
+    property var pendingRegion: null
+    function showOfflineRegion(region) {
+        followDrone = false
+        pendingRegion = region
+        if (!mapReady) return
+        visibleRegion = QtPositioning.rectangle(QtPositioning.coordinate(region.north, region.west),
+                                               QtPositioning.coordinate(region.south, region.east))
+        // Older installed packages may not contain the overview zooms.
+        zoomLevel = Math.max(region.minZoom || 0, Math.min(region.maxZoom || maximumZoomLevel, zoomLevel))
+        pendingRegion = null
     }
 
     onSupportedMapTypesChanged: {
@@ -76,6 +140,7 @@ Map {
     onMapReadyChanged: {
         console.log("Map component: is ready");
         findMapBounds();
+        if (mapReady && pendingRegion) showOfflineRegion(pendingRegion)
     }
 
     onCenterChanged: {
@@ -97,7 +162,7 @@ Map {
     function addDroneTrack() {
         //console.log("Add drone track")
         // only add track while armed
-        if(!_fcMavlinkSystem.armed || !hasValidDroneCoordinate){
+        if(demoFlight || !_fcMavlinkSystem.armed || !hasValidDroneCoordinate){
             return;
         }
         var new_coordinate=QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
@@ -135,13 +200,13 @@ Map {
 
     MapPolyline {
         id: droneTrack
-        visible: settings.map_drone_track
+        visible: !map.demoFlight && settings.map_drone_track
         line.color: "red"
         line.width: 3
     }
     // Visualizes the GPS hdop
     MapCircle {
-        visible: hasValidDroneCoordinate
+        visible: !map.demoFlight && hasValidDroneCoordinate
         center: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
         radius: _fcMavlinkSystem.gps_hdop
         color: 'red'
@@ -150,6 +215,7 @@ Map {
     // Home marker
     MapQuickItem {
         id: homemarkerSmallMap
+        visible: !map.demoFlight && hasValidDroneCoordinate && (_fcMavlinkSystem.home_latitude !== 0 || _fcMavlinkSystem.home_longitude !== 0)
         anchorPoint.x: imageSmallMap.width / 2
         anchorPoint.y: imageSmallMap.height
         coordinate: coordinateWithFallback(_fcMavlinkSystem.home_latitude, _fcMavlinkSystem.home_longitude)
@@ -246,8 +312,8 @@ Map {
 
 
 
-                                if (settings.map_orientation === true){
-                                    var orientation = object.heading-_fcMavlinkSystem.hdg;
+                                if (map.bearing !== 0){
+                                    var orientation = object.heading-map.bearing;
                                     if (orientation < 0) orientation += 360;
                                     if (orientation >= 360) orientation -=360;
                                     return orientation;
@@ -306,8 +372,8 @@ Map {
                                         return 0;
                                     }
 
-                                    if (settings.map_orientation === true){
-                                        var orientation = object.heading - _fcMavlinkSystem.hdg;
+                                    if (map.bearing !== 0){
+                                        var orientation = object.heading - map.bearing;
 
                                         if (orientation < 0) orientation += 360;
                                         if (orientation >= 360) orientation -=360;
@@ -445,19 +511,17 @@ Map {
     //>>>>>>>>>>>>>>>>>>> end ADSB <<<<<<<<<<<<<<<
 
 
-    //get coordinates on click... for future use
+    signal expandRequested()
     MouseArea {
+        objectName: "mapDoubleClickArea"
         anchors.fill: parent
-        onClicked: {
-            var coord = map.toCoordinate(Qt.point(mouse.x,mouse.y))
-            console.log("Map clicked, "+coord.latitude+":"+coord.longitude)
-            configureLargeMap()
-        }
+        onDoubleClicked: map.expandRequested()
     }
-    // Arrow indicating the drone position
+    // Aircraft position: click the plane to resume following.
     MapQuickItem {
         id: dronemarker
-        visible: hasValidDroneCoordinate
+        objectName: "droneMarker"
+        visible: !map.demoFlight && hasValidDroneCoordinate
         coordinate: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
 
         onCoordinateChanged: {
@@ -467,33 +531,12 @@ Map {
             }
         }
 
-        anchorPoint.x : 0
-        anchorPoint.y : 0
-
-        sourceItem: Shape {
-            anchors.fill: parent
-
-            ShapePath {
-                capStyle: ShapePath.RoundCap
-                strokeColor: "darkBlue"
-                fillColor: "blue"
-                strokeWidth: 1
-                strokeStyle: ShapePath.SolidLine
-
-                startX: 0
-                startY: 0
-
-                PathLine { x: 10;                y: 17  } //right bottom
-                PathLine { x: 0;                 y: 13  } //middle bottom
-                PathLine { x: -10;               y: 17  } //left bottom
-                PathLine { x: 0;                 y: 0   } //back to start
-            }
-
-            transform: Rotation {
-                origin.x: 0;
-                origin.y: 0;
-                angle: settings.map_orientation ? 0 : _fcMavlinkSystem.hdg
-            }
+        anchorPoint: Qt.point(22, 22)
+        z: 3
+        sourceItem: PlaneMapMarker {
+            hitObjectName: "gpsPlaneFollow"
+            heading: map.craftHeading - map.bearing
+            onActivated: followDrone = true
         }
     }
 

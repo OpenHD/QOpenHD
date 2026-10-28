@@ -43,7 +43,7 @@ Rectangle {
                 GridLayout { id: settingsGrid; width: parent.width; columns: 1; rowSpacing: 2
                     Repeater { id: settingRepeater
                         model: [{id:"AR_MCS_MD",label:qsTr("MCS mode")},{id:"AR_MCS_VAL",label:qsTr("Manual MCS")},{id:"AR_BW_MD",label:qsTr("Bandwidth mode")},{id:"AR_BW_VAL",label:qsTr("Manual bandwidth")},{id:"AR_CHN_MD",label:qsTr("Channel mode")},{id:"AR_CHN_IDX",label:qsTr("Manual channel")},{id:"AR_PWR_ATO",label:qsTr("Power control")},{id:"AR_PWR_DBM",label:qsTr("TX power"),suffix:" dBm"}]
-                        delegate: DynamicLinkSetting { property var sourceModel: _ohdSystemAirSettingsModel.param_int_exists(modelData.id) ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings; Layout.fillWidth: true; visible: sourceModel.param_int_exists(modelData.id); settingsModel: sourceModel; paramId: modelData.id; label: modelData.label; valueSuffix: modelData.suffix||""; onMoveRequested: root.moveFocus(step); onBackRequested: if (root.host) root.host.collapseCard(root.cardIndex) }
+                        delegate: DynamicLinkSetting { property var sourceModel: _ohdSystemAirSettingsModel.param_int_exists(modelData.id) ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings; Layout.fillWidth: true; visible: _qopenhd.debugMenuPreview || (sourceModel.param_int_exists(modelData.id)); settingsModel: sourceModel; paramId: modelData.id; label: modelData.label; valueSuffix: modelData.suffix||""; onMoveRequested: root.moveFocus(step); onBackRequested: if (root.host) root.host.collapseCard(root.cardIndex) }
                     }
                 }
             }

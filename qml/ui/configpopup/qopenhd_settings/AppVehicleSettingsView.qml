@@ -53,7 +53,7 @@ ScrollView {
 
             SettingBaseElement{
                 m_short_description: qsTr("Set FC Battery Capacity")
-                visible: Object.keys(_fcMavlinkSystem.battery_capacity_parameter).length > 0
+                visible: _qopenhd.debugMenuPreview || (Object.keys(_fcMavlinkSystem.battery_capacity_parameter).length > 0)
                 m_long_description: qsTr("Writes the battery capacity to a supported flight controller over MAVLink. QOpenHD continues to display the percentage reported by the FC. Unsupported FCs show a warning and are not changed.")
                 Row {
                     height: elementHeight

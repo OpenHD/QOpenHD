@@ -226,6 +226,7 @@ HEADERS += \
     app/fleetcontrol/fleetcontrollte.h \
     app/util/mousehelper.h \
     app/util/qopenhd.h \
+    app/util/qtcreatorlaunch.h \
     app/util/asyncping.h \
     app/util/asynccommandrunner.h \
     app/util/WorkaroundMessageBox.h \

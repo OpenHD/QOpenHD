@@ -204,6 +204,8 @@ Settings {
     property bool ground_battery_show_voltage_current: false
     property bool ground_battery_show_single_cell: false
     property bool ground_battery_show_fc_percent: false
+    // Local ground battery configuration; this is not an FC parameter.
+    property int ground_battery_capacity_mah: 0
     property int ground_battery_cells: 3
     property int ground_battery_type: 1
     property int ground_battery_low: 35
@@ -369,6 +371,7 @@ Settings {
 
     property int map_zoom: 18
     property double map_size: 1
+    property bool map_round: true
     property bool show_throttle: false
 
     property bool show_control: false

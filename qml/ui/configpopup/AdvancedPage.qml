@@ -6,6 +6,7 @@ import QtQuick.Window 2.12
 FocusScope {
     id: root
 
+    property bool showPageHeader: false
     property string pageIcon: ""
     property string pageTitle: ""
     property string pageSubtitle: ""
@@ -30,6 +31,7 @@ FocusScope {
 
     Row {
         id: header
+        visible: root.showPageHeader
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: 18
@@ -70,7 +72,7 @@ FocusScope {
 
     Item {
         id: content
-        anchors.top: header.bottom
+        anchors.top: root.showPageHeader ? header.bottom : parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right

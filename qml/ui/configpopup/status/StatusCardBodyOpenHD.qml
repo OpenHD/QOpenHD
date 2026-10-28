@@ -1,19 +1,9 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
-
-import QtQuick.Controls.Material 2.12
-
-import Qt.labs.settings 1.0
 
 Column {
     id: body
-    //Layout.fillWidth: true
-    //Layout.fillHeight: true
-    // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
-    //anchors.fill: parent
     width: parent.width
-    spacing: 1
+    spacing: 0
 
     property bool m_is_ground: false
 
@@ -21,16 +11,9 @@ Column {
 
     property string m_version: m_model.openhd_version
     property bool m_is_alive: m_model.is_alive
-    property string m_qopenhd_version: _qopenhd.version_string
     property int m_ground_settings_update_count: _ohdSystemGroundSettings.update_count
     property int m_air_settings_update_count: _ohdSystemAirSettingsModel.update_count
 
-    readonly property bool videoEncrypted: {
-        var updates = _airCameraSettingsModel.update_count
-        return !m_is_ground && m_is_alive && _airCameraSettingsModel.has_params_fetched
-                && _airCameraSettingsModel.param_int_exists("HIGH_ENCRYPTION")
-                && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
-    }
     readonly property int temperature: m_model.curr_soc_temp_degree
     readonly property int cpuLoad: m_model.curr_cpuload_perc
     // Legacy core telemetry defaults to zero until a sample arrives.
@@ -47,9 +30,6 @@ Column {
                                          || (m_is_alive && m_model.rpi_undervolt_error)
     readonly property bool healthCaution: (hasTemperature && temperature >= temperatureCaution)
                                          || (hasCpuLoad && cpuLoad >= cpuCaution)
-
-    //fucking hell qt
-    property int m_font_pixel_size: 13
 
     function get_gnd_active_cards(){
         var ret=0;
@@ -93,227 +73,32 @@ Column {
         return settings_primary_link_is_artosyn(_ohdSystemAirSettingsModel, m_air_settings_update_count);
     }
 
-    function gnd_uplink_state(){
-        if(!_ohdSystemGround.is_alive)return 0;
-        if(!_ohdSystemAir.is_alive)return 0;
-        if(!_ohdSystemAir.curr_rx_last_packet_status_good)return -1;
-        return 1;
+    readonly property bool healthKnown: hasTemperature || hasCpuLoad || (m_is_alive && m_model.rpi_undervolt_error)
+    readonly property string healthText: !healthKnown ? qsTr("Not reported") : (healthWarning ? qsTr("Warning") : (healthCaution ? qsTr("Caution") : qsTr("Healthy")))
+    readonly property color healthColor: !healthKnown ? "#94a9b9" : (healthWarning ? settings_form.errorColor : (healthCaution ? settings.color_caution : "#3bda69"))
+    function linkText() {
+        if (!m_is_alive) return qsTr("Not reported")
+        var names = [], usage = m_model.link_usage
+        var labels = {1: "WiFiBroadcast", 2: "Ethernet", 3: "UART", 4: "Microhard", 5: "ARTOSYN", 6: "FleetControl", 7: "mLRS"}
+        for (var i = 0; usage && i < usage.length; ++i)
+            if (labels[usage[i].id] && names.indexOf(labels[usage[i].id]) < 0) names.push(labels[usage[i].id])
+        if (names.length) return names.join(" + ")
+        if (m_is_ground ? ground_artosyn_detected() : air_artosyn_detected()) return "ARTOSYN"
+        if (m_model.primary_link_type === 1) return "WiFiBroadcast"
+        if (m_model.primary_link_type === 2) return "Ethernet"
+        if (m_model.primary_link_type === 3) return "Microhard"
+        if (m_is_ground ? get_gnd_active_cards() > 0 : _wifi_card_air.alive) return "WiFiBroadcast"
+        return qsTr("Not reported")
     }
-    function gnd_uplink_state_text(){
-        var curr_gnd_uplink_state=gnd_uplink_state();
-        if(curr_gnd_uplink_state==0)return qsTr("N/A");
-        if(curr_gnd_uplink_state==1) return qsTr("OK");
-        return qsTr("ERROR");
-    }
-
-    function get_text_qopenhd_openhd_ground_version_mismatch(){
-        var ret=qsTr("Your version of QOpenHD [%1] is incompatible with your ground station OpenHD version: [%2]\nPlease update QOpenHD / your Ground station.")
-                .arg(m_qopenhd_version)
-                .arg(m_version);
-        return ret;
-    }
-    function get_text_openhd_air_ground_version_mismatch(){
-        var ret=qsTr("Your version of OpenHD AIR [%1] is incompatible with OpenHD GROUND: [%2]\nPlease update your AIR / GROUND unit.")
-                .arg(_ohdSystemAir.openhd_version)
-                .arg(_ohdSystemGround.openhd_version);
-        return ret;
-    }
-    function get_major_minor(version_string){
-        var s = String(version_string)
-        var match = s.match(/^(\d+)\.(\d+)/)
-        if(!match || match.length < 3){
-            return ""
-        }
-        return match[1] + "." + match[2]
-    }
-    function is_qopenhd_compatible_with_ground_openhd(){
-        if(_ohdSystemGround.openhd_version=="N/A"){
-            return true
-        }
-        var gnd_mm = get_major_minor(_ohdSystemGround.openhd_version)
-        var qohd_mm = get_major_minor(m_qopenhd_version)
-        if(gnd_mm !== "" && qohd_mm !== ""){
-            return gnd_mm === qohd_mm
-        }
-        // Fallback when parsing fails on custom strings
-        return _ohdSystemGround.openhd_version === m_qopenhd_version
-    }
-
-    Item {
-        width: parent.width
-        height: visible ? 29 : 0
-        visible: body.videoEncrypted
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 10; anchors.rightMargin: 10
-            spacing: 5
-            Repeater {
-                model: [ { label: qsTr("Video encrypted"), active: body.videoEncrypted } ]
-                Rectangle {
-                    visible: modelData.active
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 22
-                    radius: 7
-                    color: Qt.rgba(settings_form.accentColor.r, settings_form.accentColor.g, settings_form.accentColor.b, 0.14)
-                    Text {
-                        anchors.fill: parent; anchors.leftMargin: 5; anchors.rightMargin: 5
-                        text: modelData.label
-                        color: settings_form.accentColor
-                        font.pixelSize: 9
-                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-                }
-            }
-        }
-    }
-
-    StatusCardRow{
-        m_left_text: qsTr("Platform:")
-        m_right_text: m_is_ground ? _ohdSystemGround.ohd_platform_type_as_string : _ohdSystemAir.ohd_platform_type_as_string
-        m_has_error: false
-    }
-
-    StatusCardRow{
-        m_left_text: qsTr("Version:")
-        m_right_text: m_version
-        m_has_error: {
-            if(m_is_ground){
-                // Show if ground reported version is valid and there is a mismatch OpenHD ground / QOpenHD
-                return !is_qopenhd_compatible_with_ground_openhd();
-            }else{
-                // Show if ground and air reported version is valid and there is a mismatch
-                if(_ohdSystemGround.openhd_version=="N/A" || _ohdSystemAir.openhd_version=="N/A"){
-                    return false;
-                }
-                return _ohdSystemGround.openhd_version != _ohdSystemAir.openhd_version
-            }
-        }
-        m_error_text: {
-            var text_warning= m_is_ground ? get_text_qopenhd_openhd_ground_version_mismatch() : get_text_openhd_air_ground_version_mismatch()
-            return text_warning;
-        }
-        m_error_view: true
-    }
+    StatusCardRow { m_left_text: qsTr("Platform"); m_icon: "\uf0e8"; m_right_text: m_model.ohd_platform_type_as_string }
+    StatusCardRow { m_left_text: qsTr("Version"); m_icon: "\uf013"; m_right_text: m_version }
+    StatusCardRow { m_left_text: qsTr("Link"); m_icon: "\uf0c1"; m_value_icon: m_right_text.indexOf("WiFiBroadcast") >= 0 ? "\uf1eb" : ""; m_right_text: body.linkText() }
+    StatusCardRow { m_left_text: qsTr("System health"); m_icon: "\uf2db"; m_right_text: body.healthText; m_status_dot: body.healthKnown; m_right_text_color: body.healthColor }
     StatusCardRow {
-        m_left_text: qsTr("Link:")
-
-        m_right_text: {
-            function pingToMsString(pingValue) {
-                var pingNum = parseFloat(pingValue)
-
-                // If it's not a number (NaN) or zero, return an empty string
-                if (isNaN(pingNum) || pingNum === 0) {
-                    return ""
-                }
-
-                // Otherwise, convert to an integer (or leave as a string)
-                // e.g., rounding down to remove decimals
-                return Math.floor(pingNum).toString()
-            }
-
-            if (m_is_ground) {
-                if (!_ohdSystemGround.is_alive) {
-                    return qsTr("N/A")
-                }
-                var alive_count = get_gnd_active_cards()
-                if (alive_count === 0) {
-                    if (ground_artosyn_detected()) {
-                        return qsTr("ARTOSYN")
-                    }
-                    return qsTr("waiting")
-                }
-                if (alive_count === 1) {
-                    return _wifi_card_gnd0.card_type_as_string
-                }
-                var pingStrGnd = pingToMsString(m_model.last_ping_result_openhd)
-                if (pingStrGnd !== "") {
-                    return qsTr("%1x array %2 ms").arg(alive_count).arg(pingStrGnd)
-                } else {
-                    return qsTr("%1x array").arg(alive_count)
-                }
-            } else {
-                if (air_artosyn_detected()) {
-                    return qsTr("ARTOSYN")
-                }
-                if (!_wifi_card_air.alive) {
-                    return qsTr("N/A")
-                }
-                var pingStrAir = pingToMsString(m_model.last_ping_result_openhd)
-                var cardTypeStr = _wifi_card_air.card_type_as_string
-                if (pingStrAir !== "") {
-                    return qsTr("%1 %2 ms").arg(cardTypeStr).arg(pingStrAir)
-                } else {
-                    return cardTypeStr
-                }
-            }
-        }
-
-        m_has_error: {
-            var show_message_card_unsupported = false
-            if (m_is_ground) {
-                if (_wifi_card_gnd0.alive && !_wifi_card_gnd0.card_type_supported) {
-                    show_message_card_unsupported = true
-                }
-            } else {
-                if (_wifi_card_air.alive && !_wifi_card_air.card_type_supported) {
-                    show_message_card_unsupported = true
-                }
-            }
-            return show_message_card_unsupported
-        }
-
-        m_error_text: {
-            var message = qsTr("Using unsupported card(s) has side effects like non-working frequency changes, no uplink gnd-air or bad range. Be warned.")
-            return message
-        }
-
-        m_error_view: true
+        m_left_text: qsTr("Battery"); m_icon: "\uf2c2"
+        m_right_text: m_is_alive && m_model.ina219_voltage_millivolt > 0
+                      ? qsTr("%1 V (%2 %)").arg((m_model.ina219_voltage_millivolt / 1000).toFixed(1)).arg(m_model.battery_percent)
+                      : qsTr("Not reported")
     }
-    // StatusCardRow{
-    //     visible: m_is_ground
-    //     m_left_text: "Uplink:"
-    //     m_right_text: {
-    //         return gnd_uplink_state_text()
-    //     }
-    //     m_has_error: {
-    //         return m_right_text=="ERROR"
-    //     }
-    //     m_error_text: {
-    //         var message="Looks like your uplink (GND to AIR) is not functional - please use a supported card on your GND station"+
-    //         " and make sure passive (listen only) mode is disabled on your ground station."
-    //         return message;
-    //     }
-    // }
-    StatusCardRow {
-        m_left_text: qsTr("System health:")
-        m_right_text: {
-            if (m_is_alive && m_model.rpi_undervolt_error) return qsTr("Undervoltage")
-            var parts = []
-            if (body.hasTemperature) parts.push(qsTr("%1 \u00b0C").arg(body.temperature))
-            if (body.hasCpuLoad) parts.push(qsTr("%1% CPU").arg(body.cpuLoad))
-            return parts.length ? parts.join(" \u00b7 ") : qsTr("Not reported")
-        }
-        m_has_error: body.healthWarning
-        m_right_text_color: body.healthCaution ? settings.color_caution : settings_form.primaryText
-    }
-    StatusCardRow{
-        visible: m_is_ground;
-        m_left_text: qsTr("Shared:")
-        m_right_text: {
-            if(_ohdSystemGround.external_devices_count<0){
-                return qsTr("No");
-            }
-            if(_ohdSystemGround.external_devices_count==0){
-                return qsTr("Yes");
-            }
-            return qsTr("%1x").arg(_ohdSystemGround.external_devices_count);
-        }
-    }
-    StatusCardRow{
-        visible: false;
-        m_left_text: qsTr("License:")
-        m_right_text: qsTr("Community")
-    }
-
+    StatusCardRow { m_left_text: qsTr("Temperature"); m_icon: "\uf2c9"; m_right_text: body.hasTemperature ? qsTr("%1 \u00b0C").arg(body.temperature) : qsTr("Not reported") }
 }

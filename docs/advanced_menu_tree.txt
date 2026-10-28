@@ -1,0 +1,858 @@
+QOpenHD Advanced menu — ADVANCED SETTINGS ON
+
+Scope: this local QOpenHD checkout and adjacent OpenHD firmware source, 2026-10-28.
+Parameter reference: 290 fallback definitions + 49 additional firmware IDs + generated families.
+Fixed options/ranges are expanded below. Hardware-specific options remain explicitly dynamic.
+Air/Ground/camera membership and metadata are supplied by the connected firmware; this is not a live-device export.
+
+Advanced switch effects:
+  - Disable all hidden/whitelist filtering in parameter models, including per-card TX power and CARD_TYPE_* diagnostics. Actual rows still depend on parameters reported by Air, Ground and each camera.
+  - Expose SENSOR_MODE and LIBCAMERA_IMPL camera rows when reported.
+  - Expose the separate frame-rate selector in the resolution editor.
+  - Extend Air and Ground power sliders to 150%.
+  - Expose ESP analysis, FHSS controls and link usage diagnostics, subject to parameter availability.
+  - Instantiate Show Retransmission Stats widget control.
+  Separate switches: Allow frequency change when armed, Show all wifi channels, Show link routing, Show link usage
+
+Advanced
+├── Status
+│   ├── Status card actions
+│   │   ├── WiFi hotspot
+│   │   ├── Request FC Rates
+│   │   ├── CRAFT DETAILS
+│   │   ├── REBOOT
+│   │   ├── SHUTDOWN
+│   │   └── CALIBRATE
+│   ├── Air status
+│   ├── Ground status
+│   ├── Flight controller
+│   ├── Power actions
+│   │   ├── Cancel
+│   │   └── Sending... / Reboot Ground / Shutdown Ground / Reboot Air / Shutdown Air / Reboot FC / Shutdown FC / Yes
+│   └── Craft details
+│       ├── Battery capacity (from: 100; to: 100000; step: 100)
+│       ├── Cancel
+│       ├── Save
+│       ├── Aircraft ID [free text]
+│       ├── Save
+│       ├── Operator ID [free text]
+│       ├── Save
+│       ├── Back
+│       └── MAVLINK INSPECTOR · %1 packets received
+├── OpenHD
+│   ├── LINK
+│   │   ├── WiFiBroadcast only + UART / One link + UART
+│   │   ├── Multiple links (Enterprise)
+│   │   ├── WiFiBroadcast
+│   │   │   ├── ENABLED / DISABLED [Off | On]
+│   │   │   ├── Scan
+│   │   │   ├── Analyze
+│   │   │   ├── Frequency filter [OHD frequencies=0 | 5.8 GHz=2 | 2.4 GHz=1]
+│   │   │   ├── Channel / frequency [dynamic_model: host ? host.frequencyModel : null]
+│   │   │   ├── Channel width [device_metadata: WB_CHANNEL_W; fallback: 10Mhz=10 | 20Mhz=20 | 40Mhz=40] {WB_CHANNEL_W}
+│   │   │   ├── MCS [device_metadata: WB_MCS_INDEX; fallback: MCS0=0 | MCS1=1 | MCS2=2 | MCS3=3 | MCS4=4 | MCS5=5 | MCS6=6 | MCS7=7 | MCS8=8 | MCS9=9 | MCS10=10 | MCS11=11 | MCS12=12 | MCS13=13 | MCS14=14 | MCS15=15 | MCS16=16 | MCS17=17 | MCS18=18 | MCS19=19 | MCS20=20 | MCS21=21 | MCS22=22 | MCS23=23 | MCS24=24 | MCS25=25 | MCS26=26 | MCS27=27 | MCS28=28 | MCS29=29 | MCS30=30 | MCS31=31] {WB_MCS_INDEX}
+│   │   │   ├── Pit Mode [Disable=0 | Enable=1] {WB_PIT_MODE}
+│   │   │   ├── Air [slider: 0?100%; advanced mode extends to 150%] (from: 0; to: 100 normally; 150 with advanced settings; step: 10; unit: %) {TX_PWR_LVL}
+│   │   │   ├── Ground [slider: 0?100%; advanced mode extends to 150%] (from: 0; to: 100 normally; 150 with advanced settings; step: 10; unit: %) {TX_PWR_LVL}
+│   │   │   ├── ESP analysis (Air) [Disable=0 | Enable=1] {ESP_ANALYSE}
+│   │   │   ├── ESP analysis (Ground) [Disable=0 | Enable=1] {ESP_ANALYSE}
+│   │   │   ├── Adaptive Link [Disable=0 | Enable=1] {WB_ADAPT_CH}
+│   │   │   ├── Enable [Disable=0 | Enable=1] {WB_FHSS}
+│   │   │   └── Dwell [25 ms=25 | 50 ms=50 | 100 ms=100] {WB_FHSS_SLOT}
+│   │   ├── Ethernet / UART
+│   │   │   └── ENABLED / DISABLED [Off | On]
+│   │   ├── Microhard
+│   │   ├── ArtoSyn
+│   │   │   └── Radio parameters {modelData.id}
+│   │   │       ├── AR_MCS_MD [Manual=0 | Auto=1]
+│   │   │       ├── AR_MCS_VAL [-1..25]
+│   │   │       ├── AR_BW_MD [Manual=0 | Auto=1]
+│   │   │       ├── AR_BW_VAL [Ignore (-1)=-1 | 1.25 MHz=0 | 2.5 MHz=1 | 5 MHz=2 | 10 MHz=3 | 20 MHz=4 | 40 MHz=5]
+│   │   │       ├── AR_CHN_MD [Manual=0 | Auto=1]
+│   │   │       ├── AR_CHN_IDX [-1..255]
+│   │   │       ├── AR_PWR_ATO [Manual=0 | Auto=1]
+│   │   │       └── AR_PWR_DBM [-1..31]
+│   │   ├── FleetControl LTE
+│   │   ├── mLRS
+│   │   ├── Scan channels
+│   │   │   ├── Passive (Nexmon) / Normal (Devourer radio) [Off | On]
+│   │   │   ├── SCAN RANGE [OpenHD channels 1–7=0 | All 2.4 GHz channels=1 | All 5.8 GHz channels=2]
+│   │   │   ├── CHANNEL WIDTH [always: 20 | 40; when_supported: 10; unit: MHz]
+│   │   │   └── SCANNING… / START SCAN
+│   │   ├── Analyze channels
+│   │   │   ├── filterCombo [OpenHD channels 1–7=0 | All 2.4 GHz channels=1 | All supported 5 GHz channels=2]
+│   │   │   ├── metricCombo [Energy above noise floor (%) | Channel busy (%) | Wi-Fi packets | Wi-Fi packets (relative)]
+│   │   │   ├── durationCombo [Quick | Medium | Detailed]
+│   │   │   └── ANALYZING… / START ANALYSIS
+│   │   ├── STBC / LDPC
+│   │   │   ├── comboBoxNAntennasAir [AIR: PLEASE SELECT N RF PATH / ANTENNAS=0 | AIR: 1 RF PATH / ANTENNAS=1 | AIR: 2 RF PATHS / ANTENNAS=2]
+│   │   │   ├── comboBoxNAntennasGnd [GND: PLEASE SELECT N RF PATH / ANTENNAS=0 | GND: 1 RF PATH / ANTENNAS=1 | GND: 2 RF PATHS / ANTENNAS=2]
+│   │   │   └── ENABLE
+│   │   ├── Frequency change Air + Ground
+│   │   │   ├── CANCEL
+│   │   │   └── YES
+│   │   └── Frequency change Ground only
+│   │       ├── AIR Only / GND Only
+│   │       ├── Okay
+│   │       ├── YES, AIR ONLY / YES, GND ONLY
+│   │       └── Cancel
+│   ├── CAMERA
+│   │   ├── Variable bitrate [Disable=0 | Enable=1] {VARIABLE_BITRATE}
+│   │   ├── Load camera settings
+│   │   ├── VIDEO
+│   │   │   ├── Frame rate (resolution editor) [dynamic_model: root.fpsForResolution(formatEditor.selectedResolution)] [advanced only]
+│   │   │   ├── RESOLUTION_FPS [640x480@30=640x480@30 | 640x480@60=640x480@60 | 640x480@90=640x480@90 | 1280x720@30=1280x720@30 | 1280x720@49=1280x720@49 | 1280x720@60=1280x720@60 | 1920x1080@30=1920x1080@30] [if reported by camera]
+│   │   │   ├── VIDEO_CODEC [h264=0 | h265=1; hidden filter bypassed in advanced mode] [if reported by camera]
+│   │   │   ├── AIR_RECORDING_E [DISABLE=0 | ENABLE=1 | AUTO(armed)=2] [if reported by camera]
+│   │   │   ├── STREAMING_E [Disable=0 | Enable=1; hidden filter bypassed in advanced mode] [if reported by camera]
+│   │   │   ├── BITRATE_MBITS [2MBit/s=2 | 4MBit/s=4 | 6MBit/s=6 | 8MBit/s (default)=8 | 10MBit/s (high)=10 | 14MBit/s (high)=14 | 18MBit/s (high)=18; hidden filter bypassed in advanced mode] [if reported by camera]
+│   │   │   ├── KEYFRAME_I [2  (best recovery)=2 | 3  (best recovery)=3 | 5  (good recovery)=5 | 8  (good recovery)=8 | 10 (medium recovery)=10 | 15 (medium recovery)=15 | 20 (bad recovery)=20; hidden filter bypassed in advanced mode] [if reported by camera]
+│   │   │   └── VARIABLE_BITRATE [Disable=0 | Enable=1; hidden filter bypassed in advanced mode] [if reported by camera]
+│   │   ├── CAMERA
+│   │   │   ├── ROCKCHIP_IMPL [GStreamer (MPP elements)=0 | MPP direct (native)=1] [if reported by camera]
+│   │   │   ├── ROTATION_FLIP [NONE=0 | Horizontal mirror=1 | Vertical flip=2 | Both (180Â°)=3] [if reported by camera]
+│   │   │   ├── ROTATION_DEG [0Â°(disable)=0 | 180Â°=180] [if reported by camera]
+│   │   │   └── CAMERA_TYPE [Platform-supported camera models supplied by camera stream model] [if reported by camera]
+│   │   ├── IMAGE
+│   │   │   ├── BRIGHTNESS [device-defined values] [if reported by camera]
+│   │   │   ├── GX_SATURATION [0..100] [if reported by camera]
+│   │   │   ├── GX_CONTRAST [0..100] [if reported by camera]
+│   │   │   ├── GX_SHARPNESS [0..255] [if reported by camera]
+│   │   │   ├── GX_DENOISE_2D [0..255] [if reported by camera]
+│   │   │   ├── GX_DENOISE_3D [0..255] [if reported by camera]
+│   │   │   ├── DENOISE_INDEX_LC [AUTO=0 | OFF=1 | CDN_OFF=2 | CDN_FAST=3 | CDN_HQ=4] [if reported by camera]
+│   │   │   ├── CONTRAST_LC [default(100)=100 | higher (120)=120 | higher (150)=150 | lower(80)=80 | lower (50)=50] [if reported by camera]
+│   │   │   ├── SATURATION_LC [default(100)=100 | higher (120)=120 | higher (150)=150 | lower(80)=80 | lower (50)=50] [if reported by camera]
+│   │   │   └── SHARPNESS_LC [default(100)=100 | higher (120)=120 | higher (150)=150 | lower(80)=80 | lower (50)=50] [if reported by camera]
+│   │   ├── COLOR
+│   │   │   ├── AWB_MODE [OFF=0 | AUTO=1 | SUNLIGHT=2 | CLOUDY=3 | SHADE=4 | TUNGSTEN=5 | FLUORESCENT=6 | INCANDESCENT=7 | FLASH=8 | HORIZON=9] [if reported by camera]
+│   │   │   └── AWB_MODE_LC [auto (default)=0 | incandescent=1 | tungsten=2 | fluorescent=3 | indoor=4 | daylight=5 | cloudy=6 | custom=7] [if reported by camera]
+│   │   ├── EXPOSURE
+│   │   │   ├── ISO [device-defined values] [if reported by camera]
+│   │   │   ├── GX_EXPOSURE [Manual=0 | Auto=2] [if reported by camera]
+│   │   │   ├── GX_SHUTTER_US [16..33333] [if reported by camera]
+│   │   │   ├── EXP_MODE [OFF=0 | AUTO=1 | NIGHT=2 | NIGHTPREVIEW=3 | BACKLIGHT=4 | SPOTLIGHT=5 | SPORTS=6 | SNOW=7 | BEACH=8 | VERYLONG=9 | FIXEDFPS=10 | ANTISHAKE=11 | FIREWORKS=12] [if reported by camera]
+│   │   │   ├── METERING_MODE [AVERAGE=0 | SPOT=1 | BACKLIST=2 | MATRIX=3] [if reported by camera]
+│   │   │   ├── METERING_MODE_LC [centre (default)=0 | spot=1 | average=2] [if reported by camera]
+│   │   │   ├── EXPOSURE_MODE_LC [normal (default)=0 | sport=1] [if reported by camera]
+│   │   │   ├── SHUTTER_US_LC [auto=0 | example1 (1000us)=1000 | example2 (5000us)=5000 | example3 (16666us)=16666 | example4 (33333us)=33333] [if reported by camera]
+│   │   │   ├── EXPOSURE_LC [default(0)=0 | higher (5)=5 | higher (10)=10 | lower(-5)=-5 | lower (-10)=-10] [if reported by camera]
+│   │   │   └── ISP_EXPOSURE_US [100..4000] [if reported by camera]
+│   │   ├── IP CAMERA
+│   │   │   ├── Camera preset [SIYI camera | Generic RTSP camera | Custom]
+│   │   │   ├── Camera IPv4 address [free text]
+│   │   │   ├── RTSP port [free text]
+│   │   │   ├── Stream path [free text]
+│   │   │   ├── Open camera WebUI
+│   │   │   ├── Save connection
+│   │   │   ├── Expert: edit the GStreamer source pipeline [Off | On]
+│   │   │   ├── RTSP source [free text]
+│   │   │   ├── Video-link reservation (from: 1; to: 20; step: 1)
+│   │   │   ├── Apply
+│   │   │   ├── IP_CAM_PIPELINE [text] [if reported by camera]
+│   │   │   └── IP_CAM_ADDRESS [text] [if reported by camera]
+│   │   ├── ADVANCED
+│   │   │   ├── LIBCAMERA_IMPL [GStreamer (libcamerasrc)=0 | libcamera direct (rpicam-vid)=1; advanced only] [if reported by camera]
+│   │   │   ├── QP_PID_ENABLE [Disable=0 | Enable=1] [if reported by camera]
+│   │   │   ├── RK_BITRATE_PID [Disable=0 | Enable=1] [if reported by camera]
+│   │   │   ├── FORCE_SW_ENC [Disable=0 | Enable=1; hidden filter bypassed in advanced mode] [if reported by camera]
+│   │   │   ├── V_SWITCH_CAM [Disable=0 | Enable=1] [if reported by camera]
+│   │   │   ├── V_PRIMARY_PERC [device-defined values] [if reported by camera]
+│   │   │   ├── V_IP_CAM_MBITS [1 MBit/s=1 | 2 MBit/s (default)=2 | 3 MBit/s=3 | 4 MBit/s=4] [if reported by camera]
+│   │   │   ├── INTRA_REFRESH [NONE=-1 | CYCLIC=0 | ADAPTIVE=1 | BOTH=2 | CYCLIC_ROWS=2130706433; hidden filter bypassed in advanced mode] [if reported by camera]
+│   │   │   ├── GX_DAYNIGHT [Day / IR-cut=0 | Night / clear=1 | External trigger=2] [if reported by camera]
+│   │   │   ├── GX_IRCUT_DIR [Normal=0 | Reversed=1] [if reported by camera]
+│   │   │   ├── GX_IRCUT_TIMER [Disable=0 | Enable=1] [if reported by camera]
+│   │   │   ├── GX_WB_MODE [Manual=0 | Auto=2] [if reported by camera]
+│   │   │   ├── GX_GAIN [0..720] [if reported by camera]
+│   │   │   ├── GX_AE_MAX_GAIN [0..720] [if reported by camera]
+│   │   │   ├── GX_AE_MAX_US [16..33333] [if reported by camera]
+│   │   │   ├── GX_AE_STRATEGY [Highlight priority=0 | Shadow priority=1] [if reported by camera]
+│   │   │   ├── GX_WB_RED [0..4095] [if reported by camera]
+│   │   │   ├── GX_WB_BLUE [0..4095] [if reported by camera]
+│   │   │   ├── GX_HUE [0..100] [if reported by camera]
+│   │   │   ├── GX_AE_TARGET [0..255] [if reported by camera]
+│   │   │   ├── GX_DRC [0..255] [if reported by camera]
+│   │   │   ├── GX_GAMMA [Linear=0 | Default=1 | Gamma 1.6=2 | Gamma 1.8=3 | Gamma 2.0=4 | Gamma 2.2=5 | Style 1=6 | Style 2=7 | Style 3=8 | Style 4=9 | Style 5=10 | Style 6=11] [if reported by camera]
+│   │   │   ├── HIGH_ENCRYPTION [Disable=0 | Enable=1] [if reported by camera]
+│   │   │   ├── ARDUCAM_HDR [Standard=0 | 3-exposure HDR (experimental)=1] [if reported by camera]
+│   │   │   ├── ISP_AE_MODE [Auto=0 | Manual=1] [if reported by camera]
+│   │   │   ├── ISP_AE_PROFILE [Normal=0 | Sport (2 ms shutter)=1 | Fly (ground priority, experimental)=2] [if reported by camera]
+│   │   │   ├── ISP_GAIN [100..800] [if reported by camera]
+│   │   │   ├── ISP_WB_AUTO [Manual=0 | Automatic=1] [if reported by camera]
+│   │   │   ├── ISP_WB_K [2000..10000] [if reported by camera]
+│   │   │   ├── ISP_GAMMA [0..200] [if reported by camera]
+│   │   │   ├── ARDUCAM_HDR_INFO [text; read-only] [if reported by camera]
+│   │   │   └── SENSOR_MODE [Supported sensor modes, camera dependent; advanced only] [if reported by camera]
+│   │   ├── Camera row editor
+│   │   │   ├── READ ONLY [dynamic_model: root.uniqueResolutions()]
+│   │   │   ├── READ ONLY [dynamic_model: root.fpsForResolution(formatEditor.selectedResolution)]
+│   │   │   ├── Apply
+│   │   │   ├── READ ONLY [dynamic_model: root.sensorModes()]
+│   │   │   ├── Apply
+│   │   │   ├── READ ONLY (from: root.sliderMinimum(); to: root.sliderMaximum(); step: 1)
+│   │   │   ├── On / Off [Off | On]
+│   │   │   ├── READ ONLY [dynamic_model: root.streamModel ? root.streamModel.get_supported_camera_names(root.platformType) : []]
+│   │   │   ├── Apply
+│   │   │   └── READ ONLY {root.paramId}
+│   │   ├── Camera selection dialog
+│   │   │   ├── Your AIR Platform: %1 [DUMMY_MANUFACTURER]
+│   │   │   ├── Your AIR Platform: %1 [CAM TYPE=0]
+│   │   │   ├── CANCEL
+│   │   │   └── SAVE
+│   │   └── Resolution selection dialog
+│   │       ├── Your Camera: %1 [480p@60fps  (4:3)=640x480@60 | 720p@60fps  (16:9)=1280x720@60 | 1080p@30fps (16:9)=1920x1080@30]
+│   │       ├── WIDTHxHEIGHT@FPS [free text]
+│   │       ├── experiment [Off | On]
+│   │       ├── CANCEL
+│   │       └── SAVE
+│   ├── STORAGE
+│   │   ├── Use for recordings
+│   │   ├── Prepare
+│   │   ├── Erase
+│   │   ├── Refresh
+│   │   ├── %1 total
+│   │   │   ├── Add recording partition
+│   │   │   ├── Set up storage
+│   │   │   └── Make space for recordings
+│   │   └── Storage confirmation
+│   │       ├── OK
+│   │       └── Cancel
+│   ├── AIR
+│   │   ├── IP CAMERA SETUP [SIYI camera | Generic RTSP camera | Custom]
+│   │   ├── Camera IP [free text]
+│   │   ├── RTSP port [free text]
+│   │   ├── RTSP port [free text]
+│   │   ├── SAVE CAMERA CONNECTION
+│   │   ├── Link reservation (from: 1; to: 20; step: 1)
+│   │   ├── Save Mbit/s
+│   │   ├── Open WebUI
+│   │   ├── Expert: edit GStreamer pipeline [Off | On]
+│   │   ├── IP CAMERA SETUP [free text]
+│   │   └── All reported parameters, including hidden / per-card entries; values expanded in shared reference below
+│   ├── GROUND
+│   │   ├── IP CAMERA SETUP [SIYI camera | Generic RTSP camera | Custom]
+│   │   ├── Camera IP [free text]
+│   │   ├── RTSP port [free text]
+│   │   ├── RTSP port [free text]
+│   │   ├── SAVE CAMERA CONNECTION
+│   │   ├── Link reservation (from: 1; to: 20; step: 1)
+│   │   ├── Save Mbit/s
+│   │   ├── Open WebUI
+│   │   ├── Expert: edit GStreamer pipeline [Off | On]
+│   │   ├── IP CAMERA SETUP [free text]
+│   │   └── All reported parameters, including hidden / per-card entries; values expanded in shared reference below
+│   └── EXTRAS
+│       ├── Play received audio [Off | On]
+│       ├── Output [dynamic_model: _audioControl.outputDeviceNames]
+│       ├── Output
+│       ├── Playback volume (from: 0; to: 100; step: 1)
+│       ├── AUDIO
+│       │   └── AUDIO INPUT & OUTPUT
+│       │       ├── Stream audio from air unit [Off | On]
+│       │       ├── Audio source [always: Microphone | Test tone; when_example_audio_available: Example audio (loop)]
+│       │       ├── Microphone [always: System default; dynamic: Detected microphone inputs AUD_DEV_0 to AUD_DEV_7]
+│       │       ├── Microphone
+│       │       └── Microphone gain (from: 0; to: 1000; step: 1)
+│       ├── ADS-B
+│       │   └── ADS-B TRAFFIC
+│       │       ├── Enable ADS-B receiver on Air unit [Off | On]
+│       │       ├── Enable ADS-B receiver on Ground unit [Off | On]
+│       │       ├── Enable ADS-B traffic in QOpenHD [Off | On]
+│       │       ├── Traffic source [Internet | SDR / OpenHD]
+│       │       ├── Display radius (from: 5000; to: 200000; step: 5000)
+│       │       ├── Show unknown / zero altitude [Off | On]
+│       │       ├── Show three closest aircraft widget [Off | On]
+│       │       └── Show aircraft direction on OSD [Off | On]
+│       ├── RC / LOGS
+│       │   ├── EDGETX / OPENTX LUA SETTINGS
+│       │   │   ├── Enable Lua settings protocol [Off | On]
+│       │   │   └── First RC channel (from: 0; to: 15; step: 1)
+│       │   └── DIAGNOSTIC LOGS
+│       │       ├── OpenHD logs on Air [Off | On]
+│       │       ├── OpenHD logs on Ground [Off | On]
+│       │       ├── Raw telemetry recording on Air [Off | On]
+│       │       ├── Raw telemetry recording on Ground [Off | On]
+│       │       └── Keep Devourer log enabled separately [Off | On]
+│       ├── DATA LINK
+│       │   └── UNIVERSAL UDP DATA LINK
+│       │       ├── Enabled on air and ground [Off | On]
+│       │       ├── UNIVERSAL UDP DATA LINK [5 | 10 | 20 | 40]
+│       │       ├── UNIVERSAL UDP DATA LINK (from: 0; to: 100; step: 1)
+│       │       ├── UNIVERSAL UDP DATA LINK (from: 1; to: 80; step: 1)
+│       │       ├── UNIVERSAL UDP DATA LINK (from: 0; to: 100000; step: 100)
+│       │       ├── UNIVERSAL UDP DATA LINK (from: 1024; to: 65535; step: 1)
+│       │       └── UNIVERSAL UDP DATA LINK (from: 1024; to: 65535; step: 1)
+│       └── FLEETCONTROL
+│           ├── Sign out
+│           ├── Sign in to assign your craft to a certificate. [free text]
+│           ├── Sign in to assign your craft to a certificate. [free text]
+│           ├── Sign in
+│           ├── Certificate [dynamic_model: root.fleetBackend ? root.fleetBackend.licenses.map(function(license) { return license.plan + " · " + license.id.slice(-6) }) : []]
+│           ├── Certificate [dynamic_model: root.availableCrafts.map(function(craft) { return craft.name })]
+│           ├── Assign craft
+│           ├── Stop transmission / Start transmission
+│           └── Video encryption [Off | On]
+├── OSD / OSD & APPLICATION
+│   ├── WIDGETS
+│   │   ├── OHD LINK / STREAMING WIDGETS
+│   │   │   ├── Show Widgets [Off | On]
+│   │   │   ├── Show Link Overview [Off | On]
+│   │   │   ├── Show Bottom Link Bar [Off | On]
+│   │   │   ├── Show Video Debug Widget [Off | On]
+│   │   │   └── Show Artosyn Debug Widget [Off | On]
+│   │   ├── UAV (FC) WIDGETS
+│   │   │   ├── Show Flight Mode [Off | On]
+│   │   │   ├── Show IMU Sensor Temperature [Off | On]
+│   │   │   ├── Show Pressure Sensor Temperature [Off | On]
+│   │   │   ├── Show Pressure Sensor 2 Temperature [Off | On]
+│   │   │   ├── Show Pressure Sensor 3 Temperature [Off | On]
+│   │   │   ├── Show Airspeed Sensor Temperature [Off | On]
+│   │   │   ├── Show Esc Temperature [Off | On]
+│   │   │   ├── Show Battery Temperature [Off | On]
+│   │   │   ├── Show Horizon [Off | On]
+│   │   │   ├── Show performance horizon [Off | On]
+│   │   │   ├── Show Flight Path Vector [Off | On]
+│   │   │   ├── Show Altitude [Off | On]
+│   │   │   ├── Show Speed [Off | On]
+│   │   │   ├── Show Heading [Off | On]
+│   │   │   ├── Show Bank Angle Indicator [Off | On]
+│   │   │   ├── Show Home Arrow [Off | On]
+│   │   │   ├── Show Control Inputs [Off | On]
+│   │   │   ├── Show Vibration [Off | On]
+│   │   │   ├── Show Vertical Speed Gauge [Off | On]
+│   │   │   ├── Show Angle of Attack [Off | On]
+│   │   │   ├── Show distance sensor widget [Off | On]
+│   │   │   └── Show (GPS) time widget [Off | On]
+│   │   ├── OTHER
+│   │   │   ├── Show Map [Off | On]
+│   │   │   ├── Show ADSB [Off | On]
+│   │   │   ├── Show log messages on-screen [Off | On]
+│   │   │   ├── Show Sidebar [Off | On]
+│   │   │   ├── Show QT Render stats [Off | On]
+│   │   │   ├── Show IP Camera Control [Off | On]
+│   │   │   └── Show GPIO [Off | On]
+│   │   └── LEGACY
+│   │       ├── Show TX Temperature [Off | On]
+│   │       ├── Show RX Temperature [Off | On]
+│   │       ├── Show Retransmission Stats [Off | On]
+│   │       ├── Show Downlink RSSI [Off | On]
+│   │       ├── Show Uplink RSSI [Off | On]
+│   │       ├── Show live rate control widget [Off | On]
+│   │       ├── Show video widget [Off | On]
+│   │       ├── Show RC RSSI (not OpenHD RC) [Off | On]
+│   │       ├── Show Ground Status [Off | On]
+│   │       ├── Show Air Status [Off | On]
+│   │       ├── Show Air Battery [Off | On]
+│   │       ├── Show Ground Battery [Off | On]
+│   │       ├── Show mAh [Off | On]
+│   │       ├── Show Efficiency in mAh/km [Off | On]
+│   │       ├── Show Total Flight Distance [Off | On]
+│   │       ├── Show Wind [Off | On]
+│   │       ├── Show GPS [Off | On]
+│   │       ├── Show Home Distance [Off | On]
+│   │       ├── Show Flight Timer [Off | On]
+│   │       ├── Show Second Speed [Off | On]
+│   │       ├── Show Throttle [Off | On]
+│   │       ├── Show Missions [Off | On]
+│   │       ├── Show Vertical Speed (minimal) [Off | On]
+│   │       └── Show Second Altitude [Off | On]
+│   ├── STYLE
+│   │   ├── Matrix
+│   │   ├── Trainwreck
+│   │   ├── RESET
+│   │   ├── Shape Color [Color picker (arbitrary color)]
+│   │   ├── Glow Color [Color picker (arbitrary color)]
+│   │   ├── Text Color [Color picker (arbitrary color)]
+│   │   └── Text font [Sans Serif | Acme | Aldrich | Anonymous Pro | Archivo | Archivo Black | Armata | Bangers | Black Ops One | Bungee | Carbon | Chicle | Digital Counter 7 | Expletus Sans | Fjalla One | Fredoka One | Geostar Fill | Iceberg | Iceland | Jura | Keania One | Larabiefont | LED Display7 | Luckiest Guy | Merysha | Nixie One | Orbitron | Oxygen | Passion One | Quantico | Quicksand | Rammetto One | Rationale | Righteous | Roboto Mono | Russo One | Share Tech | Share Tech Mono | Sigmar One | Slackey | Subway Ticker | Ubuntu Mono | Visitor TT1 BRK | Zolan Mono BTN]
+│   ├── GENERAL
+│   │   ├── Enable text to speech [Off | On]
+│   │   ├── Use Imperial units [Off | On]
+│   │   ├── Animation Smoothing (from: 0; to: 1000; step: 25)
+│   │   ├── Ground Battery Cells (from: 1; to: 6; step: 1)
+│   │   ├── Language [English: en | German: de]
+│   │   ├── Mavlink sys id (from: 1; to: 255; step: 1)
+│   │   ├── Latitude GPS offset (from: 0.0; to: 3.0; step: 0.01)
+│   │   └── Longitude GPS offset (from: 0.0; to: 3.0; step: 0.01)
+│   ├── VEHICLE
+│   │   ├── Vehicle Battery Cells (from: 1; to: 32; step: 1)
+│   │   ├── Set FC Battery Capacity (from: 100; to: 100000; step: 100)
+│   │   ├── Apply
+│   │   ├── Show FC Messages in HUD [Off | On]
+│   │   ├── Set mavlink message rates [Off | On]
+│   │   ├── High mavlink message rates [Off | On]
+│   │   ├── High mavlink message rates RC [Off | On]
+│   │   └── Log quiet FC warning [Off | On]
+│   ├── VIDEO
+│   │   ├── Number of Cameras (from: 1; to: 2; step: 1)
+│   │   ├── Scale primary video to fit screen [Off | On]
+│   │   ├── Switch primary / secondary video [Off | On]
+│   │   ├── Advanced video settings
+│   │   │   ├── Primary video codec [H264 | H265]
+│   │   │   ├── Use low latency RTP parser [Off | On]
+│   │   │   ├── Enable audio playback (experimental) [Off | On]
+│   │   │   ├── Use Software Decode [Off | On]
+│   │   │   ├── Primary video udp port (from: 1; to: 6900; step: 1)
+│   │   │   ├── Secondary video codec [H264 | H265]
+│   │   │   ├── Secondary video udp port (from: 1; to: 6900; step: 1)
+│   │   │   ├── Secondary video input (Android dev) [UDP secondary port | UDP primary port | HTTP test clip]
+│   │   │   ├── Disable primary video (Android) [Off | On]
+│   │   │   ├── Video test mode [DISABLE | RAW_VIDEO | RAW_DECODE_ENCODE]
+│   │   │   ├── Limit FPS in test file (from: -1; to: 240; step: 1)
+│   │   │   ├── Use RPI decoding [Off | On]
+│   │   │   ├── Use external decoding service [Off | On]
+│   │   │   └── Use KMS DRM overlay renderer (experimental) [Off | On]
+│   │   └── Screen & display
+│   │       ├── Screen Scale (from: 0.3; to: 2.5; step: .1)
+│   │       ├── Auto hide cursor [Off | On]
+│   │       ├── Set cursor Skin (from: 0; to: 7; step: 1)
+│   │       ├── Cursor Scale (from: 0; to: 7; step: 1)
+│   │       └── Advanced screen settings
+│   │           ├── Screen rotation [0° | 90° (WARNING) | 180° | 270° (WARNING)]
+│   │           ├── Transparent Background [Off | On]
+│   │           ├── Full screen [Off | On]
+│   │           ├── Swap interval 0 [Off | On]
+│   │           ├── Transparent settings [Off | On]
+│   │           └── Font DPI [-1 Disable | 0 Auto (Recommended) | 50 (ultra small) | 72 (smaller) | 100 | 120 (bigger) | 150 (ultra big)]
+│   ├── MAP
+│   │   ├── Create offline map...
+│   │   ├── %1 offline map packages installed [dynamic_model: _offlineMapTiles.packages]
+│   │   ├── Jump to map
+│   │   ├── Stop demo flight / Debug: circling plane
+│   │   ├── Show map [Off | On]
+│   │   ├── Map provider [OpenStreetMap | Mapbox (API key) | OpenHD Offline]
+│   │   ├── Map style [dynamic_model: mapTarget.supportedMapTypes]
+│   │   ├── Mapbox API key [free text]
+│   │   ├── Reload map
+│   │   ├── Zoom (from: 1; to: 30; step: 1)
+│   │   ├── Small map shape [Rounded rectangle | Round]
+│   │   ├── Small map size (from: 0.25; to: 8; step: 0.05)
+│   │   ├── Small map opacity (from: 0.1; to: 1; step: 0.1)
+│   │   ├── Expanded map opacity (from: 0.1; to: 1; step: 0.1)
+│   │   ├── Lock map to drone direction [Off | On]
+│   │   ├── Show drone track [Off | On]
+│   │   ├── Show mission waypoints [Off | On]
+│   │   ├── Enable ADS-B [Off | On]
+│   │   ├── ADS-B SDR source [Off | On]
+│   │   ├── ADS-B radius: %1 km (from: 5000; to: 100000; step: 1000)
+│   │   └── Offline map creator
+│   │       ├── Create an offline map [free text]
+│   │       ├── Create an offline map [dynamic_model: root.builder.searchResults]
+│   │       ├── Create an offline map [Overview | Standard detail | High detail | Maximum detail]
+│   │       └── Region selection
+│   └── DEV
+│       ├── Enable advanced settings [Off | On]
+│       ├── Allow frequency change when armed [Off | On]
+│       ├── Show all wifi channels [Off | On]
+│       ├── Disable auto fetch [Off | On]
+│       ├── Show link routing [Off | On]
+│       ├── Show link usage [Off | On]
+│       ├── Simulate Ethernet link [Off | On]
+│       ├── Simulate WiFiBroadcast link [Off | On]
+│       ├── Simulate UART link [Off | On]
+│       ├── Save
+│       ├── Load
+│       ├── Reset
+│       ├── Disable STBC warning [Off | On]
+│       ├── Continue
+│       └── Cancel
+├── Log
+│   ├── GROUND
+│   ├── AIR
+│   └── FC
+├── RC
+│   ├── OVERVIEW
+│   ├── OPENHD RC
+│   ├── FC CHANNELS
+│   └── mLRS settings (from overview)
+│       ├── REFRESH
+│       ├── APPLY
+│       ├── SAVE TO RADIO
+│       ├── POWER
+│       │   ├── mLRS power index. The actual mW/dBm depends on the transmitter hardware. (from: 0; to: 15; step: 1)
+│       │   └── mLRS power index. The actual mW/dBm depends on the receiver hardware. (from: 0; to: 15; step: 1)
+│       ├── RF LINK
+│       │   ├── Mode [50 Hz | 31 Hz | 19 Hz | FLRC | FSK | 19 Hz 7x]
+│       │   ├── Mode [2.4 GHz | 915 FCC | 868 MHz | 433 MHz | 70 cm | 866 India | 915 + 2.4 | 868 + 2.4]
+│       │   └── Mode [Off | 1/3 | 2/3 | 3/3]
+│       └── PAIRING
+│           └── Bind phrase [free text]
+├── Connect
+│   ├── AUTO
+│   ├── MANUAL UDP
+│   ├── MANUAL TCP
+│   ├── Open Android tethering settings
+│   ├── Ethernet forward + internet instructions
+│   ├── Ethernet hotspot instructions
+│   ├── TCP TARGET [free text]
+│   ├── SAVE
+│   ├── SCANNING %1% / SCAN ETHERNET FOR OPENHD
+│   └── CONNECT
+├── Credits
+├── MAV Debug
+│   ├── Ping systems
+│   ├── Clear
+│   ├── Pause / Start
+│   └── Close
+└── Developer tools (version label)
+    └── QOpenHD service confirmation
+        ├── Cancel
+        └── Button
+
+Shared parameter reference — not a separate UI menu
+The same catalog serves Air, Ground and camera models. Actual model membership is not recorded in the catalog.
+├── General
+│   ├── VARIABLE_BITRATE [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── QP_MAX [0..51; hidden filter bypassed in advanced mode]
+│   ├── QP_MIN [0..51; hidden filter bypassed in advanced mode]
+│   ├── WB_E_STBC [Disable=0 | +1 (2 antennas)=1; hidden filter bypassed in advanced mode]
+│   ├── WB_E_LDPC [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── WB_E_SHORT_GUARD [LONG_GI (default)=0 | SHORT_GI=1; hidden filter bypassed in advanced mode]
+│   ├── ESP_ANALYSE [Disable=0 | Enable=1]
+│   ├── WB_PASSIVE_MODE [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── WB_PIT_MODE [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── DEV_HIGH_RETR [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── WB_RED_TX [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── WB_ADAPT_CH [Disable=0 | Enable=1]
+│   ├── WB_FHSS [Disable=0 | Enable=1]
+│   ├── WB_FHSS_SLOT [25 ms=25 | 50 ms=50 | 100 ms=100]
+│   ├── RC_OHD_CTRL [Disable=0 | Enable=1]
+│   ├── RC_SET_BASE [0..15]
+│   ├── WB_ENABLE_RETRA [Disable=0 | Enable=1; hidden filter bypassed in advanced mode; reboot required]
+│   ├── WB_RTX_VIDEO [Disable=0 | Enable=1; hidden filter bypassed in advanced mode; reboot required]
+│   ├── WB_RTX_TELEM [Disable=0 | Enable=1; hidden filter bypassed in advanced mode; reboot required]
+│   ├── WB_RTX_RC [Disable=0 | Enable=1; hidden filter bypassed in advanced mode; reboot required]
+│   ├── WB_RTX_V_MAXMS [1..100; hidden filter bypassed in advanced mode]
+│   ├── WB_RTX_T_MAXMS [1..100; hidden filter bypassed in advanced mode]
+│   ├── WB_RTX_R_MAXMS [1..100; hidden filter bypassed in advanced mode]
+│   ├── WB_RTX_REQ_REP [1..10; hidden filter bypassed in advanced mode]
+│   ├── TX_POWER_I [Unitless [1]=1 | Unitless [3]=3 | Unitless [6]=6 | Unitless [10]=10 | Unitless [20]=20 | Unitless [26]=26 | Unitless [40]=40 | Unitless [60]=60 | Unitless [63]=63; hidden filter bypassed in advanced mode]
+│   ├── TX_POWER_I_ARMED [Disabled [0]=0 | Unitless [1]=1 | Unitless [3]=3 | Unitless [6]=6 | Unitless [10]=10 | Unitless [20]=20 | Unitless [26]=26 | Unitless [40]=40 | Unitless [60]=60 | Unitless [63]=63; hidden filter bypassed in advanced mode]
+│   ├── TX_POWER_MW [device-defined values; hidden filter bypassed in advanced mode]
+│   ├── TX_POWER_MW_ARM [device-defined values; hidden filter bypassed in advanced mode]
+│   ├── TX_PWR_LVL [0%=0 | 20%=20 | 40%=40 | 60%=60 | 80%=80 | 100%=100 | 110% (OVERDRIVE)=110 | 120% (OVERDRIVE)=120 | 130% (OVERDRIVE)=130 | 140% (OVERDRIVE)=140 | 150% (MAX OVERDRIVE)=150; hidden filter bypassed in advanced mode]
+│   ├── WB_V_FEC_BLK_L [AUTO (Default)=0 | FEC_K=8=8 | FEC_K=10=10 | FEC_K=12=12 | FEC_K=16=16 | FEC_K=20=20 | FEC_K=50=50]
+│   ├── WB_V_RATE_PERC [70% (lower)=70 | 80% (lower)=80 | 90% (slightly lower)=90 | DEFAULT=100 | 110% (slightly higher)=110 | 120% (higher)=120 | 130% (higher)=130; hidden filter bypassed in advanced mode]
+│   ├── WB_V_FEC_PERC [10%=10 | 20% (low interf)=20 | 30%=30 | 40%=40 | 50% (high interf)=50 | 100%=100; hidden filter bypassed in advanced mode]
+│   ├── WB_CHANNEL_W [10Mhz=10 | 20Mhz=20 | 40Mhz=40; hidden filter bypassed in advanced mode]
+│   ├── WB_MCS_INDEX [MCS0=0 | MCS1=1 | MCS2=2 | MCS3=3 | MCS4=4 | MCS5=5 | MCS6=6 | MCS7=7 | MCS8=8 | MCS9=9 | MCS10=10 | MCS11=11 | MCS12=12 | MCS13=13 | MCS14=14 | MCS15=15 | MCS16=16 | MCS17=17 | MCS18=18 | MCS19=19 | MCS20=20 | MCS21=21 | MCS22=22 | MCS23=23 | MCS24=24 | MCS25=25 | MCS26=26 | MCS27=27 | MCS28=28 | MCS29=29 | MCS30=30 | MCS31=31; hidden filter bypassed in advanced mode]
+│   ├── MCS_VIA_RC [Disable=0 | Channel 1=1 | Channel 2=2 | Channel 3=3 | Channel 4=4 | Channel 5=5 | Channel 6=6 | Channel 7=7 | Channel 8=8 | Channel 9=9 | Channel 10=10 | Channel 11=11 | Channel 12=12 | Channel 13=13 | Channel 14=14 | Channel 15=15 | Channel 16=16 | Channel 17=17 | Channel 18=18; hidden filter bypassed in advanced mode]
+│   ├── BW_VIA_RC [Disable=0 | Channel 1=1 | Channel 2=2 | Channel 3=3 | Channel 4=4 | Channel 5=5 | Channel 6=6 | Channel 7=7 | Channel 8=8 | Channel 9=9 | Channel 10=10 | Channel 11=11 | Channel 12=12 | Channel 13=13 | Channel 14=14 | Channel 15=15 | Channel 16=16 | Channel 17=17 | Channel 18=18; hidden filter bypassed in advanced mode]
+│   ├── WB_FREQUENCY [device-defined values; hidden filter bypassed in advanced mode]
+│   ├── WB_MAX_D_BZ [AUTO -1=-1 | LOW 20=20 | 30=30 | 40=40 | 50=50 | 100=100 | 128=128; hidden filter bypassed in advanced mode]
+│   ├── WIFI_CARD0 [device-defined values; read-only]
+│   ├── WIFI_CARD1 [device-defined values; read-only]
+│   ├── WIFI_CARD2 [device-defined values; read-only]
+│   ├── WIFI_CARD3 [device-defined values; read-only]
+│   ├── HOTSPOT_CARD [device-defined values; read-only]
+│   ├── WB_N_RX_CARDS [device-defined values; read-only]
+│   ├── FC_BATT_N_CELLS [device-defined values]
+│   ├── FC_SYS_ID [1..254]
+│   ├── AR_ADDR [text]
+│   ├── AR_PORT [1..65535]
+│   ├── AR_SLOT [0..7]
+│   ├── AR_VPORT [0..255]
+│   ├── AR_TPORT [0..255]
+│   ├── AR_DGRAM [Disable=0 | Enable=1]
+│   ├── AR_RXBUF [1..2147483647]
+│   ├── AR_TXBUF [1..2147483647]
+│   ├── AR_RDTMO [0..2147483647]
+│   ├── AR_MCS_MD [Manual=0 | Auto=1]
+│   ├── AR_MCS_VAL [-1..25]
+│   ├── AR_MCS_MIN [-1..25]
+│   ├── AR_MCS_MAX [-1..25]
+│   ├── AR_BW_MD [Manual=0 | Auto=1]
+│   ├── AR_BW_VAL [Ignore (-1)=-1 | 1.25 MHz=0 | 2.5 MHz=1 | 5 MHz=2 | 10 MHz=3 | 20 MHz=4 | 40 MHz=5]
+│   ├── AR_CHN_MD [Manual=0 | Auto=1]
+│   ├── AR_CHN_IDX [-1..255]
+│   ├── AR_PWR_ATO [Manual=0 | Auto=1]
+│   ├── AR_PWR_DBM [-1..31]
+│   ├── AR_BND_MD [Ignore (-1)=-1 | Manual (0)=0 | Auto (1)=1]
+│   ├── AR_BND_VAL [Ignore (-1)=-1 | 1G (150-1000 MHz)=0 | 2G (1000-4000 MHz)=1 | 5G (4000-7000 MHz)=2]
+│   ├── AR_CMP_MD [Ignore (-1)=-1 | Disable (0)=0 | Enable (1)=1]
+│   ├── AR_PWR_MD [Ignore (-1)=-1 | Open loop (0)=0 | Closed loop (1)=1]
+│   ├── AR_LNA_MD [Ignore (-1)=-1 | Manual (0)=0 | Auto (1)=1]
+│   ├── AR_LNA_BP [Ignore (-1)=-1 | LNA (0)=0 | Bypass (1)=1]
+│   ├── AR_RF_ATX [Ignore (-1)=-1 | Off (0)=0 | On (1)=1]
+│   ├── AR_RF_ARX [Ignore (-1)=-1 | Off (0)=0 | On (1)=1]
+│   ├── AR_RF_BTX [Ignore (-1)=-1 | Off (0)=0 | On (1)=1]
+│   ├── AR_RF_BRX [Ignore (-1)=-1 | Off (0)=0 | On (1)=1]
+│   ├── AR_LK_STATE [device-defined values; read-only]
+│   ├── AR_RX_MCS [device-defined values; read-only]
+│   ├── AR_TX_MCS [device-defined values; read-only]
+│   ├── AR_BW [device-defined values; read-only]
+│   ├── AR_RX_BW [device-defined values; read-only]
+│   ├── AR_PHY_TP [device-defined values; read-only]
+│   ├── AR_REAL_TP [device-defined values; read-only]
+│   ├── AR_TX_FREQ [device-defined values; read-only]
+│   ├── AR_RX_FREQ [device-defined values; read-only]
+│   ├── AR_SNR [device-defined values; read-only]
+│   ├── AR_LDPC_E [device-defined values; read-only]
+│   ├── AR_LDPC_N [device-defined values; read-only]
+│   ├── AR_GAIN_A [device-defined values; read-only]
+│   ├── AR_GAIN_B [device-defined values; read-only]
+│   ├── AR_CHN_AUT [device-defined values; read-only]
+│   ├── AR_CHN_CUR [device-defined values; read-only]
+│   ├── AR_CHN_FK [device-defined values; read-only]
+│   ├── AR_PWR_CUR [device-defined values; read-only]
+│   ├── AR_BND_AUT [device-defined values; read-only]
+│   ├── AR_BND_CUR [device-defined values; read-only]
+│   ├── AR_RF_ATX_R [device-defined values; read-only]
+│   ├── AR_RF_ARX_R [device-defined values; read-only]
+│   ├── AR_RF_BTX_R [device-defined values; read-only]
+│   ├── AR_RF_BRX_R [device-defined values; read-only]
+│   ├── AR_SW_VER [device-defined values; read-only]
+│   ├── AR_HW_VER [device-defined values; read-only]
+│   ├── AR_FW_VER [device-defined values; read-only]
+│   ├── AR_CMP_TM [device-defined values; read-only]
+│   ├── AR_UPTIME [device-defined values; read-only]
+│   ├── AR_RUNSYS [device-defined values; read-only]
+│   ├── AR_AP_TIME [device-defined values; read-only]
+│   ├── AR_TX_TPTH [device-defined values; read-only]
+│   ├── AR_RX_TPTH [device-defined values; read-only]
+│   ├── AR_P_SNR [device-defined values; read-only]
+│   ├── AR_P_LDPC_E [device-defined values; read-only]
+│   ├── AR_P_LDPC_N [device-defined values; read-only]
+│   ├── AR_P_GAIN_A [device-defined values; read-only]
+│   ├── AR_P_GAIN_B [device-defined values; read-only]
+│   ├── AR_ROLE [device-defined values; read-only]
+│   ├── AR_MODE [device-defined values; read-only]
+│   ├── AR_SYNC [device-defined values; read-only]
+│   ├── AR_SYNC_M [device-defined values; read-only]
+│   ├── AR_CFG_SBM [device-defined values; read-only]
+│   ├── AR_RT_SBM [device-defined values; read-only]
+│   ├── AR_LMAC [device-defined values; read-only]
+│   ├── AR_PAIR [device-defined values; read-only]
+│   ├── AR_PMAC [device-defined values; read-only]
+│   ├── AR_TX_RFM [device-defined values; read-only]
+│   ├── AR_RX_RFM [device-defined values; read-only]
+│   ├── AR_TX_TEN [device-defined values; read-only]
+│   ├── AR_RX_TEN [device-defined values; read-only]
+│   ├── AR_TX_TNM [device-defined values; read-only]
+│   ├── AR_RX_TNM [device-defined values; read-only]
+│   ├── AR_TX_TLN [device-defined values; read-only]
+│   ├── AR_RX_TLN [device-defined values; read-only]
+│   ├── AR1_S_SNR [device-defined values; read-only]
+│   ├── AR1_S_LDPT [device-defined values; read-only]
+│   ├── AR1_S_LDPN [device-defined values; read-only]
+│   ├── AR1_S_GNA [device-defined values; read-only]
+│   ├── AR1_S_GNB [device-defined values; read-only]
+│   ├── AR1_S_MCS [device-defined values; read-only]
+│   ├── AR1_S_CHN [device-defined values; read-only]
+│   ├── AR1_S_PWR [device-defined values; read-only]
+│   ├── AR1_S_LNI [device-defined values; read-only]
+│   ├── AR1_S_LNF [device-defined values; read-only]
+│   ├── AR1_S_1TX [device-defined values; read-only]
+│   ├── AR1_S_TFK [device-defined values; read-only]
+│   ├── AR1_S_LSN [device-defined values; read-only]
+│   ├── AR1_S_LGA [device-defined values; read-only]
+│   ├── AR1_S_LGB [device-defined values; read-only]
+│   ├── AR1_S_HSN [device-defined values; read-only]
+│   ├── AR1_S_HGA [device-defined values; read-only]
+│   ├── AR1_S_HGB [device-defined values; read-only]
+│   ├── AR1_P_SNR [device-defined values; read-only]
+│   ├── AR1_P_LDPT [device-defined values; read-only]
+│   ├── AR1_P_LDPN [device-defined values; read-only]
+│   ├── AR1_P_GNA [device-defined values; read-only]
+│   ├── AR1_P_GNB [device-defined values; read-only]
+│   ├── AR1_P_MCS [device-defined values; read-only]
+│   ├── AR1_P_CHN [device-defined values; read-only]
+│   ├── AR1_P_PWR [device-defined values; read-only]
+│   ├── AR1_P_LNI [device-defined values; read-only]
+│   ├── AR1_P_LNF [device-defined values; read-only]
+│   ├── AR1_P_1TX [device-defined values; read-only]
+│   ├── AR1_P_TFK [device-defined values; read-only]
+│   ├── AR1_P_LSN [device-defined values; read-only]
+│   ├── AR1_P_LGA [device-defined values; read-only]
+│   ├── AR1_P_LGB [device-defined values; read-only]
+│   ├── AR1_P_HSN [device-defined values; read-only]
+│   ├── AR1_P_HGA [device-defined values; read-only]
+│   ├── AR1_P_HGB [device-defined values; read-only]
+│   ├── AR_V_RX_AV [device-defined values; read-only]
+│   ├── AR_V_RX_OV [device-defined values; read-only]
+│   ├── AR_V_RX_BS [device-defined values; read-only]
+│   ├── AR_V_RX_DS [device-defined values; read-only]
+│   ├── AR_V_TX_AV [device-defined values; read-only]
+│   ├── AR_V_TX_OV [device-defined values; read-only]
+│   ├── AR_V_TX_BS [device-defined values; read-only]
+│   ├── AR_V_TX_DS [device-defined values; read-only]
+│   ├── AR_T_RX_AV [device-defined values; read-only]
+│   ├── AR_T_RX_OV [device-defined values; read-only]
+│   ├── AR_T_RX_BS [device-defined values; read-only]
+│   ├── AR_T_RX_DS [device-defined values; read-only]
+│   ├── AR_T_TX_AV [device-defined values; read-only]
+│   ├── AR_T_TX_OV [device-defined values; read-only]
+│   ├── AR_T_TX_BS [device-defined values; read-only]
+│   ├── AR_T_TX_DS [device-defined values; read-only]
+│   ├── RESOLUTION_FPS [640x480@30=640x480@30 | 640x480@60=640x480@60 | 640x480@90=640x480@90 | 1280x720@30=1280x720@30 | 1280x720@49=1280x720@49 | 1280x720@60=1280x720@60 | 1920x1080@30=1920x1080@30]
+│   ├── IP_CAM_PIPELINE [text]
+│   ├── IP_CAM_ADDRESS [text]
+│   ├── VIDEO_CODEC [h264=0 | h265=1; hidden filter bypassed in advanced mode]
+│   ├── LIBCAMERA_IMPL [GStreamer (libcamerasrc)=0 | libcamera direct (rpicam-vid)=1]
+│   ├── ROCKCHIP_IMPL [GStreamer (MPP elements)=0 | MPP direct (native)=1]
+│   ├── AIR_RECORDING_E [DISABLE=0 | ENABLE=1 | AUTO(armed)=2]
+│   ├── STREAMING_E [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── BITRATE_MBITS [2MBit/s=2 | 4MBit/s=4 | 6MBit/s=6 | 8MBit/s (default)=8 | 10MBit/s (high)=10 | 14MBit/s (high)=14 | 18MBit/s (high)=18; hidden filter bypassed in advanced mode]
+│   ├── KEYFRAME_I [2  (best recovery)=2 | 3  (best recovery)=3 | 5  (good recovery)=5 | 8  (good recovery)=8 | 10 (medium recovery)=10 | 15 (medium recovery)=15 | 20 (bad recovery)=20; hidden filter bypassed in advanced mode]
+│   ├── QP_PID_ENABLE [Disable=0 | Enable=1]
+│   ├── RK_BITRATE_PID [Disable=0 | Enable=1]
+│   ├── FORCE_SW_ENC [Disable=0 | Enable=1; hidden filter bypassed in advanced mode]
+│   ├── V_SWITCH_CAM [Disable=0 | Enable=1]
+│   ├── V_PRIMARY_PERC [device-defined values]
+│   ├── V_IP_CAM_MBITS [1 MBit/s=1 | 2 MBit/s (default)=2 | 3 MBit/s=3 | 4 MBit/s=4]
+│   ├── ROTATION_FLIP [NONE=0 | Horizontal mirror=1 | Vertical flip=2 | Both (180Â°)=3]
+│   ├── ROTATION_DEG [0Â°(disable)=0 | 180Â°=180]
+│   ├── INTRA_REFRESH [NONE=-1 | CYCLIC=0 | ADAPTIVE=1 | BOTH=2 | CYCLIC_ROWS=2130706433; hidden filter bypassed in advanced mode]
+│   ├── BRIGHTNESS [device-defined values]
+│   ├── ISO [device-defined values]
+│   ├── GX_DAYNIGHT [Day / IR-cut=0 | Night / clear=1 | External trigger=2]
+│   ├── GX_IRCUT_DIR [Normal=0 | Reversed=1]
+│   ├── GX_IRCUT_TIMER [Disable=0 | Enable=1]
+│   ├── GX_EXPOSURE [Manual=0 | Auto=2]
+│   ├── GX_WB_MODE [Manual=0 | Auto=2]
+│   ├── GX_GAIN [0..720]
+│   ├── GX_AE_MAX_GAIN [0..720]
+│   ├── GX_SHUTTER_US [16..33333]
+│   ├── GX_AE_MAX_US [16..33333]
+│   ├── GX_AE_STRATEGY [Highlight priority=0 | Shadow priority=1]
+│   ├── GX_WB_RED [0..4095]
+│   ├── GX_WB_BLUE [0..4095]
+│   ├── GX_SATURATION [0..100]
+│   ├── GX_CONTRAST [0..100]
+│   ├── GX_HUE [0..100]
+│   ├── GX_AE_TARGET [0..255]
+│   ├── GX_SHARPNESS [0..255]
+│   ├── GX_DENOISE_2D [0..255]
+│   ├── GX_DENOISE_3D [0..255]
+│   ├── GX_DRC [0..255]
+│   ├── GX_GAMMA [Linear=0 | Default=1 | Gamma 1.6=2 | Gamma 1.8=3 | Gamma 2.0=4 | Gamma 2.2=5 | Style 1=6 | Style 2=7 | Style 3=8 | Style 4=9 | Style 5=10 | Style 6=11]
+│   ├── AWB_MODE [OFF=0 | AUTO=1 | SUNLIGHT=2 | CLOUDY=3 | SHADE=4 | TUNGSTEN=5 | FLUORESCENT=6 | INCANDESCENT=7 | FLASH=8 | HORIZON=9]
+│   ├── EXP_MODE [OFF=0 | AUTO=1 | NIGHT=2 | NIGHTPREVIEW=3 | BACKLIGHT=4 | SPOTLIGHT=5 | SPORTS=6 | SNOW=7 | BEACH=8 | VERYLONG=9 | FIXEDFPS=10 | ANTISHAKE=11 | FIREWORKS=12]
+│   ├── METERING_MODE [AVERAGE=0 | SPOT=1 | BACKLIST=2 | MATRIX=3]
+│   ├── DENOISE_INDEX_LC [AUTO=0 | OFF=1 | CDN_OFF=2 | CDN_FAST=3 | CDN_HQ=4]
+│   ├── METERING_MODE_LC [centre (default)=0 | spot=1 | average=2]
+│   ├── AWB_MODE_LC [auto (default)=0 | incandescent=1 | tungsten=2 | fluorescent=3 | indoor=4 | daylight=5 | cloudy=6 | custom=7]
+│   ├── EXPOSURE_MODE_LC [normal (default)=0 | sport=1]
+│   ├── SHUTTER_US_LC [auto=0 | example1 (1000us)=1000 | example2 (5000us)=5000 | example3 (16666us)=16666 | example4 (33333us)=33333]
+│   ├── CONTRAST_LC [default(100)=100 | higher (120)=120 | higher (150)=150 | lower(80)=80 | lower (50)=50]
+│   ├── SATURATION_LC [default(100)=100 | higher (120)=120 | higher (150)=150 | lower(80)=80 | lower (50)=50]
+│   ├── SHARPNESS_LC [default(100)=100 | higher (120)=120 | higher (150)=150 | lower(80)=80 | lower (50)=50]
+│   ├── EXPOSURE_LC [default(0)=0 | higher (5)=5 | higher (10)=10 | lower(-5)=-5 | lower (-10)=-10]
+│   ├── HIGH_ENCRYPTION [Disable=0 | Enable=1]
+│   ├── BOARD_TYPE [device-defined values; read-only]
+│   ├── ENABLE_JOY_RC [Disable=0 | Enable=1]
+│   ├── FC_UART_FLWCTL [Disable=0 | Enable=1]
+│   ├── FC_UART_BAUD [9600=9600 | 19200=19200 | 38400=38400 | 57600=57600 | 115200=115200 | 230400=230400 | 460800=460800 | 500000=500000 | 576000=576000 | 921600=921600 | 1000000=1000000]
+│   ├── OHD_UART_EN [Disable=0 | Enable=1]
+│   ├── OHD_UART_BAUD [9600=9600 | 19200=19200 | 38400=38400 | 57600=57600 | 115200=115200 | 230400=230400 | 460800=460800 | 500000=500000 | 576000=576000 | 921600=921600 | 1000000=1000000]
+│   ├── OHD_UART_FLW [Disable=0 | Enable=1]
+│   ├── SBUS_EN [Disable=0 | Enable=1]
+│   ├── SBUS_DEV [text]
+│   ├── SBUS_HZ [1..1000]
+│   ├── TRACK_UART_BAUD [9600=9600 | 19200=19200 | 38400=38400 | 57600=57600 | 115200=115200 | 230400=230400 | 460800=460800 | 500000=500000 | 576000=576000 | 921600=921600 | 1000000=1000000]
+│   ├── TRACK_UART_FLOW [Disable=0 | Enable=1]
+│   ├── UART_PRI_RC [0 (lowest)=0 | 1=1 | 2=2 | 3 (default RC)=3 | 4=4 | 5=5 | 6=6 | 7=7 | 8=8 | 9=9 | 10 (highest)=10]
+│   ├── UART_PRI_OHD [0 (lowest)=0 | 1=1 | 2=2 | 3 (default RC)=3 | 4=4 | 5=5 | 6=6 | 7=7 | 8=8 | 9=9 | 10 (highest)=10]
+│   ├── UART_PRI_FC [0 (lowest)=0 | 1=1 | 2=2 | 3 (default RC)=3 | 4=4 | 5=5 | 6=6 | 7=7 | 8=8 | 9=9 | 10 (highest)=10]
+│   ├── CONFIG_BOOT_AIR [Disable=0 | Enable=1; hidden filter bypassed in advanced mode; reboot required]
+│   ├── MULTI_LINK_EN [Disable=0 | Enable=1]
+│   ├── MULTI_LINK_CAP [device-defined values; read-only]
+│   ├── WIFI_MODE [OFF=0 | HOTSPOT=1 | CLIENT=2]
+│   ├── WIFI_HOTSPOT_E [AUTO=0 | ALWAYS_OFF=1 | ALWAYS_ON=2]
+│   ├── WIFI_IFACES [device-defined values; read-only]
+│   ├── WIFI_HS_IFACE [text]
+│   ├── WIFI_CL_IFACE [text]
+│   ├── WIFI_CL_SSID [text]
+│   ├── WIFI_CL_PW [text]
+│   ├── ETH_HOTSPOT_E [Disable=0 | Enable=1; reboot required]
+│   ├── ETH_PASSIVE_F [Disable=0 | Enable=1]
+│   ├── ETHERNET [UNMANAGED=0 | HOTSPOT=1 | FORWARD+INTERNET=2]
+│   ├── GPIO_2 [untouched=0 | high=1 | low=2]
+│   ├── GPIO_26 [untouched=0 | high=1 | low=2]
+│   ├── FC_UART_CONN [DISABLE= | DEFAULT=DEFAULT | /dev/serial0=/dev/serial0 | /dev/ttyAMA1=/dev/ttyAMA1 | /dev/ttyAMA2=/dev/ttyAMA2 | /dev/ttyAMA3=/dev/ttyAMA3 | /dev/ttyAMA4=//dev/ttyAMA4 | /dev/serial1=/dev/serial1 | /dev/ttyS1=/dev/ttyS1 | /dev/ttyS2=/dev/ttyS2 | /dev/ttyS7=/dev/ttyS7]
+│   ├── TRACKER_UART_OUT [DISABLE= | DEFAULT=DEFAULT | /dev/serial0=/dev/serial0 | /dev/ttyAMA1=/dev/ttyAMA1 | /dev/ttyAMA2=/dev/ttyAMA2 | /dev/ttyAMA3=/dev/ttyAMA3 | /dev/ttyAMA4=//dev/ttyAMA4 | /dev/serial1=/dev/serial1 | /dev/ttyS1=/dev/ttyS1 | /dev/ttyS2=/dev/ttyS2 | /dev/ttyUSB0=/dev/ttyUSB0 | /dev/ttyUSB1=/dev/ttyUSB1 | /dev/ttyACM0=/dev/ttyACM0 | /dev/ttyACM1=/dev/ttyACM1 | /dev/ttyS7=/dev/ttyS7]
+│   ├── OHD_UART_TLM [DISABLE= | DEFAULT=DEFAULT | /dev/serial0=/dev/serial0 | /dev/ttyAMA1=/dev/ttyAMA1 | /dev/ttyAMA2=/dev/ttyAMA2 | /dev/ttyAMA3=/dev/ttyAMA3 | /dev/ttyAMA4=//dev/ttyAMA4 | /dev/serial1=/dev/serial1 | /dev/ttyS1=/dev/ttyS1 | /dev/ttyS2=/dev/ttyS2 | /dev/ttyUSB0=/dev/ttyUSB0 | /dev/ttyUSB1=/dev/ttyUSB1 | /dev/ttyACM0=/dev/ttyACM0 | /dev/ttyACM1=/dev/ttyACM1 | /dev/ttyS7=/dev/ttyS7]
+│   ├── RC_CHAN_MAP [default=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 | Steamdeck AETR=4,5,1,2,3,6,7,8,9,10,11,12,13,14,15,16,17,18 | EX1=2,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 | EX2=2,1,4,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+│   ├── COLOR_PALETE [CMD Shutter calibration=32768 | CMD YUYV output=32773 | CMD save configurations=33022 | White Hot=34816 | Black Hot=34817 | Iron Rainbow=34818 | Lava=34819 | Rainbow2=34820 | Rainbow3=34821 | Red Hot=34822 | Iron gray=34823 | HCR1=34824 | HCR2=34825 | Black hot 2=34826]
+│   ├── RC_UPDATE_HZ [device-defined values]
+│   └── AUDIO_ENABLE [DISABLE=1 | ENABLE=0 | TEST=100; hidden filter bypassed in advanced mode]
+├── Status
+│   ├── FC_FW_EVID [text; hidden filter bypassed in advanced mode; read-only]
+│   └── FC_FW_INFO [text; hidden filter bypassed in advanced mode; read-only]
+├── System
+│   ├── SYS_RUN_MODE [Air=air | Ground=ground | Record only=record; reboot required]
+│   ├── SYS_DEBUG [Disabled=0 | Enabled=1]
+│   └── SYS_PLATFORM [device-defined values; read-only]
+├── Display
+│   ├── SYS_DISP_FORCE [Automatic=0 | Forced=1; reboot required]
+│   └── SYS_DISP_MODE [text; reboot required]
+└── Camera
+    ├── ARDUCAM_HDR [Standard=0 | 3-exposure HDR (experimental)=1]
+    ├── ISP_AE_MODE [Auto=0 | Manual=1]
+    ├── ISP_AE_PROFILE [Normal=0 | Sport (2 ms shutter)=1 | Fly (ground priority, experimental)=2]
+    ├── ISP_EXPOSURE_US [100..4000]
+    ├── ISP_GAIN [100..800]
+    ├── ISP_WB_AUTO [Manual=0 | Automatic=1]
+    ├── ISP_WB_K [2000..10000]
+    ├── ISP_GAMMA [0..200]
+    └── ARDUCAM_HDR_INFO [text; read-only]
+
+Additional parameters found in adjacent OpenHD firmware source
+Only entries actually reported by your device appear in its Air/Ground/camera menu.
+├── ACTIVE_LINKS [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── ADSB_ENABLE [Disable=0 | Enable=1]
+├── AR_DMN_AUTO [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── AR_DMN_CMD [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── AR_PAIR_CMD [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── AR_RESET_CMD [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── AUDIO_DEVICE [System default (empty token) or detected microphone token]
+├── AUDIO_DEV_COUNT [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── AUDIO_EXAMPLE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── AUDIO_GAIN [minimum: 0; maximum: 1000]
+├── AUDIO_USB_COUNT [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── AUD_USB_NAMES [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── CAMERA_TYPE [Platform-supported camera model choices from camera stream model / firmware metadata]
+├── CAM_CTRL_ACTIVE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── CONTRAST [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── ETH_LINK_EN [Disable=0 | Enable=1]
+├── FHSS_VIA_RC [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── LOG_MAVLINK [Disable=0 | Enable=1]
+├── LOG_OPENHD [Disable=0 | Enable=1]
+├── MICROHARD_DUMMY0 [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── NXP_ENABLE_AUD [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── N_SLICES [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── PRIMARY_LINK [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── RK_CAM_MODE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── RK_FPS_LOCK [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── RK_HDR_STATUS [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── SATURATION [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── SENSOR_MODE [Camera-specific sensor mode choices from metadata / camera stream model]
+├── SHARPNESS [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── SIYI_ACTIVE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── TOPOTEK_ACTIVE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── TXMODE_VIA_RC [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── VEYE_CAMERAMODE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── VEYE_DENOISE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── VEYE_FRAMERATE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── VEYE_MSHUTTER [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── VEYE_WBMODE [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── VEYE_WDRBTARGETBR [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── WB_DEV_LOGS [Disable=0 | Enable=1]
+├── WB_N_CARDS [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+├── WB_UDP_BUDGET [minimum: 1; maximum: 80]
+├── WB_UDP_ENABLE [0 | 1]
+├── WB_UDP_FEC [minimum: 0; maximum: 100]
+├── WB_UDP_IN_PORT [minimum: 1024; maximum: 65535]
+├── WB_UDP_MAX_KBPS [minimum: 0; maximum: 100000]
+├── WB_UDP_OUT_PORT [minimum: 1024; maximum: 65535]
+├── WFB_LINK_EN [Disable=0 | Enable=1]
+├── WIFI_HS_PW [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+└── WIFI_HS_SSID [Not defined in QOpenHD fallback catalog; inspect device metadata / firmware validation.]
+
+Generated parameter families (hardware dependent)
+├── TX_POWER_I_* — Per-card TX power indices
+├── TX_POWER_IA_* — Per-card armed TX power indices
+├── TX_POWER_MW_* — Per-card TX power in mW
+├── TX_POWER_MWA_* — Per-card armed TX power in mW
+├── CARD_TYPE_* — Detected card types
+└── AUD_DEV_0..7 — Detected microphone token/name strings

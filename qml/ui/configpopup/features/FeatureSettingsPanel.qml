@@ -7,6 +7,7 @@ import ".."
 import "../openhd_settings"
 
 AdvancedPage {
+    showPageHeader: true
     id: root
     pageIcon: "\uf1eb"
     pageTitle: qsTr("Extras")
@@ -258,7 +259,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                visible: settings.adsb_source === 1
+                                visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 1)
                                 Label { text: qsTr("Enable ADS-B receiver on Air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
                                     enabled: root.adsbAirParameterAvailable && !_ohdSystemAirSettingsModel.ui_is_busy
@@ -268,7 +269,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                visible: settings.adsb_source === 1
+                                visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 1)
                                 Label { text: qsTr("Enable ADS-B receiver on Ground unit"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Switch {
                                     enabled: root.adsbGroundParameterAvailable && !_ohdSystemGroundSettings.ui_is_busy
@@ -291,7 +292,7 @@ AdvancedPage {
                                 }
                             }
                             Label {
-                                visible: settings.adsb_source === 0
+                                visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 0)
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Internet traffic requires no SDR. Uses craft GPS, ground-device location, or an automatic approximate internet position when GPS is unavailable.")
                             }
@@ -317,7 +318,7 @@ AdvancedPage {
                                 Switch { checked: settings.adsb_show_osd_markers; onToggled: settings.adsb_show_osd_markers = checked }
                             }
                             Label {
-                                visible: settings.adsb_source === 1 && !root.adsbAirParameterAvailable && !root.adsbGroundParameterAvailable
+                                visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 1 && !root.adsbAirParameterAvailable && !root.adsbGroundParameterAvailable)
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Connect an OpenHD unit with ADS-B support to enable its SDR receiver.")
                             }
@@ -395,7 +396,7 @@ AdvancedPage {
                                 model: _rcchannelsmodelfc
                                 delegate: RowLayout {
                                     property int protocolOffset: index - root.rcLuaBaseChannel + 1
-                                    visible: root.rcLuaBaseChannel > 0 && protocolOffset >= 0 && protocolOffset < 4
+                                    visible: _qopenhd.debugMenuPreview || (root.rcLuaBaseChannel > 0 && protocolOffset >= 0 && protocolOffset < 4)
                                     Layout.fillWidth: true
                                     Label {
                                         Layout.preferredWidth: 110; color: settings_form.primaryText; font.bold: true

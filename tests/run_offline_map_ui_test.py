@@ -43,6 +43,7 @@ def tile_fixture():
 TEST = '''import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtTest 1.2
+import QtPositioning 5.15
 Item {
     id: scene
     width: 850; height: 480
@@ -85,11 +86,22 @@ Item {
             tryCompare(canvas, "status", Loader.Ready, 10000)
             var map = findChild(canvas.item, "offlineSelectionMap")
             tryCompare(map, "mapReady", true, 10000)
+            verify(canvas.item.selectionValid)
+            var centre = canvas.item.radiusCenter
+            verify(Math.abs(centre.distanceTo(QtPositioning.coordinate(canvas.item.north, centre.longitude)) - 50000) < 100)
+            var oldZoom = map.zoomLevel
+            map.zoomLevel = oldZoom + 1
+            verify(map.zoomLevel > oldZoom)
+            var oldLongitude = map.center.longitude
+            mouseDrag(map, map.width / 2, map.height / 2, 70, 0, Qt.LeftButton)
+            wait(100)
+            verify(Math.abs(map.center.longitude - oldLongitude) > 0.00001)
             var search = findChild(dialog, "offlineRegionSearch")
             search.text = "Test region"
             search.accepted()
             wait(100)
             var selection = findChild(canvas.item, "offlineRectangleInput")
+            canvas.item.radiusMode = false
             canvas.item.drawing = true
             mousePress(selection, 120, 25)
             mouseMove(selection, 400, 95)
@@ -141,7 +153,7 @@ def main():
     args.screenshot.parent.mkdir(parents=True, exist_ok=True)
     with tile_fixture() as (tile_url, requests), tempfile.TemporaryDirectory(prefix="openhd-offline-ui-") as temp:
         folder = Path(temp)
-        for name in ["OfflineMapDialog.qml", "OfflineMapSelection.qml"]:
+        for name in ["OfflineMapDialog.qml", "OfflineMapSelection.qml", "OfflineMapButton.qml"]:
             source = (ROOT / "qml/ui/widgets/map" / name).read_text(encoding="utf-8")
             source = source.replace("https://tile.openstreetmap.org/", tile_url)
             (folder / name).write_text(source, encoding="utf-8")

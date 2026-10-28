@@ -57,6 +57,11 @@ int main(int argc, char** argv) {
                 auto data = socket->property("request").toByteArray() + socket->readAll();
                 socket->setProperty("request", data);
                 if (!data.contains("\r\n\r\n") || socket->property("answered").toBool()) return;
+                const int headerEnd = data.indexOf("\r\n\r\n");
+                int contentLength = 0;
+                for (const auto& line : data.left(headerEnd).split('\n'))
+                    if (line.toLower().startsWith("content-length:")) contentLength = line.mid(15).trimmed().toInt();
+                if (data.size() < headerEnd + 4 + contentLength) return;
                 socket->setProperty("answered", true); ++requests;
                 if (data.startsWith("GET /tiles/")) tileTokenReceived = data.contains("access_token=pk.fixture");
                 const QByteArray body = data.startsWith("GET /tiles/") ? fixtureTile : data.startsWith("GET /search")
@@ -81,6 +86,8 @@ int main(int argc, char** argv) {
     CHECK(builder.tileCount(49, 7, 51, 9, 15) == -1);
     CHECK(builder.tileCount(49.999, 7.999, 50.001, 8.001, 15) > 0);
     CHECK(builder.tileCount(49.999, 7.999, 50.001, 8.001, 99) == -1);
+    CHECK(builder.tileCount(49.55, 7.30, 50.45, 8.70, 14) > 0); // 50 km radius bounding box
+    CHECK(builder.tileCount(49.55, 7.30, 50.45, 8.70, 16) > 0);
     builder.search("Test region");
     CHECK(waitFor([&] { return !builder.searching(); }));
     CHECK(builder.searchResults().size() == 1);
@@ -94,6 +101,9 @@ int main(int argc, char** argv) {
     qputenv("GLIDE_MAP_PACKAGE_DIR", output.path().toUtf8());
     OfflineMapTileProvider provider; provider.setPosition(50, 8);
     CHECK(provider.activePackageName() == "Test field");
+    CHECK(!provider.packages().isEmpty());
+    CHECK(provider.packages().first().toMap()["name"] == "Test field");
+    CHECK(provider.packages().first().toMap()["south"].toDouble() == 49.999);
     const int x = int((8.0 + 180) / 360 * (1 << 15));
     const int y = int((1.0 - std::asinh(std::tan(50.0 * 3.141592653589793 / 180)) / 3.141592653589793) * 0.5 * (1 << 15));
     QNetworkAccessManager network;
@@ -124,6 +134,15 @@ int main(int argc, char** argv) {
     builder.generate("Cancelled", 49.999, 7.999, 50.001, 8.001, 15); builder.cancel();
     CHECK(!builder.busy()); CHECK(path.isEmpty());
     CHECK(QDir(output.path()).entryList({"*.glidemap"}, QDir::Files).size() == 1);
+    invalidData = false;
+    path.clear();
+    const int requestsBeforeRadius = requests;
+    builder.generate("50 km radius", 49.55, 7.30, 50.45, 8.70, 14);
+    CHECK(waitFor([&] { return !builder.busy(); }, 60000));
+    if (path.isEmpty()) std::cerr << builder.status().toStdString() << "\n";
+    CHECK(!path.isEmpty());
+    CHECK(builder.progress() == 1.0);
+    CHECK(requests - requestsBeforeRadius > 2); // Large geometry is fetched in sections.
     std::cout << "Search, bounds, generation, GLDMAP1 playback, invalid data, and cancellation passed (" << requests << " fixture requests).\n";
     return 0;
 }

@@ -104,6 +104,7 @@ Rectangle {
     property var collapsedGroups: ({})
 
     function groupIsCollapsed(groupName) {
+        if (_qopenhd.debugMenuPreview) return false;
         if(collapsedGroups[groupName] !== undefined) return collapsedGroups[groupName]
         return groupName !== "GENERAL"
     }
@@ -179,7 +180,7 @@ Rectangle {
                    ? (settings_form.darkMode ? "#174d82" : "#dcecff")
                    : (index % 2 === 0 ? settings_form.panelBackgroundRaised : "transparent")
             property bool isIpCameraQuickSetting: model.unique_id === "IP_CAM_ADDRESS" || model.unique_id === "IP_CAM_PIPELINE"
-            property bool isRawActiveLinks: root.m_show_link_status && model.unique_id === "ACTIVE_LINKS"
+            property bool isRawActiveLinks: root.m_show_link_status && (model.unique_id === "ACTIVE_LINKS" || model.unique_id === "VARIABLE_BITRATE" || model.unique_id === "V_PRIMARY_PERC")
             property bool groupCollapsed: groupIsCollapsed(model.group)
             function activate() {
                 inlineEditor.gainFocus()
@@ -396,7 +397,7 @@ Rectangle {
                         onClicked: toggleGroup(section)
                     }
                 }
-                visible: !please_fetch_item.visible && m_instanceCheckIsAvlie.is_alive
+                visible: _qopenhd.debugMenuPreview || (!please_fetch_item.visible && m_instanceCheckIsAvlie.is_alive)
                 header: Rectangle {
                     width: listView.width - 12
                     height: m_ip_camera_settings_available ? (expertPipelineCheck.checked ? 570 : 510) : 0
@@ -523,7 +524,7 @@ Rectangle {
             id: please_fetch_item
             width: scrollViewRectangle.width
             height: scrollViewRectangle.height
-            visible: !m_instanceMavlinkSettingsModel.has_params_fetched && m_instanceCheckIsAvlie.is_alive
+            visible: !_qopenhd.debugMenuPreview && !m_instanceMavlinkSettingsModel.has_params_fetched && m_instanceCheckIsAvlie.is_alive
             Text{
                 anchors.centerIn: parent
                 text: qsTr("Please fetch");
@@ -534,7 +535,7 @@ Rectangle {
             id: not_connected_overlay
             width: scrollViewRectangle.width
             height: scrollViewRectangle.height
-            visible: !m_instanceCheckIsAvlie.is_alive
+            visible: !_qopenhd.debugMenuPreview && !m_instanceCheckIsAvlie.is_alive
             /*Rectangle{
                 anchors.fill: parent
                 color: "gray"

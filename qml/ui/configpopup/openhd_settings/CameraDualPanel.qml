@@ -26,7 +26,7 @@ FocusScope {
                                  _ohdSystemAirSettingsModel.ui_is_busy ||
                                  _airCameraSettingsModel.ui_is_busy ||
                                  _airCameraSettingsModel2.ui_is_busy
-    readonly property bool ready: _ohdSystemAir.is_alive && settingsModel.has_params_fetched
+    readonly property bool ready: _qopenhd.debugMenuPreview || (_ohdSystemAir.is_alive && settingsModel.has_params_fetched)
     readonly property int paramRevision: settingsModel ? settingsModel.update_count : 0
 
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
@@ -80,10 +80,10 @@ FocusScope {
 
     function categoryCount(category) {
         var revision = paramRevision
-        var count = category === "VIDEO" && variableBitrate.available ? 1 : 0
+        var count = 0
         var ids = settingsModel ? settingsModel.param_ids() : []
         for (var i = 0; i < ids.length; ++i) {
-            if (["SENSOR_MODE", "LIBCAMERA_IMPL"].indexOf(ids[i]) >= 0 && !settings.dev_show_advanced_button) continue
+            if (["SENSOR_MODE", "LIBCAMERA_IMPL"].indexOf(ids[i]) >= 0 && !settings.dev_show_advanced_button && !_qopenhd.debugMenuPreview) continue
             if (categoryFor(ids[i]) === category) ++count
         }
         return count
@@ -97,7 +97,7 @@ FocusScope {
 
     function categoryAvailable(index) {
         return index >= 0 && index < categoryModel.count &&
-               categoryCount(categoryModel.get(index).categoryKey) > 0
+               (_qopenhd.debugMenuPreview || categoryCount(categoryModel.get(index).categoryKey) > 0)
     }
 
     function firstAvailableCategory(from, step) {
@@ -159,11 +159,6 @@ FocusScope {
             connectionPanel.gainFocus()
             return
         }
-        if (variableBitrate.visible) {
-            variableBitrate.focusControl.forceActiveFocus()
-            ensureSettingVisible(variableBitrate)
-            return
-        }
         var first = firstVisibleSettingIndex()
         if (first >= 0) focusSetting(first)
         else focusActiveCategory()
@@ -185,10 +180,7 @@ FocusScope {
             }
         }
         if (step < 0) {
-            if (variableBitrate.visible) {
-                variableBitrate.focusControl.forceActiveFocus()
-                ensureSettingVisible(variableBitrate)
-            } else focusActiveCategory()
+            focusActiveCategory()
         }
     }
 
@@ -252,6 +244,13 @@ FocusScope {
         else forceActiveFocus()
     }
 
+    Connections {
+        target: _qopenhd
+        function onDebugMenuPreviewChanged() {
+            if (!_qopenhd.debugMenuPreview && !root.cam2Available) root.activeCamera = 0
+            root.ensureActiveCategory()
+        }
+    }
     onParamRevisionChanged: ensureActiveCategory()
     onActiveCameraChanged: {
         ensureActiveCategory()
@@ -402,7 +401,7 @@ FocusScope {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 78
                 radius: 11
-                visible: cam2Available
+                visible: _qopenhd.debugMenuPreview || cam2Available
                 color: settings_form.panelBackgroundRaised
                 border.width: activeCamera === 1 ? 2 : 1
                 border.color: activeCamera === 1 ? settings_form.accentColor
@@ -548,7 +547,7 @@ FocusScope {
                     delegate: AdvancedTabButton {
                         id: categoryButton
                         property int itemCount: root.categoryCount(model.categoryKey)
-                        visible: itemCount > 0
+                        visible: _qopenhd.debugMenuPreview || itemCount > 0
                         width: visible ? implicitWidth : 0
                         height: 36
                         text: model.title
@@ -662,21 +661,7 @@ FocusScope {
                             x: Math.round((settingsFlick.width - width) / 2)
                             spacing: 3
 
-                            DynamicLinkSetting {
-                                id: variableBitrate
-                                width: settingsColumn.width
-                                visible: root.activeCategory === "VIDEO" && available
-                                height: visible ? implicitHeight : 0
-                                settingsModel: _ohdSystemAirSettingsModel
-                                paramId: "VARIABLE_BITRATE"
-                                label: qsTr("Variable bitrate")
-                                editorEnabled: !root.busy && _ohdSystemAir.is_alive
-                                onMoveRequested: function(step) {
-                                    if (step > 0) root.moveSetting(-1, 1)
-                                    else root.focusActiveCategory()
-                                }
-                                onBackRequested: root.focusActiveCategory()
-                            }
+
                             Repeater {
                                 id: settingRepeater
                                 model: root.settingsModel
@@ -684,7 +669,7 @@ FocusScope {
                                     width: settingsColumn.width
                                     visible: root.categoryFor(model.unique_id) === root.activeCategory &&
                                              root.activeCategory !== "CONNECTION" &&
-                                             (["SENSOR_MODE", "LIBCAMERA_IMPL"].indexOf(model.unique_id) < 0 || settings.dev_show_advanced_button)
+                                             (["SENSOR_MODE", "LIBCAMERA_IMPL"].indexOf(model.unique_id) < 0 || settings.dev_show_advanced_button || _qopenhd.debugMenuPreview)
                                     settingsModel: root.settingsModel
                                     categoryKey: root.activeCategory
                                     modelIndex: index

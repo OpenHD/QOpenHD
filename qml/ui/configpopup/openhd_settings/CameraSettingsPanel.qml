@@ -73,7 +73,7 @@ FocusScope {
 
     function categoryCount(category) {
         var revision = paramRevision
-        var count = category === "VIDEO" && variableBitrate.available ? 1 : 0
+        var count = 0
         var ids = settingsModel ? settingsModel.param_ids() : []
         for (var i = 0; i < ids.length; ++i) {
             if (["SENSOR_MODE", "LIBCAMERA_IMPL"].indexOf(ids[i]) >= 0 && !settings.dev_show_advanced_button) continue
@@ -151,11 +151,6 @@ FocusScope {
             connectionPanel.gainFocus()
             return
         }
-        if (variableBitrate.visible) {
-            variableBitrate.focusControl.forceActiveFocus()
-            ensureSettingVisible(variableBitrate)
-            return
-        }
         var first = firstVisibleSettingIndex()
         if (first >= 0) focusSetting(first)
         else focusActiveCategory()
@@ -177,10 +172,7 @@ FocusScope {
             }
         }
         if (step < 0) {
-            if (variableBitrate.visible) {
-                variableBitrate.focusControl.forceActiveFocus()
-                ensureSettingVisible(variableBitrate)
-            } else focusActiveCategory()
+            focusActiveCategory()
         }
     }
 
@@ -505,21 +497,7 @@ FocusScope {
                             x: Math.round((settingsFlick.width - width) / 2)
                             spacing: 3
 
-                            DynamicLinkSetting {
-                                id: variableBitrate
-                                width: settingsColumn.width
-                                visible: root.activeCategory === "VIDEO" && available
-                                height: visible ? implicitHeight : 0
-                                settingsModel: _ohdSystemAirSettingsModel
-                                paramId: "VARIABLE_BITRATE"
-                                label: qsTr("Variable bitrate")
-                                editorEnabled: !root.busy && _ohdSystemAir.is_alive
-                                onMoveRequested: function(step) {
-                                    if (step > 0) root.moveSetting(-1, 1)
-                                    else root.focusActiveCategory()
-                                }
-                                onBackRequested: root.focusActiveCategory()
-                            }
+
                             Repeater {
                                 id: settingRepeater
                                 model: root.settingsModel

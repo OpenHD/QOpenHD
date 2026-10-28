@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "../../elements"
+import ".."
 
 ScrollView {
     id: root
@@ -33,7 +34,7 @@ ScrollView {
         id: mapColumn
         width: root.availableWidth
         spacing: 5
-        Button {
+        AdvancedActionButton {
             text: qsTr("Create offline map...")
             onClicked: {
                 if (offlineMapDialog.item) offlineMapDialog.item.open()
@@ -47,6 +48,47 @@ ScrollView {
             wrapMode: Text.WordWrap
         }
 
+        Text {
+            objectName: "mapMenuAttribution"
+            width: parent.width - 24
+            x: 12
+            text: '<a href="https://www.openstreetmap.org/copyright">\u00a9 OpenStreetMap contributors</a>'
+            color: settings_form.secondaryText
+            linkColor: settings_form.accentColor
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
+            onLinkActivated: Qt.openUrlExternally(link)
+        }
+
+        ComboBox {
+            id: offlinePackages
+            objectName: "offlinePackages"
+            width: Math.min(400, parent.width)
+            model: _offlineMapTiles.packages
+            textRole: "name"
+            visible: _qopenhd.debugMenuPreview || (count > 0)
+        }
+        AdvancedActionButton {
+            objectName: "jumpToOfflineMap"
+            text: qsTr("Jump to map")
+            enabled: offlinePackages.currentIndex >= 0
+            onClicked: {
+                mapTarget.jumpToOfflineMap(_offlineMapTiles.packages[offlinePackages.currentIndex])
+                settings_form.close_all()
+            }
+        }
+        AdvancedActionButton {
+            objectName: "toggleMapDemo"
+            text: mapTarget.demoFlight ? qsTr("Stop demo flight") : qsTr("Debug: circling plane")
+            onClicked: {
+                mapTarget.demoFlight = !mapTarget.demoFlight
+                if (mapTarget.demoFlight) {
+                    settings.show_map = true
+                    mapTarget.followDrone = true
+                    settings_form.close_all()
+                }
+            }
+        }
         SettingBaseElement {
             m_short_description: qsTr("Show map")
 
@@ -58,6 +100,19 @@ ScrollView {
                 anchors.verticalCenter: parent.verticalCenter
                 checked: settings.show_map
                 onToggled: settings.show_map = checked
+            }
+        }
+
+        SettingBaseElement {
+            m_short_description: qsTr("Follow aircraft")
+            Switch {
+                width: Math.min(260, parent.width * 0.46)
+                height: elementHeight
+                anchors.right: parent.right
+                anchors.rightMargin: 18
+                anchors.verticalCenter: parent.verticalCenter
+                checked: mapTarget.followDrone
+                onToggled: mapTarget.followDrone = checked
             }
         }
 
@@ -119,7 +174,7 @@ ScrollView {
             font.pixelSize: 12
             wrapMode: Text.WordWrap
         }
-        Button {
+        AdvancedActionButton {
             objectName: "reloadMap"
             text: qsTr("Reload map")
             onClicked: mapTarget.configure()
@@ -137,6 +192,21 @@ ScrollView {
                 from: 1; to: 30; stepSize: 1
                 value: settings.map_zoom
                 onMoved: settings.map_zoom = value
+            }
+        }
+
+        SettingBaseElement {
+            m_short_description: qsTr("Small map shape")
+            ComboBox {
+                objectName: "mapShape"
+                width: Math.min(260, parent.width * 0.46)
+                height: elementHeight
+                anchors.right: parent.right
+                anchors.rightMargin: 18
+                anchors.verticalCenter: parent.verticalCenter
+                model: [qsTr("Rounded rectangle"), qsTr("Round")]
+                currentIndex: settings.map_round ? 1 : 0
+                onActivated: settings.map_round = index === 1
             }
         }
 
@@ -244,7 +314,7 @@ ScrollView {
 
         SettingBaseElement {
             m_short_description: qsTr("ADS-B SDR source")
-            visible: settings.adsb_enable
+            visible: _qopenhd.debugMenuPreview || (settings.adsb_enable)
             Switch {
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
@@ -258,7 +328,7 @@ ScrollView {
 
         SettingBaseElement {
             m_short_description: qsTr("ADS-B radius: %1 km").arg(Math.round(settings.adsb_radius / 1000))
-            visible: settings.adsb_enable
+            visible: _qopenhd.debugMenuPreview || (settings.adsb_enable)
             Slider {
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight

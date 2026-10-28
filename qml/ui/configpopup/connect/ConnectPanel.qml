@@ -16,23 +16,8 @@ Rectangle {
         anchors.rightMargin: settings_form.compactSidebar ? 13 : Math.max(16, Math.min(32, width * 0.025))
         spacing: 13
 
-        Item { Layout.fillWidth: true; Layout.preferredHeight: 14 }
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.rightMargin: root.width > 420 ? 150 : 0
-            spacing: 13
-            Text {
-                text: "\uf6ff"
-                color: settings_form.accentColor
-                font.family: "Font Awesome 5 Free"
-                font.pixelSize: 27
-            }
-            ColumnLayout {
-                spacing: 1
-                Text { text: qsTr("CONNECT"); color: settings_form.primaryText; font.pixelSize: Math.max(17, Math.min(22, root.width / 45)); font.bold: true }
-                Text { text: qsTr("Choose how QOpenHD reaches your OpenHD system"); color: settings_form.secondaryText; font.pixelSize: 12 }
-            }
-        }
+        Item { Layout.fillWidth: true; Layout.preferredHeight: 12 }
+
         PaneConnectionMode {
             id: connectionPane
             Layout.fillWidth: true
