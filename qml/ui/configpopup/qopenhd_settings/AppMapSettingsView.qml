@@ -60,8 +60,10 @@ ScrollView {
             onLinkActivated: Qt.openUrlExternally(link)
         }
 
-        ComboBox {
+        DarkComboBox {
             id: offlinePackages
+            optionIcon: "\uf279"
+            optionDescription: qsTr("Saved map package available offline")
             objectName: "offlinePackages"
             width: Math.min(400, parent.width)
             model: _offlineMapTiles.packages
@@ -119,12 +121,14 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Map provider")
 
-            ComboBox {
+            DarkComboBox {
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
                 anchors.rightMargin: 18
                 anchors.verticalCenter: parent.verticalCenter
+                optionIcon: "\uf279"
+                optionDescription: qsTr("Map imagery provider")
                 objectName: "mapProvider"
                 model: mapTarget.pluginModel
                 textRole: "description"
@@ -136,7 +140,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Map style")
 
-            ComboBox {
+            DarkComboBox {
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -197,7 +201,9 @@ ScrollView {
 
         SettingBaseElement {
             m_short_description: qsTr("Small map shape")
-            ComboBox {
+            DarkComboBox {
+                optionIcon: "\uf279"
+                optionDetails: [{description: qsTr("Rectangular map with rounded corners")}, {description: qsTr("Circular map widget")} ]
                 objectName: "mapShape"
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight

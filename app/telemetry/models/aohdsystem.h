@@ -166,6 +166,8 @@ public:
     // MAVLink ONBOARD_COMPUTER_STATUS (common)
     L_RO_PROP(quint64,onboard_time_usec,set_onboard_time_usec,0)
     L_RO_PROP(int,onboard_uptime_ms,set_onboard_uptime_ms,-1)
+    L_RO_PROP(QVariantMap,ground_details,set_ground_details,QVariantMap())
+    std::chrono::steady_clock::time_point m_ground_details_received{};
     L_RO_PROP(int,onboard_ram_usage_mib,set_onboard_ram_usage_mib,-1)
     L_RO_PROP(int,onboard_ram_total_mib,set_onboard_ram_total_mib,-1)
     L_RO_PROP(int,onboard_temperature_board,set_onboard_temperature_board,-1)

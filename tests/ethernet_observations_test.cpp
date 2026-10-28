@@ -14,6 +14,20 @@ int main(int argc,char** argv) {
     app.setOrganizationName("OpenHDModelRegression");app.setApplicationName("EthernetObservationsTest");
     try {
         AOHDSystem air(true);
+        AOHDSystem ground(false);
+        mavlink_data96_t details{}; details.type=0x47;details.len=76;
+        std::memcpy(details.data,"OHDG",4);details.data[4]=1;details.data[5]=31;
+        put(details.data,8,3);put(details.data,12,1073741824);put(details.data,20,2147483648u);
+        std::memcpy(details.data+44,"192.168.3.1",12);std::memcpy(details.data+60,"8.8.8.8",8);
+        mavlink_message_t detailsMessage{};
+        mavlink_msg_data96_encode(100,191,&detailsMessage,&details);
+        ground.process_message(detailsMessage);
+        CHECK(ground.ground_details().value("hotspot_clients").toInt()==3);
+        CHECK(ground.ground_details().value("hotspot_ip").toString()=="192.168.3.1");
+        CHECK(ground.ground_details().value("system_total_bytes").toDouble()==2147483648.0);
+        details.data[5]=0;mavlink_msg_data96_encode(100,191,&detailsMessage,&details);
+        ground.process_message(detailsMessage);CHECK(ground.ground_details().isEmpty());
+
         mavlink_data96_t payload{};payload.type=0x4f;payload.len=82;
         std::memcpy(payload.data,"OHLU",4);payload.data[4]=1;payload.data[5]=2;payload.data[6]=6;
         put(payload.data,8,12300000);put(payload.data,12,1000000000);

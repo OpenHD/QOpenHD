@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import "../../elements"
 
 Popup {
     id: dialog
@@ -23,10 +24,18 @@ Popup {
         var revision = params.update_count
         return live && params.has_params_fetched && params.param_int_exists("WIFI_HOTSPOT_E") ? params.get_cached_int("WIFI_HOTSPOT_E") : -1
     }
+    readonly property var details: live && unit.ground_details ? unit.ground_details : ({})
+    function storageText(prefix) {
+        var used=details[prefix+"_used_bytes"],total=details[prefix+"_total_bytes"]
+        if (!(total > 0) || used < 0 || used > total) return unavailable
+        return qsTr("%1 / %2 GiB (%3 %)").arg((used/1073741824).toFixed(1)).arg((total/1073741824).toFixed(1)).arg(Math.round(used*100/total))
+    }
     readonly property string unavailable: qsTr("Not reported")
     // OpenHD's legacy ONBOARD_COMPUTER_STATUS sends RAM usage as a percentage.
     readonly property real ramPercent: live && unit.onboard_ram_usage_mib >= 0 && unit.onboard_ram_usage_mib <= 100 ? unit.onboard_ram_usage_mib : -1
-    readonly property real ramTotal: unit.onboard_ram_total_mib
+    // The OpenHD producer forwards MemTotal from /proc/meminfo in KiB,
+    // despite the historical QOpenHD property name ending in _mib.
+    readonly property real ramTotal: unit.onboard_ram_total_mib / 1024
     function open_dialoque(system) { open() }
     function chemistryChanged(index) {
         settings.ground_battery_type = index
@@ -69,8 +78,8 @@ Popup {
                     model: [
                         {label: qsTr("CPU Usage"), icon: "\uf2db", value: dialog.live && (unit.onboard_uptime_ms >= 0 || unit.curr_soc_temp_degree > 0) ? unit.curr_cpuload_perc + " %" : dialog.unavailable},
                         {label: qsTr("RAM Usage"), icon: "\uf538", value: dialog.ramPercent >= 0 && dialog.ramTotal > 0 ? (dialog.ramTotal * dialog.ramPercent / 100 / 1024).toFixed(1) + " GB / " + (dialog.ramTotal / 1024).toFixed(1) + " GB (" + dialog.ramPercent + " %)" : dialog.unavailable},
-                        {label: qsTr("Storage (System)"), icon: "\uf0a0", value: dialog.live && unit.curr_space_left_mb > 0 ? qsTr("%1 GB free").arg((unit.curr_space_left_mb / 1024).toFixed(1)) : dialog.unavailable},
-                        {label: qsTr("Storage (Logs)"), icon: "\uf15c", value: dialog.unavailable}
+                        {label: qsTr("Storage (System)"), icon: "\uf0a0", value: dialog.details.system_total_bytes > 0 ? dialog.storageText("system") : dialog.live && unit.curr_space_left_mb > 0 ? qsTr("%1 GiB free").arg((unit.curr_space_left_mb / 1024).toFixed(1)) : dialog.unavailable},
+                        {label: qsTr("Storage (Logs)"), icon: "\uf15c", value: dialog.storageText("logs")}
                     ]
                     Item {
                         x: 16; y: 62 + index * 58; width: resourcePanel.width - 32; height: 58
@@ -78,7 +87,7 @@ Popup {
                         Text { x: 8; anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: 27 }
                         Text { x: 62; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: 18 }
                         Text { anchors.right: parent.right; anchors.rightMargin: 4; y: index >= 2 ? 11 : 19; text: modelData.value; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: 18 }
-                        Rectangle { visible: index >= 2; x: 284; y: 39; width: 196; height: 10; radius: 5; color: "#10384c" }
+
                     }
                 }
             }
@@ -92,9 +101,9 @@ Popup {
                     model: [
                         {label: qsTr("Hotspot Mode"), icon: "\uf1eb", value: ""},
                         {label: qsTr("Hotspot Channel"), icon: "\uf012", value: ""},
-                        {label: qsTr("Connected Clients"), icon: "\uf0c0", value: dialog.unavailable},
-                        {label: qsTr("Local IP (Hotspot)"), icon: "\uf0e8", value: dialog.unavailable},
-                        {label: qsTr("Public IP (WAN)"), icon: "\uf0ac", value: dialog.unavailable}
+                        {label: qsTr("Connected Clients"), icon: "\uf0c0", value: dialog.details.hotspot_clients !== undefined ? String(dialog.details.hotspot_clients) : dialog.unavailable},
+                        {label: qsTr("Local IP (Hotspot)"), icon: "\uf0e8", value: dialog.details.hotspot_ip || dialog.unavailable},
+                        {label: qsTr("Public IP (WAN)"), icon: "\uf0ac", value: dialog.details.public_ip || dialog.unavailable}
                     ]
                     Item {
                         x: 16; y: 62 + index * 53; width: network.width - 32; height: 53
@@ -119,8 +128,9 @@ Popup {
                         }
                     }
                 }
-                ComboBox {
+                DarkComboBox {
                     id: channelCombo
+                    popupScale: dialog.uiScale
                     objectName: "groundHotspotChannel"
                     indicator: Text { x: channelCombo.width - 28; anchors.verticalCenter: parent.verticalCenter; text: "\uf078"; color: "#7694a7"; font.family: "Font Awesome 5 Free"; font.pixelSize: 14 }
                     x: 288; y: 122; width: 192; height: 44
@@ -145,17 +155,24 @@ Popup {
                         Text { x: 68; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: 18 }
                     }
                 }
-                ComboBox {
+                DarkComboBox {
                     id: chemistryCombo
                     objectName: "groundBatteryChemistry"
-                    indicator: Text { x: chemistryCombo.width - 28; anchors.verticalCenter: parent.verticalCenter; text: "\uf078"; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: 14 }
+
                     x: 310; y: 64; width: 200; height: 44
                     model: ["Li-Po", "Li-Ion", "LiFe", qsTr("Custom")]
                     currentIndex: settings.ground_battery_type
                     enabled: !dialog.preview
                     onActivated: dialog.chemistryChanged(currentIndex)
-                    background: Rectangle { color: "#06263a"; radius: 7; border.color: "#006997" }
-                    contentItem: Text { text: parent.displayText; leftPadding: 14; color: "#edf4fa"; font.family: "Archivo"; font.pixelSize: 18; verticalAlignment: Text.AlignVCenter }
+                    font.pixelSize: 18
+                    popupWidth: 270
+                    popupScale: dialog.uiScale
+                    optionDetails: [
+                        {icon: "\uf243", color: "#28adf1", description: qsTr("Lithium Polymer")},
+                        {icon: "\uf243", color: "#58bd8b", description: qsTr("Lithium Ion")},
+                        {icon: "\uf243", color: "#f3c653", description: qsTr("Lithium Iron Phosphate")},
+                        {icon: "\uf013", color: "#ac7bed", description: qsTr("User defined parameters")}
+                    ]
                 }
                 TextField {
                     objectName: "groundBatteryCapacity"

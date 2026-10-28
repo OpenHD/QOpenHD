@@ -134,3 +134,14 @@ error messages. Mapbox preview attribution/logo apply only to the online display
 created `.glidemap` files still contain locally rendered OSM geometry only.
 Mapbox preview data uses its own cache, separate from OSM and package tiles.
 `OPENHD_MAPBOX_TILE_URL` overrides the adapter endpoint for local fixture tests.
+
+### Online tile failures
+
+Interactive OpenStreetMap tiles use the localhost tile adapter's `/osm/` route.
+It requests the canonical HTTPS endpoint with the stable QOpenHD app identifier,
+keeps an HTTP disk cache, disables viewport prefetch, and rejects HTTP errors
+instead of returning their PNG error artwork to QtLocation. The online Qt cache
+uses `online-https-v2` to avoid old blocked-response tiles. Offline packages remain
+local-only and are generated from vector geometry, not scraped raster tiles.
+Provider blocks caused by excessive traffic or network policy still require
+resolution with the provider; this does not bypass them.

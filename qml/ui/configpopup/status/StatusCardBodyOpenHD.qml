@@ -14,6 +14,17 @@ Column {
     property int m_ground_settings_update_count: _ohdSystemGroundSettings.update_count
     property int m_air_settings_update_count: _ohdSystemAirSettingsModel.update_count
 
+    readonly property bool hasBatterySensor: m_is_alive && m_model.ina219_voltage_millivolt > 0
+    readonly property bool useFlightControllerBattery: !m_is_ground && m_is_alive && !hasBatterySensor
+        && _fcMavlinkSystem.is_alive
+        && _fcMavlinkSystem.craft_diagnostics.heartbeatAge >= 0
+        && _fcMavlinkSystem.craft_diagnostics.heartbeatAge < 5
+        && _fcMavlinkSystem.battery_voltage_volt > 0
+    readonly property real batteryVoltage: hasBatterySensor ? m_model.ina219_voltage_millivolt / 1000
+        : useFlightControllerBattery ? _fcMavlinkSystem.battery_voltage_volt : 0
+    readonly property int batteryPercent: hasBatterySensor ? m_model.battery_percent
+        : useFlightControllerBattery ? _fcMavlinkSystem.battery_percent : -1
+
     readonly property int temperature: m_model.curr_soc_temp_degree
     readonly property int cpuLoad: m_model.curr_cpuload_perc
     // Legacy core telemetry defaults to zero until a sample arrives.
@@ -96,8 +107,10 @@ Column {
     StatusCardRow { m_left_text: qsTr("System health"); m_icon: "\uf2db"; m_right_text: body.healthText; m_status_dot: body.healthKnown; m_right_text_color: body.healthColor }
     StatusCardRow {
         m_left_text: qsTr("Battery"); m_icon: "\uf2c2"
-        m_right_text: m_is_alive && m_model.ina219_voltage_millivolt > 0
-                      ? qsTr("%1 V (%2 %)").arg((m_model.ina219_voltage_millivolt / 1000).toFixed(1)).arg(m_model.battery_percent)
+        m_right_text: body.batteryVoltage > 0
+                      ? (body.batteryPercent >= 0 && body.batteryPercent <= 100
+                         ? qsTr("%1 V (%2 %)").arg(body.batteryVoltage.toFixed(1)).arg(body.batteryPercent)
+                         : qsTr("%1 V").arg(body.batteryVoltage.toFixed(1)))
                       : qsTr("Not reported")
     }
     StatusCardRow { m_left_text: qsTr("Temperature"); m_icon: "\uf2c9"; m_right_text: body.hasTemperature ? qsTr("%1 \u00b0C").arg(body.temperature) : qsTr("Not reported") }

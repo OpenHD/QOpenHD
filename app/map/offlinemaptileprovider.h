@@ -19,6 +19,7 @@ class OfflineMapTileProvider final : public QObject
     Q_OBJECT
     Q_PROPERTY(bool available READ available NOTIFY packagesChanged)
     Q_PROPERTY(QString baseUrl READ baseUrl CONSTANT)
+    Q_PROPERTY(QString osmBaseUrl READ osmBaseUrl CONSTANT)
     Q_PROPERTY(QString mapboxBaseUrl READ mapboxBaseUrl CONSTANT)
     Q_PROPERTY(QString mapboxCacheDirectory READ mapboxCacheDirectory CONSTANT)
     Q_PROPERTY(QString activePackageName READ activePackageName NOTIFY activePackageChanged)
@@ -31,6 +32,7 @@ public:
     bool available() const { return !m_packages.isEmpty(); }
     QString baseUrl() const;
     QString mapboxBaseUrl() const;
+    QString osmBaseUrl() const;
     QString mapboxCacheDirectory() const;
     Q_INVOKABLE void setMapboxKey(const QString& key) { m_mapboxKey = key.trimmed(); }
     QString activePackageName() const;

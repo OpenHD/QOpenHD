@@ -109,7 +109,7 @@ MapWidgetForm {
         var parameters = provider === "mapboxgl"
                 ? 'PluginParameter { name: "mapboxgl.access_token"; value: ' + JSON.stringify(token) + ' }'
                 : 'PluginParameter { name: "osm.mapping.custom.host"; value: '
-                  + JSON.stringify(provider === "openhd_offline" ? _offlineMapTiles.baseUrl : "https://tile.openstreetmap.org/") + ' }'
+                  + JSON.stringify(provider === "openhd_offline" ? _offlineMapTiles.baseUrl : _offlineMapTiles.osmBaseUrl) + ' }'
         if (provider !== "mapboxgl") {
             parameters += 'PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }'
                         + 'PluginParameter { name: "osm.useragent"; value: "OpenHD-OfflineMaps/1.0 (+https://openhd.org)" }'

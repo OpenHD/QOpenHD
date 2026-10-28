@@ -115,6 +115,7 @@ Item {
         property int packageCount: 1
         property var packages: [{name: "Remote field", south: 49, west: 7, north: 50, east: 8, minZoom: 0, maxZoom: 14}]
         property string baseUrl: "http://127.0.0.1:9/"
+        property string osmBaseUrl: "http://127.0.0.1:9/osm/"
         function reload() {}
     }
     QtObject {
@@ -174,7 +175,7 @@ Item {
             var parameters = {}
             for (var i = 0; i < widget.mapPlugin.parameters.length; ++i)
                 parameters[widget.mapPlugin.parameters[i].name] = widget.mapPlugin.parameters[i].value
-            compare(parameters["osm.mapping.custom.host"], "https://tile.openstreetmap.org/")
+            compare(parameters["osm.mapping.custom.host"], _offlineMapTiles.osmBaseUrl)
             compare(parameters["osm.useragent"], "OpenHD-OfflineMaps/1.0 (+https://openhd.org)")
             compare(parameters["osm.mapping.prefetching_style"], "NoPrefetching")
             widget.map.supportedMapTypes = []
@@ -471,6 +472,7 @@ def main():
         shutil.copyfile(ROOT / "qml/ui/widgets/map/MapboxLogo.png", folder / "MapboxLogo.png")
         (folder / "MapControlButton.qml").write_text((ROOT / "qml/ui/widgets/map/MapControlButton.qml").read_text(encoding="utf-8"), encoding="utf-8")
         (folder / "MapComponent.qml").write_text(CANVAS, encoding="utf-8")
+        shutil.copyfile(ROOT / "qml/ui/elements/DarkComboBox.qml", folder / "DarkComboBox.qml")
         view = (ROOT / "qml/ui/configpopup/qopenhd_settings/AppMapSettingsView.qml").read_text(encoding="utf-8")
         (folder / "AppMapSettingsView.qml").write_text(view.replace('import "../../elements"', '').replace('import ".."', ''), encoding="utf-8")
         (folder / "SettingBaseElement.qml").write_text(

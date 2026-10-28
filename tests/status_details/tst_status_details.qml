@@ -75,7 +75,8 @@ Item {
   property bool rpi_undervolt_error: false
   property int air_reported_fc_sys_id: 1
   property int onboard_ram_usage_mib: 31
-  property int onboard_ram_total_mib: 3994
+  property var ground_details: ({hotspot_clients: 2, hotspot_ip: "192.168.3.1", system_used_bytes: 1073741824, system_total_bytes: 4294967296, logs_used_bytes: 2147483648, logs_total_bytes: 8589934592})
+  property int onboard_ram_total_mib: 3994 * 1024
   property int curr_space_left_mb: 42000
   property int wifi_hotspot_frequency: 5745
   property int external_devices_count: -1
@@ -122,6 +123,20 @@ Item {
    mouseClick(visualChild(popup.contentItem,"groundHotspotMode1"))
    compare(params.writtenParam,"WIFI_HOTSPOT_E");compare(params.writtenValue,1)
    var chemistry=findChild(menu,"groundBatteryChemistry")
+   compare(popup.ramTotal,3994)
+   compare(popup.details.hotspot_clients,2)
+   compare(popup.storageText("logs"),"2.0 / 8.0 GiB (25 %)")
+   for (var size of [[850,480],[640,360],[1440,900]]) {
+    scene.width=size[0];scene.height=size[1];wait(80)
+    chemistry.popup.open();wait(80)
+    var dropdown=chemistry.popup
+    verify(dropdown.x>=0 && dropdown.y>=0)
+    verify(dropdown.x+dropdown.width*dropdown.scale<=scene.width)
+    verify(dropdown.y+dropdown.height*dropdown.scale<=scene.height)
+    verify(dropdown.height>=200, "All four chemistry rows should fit")
+    dropdown.close()
+   }
+   scene.width=850;scene.height=480;wait(80)
    chemistry.forceActiveFocus();keyClick(Qt.Key_Home);keyClick(Qt.Key_Return)
    compare(settings.ground_battery_type,0)
    compare(settings.ground_battery_low,33);compare(settings.ground_battery_full,42)

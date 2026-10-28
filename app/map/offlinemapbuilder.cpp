@@ -105,7 +105,7 @@ QString OfflineMapBuilder::mapCacheDirectory(const QString& source) const {
     const QString name = source == QStringLiteral("preview") ? QStringLiteral("preview")
         : source == QStringLiteral("preview_mapbox") ? QStringLiteral("preview-mapbox")
         : source == QStringLiteral("openhd_offline") ? QStringLiteral("offline")
-        : source == QStringLiteral("mapbox_raster") ? QStringLiteral("mapbox") : QStringLiteral("online");
+        : source == QStringLiteral("mapbox_raster") ? QStringLiteral("mapbox") : QStringLiteral("online-https-v2");
     const auto cacheRoot = m_outputDirectory.isEmpty()
         ? QStandardPaths::writableLocation(QStandardPaths::CacheLocation)
         : QDir(m_outputDirectory).filePath(QStringLiteral(".cache"));

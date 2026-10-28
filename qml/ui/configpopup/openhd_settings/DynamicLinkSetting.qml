@@ -237,6 +237,7 @@ Item {
         id: dropdownEditor
         CompactLinkComboBox {
             id: combo
+            optionDescription: root.metadata.description || ""
             property var optionValues: root.metadata.values || []
             model: root.metadata.keys || []
             currentIndex: {

@@ -171,9 +171,24 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             consumed=true;
         }break;
         case MAVLINK_MSG_ID_DATA96:{
-            if(!m_is_air) break;
             mavlink_data96_t parsed{};
             mavlink_msg_data96_decode(&msg, &parsed);
+            if(parsed.type == 0x47 && parsed.len == 76 &&
+               std::memcmp(parsed.data,"OHDG",4)==0 && parsed.data[4]==1) {
+                const auto flags=parsed.data[5];
+                auto u64=[&](int offset) { quint64 value=0;for(int i=0;i<8;++i)value|=quint64(parsed.data[offset+i])<<(8*i);return value; };
+                auto ip=[&](int offset) { return QString::fromLatin1(reinterpret_cast<const char*>(parsed.data+offset),16).split(QChar(0)).first(); };
+                QVariantMap details;
+                if(flags&1) { details["system_used_bytes"]=double(u64(12));details["system_total_bytes"]=double(u64(20)); }
+                if(flags&2) { details["logs_used_bytes"]=double(u64(28));details["logs_total_bytes"]=double(u64(36)); }
+                if(flags&4) { quint32 count=0;for(int i=0;i<4;++i)count|=quint32(parsed.data[8+i])<<(8*i);details["hotspot_clients"]=count; }
+                if(flags&8)details["hotspot_ip"]=ip(44);
+                if(flags&16)details["public_ip"]=ip(60);
+                set_ground_details(details);
+                m_ground_details_received=std::chrono::steady_clock::now();
+                consumed=true;break;
+            }
+            if(!m_is_air) break;
             if(parsed.type != 0x4f || parsed.len < 16 || parsed.len > 96 ||
                     std::memcmp(parsed.data, "OHLU", 4) != 0 || parsed.data[4] != 1) break;
             process_link_usage(parsed);
@@ -957,6 +972,9 @@ void AOHDSystem::process_link_usage(const mavlink_data96_t& msg)
 
 void AOHDSystem::update_alive_status_with_hud_message(bool alive)
 {
+    if(!m_ground_details.isEmpty() && std::chrono::steady_clock::now()-m_ground_details_received > std::chrono::seconds(15))
+        set_ground_details(QVariantMap());
+
     if(alive != m_is_alive){
         // message when state changes
         std::stringstream message;
@@ -993,5 +1011,6 @@ void AOHDSystem::update_alive_status_with_hud_message(bool alive)
             }*/
         }
         set_is_alive(alive);
+        if(!alive) set_ground_details(QVariantMap());
     }
 }
