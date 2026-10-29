@@ -1,3 +1,4 @@
+import "../configpopup/MenuTypography.js" as MenuTypography
 import QtQuick 2.0
 
 import QtQuick 2.12
@@ -44,7 +45,7 @@ Rectangle {
         id: description
         text: qsTr(m_short_description)
         font.weight: Font.Bold
-        font.pixelSize: 13
+        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
         anchors.leftMargin: 12
         verticalAlignment: Text.AlignVCenter
         anchors.verticalCenter: parent.verticalCenter

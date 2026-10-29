@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
@@ -243,7 +244,7 @@ Rectangle{
     }
 
     // This button closes the param editor
-    Button{
+    Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
         id:exit_button
         text: qsTr("x")
         anchors.right: parent.right
@@ -289,7 +290,7 @@ Rectangle{
             text: qsTr("Parameter editor")
             color: settings_form.primaryText
             font.bold: true
-            font.pixelSize: 18
+            font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family
             horizontalAlignment: Qt.AlignHCenter
             Layout.alignment: Qt.AlignCenter
         }
@@ -297,14 +298,14 @@ Rectangle{
         Label{
             height:customHeight
             anchors.topMargin: 30
-            font.pixelSize: 12
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             text: qsTr(parameterId+" "+get_param_type_readable())
             color: settings_form.secondaryText
             // dafuq https://stackoverflow.com/questions/35799944/text-type-alignment
             horizontalAlignment: Qt.AlignHCenter
             Layout.alignment: Qt.AlignCenter
         }
-        Text{
+        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: 300
             height:customHeight
             Layout.alignment: Qt.AlignCenter
@@ -322,7 +323,7 @@ Rectangle{
         SpinBox {
             id: spinBoxInputParamtypeInt
             height: customHeight
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             Layout.alignment: Qt.AlignCenter
             from: param_int_min_value()
             to: param_int_max_value()
@@ -349,7 +350,7 @@ Rectangle{
         CompactLinkComboBox {
             id: intEnumDynamicComboBox
             height: customHeight
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             Layout.alignment: Qt.AlignCenter
             model: intEnumDynamicListModel
             textRole: "title"
@@ -370,7 +371,7 @@ Rectangle{
         CompactLinkComboBox {
             id: stringEnumDynamicComboBox
             height: customHeight
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             Layout.alignment: Qt.AlignCenter
             model: stringEnumDynamicListModel
             textRole: "title"
@@ -419,7 +420,7 @@ Rectangle{
             spacing: 10
             Layout.alignment: Qt.AlignHCenter
 
-            Button{
+            Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 text: qsTr("Advanced")
                 visible: settings.dev_show_advanced_button
                 Layout.alignment: Qt.AlignLeft
@@ -431,7 +432,7 @@ Rectangle{
                 }
                 enabled: !instanceMavlinkSettingsModel.ui_is_busy
             }
-            Button{
+            Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 text: qsTr("Save")
                 Layout.alignment: Qt.AlignRight
                 onClicked: {

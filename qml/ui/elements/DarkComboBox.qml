@@ -1,3 +1,4 @@
+import "../configpopup/MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
@@ -11,6 +12,7 @@ ComboBox {
     property color outlineColor: "#33485d"
     property color focusColor: "#278cff"
     property int popupWidth: Math.max(width, 240)
+    readonly property real preferredTextWidth: selectedLabel.implicitWidth + leftPadding + rightPadding + 32
     property real popupScale: 1
     // Callers can supply explanatory metadata without changing value models.
     property var optionDetails: []
@@ -46,7 +48,7 @@ ComboBox {
     hoverEnabled: true
     leftPadding: 12
     rightPadding: 36
-    font.pixelSize: 10
+    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
 
     contentItem: Item {
         implicitWidth: selectedLabel.implicitWidth + 34
@@ -105,8 +107,8 @@ ComboBox {
             Column {
                 x: 38; width: Math.max(0, parent.width - 66)
                 anchors.verticalCenter: parent.verticalCenter; spacing: 2
-                Text { width: parent.width; text: option.label; color: control.textColor; font.pixelSize: 14; elide: Text.ElideRight }
-                Text { width: parent.width; visible: text.length > 0; text: option.details.description || ""; color: control.mutedColor; font.pixelSize: 10; wrapMode: Text.WordWrap; maximumLineCount: 2; elide: Text.ElideRight }
+                Text { width: parent.width; text: option.label; color: control.textColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; elide: Text.ElideRight }
+                Text { width: parent.width; visible: text.length > 0; text: option.details.description || ""; color: control.mutedColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap; maximumLineCount: 2; elide: Text.ElideRight }
             }
             Text {
                 anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter
@@ -168,7 +170,7 @@ ComboBox {
             keyNavigationEnabled: true
             keyNavigationWraps: true
             highlightMoveDuration: 0
-            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
             Keys.onReturnPressed: {
                 if (currentIndex >= 0) {
                     control.currentIndex = currentIndex

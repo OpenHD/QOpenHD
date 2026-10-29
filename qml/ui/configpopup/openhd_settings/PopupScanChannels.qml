@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -152,7 +153,7 @@ PopupBigGeneric {
 
             Item { Layout.preferredHeight: 4 }
 
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: scanModeSwitch
                 Layout.fillWidth: true
                 text: checked ? qsTr("Passive (Nexmon)") : qsTr("Normal (Devourer radio)")
@@ -183,14 +184,14 @@ PopupBigGeneric {
                         Layout.fillWidth: true
                         text: qsTr("Locate a running OpenHD air unit")
                         color: settings_form.primaryText
-                        font.pixelSize: 15
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         font.bold: true
                     }
                     Text {
                         Layout.fillWidth: true
                         text: qsTr("The ground station checks each selected channel until it finds a compatible signal.")
                         color: settings_form.secondaryText
-                        font.pixelSize: 10
+                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                         wrapMode: Text.WordWrap
                     }
                 }
@@ -216,7 +217,7 @@ PopupBigGeneric {
                         Text {
                             text: qsTr("SCAN RANGE")
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                             font.letterSpacing: 1
                         }
@@ -237,7 +238,7 @@ PopupBigGeneric {
                         Text {
                             text: qsTr("CHANNEL WIDTH")
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                             font.letterSpacing: 1
                         }
@@ -256,7 +257,7 @@ PopupBigGeneric {
                         }
                     }
 
-                    Button {
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: startButton
                         Layout.fillWidth: true
                         Layout.columnSpan: root.width >= 560 ? 2 : 1
@@ -277,7 +278,7 @@ PopupBigGeneric {
                         contentItem: Text {
                             text: startButton.text
                             color: startButton.enabled ? "#ffffff" : settings_form.secondaryText
-                            font.pixelSize: 12
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -303,14 +304,14 @@ PopupBigGeneric {
                             text: root.scanning ? qsTr("Scanning channels")
                                                 : (root.scanFinished ? qsTr("Scan complete") : qsTr("Ready"))
                             color: settings_form.primaryText
-                            font.pixelSize: 12
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                             Layout.fillWidth: true
                         }
                         Text {
                             text: root.scanProgress + "%"
                             color: settings_form.accentColor
-                            font.pixelSize: 12
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                         }
                     }
@@ -362,7 +363,7 @@ PopupBigGeneric {
                                                       ? qsTr("Choose a range and channel width, then start the scan.")
                                                       : qsTr("Ground station is offline.")))
                             color: settings_form.primaryText
-                            font.pixelSize: 11
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: root.scanFinished
                             wrapMode: Text.WordWrap
                         }
@@ -371,7 +372,7 @@ PopupBigGeneric {
                             visible: root.scanFinished
                             text: qsTr("The link switches automatically when an air unit is found.")
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             wrapMode: Text.WordWrap
                         }
                     }
@@ -382,7 +383,7 @@ PopupBigGeneric {
                 Layout.fillWidth: true
                 text: qsTr("OpenHD channels 1–7 are the quickest option. Wider scans can take considerably longer.")
                 color: settings_form.secondaryText
-                font.pixelSize: 10
+                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
             }

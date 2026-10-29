@@ -94,3 +94,5 @@ CMakeLists.txt.user
 
 # Native host cross SDK and target build outputs
 .cross-build/
+/tools/__pycache__
+__pycache__/

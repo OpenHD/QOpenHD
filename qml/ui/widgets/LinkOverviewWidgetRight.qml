@@ -148,12 +148,11 @@ BaseWidget {
     }
 
     function get_bitrate_text() {
-        var bitrate_text = m_camera_stream_model.curr_received_bitrate_with_fec;
-        if (bitrate_text === "" || bitrate_text === "N/A") {
-            // Air-side debug mode has no ground RX stats, use current injected bitrate (+FEC) instead.
-            bitrate_text = m_camera_stream_model.curr_video_injected_bitrate;
-        }
-        return bitrate_to_mbit_text(bitrate_text);
+        // Actual Ground arrivals across the full link, not one encoder or TX target.
+        if (!_ohdSystemGround.is_alive || _ohdSystemGround.received_link_bitrate_bps < 0)
+            return "--Mbit"
+        var mbits = _ohdSystemGround.received_link_bitrate_bps / 1000000.0
+        return Number(mbits).toLocaleString(Qt.locale(), 'f', mbits < 10 ? 1 : 0) + "Mbit"
     }
 
     function rc_rssi_is_valid() {

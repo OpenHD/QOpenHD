@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
@@ -37,7 +38,7 @@ FocusScope {
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.tag
                     color: model.severity_color
-                    font.pixelSize: 11
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     font.bold: true
                     elide: Text.ElideRight
                 }
@@ -47,7 +48,7 @@ FocusScope {
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.message
                     color: settings_form.primaryText
-                    font.pixelSize: 12
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
             }

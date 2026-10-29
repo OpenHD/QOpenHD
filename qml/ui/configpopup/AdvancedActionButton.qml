@@ -1,7 +1,8 @@
+import "MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
-Button {
+Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
     id: control
     property bool primary: false
     property bool destructive: false
@@ -50,7 +51,7 @@ Button {
         Text {
             text: control.text
             color: control.primary ? "white" : (control.destructive ? _theme.errorColor : _theme.primaryText)
-            font.pixelSize: 13
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             font.bold: true
         }
     }

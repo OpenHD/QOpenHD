@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -65,7 +66,7 @@ Item {
                 Text {
                     Layout.fillWidth: true
                     text: card.title.toUpperCase(); color: "#edf3fa"
-                    font.family: "Archivo"; font.pixelSize: 20; font.bold: true
+                    font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true
                     elide: Text.ElideRight
                 }
                 Row {
@@ -75,7 +76,7 @@ Item {
                         id: statusText
                         text: card.alive ? (card.systemType === 2 ? qsTr("Connected") : qsTr("Online")) : qsTr("Offline")
                         color: card.alive ? "#3bda69" : "#94a9b9"
-                        font.family: "Archivo"; font.pixelSize: 20
+                        font.family: "Archivo"; font.pixelSize: MenuTypography.body
                     }
                 }
             }
@@ -96,7 +97,7 @@ Item {
             height: 52
             text: qsTr("Details")
             font.capitalization: Font.MixedCase
-            font.family: "Archivo"; font.pixelSize: 20
+            font.family: "Archivo"; font.pixelSize: MenuTypography.body
             Accessible.name: qsTr("%1 details").arg(card.title)
             onClicked: card.detailsRequested()
             onActiveFocusChanged: if (activeFocus) statusPanel.syncFocus(detailsButton)

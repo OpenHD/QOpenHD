@@ -2,8 +2,7 @@
 
 Open **Status**, then click the Flight controller card (or focus it and press
 Enter). The popup shows live instruments, firmware identity when reported,
-sensor health, recent FC events, and an expandable MAVLink inspector with decoded
-fields and wire payloads. OpenHD Air owns the asynchronous MAVLink firmware
+sensor health and recent FC events together on one scrolling page. OpenHD Air owns the asynchronous MAVLink firmware
 detector and reports its result through the existing telemetry infrastructure.
 QOpenHD never starts another detector or an MSP/USB probe. The menu uses plain
 firmware names; confidence remains in internal diagnostics. INAV compatibility

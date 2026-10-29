@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -329,12 +330,12 @@ Rectangle {
                 Text {
                     text: qsTr("Link routing")
                     color: settings_form.primaryText
-                    font.pixelSize: 11
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     font.bold: true
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Button {
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         text: root.wifiActive() ? qsTr("WiFiBroadcast only + UART") : qsTr("One link + UART")
                         highlighted: root.bothSingleEnabled
                         enabled: root.linkModeAvailable &&
@@ -342,7 +343,7 @@ Rectangle {
                                  !_ohdSystemAirSettingsModel.ui_is_busy
                         onClicked: root.setBoth("MULTI_LINK_EN", 0)
                     }
-                    Button {
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         text: qsTr("Multiple links (Enterprise)")
                         highlighted: root.bothMultiEnabled
                         enabled: root.enterpriseEligible &&
@@ -364,7 +365,7 @@ Rectangle {
                                  : qsTr("One transport per unit; WiFiBroadcast is preferred. UART remains available. Multiple links require verified enterprise certificates on Air and Ground."))
                               : qsTr("Air and Ground have different link modes. Select One link + UART to synchronize them.")
                     color: settings_form.secondaryText
-                    font.pixelSize: 9
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                     wrapMode: Text.WordWrap
                 }
             }
@@ -434,8 +435,8 @@ Rectangle {
                         Column {
                             anchors.centerIn: parent; spacing: 8
                             Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: 22; color: settings_form.secondaryText }
-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("No active links yet"); color: settings_form.primaryText; font.pixelSize: 11; font.bold: true }
-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Connect an OpenHD unit or add an optional Air link above."); color: settings_form.secondaryText; font.pixelSize: 9 }
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("No active links yet"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Connect an OpenHD unit or add an optional Air link above."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                         }
                     }
                 }
@@ -461,7 +462,7 @@ Rectangle {
         }
     }
 
-    LinkAllocationPopup { id: allocationPopup; usage: root.usageFor("wifi") }
+    LinkAllocationPopup { id: allocationPopup; usage: root.usageFor("wifi"); linkUsages: root.reportedUsage }
     onVisibleChanged: if (!visible) allocationPopup.close()
 
     Component { id: wifiCard; WifiBroadcastLinkCard {} }

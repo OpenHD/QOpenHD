@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -5,16 +6,18 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 
 import "../../elements"
+import ".."
 
 // Dialoque to select a camera
 Card {
+    dialogStyle: true
     id: dialoque_choose_camera
     width: 360
     height: 340
     z: 5.0
     anchors.centerIn: parent
     cardName: qsTr("Camera Selection")
-    cardNameColor: "black"
+    cardNameColor: "#edf4fa"
     visible: false
 
     property int m_platform_type: 0;
@@ -143,7 +146,7 @@ Card {
     cardBody: Column{
         padding: 10
         spacing: 10
-        Text{
+        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: 300
             text: qsTr("Your AIR Platform: %1").arg(get_platform_name());
         }
@@ -173,7 +176,7 @@ Card {
             width: 300
             text: qsTr("NOTE: Changing your camera automatically\nreboots your air unit");
             visible: button_save.enabled
-            font.pixelSize: 13
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
 
         }
     }
@@ -191,7 +194,7 @@ Item {
         RowLayout {
             anchors.centerIn: parent
 
-            Button {
+            AdvancedDialogButton {
                 Layout.preferredWidth: 150
                 text: qsTr("CANCEL")
                 onPressed: {
@@ -199,7 +202,7 @@ Item {
                 }
             }
 
-            Button {
+            AdvancedDialogButton {
                 id: button_save
                 Layout.preferredWidth: 150
                 text: qsTr("SAVE")

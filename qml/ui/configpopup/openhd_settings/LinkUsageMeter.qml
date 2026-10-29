@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
@@ -30,8 +31,9 @@ Item {
         if (id === 2) return qsTr("Cam 2")
         if (id === 3) return qsTr("Audio")
         if (id === 4) return qsTr("Telemetry")
-        if (id === 5) return qsTr("Other")
-        if (id === 6) return qsTr("Control")
+        if (id === 5) return usage && Number(usage.id) === 1 ? qsTr("FEC") : qsTr("Overhead")
+        if (id === 7) return qsTr("Custom data")
+        if (id === 6) return qsTr("RC control")
         return qsTr("Type %1").arg(id)
     }
     function iconFor(id) {
@@ -39,20 +41,29 @@ Item {
         if (id === 3) return "\uf028"
         if (id === 4) return "\uf1eb"
         if (id === 6) return "\uf11b"
+        if (id === 7) return "\uf121"
         return "\uf141"
     }
     function colorFor(id) {
-        if (id === 1) return "#299fff"
-        if (id === 2) return "#34dba0"
-        if (id === 3) return "#ffad32"
-        if (id === 4) return "#a967e8"
-        if (id === 6) return "#d08cff"
+        if (id === 1) return "#198eff"
+        if (id === 2) return "#23c3eb"
+        if (id === 3) return "#55c8dd"
+        if (id === 4) return "#ac58ee"
+        if (id === 6) return "#ed72c6"
+        if (id === 5) return "#35dc72"
+        if (id === 7) return "#f4bb47"
         return "#91aac5"
     }
     function rate(value) {
         if (value >= 1000000) return (value / 1000000).toFixed(1) + " Mbit/s"
         if (value >= 1000) return (value / 1000).toFixed(1) + " kbit/s"
         return Number(value).toFixed(0) + " bit/s"
+    }
+    function compactUsage(value) {
+        if (capacity <= 0) return rate(value)
+        var percent = Math.max(0, Math.min(100, Number(value) * 100 / capacity))
+        if (percent > 0 && percent < 0.1) return "<0.1%"
+        return percent.toFixed(1).replace(/\.0$/, "") + "%"
     }
     function segments() {
         if (!usage || !usage.categories) return []
@@ -71,14 +82,14 @@ Item {
         spacing: 8
         RowLayout {
             Layout.fillWidth: true
-            Text { text: qsTr("Link Usage"); color: settings_form.primaryText; font.pixelSize: 18; font.bold: true; Layout.fillWidth: true }
+            Text { text: qsTr("Link Usage"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Switch {
                 id: allocationSwitch
                 objectName: "dynamicLinkBitrateSwitch"
                 text: qsTr("Dynamic Link Bitrate")
                 enabled: root.allocationSettings && _ohdSystemAir.is_alive && !_qopenhd.debugMenuPreview && root.allocationSettings.has_params_fetched && !root.allocationSettings.ui_is_busy && root.allocationSettings.param_int_exists("VARIABLE_BITRATE")
                 onClicked: root.allocationSettings.try_set_param_int_async("VARIABLE_BITRATE", checked ? 1 : 0, true)
-                font.pixelSize: root.width < 440 ? 10 : 12
+                font.pixelSize: MenuTypography.body
                 contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; leftPadding: parent.indicator.width + parent.spacing; verticalAlignment: Text.AlignVCenter }
             }
             Binding { target: allocationSwitch; property: "checked"; value: root.dynamicEnabled }
@@ -90,45 +101,44 @@ Item {
             radius: 8; color: "#294154"; clip: true
             LinkSegmentsBar {
                 anchors.fill: parent
-                denominator: root.allocationAvailable ? Math.max(1, root.allocationCapacity) : root.barDenominator
-                segments: root.allocationAvailable
-                         ? [{value: root.priorityReservation, color: "#15a99b"}, {value: root.fixedReservation, color: "#8d919f"}, {value: root.dynamicPool, color: "#347ff0"}]
-                         : root.segments().map(function(item) {return {value: Number(item.bps), color: root.colorFor(Number(item.id))}})
+                objectName: "linkUsageSegments"
+                denominator: root.barDenominator
+                segments: root.segments().map(function(item) {return {value: Number(item.bps), color: root.colorFor(Number(item.id))}})
             }
             MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.allocationRequested() }
         }
-        RowLayout {
-            visible: root.usage !== null
+        Flow {
             Layout.fillWidth: true
-            Text { text: root.allocationAvailable ? qsTr("Fixed %1%").arg(root.fixedPercent) : qsTr("Allocation unavailable"); color: settings_form.secondaryText; font.pixelSize: 13; font.bold: true; Layout.fillWidth: true }
-            Text { text: root.allocationAvailable ? qsTr("Dynamic %1%").arg(root.dynamicPercent) : ""; color: settings_form.secondaryText; font.pixelSize: 13; font.bold: true }
+            spacing: 14
+            Repeater {
+                model: root.segments().filter(function(item) {
+                    return Number(item.id) !== 6 || root.capacity <= 0 || Number(item.bps) * 100 / root.capacity >= 0.1
+                })
+                delegate: Row {
+                    spacing: 6
+                    Rectangle { anchors.verticalCenter: parent.verticalCenter; width: 9; height: 9; radius: 3; color: root.colorFor(Number(modelData.id)) }
+                    Text {
+                        objectName: "linkUsagePercent" + modelData.id
+                        text: root.labelFor(Number(modelData.id)) + " " + root.compactUsage(Number(modelData.bps))
+                        color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
+                    }
+                }
+            }
         }
         Text {
+            visible: !root.usage || root.capacity <= 0
             Layout.fillWidth: true; wrapMode: Text.WordWrap
-            text: root.allocationAvailable ? qsTr("Estimated reservations and dynamic pool. Measured traffic: %1.").arg(root.rate(root.total))
-                  : root.usage ? qsTr("Measured traffic: %1. Allocation estimates unavailable.").arg(root.rate(root.total)) : qsTr("Waiting for link telemetry.")
-            color: root.allocation && root.allocation.overcommitted && root.allocation.enabled ? settings_form.errorColor : settings_form.secondaryText
-            font.pixelSize: 12
+            text: root.usage ? qsTr("Link capacity not reported.") : qsTr("Waiting for link telemetry.")
+            color: settings_form.secondaryText
+            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
         }
         Text {
             visible: !!root.allocation && !!root.allocation.enabled && !!root.allocation.overcommitted
             Layout.fillWidth: true; wrapMode: Text.WordWrap
             text: qsTr("Overcommitted — display capped at 100%. Encoder minimums or fixed traffic exceed capacity.")
-            color: settings_form.errorColor; font.pixelSize: 12
+            color: settings_form.errorColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
         }
-        Text { visible: root.usage !== null; Layout.fillWidth: true; text: qsTr("Click to inspect link allocation and adjust dynamic stream shares."); wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12 }
-        Button {
-            objectName: "openLinkAllocationButton"
-            text: qsTr("Open Link Allocation")
-            implicitHeight: 36
-            onClicked: root.allocationRequested()
-            contentItem: Row {
-                spacing: 10
-                Text { anchors.verticalCenter: parent.verticalCenter; text: "\uf1de"; color: settings_form.primaryText; font.family: "Font Awesome 5 Free"; font.pixelSize: 14 }
-                Text { anchors.verticalCenter: parent.verticalCenter; text: parent.parent.text; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
-            }
-            background: Rectangle { radius: 9; color: parent.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: "#45627b" }
-        }
+
     }
 
     Column {
@@ -139,23 +149,23 @@ Item {
         RowLayout {
             width: parent.width
             height: root.allocationControls ? 34 : 18
-            Text { text: root.title; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true; Layout.fillWidth: true; elide: Text.ElideRight }
+            Text { text: root.title; color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true; elide: Text.ElideRight }
             Text {
                 visible: !root.allocationControls
                 text: root.usage ? root.rate(root.total) + (root.capacity > 0 ? " / " + root.rate(root.capacity) : "") : qsTr("Waiting for telemetry")
-                color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true
+                color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true
             }
             Rectangle {
                 visible: !root.allocationControls
                 Layout.preferredWidth: 42; Layout.preferredHeight: 22; radius: 6
                 color: "#163955"; border.color: "#31516c"
-                Text { anchors.centerIn: parent; text: root.usage && root.capacity > 0 ? Math.min(100, Math.max(0, Math.round(root.total * 100 / root.capacity))) + "%" : "N/A"; color: "#e7f2ff"; font.pixelSize: 10; font.bold: true }
+                Text { anchors.centerIn: parent; text: root.usage && root.capacity > 0 ? Math.min(100, Math.max(0, Math.round(root.total * 100 / root.capacity))) + "%" : "N/A"; color: "#e7f2ff"; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
         Text {
             visible: root.allocationControls
             text: root.usage ? root.rate(root.total) + (root.capacity > 0 ? " / " + root.rate(root.capacity) : "") + " " + qsTr("measured traffic / radio estimate") : qsTr("Waiting for telemetry")
-            color: settings_form.secondaryText; font.pixelSize: 10
+            color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
             width: parent.width; elide: Text.ElideRight
         }
         Rectangle {
@@ -186,17 +196,10 @@ Item {
                 delegate: Row {
                     spacing: 3
                     Text { text: root.iconFor(Number(modelData.id)); color: root.colorFor(Number(modelData.id)); font.family: "Font Awesome 5 Free"; font.pixelSize: 9 }
-                    Text { text: root.labelFor(Number(modelData.id)) + " " + root.rate(Number(modelData.bps)); color: settings_form.secondaryText; font.pixelSize: 8 }
+                    Text { text: root.labelFor(Number(modelData.id)) + " " + root.rate(Number(modelData.bps)); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                 }
             }
         }
-        Button {
-            visible: root.allocationControls
-            text: qsTr("Manage Allocation")
-            onClicked: root.allocationRequested()
-            font.pixelSize: 11
-            contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-            background: Rectangle { radius: 6; color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor }
-        }
+
     }
 }

@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -9,6 +10,7 @@ Item {
     property var settingsModel
     property string paramId: ""
     property string label: paramId
+    property string description: metadata.description || ""
     property string valueSuffix: ""
     property bool preferSlider: false
     property bool preferRadioToggle: false
@@ -96,17 +98,17 @@ Item {
                     Layout.fillWidth: true
                     text: root.label
                     color: settings_form.primaryText
-                    font.pixelSize: 11
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     font.bold: true
                     elide: Text.ElideRight
                 }
                 Text {
                     Layout.fillWidth: true
                     visible: root.controlType !== "slider"
-                    text: root.metadata.description || ""
+                    text: root.description
+                    wrapMode: Text.WordWrap
                     color: settings_form.secondaryText
-                    font.pixelSize: 8
-                    elide: Text.ElideRight
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                 }
             }
             Loader {
@@ -136,7 +138,7 @@ Item {
 
     Component {
         id: toggleEditor
-        Switch {
+        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             checked: root.cachedValue !== 0
             onClicked: root.commitInt(checked ? 1 : 0)
             Keys.onPressed: root.handleNavigation(event)
@@ -150,7 +152,7 @@ Item {
             property Item keyboardControl: root.cachedValue !== 0 ? enabledChoice : disabledChoice
             ButtonGroup { id: stateGroup }
 
-            RadioButton {
+            RadioButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: disabledChoice
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -169,7 +171,7 @@ Item {
                 contentItem: Text {
                     leftPadding: 22; text: disabledChoice.text
                     color: disabledChoice.checked ? settings_form.primaryText : settings_form.secondaryText
-                    font.pixelSize: 9; font.bold: disabledChoice.checked
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: disabledChoice.checked
                     verticalAlignment: Text.AlignVCenter
                 }
                 background: Rectangle {
@@ -190,7 +192,7 @@ Item {
                 Keys.onDownPressed: root.moveRequested(1)
                 Keys.onEscapePressed: root.backRequested()
             }
-            RadioButton {
+            RadioButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: enabledChoice
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -209,7 +211,7 @@ Item {
                 contentItem: Text {
                     leftPadding: 22; text: enabledChoice.text
                     color: enabledChoice.checked ? settings_form.primaryText : settings_form.secondaryText
-                    font.pixelSize: 9; font.bold: enabledChoice.checked
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: enabledChoice.checked
                     verticalAlignment: Text.AlignVCenter
                 }
                 background: Rectangle {
@@ -257,7 +259,7 @@ Item {
             text: Math.round(root.previewValue) + root.valueSuffix
             color: root.dangerAboveEnabled && root.previewValue > root.dangerAbove
                    ? settings_form.errorColor : settings_form.accentColor
-            font.pixelSize: 11
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             font.bold: true
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
@@ -382,7 +384,7 @@ Item {
 
     Component {
         id: unsupportedEditor
-        Text {
+        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             text: qsTr("N/A")
             color: settings_form.secondaryText
             horizontalAlignment: Text.AlignRight

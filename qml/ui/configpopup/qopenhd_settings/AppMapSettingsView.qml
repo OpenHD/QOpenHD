@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "../../elements"
@@ -34,14 +35,14 @@ ScrollView {
         id: mapColumn
         width: root.availableWidth
         spacing: 5
-        AdvancedActionButton {
+        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             text: qsTr("Create offline map...")
             onClicked: {
                 if (offlineMapDialog.item) offlineMapDialog.item.open()
                 else offlineMapDialog.active = true
             }
         }
-        Text {
+        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: parent.width - 24; x: 12
             text: qsTr("%1 offline map packages installed").arg(_offlineMapTiles.packageCount)
             color: settings_form.secondaryText
@@ -55,7 +56,7 @@ ScrollView {
             text: '<a href="https://www.openstreetmap.org/copyright">\u00a9 OpenStreetMap contributors</a>'
             color: settings_form.secondaryText
             linkColor: settings_form.accentColor
-            font.pixelSize: 12
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             wrapMode: Text.WordWrap
             onLinkActivated: Qt.openUrlExternally(link)
         }
@@ -70,7 +71,7 @@ ScrollView {
             textRole: "name"
             visible: _qopenhd.debugMenuPreview || (count > 0)
         }
-        AdvancedActionButton {
+        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             objectName: "jumpToOfflineMap"
             text: qsTr("Jump to map")
             enabled: offlinePackages.currentIndex >= 0
@@ -79,7 +80,7 @@ ScrollView {
                 settings_form.close_all()
             }
         }
-        AdvancedActionButton {
+        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             objectName: "toggleMapDemo"
             text: mapTarget.demoFlight ? qsTr("Stop demo flight") : qsTr("Debug: circling plane")
             onClicked: {
@@ -94,7 +95,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Show map")
 
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -107,7 +108,7 @@ ScrollView {
 
         SettingBaseElement {
             m_short_description: qsTr("Follow aircraft")
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -157,7 +158,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Mapbox API key")
 
-            TextField {
+            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -175,10 +176,10 @@ ScrollView {
             x: 12
             text: qsTr("Get a Mapbox public access token at account.mapbox.com under Tokens. Select OpenStreetMap or OpenHD Offline to use the map without a key.")
             color: settings_form.secondaryText
-            font.pixelSize: 12
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             wrapMode: Text.WordWrap
         }
-        AdvancedActionButton {
+        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             objectName: "reloadMap"
             text: qsTr("Reload map")
             onClicked: mapTarget.configure()
@@ -265,7 +266,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Lock map to drone direction")
 
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -279,7 +280,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Show drone track")
 
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -293,7 +294,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Show mission waypoints")
 
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -307,7 +308,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("Enable ADS-B")
 
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right
@@ -321,7 +322,7 @@ ScrollView {
         SettingBaseElement {
             m_short_description: qsTr("ADS-B SDR source")
             visible: _qopenhd.debugMenuPreview || (settings.adsb_enable)
-            Switch {
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 width: Math.min(260, parent.width * 0.46)
                 height: elementHeight
                 anchors.right: parent.right

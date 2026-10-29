@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -22,10 +23,10 @@ FocusScope {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 2
-                    Text { text: root.title; color: settings_form.primaryText; font.pixelSize: 15; font.bold: true }
-                    Text { text: root.description; color: settings_form.secondaryText; font.pixelSize: 11; elide: Text.ElideRight; Layout.fillWidth: true }
+                    Text { text: root.title; color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+                    Text { text: root.description; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; elide: Text.ElideRight; Layout.fillWidth: true }
                 }
-                Text { text: qsTr("PWM 1000–2000"); color: settings_form.secondaryText; font.pixelSize: 11 }
+                Text { text: qsTr("PWM 1000–2000"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             }
             ListView {
                 id: channels
@@ -50,9 +51,9 @@ FocusScope {
                         anchors.leftMargin: 10
                         anchors.rightMargin: 10
                         spacing: 12
-                        Text { text: qsTr("CH %1").arg(index + 1); color: settings_form.secondaryText; font.pixelSize: 11; font.bold: true; Layout.preferredWidth: 52 }
+                        Text { text: qsTr("CH %1").arg(index + 1); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; Layout.preferredWidth: 52 }
                         ProgressBar { Layout.fillWidth: true; from: 1000; to: 2000; value: model.curr_value }
-                        Text { text: model.curr_value; color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; horizontalAlignment: Text.AlignRight; Layout.preferredWidth: 48 }
+                        Text { text: model.curr_value; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignRight; Layout.preferredWidth: 48 }
                     }
                     MouseArea { anchors.fill: parent; onClicked: { channels.currentIndex = index; channels.forceActiveFocus() } }
                 }

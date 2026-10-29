@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -5,16 +6,18 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 
 import "../../elements"
+import ".."
 
 // Dialoque to select a resolution for a camera
 Card {
+    dialogStyle: true
     id: dialoque_choose_resolution
     width: 360
     height: 340
     z: 5.0
     anchors.centerIn: parent
     cardName: qsTr("Resolution Selection")
-    cardNameColor: "black"
+    cardNameColor: "#edf4fa"
     visible: false
 
     property string m_current_resolution_fps: "1920x1080@30"
@@ -95,11 +98,11 @@ Card {
     cardBody: Column{
         spacing: 10
         padding: 10
-        Text{
+        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: 200
             text: qsTr("Your Camera: %1").arg(m_cam_type_as_string);
         }
-        Text{
+        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: 200
             text: qsTr("Default Resolution: %1").arg(m_default_resolution_fps)
         }
@@ -121,7 +124,7 @@ Card {
                 text: qsTr("WIDTHxHEIGHT@FPS")
                 visible: advanced_checkbox.checked
                 maximumLength: 13 //3840x2160@200 | 13 chars
-                font.pixelSize: 20
+                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 padding: 2
                 topPadding: 6
                 Rectangle{
@@ -146,7 +149,7 @@ Card {
             }
         }
         // Toggles between text and drop down input
-        CheckBox{
+        CheckBox{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: advanced_checkbox
             text: qsTr("experiment")
         }
@@ -159,14 +162,14 @@ Card {
             anchors.horizontalCenter: parent.horizontalCenter  // Center the RowLayout horizontally within the parent
             spacing: 20  // Add spacing between the buttons (optional)
 
-            Button {
+            AdvancedDialogButton {
                 Layout.preferredWidth: 150
                 text: qsTr("CANCEL")
                 onPressed: {
                     close();
                 }
             }
-            Button{
+            AdvancedDialogButton {
                 Layout.preferredWidth: 150
                 text: qsTr("SAVE")
                 onPressed: {

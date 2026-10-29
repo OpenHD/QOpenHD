@@ -129,17 +129,23 @@ Rectangle {
     DeferredStatusDialog { id: powerDialog; source: "PowerActionDialoque.qml" }
     Popup {
         id: craftDetails
-        parent: root
+        objectName: "flightControllerDetailsPopup"
+        parent: Overlay.overlay
         anchors.centerIn: parent
-        width: Math.min(parent.width - 12, 1000)
-        height: parent.height - 12
+        readonly property real uiScale: Math.min(1, (parent.width - 24) / 1080, (parent.height - 24) / 800)
+        width: 1080 * uiScale
+        height: 800 * uiScale
         modal: true
-        dim: false
+        dim: true
         focus: true
         padding: 0
-        closePolicy: Popup.CloseOnEscape
-        background: Rectangle { color: settings_form.pageBackground; radius: 14; border.color: settings_form.lineColor }
-        contentItem: Loader {
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        Overlay.modal: Rectangle { color: "#af000b12" }
+        background: Rectangle { color: "#041d2c"; radius: 16 * craftDetails.uiScale; border.color: "#0089c4" }
+        contentItem: Item {
+          Loader {
+            width: 1080; height: 800
+            scale: craftDetails.uiScale; transformOrigin: Item.TopLeft
             id: craftDetailsLoader
             active: craftDetails.visible
             asynchronous: true
@@ -149,6 +155,7 @@ Rectangle {
                 target: craftDetailsLoader.item
                 function onCloseRequested() { craftDetails.close() }
             }
+        }
         }
         onOpened: if (craftDetailsLoader.item) craftDetailsLoader.item.gainFocus()
         onClosed: if (root.visible) root.gainFocus()

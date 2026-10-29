@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
@@ -54,18 +55,18 @@ Popup {
                     text: "OPENHD // PERSONNEL ARCHIVE"
                     color: terminal.phosphor
                     font.family: terminalFont.name
-                    font.pixelSize: terminal.width < 500 ? 11 : 16
+                    font.pixelSize: MenuTypography.body
                     font.bold: true
                 }
                 Text {
                     text: "SUBJECT 001 / LEAD DEVELOPER"
                     color: "#d39750"
                     font.family: terminalFont.name
-                    font.pixelSize: 10
+                    font.pixelSize: MenuTypography.helper
                 }
             }
         }
-        Button {
+        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: closeButton
             objectName: "creditArchiveClose"
             anchors.top: parent.top
@@ -75,7 +76,7 @@ Popup {
             text: qsTr("Close")
             Accessible.name: qsTr("Close developer terminal")
             onClicked: terminal.close()
-            contentItem: Text {
+            contentItem: Text { font.pixelSize: MenuTypography.body;
                 text: closeButton.text
                 color: terminal.phosphor
                 font.family: terminalFont.name
@@ -117,7 +118,7 @@ Popup {
                 textFormat: Text.PlainText
                 color: terminal.phosphor
                 font.family: terminalFont.name
-                font.pixelSize: terminal.width < 500 ? 12 : 15
+                font.pixelSize: MenuTypography.body
                 wrapMode: Text.Wrap
                 lineHeight: 1.25
             }
@@ -131,7 +132,7 @@ Popup {
                   : "END OF REPORT // OPENHD CONTINUES."
             color: "#d39750"
             font.family: terminalFont.name
-            font.pixelSize: 10
+            font.pixelSize: MenuTypography.helper
             wrapMode: Text.Wrap
         }
     }

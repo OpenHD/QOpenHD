@@ -1,3 +1,4 @@
+import "MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -126,7 +127,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.margins: settings_form.compactSidebar ? 10 : 20
             spacing: 3
-            Button {
+            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: logoBackButton
                 width: 52
                 height: 52
@@ -224,7 +225,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         text: model.title
                         color: navDelegate.highlighted ? "#ffffff" : settings_form.primaryText
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         font.bold: navDelegate.highlighted
                     }
                 }
@@ -275,7 +276,7 @@ Rectangle {
             Row {
                 anchors.centerIn: parent; spacing: 10
                 Rectangle { width: 10; height: 10; radius: 5; color: goodColor }
-                Text { visible: !settings_form.compactSidebar; anchors.verticalCenter: parent.verticalCenter; text: _qopenhd.version_string; color: secondaryText; font.pixelSize: 11 }
+                Text { visible: !settings_form.compactSidebar; anchors.verticalCenter: parent.verticalCenter; text: _qopenhd.version_string; color: secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             }
             MouseArea {
                 id: versionHit

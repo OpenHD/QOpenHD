@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -146,8 +147,8 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
             Text { text: "\uf1eb"; color: "#55aaff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 18 }
-            Text { text: qsTr("WiFiBroadcast Link"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
-            Switch {
+            Text { text: qsTr("WiFiBroadcast Link"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: linkSwitch
                 visible: _qopenhd.debugMenuPreview || (root.linkSwitchAvailable && !root.simulated && root.host && root.host.bothMultiEnabled)
                 enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
@@ -157,11 +158,12 @@ Rectangle {
             }
             Binding { target: linkSwitch; property: "checked"; value: root.linkRoutingEnabled }
             Rectangle { visible: !linkSwitch.visible; Layout.preferredWidth: activeText.implicitWidth + 14; Layout.preferredHeight: 21; radius: 7; color: root.simulated || (root.airSystemAlive && root.groundSystemAlive && root.linkRoutingEnabled) ? Qt.rgba(0.1, 0.8, 0.35, 0.12) : settings_form.panelBackground
-                Text { id: activeText; anchors.centerIn: parent; text: root.simulated ? qsTr("SIMULATED") : !root.groundSystemAlive ? qsTr("GROUND OFFLINE") : !root.airSystemAlive ? qsTr("AIR OFFLINE") : !root.linkRoutingEnabled ? qsTr("DISABLED") : qsTr("UNITS ONLINE"); color: root.simulated || (root.airSystemAlive && root.groundSystemAlive && root.linkRoutingEnabled) ? settings_form.goodColor : settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                Text { id: activeText; anchors.centerIn: parent; text: root.simulated ? qsTr("SIMULATED") : !root.groundSystemAlive ? qsTr("GROUND OFFLINE") : !root.airSystemAlive ? qsTr("AIR OFFLINE") : !root.linkRoutingEnabled ? qsTr("DISABLED") : qsTr("ONLINE"); color: root.simulated || (root.airSystemAlive && root.groundSystemAlive && root.linkRoutingEnabled) ? settings_form.goodColor : settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
 
         GridLayout {
+            visible: settings.dev_show_advanced_button
             Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 88 : 44; Layout.maximumHeight: Layout.preferredHeight; columns: root.width < 360 ? 2 : 4; columnSpacing: 4; rowSpacing: 4
             Repeater {
                 model: [
@@ -174,8 +176,8 @@ Rectangle {
                 delegate: Rectangle {
                     Layout.fillWidth: true; Layout.fillHeight: true; Layout.minimumHeight: 40; radius: 5; color: settings_form.panelBackground; border.color: settings_form.lineColor
                     Column { anchors.centerIn: parent; spacing: 1
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: modelData.bad ? settings_form.errorColor : settings_form.primaryText; font.pixelSize: 12; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: modelData.bad ? settings_form.errorColor : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     }
                 }
             }
@@ -188,7 +190,7 @@ Rectangle {
             ColumnLayout {
                 id: radioContent
                 anchors.fill: parent; anchors.margins: 12; spacing: 10
-                Text { text: qsTr("Channel & frequency"); color: settings_form.primaryText; font.pixelSize: 15; font.bold: true }
+                Text { text: qsTr("Channel & frequency"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                 GridLayout {
                     Layout.fillWidth: true
                     columns: root.width < 650 ? 1 : 2
@@ -201,34 +203,34 @@ Rectangle {
                             id: discoveryContent
                             anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
                             anchors.margins: 12; spacing: 10
-                            Text { text: qsTr("Find a channel"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
-                            Text { Layout.fillWidth: true; text: qsTr("Scan to find your Air unit, or analyze interference before choosing a frequency."); color: settings_form.secondaryText; font.pixelSize: 11; wrapMode: Text.WordWrap }
+                            Text { text: qsTr("Find a channel"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+                            Text { Layout.fillWidth: true; text: qsTr("Scan to find your Air unit, or analyze interference before choosing a frequency."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap }
                             RowLayout {
                                 Layout.fillWidth: true; spacing: 8
-                                Button {
+                                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     id: scan
                                     Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: 64
                                     enabled: !root.simulated; text: qsTr("Scan"); hoverEnabled: true
                                     contentItem: Item {
                                       Column {
                                         width: parent.width; anchors.verticalCenter: parent.verticalCenter; spacing: 5
-                                        Text { width: parent.width; text: scan.text; color: "white"; font.pixelSize: 15; font.bold: true; horizontalAlignment: Text.AlignHCenter }
-                                        Text { width: parent.width; text: qsTr("Find Air unit"); color: "white"; font.pixelSize: 10; horizontalAlignment: Text.AlignHCenter }
+                                        Text { width: parent.width; text: scan.text; color: "white"; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter }
+                                        Text { width: parent.width; text: qsTr("Find Air unit"); color: "white"; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter }
                                       }
                                     }
                                     background: Rectangle { radius: 8; color: scan.down ? Qt.darker(settings_form.accentColor, 1.2) : (scan.hovered ? Qt.lighter(settings_form.accentColor, 1.1) : settings_form.accentColor); opacity: scan.enabled ? 1 : 0.45; border.color: scan.activeFocus ? settings_form.primaryText : settings_form.accentColor; border.width: scan.activeFocus ? 2 : 1 }
                                     onClicked: if (host) host.openScan()
                                     Keys.onPressed: root.keyNav(event)
                                 }
-                                Button {
+                                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     id: analyze
                                     Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: 64
                                     enabled: !root.simulated; text: qsTr("Analyze"); hoverEnabled: true
                                     contentItem: Item {
                                       Column {
                                         width: parent.width; anchors.verticalCenter: parent.verticalCenter; spacing: 5
-                                        Text { width: parent.width; text: analyze.text; color: settings_form.primaryText; font.pixelSize: 15; font.bold: true; horizontalAlignment: Text.AlignHCenter }
-                                        Text { width: parent.width; text: qsTr("Check interference"); color: settings_form.secondaryText; font.pixelSize: 10; horizontalAlignment: Text.AlignHCenter }
+                                        Text { width: parent.width; text: analyze.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter }
+                                        Text { width: parent.width; text: qsTr("Check interference"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter }
                                       }
                                     }
                                     background: Rectangle { radius: 8; color: analyze.down || analyze.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground; border.color: analyze.activeFocus || analyze.hovered ? settings_form.accentColor : settings_form.lineColor; border.width: analyze.activeFocus ? 2 : 1; opacity: analyze.enabled ? 1 : 0.6 }
@@ -246,22 +248,23 @@ Rectangle {
                             id: channelContent
                             anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
                             anchors.margins: 12; spacing: 7
-                            RowLayout {
-                                Layout.fillWidth: true; spacing: 8
-                                Text { Layout.fillWidth: true; text: qsTr("Radio settings"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
+                            GridLayout {
+                                columns: channelContent.width < 420 ? 1 : 2
+                                Layout.fillWidth: true; columnSpacing: 8; rowSpacing: 8
+                                Text { Layout.fillWidth: true; text: qsTr("Radio settings"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                                 CompactLinkComboBox {
                                     id: frequencyFilter
-                                    Layout.preferredWidth: 140; Layout.preferredHeight: 32; font.pixelSize: 11
+                                    Layout.preferredWidth: Math.max(200, preferredTextWidth); Layout.minimumWidth: Layout.preferredWidth; Layout.fillWidth: channelContent.width < 420; Layout.preferredHeight: 36; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                                     model: frequencyFilters; textRole: "title"
                                     currentIndex: root.modelIndex(frequencyFilters, settings.qopenhd_frequency_filter_selection)
                                     onActivated: { settings.qopenhd_frequency_filter_selection = frequencyFilters.get(currentIndex).value; root.syncRadio() }
                                     Keys.onPressed: root.keyNav(event)
                                 }
                             }
-                            Text { text: qsTr("Channel / frequency"); color: settings_form.secondaryText; font.pixelSize: 10 }
+                            Text { text: qsTr("Channel / frequency"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
                             CompactLinkComboBox {
                                 id: frequency
-                                Layout.fillWidth: true; Layout.preferredHeight: 44; font.pixelSize: 14; font.bold: true
+                                Layout.fillWidth: true; Layout.preferredHeight: 44; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true
                                 model: host ? host.frequencyModel : null; textRole: "title"; popupWidth: Math.max(width, 250)
                                 displayText: root.currentFrequency > 0 && host ? host.formatFrequency(root.currentFrequency) : qsTr("N/A")
                                 enabled: !root.simulated
@@ -272,13 +275,13 @@ Rectangle {
                                 Layout.fillWidth: true; spacing: 10
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 4
-                                    Text { text: qsTr("Channel width"); color: settings_form.secondaryText; font.pixelSize: 10 }
-                                    CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 12; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
+                                    Text { text: qsTr("Channel width"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                                    CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
                                 }
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 4
-                                    Text { text: qsTr("MCS"); color: settings_form.secondaryText; font.pixelSize: 10 }
-                                    CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 12; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
+                                    Text { text: qsTr("MCS"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                                    CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
                                 }
                             }
                         }
@@ -290,28 +293,31 @@ Rectangle {
 
         Rectangle {
             visible: root.pitModeAvailable || root.showAirPower || root.showGroundPower
-            Layout.fillWidth: true; Layout.preferredHeight: 91; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
-            RowLayout { anchors.fill: parent; anchors.margins: 7; spacing: 10
+            Layout.fillWidth: true; Layout.preferredHeight: powerContent.implicitHeight + 14; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
+            GridLayout { id: powerContent; columns: root.width < 650 ? 1 : 3; anchors.fill: parent; anchors.margins: 7; columnSpacing: 10; rowSpacing: 10
                 DynamicLinkSetting {
                     id: pitMode
-                    Layout.preferredWidth: Math.min(220, parent.width * 0.24)
+                    Layout.preferredWidth: root.width < 650 ? parent.width : Math.min(220, parent.width * 0.24)
+                    Layout.fillWidth: root.width < 650
+                    Layout.preferredHeight: 48
                     Layout.fillHeight: true
                     visible: _qopenhd.debugMenuPreview || (root.pitModeAvailable)
                     editorEnabled: root.pitModeAvailable
                     settingsModel: _ohdSystemAirSettingsModel
                     paramId: "WB_PIT_MODE"
                     label: qsTr("Pit Mode")
+                    description: qsTr("Reduce power until armed")
                     onMoveRequested: root.moveFocus(step)
                     onBackRequested: root.leaveCard()
                 }
                 Rectangle {
-                    visible: pitMode.visible
+                    visible: pitMode.visible && root.width >= 650
                     Layout.preferredWidth: 1; Layout.fillHeight: true
                     color: settings_form.lineColor
                 }
                 ColumnLayout {
                     Layout.fillWidth: true; Layout.fillHeight: true; spacing: 1
-                    Text { text: qsTr("TX POWER"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                    Text { text: qsTr("TX POWER"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                     RowLayout { Layout.fillWidth: true; spacing: 14
                         DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings.dev_show_advanced_button || _qopenhd.debugMenuPreview) ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                         DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings.dev_show_advanced_button || _qopenhd.debugMenuPreview) ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
@@ -360,7 +366,7 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.minimumWidth: root.dwellAvailable ? 210 : 120
                     spacing: 1
-                    Text { text: qsTr("FHSS"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                    Text { text: qsTr("FHSS"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 10
                         DynamicLinkSetting { id: fhss; Layout.preferredWidth: 190; visible: _qopenhd.debugMenuPreview || (root.fhssAvailable); settingsModel: _ohdSystemGroundSettings; paramId: "WB_FHSS"; label: qsTr("Enable"); preferRadioToggle: true; commitHandler: function(value) { host.setFhss(value !== 0) }; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
@@ -380,8 +386,8 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 25; spacing: 6
-            Text { Layout.fillWidth: true; text: qsTr("Driver: %1").arg(root.simulated ? "RTL8812AU" : _wifi_card_air.card_type_as_string); color: settings_form.secondaryText; font.pixelSize: 7; elide: Text.ElideRight }
-            Text { visible: _ohdSystemAir.onboard_uptime_ms > 0; text: qsTr("Uptime: %1").arg(root.formatUptime(_ohdSystemAir.onboard_uptime_ms)); color: settings_form.secondaryText; font.pixelSize: 7 }
+            Text { Layout.fillWidth: true; text: qsTr("Driver: %1").arg(root.simulated ? "RTL8812AU" : _wifi_card_air.card_type_as_string); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; elide: Text.ElideRight }
+            Text { visible: _ohdSystemAir.onboard_uptime_ms > 0; text: qsTr("Uptime: %1").arg(root.formatUptime(_ohdSystemAir.onboard_uptime_ms)); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
         }
     }
 }

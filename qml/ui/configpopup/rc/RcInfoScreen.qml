@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -30,12 +31,12 @@ FocusScope {
                 Column {
                     anchors.fill: parent
                     spacing: 10
-                    Text { text: qsTr("GETTING STARTED"); color: settings_form.accentColor; font.pixelSize: 12; font.bold: true }
+                    Text { text: qsTr("GETTING STARTED"); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     Text {
                         width: parent.width
                         text: qsTr("1. Enable ENABLE_JOY_RC in the OpenHD Ground settings.\n2. Connect a USB joystick to the ground station.\n3. Reboot when requested, then verify the live channels in the OpenHD RC tab.")
                         color: settings_form.primaryText
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         lineHeight: 1.35
                         wrapMode: Text.WordWrap
                     }
@@ -43,7 +44,7 @@ FocusScope {
                         width: parent.width
                         text: qsTr("A dedicated RC link such as ExpressLRS is recommended for primary flight control.")
                         color: settings_form.secondaryText
-                        font.pixelSize: 12
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         wrapMode: Text.WordWrap
                     }
                 }
@@ -59,12 +60,12 @@ FocusScope {
                 Column {
                     anchors.fill: parent
                     spacing: 9
-                    Text { text: qsTr("CHANNEL MAPPING"); color: settings_form.accentColor; font.pixelSize: 12; font.bold: true }
+                    Text { text: qsTr("CHANNEL MAPPING"); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     Text {
                         width: parent.width
                         text: qsTr("Use the live channel screens to validate assignments and their 1000–2000 PWM range. Advanced transmitters can perform channel mapping before the joystick data reaches QOpenHD.")
                         color: settings_form.primaryText
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         wrapMode: Text.WordWrap
                     }
                 }

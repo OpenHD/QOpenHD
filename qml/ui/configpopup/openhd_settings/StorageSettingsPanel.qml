@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -127,7 +128,7 @@ FocusScope {
                     Text {
                         text: storageItem ? root.friendlyPartitionName(storageItem, position) : ""
                         color: settings_form.primaryText
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         font.bold: true
                     }
                     Rectangle {
@@ -141,7 +142,7 @@ FocusScope {
                             anchors.centerIn: parent
                             text: qsTr("IN USE")
                             color: settings_form.darkMode ? "#62d99b" : "#16744a"
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                         }
                     }
@@ -149,7 +150,7 @@ FocusScope {
                     Text {
                         text: storageItem ? qsTr("%1 free of %2").arg(root.sizeText(storageItem.freeMiB)).arg(root.sizeText(storageItem.totalMiB)) : ""
                         color: settings_form.secondaryText
-                        font.pixelSize: 12
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     }
                 }
 
@@ -179,9 +180,9 @@ FocusScope {
                                  ? qsTr("Ready to store recordings")
                                  : qsTr("Needs to be prepared"))
                         color: settings_form.secondaryText
-                        font.pixelSize: 11
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     }
-                    AdvancedActionButton {
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         visible: storageItem && !storageItem.mountedAtVideo && storageItem.canMount
                         text: qsTr("Use for recordings")
                         iconText: "\uf03d"
@@ -189,7 +190,7 @@ FocusScope {
                         enabled: root.canOperate
                         onClicked: confirmDialog.prepare("mount", storageItem)
                     }
-                    AdvancedActionButton {
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         visible: storageItem && !storageItem.formatted && storageItem.canFormat
                         text: qsTr("Prepare")
                         iconText: "\uf0ad"
@@ -197,7 +198,7 @@ FocusScope {
                         enabled: root.canOperate
                         onClicked: confirmDialog.prepare("format", storageItem)
                     }
-                    AdvancedActionButton {
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         visible: storageItem && storageItem.formatted && storageItem.canFormat
                         text: qsTr("Erase")
                         iconText: "\uf2ed"
@@ -246,7 +247,7 @@ FocusScope {
                     Text {
                         text: qsTr("Recording storage")
                         color: settings_form.primaryText
-                        font.pixelSize: 20
+                        font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family
                         font.bold: true
                     }
                     Text {
@@ -261,10 +262,10 @@ FocusScope {
                         color: root.activePartition() && Number(root.activePartition().freeMiB) < 300
                                ? (settings_form.darkMode ? "#f4b844" : "#9a6200")
                                : (root.activePartition() ? settings_form.secondaryText : "#e6a52e")
-                        font.pixelSize: 12
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     }
                 }
-                AdvancedActionButton {
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: refreshButton
                     text: qsTr("Refresh")
                     iconText: "\uf2f1"
@@ -280,13 +281,13 @@ FocusScope {
                 Text {
                     text: qsTr("Available storage")
                     color: settings_form.primaryText
-                    font.pixelSize: 15
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     font.bold: true
                 }
                 Text {
                     text: qsTr("USB drives appear automatically when you plug them into the Air unit.")
                     color: settings_form.secondaryText
-                    font.pixelSize: 12
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 }
             }
 
@@ -326,13 +327,13 @@ FocusScope {
                                 Text {
                                     text: root.friendlyDiskName(diskCard.diskItem)
                                     color: settings_form.primaryText
-                                    font.pixelSize: 15
+                                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                                     font.bold: true
                                 }
                                 Text {
                                     text: qsTr("%1 total").arg(root.sizeText(diskCard.diskItem.totalMiB))
                                     color: settings_form.secondaryText
-                                    font.pixelSize: 12
+                                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                                 }
                             }
                             Rectangle {
@@ -345,7 +346,7 @@ FocusScope {
                                     anchors.centerIn: parent
                                     text: diskCard.diskItem.internal ? qsTr("INTERNAL") : qsTr("REMOVABLE")
                                     color: settings_form.secondaryText
-                                    font.pixelSize: 10
+                                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                                     font.bold: true
                                 }
                             }
@@ -382,9 +383,9 @@ FocusScope {
                                     Layout.fillWidth: true
                                     text: qsTr("%1 unallocated space").arg(root.sizeText(diskCard.diskItem.freeMiB))
                                     color: settings_form.primaryText
-                                    font.pixelSize: 12
+                                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                                 }
-                                AdvancedActionButton {
+                                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     text: qsTr("Add recording partition")
                                     iconText: "\uf067"
                                     primary: true
@@ -403,9 +404,9 @@ FocusScope {
                                 visible: diskCard.diskPartitions.length === 0
                                 text: qsTr("No recording partition yet")
                                 color: settings_form.secondaryText
-                                font.pixelSize: 12
+                                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             }
-                            AdvancedActionButton {
+                            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: diskCard.diskPartitions.length === 0 && diskCard.diskItem.canRepartition
                                 text: qsTr("Set up storage")
                                 iconText: "\uf0ad"
@@ -413,7 +414,7 @@ FocusScope {
                                 enabled: root.canOperate
                                 onClicked: confirmDialog.prepare("repartition", diskCard.diskItem)
                             }
-                            AdvancedActionButton {
+                            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: diskCard.diskItem.canResizePartition
                                 text: qsTr("Make space for recordings")
                                 iconText: "\uf065"
@@ -456,14 +457,14 @@ FocusScope {
                         Layout.alignment: Qt.AlignHCenter
                         text: qsTr("No storage was detected")
                         color: settings_form.primaryText
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         font.bold: true
                     }
                     Text {
                         Layout.alignment: Qt.AlignHCenter
                         text: qsTr("Insert a USB drive, then press Refresh")
                         color: settings_form.secondaryText
-                        font.pixelSize: 12
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     }
                 }
             }
@@ -482,7 +483,7 @@ FocusScope {
                     Layout.fillWidth: true
                     text: _ohdAction.formatAirSdCardStatus
                     color: _ohdAction.formatAirSdCardBusy ? settings_form.accentColor : settings_form.secondaryText
-                    font.pixelSize: 12
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     wrapMode: Text.WordWrap
                 }
             }
@@ -515,7 +516,7 @@ FocusScope {
             else if (action === "mount") _ohdAction.mount_air_storage_for_recording(storageId)
         }
 
-        contentItem: Label {
+        contentItem: Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: confirmDialog.width - 48
             wrapMode: Text.WordWrap
             text: confirmDialog.action === "mount" ? qsTr("New Air recordings will be saved on this partition. Existing recordings stay where they are.") : confirmDialog.action === "format" ? qsTr("This partition will be erased and prepared automatically for OpenHD recordings.") : confirmDialog.action === "create" ? qsTr("OpenHD will use the available unallocated space to create a recording partition. Existing partitions are left unchanged.") : confirmDialog.action === "resize" ? qsTr("OpenHD will reduce the main partition and create dedicated recording space. Back up important data before continuing.") : qsTr("This USB drive will be erased and prepared automatically for OpenHD recordings.")

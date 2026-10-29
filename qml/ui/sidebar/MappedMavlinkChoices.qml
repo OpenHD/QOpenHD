@@ -106,8 +106,10 @@ Item {
     }
     ListModel{
         id: elements_model_camera_rotation_degree
-        ListElement {value: 0; verbose:"0°\n(Default)"}
-        ListElement {value: 180; verbose:"180°\n"}
+        ListElement {value: 0; verbose:"0 deg (default)"}
+        ListElement {value: 90; verbose:"90 deg"}
+        ListElement {value: 180; verbose:"180 deg"}
+        ListElement {value: 270; verbose:"270 deg"}
     }
     ListModel{
         id: elements_model_camera_rotation_flip

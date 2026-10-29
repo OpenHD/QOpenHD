@@ -13,7 +13,7 @@ import "../ui/elements"
 
 Item {
     id: secondary_video_item
-    visible: settings.dev_qopenhd_n_cameras>1
+    visible: settings.secondary_camera_available
     // We use the full screen since while usually small in the lower left corner, the secondary video can be resized
     anchors.fill: parent
     anchors.left: parent.left
@@ -93,7 +93,7 @@ Item {
         z: 0.0
         anchors.fill: video_holder
         source: {
-            if(settings.dev_qopenhd_n_cameras>1){
+            if(settings.secondary_camera_available){
                 if (QOPENHD_ENABLE_NXP_VIDEO)
                     return "SecondaryVideoNxp.qml";
                 if (QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
@@ -175,76 +175,5 @@ Item {
         }
     }*/
 
-    property int rowHeight: 64
-    // This popup allows changing the settings for this element
-    Popup {
-        id: popup
-        x: 100
-        y: 100
-        width: 500
-        height: 300
-        modal: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        Pane{
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.centerIn: parent
-                anchors.left: parent.Left
-                anchors.right: parent.right
-
-                RowLayout{
-                    height:rowHeight
-                    width:parent.width
-                    Layout.fillWidth: true
-                    Text{
-                        width: 100
-                        text: qsTr("Minimized Width (px)")
-                    }
-                    SpinBox {
-                        stepSize: 1
-                        editable: true
-                        from:25
-                        to: 500
-                        value: settings.secondary_video_minimized_width
-                        onValueChanged: settings.secondary_video_minimized_width = value
-                    }
-                }
-                RowLayout{
-                    height:rowHeight
-                    width:parent.width
-                    Layout.fillWidth: true
-                    Text{
-                        width: 100
-                        text: qsTr("Minimized Height (px)")
-                    }
-                    SpinBox {
-                        stepSize: 1
-                        editable: true
-                        from:25
-                        to: 500
-                        value: settings.secondary_video_minimized_height
-                        onValueChanged: settings.secondary_video_minimized_height = value
-                    }
-                }
-                RowLayout{
-                    height:rowHeight
-                    width:parent.width
-                    Layout.fillWidth: true
-                    Text{
-                        width: 100
-                        text: qsTr("Maximize factor %")
-                    }
-                    SpinBox {
-                        stepSize: 1
-                        editable: true
-                        from:120
-                        to: 800
-                        value: settings.secondary_video_maximize_factor_perc
-                        onValueChanged: settings.secondary_video_maximize_factor_perc = value
-                    }
-                }
-            }
-        }
-    }
+    SecondaryVideoSettingsPopup { id: popup }
 }
-

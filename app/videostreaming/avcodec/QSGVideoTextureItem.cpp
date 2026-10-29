@@ -18,6 +18,8 @@ QSGVideoTextureItem::QSGVideoTextureItem():
 
 QSGVideoTextureItem::~QSGVideoTextureItem()
 {
+    if (m_connected_window) disconnect(m_connected_window, nullptr, this, nullptr);
+    m_av_codec_decoder.reset();
     if (!m_primary_stream) {
         TextureRenderer::instance().setSecondaryViewport(QRect());
     }
@@ -53,8 +55,16 @@ void QSGVideoTextureItem::componentComplete()
 void QSGVideoTextureItem::handleWindowChanged(QQuickWindow *win)
 {
     qDebug()<<"QSGVideoTextureItem::handleWindowChanged";
+    // A Loader can detach this item while its old window is still rendering.
+    // Never keep synchronization callbacks from that previous window alive.
+    if (m_connected_window) disconnect(m_connected_window, nullptr, this, nullptr);
+    m_connected_window = win;
     if (win) {
         connect(win, &QQuickWindow::beforeSynchronizing, this, &QSGVideoTextureItem::sync, Qt::DirectConnection);
+        if (m_primary_stream && m_renderer) {
+            connect(win, &QQuickWindow::beforeRendering, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
+            connect(win, &QQuickWindow::beforeRenderPassRecording, this, &QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
+        }
         //connect(win, &QQuickWindow::sceneGraphInvalidated, this, &QSGVideoTextureItem::cleanup, Qt::DirectConnection);
         // Ensure we start with cleared to black. The squircle's blend mode relies on this.
         // We do not need that when rendering a texture, which is what we actually want (squircle is just the example where I started with,
@@ -77,6 +87,7 @@ void QSGVideoTextureItem::releaseResources()
 
 void QSGVideoTextureItem::sync()
 {
+    if (!window()) return;
     if (!m_renderer) {
         m_renderer = &TextureRenderer::instance();
         // Only the primary item owns the scene-graph hook. The renderer composites
@@ -104,14 +115,14 @@ void QSGVideoTextureItem::sync()
 
 void QSGVideoTextureItem::m_QQuickWindow_beforeRendering()
 {
-    if(m_renderer){
+    if(m_renderer && window()){
         m_renderer->initGL(window());
     }
 }
 
 void QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording()
 {
-    if(m_renderer){
+    if(m_renderer && window()){
         //qDebug()<<"Rotation:"<<QQuickItem::rotation();
         const auto screen_rotation=QOpenHDVideoHelper::get_display_rotation();
         m_renderer->paint(window(),screen_rotation);

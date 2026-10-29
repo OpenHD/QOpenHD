@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -41,7 +42,7 @@ Card {
             anchors.right: parent.right
             width: parent.width * 2/3
             text: qsTr("QOpenHD")
-            font.pixelSize: 20
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             verticalAlignment: Qt.AlignCenter
         }
     }*/
@@ -49,7 +50,7 @@ Card {
         width: parent.width
         height: parent.height
         text: qsTr("QOpenHD")
-        font.pixelSize: 20
+        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
         anchors.centerIn: parent
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignHCenter
@@ -63,7 +64,7 @@ Card {
         anchors.bottomMargin: -35
         anchors.right: parent.right
         rightPadding: 12
-        font.pixelSize: 12
+        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
         onLinkActivated: {
             Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
         }
@@ -76,6 +77,6 @@ Card {
         anchors.bottomMargin: -35
         anchors.left: parent.left
         rightPadding: 12
-        font.pixelSize: 12
+        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
     }
 }

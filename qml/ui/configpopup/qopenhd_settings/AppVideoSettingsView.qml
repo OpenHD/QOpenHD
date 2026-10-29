@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -37,34 +38,9 @@ ScrollView {
                 ListElement { text: qsTr("H265");  }
             }
             SettingBaseElement{
-                m_short_description: qsTr("Number of Cameras") //will be removed in the future, we just should autodetect it
-
-                SpinBox {
-                    id: dev_qopenhd_n_cameras_spinbox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 1
-                    to: 2
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.dev_qopenhd_n_cameras
-                    onValueChanged: {
-                        var actually_changed=settings.dev_qopenhd_n_cameras!=value
-                        settings.dev_qopenhd_n_cameras = value
-                        if(actually_changed){
-                            _restartqopenhdmessagebox.show()
-                        }
-                    }
-                }
-            }
-            SettingBaseElement{
                 m_short_description: qsTr("Scale primary video to fit screen")
 
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -78,7 +54,7 @@ ScrollView {
             }
             SettingBaseElement{
                     m_short_description: qsTr("Switch primary / secondary video")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -121,7 +97,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Use low latency RTP parser")
                     visible: _qopenhd.debugMenuPreview || (_qopenhd.is_platform_nxp())
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -134,7 +110,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Enable audio playback (experimental)")
                     m_long_description: qsTr("Plays the incoming audio stream on the ground station. Requires audio streaming to be enabled on the air unit.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -147,7 +123,7 @@ ScrollView {
                 }
                 SettingBaseElement{
                     m_short_description: qsTr("Use Software Decode")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -166,7 +142,7 @@ ScrollView {
                     SpinBox {
                         height: elementHeight
                         width: 210
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         from: 1
@@ -226,7 +202,7 @@ ScrollView {
                     SpinBox {
                         height: elementHeight
                         width: 210
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         from: 1
@@ -267,7 +243,7 @@ ScrollView {
                     m_short_description: qsTr("Disable primary video (Android)")
                     m_long_description: qsTr("Stops rendering the primary stream on Android to debug the secondary feed. Requires restart.")
                     visible: _qopenhd.debugMenuPreview || (_qopenhd.is_android())
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -294,7 +270,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Video test mode")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -338,7 +314,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Limit FPS in test file")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -351,7 +327,7 @@ ScrollView {
                         id: dev_limit_fps_on_test_fileSpinBox
                         height: elementHeight
                         width: 210
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         from: -1
@@ -373,7 +349,7 @@ ScrollView {
                 //     StyledText {
                 //         text: qsTr("Draw RGB dummy frames")
                 //         font.weight: Font.Bold
-                //         font.pixelSize: 13
+                //         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 //         anchors.leftMargin: 8
                 //         verticalAlignment: Text.AlignVCenter
                 //         anchors.verticalCenter: parent.verticalCenter
@@ -401,7 +377,7 @@ ScrollView {
                 //     StyledText {
                 //         text: qsTr("dev_use_low_latency_parser_when_possible")
                 //         font.weight: Font.Bold
-                //         font.pixelSize: 13
+                //         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 //         anchors.leftMargin: 8
                 //         verticalAlignment: Text.AlignVCenter
                 //         anchors.verticalCenter: parent.verticalCenter
@@ -429,7 +405,7 @@ ScrollView {
                 //     StyledText {
                 //         text: qsTr("dev_feed_incomplete_frames_to_decoder")
                 //         font.weight: Font.Bold
-                //         font.pixelSize: 13
+                //         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 //         anchors.leftMargin: 8
                 //         verticalAlignment: Text.AlignVCenter
                 //         anchors.verticalCenter: parent.verticalCenter
@@ -452,7 +428,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Use RPI decoding")
                     //m_long_description: "On by default, RPI specific."
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         visible: true
@@ -466,7 +442,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Use external decoding service")
                     //m_long_description: "Video decode is not done via QOpenHD, but rather in an extra service (started and stopped by QOpenHD). For platforms other than rpi"
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -479,7 +455,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Use KMS DRM overlay renderer (experimental)")
                     m_long_description: qsTr("Linux only. Requires restart. Disable external decode service for this to take effect.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -498,7 +474,7 @@ ScrollView {
                     m_short_description: qsTr("Screen Scale")
                     StyledText {
                         text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
-                        font.pixelSize: 16
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.right: screenScaleSpinBox.left
                         anchors.rightMargin: 12
                         verticalAlignment: Text.AlignVCenter
@@ -512,7 +488,7 @@ ScrollView {
                         id: screenScaleSpinBox
                         height: elementHeight
                         width: 210
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         from : 0.3
@@ -534,7 +510,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Auto hide cursor")
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -554,7 +530,7 @@ ScrollView {
                     m_short_description: qsTr("Set cursor Skin")
                     SpinBox {
                         width: 210
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                         anchors.right: parent.right
@@ -575,7 +551,7 @@ ScrollView {
 
                     SpinBox {
                         width: 210
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                         anchors.right: parent.right
@@ -629,7 +605,7 @@ ScrollView {
                     SettingBaseElement{
                         m_short_description: qsTr("Transparent Background")
 
-                        Switch {
+                        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -643,7 +619,7 @@ ScrollView {
                     SettingBaseElement{
                         m_short_description: qsTr("Full screen")
 
-                        Switch {
+                        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -658,7 +634,7 @@ ScrollView {
                         m_short_description: qsTr("Swap interval 0")
                         m_long_description: qsTr("Can decrease latency on x86 / laptop. Requires restart. Experimental.")
 
-                        Switch {
+                        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -675,7 +651,7 @@ ScrollView {
 
                     //     SpinBox {
                     //         width: 210
-                    //         font.pixelSize: 14
+                    //         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     //         height: elementHeight
                     //         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     //         anchors.right: parent.right
@@ -693,7 +669,7 @@ ScrollView {
                     SettingBaseElement{
                         m_short_description: qsTr("Transparent settings")
 
-                        Switch {
+                        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

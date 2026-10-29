@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
@@ -44,12 +45,12 @@ Item {
             background: Rectangle { radius: 10; color: parent.hovered ? "#20384f" : settings_form.panelBackgroundRaised; border.color: parent.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: parent.activeFocus ? 2 : 1 }
             contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
         }
-        Switch {
+        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: autoPingSwitch
             width: 132; height: 43
             text: qsTr("Auto-ping")
             onToggled: autopingTimer.running = checked
-            contentItem: Text { leftPadding: autoPingSwitch.indicator.width + autoPingSwitch.spacing; text: autoPingSwitch.text; color: settings_form.secondaryText; font.pixelSize: 11; verticalAlignment: Text.AlignVCenter }
+            contentItem: Text { leftPadding: autoPingSwitch.indicator.width + autoPingSwitch.spacing; text: autoPingSwitch.text; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; verticalAlignment: Text.AlignVCenter }
         }
     }
 }

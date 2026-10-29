@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -18,10 +19,10 @@ Rectangle {
     ColumnLayout {
         anchors.fill: parent; anchors.margins: 8; spacing: 7
         RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
-            Text { text: "A"; color: "#9a76ff"; font.pixelSize: 18; font.bold: true }
-            Text { text: qsTr("ArtoSyn Link 1"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
+            Text { text: "A"; color: "#9a76ff"; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+            Text { text: qsTr("ArtoSyn Link 1"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Rectangle { width: activeText.implicitWidth + 14; height: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
-                Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
+                Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
         LinkUsageMeter { Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("artosyn") : null }
@@ -32,8 +33,8 @@ Rectangle {
                 {label: qsTr("RX RATE"), value: Math.round(_ohdSystemGround.artosyn_rx_rate_kbits / 100) / 10 + " Mbps"}]
                 delegate: Rectangle { Layout.fillWidth: true; Layout.fillHeight: true; color: settings_form.panelBackground; border.color: settings_form.lineColor
                     Column { anchors.centerIn: parent; spacing: 2
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 7; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     }
                 }
             }
@@ -49,7 +50,7 @@ Rectangle {
             }
         }
         RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 25
-            Text { Layout.fillWidth: true; text: qsTr("ArtoSyn parameters exposed by the active system"); color: settings_form.secondaryText; font.pixelSize: 7 }
+            Text { Layout.fillWidth: true; text: qsTr("ArtoSyn parameters exposed by the active system"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
             Rectangle { width: 7; height: 7; radius: 4; color: settings_form.goodColor }
         }
     }

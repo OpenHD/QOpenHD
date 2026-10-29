@@ -1,3 +1,4 @@
+import "MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -22,7 +23,7 @@ Item {
     height:  46
     width: parent.width
 
-    Button{
+    Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
         id: genericButton
 
         height: parent.height
@@ -51,7 +52,7 @@ Item {
             anchors.leftMargin: 6
 
             text: m_description_text
-            font.pixelSize: 15
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             color: mainStackLayout.currentIndex == m_selection_index ? "#33aaff" : "#dde4ed"

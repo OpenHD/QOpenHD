@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
@@ -33,7 +34,7 @@ ScrollView {
             //
             SettingBaseElement{
                 m_short_description: qsTr("Enable advanced settings")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -49,7 +50,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: qsTr("Allow frequency change when armed")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -62,7 +63,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: qsTr("Show all wifi channels")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -75,7 +76,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: qsTr("Disable auto fetch")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -89,7 +90,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Show link routing")
                 m_long_description: qsTr("Show the Link routing selector in the OpenHD Link panel.")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -103,7 +104,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Show link usage")
                 m_long_description: qsTr("Show Total Link Usage meter in the OpenHD Link panel.")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -117,7 +118,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Simulate Ethernet link")
                 m_long_description: qsTr("UI debugging only. Does not create or change any real connection.")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -131,7 +132,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Simulate WiFiBroadcast link")
                 m_long_description: qsTr("UI debugging only. Shows populated radio data in the Link tab.")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -145,7 +146,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Simulate UART link")
                 m_long_description: qsTr("UI debugging only. Does not create or change any real connection.")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -160,7 +161,7 @@ ScrollView {
                 m_short_description: qsTr("Save Settings to file")
                 m_long_description: qsTr("Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux.")
 
-                Button {
+                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id:save
                     width: 128
                     height: elementHeight
@@ -184,7 +185,7 @@ ScrollView {
                 m_short_description: qsTr("Load Settings from file")
                 m_long_description: qsTr("Load a previosly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux.")
 
-                Button {
+                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id:load
                     width: 128
                     height: elementHeight
@@ -207,7 +208,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Reset all QOpenHD Settings")
 
-                Button {
+                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id:reset
                     width: 128
                     height: elementHeight
@@ -224,7 +225,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: qsTr("Disable STBC warning")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -254,7 +255,7 @@ ScrollView {
                     height: parent.height
                     leftPadding: 12
                     rightPadding: 12
-                    font.pixelSize: 15
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     color: settings_form.primaryText
                     wrapMode: Text.WordWrap
                 }
@@ -262,7 +263,7 @@ ScrollView {
             hasFooter: true
             cardFooter: Item {
                 anchors.fill: parent
-                AdvancedActionButton {
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 160
                     height: 40
                     anchors.left: parent.left
@@ -283,7 +284,7 @@ ScrollView {
                         }
                     }
                 }
-                AdvancedActionButton {
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 130
                     height: 40
                     anchors.right: parent.right

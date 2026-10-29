@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.0
 
 import QtQuick 2.12
@@ -11,8 +12,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import "../../../ui" as Ui
-import "../../elements"
 
 import QtCharts 2.15
 
@@ -68,7 +67,8 @@ Rectangle{
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: m_modern_style ? Text.AlignLeft : Text.AlignHCenter
             color: m_modern_style ? settings_form.primaryText : "black"
-            font.pixelSize: m_modern_style ? 13 : 13
+            font.family: MenuTypography.family
+            font.pixelSize: MenuTypography.sectionTitle
         }
         Button {
             anchors.verticalCenter: parent.verticalCenter
@@ -78,7 +78,7 @@ Rectangle{
             text: qsTr("X")
             height: m_modern_style ? 30 : parent.height
             width: m_modern_style ? 30 : parent.height
-            font.pixelSize: m_modern_style ? 11 : 13
+            font.pixelSize: MenuTypography.body
             background: Rectangle {
                 radius: m_modern_style ? 9 : 0
                 color: m_modern_style

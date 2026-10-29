@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls 1.4 as Controls1
@@ -26,9 +27,9 @@ AdvancedPage {
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
-            AdvancedActionButton { id: pingButton; text: qsTr("Ping systems"); iconText: "\uf1ce"; onClicked: _mavlinkTelemetry.ping_all_systems(); KeyNavigation.right: clearButton }
-            AdvancedActionButton { id: clearButton; text: qsTr("Clear"); iconText: "\uf2ed"; onClicked: _mavlinkMessageStatsModel.clear(); KeyNavigation.left: pingButton; KeyNavigation.right: captureButton }
-            AdvancedActionButton {
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; id: pingButton; text: qsTr("Ping systems"); iconText: "\uf1ce"; onClicked: _mavlinkTelemetry.ping_all_systems(); KeyNavigation.right: clearButton }
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; id: clearButton; text: qsTr("Clear"); iconText: "\uf2ed"; onClicked: _mavlinkMessageStatsModel.clear(); KeyNavigation.left: pingButton; KeyNavigation.right: captureButton }
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: captureButton
                 text: _mavlinkMessageStatsModel.enabled ? qsTr("Pause") : qsTr("Start")
                 iconText: _mavlinkMessageStatsModel.enabled ? "\uf04c" : "\uf04b"
@@ -38,7 +39,7 @@ AdvancedPage {
             }
             Item { Layout.fillWidth: true }
             Rectangle { width: 8; height: 8; radius: 4; color: _mavlinkMessageStatsModel.enabled ? settings_form.goodColor : settings_form.errorColor }
-            Text { text: _mavlinkMessageStatsModel.enabled ? qsTr("CAPTURING") : qsTr("PAUSED"); color: _mavlinkMessageStatsModel.enabled ? settings_form.goodColor : settings_form.errorColor; font.pixelSize: 11; font.bold: true }
+            Text { text: _mavlinkMessageStatsModel.enabled ? qsTr("CAPTURING") : qsTr("PAUSED"); color: _mavlinkMessageStatsModel.enabled ? settings_form.goodColor : settings_form.errorColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
         }
 
         AdvancedCard {
@@ -75,7 +76,7 @@ AdvancedPage {
                     implicitHeight: 34
                     color: settings_form.panelBackgroundRaised
                     border.color: settings_form.lineColor
-                    Text { anchors.centerIn: parent; text: styleData.value; color: settings_form.secondaryText; font.pixelSize: 10; font.bold: true }
+                    Text { anchors.centerIn: parent; text: styleData.value; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
                 }
                 itemDelegate: Item {
                     implicitHeight: 32
@@ -85,7 +86,7 @@ AdvancedPage {
                         text: styleData.column <= 2 ? ("000" + styleData.value).slice(-3) : styleData.value
                         color: settings_form.primaryText
                         font.family: styleData.column <= 2 ? "Roboto Mono" : ""
-                        font.pixelSize: 11
+                        font.pixelSize: MenuTypography.body
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
@@ -120,8 +121,8 @@ AdvancedPage {
         background: Rectangle { color: settings_form.panelBackground; radius: 12; border.color: settings_form.lineColor }
         contentItem: ColumnLayout {
             spacing: 10
-            Text { text: root.decodedMessageDetails.messageName; color: settings_form.primaryText; font.pixelSize: 18; font.bold: true }
-            Text { text: qsTr("Message ID %1 · %2 fields").arg(root.decodedMessageDetails.messageId).arg(root.decodedMessageDetails.fieldCount); color: settings_form.secondaryText; font.pixelSize: 11 }
+            Text { text: root.decodedMessageDetails.messageName; color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+            Text { text: qsTr("Message ID %1 · %2 fields").arg(root.decodedMessageDetails.messageId).arg(root.decodedMessageDetails.fieldCount); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             ListView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -136,13 +137,13 @@ AdvancedPage {
                     color: index % 2 ? settings_form.panelBackgroundRaised : "transparent"
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 9; anchors.rightMargin: 9
-                        Text { text: modelData.name; color: settings_form.primaryText; font.pixelSize: 11; Layout.preferredWidth: 180; elide: Text.ElideRight }
-                        Text { text: modelData.type; color: settings_form.secondaryText; font.pixelSize: 10; Layout.preferredWidth: 80 }
-                        Text { text: modelData.value; color: settings_form.primaryText; font.family: "Roboto Mono"; font.pixelSize: 11; Layout.fillWidth: true; elide: Text.ElideRight }
+                        Text { text: modelData.name; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; Layout.preferredWidth: 180; elide: Text.ElideRight }
+                        Text { text: modelData.type; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; Layout.preferredWidth: 80 }
+                        Text { text: modelData.value; color: settings_form.primaryText; font.family: "Roboto Mono"; font.pixelSize: MenuTypography.body; Layout.fillWidth: true; elide: Text.ElideRight }
                     }
                 }
             }
-            AdvancedActionButton { Layout.alignment: Qt.AlignRight; text: qsTr("Close"); primary: true; onClicked: decodeDialog.close() }
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.alignment: Qt.AlignRight; text: qsTr("Close"); primary: true; onClicked: decodeDialog.close() }
         }
     }
 }

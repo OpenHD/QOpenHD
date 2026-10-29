@@ -10,15 +10,16 @@ Item {
     property Item cardBody: Item {}
     property Item cardFooter: Item {}
     property bool hasFooter: false
+    property bool dialogStyle: false
 
     property bool hasHeader: true
     property bool hasHeaderImage: false
 
     property int cardRadius: 14
-    property color cardNameColor: _theme.primaryText
-    property color borderColor: _theme.lineColor
-    property color cardBackgroundColor: _theme.panelBackgroundRaised
-    property color cardFooterColor: _theme.panelBackground
+    property color cardNameColor: dialogStyle ? "#edf4fa" : _theme.primaryText
+    property color borderColor: dialogStyle ? "#0089c4" : _theme.lineColor
+    property color cardBackgroundColor: dialogStyle ? "#041d2c" : _theme.panelBackgroundRaised
+    property color cardFooterColor: dialogStyle ? "#041d2c" : _theme.panelBackground
     readonly property bool dangerTitle: cardNameColor === "#ff0000" || cardNameColor === "red"
 
     property bool m_style_error: false
@@ -41,10 +42,10 @@ Item {
     }
     readonly property var _theme: _sf ? _sf : _fallback
 
-    Material.theme: _theme.darkMode ? Material.Dark : Material.Light
+    Material.theme: dialogStyle || _theme.darkMode ? Material.Dark : Material.Light
     Material.accent: _theme.accentColor
-    Material.foreground: _theme.primaryText
-    Material.background: _theme.panelBackgroundRaised
+    Material.foreground: dialogStyle ? "#edf4fa" : _theme.primaryText
+    Material.background: cardBackgroundColor
 
     Rectangle {
         id: background
@@ -91,7 +92,8 @@ Item {
             id: cardHeader
             width: parent.width
             height: parent.height
-            color: dangerTitle ? (_theme.darkMode ? "#ff6577" : "#c6283e") : _theme.primaryText
+            color: dangerTitle ? (_theme.darkMode ? "#ff6577" : "#c6283e") : cardNameColor
+            font.family: dialogStyle ? "Archivo" : Qt.application.font.family
             font.bold: true
             font.pixelSize: 15
             verticalAlignment: Text.AlignVCenter

@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -10,16 +11,21 @@ import OpenHD 1.0
 
 import "../../../ui" as Ui
 import "../../elements"
+import ".."
 
 
 // Dialoque that does all the power commands (reboot / shutdown)
 Card {
+    dialogStyle: true
     id: powerDialog
     height: 240
     width: 400
     z: 5.0
     anchors.centerIn: parent
-    cardNameColor: "black"
+    cardNameColor: "#edf4fa"
+    cardBackgroundColor: "#041d2c"
+    cardFooterColor: "#041d2c"
+    borderColor: "#0089c4"
     hasHeaderImage: true
 
     Component.onCompleted: visible = false
@@ -108,7 +114,7 @@ Card {
         height: powerDialog.height
         width: powerDialog.width
 
-        Text {
+        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             text: qsTr("If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode!")
             width: parent.width
             leftPadding: 12
@@ -121,7 +127,7 @@ Card {
     hasFooter: true
     cardFooter: Item {
         anchors.fill: parent
-        Button {
+        AdvancedDialogButton {
             id: groundReboot
             enabled: !powerDialog.powerRequestPending
             width: 96
@@ -131,7 +137,7 @@ Card {
             anchors.leftMargin: 12
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             font.capitalization: Font.MixedCase
 
             onPressed: {
@@ -139,7 +145,7 @@ Card {
             }
         }
 
-        Button {
+        AdvancedDialogButton {
             id: groundShutdown
             enabled: !powerDialog.powerRequestPending && !_ohdAction.powerActionBusy
             width: 140
@@ -148,9 +154,9 @@ Card {
             anchors.rightMargin: 12
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             font.capitalization: Font.MixedCase
-            Material.accent: Material.Red
+            destructive: true
             highlighted: true
 
             text:  {

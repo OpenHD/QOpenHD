@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -47,13 +48,13 @@ ScrollView {
                         //text: "PRESETS\nColor/Font"
                         text: qsTr("Presets Color/Font")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     }
                     Item{ // filler
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                     }
-                    Button{
+                    Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         text: qsTr("Matrix")
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
@@ -67,7 +68,7 @@ ScrollView {
                             settings.font_text="Quicksand"
                         }
                     }
-                    Button{
+                    Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         text: qsTr("Trainwreck")
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
@@ -81,7 +82,7 @@ ScrollView {
                             settings.font_text="Quicksand"
                         }
                     }
-                    Button{
+                    Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         text: qsTr("RESET")
                         Layout.alignment: Qt.AlignRight
                         Layout.leftMargin: 10
@@ -108,7 +109,7 @@ ScrollView {
                 StyledText {
                     text: qsTr("Shape Color")
                     font.weight: Font.Bold
-                    font.pixelSize: 13
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -153,7 +154,7 @@ ScrollView {
                 StyledText {
                     text: qsTr("Glow Color")
                     font.weight: Font.Bold
-                    font.pixelSize: 13
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -196,7 +197,7 @@ ScrollView {
                 StyledText {
                     text: qsTr("Text Color")
                     font.weight: Font.Bold
-                    font.pixelSize: 13
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -241,7 +242,7 @@ ScrollView {
                 StyledText {
                     text: qsTr("Text font")
                     font.weight: Font.Bold
-                    font.pixelSize: 13
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter

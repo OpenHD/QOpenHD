@@ -27,8 +27,13 @@ Settings {
     // All video (streaming) related settings local to qopenhd (nothing to do with openhd) begin
     // ----------------------------------------------------------------------------------
 
-    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
+    // Updated automatically from confirmed Air camera state. Retained for decoder compatibility.
     property int dev_qopenhd_n_cameras:1
+    Component.onCompleted: {
+        // Reconfirm camera presence for this session rather than showing a saved empty widget.
+        dev_qopenhd_n_cameras = 1
+    }
+    readonly property bool secondary_camera_available: dev_qopenhd_n_cameras > 1 && _ohdSystemAir.is_alive && _cameraStreamModelSecondary.camera_status === 1
 
     // Inside QOpenHD, swap primary and secondary camera - on platforms that only are capable of showing one video stream,
     // this can be used to switch between 2 different video feeds

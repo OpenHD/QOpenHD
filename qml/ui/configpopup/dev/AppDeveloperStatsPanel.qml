@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -72,8 +73,8 @@ AdvancedPage {
                             Column {
                                 anchors.centerIn: parent
                                 spacing: 4
-                                Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true }
-                                Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                                Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                                Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                             }
                         }
                     }
@@ -86,23 +87,23 @@ AdvancedPage {
                 ColumnLayout {
                     anchors.fill: parent
                     spacing: 10
-                    Text { text: qsTr("ACTIONS"); color: settings_form.accentColor; font.pixelSize: 12; font.bold: true }
+                    Text { text: qsTr("ACTIONS"); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     GridLayout {
                         id: actionGrid
                         Layout.fillWidth: true
                         columns: width > 760 ? 3 : (width > 430 ? 2 : 1)
                         rowSpacing: 8
                         columnSpacing: 8
-                        AdvancedActionButton { id: restartService; Layout.fillWidth: true; text: qsTr("Restart local service"); iconText: "\uf2f1"; onClicked: _qopenhd.restart_local_oenhd_service() }
-                        AdvancedActionButton { id: localIp; Layout.fillWidth: true; text: qsTr("Show local IP"); iconText: "\uf0ac"; onClicked: text = _qopenhd.show_local_ip() }
-                        AdvancedActionButton { id: groundLog; Layout.fillWidth: true; text: qsTr("Write Ground log"); iconText: "\uf56e"; onClicked: text = _qopenhd.write_local_log() }
-                        AdvancedActionButton { Layout.fillWidth: true; text: qsTr("Reapply telemetry rates"); iconText: "\uf021"; onClicked: _mavlinkTelemetry.re_apply_rates() }
-                        AdvancedActionButton { visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Start OpenHD"); iconText: "\uf04b"; onClicked: _qopenhd.sysctl_openhd(0) }
-                        AdvancedActionButton { visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Stop OpenHD"); iconText: "\uf04d"; onClicked: _qopenhd.sysctl_openhd(1) }
-                        AdvancedActionButton { visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Enable OpenHD"); iconText: "\uf00c"; onClicked: _qopenhd.sysctl_openhd(2) }
-                        AdvancedActionButton { visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Disable OpenHD"); iconText: "\uf05e"; onClicked: _qopenhd.sysctl_openhd(3) }
-                        AdvancedActionButton { Layout.fillWidth: true; text: qsTr("Restart QOpenHD"); iconText: "\uf2f1"; onClicked: qopenhdservicedialoque.open_dialoque(0) }
-                        AdvancedActionButton { Layout.fillWidth: true; text: qsTr("Close QOpenHD"); destructive: true; iconText: "\uf011"; onClicked: qopenhdservicedialoque.open_dialoque(1) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; id: restartService; Layout.fillWidth: true; text: qsTr("Restart local service"); iconText: "\uf2f1"; onClicked: _qopenhd.restart_local_oenhd_service() }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; id: localIp; Layout.fillWidth: true; text: qsTr("Show local IP"); iconText: "\uf0ac"; onClicked: text = _qopenhd.show_local_ip() }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; id: groundLog; Layout.fillWidth: true; text: qsTr("Write Ground log"); iconText: "\uf56e"; onClicked: text = _qopenhd.write_local_log() }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.fillWidth: true; text: qsTr("Reapply telemetry rates"); iconText: "\uf021"; onClicked: _mavlinkTelemetry.re_apply_rates() }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Start OpenHD"); iconText: "\uf04b"; onClicked: _qopenhd.sysctl_openhd(0) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Stop OpenHD"); iconText: "\uf04d"; onClicked: _qopenhd.sysctl_openhd(1) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Enable OpenHD"); iconText: "\uf00c"; onClicked: _qopenhd.sysctl_openhd(2) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: _qopenhd.is_linux(); Layout.fillWidth: true; text: qsTr("Disable OpenHD"); iconText: "\uf05e"; onClicked: _qopenhd.sysctl_openhd(3) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.fillWidth: true; text: qsTr("Restart QOpenHD"); iconText: "\uf2f1"; onClicked: qopenhdservicedialoque.open_dialoque(0) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.fillWidth: true; text: qsTr("Close QOpenHD"); destructive: true; iconText: "\uf011"; onClicked: qopenhdservicedialoque.open_dialoque(1) }
                     }
                 }
             }
@@ -115,12 +116,12 @@ AdvancedPage {
                     spacing: 8
                     RowLayout {
                         Layout.fillWidth: true
-                        Text { text: qsTr("SYSTEM INSPECTOR"); color: settings_form.accentColor; font.pixelSize: 12; font.bold: true }
+                        Text { text: qsTr("SYSTEM INSPECTOR"); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                         Item { Layout.fillWidth: true }
-                        AdvancedActionButton { text: qsTr("Air"); onClicked: root.showSystemInfo(_ohdSystemAir, qsTr("Air")) }
-                        AdvancedActionButton { text: qsTr("Ground"); onClicked: root.showSystemInfo(_ohdSystemGround, qsTr("Ground")) }
-                        AdvancedActionButton { text: qsTr("MAVLink"); onClicked: root.showSystemInfo(_fcMavlinkSystem, qsTr("MAVLink")) }
-                        AdvancedActionButton { text: qsTr("Clear"); iconText: "\uf2ed"; onClicked: terminalTextArea.clear() }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Air"); onClicked: root.showSystemInfo(_ohdSystemAir, qsTr("Air")) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Ground"); onClicked: root.showSystemInfo(_ohdSystemGround, qsTr("Ground")) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("MAVLink"); onClicked: root.showSystemInfo(_fcMavlinkSystem, qsTr("MAVLink")) }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Clear"); iconText: "\uf2ed"; onClicked: terminalTextArea.clear() }
                     }
                     TextArea {
                         id: terminalTextArea
@@ -132,13 +133,13 @@ AdvancedPage {
                         selectionColor: settings_form.accentColor
                         selectedTextColor: "white"
                         font.family: "Roboto Mono"
-                        font.pixelSize: 11
+                        font.pixelSize: MenuTypography.body
                         background: Rectangle { color: settings_form.pageBackground; radius: 7; border.color: settings_form.lineColor }
                     }
                 }
             }
 
-            Text { Layout.fillWidth: true; text: qsTr("Build features: %1").arg(root.get_features_string()); color: settings_form.secondaryText; font.pixelSize: 10; wrapMode: Text.WordWrap }
+            Text { Layout.fillWidth: true; text: qsTr("Build features: %1").arg(root.get_features_string()); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap }
         }
     }
 

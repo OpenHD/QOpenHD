@@ -135,6 +135,9 @@ public:
     L_RO_PROP(bool,curr_rx_last_packet_status_good,set_curr_rx_last_packet_status_good,false)
     //
     L_RO_PROP(QString,tx_packets_per_second_and_bits_per_second,set_tx_packets_per_second_and_bits_per_second,"N/A")
+    // Valid received OpenHD traffic across all streams, including FEC.
+    L_RO_PROP(qint64,received_link_bitrate_bps,set_received_link_bitrate_bps,-1)
+    qint64 m_received_link_bitrate_update_ms = -1;
     L_RO_PROP(QString,rx_packets_per_second_and_bits_per_second,set_rx_packets_per_second_and_bits_per_second,"N/A")
     L_RO_PROP(QString,tx_tele_packets_per_second_and_bits_per_second,set_tx_tele_packets_per_second_and_bits_per_second,"N/A")
     L_RO_PROP(QString,rx_tele_packets_per_second_and_bits_per_second,set_rx_tele_packets_per_second_and_bits_per_second,"N/A")
@@ -234,7 +237,6 @@ private:
 private:
      // do not completely pollute the HUD with this error message
     std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point m_last_n_cameras_message=std::chrono::steady_clock::now();
     void update_alive_status_with_hud_message(bool alive);
 private:
     bool m_x20_rpi_upgrade_warning_logged=false;

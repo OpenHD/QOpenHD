@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -307,7 +308,7 @@ FocusScope {
                     Layout.fillWidth: true
                     text: root.friendlyName(root.paramId)
                     color: settings_form.primaryText
-                    font.pixelSize: 13
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     font.bold: true
                     elide: Text.ElideRight
                 }
@@ -323,7 +324,7 @@ FocusScope {
                         anchors.centerIn: parent
                         text: qsTr("READ ONLY")
                         color: settings_form.secondaryText
-                        font.pixelSize: 8; font.bold: true
+                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true
                     }
                 }
                 Rectangle {
@@ -338,7 +339,7 @@ FocusScope {
                         anchors.centerIn: parent
                         text: qsTr("EXPERT")
                         color: settings_form.darkMode ? "#ffd479" : "#805400"
-                        font.pixelSize: 8; font.bold: true
+                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true
                     }
                 }
                 Rectangle {
@@ -353,7 +354,7 @@ FocusScope {
                         anchors.centerIn: parent
                         text: qsTr("RESTART")
                         color: settings_form.darkMode ? "#ffd479" : "#805400"
-                        font.pixelSize: 8; font.bold: true
+                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true
                     }
                 }
             }
@@ -362,7 +363,7 @@ FocusScope {
                 visible: text.length > 0
                 text: root.friendlyDescription(root.paramId, root.description)
                 color: settings_form.secondaryText
-                font.pixelSize: 10
+                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                 lineHeight: 1.15
                 wrapMode: Text.WordWrap
                 maximumLineCount: root.compact ? 3 : 2
@@ -374,7 +375,7 @@ FocusScope {
                 text: root.paramId
                 color: settings_form.secondaryText
                 opacity: 0.72
-                font.pixelSize: 8
+                font.pixelSize: MenuTypography.helper
                 font.family: "monospace"
                 elide: Text.ElideRight
             }
@@ -478,7 +479,7 @@ FocusScope {
                     text: qsTr("Apply")
                     enabled: formatEditor.dirty && !root.busy && !root.readOnly
                     hoverEnabled: true
-                    font.pixelSize: 10
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                     font.bold: true
                     contentItem: Text {
                         text: formatApplyButton.text
@@ -555,7 +556,7 @@ FocusScope {
                     text: qsTr("Apply")
                     enabled: sensorEditor.sensorModeDirty && !root.busy && !root.readOnly
                     hoverEnabled: true
-                    font.pixelSize: 10
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                     font.bold: true
                     contentItem: Text {
                         text: sensorModeApplyButton.text
@@ -594,11 +595,11 @@ FocusScope {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 16
-                    Text { text: String(Math.round(valueSlider.from)) + root.valueSuffix(root.paramId); color: settings_form.secondaryText; font.pixelSize: 8 }
+                    Text { text: String(Math.round(valueSlider.from)) + root.valueSuffix(root.paramId); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                     Item { Layout.fillWidth: true }
-                    Text { text: String(Math.round(valueSlider.value)) + root.valueSuffix(root.paramId); color: settings_form.accentColor; font.pixelSize: 11; font.bold: true }
+                    Text { text: String(Math.round(valueSlider.value)) + root.valueSuffix(root.paramId); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     Item { Layout.fillWidth: true }
-                    Text { text: String(Math.round(valueSlider.to)) + root.valueSuffix(root.paramId); color: settings_form.secondaryText; font.pixelSize: 8 }
+                    Text { text: String(Math.round(valueSlider.to)) + root.valueSuffix(root.paramId); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                 }
                 Slider {
                     id: valueSlider
@@ -685,7 +686,7 @@ FocusScope {
             checked: Number(root.paramValue) !== 0
             enabled: !root.busy && !root.readOnly
             text: checked ? qsTr("On") : qsTr("Off")
-            font.pixelSize: 11
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             onClicked: root.commitInt(checked ? 1 : 0)
             Keys.priority: Keys.BeforeItem
             Keys.onPressed: function(event) {
@@ -747,7 +748,7 @@ FocusScope {
                 text: qsTr("Apply")
                 enabled: cameraEditor.dirty && !root.busy && !root.readOnly
                 hoverEnabled: true
-                font.pixelSize: 10
+                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                 font.bold: true
                 contentItem: Text {
                     text: cameraApplyButton.text

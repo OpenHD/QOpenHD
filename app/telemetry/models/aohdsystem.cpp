@@ -220,16 +220,9 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             }else if(msg.compid==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
                 CameraStreamModel::instance(1).update_mavlink_openhd_camera_status_air(parsedMsg);
                 set_dirty_air_has_secondary_cam(true);
-                // Feature - tell user to enable 2 cameras in qopenhd
+                // QML automatically starts the secondary video view from camera
+                // status/STREAMING_E; users no longer configure a stream count.
                 set_n_openhd_cameras(2);
-                const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
-                if(value_in_qopenhd!=2){
-                    const auto elapsed=std::chrono::steady_clock::now()-m_last_n_cameras_message;
-                    if(elapsed>std::chrono::seconds(5)){
-                        LogMessagesModel::instanceGround().add_message_debug("QOpenHD","Please enable 2 camera control");
-                        m_last_n_cameras_message=std::chrono::steady_clock::now();
-                    }
-                }
 
             }
             consumed=true;
@@ -667,6 +660,8 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
 }
 
 void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t &msg){
+    set_received_link_bitrate_bps(msg.curr_rx_bps >= 0 ? msg.curr_rx_bps : -1);
+    m_received_link_bitrate_update_ms = QOpenHDMavlinkHelper::getTimeMilliseconds();
     //qDebug()<<"Got mavlink_openhd_stats_monitor_mode_wifi_link_t";
     set_curr_rx_packet_loss_perc(msg.curr_rx_packet_loss_perc);
     set_count_tx_inj_error_hint(msg.count_tx_inj_error_hint);
@@ -888,6 +883,9 @@ void AOHDSystem::autofech_params_if_apropriate()
 
 void AOHDSystem::update_alive()
 {
+    if(m_received_link_bitrate_update_ms < 0 ||
+       QOpenHDMavlinkHelper::getTimeMilliseconds()-m_received_link_bitrate_update_ms > 4000)
+        set_received_link_bitrate_bps(-1);
     if(m_is_air && !m_link_usage.isEmpty()) {
         const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
         bool changed = false;

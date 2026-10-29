@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -276,7 +277,7 @@ FocusScope {
                         Layout.fillWidth: true
                         text: root.secondary ? qsTr("AIR CAMERA 2") : qsTr("AIR CAMERA 1")
                         color: settings_form.primaryText
-                        font.pixelSize: 16
+                        font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family
                         font.bold: true
                         elide: Text.ElideRight
                     }
@@ -292,15 +293,15 @@ FocusScope {
                         Text {
                             text: root.statusText()
                             color: root.statusColor()
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                         }
-                        Text { text: "\u2022"; color: settings_form.secondaryText; font.pixelSize: 9 }
+                        Text { text: "\u2022"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                         Text {
                             Layout.fillWidth: true
                             text: root.cameraName()
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             elide: Text.ElideRight
                         }
                     }
@@ -323,8 +324,8 @@ FocusScope {
                     Column {
                         anchors.centerIn: parent
                         spacing: 2
-                        Text { text: qsTr("FORMAT"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
-                        Text { width: 132; text: root.formatText(); color: settings_form.primaryText; font.pixelSize: 10; font.bold: true; elide: Text.ElideRight }
+                        Text { text: qsTr("FORMAT"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { width: 132; text: root.formatText(); color: settings_form.primaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true; elide: Text.ElideRight }
                     }
                 }
 
@@ -338,8 +339,8 @@ FocusScope {
                     Column {
                         anchors.centerIn: parent
                         spacing: 2
-                        Text { text: qsTr("CODEC"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
-                        Text { text: root.codecText(); color: settings_form.primaryText; font.pixelSize: 10; font.bold: true }
+                        Text { text: qsTr("CODEC"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { text: root.codecText(); color: settings_form.primaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
                     }
                 }
 
@@ -353,8 +354,8 @@ FocusScope {
                     Column {
                         anchors.centerIn: parent
                         spacing: 2
-                        Text { text: qsTr("TARGET"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
-                        Text { text: streamModel.curr_recomended_video_bitrate_string; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true }
+                        Text { text: qsTr("TARGET"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { text: streamModel.curr_recomended_video_bitrate_string; color: settings_form.primaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
                     }
                 }
             }
@@ -444,14 +445,14 @@ FocusScope {
                         Text {
                             text: categoryModel.get(Math.max(0, root.categoryIndex(root.activeCategory))).title
                             color: settings_form.primaryText
-                            font.pixelSize: 14
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                         }
                         Text {
                             Layout.fillWidth: true
                             text: root.categoryDescription(root.activeCategory)
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             elide: Text.ElideRight
                         }
                     }
@@ -467,7 +468,7 @@ FocusScope {
                             text: root.activeCategory === "CONNECTION"
                                   ? qsTr("SETUP") : String(root.categoryCount(root.activeCategory))
                             color: settings_form.secondaryText
-                            font.pixelSize: 9
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                         }
                     }
@@ -569,7 +570,7 @@ FocusScope {
                           : (settingsModel.ui_is_busy ? qsTr("Loading camera settings")
                                                      : qsTr("Camera settings are not loaded"))
                     color: settings_form.primaryText
-                    font.pixelSize: 16
+                    font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                 }
@@ -579,7 +580,7 @@ FocusScope {
                           ? qsTr("Connect the air unit to view and change this camera.")
                           : qsTr("Load the parameters reported by this camera component.")
                     color: settings_form.secondaryText
-                    font.pixelSize: 11
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignHCenter
                 }
@@ -589,7 +590,7 @@ FocusScope {
                     from: 0; to: 100
                     value: Math.max(0, settingsModel.curr_get_all_progress_perc)
                 }
-                AdvancedActionButton {
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: reloadButton
                     Layout.alignment: Qt.AlignHCenter
                     visible: _ohdSystemAir.is_alive && !settingsModel.ui_is_busy

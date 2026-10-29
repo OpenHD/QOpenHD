@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -15,10 +16,10 @@ Rectangle {
     ColumnLayout {
         anchors.fill: parent; anchors.margins: 8; spacing: 7
         RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
-            Text { text: "M"; color: "#36c88a"; font.pixelSize: 18; font.bold: true }
-            Text { text: qsTr("Microhard Link 1"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
+            Text { text: "M"; color: "#36c88a"; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+            Text { text: qsTr("Microhard Link 1"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Rectangle { width: activeText.implicitWidth + 14; height: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)
-                Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
+                Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
         LinkUsageMeter { Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("microhard") : null }
@@ -31,8 +32,8 @@ Rectangle {
                 {label: qsTr("TX POWER"), value: String(_ohdSystemGround.microhard_tx_pwr)}]
                 delegate: Rectangle { Layout.fillWidth: true; Layout.fillHeight: true; color: settings_form.panelBackground; border.color: settings_form.lineColor
                     Column { anchors.centerIn: parent; spacing: 2
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 7; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     }
                 }
             }
@@ -40,27 +41,27 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true; Layout.preferredHeight: 107; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
             ColumnLayout { anchors.fill: parent; anchors.margins: 9; spacing: 8
-                Text { text: qsTr("RADIO"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                Text { text: qsTr("RADIO"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                 GridLayout { Layout.fillWidth: true; columns: 2; rowSpacing: 8; columnSpacing: 15
-                    Text { text: qsTr("Frequency"); color: settings_form.secondaryText; font.pixelSize: 9 }
-                    Text { text: _ohdSystemGround.microhard_freq + " MHz"; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true; Layout.alignment: Qt.AlignRight }
-                    Text { text: qsTr("Channel width"); color: settings_form.secondaryText; font.pixelSize: 9 }
-                    Text { text: _ohdSystemGround.microhard_bw + " MHz"; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true; Layout.alignment: Qt.AlignRight }
+                    Text { text: qsTr("Frequency"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                    Text { text: _ohdSystemGround.microhard_freq + " MHz"; color: settings_form.primaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true; Layout.alignment: Qt.AlignRight }
+                    Text { text: qsTr("Channel width"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                    Text { text: _ohdSystemGround.microhard_bw + " MHz"; color: settings_form.primaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true; Layout.alignment: Qt.AlignRight }
                 }
             }
         }
         Rectangle {
             Layout.fillWidth: true; Layout.preferredHeight: 92; radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
             GridLayout { anchors.fill: parent; anchors.margins: 9; columns: 2; rowSpacing: 9
-                Text { text: qsTr("Telemetry TX"); color: settings_form.secondaryText; font.pixelSize: 9 }
-                Text { text: _ohdSystemGround.curr_telemetry_tx_bps; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true; Layout.alignment: Qt.AlignRight }
-                Text { text: qsTr("Telemetry RX"); color: settings_form.secondaryText; font.pixelSize: 9 }
-                Text { text: _ohdSystemGround.curr_telemetry_rx_bps; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true; Layout.alignment: Qt.AlignRight }
+                Text { text: qsTr("Telemetry TX"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                Text { text: _ohdSystemGround.curr_telemetry_tx_bps; color: settings_form.primaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true; Layout.alignment: Qt.AlignRight }
+                Text { text: qsTr("Telemetry RX"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                Text { text: _ohdSystemGround.curr_telemetry_rx_bps; color: settings_form.primaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true; Layout.alignment: Qt.AlignRight }
             }
         }
         Item { Layout.fillHeight: true }
         RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 25
-            Text { Layout.fillWidth: true; text: qsTr("Telemetry status reported by OpenHD"); color: settings_form.secondaryText; font.pixelSize: 7 }
+            Text { Layout.fillWidth: true; text: qsTr("Telemetry status reported by OpenHD"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
             Rectangle { width: 7; height: 7; radius: 4; color: settings_form.goodColor }
         }
     }

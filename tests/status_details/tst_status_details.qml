@@ -10,7 +10,19 @@ Item {
  Component.onCompleted: Qt.application.font = Qt.font({family: "Segoe UI", pixelSize: 13})
  property bool captureImages: false
  id: scene; width: 1543; height: 565
- property var _cameraStreamModelPrimary: ({curr_received_bitrate_with_fec_bps:12300000,curr_set_video_format:"1920x1080@60"})
+ property var _cameraStreamModelPrimary: testCamera
+ QtObject {
+  id: testCamera
+  property int camera_status: 1
+  property int camera_type: 124
+  property int encoding_codec: 1
+  function camera_codec_to_string(value) { return "H.265" }
+  property string curr_set_video_format: "1920x1080@60"
+  property int curr_received_bitrate_with_fec_bps: 12300000
+  property int curr_video_measured_encoder_bitrate_bps: 6600000
+  property int curr_video_injected_bitrate_bps: 7920000
+  function camera_type_to_string(value) { return "ORQA REKINDLE" }
+ }
  property var _audioControl: testAudio
  QtObject { id: testAudio; property bool playing: true; property int playbackVolume: 70; function setPlaybackEnabled(enabled) { playing = enabled } }
  property var _ohdSystemAir: air
@@ -35,6 +47,12 @@ Item {
   property int air_status_cpu_caution: 85
   property int ground_status_cpu_warn: 95
   property int ground_status_cpu_caution: 85
+  property int air_unit_battery_type: -1
+  property int air_unit_battery_cells: 0
+  property int air_unit_battery_capacity_mah: 0
+  property int air_unit_battery_low: 0
+  property int air_unit_battery_mid: 0
+  property int air_unit_battery_full: 0
   property int ground_battery_type: 1
   property int ground_battery_cells: 4
   property int ground_battery_capacity_mah: 5200
@@ -66,6 +84,7 @@ Item {
   property bool artosyn_link_detected: false
   property int primary_link_type: 0
   property int current_rx_signal_quality: 92
+  property double received_link_bitrate_bps: 13200000
   property bool artosyn_debug_stats_available: false
   property string last_ping_result_openhd: "28 ms"
   property int wifi_hotspot_state: 0
@@ -82,7 +101,7 @@ Item {
   property int external_devices_count: -1
   property int ina219_voltage_millivolt: 15800
   property int battery_percent: 62
-  property var link_usage: [{id: 1}]
+  property var link_usage: [{id: 1, total_bps: 13200000}]
  }
  QtObject { id: wifi; property bool alive: true; property bool card_type_supported: true; property string card_type_as_string: "Devourer RTL822C" }
  QtObject {
@@ -112,6 +131,14 @@ Item {
   function test_ground_details_popup() {
    scene.width=850;scene.height=480
    tryVerify(function() { return menu.statusPanel !== null })
+   var receiveHeader=findChild(menu,"statusOverviewHeader")
+   verify(receiveHeader !== null)
+   compare(receiveHeader.receivedLinkBps,13200000)
+   air.received_link_bitrate_bps=0
+   compare(receiveHeader.receivedLinkBps,0)
+   air.received_link_bitrate_bps=-1
+   compare(receiveHeader.receivedLinkBps,-1)
+   air.received_link_bitrate_bps=13200000
    var cards=findChild(menu,"statusOverviewCards")
    mouseClick(cards.actionButtons()[0])
    tryVerify(function() { return findChild(menu,"groundStationDetailsPopup") !== null })
@@ -123,6 +150,7 @@ Item {
    mouseClick(visualChild(popup.contentItem,"groundHotspotMode1"))
    compare(params.writtenParam,"WIFI_HOTSPOT_E");compare(params.writtenValue,1)
    var chemistry=findChild(menu,"groundBatteryChemistry")
+   compare(chemistry.count,3)
    compare(popup.ramTotal,3994)
    compare(popup.details.hotspot_clients,2)
    compare(popup.storageText("logs"),"2.0 / 8.0 GiB (25 %)")
@@ -133,7 +161,7 @@ Item {
     verify(dropdown.x>=0 && dropdown.y>=0)
     verify(dropdown.x+dropdown.width*dropdown.scale<=scene.width)
     verify(dropdown.y+dropdown.height*dropdown.scale<=scene.height)
-    verify(dropdown.height>=200, "All four chemistry rows should fit")
+    verify(dropdown.height>=150, "All three chemistry rows should fit")
     dropdown.close()
    }
    scene.width=850;scene.height=480;wait(80)
@@ -141,10 +169,23 @@ Item {
    compare(settings.ground_battery_type,0)
    compare(settings.ground_battery_low,33);compare(settings.ground_battery_full,42)
    var capacity=findChild(menu,"groundBatteryCapacity")
-   capacity.forceActiveFocus();capacity.selectAll();keyClick(Qt.Key_6);keyClick(Qt.Key_0);keyClick(Qt.Key_0);keyClick(Qt.Key_0);keyClick(Qt.Key_Tab)
+   capacity.popup.open();wait(80)
+   capacity.popup.contentItem.currentIndex=capacity.capacities.indexOf(6000)
+   keyClick(Qt.Key_Return)
    compare(settings.ground_battery_capacity_mah,6000)
    var cells=findChild(menu,"groundBatteryCells")
-   cells.forceActiveFocus();keyClick(Qt.Key_Up)
+   compare(cells.count,7)
+   compare(cells.optionDetails[3].description,"17.5-21.0 V - discharge to full")
+   compare(cells.optionDetails[0].description,"7.0-8.4 V - discharge to full")
+   compare(cells.optionDetails[6].description,"28.0-33.6 V - discharge to full")
+   popup.chemistryChanged(1)
+   compare(cells.optionDetails[0].description,"5.0-8.4 V - discharge to full")
+   compare(cells.optionDetails[6].description,"20.0-33.6 V - discharge to full")
+   popup.chemistryChanged(0)
+   compare(cells.model[0],"2S");compare(cells.model[6],"8S")
+   cells.popup.open();wait(80)
+   cells.popup.contentItem.currentIndex=3
+   keyClick(Qt.Key_Return)
    compare(settings.ground_battery_cells,5)
    compare(findChild(menu,"groundHotspotChannel").enabled,false)
    scene._qopenhd={version_string:"3.0.0-evo",debugMenuPreview:true,launchedFromQtCreator:true}
@@ -156,6 +197,29 @@ Item {
    if(scene.captureImages) grabImage(scene).save("build/status-layout-full/ground-details-1440x900.png")
    mouseClick(findChild(menu,"groundDetailsClose"))
    tryCompare(popup,"visible",false)
+   mouseClick(cards.actionButtons()[1])
+   tryVerify(function() { return findChild(menu,"airUnitDetailsPopup") !== null })
+   var airPopup=findChild(menu,"airUnitDetailsPopup")
+   tryCompare(airPopup,"visible",true)
+   if(scene.captureImages) grabImage(visualChild(airPopup.contentItem,"airCamerasPanel")).save("build/status-layout-full/air-camera-cards.png")
+   compare(airPopup.systemType,1)
+   compare(airPopup.width,popup.width)
+   compare(airPopup.height,popup.height)
+   compare(airPopup.uiScale,popup.uiScale)
+   verify(visualChild(airPopup.contentItem,"airCamerasPanel").visible)
+   compare(visualChild(airPopup.contentItem,"airCamera0Value0").text,"ORQA REKINDLE")
+   compare(visualChild(airPopup.contentItem,"airCamera0Status").text,"Streaming")
+   compare(visualChild(airPopup.contentItem,"airCamera0Value3").text,"6.6 Mbit/s")
+   compare(visualChild(airPopup.contentItem,"airCamera0Value1").text,"1920 x 1080 @ 60 FPS")
+   compare(visualChild(airPopup.contentItem,"airCamera0Value2").text,"H.265")
+   compare(visualChild(airPopup.contentItem,"airCamera1Value0").text,"Not reported")
+   compare(visualChild(airPopup.contentItem,"airCamerasPanel").height,236)
+   verify(!findChild(airPopup,"groundBatteryChemistry").visible)
+   compare(airPopup.unit,scene._ohdSystemAir)
+   compare(airPopup.params,scene._ohdSystemAirSettingsModel)
+   compare(airPopup.ramTotal,3994)
+   compare(airPopup.details.hotspot_clients,2)
+   airPopup.close()
   }
   function test_resize_and_alignment() {
    tryVerify(function() { return menu.statusPanel !== null })

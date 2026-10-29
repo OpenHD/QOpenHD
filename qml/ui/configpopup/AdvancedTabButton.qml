@@ -1,7 +1,8 @@
+import "MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
-TabButton {
+TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
     id: control
     property string iconText: ""
     implicitHeight: 34
@@ -33,7 +34,7 @@ TabButton {
                 height: Math.max(18, implicitHeight)
                 text: control.text
                 color: control.checked ? "white" : settings_form.primaryText
-                font.pixelSize: 11
+                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter
             }

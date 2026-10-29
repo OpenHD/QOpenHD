@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -76,30 +77,30 @@ ScrollView {
             Layout.fillWidth: true; Layout.margins: 12
             ColumnLayout {
                 Layout.fillWidth: true; spacing: 4
-                Text { Layout.fillWidth: true; text: qsTr("FleetControl"); color: settings_form.primaryText; font.pixelSize: 18; font.bold: true }
-                Text { Layout.fillWidth: true; text: "openhd.tech"; color: settings_form.secondaryText; font.pixelSize: 12 }
+                Text { Layout.fillWidth: true; text: qsTr("FleetControl"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+                Text { Layout.fillWidth: true; text: "openhd.tech"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             }
-            AdvancedActionButton { visible: root.fleetBackend && root.fleetBackend.authenticated; text: qsTr("Sign out"); enabled: !root.working; opacity: enabled ? 1 : 0.5; onClicked: { if (root.fleetBackend) root.fleetBackend.logout() } }
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: root.fleetBackend && root.fleetBackend.authenticated; text: qsTr("Sign out"); enabled: !root.working; opacity: enabled ? 1 : 0.5; onClicked: { if (root.fleetBackend) root.fleetBackend.logout() } }
         }
         ColumnLayout {
             visible: !root.fleetBackend || !root.fleetBackend.authenticated
             Layout.fillWidth: true; Layout.margins: 12; spacing: 10
-            Text { text: qsTr("Sign in to assign your craft to a certificate."); color: settings_form.secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            Text { text: qsTr("Sign in to assign your craft to a certificate."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             TextField {
                 id: username; objectName: "fleetUsername"; Layout.fillWidth: true; Layout.preferredHeight: 40
                 placeholderText: qsTr("Username or email"); selectByMouse: true; enabled: !root.working; onAccepted: password.forceActiveFocus()
-                font.pixelSize: 13; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
+                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
                 leftPadding: 12; rightPadding: 12
                 background: Rectangle { radius: 8; color: settings_form.panelBackground; border.color: username.activeFocus ? settings_form.accentColor : settings_form.lineColor }
             }
             TextField {
                 id: password; objectName: "fleetPassword"; Layout.fillWidth: true; Layout.preferredHeight: 40
                 placeholderText: qsTr("Password"); echoMode: TextInput.Password; enabled: !root.working; onAccepted: { if (signIn.enabled) signIn.clicked() }
-                font.pixelSize: 13; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
+                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
                 leftPadding: 12; rightPadding: 12
                 background: Rectangle { radius: 8; color: settings_form.panelBackground; border.color: password.activeFocus ? settings_form.accentColor : settings_form.lineColor }
             }
-            AdvancedActionButton {
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: signIn; objectName: "fleetSignIn"; text: qsTr("Sign in"); primary: true; Layout.alignment: Qt.AlignRight
                 enabled: !root.working && username.text.trim().length > 0 && password.text.length > 0; opacity: enabled ? 1 : 0.5
                 onClicked: { if (root.fleetBackend) root.fleetBackend.login(username.text, password.text); password.clear() }
@@ -108,41 +109,41 @@ ScrollView {
         ColumnLayout {
             visible: root.fleetBackend && root.fleetBackend.authenticated
             Layout.fillWidth: true; Layout.margins: 12; spacing: 12
-            Text { Layout.fillWidth: true; text: root.fleetBackend ? root.fleetBackend.accountName : ""; color: settings_form.secondaryText; font.pixelSize: 12; elide: Text.ElideRight }
+            Text { Layout.fillWidth: true; text: root.fleetBackend ? root.fleetBackend.accountName : ""; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; elide: Text.ElideRight }
             Pane {
                 Layout.fillWidth: true; padding: 12
                 background: Rectangle { radius: 8; color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor }
                 contentItem: ColumnLayout {
                     spacing: 10
-                    Text { text: qsTr("Certificate"); color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                    Text { text: qsTr("Certificate"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     CompactLinkComboBox {
-                        id: certificateBox; objectName: "fleetCertificate"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 13
+                        id: certificateBox; objectName: "fleetCertificate"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         model: root.fleetBackend ? root.fleetBackend.licenses.map(function(license) { return license.plan + " · " + license.id.slice(-6) }) : []
                         currentIndex: root.licenseIndex; enabled: !root.working && count > 1
                         displayText: root.selectedLicense ? model[root.licenseIndex] : qsTr("No certificates in this account")
                         onActivated: { if (root.fleetBackend) root.selectedLicenseId = root.fleetBackend.licenses[currentIndex].id }
                     }
                     Text {
-                        objectName: "fleetLicenceExpiry"; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
+                        objectName: "fleetLicenceExpiry"; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         text: !root.selectedLicense ? qsTr("Your licences will appear here after they are added to your account.")
                               : root.selectedLicense.status === "expired" ? qsTr("Expired %1").arg(root.dateText(root.selectedLicense.expiresAt))
                               : qsTr("Active until %1 · %2 days left").arg(root.dateText(root.selectedLicense.expiresAt)).arg(Math.max(0, root.selectedLicense.daysRemaining))
                     }
                     Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
-                    Text { text: qsTr("Craft"); color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                    Text { text: qsTr("Craft"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     CompactLinkComboBox {
-                        id: craftBox; objectName: "fleetCraft"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: 13
+                        id: craftBox; objectName: "fleetCraft"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         model: root.availableCrafts.map(function(craft) { return craft.name })
                         enabled: !root.working && root.selectedLicense && !root.selectedLicense.craftId && count > 0
                         displayText: root.selectedCraft ? root.selectedCraft.name : qsTr("No available craft")
                     }
                     Text {
-                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         text: root.selectedLicense && root.selectedLicense.craftId ? qsTr("Assigned to this certificate")
                               : root.availableCrafts.length ? qsTr("Each certificate is permanently assigned to one craft.")
                               : !root.fleetBackend || !root.fleetBackend.crafts.length ? qsTr("No craft in this account yet.") : qsTr("All your craft already have a certificate.")
                     }
-                    AdvancedActionButton {
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         objectName: "fleetAssign"; text: qsTr("Assign craft"); primary: true; Layout.alignment: Qt.AlignRight
                         visible: root.selectedLicense && !root.selectedLicense.craftId
                         enabled: !root.working && root.selectedCraft && root.selectedLicense && root.selectedLicense.status !== "expired"
@@ -158,8 +159,8 @@ ScrollView {
                     spacing: 10
                     RowLayout {
                         Layout.fillWidth: true
-                        Text { text: qsTr("Transmission"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
-                        AdvancedActionButton {
+                        Text { text: qsTr("Transmission"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             objectName: "fleetTransmission"
                             text: root.transmissionEnabled ? qsTr("Stop transmission") : qsTr("Start transmission")
                             primary: !root.transmissionEnabled
@@ -169,7 +170,7 @@ ScrollView {
                         }
                     }
                     Text {
-                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: 12
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         text: !root.craftAssigned ? qsTr("Assign a craft to start transmission.")
                               : root.transmissionEnabled ? qsTr("Transmission to openhd.tech is enabled.")
                               : qsTr("Transmission to openhd.tech is stopped.")
@@ -177,14 +178,14 @@ ScrollView {
                     Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
                     RowLayout {
                         Layout.fillWidth: true
-                        Text { text: qsTr("Video quality"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
-                        Text { text: "480p · 15 fps · 1 Mbit/s"; color: settings_form.secondaryText; font.pixelSize: 12 }
+                        Text { text: qsTr("Video quality"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
+                        Text { text: "480p · 15 fps · 1 Mbit/s"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
                     }
                     Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
                     RowLayout {
                         Layout.fillWidth: true
-                        Text { text: qsTr("Video encryption"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: 13 }
-                        Switch {
+                        Text { text: qsTr("Video encryption"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: encryption; objectName: "fleetEncryption"; implicitWidth: 48; implicitHeight: 30; padding: 0
                             checked: root.encryptionEnabled
                             enabled: root.encryptionAvailable && !root.working && (root.encryptionEnabled || (root.selectedLicense && root.selectedLicense.craftId && root.selectedLicense.status !== "expired" && root.selectedLicense.video1Allowed))
@@ -208,7 +209,7 @@ ScrollView {
                         }
                     }
                     Text {
-                        Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: 12; color: settings_form.secondaryText
+                        Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.secondaryText
                         text: !root.encryptionAvailable ? qsTr("Connect Air to change video encryption.") : qsTr("Encrypt the Air video link. Streaming to openhd.tech is always encrypted.")
                     }
                 }
@@ -216,7 +217,7 @@ ScrollView {
         }
         Text {
             Layout.fillWidth: true; Layout.margins: 12; text: root.fleetBackend ? root.fleetBackend.statusText : ""
-            color: settings_form.secondaryText; wrapMode: Text.WordWrap; font.pixelSize: 12
+            color: settings_form.secondaryText; wrapMode: Text.WordWrap; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
         }
     }
 }

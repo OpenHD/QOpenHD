@@ -1,0 +1,41 @@
+import QtQuick 2.12
+import QtTest 1.2
+Item {
+ id: root; width: 850; height: 480
+ QtObject {id:_qopenhd;property bool debugMenuPreview:false}
+ QtObject {id:_ohdSystemAir;property bool is_alive:true}
+ QtObject {id:_cameraStreamModelPrimary;property int camera_status:3}
+ QtObject {id:_cameraStreamModelSecondary;property int camera_status:3}
+ Component {id:settingsMock;QtObject {
+ property int update_count:0
+ property bool has_params_fetched:false
+ property bool ui_is_busy:false
+ property bool cached:false
+ property int value:0
+ property int writes:0
+ function param_int_exists(id){return cached && id==="STREAMING_E"}
+ function get_cached_int(id){return value}
+ function try_set_param_int_async(id,next,log){if(id==="STREAMING_E"){value=next;cached=true;writes++;update_count++}}
+ }}
+ property var _airCameraSettingsModel:settingsMock.createObject(root)
+ property var _airCameraSettingsModel2:settingsMock.createObject(root)
+FUNCTIONS
+ TestCase {name:"CameraEnable";when:windowShown
+ function init(){_qopenhd.debugMenuPreview=false;_ohdSystemAir.is_alive=true;_airCameraSettingsModel2.ui_is_busy=false}
+ function test_disabled_camera_can_enable_without_full_parameter_fetch(){
+ _airCameraSettingsModel2.cached=false;_airCameraSettingsModel2.value=0
+ verify(root.canToggleCamera(1));verify(!root.cameraEnabled(1))
+ var before=_airCameraSettingsModel2.writes
+ root.setCameraEnabled(1,true)
+ compare(_airCameraSettingsModel2.writes,before+1);verify(root.cameraEnabled(1))
+ root.setCameraEnabled(1,false);verify(!root.cameraEnabled(1));verify(root.canToggleCamera(1))
+ }
+ function test_writes_blocked_when_offline_busy_or_preview(){
+ var before=_airCameraSettingsModel2.writes
+ _ohdSystemAir.is_alive=false;root.setCameraEnabled(1,true)
+ _ohdSystemAir.is_alive=true;_qopenhd.debugMenuPreview=true;root.setCameraEnabled(1,true)
+ _qopenhd.debugMenuPreview=false;_airCameraSettingsModel2.ui_is_busy=true;root.setCameraEnabled(1,true)
+ compare(_airCameraSettingsModel2.writes,before)
+ }
+ }
+}

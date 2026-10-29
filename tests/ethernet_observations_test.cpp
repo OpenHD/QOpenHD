@@ -15,6 +15,15 @@ int main(int argc,char** argv) {
     try {
         AOHDSystem air(true);
         AOHDSystem ground(false);
+        mavlink_openhd_stats_monitor_mode_wifi_link_t radio{};
+        radio.curr_rx_bps=13200000;
+        mavlink_message_t radioMessage{};
+        mavlink_msg_openhd_stats_monitor_mode_wifi_link_encode(100,191,&radioMessage,&radio);
+        CHECK(ground.process_message(radioMessage));
+        CHECK(ground.received_link_bitrate_bps()==13200000);
+        radio.curr_rx_bps=0;
+        mavlink_msg_openhd_stats_monitor_mode_wifi_link_encode(100,191,&radioMessage,&radio);
+        ground.process_message(radioMessage);CHECK(ground.received_link_bitrate_bps()==0);
         mavlink_data96_t details{}; details.type=0x47;details.len=76;
         std::memcpy(details.data,"OHDG",4);details.data[4]=1;details.data[5]=31;
         put(details.data,8,3);put(details.data,12,1073741824);put(details.data,20,2147483648u);
@@ -65,8 +74,24 @@ int main(int argc,char** argv) {
         CHECK(streams[0].toMap().value("percent").toInt()+streams[1].toMap().value("percent").toInt()==100);
         CHECK(streams[1].toMap().value("budget_kbits").toInt()==2526);
         payload.len=89;receive();CHECK(!air.link_usage()[1].toMap().contains("allocation"));
+        // A custom-UDP category shifts the trailer, but still fits DATA96.
+        std::memset(payload.data,0,sizeof(payload.data));
+        std::memcpy(payload.data,"OHLU",4);payload.data[4]=1;payload.data[5]=1;payload.data[6]=7;payload.len=95;
+        for(int i=0;i<7;++i){payload.data[16+i*5]=i+1;put(payload.data,17+i*5,i==6?200000:0);}
+        std::memcpy(payload.data+51,"BWA1",4);
+        for(int i=0;i<7;++i)put(payload.data,55+i*4,allocationFields[i]);
+        payload.data[83]=3;payload.data[84]=70;put(payload.data,85,5894);
+        payload.data[89]=3;payload.data[90]=30;put(payload.data,91,2526);
+        receive();
+        const auto extended=air.link_usage()[1].toMap();
+        CHECK(extended.value("categories").toList()[6].toMap().value("id").toInt()==7);
+        CHECK(extended.value("categories").toList()[6].toMap().value("bps").toInt()==200000);
+        CHECK(extended.value("allocation").toMap().value("pool_kbits").toInt()==8420);
+        CHECK(extended.value("allocation").toMap().value("streams").toList()[1].toMap().value("budget_kbits").toInt()==2526);
+        payload.len=94;receive();CHECK(!air.link_usage()[1].toMap().contains("allocation"));
         QEventLoop loop;QTimer::singleShot(4200,&loop,&QEventLoop::quit);loop.exec();
         CHECK(air.link_usage().empty());
+        CHECK(ground.received_link_bitrate_bps()==-1);
         std::cout<<"Ethernet and bandwidth allocation decoding, legacy packets, unknowns, truncation and expiry passed\n";
     } catch(const std::exception& error) {std::cerr<<error.what()<<"\n";return 1;}
 }

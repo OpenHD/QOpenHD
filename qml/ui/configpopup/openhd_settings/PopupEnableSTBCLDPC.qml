@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.0
 
 import QtQuick 2.12
@@ -64,7 +65,7 @@ PopupBigGeneric{
             Layout.preferredWidth: 450
             model: model_n_antennas_air
             textRole: "title"
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             onCurrentIndexChanged: {
                 if(currentIndex==2){
                     anim_warn_user_stbc.start();
@@ -77,7 +78,7 @@ PopupBigGeneric{
             Layout.preferredWidth: 450
             model: model_n_antennas_gnd
             textRole: "title"
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             onCurrentIndexChanged: {
                 if(currentIndex==2){
                     anim_warn_user_stbc.start();
@@ -88,7 +89,7 @@ PopupBigGeneric{
             id: button_enable
             text: qsTr("ENABLE")
             enabled: comboBoxNAntennasAir.currentIndex==2 && comboBoxNAntennasGnd.currentIndex==2;
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             onClicked: {
                 if(_wbLinkSettingsHelper.set_param_stbc_ldpc_enable_air_ground()){
                     _qopenhd.show_toast(qsTr("Success (STBC & LDPC set to ON on both AIR and GND)"));
@@ -103,7 +104,7 @@ PopupBigGeneric{
             Layout.preferredHeight: 40
             visible: !button_enable.enabled
             text: qsTr("CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS");
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             verticalAlignment: Qt.AlignVCenter
             horizontalAlignment: Qt.AlignLeft
             color: "white"
@@ -116,7 +117,7 @@ PopupBigGeneric{
             height: 200
             verticalAlignment: Qt.AlignVCenter
             horizontalAlignment: Qt.AlignHCenter
-            font.pixelSize: 15
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             wrapMode: Text.WordWrap
             SequentialAnimation {
                 running: false

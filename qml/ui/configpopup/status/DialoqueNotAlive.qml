@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
  
@@ -10,16 +11,21 @@ import OpenHD 1.0
 
 import "../../../ui" as Ui
 import "../../elements"
+import ".."
 
 // Dialoque that prompts the user to go to the right location if ground / air is not alive
 Card {
+    dialogStyle: true
     id: groundNotAliveDialoque
     width: 360
     height: 340
     z: 20.0
     anchors.centerIn: parent
     cardName: qsTr("QOpenHD")
-    cardNameColor: "black"
+    cardNameColor: "#edf4fa"
+    cardBackgroundColor: "#041d2c"
+    cardFooterColor: "#041d2c"
+    borderColor: "#0089c4"
     visible: false
     property int m_type: 0;
 
@@ -36,7 +42,7 @@ Card {
     cardBody: Column {
         height: 200
         width: 320
-        Text {
+        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             text: {
                 if(m_type==0){
                     return "You are not connected to your openhd ground station (No incoming openhd telemetry messages)";
@@ -56,14 +62,14 @@ Card {
     cardFooter: Item {
         anchors.fill: parent
 
-        Button {
+        AdvancedDialogButton {
             width: 140
             height: 48
             anchors.left: parent.left
             anchors.leftMargin: 12
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             font.capitalization: Font.MixedCase
             //Material.accent: Material.Green
             highlighted: true
@@ -73,14 +79,14 @@ Card {
             }
         }
 
-        Button {
+        AdvancedDialogButton {
             width: 140
             height: 48
             anchors.right: parent.right
             anchors.rightMargin: 12
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
-            font.pixelSize: 14
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             font.capitalization: Font.MixedCase
             Material.accent: Material.Green
             highlighted: true

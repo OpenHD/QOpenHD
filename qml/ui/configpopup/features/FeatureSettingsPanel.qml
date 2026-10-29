@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -119,15 +120,15 @@ AdvancedPage {
                         Layout.fillWidth: true; implicitHeight: audioAirColumn.implicitHeight + 32
                         ColumnLayout {
                             id: audioAirColumn; anchors.fill: parent; spacing: 10
-                            Label { text: qsTr("AUDIO INPUT & OUTPUT"); color: settings_form.primaryText; font.bold: true }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("AUDIO INPUT & OUTPUT"); color: settings_form.primaryText; font.bold: true }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Choose the air-unit microphone and this device's audio output. Audio is disabled by default.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Stream audio from air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Stream audio from air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     objectName: "audioStreamingSwitch"
                                     checked: root.audioModeValue !== 1
                                     enabled: root.audioAvailable
@@ -136,7 +137,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Audio source"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Audio source"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 CompactLinkComboBox {
                                     id: audioMode
                                     objectName: "audioSourceSelector"
@@ -155,26 +156,26 @@ AdvancedPage {
                                     }
                                 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: !root.audioAvailable || !root.exampleAudioAvailable
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: !root.audioAvailable ? qsTr("Connect an air unit to configure audio streaming.")
                                       : qsTr("Update OpenHD to select example audio explicitly.")
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 objectName: "usbAudioDiagnostic"
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap
                                 color: root.usbAudioCount > 0 ? "#35d36b" : settings_form.secondaryText
                                 text: root.usbAudioStatus
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 visible: text.length > 0
                                 text: root.captureAudioStatus + " " + qsTr("Detection is reported at air-unit startup.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Microphone"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Microphone"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 CompactLinkComboBox {
                                     id: captureDevice
                                     objectName: "audioMicrophoneSelector"
@@ -206,7 +207,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Microphone gain"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Microphone gain"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Slider {
                                     id: gainSlider; Layout.preferredWidth: Math.min(360, root.width * 0.4); from: 0; to: 1000; stepSize: 1
                                     value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("AUDIO_GAIN") ? _ohdSystemAirSettingsModel.get_cached_int("AUDIO_GAIN") : 100 }
@@ -215,9 +216,9 @@ AdvancedPage {
                                     onMoved: gainValue.text = Math.round(value) + "%"
                                     onPressedChanged: if (!pressed) root.setAirInt("AUDIO_GAIN", Math.round(value))
                                 }
-                                Label { id: gainValue; text: Math.round(gainSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 64 }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; id: gainValue; text: Math.round(gainSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 64 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Boost quiet microphones up to 1000% (+20 dB). Start at 200–400% and reduce the gain if sound becomes noisy or distorted.")
                             }
@@ -226,7 +227,7 @@ AdvancedPage {
                                 active: QOPENHD_AUDIO_PLAYBACK_AVAILABLE
                                 sourceComponent: audioPlaybackControls
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: !QOPENHD_AUDIO_PLAYBACK_AVAILABLE
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Output selection, volume and VU meters are unavailable in this build.")
@@ -244,11 +245,11 @@ AdvancedPage {
                         Layout.fillWidth: true; implicitHeight: adsbColumn.implicitHeight + 32
                         ColumnLayout {
                             id: adsbColumn; anchors.fill: parent; spacing: 12
-                            Label { text: qsTr("ADS-B TRAFFIC"); color: settings_form.primaryText; font.bold: true }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("ADS-B TRAFFIC"); color: settings_form.primaryText; font.bold: true }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Rectangle { width: 12; height: 12; radius: 6; color: AdsbVehicleManager.status === 2 ? "#35d36b" : (AdsbVehicleManager.status === 1 ? "#ff5a5a" : "#7d8790") }
-                                Label {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     Layout.fillWidth: true; color: settings_form.primaryText
                                     text: AdsbVehicleManager.status === 2
                                           ? (settings.adsb_source === 0 ? qsTr("Internet ADS-B connected") : qsTr("SDR ADS-B connected"))
@@ -260,8 +261,8 @@ AdvancedPage {
                             RowLayout {
                                 Layout.fillWidth: true
                                 visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 1)
-                                Label { text: qsTr("Enable ADS-B receiver on Air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Enable ADS-B receiver on Air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.adsbAirParameterAvailable && !_ohdSystemAirSettingsModel.ui_is_busy
                                     checked: { root.airRevision; return root.adsbAirParameterAvailable && _ohdSystemAirSettingsModel.get_cached_int("ADSB_ENABLE") !== 0 }
                                     onClicked: root.setAirInt("ADSB_ENABLE", checked ? 1 : 0)
@@ -270,8 +271,8 @@ AdvancedPage {
                             RowLayout {
                                 Layout.fillWidth: true
                                 visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 1)
-                                Label { text: qsTr("Enable ADS-B receiver on Ground unit"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Enable ADS-B receiver on Ground unit"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.adsbGroundParameterAvailable && !_ohdSystemGroundSettings.ui_is_busy
                                     checked: { root.groundRevision; return root.adsbGroundParameterAvailable && _ohdSystemGroundSettings.get_cached_int("ADSB_ENABLE") !== 0 }
                                     onClicked: root.setGroundInt("ADSB_ENABLE", checked ? 1 : 0)
@@ -279,45 +280,45 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Enable ADS-B traffic in QOpenHD"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch { checked: settings.adsb_enable; onToggled: settings.adsb_enable = checked }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Enable ADS-B traffic in QOpenHD"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; checked: settings.adsb_enable; onToggled: settings.adsb_enable = checked }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Traffic source"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Traffic source"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 CompactLinkComboBox {
                                     model: [qsTr("Internet"), qsTr("SDR / OpenHD")]
                                     currentIndex: settings.adsb_source
                                     onActivated: settings.adsb_source = index
                                 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 0)
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Internet traffic requires no SDR. Uses craft GPS, ground-device location, or an automatic approximate internet position when GPS is unavailable.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Display radius"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Display radius"); color: settings_form.primaryText; Layout.fillWidth: true }
                                 Slider { id: radiusSlider; Layout.preferredWidth: Math.min(360, root.width * 0.4); from: 5000; to: 200000; stepSize: 5000; value: settings.adsb_radius; onMoved: settings.adsb_radius = value }
-                                Label { text: Math.round(radiusSlider.value / 1000) + " km"; color: settings_form.primaryText; Layout.preferredWidth: 62 }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: Math.round(radiusSlider.value / 1000) + " km"; color: settings_form.primaryText; Layout.preferredWidth: 62 }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Show unknown / zero altitude"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch { checked: settings.adsb_show_unknown_or_zero_alt; onToggled: settings.adsb_show_unknown_or_zero_alt = checked }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Show unknown / zero altitude"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; checked: settings.adsb_show_unknown_or_zero_alt; onToggled: settings.adsb_show_unknown_or_zero_alt = checked }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Show three closest aircraft widget"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch { checked: settings.adsb_show_nearest_widget; onToggled: settings.adsb_show_nearest_widget = checked }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Show three closest aircraft widget"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; checked: settings.adsb_show_nearest_widget; onToggled: settings.adsb_show_nearest_widget = checked }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Show aircraft direction on OSD"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch { checked: settings.adsb_show_osd_markers; onToggled: settings.adsb_show_osd_markers = checked }
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Show aircraft direction on OSD"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; checked: settings.adsb_show_osd_markers; onToggled: settings.adsb_show_osd_markers = checked }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 1 && !root.adsbAirParameterAvailable && !root.adsbGroundParameterAvailable)
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Connect an OpenHD unit with ADS-B support to enable its SDR receiver.")
@@ -335,15 +336,15 @@ AdvancedPage {
                         Layout.fillWidth: true; implicitHeight: rcLuaSetupColumn.implicitHeight + 32
                         ColumnLayout {
                             id: rcLuaSetupColumn; anchors.fill: parent; spacing: 11
-                            Label { text: qsTr("EDGETX / OPENTX LUA SETTINGS"); color: settings_form.primaryText; font.bold: true }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("EDGETX / OPENTX LUA SETTINGS"); color: settings_form.primaryText; font.bold: true }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Lets the OpenHD Lua tool change frequency, bandwidth, MCS and TX power, or disable FHSS. Assign the OHDSET mixer outputs to four consecutive receiver channels in this order: D2, D1, D0, CLK.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Enable Lua settings protocol"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Enable Lua settings protocol"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.rcLuaAvailable && root.rcLuaBaseChannel > 0
                                     checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("RC_OHD_CTRL") !== 0 }
                                     onToggled: root.setAirInt("RC_OHD_CTRL", checked ? 1 : 0)
@@ -351,8 +352,8 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("First RC channel"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                SpinBox {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("First RC channel"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     id: rcLuaBase
                                     from: 0; to: 15; editable: true
                                     value: root.rcLuaBaseChannel
@@ -360,7 +361,7 @@ AdvancedPage {
                                     onValueModified: root.setAirInt("RC_SET_BASE", value)
                                 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.primaryText
                                 text: root.rcLuaBaseChannel > 0
                                       ? qsTr("Mapping: CH %1 = D2, CH %2 = D1, CH %3 = D0, CH %4 = CLK")
@@ -368,7 +369,7 @@ AdvancedPage {
                                             .arg(root.rcLuaBaseChannel + 2).arg(root.rcLuaBaseChannel + 3)
                                       : qsTr("Select a first channel. Four consecutive channels are required.")
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("The four channels must otherwise be unused. Configure RC_OHD_CTRL only after checking that all four live values reach the Air unit.")
                             }
@@ -379,16 +380,16 @@ AdvancedPage {
                         Layout.fillWidth: true; implicitHeight: rcLuaDebugColumn.implicitHeight + 32
                         ColumnLayout {
                             id: rcLuaDebugColumn; anchors.fill: parent; spacing: 8
-                            Label { text: qsTr("LUA PROTOCOL DEBUG"); color: settings_form.primaryText; font.bold: true }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("LUA PROTOCOL DEBUG"); color: settings_form.primaryText; font.bold: true }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Rectangle { width: 12; height: 12; radius: 6; color: _rcchannelsmodelfc.is_alive ? "#35d36b" : "#ff5a5a" }
-                                Label {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     Layout.fillWidth: true; color: settings_form.primaryText
                                     text: _rcchannelsmodelfc.is_alive ? qsTr("RC channel data received") : qsTr("No RC channel data from the flight controller")
                                 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Data lines must be near 1000 or 2000 µs. The clock must alternate while a command is sent. Mid-position values are invalid.")
                             }
@@ -398,13 +399,13 @@ AdvancedPage {
                                     property int protocolOffset: index - root.rcLuaBaseChannel + 1
                                     visible: _qopenhd.debugMenuPreview || (root.rcLuaBaseChannel > 0 && protocolOffset >= 0 && protocolOffset < 4)
                                     Layout.fillWidth: true
-                                    Label {
+                                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                         Layout.preferredWidth: 110; color: settings_form.primaryText; font.bold: true
                                         text: protocolOffset === 0 ? "D2" : (protocolOffset === 1 ? "D1" : (protocolOffset === 2 ? "D0" : "CLK"))
                                     }
-                                    Label { Layout.preferredWidth: 70; color: settings_form.secondaryText; text: qsTr("CH %1").arg(index + 1) }
+                                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.preferredWidth: 70; color: settings_form.secondaryText; text: qsTr("CH %1").arg(index + 1) }
                                     ProgressBar { Layout.fillWidth: true; from: 1000; to: 2000; value: model.curr_value }
-                                    Label {
+                                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                         Layout.preferredWidth: 120; horizontalAlignment: Text.AlignRight
                                         color: model.curr_value >= 900 && model.curr_value <= 1300 ? "#35d36b"
                                                : (model.curr_value >= 1700 && model.curr_value <= 2100 ? "#35d36b" : "#ff5a5a")
@@ -414,14 +415,14 @@ AdvancedPage {
                                     }
                                 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: root.rcLuaBaseChannel === 0
                                 Layout.fillWidth: true; color: settings_form.secondaryText
                                 text: qsTr("Select the first RC channel to display protocol inputs.")
                             }
                         }
                     }
-                    Label {
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         visible: !root.rcLuaAvailable
                         Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                         text: qsTr("Connect an Air unit containing the RC Lua settings protocol to configure it.")
@@ -431,15 +432,15 @@ AdvancedPage {
                         Layout.fillWidth: true; implicitHeight: diagnosticsColumn.implicitHeight + 32
                         ColumnLayout {
                             id: diagnosticsColumn; anchors.fill: parent; spacing: 8
-                            Label { text: qsTr("DIAGNOSTIC LOGS"); color: settings_form.primaryText; font.bold: true }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("DIAGNOSTIC LOGS"); color: settings_form.primaryText; font.bold: true }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Start or stop split OpenHD logs immediately. Files are written to the video partition under logs/openhd.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("OpenHD logs on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("OpenHD logs on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("LOG_OPENHD")
                                     checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("LOG_OPENHD") !== 0 }
                                     onToggled: root.setAirInt("LOG_OPENHD", checked ? 1 : 0)
@@ -447,21 +448,21 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("OpenHD logs on Ground"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("OpenHD logs on Ground"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.groundRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("LOG_OPENHD")
                                     checked: { root.groundRevision; return enabled && _ohdSystemGroundSettings.get_cached_int("LOG_OPENHD") !== 0 }
                                     onToggled: root.setGroundInt("LOG_OPENHD", checked ? 1 : 0)
                                 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Raw MAVLink telemetry recording is optional and separate from the OpenHD diagnostic logs.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Raw telemetry recording on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Raw telemetry recording on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("LOG_MAVLINK")
                                     checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("LOG_MAVLINK") !== 0 }
                                     onToggled: root.setAirInt("LOG_MAVLINK", checked ? 1 : 0)
@@ -469,8 +470,8 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Raw telemetry recording on Ground"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Raw telemetry recording on Ground"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.groundRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("LOG_MAVLINK")
                                     checked: { root.groundRevision; return enabled && _ohdSystemGroundSettings.get_cached_int("LOG_MAVLINK") !== 0 }
                                     onToggled: root.setGroundInt("LOG_MAVLINK", checked ? 1 : 0)
@@ -478,8 +479,8 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Keep Devourer log enabled separately"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Keep Devourer log enabled separately"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: root.airRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_DEV_LOGS")
                                     checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("WB_DEV_LOGS") !== 0 }
                                     onToggled: root.setAirInt("WB_DEV_LOGS", checked ? 1 : 0)
@@ -498,52 +499,52 @@ AdvancedPage {
                         Layout.fillWidth: true; implicitHeight: dataColumn.implicitHeight + 32
                         ColumnLayout {
                             id: dataColumn; anchors.fill: parent; spacing: 11
-                            Label { text: qsTr("UNIVERSAL UDP DATA LINK"); color: settings_form.primaryText; font.bold: true }
-                            Label { Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; text: qsTr("Bridges localhost UDP through encrypted wifibroadcast. FEC overhead is deducted from the configured RF budget.") }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("UNIVERSAL UDP DATA LINK"); color: settings_form.primaryText; font.bold: true }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; text: qsTr("Bridges localhost UDP through encrypted wifibroadcast. FEC overhead is deducted from the configured RF budget.") }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Enabled on air and ground"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch {
+                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Enabled on air and ground"); color: settings_form.primaryText; Layout.fillWidth: true }
+                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     enabled: _ohdSystemAirSettingsModel.param_int_exists("WB_UDP_ENABLE") && _ohdSystemGroundSettings.param_int_exists("WB_UDP_ENABLE")
                                     checked: { root.airRevision; root.groundRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("WB_UDP_ENABLE") !== 0 && _ohdSystemGroundSettings.get_cached_int("WB_UDP_ENABLE") !== 0 }
                                     onToggled: root.setBoth("WB_UDP_ENABLE", checked ? 1 : 0)
                                 }
                             }
-                            Label { text: qsTr("Channel bandwidth"); color: settings_form.primaryText }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Channel bandwidth"); color: settings_form.primaryText }
                             CompactLinkComboBox { Layout.fillWidth: true; model: [5, 10, 20, 40]; currentIndex: Math.max(0, model.indexOf(_ohdSystemAir.curr_channel_width_mhz)); onActivated: _wbLinkSettingsHelper.change_param_air_channel_width_async(model[index], true) }
-                            Label { text: qsTr("FEC overhead (%)"); color: settings_form.primaryText }
-                            SpinBox {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("FEC overhead (%)"); color: settings_form.primaryText }
+                            SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; from: 0; to: 100; editable: true
                                 value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("WB_UDP_FEC") ? _ohdSystemAirSettingsModel.get_cached_int("WB_UDP_FEC") : 20 }
                                 onValueModified: root.setBoth("WB_UDP_FEC", value)
                             }
-                            Label { text: qsTr("RF link budget (%)"); color: settings_form.primaryText }
-                            SpinBox {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("RF link budget (%)"); color: settings_form.primaryText }
+                            SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; from: 1; to: 80; editable: true
                                 value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("WB_UDP_BUDGET") ? _ohdSystemAirSettingsModel.get_cached_int("WB_UDP_BUDGET") : 10 }
                                 onValueModified: root.setBoth("WB_UDP_BUDGET", value)
                             }
-                            Label { text: qsTr("Maximum payload (kbit/s, 0 = automatic)"); color: settings_form.primaryText }
-                            SpinBox {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Maximum payload (kbit/s, 0 = automatic)"); color: settings_form.primaryText }
+                            SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 Layout.fillWidth: true; from: 0; to: 100000; stepSize: 100; editable: true
                                 value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("WB_UDP_MAX_KBPS") ? _ohdSystemAirSettingsModel.get_cached_int("WB_UDP_MAX_KBPS") : 0 }
                                 onValueModified: root.setBoth("WB_UDP_MAX_KBPS", value)
                             }
-                            Label { text: qsTr("UDP input / output ports"); color: settings_form.primaryText }
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("UDP input / output ports"); color: settings_form.primaryText }
                             RowLayout {
                                 Layout.fillWidth: true
-                                SpinBox {
+                                SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     Layout.fillWidth: true; from: 1024; to: 65535; editable: true
                                     value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("WB_UDP_IN_PORT") ? _ohdSystemAirSettingsModel.get_cached_int("WB_UDP_IN_PORT") : 5602 }
                                     onValueModified: root.setBoth("WB_UDP_IN_PORT", value)
                                 }
-                                SpinBox {
+                                SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     Layout.fillWidth: true; from: 1024; to: 65535; editable: true
                                     value: { root.airRevision; return _ohdSystemAirSettingsModel.param_int_exists("WB_UDP_OUT_PORT") ? _ohdSystemAirSettingsModel.get_cached_int("WB_UDP_OUT_PORT") : 5603 }
                                     onValueModified: root.setBoth("WB_UDP_OUT_PORT", value)
                                 }
                             }
-                            Label {
+                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 visible: !_ohdSystemAirSettingsModel.param_int_exists("WB_UDP_ENABLE") || !_ohdSystemGroundSettings.param_int_exists("WB_UDP_ENABLE")
                                 Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
                                 text: qsTr("Connect compatible OpenHD air and ground units to configure the data link.")
@@ -567,12 +568,12 @@ AdvancedPage {
             spacing: 10
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Play received audio"); color: settings_form.primaryText; Layout.fillWidth: true }
-                    Switch { checked: _audioControl.playing; onToggled: { settings.dev_enable_live_audio_playback = checked; _audioControl.setPlaybackEnabled(checked) } }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Play received audio"); color: settings_form.primaryText; Layout.fillWidth: true }
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; checked: _audioControl.playing; onToggled: { settings.dev_enable_live_audio_playback = checked; _audioControl.setPlaybackEnabled(checked) } }
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Output"); color: settings_form.primaryText; Layout.fillWidth: true }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Output"); color: settings_form.primaryText; Layout.fillWidth: true }
                     CompactLinkComboBox {
                         id: outputDevice; Layout.preferredWidth: Math.min(420, root.width * 0.48); model: _audioControl.outputDeviceNames
                         currentIndex: Math.max(0, _audioControl.outputDeviceIds.indexOf(_audioControl.selectedOutputDevice))
@@ -582,21 +583,21 @@ AdvancedPage {
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Playback volume"); color: settings_form.primaryText; Layout.fillWidth: true }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Playback volume"); color: settings_form.primaryText; Layout.fillWidth: true }
                     Slider { id: volumeSlider; Layout.preferredWidth: Math.min(360, root.width * 0.4); from: 0; to: 100; stepSize: 1; value: _audioControl.playbackVolume; onMoved: _audioControl.playbackVolume = Math.round(value) }
-                    Label { text: Math.round(volumeSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: Math.round(volumeSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Input VU"); color: settings_form.primaryText; Layout.preferredWidth: 130 }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Input VU"); color: settings_form.primaryText; Layout.preferredWidth: 130 }
                     ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: _audioControl.inputLevel }
-                    Label { text: _audioControl.inputLevel + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: _audioControl.inputLevel + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Output VU"); color: settings_form.primaryText; Layout.preferredWidth: 130 }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Output VU"); color: settings_form.primaryText; Layout.preferredWidth: 130 }
                     ProgressBar { Layout.fillWidth: true; from: 0; to: 100; value: _audioControl.outputLevel }
-                    Label { text: _audioControl.outputLevel + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: _audioControl.outputLevel + "%"; color: settings_form.primaryText; Layout.preferredWidth: 48 }
                 }
         }
     }

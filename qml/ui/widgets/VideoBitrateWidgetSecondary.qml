@@ -10,8 +10,8 @@ import OpenHD 1.0
 
 VideoBitrateWidgetGeneric{
     m_is_for_primary_camera: false
-    // Also show it if air has a seconary cam
-    visible: (settings.show_bitrate && settings.dev_qopenhd_n_cameras>1) || (settings.show_bitrate && _ohdSystemAir.dirty_air_has_secondary_cam)
+    // Follow the confirmed secondary stream state, including explicit disable.
+    visible: settings.show_bitrate && settings.secondary_camera_available
 
     m_show_button_quick_switch: _qopenhd.is_linux() && !_qopenhd.is_platform_rpi()
 }

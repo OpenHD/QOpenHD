@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -205,7 +206,7 @@ Rectangle {
                         Layout.fillWidth: true
                         text: model.unique_id
                         font.bold: true
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         color: settings_form.primaryText
                         elide: Text.ElideRight
                     }
@@ -213,7 +214,7 @@ Rectangle {
                         Layout.fillWidth: true
                         visible: model.shortDescription !== "TODO" && model.shortDescription.length > 0
                         text: model.shortDescription
-                        font.pixelSize: 10
+                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                         color: settings_form.secondaryText
                         elide: Text.ElideRight
                     }
@@ -293,7 +294,7 @@ Rectangle {
                             height: 30
                             text: qsTr("Active links")
                             color: settings_form.primaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -324,7 +325,7 @@ Rectangle {
                                 text: modelData
                                 color: root.activeLinkNames.length > 0
                                        ? settings_form.primaryText : settings_form.secondaryText
-                                font.pixelSize: 9
+                                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                                 font.bold: true
                             }
                         }
@@ -379,7 +380,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         text: section
                         font.bold: true
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         color: settings_form.primaryText
                         elide: Text.ElideRight
                     }
@@ -411,7 +412,7 @@ Rectangle {
                         anchors.margins: 12
                         spacing: 5
 
-                        Text {
+                        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             text: qsTr("IP CAMERA SETUP")
                             font.bold: true
                             color: settings_form.primaryText
@@ -433,8 +434,8 @@ Rectangle {
                         }
                         RowLayout {
                             Layout.fillWidth: true
-                            Text { text: qsTr("Camera IP"); color: settings_form.primaryText }
-                            TextField {
+                            Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Camera IP"); color: settings_form.primaryText }
+                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: ipCameraAddressField
                                 Layout.fillWidth: true
                                 placeholderText: "192.168.1.12"
@@ -444,16 +445,16 @@ Rectangle {
                         }
                         RowLayout {
                             Layout.fillWidth: true
-                            Text { text: qsTr("RTSP port"); color: settings_form.primaryText }
-                            TextField {
+                            Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("RTSP port"); color: settings_form.primaryText }
+                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: ipCameraPortField
                                 Layout.preferredWidth: 100
                                 text: ipCameraPortFromPipeline(storedPipeline)
                                 inputMethodHints: Qt.ImhDigitsOnly
                                 maximumLength: 5
                             }
-                            Text { text: qsTr("Stream path"); color: settings_form.primaryText }
-                            TextField {
+                            Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Stream path"); color: settings_form.primaryText }
+                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: ipCameraPathField
                                 Layout.fillWidth: true
                                 text: ipCameraPathFromPipeline(storedPipeline)
@@ -461,13 +462,13 @@ Rectangle {
                                 maximumLength: 48
                             }
                         }
-                        Text {
+                        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             Layout.fillWidth: true
                             text: qsTr("Generated RTSP link: rtsp://%1:%2%3").arg(ipCameraAddressField.text).arg(ipCameraPortField.text).arg(ipCameraPathField.text)
                             elide: Text.ElideMiddle
                             color: settings_form.secondaryText
                         }
-                        Button {
+                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             Layout.fillWidth: true
                             text: qsTr("SAVE CAMERA CONNECTION")
                             enabled: !m_any_param_busy
@@ -475,43 +476,43 @@ Rectangle {
                         }
                         RowLayout {
                             Layout.fillWidth: true
-                            Text { text: qsTr("Link reservation"); color: settings_form.primaryText }
-                            SpinBox {
+                            Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Link reservation"); color: settings_form.primaryText }
+                            SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: ipCameraBitrateField
                                 from: 1
                                 to: 20
                                 value: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") ? _ohdSystemAirSettingsModel.get_cached_int("V_IP_CAM_MBITS") : 2
                                 editable: true
                             }
-                            Button {
+                            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 text: qsTr("Save Mbit/s")
                                 enabled: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") && !m_any_param_busy
                                 onClicked: _ohdSystemAirSettingsModel.try_set_param_int_async("V_IP_CAM_MBITS", ipCameraBitrateField.value, true)
                             }
-                            Button {
+                            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 text: qsTr("Open WebUI")
                                 enabled: ipCameraAddressField.text.length > 0
                                 onClicked: Qt.openUrlExternally("http://" + ipCameraAddressField.text)
                             }
                         }
-                        Text {
+                        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             Layout.fillWidth: true
                             text: qsTr("VIDEO_CODEC, RESOLUTION_FPS and BITRATE_MBITS below also configure a supported camera plugin.")
                             wrapMode: Text.WordWrap
                             color: settings_form.darkMode ? "#ffbf69" : "#9a4d00"
                         }
-                        CheckBox {
+                        CheckBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: expertPipelineCheck
                             text: qsTr("Expert: edit GStreamer pipeline")
                         }
-                        TextField {
+                        TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: expertPipelineField
                             Layout.fillWidth: true
                             visible: expertPipelineCheck.checked
                             text: storedPipeline
                             maximumLength: 127
                         }
-                        Text {
+                        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             Layout.alignment: Qt.AlignRight
                             text: qsTr("Settings are sent directly to %1 via MAVLink.").arg(m_name)
                             color: settings_form.secondaryText
@@ -525,7 +526,7 @@ Rectangle {
             width: scrollViewRectangle.width
             height: scrollViewRectangle.height
             visible: !_qopenhd.debugMenuPreview && !m_instanceMavlinkSettingsModel.has_params_fetched && m_instanceCheckIsAvlie.is_alive
-            Text{
+            Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 anchors.centerIn: parent
                 text: qsTr("Please fetch");
                 font.bold: true

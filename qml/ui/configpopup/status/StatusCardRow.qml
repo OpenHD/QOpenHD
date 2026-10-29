@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 
 Item {
@@ -34,7 +35,7 @@ Item {
         anchors.left: icon.right; anchors.leftMargin: 24
         anchors.verticalCenter: parent.verticalCenter
         text: row.m_left_text.replace(":", ""); color: "#dce6ef"
-        font.family: "Archivo"; font.pixelSize: 18
+        font.family: "Archivo"; font.pixelSize: MenuTypography.body
         width: row.width * 0.35
         elide: Text.ElideRight
     }
@@ -66,7 +67,7 @@ Item {
                 width: Math.min(implicitWidth, Math.max(0, valueColumn.width - (row.m_status_dot ? 32 : 0) - (row.m_value_icon !== "" ? 42 : 0)))
                 text: row.m_right_text
                 color: row.m_has_error ? row.m_right_text_color_error : row.m_right_text_color
-                font.family: "Archivo"; font.pixelSize: 18
+                font.family: "Archivo"; font.pixelSize: MenuTypography.body
                 horizontalAlignment: Text.AlignRight; elide: Text.ElideRight
             }
         }

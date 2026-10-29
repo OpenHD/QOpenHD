@@ -5,6 +5,9 @@ import "../../qml/ui/configpopup/status" as Status
 
 Item {
     id: scene
+    FontLoader { source: "../../qml/resources/Font Awesome 5 Free-Solid-900.otf" }
+    FontLoader { source: "../../qml/osdfonts/Archivo-Regular.ttf" }
+    FontLoader { source: "../../qml/osdfonts/Archivo-Bold.ttf" }
     width: 960; height: 720
     FontLoader { id: testFont; source: Qt.platform.os === "windows" ? "file:///C:/Windows/Fonts/segoeui.ttf" : "" }
     Component.onCompleted: if (testFont.status === FontLoader.Ready) Qt.application.font = Qt.font({family: testFont.name, pixelSize: 13})
@@ -119,6 +122,8 @@ Item {
     QtObject {
         id: mockAction
         property int requestedCapacity: 0
+        property int rebootRequests: 0
+        function send_command_reboot(flightController) { if (flightController) rebootRequests++ }
         property bool remote_id_busy: false
         property string requestedRemoteId: ""
         property bool requestedOperatorId: false
@@ -131,6 +136,43 @@ Item {
     TestCase {
         name: "CraftDetails"
         when: windowShown
+        function test_small_confirmation_style_and_action() {
+            mock.telemetry_active = true; mock.is_alive = true; mock.armed = false
+            var dialog = findChild(panel, "craftRebootDialog")
+            verify(dialog !== null)
+            var before = mockAction.rebootRequests
+            dialog.open()
+            tryCompare(dialog, "opened", true)
+            compare(String(dialog.background.color), "#041d2c")
+            compare(String(dialog.background.border.color), "#0089c4")
+            verify(dialog.width <= 420)
+            verify(dialog.height < 300)
+            verify(dialog.x >= 0 && dialog.y >= 0)
+            verify(dialog.x + dialog.width <= scene.width)
+            verify(dialog.y + dialog.height <= scene.height)
+            var confirm = findChild(panel, "craftRebootConfirm")
+            verify(confirm.enabled); verify(confirm.destructive)
+            wait(100)
+            var captured = false
+            verify(scene.parent.grabToImage(function(shot) {
+                verify(shot.saveToFile(Qt.resolvedUrl("../../build/craft-reboot-confirmation.png").toString().replace("file:///", "")))
+                captured = true
+            }))
+            tryVerify(function() { return captured })
+            dialog.reject()
+            tryCompare(dialog, "visible", false)
+            compare(mockAction.rebootRequests, before)
+            dialog.open(); tryCompare(dialog, "opened", true)
+            mock.armed = true
+            verify(!confirm.enabled)
+            dialog.accept()
+            compare(mockAction.rebootRequests, before)
+            mock.armed = false
+            dialog.open(); tryCompare(dialog, "opened", true)
+            mouseClick(confirm)
+            tryCompare(mockAction, "rebootRequests", before + 1)
+            dialog.close()
+        }
         function test_diagnostic_subscription_lifecycle() {
             compare(mock.diagnosticsViewers, 1)
             panel.visible = false
@@ -147,22 +189,22 @@ Item {
             tryCompare(mock, "diagnosticsViewers", 1)
         }
         function test_remote_id_card() {
-            mock.telemetry_active=true;mock.armed=false;panel.selectedTab=0
+            mock.telemetry_active=true;mock.armed=false
             mock.remote_id_status={aircraftId: "FC-BOARD-ID", idType: 1, locationReceivedMs: 9900}
             wait(50)
             var card=findChild(panel,"craftRemoteIdCard")
             verify(card!==null)
             verify(panel.remoteIdStatus().indexOf("ready") < 0)
-            panel.openRemoteId();wait(50)
+            panel.openRemoteId();wait(200)
             var dialog=findChild(panel,"craftRemoteIdDialog")
-            verify(dialog.opened)
+            tryCompare(dialog, "opened", true)
             verify(!findChild(panel,"craftRemoteAircraftId").visible)
             var readonlyImage=grabImage(scene)
             if (readonlyImage.width > 0) readonlyImage.save("QOpenHD/build/remote-id-readonly.png")
             dialog.close()
             mock.remote_id_status={aircraftId: "MODULE-ID", armStatus: 0, armStatusReceivedMs: 9900,
                 operatorParameter: {id: "OPERATOR_ID", value: "OLD-ID", sys: 1, comp: 236, type: 11}}
-            panel.openRemoteId();wait(50)
+            panel.openRemoteId();wait(200)
             var input=findChild(panel,"craftRemoteOperatorId")
             verify(input.visible);input.text="NEW-ID"
             var editorImage=grabImage(scene)
@@ -180,17 +222,19 @@ Item {
             var savedDiagnostics = mock.craft_diagnostics
             mock.telemetry_active = true
             mock.armed = false
-            panel.selectedTab = 0
             mock.craft_diagnostics = {nowMs: 10000, observed: {packVoltage: {value: 12, receivedMs: 9990}}, messages: [], sensors: [], events: []}
             mock.battery_capacity_parameter = {id: "BATT_CAPACITY", value: 3300, type: 6}
             wait(50)
             var tile = findChild(panel, "craftBatteryCapacityCard")
             verify(tile !== null)
-            compare(tile.height, findChild(panel, "craftTelemetryTile_BATTERY").height)
+            verify(tile.height > 0)
             compare(panel.telemetryCards()[panel.telemetryCards().length - 1].key, "capacity")
             var dialog = findChild(panel, "craftBatteryCapacityDialog")
             verify(!dialog.visible)
             screenshot("capacity-card")
+            var capacityScroll=findChild(panel,"craftDetailsScroll")
+            capacityScroll.contentItem.contentY=Math.max(0,tile.mapToItem(capacityScroll.contentItem,0,0).y-capacityScroll.height+tile.height+20)
+            wait(50)
             mouseClick(tile)
             tryCompare(dialog, "visible", true)
             verify(dialog.width <= 340)
@@ -216,7 +260,7 @@ Item {
             panel.openCapacityEditor()
             verify(!dialog.visible)
             mock.battery_capacity_parameter = {}
-            verify(findChild(panel, "craftBatteryCapacityCard") === null)
+            verify(!findChild(panel, "craftBatteryCapacityCard").visible)
             mock.telemetry_active = true
             mock.craft_diagnostics = savedDiagnostics
         }
@@ -348,9 +392,10 @@ Item {
             tryVerify(function() { return done })
         }
         function test_details() {
+            findChild(panel,"craftDetailsScroll").contentItem.contentY=0
             wait(200)
             compare(panel.firmwareLabel, "INAV")
-            compare(findChild(panel, "craftFirmwareTitle").text, "INAV \u00b7 Quadrotor")
+            compare(findChild(panel, "craftFirmwareTitle").text, "INAV - Quadrotor")
             verify(findChild(panel, "inavDshotBeeperSwitch") === null, "USB/MSP controls must not exist")
             verify(!panel.has("batteryTemperature"), "Unreported temperature must not be advertised")
             verify(!panel.has("throttle"), "Invalid throttle must not be advertised")
@@ -364,26 +409,24 @@ Item {
                 themes.push(String(panel.accent))
                 screenshot("theme-" + type)
             }
-            compare(themes.filter(function(value, index, array) { return array.indexOf(value) === index }).length, 4)
+            compare(themes.filter(function(value, index, array) { return array.indexOf(value) === index }).length, 1)
             mock.firmware_identity = original
-            mouseClick(findChild(panel, "craftHealthTab"))
-            compare(panel.selectedTab, 1)
+            verify(findChild(panel, "craftHealthTab") === null)
+            verify(findChild(panel, "craftOverviewTab") === null)
             wait(100)
             screenshot("health")
-            mouseClick(findChild(panel, "craftMessagesTab"))
-            compare(panel.selectedTab, 2)
-            var packet = findChild(panel, "craftMessage0")
-            verify(packet !== null)
-            panel.expandedMessages = [0]
-            verify(packet.expanded)
-            var snapshot = JSON.parse(JSON.stringify(mock.craft_diagnostics))
-            snapshot.messages[0].count = 32
-            mock.craft_diagnostics = snapshot
+            verify(findChild(panel, "craftMessagesTab") === null)
+            verify(findChild(panel, "craftHealthEvents").visible)
+            var eventCard=findChild(panel,"craftEvent_0")
+            verify(eventCard !== null)
+            var scroller=findChild(panel,"craftDetailsScroll")
+            verify(scroller.contentItem.contentHeight > 0)
+            scroller.contentItem.contentY=Math.max(0,scroller.contentItem.contentHeight-scroller.height)
             wait(50)
-            compare(findChild(panel, "craftMessage0"), packet, "Updating telemetry must preserve the delegate and focus")
-            verify(packet.expanded)
-            compare(packet.row.count, 32)
-            screenshot("messages")
+            verify(eventCard.mapToItem(panel,0,eventCard.height).y > 0)
+
+            verify(findChild(panel, "craftMessage0") === null)
+            var snapshot = JSON.parse(JSON.stringify(mock.craft_diagnostics))
             mock.is_alive = false
             compare(panel.online, true, "Live telemetry must stay usable without a heartbeat")
             verify(findChild(panel, "craftBack").enabled)
@@ -394,7 +437,6 @@ Item {
             panel.anchors.fill = undefined
             panel.width = 380
             panel.height = 680
-            mouseClick(findChild(panel, "craftOverviewTab"))
             wait(100)
             screenshot("offline")
             mouseClick(findChild(panel, "craftBack"))

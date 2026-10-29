@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -215,7 +216,7 @@ FocusScope {
                         Text {
                             text: qsTr("RTSP source")
                             color: settings_form.primaryText
-                            font.pixelSize: 14
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                         }
                     }
@@ -224,7 +225,7 @@ FocusScope {
                         Layout.fillWidth: true
                         text: qsTr("Connect an Ethernet camera using a preset, or enter its RTSP details manually.")
                         color: settings_form.secondaryText
-                        font.pixelSize: 10
+                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                         wrapMode: Text.WordWrap
                     }
 
@@ -237,7 +238,7 @@ FocusScope {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-                            Text { text: qsTr("Camera preset"); color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true }
+                            Text { text: qsTr("Camera preset"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
                             CompactLinkComboBox {
                                 id: profileBox
                                 Layout.fillWidth: true
@@ -261,8 +262,8 @@ FocusScope {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-                            Text { text: qsTr("Camera IPv4 address"); color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true }
-                            TextField {
+                            Text { text: qsTr("Camera IPv4 address"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: addressField
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 40
@@ -285,8 +286,8 @@ FocusScope {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-                            Text { text: qsTr("RTSP port"); color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true }
-                            TextField {
+                            Text { text: qsTr("RTSP port"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: portField
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 40
@@ -309,8 +310,8 @@ FocusScope {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
-                            Text { text: qsTr("Stream path"); color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true }
-                            TextField {
+                            Text { text: qsTr("Stream path"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: pathField
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 40
@@ -342,7 +343,7 @@ FocusScope {
                             text: "rtsp://" + (addressField.text.length ? addressField.text : qsTr("camera-ip")) +
                                   ":" + (portField.text.length ? portField.text : "554") + root.normalizedPath()
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper
                             font.family: "monospace"
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideMiddle
@@ -353,7 +354,7 @@ FocusScope {
                         Layout.fillWidth: true
                         spacing: 9
                         Item { Layout.fillWidth: true }
-                        AdvancedActionButton {
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: webButton
                             text: qsTr("Open camera WebUI")
                             iconText: "\uf35d"
@@ -362,7 +363,7 @@ FocusScope {
                             Keys.onPressed: root.handleNavigation(event, webButton)
                             onClicked: Qt.openUrlExternally("http://" + addressField.text.trim())
                         }
-                        AdvancedActionButton {
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: applyButton
                             text: qsTr("Save connection")
                             iconText: "\uf0c7"
@@ -374,7 +375,7 @@ FocusScope {
                         }
                     }
 
-                    CheckBox {
+                    CheckBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: expertPipeline
                         text: qsTr("Expert: edit the GStreamer source pipeline")
                         Keys.priority: Keys.BeforeItem
@@ -383,7 +384,7 @@ FocusScope {
                                               pipelineField.text = root.generatedPipeline()
                     }
 
-                    TextField {
+                    TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: pipelineField
                         Layout.fillWidth: true
                         Layout.preferredHeight: 42
@@ -424,17 +425,17 @@ FocusScope {
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 3
-                        Text { text: qsTr("Video-link reservation"); color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                        Text { text: qsTr("Video-link reservation"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                         Text {
                             Layout.fillWidth: true
                             text: qsTr("Reserve enough link capacity for the bitrate configured in the camera's WebUI.")
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             wrapMode: Text.WordWrap
                         }
                     }
 
-                    SpinBox {
+                    SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: reservationBox
                         Layout.preferredWidth: 118
                         Layout.preferredHeight: 40
@@ -447,7 +448,7 @@ FocusScope {
                         Keys.onPressed: root.handleNavigation(event, reservationBox)
                     }
 
-                    AdvancedActionButton {
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: reservationButton
                         text: qsTr("Apply")
                         iconText: "\uf00c"

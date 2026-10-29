@@ -71,7 +71,7 @@ private:
     // out of a running "constant_decode_xx" loop
     std::atomic<bool> request_restart=false;
     // Completely stop (Exit QOpenHD)
-    bool m_should_terminate=false;
+    std::atomic<bool> m_should_terminate{false};
     int n_no_output_frame_after_x_seconds=0;
     bool use_frame_timestamps_for_latency=false;
     AvgCalculator avg_decode_time{"Decode"};

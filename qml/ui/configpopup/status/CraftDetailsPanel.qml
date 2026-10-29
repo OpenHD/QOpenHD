@@ -1,10 +1,12 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import ".."
 
 Rectangle {
     id: root
-    color: settings_form.pageBackground
+    color: "#041d2c"
     radius: 14
     signal closeRequested()
     property var fc: _fcMavlinkSystem
@@ -39,17 +41,13 @@ Rectangle {
     readonly property bool hasHealth: (diagnostics.sensors || []).length > 0 || (diagnostics.events || []).length > 0
     readonly property var diagnostics: fc.craft_diagnostics || ({})
     readonly property bool online: fc.telemetry_active
-    readonly property color accent: identity.type === 3 ? "#23b9e6" : identity.type === 4 ? "#ffb400"
-        : identity.type === 2 ? "#52d6a0" : identity.type === 1 ? "#54bfff" : "#b39aff"
+    readonly property color accent: "#38a5ff"
     onCapacityParameterChanged: syncRows(telemetryRows, telemetryCards())
     onHasCapacityChanged: syncRows(telemetryRows, telemetryCards())
-    property int selectedTab: 0
-    property var expandedMessages: []
     function gainFocus() { backButton.forceActiveFocus() }
 
     ListModel { id: sensorRows; dynamicRoles: true }
     ListModel { id: eventRows; dynamicRoles: true }
-    ListModel { id: messageRows; dynamicRoles: true }
     ListModel { id: telemetryRows; dynamicRoles: true }
     function syncRows(target, rows) {
         for (var i = 0; i < rows.length; ++i) {
@@ -62,8 +60,6 @@ Rectangle {
         syncRows(telemetryRows, telemetryCards())
         syncRows(sensorRows, diagnostics.sensors || [])
         syncRows(eventRows, diagnostics.events || [])
-        syncRows(messageRows, diagnostics.messages || [])
-        if (selectedTab === 1 && !hasHealth) selectedTab = 0
     }
     Component.onCompleted: {
         subscriptionReady = true
@@ -71,7 +67,6 @@ Rectangle {
         syncRows(telemetryRows, telemetryCards())
         syncRows(sensorRows, diagnostics.sensors || [])
         syncRows(eventRows, diagnostics.events || [])
-        syncRows(messageRows, diagnostics.messages || [])
     }
 
     function has(key) { return observed[key] !== undefined }
@@ -146,7 +141,7 @@ Rectangle {
         capacityInput.value = Math.max(100, capacityParameter.value || 100)
         capacityDialog.open()
     }
-    Dialog {
+    AdvancedDialog {
         id: capacityDialog; objectName: "craftBatteryCapacityDialog"
         parent: Overlay.overlay
         x: Math.round((parent.width - width) / 2)
@@ -158,24 +153,26 @@ Rectangle {
         ColumnLayout {
             width: parent.width; spacing: 10
             RowLayout {
-                SpinBox {
+                SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: capacityInput; objectName: "craftBatteryCapacity"
                     Layout.fillWidth: true
                     from: 100; to: 100000; stepSize: 100; editable: true
                     enabled: root.online && !root.fc.armed
                     Accessible.name: qsTr("Battery capacity in mAh")
                 }
-                Label { text: "mAh" }
+                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: "mAh" }
             }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 visible: root.capacityParameter.id === "BAT1_CAPACITY"
                 Layout.fillWidth: true; wrapMode: Text.Wrap
                 text: qsTr("Restart PX4 for this change to take effect.")
             }
         }
         footer: DialogButtonBox {
-            Button { text: qsTr("Cancel"); onClicked: capacityDialog.reject() }
-            Button {
+            padding: 16; spacing: 10
+            background: Item {}
+            AdvancedDialogButton { text: qsTr("Cancel"); onClicked: capacityDialog.reject() }
+            AdvancedDialogButton {
                 objectName: "craftBatteryCapacityApply"
                 text: qsTr("Save")
                 enabled: root.online && !root.fc.armed && capacityInput.value !== root.capacityParameter.value
@@ -196,86 +193,78 @@ Rectangle {
         var status = remoteId.armStatus === 0 ? qsTr("Module reports ready") : qsTr("Module reports a fault")
         return old ? qsTr("Last report: %1").arg(status) : status
     }
-    Dialog {
+    AdvancedDialog {
         id: remoteIdDialog; objectName: "craftRemoteIdDialog"
         parent: Overlay.overlay
         x: Math.round((parent.width - width) / 2); y: Math.round((parent.height - height) / 2)
         width: Math.min(420, parent.width - 24)
         title: qsTr("Remote ID"); modal: true; focus: true
-        palette.window: settings_form.panelBackground
-        palette.windowText: settings_form.primaryText
-        palette.text: settings_form.primaryText
-        palette.base: settings_form.pageBackground
-        palette.button: settings_form.panelBackground
-        palette.buttonText: settings_form.primaryText
-        palette.highlight: root.accent
-        background: Rectangle { color: settings_form.panelBackground; radius: 10; border.color: settings_form.lineColor }
         standardButtons: Dialog.Close
         ColumnLayout {
             width: parent.width; spacing: 10
-            Label { Layout.fillWidth: true; wrapMode: Text.Wrap; text: root.remoteIdStatus() }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.fillWidth: true; wrapMode: Text.Wrap; text: root.remoteIdStatus() }
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 Layout.fillWidth: true; wrapMode: Text.Wrap
                 text: qsTr("Aircraft ID: %1").arg(root.remoteId.aircraftId || qsTr("Not reported"))
             }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 visible: root.remoteId.idType !== undefined
                 Layout.fillWidth: true; wrapMode: Text.Wrap
                 text: qsTr("ID type: %1").arg(root.remoteId.idType === 1 ? qsTr("Serial number")
                     : root.remoteId.idType === 2 ? qsTr("Registration ID") : root.remoteId.idType === 3
                     ? qsTr("UTM UUID") : root.remoteId.idType === 4 ? qsTr("Session ID") : qsTr("Unspecified"))
             }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 visible: root.remoteId.operatorId !== undefined
                 Layout.fillWidth: true; wrapMode: Text.Wrap
                 text: qsTr("Reported operator ID: %1").arg(root.remoteId.operatorId || qsTr("Empty"))
             }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 visible: root.remoteId.error !== undefined && root.remoteId.error !== ""
                 Layout.fillWidth: true; wrapMode: Text.Wrap; text: root.remoteId.error || ""
             }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 Layout.fillWidth: true; wrapMode: Text.Wrap
                 text: qsTr("MAVLink reports do not confirm Bluetooth/Wi-Fi broadcasting.")
                 color: settings_form.secondaryText
             }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 visible: !root.remoteId.aircraftParameter && !root.remoteId.operatorParameter
                 Layout.fillWidth: true; wrapMode: Text.Wrap
                 text: qsTr("This device does not expose ID editing over MAVLink.")
                 color: settings_form.secondaryText
             }
-            Label { visible: !!root.remoteId.aircraftParameter; text: qsTr("Aircraft ID") }
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: !!root.remoteId.aircraftParameter; text: qsTr("Aircraft ID") }
             RowLayout {
                 visible: !!root.remoteId.aircraftParameter; Layout.fillWidth: true
-                TextField {
+                TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: aircraftIdInput; objectName: "craftRemoteAircraftId"
                     Layout.fillWidth: true; maximumLength: 20; selectByMouse: true
                     enabled: root.online && !root.fc.armed && !root.fcAction.remote_id_busy
                 }
-                Button {
+                AdvancedDialogButton {
                     objectName: "craftRemoteAircraftIdSave"; text: qsTr("Save")
                     enabled: aircraftIdInput.enabled && aircraftIdInput.text.length > 0
                         && aircraftIdInput.text !== (root.remoteId.aircraftParameter || {}).value
                     onClicked: root.fcAction.set_remote_id_async(false, aircraftIdInput.text)
                 }
             }
-            Label { visible: !!root.remoteId.operatorParameter; text: qsTr("Operator ID") }
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: !!root.remoteId.operatorParameter; text: qsTr("Operator ID") }
             RowLayout {
                 visible: !!root.remoteId.operatorParameter; Layout.fillWidth: true
-                TextField {
+                TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: operatorIdInput; objectName: "craftRemoteOperatorId"
                     Layout.fillWidth: true; maximumLength: 20; selectByMouse: true
                     enabled: root.online && !root.fc.armed && !root.fcAction.remote_id_busy
                 }
-                Button {
+                AdvancedDialogButton {
                     objectName: "craftRemoteOperatorIdSave"; text: qsTr("Save")
                     enabled: operatorIdInput.enabled && operatorIdInput.text.length > 0
                         && operatorIdInput.text !== (root.remoteId.operatorParameter || {}).value
                     onClicked: root.fcAction.set_remote_id_async(true, operatorIdInput.text)
                 }
             }
-            Label {
+            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 visible: !!root.remoteId.aircraftParameter || !!root.remoteId.operatorParameter
                 Layout.fillWidth: true; wrapMode: Text.Wrap
                 text: root.fcAction.remote_id_busy ? qsTr("Waiting for device confirmation?")
@@ -285,208 +274,157 @@ Rectangle {
         }
     }
 
+
+    function display(key, digits, suffix) {
+        return has(key) && observed[key].valid !== false ? reading(key,digits,suffix) : qsTr("Not reported")
+    }
+    readonly property bool heartbeatFresh: online && diagnostics.heartbeatAge >= 0 && diagnostics.heartbeatAge < 5
+    readonly property bool sensorsFresh: online && diagnostics.statusAge >= 0 && diagnostics.statusAge < 5
+    readonly property bool healthWarning: sensorsFresh && (diagnostics.sensors || []).some(function(sensor) {return sensor.enabled && !sensor.healthy})
+    readonly property string healthText: !sensorsFresh || !(diagnostics.sensors || []).length ? qsTr("Not reported") : healthWarning ? qsTr("Warning") : qsTr("Healthy")
+    readonly property color healthColor: healthText === qsTr("Not reported") ? "#94a9b9" : healthWarning ? "#ff6470" : "#25d780"
+
     ColumnLayout {
-        anchors.fill: parent; anchors.margins: root.width < 500 ? 12 : 20
-        spacing: 12
+        anchors.fill: parent; anchors.margins: root.width < 500 ? 16 : 24; spacing: 12
         RowLayout {
-            Layout.fillWidth: true
+            Layout.fillWidth: true; spacing: 18
+            Text { text: "\uf2db"; font.family: "Font Awesome 5 Free"; font.pixelSize: 40; color: "#d5e8f5" }
             ColumnLayout {
                 Layout.fillWidth: true; spacing: 3
-                Text { text: qsTr("CRAFT / FLIGHT CONTROLLER"); color: root.accent; font.pixelSize: 11; font.bold: true }
-                Text {
-                    Layout.fillWidth: true
-                    objectName: "craftFirmwareTitle"
-                    text: root.firmwareLabel + (root.hasMessage(0) ? " · " + root.fc.mav_type_str : "")
-                    color: settings_form.primaryText; font.pixelSize: root.width < 500 ? 18 : 24; font.bold: true
-                    elide: Text.ElideRight
-                }
-                Text {
-                    Layout.fillWidth: true; elide: Text.ElideRight
-                    text: root.online ? (root.fc.is_alive
-                        ? qsTr("LIVE · System %1 · Last heartbeat %2 ago").arg(root.fc.for_osd_sys_id).arg(root.age(root.diagnostics.heartbeatAge))
-                        : qsTr("TELEMETRY LIVE · System %1 · Last heartbeat %2 ago").arg(root.fc.for_osd_sys_id).arg(root.age(root.diagnostics.heartbeatAge)))
-                                      : qsTr("OFFLINE · Last received values are retained")
-                    color: root.online ? settings_form.goodColor : "#f6b85b"; font.pixelSize: 11
-                }
+                Text { text: qsTr("Flight Controller Details"); color: "#edf4fa"; font.family: "Archivo"; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
+                Text { objectName: "craftFirmwareTitle"; Layout.fillWidth: true; text: root.firmwareLabel + (root.hasMessage(0) ? " - " + root.fc.mav_type_str : ""); color: "#d5e8f5"; font.family: "Archivo"; font.pixelSize: MenuTypography.body; elide: Text.ElideRight }
+                Text { text: root.heartbeatFresh ? qsTr("Connected - System %1 - Last heartbeat %2 ago").arg(root.fc.for_osd_sys_id).arg(root.age(root.diagnostics.heartbeatAge)) : root.online ? qsTr("Telemetry received - waiting for heartbeat") : qsTr("Disconnected - last received values retained"); color: root.heartbeatFresh ? "#00d684" : "#f0bb67"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
             }
-            Button { id: backButton; objectName: "craftBack"; text: qsTr("Back"); onClicked: root.closeRequested(); Accessible.name: qsTr("Back to system status") }
+            ToolButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                id: backButton; objectName: "craftBack"; Layout.alignment: Qt.AlignTop; implicitWidth: 44; implicitHeight: 44
+                text: "\uf00d"; onClicked: root.closeRequested(); Accessible.name: qsTr("Close flight controller details")
+                background: Rectangle { radius: 8; color: parent.hovered || parent.activeFocus ? "#153c53" : "transparent" }
+                contentItem: Text { text: parent.text; color: "#edf4fa"; font.family: "Font Awesome 5 Free"; font.pixelSize: 26; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+            }
         }
-
-        TabBar {
-            id: craftTabs
-            Layout.fillWidth: true
-            currentIndex: root.selectedTab
-            onCurrentIndexChanged: root.selectedTab = currentIndex
-            TabButton { width: craftTabs.availableWidth / (root.hasHealth ? 3 : 2); objectName: "craftOverviewTab"; text: qsTr("Overview") }
-            TabButton { visible: root.hasHealth; width: root.hasHealth ? craftTabs.availableWidth / 3 : 0; objectName: "craftHealthTab"; text: qsTr("Health / events") }
-            TabButton { width: craftTabs.availableWidth / (root.hasHealth ? 3 : 2); objectName: "craftMessagesTab"; text: qsTr("MAVLink") }
-        }
-
         ScrollView {
-            id: scroll
-            Layout.fillWidth: true; Layout.fillHeight: true
-            clip: true
-            contentWidth: availableWidth
+            id: scroll; objectName: "craftDetailsScroll"
+            Layout.fillWidth: true; Layout.fillHeight: true; clip: true; contentWidth: availableWidth
             ColumnLayout {
-            width: scroll.availableWidth
-            ColumnLayout {
-                Layout.fillWidth: true; spacing: 12
-                visible: root.selectedTab === 0
-
-                Rectangle {
-                    visible: root.has("roll") && root.has("pitch")
-                    Layout.fillWidth: true; implicitHeight: 162
-                    color: settings_form.panelBackground; radius: 12; border.color: settings_form.lineColor
+                width: scroll.availableWidth; spacing: 14
+                FcDetailsSection {
+                    title: qsTr("Flight Status"); icon: "\uf1d8"; Layout.fillWidth: true
                     RowLayout {
-                        anchors.fill: parent; anchors.margins: 14; spacing: 18
+                        Layout.fillWidth: true; spacing: 20
                         Rectangle {
-                            Layout.preferredWidth: Math.min(160, root.width * 0.29)
-                            Layout.fillHeight: true
-                            color: "#121c2d"; radius: 8; clip: true
+                            Layout.preferredWidth: Math.min(285,root.width * .28); Layout.minimumWidth: 0; Layout.preferredHeight: 144
+                            color: "#102839"; radius: 7; clip: true
+                            readonly property bool validAttitude: root.online && root.has("roll") && root.has("pitch")
                             Item {
-                                anchors.centerIn: parent; width: parent.width * 3; height: parent.height * 3
-                                rotation: -root.fc.roll
-                                Rectangle { width: parent.width; height: parent.height / 2; color: "#254e78"; y: root.fc.pitch * 1.4 }
-                                Rectangle { width: parent.width; height: parent.height / 2; y: parent.height / 2 + root.fc.pitch * 1.4; color: "#614b3f" }
-                                Rectangle { width: parent.width; height: 2; y: parent.height / 2 + root.fc.pitch * 1.4; color: "#b9d7f0" }
+                                anchors.centerIn: parent; width: parent.width*3; height: parent.height*3
+                                visible: parent.validAttitude; rotation: -root.fc.roll
+                                Rectangle { anchors.fill: parent; color: "#185e91" }
+                                Rectangle { width: parent.width; height: parent.height; y: parent.height/2 + root.fc.pitch*1.4; color: "#584b3a" }
+                                Rectangle { width: parent.width; height: 2; y: parent.height/2 + root.fc.pitch*1.4; color: "#d2e7ed" }
                             }
-                            Text { anchors.centerIn: parent; text: "— + —"; color: "#ffe399"; font.pixelSize: 24; font.bold: true }
-                            Text { anchors.bottom: parent.bottom; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottomMargin: 8; text: qsTr("ATTITUDE"); font.pixelSize: 9; color: "white" }
+                            Repeater { model: 5; Rectangle { x: parent.width/2-width/2; y: parent.height/2+(index-2)*20; width: index===2?110:20; height: 1; color: index===2?"#ffe399":"#9fbed3"; visible: parent.validAttitude } }
+                            Text { anchors.centerIn: parent; text: parent.validAttitude ? "- + -" : qsTr("Not reported"); color: "#ffe399"; font.family: "Archivo"; font.pixelSize: MenuTypography.metric }
+                            Text { anchors.bottom: parent.bottom; anchors.bottomMargin: 7; anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("ATTITUDE"); color: "white"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
                         }
                         ColumnLayout {
-                            Layout.fillWidth: true; spacing: 7
-                            Text { text: root.fc.armed ? qsTr("ARMED") : qsTr("DISARMED"); color: root.fc.armed ? "#ff7d85" : root.accent; font.pixelSize: 20; font.bold: true }
-                            Text { text: root.fc.flight_mode; color: settings_form.primaryText; font.pixelSize: 14 }
-                            Text { text: qsTr("Roll %1   Pitch %2").arg(root.number(root.fc.roll, 1, "°")).arg(root.number(root.fc.pitch, 1, "°")); color: settings_form.secondaryText; font.pixelSize: 12 }
-                            Text { text: qsTr("Heading %1").arg(root.number(root.fc.hdg, 0, "°")); color: settings_form.secondaryText; font.pixelSize: 12 }
+                            Layout.preferredWidth: Math.min(230,root.width * .23); Layout.maximumWidth: Math.min(230,root.width * .23); Layout.minimumWidth: 0; spacing: 6
+                            Row { spacing: 12
+                                Text { text: "\uf3ed"; color: "#12a8f3"; font.family: "Font Awesome 5 Free"; font.pixelSize: 32 }
+                                Column { spacing: 3
+                                    Text { text: root.heartbeatFresh ? (root.fc.armed ? qsTr("ARMED") : qsTr("DISARMED")) : qsTr("Not reported"); color: root.fc.armed ? "#ff6470" : "#12a8f3"; font.bold: true; font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle }
+                                    Text { text: root.heartbeatFresh ? root.fc.flight_mode : qsTr("Not reported"); color: "#a9c2d3"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                                }
+                            }
+                            FcDetailsRow { label: qsTr("Roll"); value: root.display("roll",1," deg"); implicitHeight: 29 }
+                            FcDetailsRow { label: qsTr("Pitch"); value: root.display("pitch",1," deg"); implicitHeight: 29 }
+                            FcDetailsRow { label: qsTr("Heading"); value: root.display("heading",0," deg"); implicitHeight: 29 }
+                        }
+                        Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 150; color: "#10384b" }
+                        ColumnLayout { Layout.fillWidth: true; Layout.minimumWidth: 0; spacing: 4
+                            FcDetailsRow { icon: "\uf1d8"; label: qsTr("Flight mode"); value: root.heartbeatFresh ? root.fc.flight_mode : qsTr("Not reported") }
+                            FcDetailsRow { icon: "\uf0e8"; label: qsTr("Type"); value: root.hasMessage(0) ? root.fc.mav_type_str : qsTr("Not reported") }
+                            FcDetailsRow { icon: "\uf2db"; label: qsTr("Firmware"); value: root.firmwareLabel }
                         }
                     }
                 }
-
                 GridLayout {
-                    id: telemetryGrid
-                    Layout.fillWidth: true; columns: root.width >= 600 ? 3 : 2; columnSpacing: 10; rowSpacing: 10
-                    Repeater {
-                        model: telemetryRows
-                        delegate: Rectangle {
-                            readonly property bool capacityCard: entry.key === "capacity"
-                            readonly property bool remoteIdCard: entry.key === "remoteId"
-                            objectName: remoteIdCard ? "craftRemoteIdCard" : capacityCard ? "craftBatteryCapacityCard" : "craftTelemetryTile_" + entry.label
-                            Layout.fillWidth: true; implicitHeight: 100
-                            activeFocusOnTab: capacityMouse.enabled
-                            Accessible.role: (capacityCard || remoteIdCard) ? Accessible.Button : Accessible.StaticText
-                            Accessible.name: entry.label + ": " + entry.value
-                            Keys.onReturnPressed: if (remoteIdCard) root.openRemoteId(); else if (capacityCard) root.openCapacityEditor()
-                            Keys.onSpacePressed: if (remoteIdCard) root.openRemoteId(); else if (capacityCard) root.openCapacityEditor()
-                            color: settings_form.panelBackground; radius: 10; border.color: settings_form.lineColor
+                    Layout.fillWidth: true; columns: root.width >= 650 ? 2 : 1; columnSpacing: 14; rowSpacing: 14
+                    FcDetailsSection {
+                        title: qsTr("Power"); icon: "\uf243"; Layout.fillWidth: true; Layout.alignment: Qt.AlignTop; Layout.fillHeight: true
+                        FcDetailsRow {
+                            objectName: "craftTelemetryTile_BATTERY"; icon: "\uf2c2"; label: qsTr("Battery")
+                            value: root.display(root.has("packVoltage")?"packVoltage":"batteryPackVoltage",2," V") + (root.has("batteryPercent") ? " ("+root.reading("batteryPercent",0," %")+")" : "")
+                            percent: root.has("batteryPercent") && root.observed.batteryPercent.valid !== false ? Number(root.observed.batteryPercent.value) : -1
+                        }
+                        FcDetailsRow { icon: "\uf5df"; label: qsTr("Average cell"); value: root.display("cellAverage",2," V") }
+                        FcDetailsRow { icon: "\uf0e7"; label: qsTr("Current"); value: root.display("current",2," A") }
+                        FcDetailsRow { icon: "\uf2db"; label: qsTr("Consumed"); value: root.display("consumedMah",0," mAh") }
+                    }
+                    FcDetailsSection {
+                        title: qsTr("Navigation"); icon: "\uf3c5"; Layout.fillWidth: true; Layout.alignment: Qt.AlignTop; Layout.fillHeight: true
+                        FcDetailsRow { icon: "\uf3c5"; label: qsTr("GPS"); value: root.has("gpsFix") ? root.fc.gps_status_fix_type_str : qsTr("Not reported"); detail: root.has("satellites") ? root.reading("satellites",0,qsTr(" satellites")) : "" }
+                        FcDetailsRow { icon: "\uf21a"; label: qsTr("Relative altitude"); value: root.display("relativeAltitude",1," m") }
+                        FcDetailsRow { icon: "\uf062"; label: qsTr("Climb rate"); value: root.display("climb",1," m/s") }
+                        FcDetailsRow { icon: "\uf3fd"; label: qsTr("Ground speed"); value: root.display("groundSpeed",1," m/s") }
+                    }
+                }
+                FcDetailsSection {
+                    title: qsTr("Controller Health"); icon: "\uf2db"; Layout.fillWidth: true
+                    GridLayout {
+                        Layout.fillWidth: true; columns: root.width >= 650 ? 5 : 2; columnSpacing: 14
+                        Repeater {
+                            model: [{label: qsTr("FC load"),icon:"\uf2db",value:root.display("load",1," %")},
+                                    {label:qsTr("RC signal"),icon:"\uf012",value:root.display("rcRssi",0," %")},
+                                    {label:qsTr("Sensor temperature"),icon:"\uf2c9",value:root.display("sensorTemperature",1," C")},
+                                    {label:qsTr("System health"),icon:"\uf071",value:root.healthText}]
                             ColumnLayout {
-                                anchors.fill: parent; anchors.margins: 12; spacing: 4
-                                Text { text: entry.label; font.pixelSize: 9; font.bold: true; color: root.accent }
-                                Text { Layout.fillWidth: true; text: entry.value; font.pixelSize: 21; font.bold: true; color: settings_form.primaryText; elide: Text.ElideRight }
-                                Text { Layout.fillWidth: true; text: entry.detail; font.pixelSize: 10; color: settings_form.secondaryText; elide: Text.ElideRight }
-
-                            }
-                            MouseArea {
-                                id: capacityMouse
-                                anchors.fill: parent
-                                enabled: remoteIdCard || (capacityCard && root.online && !root.fc.armed)
-                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                onClicked: if (remoteIdCard) root.openRemoteId(); else root.openCapacityEditor()
-                            }
-                        }
-                    }
-                }
-                Label { visible: root.identityRows().length > 0; text: qsTr("IDENTIFICATION"); color: root.accent; font.bold: true; font.pixelSize: 11 }
-                Repeater {
-                    model: root.identityRows()
-                    delegate: Label { Layout.fillWidth: true; wrapMode: Text.Wrap; text: modelData; color: settings_form.secondaryText; font.pixelSize: 12 }
-                }
-
-            }
-
-            // Keep each tab's content in the same scrolling surface without rebuilding the popup.
-            ColumnLayout {
-                Layout.fillWidth: true; spacing: 10; visible: root.selectedTab === 1
-                Label { visible: (root.diagnostics.sensors || []).length > 0; text: qsTr("SENSOR & SUBSYSTEM HEALTH"); color: root.accent; font.bold: true; font.pixelSize: 11 }
-                Repeater {
-                    model: sensorRows
-                    delegate: Rectangle {
-                        Layout.fillWidth: true; implicitHeight: 38; radius: 8; color: settings_form.panelBackground
-                        RowLayout {
-                            anchors.fill: parent; anchors.margins: 10
-                            Text { Layout.fillWidth: true; text: model.entry.name; color: settings_form.primaryText; font.pixelSize: 12 }
-                            Text {
-                                readonly property bool fresh: root.online && root.diagnostics.statusAge < 4
-                                text: !fresh ? qsTr("STALE") : !model.entry.enabled ? qsTr("DISABLED") : model.entry.healthy ? qsTr("HEALTHY") : qsTr("FAULT")
-                                color: !fresh || !model.entry.enabled ? settings_form.secondaryText : model.entry.healthy ? settings_form.goodColor : "#ff8a85"
-                                font.pixelSize: 11; font.bold: true
-                            }
-                        }
-                    }
-                }
-                Label { Layout.fillWidth: true; text: qsTr("Health flags are reported by the FC; calibration and arming messages can provide additional detail."); color: settings_form.secondaryText; wrapMode: Text.Wrap; font.pixelSize: 11 }
-                Label { visible: (root.diagnostics.events || []).length > 0; text: qsTr("RECENT FC EVENTS"); color: root.accent; font.bold: true; font.pixelSize: 11; Layout.topMargin: 12 }
-                Repeater {
-                    model: eventRows
-                    delegate: Rectangle {
-                        Layout.fillWidth: true; implicitHeight: eventText.implicitHeight + 42
-                        color: settings_form.panelBackground; radius: 8
-                        ColumnLayout {
-                            anchors.fill: parent; anchors.margins: 10; spacing: 5
-                            Text { id: eventText; Layout.fillWidth: true; text: model.entry.text; wrapMode: Text.Wrap; color: model.entry.severity <= 4 ? "#ffb18a" : settings_form.primaryText; font.pixelSize: 13 }
-                            Text { text: qsTr("%1 s ago · %2 occurrences · severity %3").arg(Math.max(0, (root.diagnostics.nowMs - model.entry.receivedMs) / 1000).toFixed(0)).arg(model.entry.count).arg(model.entry.severity); color: settings_form.secondaryText; font.pixelSize: 10 }
-                        }
-                    }
-                }
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true; spacing: 8; visible: root.selectedTab === 2
-                Label { text: qsTr("MAVLINK INSPECTOR · %1 packets received").arg(root.diagnostics.total || 0); color: root.accent; font.bold: true; font.pixelSize: 11 }
-                Label { Layout.fillWidth: true; text: qsTr("Expand a message to inspect its latest payload. Rates measure arrivals at QOpenHD; ages keep increasing when telemetry stops."); wrapMode: Text.Wrap; color: settings_form.secondaryText; font.pixelSize: 11 }
-                Repeater {
-                    model: messageRows
-                    delegate: Rectangle {
-                        id: packet
-                        readonly property var row: model.entry
-                        objectName: "craftMessage" + model.entry.id
-                        readonly property bool expanded: root.expandedMessages.indexOf(model.entry.id) >= 0
-                        Layout.fillWidth: true; implicitHeight: packetColumn.implicitHeight + 16
-                        color: settings_form.panelBackground; radius: 8; border.color: settings_form.lineColor
-                        ColumnLayout {
-                            id: packetColumn
-                            anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: 8
-                            Button {
-                                Layout.fillWidth: true
-                                text: (packet.expanded ? "▾ " : "▸ ") + model.entry.id + " · " + model.entry.name
-                                onClicked: {
-                                    var ids = root.expandedMessages.slice()
-                                    var index = ids.indexOf(model.entry.id)
-                                    if (index >= 0) ids.splice(index, 1)
-                                    else ids.push(model.entry.id)
-                                    root.expandedMessages = ids
+                                Layout.fillWidth: true; spacing: 7
+                                Row { spacing: 9
+                                    Text { text: modelData.icon; font.family:"Font Awesome 5 Free"; font.pixelSize:24;color:"#b8d9ec" }
+                                    Text { text: modelData.label; font.family: "Archivo"; font.pixelSize: MenuTypography.body;color:"#a9c2d3" }
                                 }
-                                contentItem: Text { text: parent.text; color: settings_form.primaryText; elide: Text.ElideRight; font.pixelSize: 12; verticalAlignment: Text.AlignVCenter }
-                                background: Rectangle { color: parent.hovered ? "#20b39aff" : "transparent"; radius: 5; border.color: parent.activeFocus ? root.accent : "transparent" }
+                                Text { text:modelData.value;font.family: "Archivo"; font.pixelSize: MenuTypography.body;color:index===3?root.healthColor:"#edf4fa" }
                             }
-                            Text { text: qsTr("%1 Hz · %2 packets · %3 s old · component %4").arg(Number(model.entry.rate).toFixed(1)).arg(model.entry.count).arg(Number(model.entry.age).toFixed(1)).arg(model.entry.component); color: model.entry.age > 4 ? "#f6b85b" : settings_form.secondaryText; font.pixelSize: 10 }
-                            Repeater {
-                                model: packet.expanded ? (packet.row.fields || []) : []
-                                delegate: Text {
-                                    Layout.fillWidth: true
-                                    text: modelData.name + ": " + modelData.value
-                                    wrapMode: Text.WrapAnywhere; font.family: "monospace"; font.pixelSize: 11
-                                    color: settings_form.primaryText
-                                }
-                            }
-                            Text { Layout.fillWidth: true; wrapMode: Text.Wrap; visible: packet.expanded; text: qsTr("WIRE PAYLOAD · raw field values above use MAVLink units"); color: settings_form.secondaryText; font.pixelSize: 9 }
-                            Text { Layout.fillWidth: true; visible: packet.expanded; text: model.entry.payload || qsTr("Empty payload"); wrapMode: Text.WrapAnywhere; font.family: "monospace"; font.pixelSize: 11; color: root.accent }
+                        }
+                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            objectName: "craftReboot"; text: qsTr("Reboot"); implicitWidth: 140; implicitHeight: 46
+                            enabled: root.heartbeatFresh && !root.fc.armed && typeof root.fcAction.send_command_reboot === "function" && !(typeof _qopenhd !== "undefined" && _qopenhd.debugMenuPreview)
+                            onClicked: rebootDialog.open()
+                            contentItem: Text { text:parent.text;font.family:"Archivo"; font.pixelSize: MenuTypography.body;color:parent.enabled?"#edf4fa":"#7694a7";horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter }
+                            background: Rectangle {radius:12;color:"#062b42";border.color:"#006997"}
                         }
                     }
                 }
-            }
+                RowLayout {
+                    Layout.fillWidth: true; visible: root.hasCapacity || root.hasRemoteId
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; objectName:"craftBatteryCapacityCard"; visible:root.hasCapacity; enabled:root.online&&!root.fc.armed; text:qsTr("Battery capacity: %1 mAh").arg(root.capacityParameter.value || "");onClicked:root.openCapacityEditor() }
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; objectName:"craftRemoteIdCard"; visible:root.hasRemoteId; text:qsTr("Remote ID");onClicked:root.openRemoteId() }
+                }
+                ColumnLayout {
+                    objectName:"craftHealthEvents";Layout.fillWidth:true;spacing:8;visible:root.hasHealth
+                    Repeater { model:sensorRows; delegate: FcDetailsRow { icon:"\uf2db";label:entry.name;value:!root.sensorsFresh?qsTr("Not reported"):!entry.enabled?qsTr("Disabled"):entry.healthy?qsTr("Healthy"):qsTr("Fault");valueColor:entry.healthy?"#25d780":"#ff6470" } }
+                    Text { visible:eventRows.count>0;text:qsTr("Recent FC Events");font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle;font.bold:true;color:"#edf4fa";Layout.topMargin:8 }
+                    Repeater { model:eventRows;delegate:Rectangle {
+                        objectName:"craftEvent_"+index;Layout.fillWidth:true;implicitHeight:eventLabel.implicitHeight+42;radius:10;color:"#051f2f";border.color:"#0d4059"
+                        Column { anchors.fill:parent;anchors.margins:12;spacing:6
+                            Text { id:eventLabel;width:parent.width;text:entry.text;wrapMode:Text.WordWrap;color:entry.severity<=4?"#ff9b86":"#edf4fa";font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                            Text {text:qsTr("%1 s ago - %2 occurrences").arg(Math.max(0,(root.diagnostics.nowMs-entry.receivedMs)/1000).toFixed(0)).arg(entry.count);font.family: "Archivo"; font.pixelSize: MenuTypography.body;color:"#a9c2d3"}
+                        }
+                    } }
+                }
             }
         }
     }
-    onSelectedTabChanged: scroll.contentItem.contentY = 0
+    AdvancedDialog {
+        id: rebootDialog; objectName: "craftRebootDialog"
+        title:qsTr("Reboot flight controller?");parent:Overlay.overlay;anchors.centerIn:parent
+        width: Math.min(420, parent.width - 24)
+        contentItem: Text { text: qsTr("The flight controller will briefly disconnect while it restarts."); wrapMode: Text.WordWrap; color: "#a9c2d3"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+        footer: DialogButtonBox {
+            padding: 16; spacing: 10; background: Item {}
+            AdvancedDialogButton { text: qsTr("Cancel"); onClicked: rebootDialog.reject() }
+            AdvancedDialogButton { objectName: "craftRebootConfirm"; text: qsTr("Reboot"); destructive: true; enabled: root.heartbeatFresh && !root.fc.armed; onClicked: rebootDialog.accept() }
+        }
+        onAccepted: if(root.heartbeatFresh && !root.fc.armed) root.fcAction.send_command_reboot(true)
+    }
 }

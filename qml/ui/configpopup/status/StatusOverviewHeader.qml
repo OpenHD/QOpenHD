@@ -1,8 +1,10 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 Item {
     id: header
+    objectName: "statusOverviewHeader"
     readonly property real headerScale: Math.max(0.45, Math.min(1, width / 1350))
     readonly property bool compactTelemetry: width < 700
     readonly property real contentHeight: (compactTelemetry ? 136 : 72) * headerScale
@@ -11,6 +13,9 @@ Item {
     readonly property var ground: typeof _ohdSystemGround !== "undefined" ? _ohdSystemGround : null
     readonly property var air: typeof _ohdSystemAir !== "undefined" ? _ohdSystemAir : null
     readonly property var audio: typeof _audioControl !== "undefined" ? _audioControl : null
+    // Ground measures actual arrivals across both video streams, FEC and telemetry.
+    readonly property real receivedLinkBps: ground && ground.is_alive
+        && ground.received_link_bitrate_bps >= 0 ? ground.received_link_bitrate_bps : -1
     function videoFormat() {
         if (!air || !air.is_alive || !camera) return "--"
         var format = camera.curr_set_video_format || ""
@@ -23,8 +28,8 @@ Item {
         width: header.width / header.headerScale; height: 72
         scale: header.headerScale; transformOrigin: Item.TopLeft
         Text { x: 0; y: 12; objectName: "menuHeaderIcon"; text: settings_form.menuPageIcon; color: "#38a5ff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 40 }
-        Text { x: 66; y: 5; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: settings_form.menuPageTitle.length > 15 ? 27 : 32; font.bold: true }
-        Text { x: 66; y: 47; text: settings_form.menuPageSubtitle; color: settings_form.secondaryText; font.family: "Archivo"; font.pixelSize: 16 }
+        Text { x: 66; y: 5; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
+        Text { x: 66; y: 47; text: settings_form.menuPageSubtitle; color: settings_form.secondaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
         Rectangle {
             x: header.compactTelemetry ? 0 : parent.width - 960; y: header.compactTelemetry ? 80 : 0; width: 424; height: 56; radius: 28
             color: "transparent"; border.color: "transparent"
@@ -32,7 +37,7 @@ Item {
                 anchors.centerIn: parent; spacing: 16
                 Repeater {
                     model: [
-                        {icon: "\uf0c1", value: header.ground && header.ground.is_alive && header.camera && header.camera.curr_received_bitrate_with_fec_bps > 0 ? (header.camera.curr_received_bitrate_with_fec_bps / 1000000).toFixed(1) + " Mbit/s" : "-- Mbit/s"},
+                        {icon: "\uf0c1", value: header.receivedLinkBps >= 0 ? (header.receivedLinkBps / 1000000).toFixed(1) + " Mbit/s" : "-- Mbit/s"},
                         {icon: "\uf1da", value: header.air && header.air.is_alive && parseFloat(header.air.last_ping_result_openhd) > 0 ? header.air.last_ping_result_openhd.trim() : "-- ms"},
                         {icon: "\uf03d", value: header.videoFormat()}
                     ]
@@ -40,7 +45,7 @@ Item {
                         spacing: 12
                         Rectangle { visible: index > 0; anchors.verticalCenter: parent.verticalCenter; width: 1; height: 28; color: "#153c53" }
                         Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: index < 2 ? "#12a8f3" : "#d5e7f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: 23 }
-                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.value; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: 18; width: Math.min(implicitWidth, 126); elide: Text.ElideRight }
+                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.value; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.body; width: Math.min(implicitWidth, 126); elide: Text.ElideRight }
                     }
                 }
             }
@@ -50,7 +55,7 @@ Item {
             color: "transparent"; border.color: "transparent"
             Row {
                 anchors.centerIn: parent; spacing: 28
-                ToolButton {
+                ToolButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: soundButton
                     objectName: "statusSoundButton"
                     anchors.verticalCenter: parent.verticalCenter
@@ -79,7 +84,7 @@ Item {
                         }
                     }
                 }
-                Text { anchors.verticalCenter: parent.verticalCenter; text: header.clockText; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: 18 }
+                Text { anchors.verticalCenter: parent.verticalCenter; text: header.clockText; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
             }
         }
     }
@@ -98,8 +103,8 @@ Item {
         contentItem: Column {
             id: volumeContent
             spacing: 12
-            Text { text: qsTr("Audio"); color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: 18; font.bold: true }
-            Switch {
+            Text { text: qsTr("Audio"); color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true }
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 objectName: "statusPlaybackSwitch"
                 width: parent.width
                 text: qsTr("Playback")
@@ -109,9 +114,9 @@ Item {
                     if (typeof settings !== "undefined") settings.dev_enable_live_audio_playback = checked
                     header.audio.setPlaybackEnabled(checked)
                 }
-                contentItem: Text { text: parent.text; color: settings_form.primaryText; verticalAlignment: Text.AlignVCenter; leftPadding: parent.indicator.width + parent.spacing; font.pixelSize: 14 }
+                contentItem: Text { text: parent.text; color: settings_form.primaryText; verticalAlignment: Text.AlignVCenter; leftPadding: parent.indicator.width + parent.spacing; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             }
-            Text { text: qsTr("Volume: %1 %").arg(header.audio ? header.audio.playbackVolume : 0); color: settings_form.primaryText; font.pixelSize: 14 }
+            Text { text: qsTr("Volume: %1 %").arg(header.audio ? header.audio.playbackVolume : 0); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             Slider {
                 id: volumeSlider
                 objectName: "statusVolumeSlider"
@@ -122,7 +127,7 @@ Item {
                 onMoved: header.audio.playbackVolume = Math.round(value)
                 Accessible.name: qsTr("Playback volume")
             }
-            Button {
+            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 objectName: "statusMuteButton"
                 width: parent.width
                 enabled: header.audio !== null

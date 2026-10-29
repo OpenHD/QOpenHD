@@ -187,6 +187,7 @@ ApplicationWindow {
     AppSettings {
         id: settings
     }
+    CameraAutoDetection { settingsObject: settings }
     // Create the first frame before compiling and incubating the flight UI.
     readonly property bool bootSplashEnabled: _qopenhd.is_platform_rpi()
     property bool firstFrameShown: false

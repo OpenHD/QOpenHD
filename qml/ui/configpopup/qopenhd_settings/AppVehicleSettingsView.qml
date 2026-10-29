@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -36,7 +37,7 @@ ScrollView {
                 SpinBox {
                     height: elementHeight
                     width: 210
-                    font.pixelSize: 14
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     from: 1
@@ -65,7 +66,7 @@ ScrollView {
                     SpinBox {
                         width: 155
                         height: elementHeight
-                        font.pixelSize: 14
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         from: 100
                         to: 100000
                         stepSize: 100
@@ -80,7 +81,7 @@ ScrollView {
                         onValueModified: settings.air_battery_capacity_mah = value
                     }
 
-                    Button {
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         height: elementHeight
                         text: qsTr("Apply")
                         onClicked: _fcMavlinkAction.set_battery_capacity_async(settings.air_battery_capacity_mah)
@@ -90,7 +91,7 @@ ScrollView {
 
             SettingBaseElement{
                 m_short_description: qsTr("Show FC Messages in HUD")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -104,7 +105,7 @@ ScrollView {
                 m_short_description: qsTr("Set mavlink message rates")
                 m_long_description: "Set mavlink message rate(s) that should work for most users. NOTE: When disabling this feature, you have to manually set the mavlink message rate(s)
  via mission planner for your autpilot running ardupilot/ PX4 ! After disabling, a reboot of the FC is required."
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -119,7 +120,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("High mavlink message rates")
                 m_long_description: qsTr("Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD.")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -137,7 +138,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("High mavlink message rates RC")
                 m_long_description: qsTr("Increases the rate for mavlink down rc channel messages (This does not affect your RC over openhd latency !)")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -155,7 +156,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Log quiet FC warning")
                 m_long_description: qsTr("Log a warning when we get heartbeats from the FC, but not proper data")
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

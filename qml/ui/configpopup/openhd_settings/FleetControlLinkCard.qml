@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -55,11 +56,11 @@ Rectangle {
             }
             ColumnLayout {
                 Layout.fillWidth: true; spacing: 0
-                Text { text: qsTr("FleetControl LTE"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
+                Text { text: qsTr("FleetControl LTE"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                 Text {
                     Layout.fillWidth: true
                     text: qsTr("Encrypted streaming to openhd.tech")
-                    color: settings_form.secondaryText; font.pixelSize: 8; elide: Text.ElideRight
+                    color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; elide: Text.ElideRight
                 }
             }
             Rectangle {
@@ -69,7 +70,7 @@ Rectangle {
                     id: stateText; anchors.centerIn: parent
                     text: root.linkActive ? qsTr("ACTIVE") : qsTr("STANDBY")
                     color: root.linkActive ? settings_form.goodColor : "#f0a43c"
-                    font.pixelSize: 8; font.bold: true
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true
                 }
             }
         }
@@ -96,8 +97,8 @@ Rectangle {
                     color: settings_form.panelBackground; border.color: settings_form.lineColor
                     Column {
                         anchors.centerIn: parent; spacing: 2
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 7; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: 10; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     }
                 }
             }
@@ -111,14 +112,14 @@ Rectangle {
                 id: statusColumn
                 anchors.left: parent.left; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
                 anchors.margins: 10; spacing: 4
-                Text { text: qsTr("CONNECTION"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                Text { text: qsTr("CONNECTION"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
                 Text {
                     Layout.fillWidth: true
                     text: root.remoteConfigured
                           ? (root.linkActive ? qsTr("Connected on OpenHD Air") : qsTr("Profile installed; waiting for tunnel"))
                           : _fleetControlLte.statusText
                     color: root.linkActive ? settings_form.goodColor : settings_form.secondaryText
-                    font.pixelSize: 10; wrapMode: Text.WordWrap
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap
                 }
             }
         }
@@ -131,11 +132,11 @@ Rectangle {
                 id: accountColumn
                 anchors.left: parent.left; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
                 anchors.margins: 10; spacing: 4
-                Text { text: qsTr("MANAGED BY FLEETCONTROL"); color: settings_form.secondaryText; font.pixelSize: 8; font.bold: true }
+                Text { text: qsTr("MANAGED BY FLEETCONTROL"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
                 Text {
                     Layout.fillWidth: true
                     text: qsTr("Sign in under OpenHD → FleetControl and assign your craft to a certificate.")
-                    color: settings_form.secondaryText; font.pixelSize: 9; wrapMode: Text.WordWrap
+                    color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap
                 }
             }
         }
@@ -143,12 +144,12 @@ Rectangle {
         Text {
             Layout.fillWidth: true
             text: qsTr("FleetControl video: 480p · 15 fps · 1 Mbit/s. Air is preferred; Ground uploads when Air is unavailable.")
-            color: settings_form.secondaryText; font.pixelSize: 8; wrapMode: Text.WordWrap
+            color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap
         }
         Item { Layout.fillHeight: true }
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 25
-            Text { Layout.fillWidth: true; text: qsTr("FleetControl encrypted network"); color: settings_form.secondaryText; font.pixelSize: 7 }
+            Text { Layout.fillWidth: true; text: qsTr("FleetControl encrypted network"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
             Rectangle { width: 7; height: 7; radius: 4; color: root.linkActive ? settings_form.goodColor : "#f0a43c" }
         }
     }

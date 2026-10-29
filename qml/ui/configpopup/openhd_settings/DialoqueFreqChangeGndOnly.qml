@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -5,17 +6,19 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 
 import "../../elements"
+import ".."
 
 // I fucking hate writing UIs in QT
 // Dialoque that is shown to the user with the option to manually change the grond station frequency.
 Card {
+    dialogStyle: true
     id: dialoqueChangeFrequency
     width: 360
     height: 340
     z: 5.0
     anchors.centerIn: parent
     cardName: get_card_title_string()
-    cardNameColor: "black"
+    cardNameColor: "#edf4fa"
     visible: false
 
     property int m_wanted_frequency: -1
@@ -64,7 +67,7 @@ Card {
         height: 200
         width: 320
 
-        Text{
+        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: parent.width
             height: parent.height
             leftPadding: 12
@@ -81,7 +84,7 @@ Card {
         RowLayout{
             anchors.fill: parent
             visible: m_index==0
-            ButtonRed{
+            AdvancedDialogButton {
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignLeft
                 Layout.leftMargin: 12
@@ -90,7 +93,7 @@ Card {
                     m_index=1
                 }
             }
-            ButtonGreen{
+            AdvancedDialogButton {
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: 12
@@ -103,7 +106,7 @@ Card {
         RowLayout{
             anchors.fill: parent
             visible: m_index==1
-            ButtonGreen{
+            AdvancedDialogButton {
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignLeft
                 Layout.leftMargin: 12
@@ -122,7 +125,7 @@ Card {
                     }
                 }
             }
-            ButtonRed{
+            AdvancedDialogButton {
                 Layout.preferredWidth: 140
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: 12

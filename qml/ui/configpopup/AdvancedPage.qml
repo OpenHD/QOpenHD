@@ -1,3 +1,4 @@
+import "MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
@@ -59,13 +60,13 @@ FocusScope {
             Text {
                 text: root.pageTitle
                 color: settings_form.primaryText
-                font.pixelSize: Math.max(18, Math.min(23, root.width / 48))
+                font.pixelSize: MenuTypography.pageTitle; font.family: MenuTypography.family
                 font.bold: true
             }
             Text {
                 text: root.pageSubtitle
                 color: settings_form.secondaryText
-                font.pixelSize: 12
+                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             }
         }
     }

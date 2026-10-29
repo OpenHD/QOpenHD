@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -107,10 +108,10 @@ ScrollView {
             text: qsTr("mLRS TELEMETRY RADIO")
             horizontalAlignment: Text.AlignHCenter
             font.bold: true
-            font.pixelSize: 22
+            font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family
         }
 
-        Label {
+        Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             Layout.fillWidth: true
             text: _mlrsController.statusText
             horizontalAlignment: Text.AlignHCenter
@@ -118,7 +119,7 @@ ScrollView {
             wrapMode: Text.WordWrap
         }
 
-        Button {
+        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: refreshButton
             Layout.alignment: Qt.AlignHCenter
             text: qsTr("REFRESH")
@@ -139,16 +140,16 @@ ScrollView {
                 GridLayout {
                     anchors.fill: parent
                     columns: 2
-                    Label { text: qsTr("Transmitter step") }
-                    SpinBox {
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Transmitter step") }
+                    SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: txPower
                         from: 0
                         to: 15
                         editable: true
                         Keys.onPressed: root.handleKeys(event, txPower)
                     }
-                    Label { text: qsTr("Receiver step") }
-                    SpinBox {
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Receiver step") }
+                    SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: rxPower
                         from: 0
                         to: 15
@@ -164,19 +165,19 @@ ScrollView {
                 GridLayout {
                     anchors.fill: parent
                     columns: 2
-                    Label { text: qsTr("Mode") }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Mode") }
                     CompactLinkComboBox {
                         id: mode
                         model: ["50 Hz", "31 Hz", "19 Hz", "FLRC", "FSK", "19 Hz 7x"]
                         Keys.onPressed: root.handleKeys(event, mode)
                     }
-                    Label { text: qsTr("Band") }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Band") }
                     CompactLinkComboBox {
                         id: rfBand
                         model: ["2.4 GHz", "915 FCC", "868 MHz", "433 MHz", "70 cm", "866 India", "915 + 2.4", "868 + 2.4"]
                         Keys.onPressed: root.handleKeys(event, rfBand)
                     }
-                    Label { text: qsTr("Orthogonality") }
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Orthogonality") }
                     CompactLinkComboBox {
                         id: rfOrtho
                         model: [qsTr("Off"), "1/3", "2/3", "3/3"]
@@ -194,8 +195,8 @@ ScrollView {
                 anchors.fill: parent
                 RowLayout {
                     Layout.fillWidth: true
-                    Label { text: qsTr("Bind phrase") }
-                    TextField {
+                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Bind phrase") }
+                    TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: bindPhrase
                         Layout.fillWidth: true
                         maximumLength: 6
@@ -203,7 +204,7 @@ ScrollView {
                         Keys.onPressed: root.handleKeys(event, bindPhrase)
                     }
                 }
-                Label {
+                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     text: qsTr("The phrase is written to the connected Tx and, after Save, its linked Rx. Stock mLRS still requires entering bind mode on both devices using their button, CLI, Lua or display; its Tx MAVLink component has no bind command yet.")
@@ -214,7 +215,7 @@ ScrollView {
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
             spacing: 20
-            Button {
+            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: applyButton
                 text: qsTr("APPLY")
                 enabled: _mlrsController.alive && _mlrsController.parametersLoaded
@@ -223,7 +224,7 @@ ScrollView {
                                                           rfOrtho.currentIndex, bindPhrase.text)
                 Keys.onPressed: root.handleKeys(event, applyButton)
             }
-            Button {
+            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: saveButton
                 text: qsTr("SAVE TO RADIO")
                 enabled: _mlrsController.alive && _mlrsController.parametersLoaded
@@ -233,7 +234,7 @@ ScrollView {
             }
         }
 
-        Label {
+        Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter

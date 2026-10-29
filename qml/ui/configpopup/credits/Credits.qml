@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -78,7 +79,7 @@ AdvancedPage {
 
             RowLayout {
                 Layout.fillWidth: true
-                Text { text: qsTr("CORE TEAM"); color: settings_form.accentColor; font.pixelSize: 12; font.bold: true }
+                Text { text: qsTr("CORE TEAM"); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                 Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
             }
 
@@ -132,7 +133,7 @@ AdvancedPage {
                                     }
                                 }
                             }
-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: personName; color: settings_form.primaryText; font.pixelSize: 16; font.bold: true }
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: personName; color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                         }
                     }
                 }
@@ -155,8 +156,8 @@ AdvancedPage {
                 Column {
                     anchors.fill: parent
                     spacing: 6
-                    Text { text: qsTr("HONORABLE MENTIONS"); color: settings_form.accentColor; font.pixelSize: 16; font.bold: true }
-                    Text { width: parent.width; text: qsTr("Community members whose testing, development, documentation and support helped shape OpenHD."); color: settings_form.secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap }
+                    Text { text: qsTr("HONORABLE MENTIONS"); color: settings_form.accentColor; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+                    Text { width: parent.width; text: qsTr("Community members whose testing, development, documentation and support helped shape OpenHD."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; wrapMode: Text.WordWrap }
                     Flow {
                         id: contributorFlow
                         width: parent.width
@@ -169,13 +170,13 @@ AdvancedPage {
                                 radius: 16
                                 color: settings_form.darkMode ? "#173b61" : "#e1effd"
                                 border.color: settings_form.lineColor
-                                Text { id: contributorLabel; anchors.centerIn: parent; text: contributorName; color: settings_form.primaryText; font.pixelSize: 11; font.bold: true }
+                                Text { id: contributorLabel; anchors.centerIn: parent; text: contributorName; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                             }
                         }
                     }
                     Rectangle { width: parent.width; height: 1; color: settings_form.lineColor }
-                    Text { text: qsTr("FORMER DEVELOPERS"); color: settings_form.accentColor; font.pixelSize: 16; font.bold: true }
-                    Text { width: parent.width; text: qsTr("Previous core contributors whose engineering work remains part of the project."); color: settings_form.secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap }
+                    Text { text: qsTr("FORMER DEVELOPERS"); color: settings_form.accentColor; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
+                    Text { width: parent.width; text: qsTr("Previous core contributors whose engineering work remains part of the project."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; wrapMode: Text.WordWrap }
                     Flow {
                         id: formerFlow
                         width: parent.width
@@ -188,7 +189,7 @@ AdvancedPage {
                                 radius: 16
                                 color: settings_form.darkMode ? "#173b61" : "#e1effd"
                                 border.color: settings_form.lineColor
-                                Text { id: formerLabel; anchors.centerIn: parent; text: modelData; color: settings_form.primaryText; font.pixelSize: 11; font.bold: true }
+                                Text { id: formerLabel; anchors.centerIn: parent; text: modelData; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                             }
                         }
                     }

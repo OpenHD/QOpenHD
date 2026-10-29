@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -170,7 +171,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Widgets")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -185,7 +186,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show Link Overview")
                     m_long_description: qsTr("Compact overview for RSSI, TXC temp, SNR, and link status.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -200,7 +201,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show Bottom Link Bar")
                     m_long_description: qsTr("Hide the bottom link sidebar without disabling other link widgets.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -215,7 +216,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show Video Debug Widget")
                     m_long_description: qsTr("Developer video bitrate graph, perf stats, pipeline string, and live bitrate control.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -230,7 +231,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show Artosyn Debug Widget")
                     m_long_description: qsTr("Artosyn link rate graph, MCS, PHY rate, and traffic stats.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -258,7 +259,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Flight Mode")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -267,7 +268,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -289,7 +290,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show IMU Sensor Temperature")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -298,7 +299,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -320,7 +321,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Pressure Sensor Temperature")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -329,7 +330,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -351,7 +352,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Pressure Sensor 2 Temperature")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -360,7 +361,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -381,7 +382,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Pressure Sensor 3 Temperature")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -390,7 +391,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -411,7 +412,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Airspeed Sensor Temperature")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -420,7 +421,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -442,7 +443,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Esc Temperature")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -451,7 +452,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -473,7 +474,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Battery Temperature")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -482,7 +483,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -503,7 +504,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Horizon")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -512,7 +513,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -534,7 +535,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show performance horizon")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -543,7 +544,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -566,7 +567,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Flight Path Vector")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -575,7 +576,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -597,7 +598,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Altitude")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -606,7 +607,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -628,7 +629,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Speed")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -637,7 +638,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -659,7 +660,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Heading")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -668,7 +669,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -690,7 +691,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Bank Angle Indicator")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -699,7 +700,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -721,7 +722,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Home Arrow")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -730,7 +731,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -752,7 +753,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Control Inputs")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -761,7 +762,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -785,7 +786,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Vibration")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -794,7 +795,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -816,7 +817,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Vertical Speed Gauge")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -825,7 +826,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -846,7 +847,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Angle of Attack")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -855,7 +856,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -873,7 +874,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show distance sensor widget")
                     m_long_description: qsTr("For UAVs with a distance sensor")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -888,7 +889,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show (GPS) time widget")
                     m_long_description: qsTr("For UAVs with GPS, shows the time as reported by the UAV")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -914,7 +915,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Map")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -923,7 +924,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -944,7 +945,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show ADSB")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -953,7 +954,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -974,7 +975,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show log messages on-screen")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -983,7 +984,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1005,7 +1006,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show Sidebar")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -1014,7 +1015,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1035,7 +1036,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show QT Render stats")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -1044,7 +1045,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1067,7 +1068,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show IP Camera Control")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -1076,7 +1077,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1098,7 +1099,7 @@ ScrollView {
                     StyledText {
                         text: qsTr("Show GPIO")
                         font.weight: Font.Bold
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         anchors.leftMargin: 8
                         verticalAlignment: Text.AlignVCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -1107,7 +1108,7 @@ ScrollView {
                         anchors.left: parent.left
                     }
 
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1125,7 +1126,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show TX Temperature")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1139,7 +1140,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show RX Temperature")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1156,7 +1157,7 @@ ScrollView {
                     sourceComponent: SettingBaseElement{
                         m_short_description: qsTr("Show Retransmission Stats")
                         m_long_description: qsTr("Shows packet loss and retransmission activity for video.")
-                        Switch {
+                        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1172,7 +1173,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show Downlink RSSI")
                     m_long_description: qsTr("RSSI / Stats about downlink")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1187,7 +1188,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show Uplink RSSI")
                     m_long_description: qsTr("RSSI / Stats about uplink")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1202,7 +1203,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show live rate control widget")
                     m_long_description: qsTr("Trade range / stability for bitrate at run time. Requires hw support.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1217,7 +1218,7 @@ ScrollView {
                 SettingBaseElement{
                     m_short_description: qsTr("Show video widget")
                     m_long_description: qsTr("More stats about each camera stream, quick resolution changes and quick air recording.")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1231,7 +1232,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show RC RSSI (not OpenHD RC)")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1245,7 +1246,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Ground Status")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1259,7 +1260,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Air Status")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1273,7 +1274,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Air Battery")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1287,7 +1288,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Ground Battery")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1301,7 +1302,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show mAh")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1315,7 +1316,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Efficiency in mAh/km")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1329,7 +1330,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Total Flight Distance")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1343,7 +1344,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Wind")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1357,7 +1358,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show GPS")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1371,7 +1372,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Home Distance")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1385,7 +1386,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Flight Timer")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1399,7 +1400,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Second Speed")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1413,7 +1414,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Throttle")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1427,7 +1428,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Missions")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1441,7 +1442,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Vertical Speed (minimal)")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -1455,7 +1456,7 @@ ScrollView {
 
                 SettingBaseElement{
                     m_short_description: qsTr("Show Second Altitude")
-                    Switch {
+                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         width: 32
                         height: elementHeight
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

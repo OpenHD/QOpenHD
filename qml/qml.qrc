@@ -88,6 +88,7 @@
         <file>ui/elements/colorwheel/mathUtils.js</file>
         <file>ui/elements/ColorPicker.qml</file>
         <file>ui/elements/AppSettings.qml</file>
+        <file>ui/elements/CameraAutoDetection.qml</file>
         <file>ui/widgets/EscTempWidget.qml</file>
         <file>ui/widgets/PressTempWidget.qml</file>
         <file>ui/widgets/ImuTempWidget.qml</file>
@@ -104,12 +105,15 @@
         <file>ui/configpopup/AdvancedActionButton.qml</file>
         <file>ui/configpopup/AdvancedTabButton.qml</file>
         <file>ui/configpopup/AdvancedDialog.qml</file>
+        <file>ui/configpopup/MenuTypography.js</file>
+        <file>ui/configpopup/AdvancedDialogButton.qml</file>
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>
         <file>video/MainVideoGStreamer.qml</file>
         <file>video/SecondaryVideoGStreamer.qml</file>
+        <file>video/SecondaryVideoSettingsPopup.qml</file>
         <file>video/SecondaryVideoAndroid.qml</file>
         <file>video/SecondaryVideoQSG.qml</file>
         <file>video/SecondaryVideoNxp.qml</file>
@@ -118,6 +122,7 @@
         <file>ui/widgets/RCRssiWidget.qml</file>
         <file>video/ExpMainVideoAndroid.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
+        <file>ui/elements/MessagePopup.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
         <file>ui/widgets/UDPDataLinkDebugWidget.qml</file>
@@ -150,6 +155,7 @@
         <file>ui/configpopup/openhd_settings/SimulatedLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/LinkUsageMeter.qml</file>
         <file>ui/configpopup/openhd_settings/LinkAllocationPopup.qml</file>
+        <file>ui/configpopup/openhd_settings/LinkAllocationSection.qml</file>
         <file>ui/configpopup/openhd_settings/LinkSegmentsBar.qml</file>
         <file>ui/configpopup/openhd_settings/MicrohardLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/ArtosynLinkCard.qml</file>
@@ -170,6 +176,8 @@
         <file>ui/configpopup/status/GroundStationDetails.qml</file>
         <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
         <file>ui/configpopup/status/CraftDetailsPanel.qml</file>
+        <file>ui/configpopup/status/FcDetailsSection.qml</file>
+        <file>ui/configpopup/status/FcDetailsRow.qml</file>
         <file>ui/configpopup/log/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/dev/MavlinkDebugPanel.qml</file>

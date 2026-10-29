@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -38,8 +39,8 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true
             Text { text: root.icon; color: ethernet ? "#49a6ff" : "#c98cff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 19 }
-            Text { text: root.title; color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
-            Switch {
+            Text { text: root.title; color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
+            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: linkSwitch
                 visible: root.linkSwitchAvailable && !root.simulated && root.host && root.host.bothMultiEnabled
                 enabled: _ohdSystemGround.is_alive && !_ohdSystemGroundSettings.ui_is_busy
@@ -56,7 +57,7 @@ Rectangle {
                           (root.ethernet && root.host && root.host.bothSingleEnabled && root.host.wifiActive()
                            ? qsTr("NOT ROUTED") : qsTr("ACTIVE"))
                     color: text === qsTr("NOT ROUTED") ? settings_form.secondaryText : settings_form.goodColor
-                    font.pixelSize: 8; font.bold: true
+                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true
                 }
             }
         }
@@ -85,12 +86,12 @@ Rectangle {
                        : [{label: qsTr("CAPACITY"), value: root.host && root.host.usageFor("uart") && root.host.usageFor("uart").capacity_bps > 0 ? root.host.usageFor("uart").capacity_bps / 1000 + " kbit/s" : qsTr("N/A")}, {label: qsTr("PROTOCOL"), value: "MAVLink 2"}, {label: qsTr("LOSS"), value: root.simulated ? "0%" : qsTr("N/A")}]
                 delegate: Rectangle { Layout.fillWidth: true; Layout.fillHeight: true; color: settings_form.panelBackground; border.color: settings_form.lineColor
                     Column { anchors.centerIn: parent; spacing: 2
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: 9; font.bold: true }
-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: 13; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.label; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
+                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: modelData.value; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     }
                 }
             }
         }
-        Text { Layout.fillWidth: true; visible: root.simulated; text: qsTr("Developer fixture - no physical link is created."); color: settings_form.secondaryText; font.pixelSize: 8; horizontalAlignment: Text.AlignRight }
+        Text { Layout.fillWidth: true; visible: root.simulated; text: qsTr("Developer fixture - no physical link is created."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; horizontalAlignment: Text.AlignRight }
     }
 }

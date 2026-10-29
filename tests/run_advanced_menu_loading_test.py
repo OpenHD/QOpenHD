@@ -148,6 +148,7 @@ Item {
         (folder / "OpenHD/Dummy.qml").write_text("import QtQuick 2.12\nQtObject {}\n", encoding="utf-8")
         (folder / "Basic.qml").write_text(stub.replace("settings_form.pageBackground", '"black"'), encoding="utf-8")
         (folder / "features").mkdir()
+        shutil.copy(menu_dir / "MenuTypography.js", folder)
         (folder / "ConfigPopup.qml").write_text(menu, encoding="utf-8")
         shutil.copy(menu_dir / "AdvancedPageLoader.qml", folder)
         for name in pages:
@@ -170,7 +171,7 @@ Item {
         status = status.replace("id: root", "id: root; readonly property color inheritedColor: settings_form.pageBackground", 1)
         status = status.replace("id: powerDialog;", 'id: powerDialog; objectName: "testPowerDialog";')
         status = status.replace("id: dialoqueNotAlive;", 'id: dialoqueNotAlive; objectName: "testWarningDialog";')
-        status = status.replace("id: craftDetails\n", 'id: craftDetails; objectName: "testCraftPopup"\n')
+        status = status.replace('objectName: "flightControllerDetailsPopup"', 'objectName: "testCraftPopup"')
         status = status.replace("id: craftDetailsLoader\n", 'id: craftDetailsLoader; objectName: "testCraftLoader"\n')
         (folder / "status/PanelStatus.qml").write_text(status, encoding="utf-8")
         (folder / "status/StatusCardsColumn.qml").write_text('''import QtQuick 2.12

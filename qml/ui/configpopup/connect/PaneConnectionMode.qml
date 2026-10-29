@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -182,8 +183,8 @@ Rectangle {
                     }
                     ColumnLayout {
                         Layout.fillWidth: true; spacing: 0
-                        Text { text: root.connected ? qsTr("OpenHD connected") : qsTr("Waiting for OpenHD"); color: settings_form.primaryText; font.pixelSize: 14; font.bold: true }
-                        Text { text: _mavlinkTelemetry.telemetry_connection_status; color: settings_form.secondaryText; font.pixelSize: 11; elide: Text.ElideRight; Layout.fillWidth: true }
+                        Text { text: root.connected ? qsTr("OpenHD connected") : qsTr("Waiting for OpenHD"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
+                        Text { text: _mavlinkTelemetry.telemetry_connection_status; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; elide: Text.ElideRight; Layout.fillWidth: true }
                     }
                     Rectangle { width: 9; height: 9; radius: 5; color: root.connected ? settings_form.goodColor : "#d97706" }
                 }
@@ -204,11 +205,11 @@ Rectangle {
                     spacing: 10
                     RowLayout {
                         Layout.fillWidth: true
-                        Text { text: qsTr("CONNECTION MODE"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
+                        Text { text: qsTr("CONNECTION MODE"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
                     }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 8
-                        Button {
+                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: autoMode
                             Layout.fillWidth: true; height: 40
                             text: qsTr("AUTO")
@@ -217,9 +218,9 @@ Rectangle {
                             onActiveFocusChanged: if (activeFocus) root.syncFocus(autoMode)
                             Keys.onPressed: root.handleButtonKey(event)
                             background: Rectangle { radius: 9; color: autoMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: autoMode.activeFocus ? (autoMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: autoMode.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: autoMode.text; color: autoMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                            contentItem: Text { text: autoMode.text; color: autoMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
-                        Button {
+                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: udpMode
                             Layout.fillWidth: true; height: 40
                             text: qsTr("MANUAL UDP")
@@ -228,9 +229,9 @@ Rectangle {
                             onActiveFocusChanged: if (activeFocus) root.syncFocus(udpMode)
                             Keys.onPressed: root.handleButtonKey(event)
                             background: Rectangle { radius: 9; color: udpMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: udpMode.activeFocus ? (udpMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: udpMode.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: udpMode.text; color: udpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                            contentItem: Text { text: udpMode.text; color: udpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
-                        Button {
+                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: tcpMode
                             Layout.fillWidth: true; height: 40
                             text: qsTr("MANUAL TCP")
@@ -239,7 +240,7 @@ Rectangle {
                             onActiveFocusChanged: if (activeFocus) root.syncFocus(tcpMode)
                             Keys.onPressed: root.handleButtonKey(event)
                             background: Rectangle { radius: 9; color: tcpMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: tcpMode.activeFocus ? (tcpMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: tcpMode.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: tcpMode.text; color: tcpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                            contentItem: Text { text: tcpMode.text; color: tcpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
                     }
                     Text {
@@ -249,7 +250,7 @@ Rectangle {
                               : (settings.qopenhd_mavlink_connection_mode === 1
                                  ? qsTr("Receives forwarded MAVLink telemetry on UDP port 5600.")
                                  : qsTr("Connects directly to a selected OpenHD TCP address on port 5760."))
-                        color: settings_form.secondaryText; font.pixelSize: 11; wrapMode: Text.WordWrap
+                        color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; wrapMode: Text.WordWrap
                     }
                 }
             }
@@ -266,8 +267,8 @@ Rectangle {
                     anchors.top: parent.top
                     anchors.margins: 13
                     spacing: 8
-                    Text { text: qsTr("AUTOMATIC CONNECTION OPTIONS"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
-                    Button {
+                    Text { text: qsTr("AUTOMATIC CONNECTION OPTIONS"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: androidButton
                         Layout.fillWidth: true; height: 40
                         text: qsTr("Open Android tethering settings")
@@ -275,9 +276,9 @@ Rectangle {
                         onActiveFocusChanged: if (activeFocus) root.syncFocus(androidButton)
                         Keys.onPressed: root.handleButtonKey(event)
                         background: Rectangle { radius: 9; color: androidButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: androidButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: androidButton.activeFocus ? 2 : 1 }
-                        contentItem: Text { text: androidButton.text; color: settings_form.primaryText; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                        contentItem: Text { text: androidButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                     }
-                    Button {
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: ethernetForwardButton
                         Layout.fillWidth: true; height: 40
                         text: qsTr("Ethernet forward + internet instructions")
@@ -285,9 +286,9 @@ Rectangle {
                         onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetForwardButton)
                         Keys.onPressed: root.handleButtonKey(event)
                         background: Rectangle { radius: 9; color: ethernetForwardButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: ethernetForwardButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ethernetForwardButton.activeFocus ? 2 : 1 }
-                        contentItem: Text { text: ethernetForwardButton.text; color: settings_form.primaryText; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                        contentItem: Text { text: ethernetForwardButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                     }
-                    Button {
+                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: ethernetHotspotButton
                         Layout.fillWidth: true; height: 40
                         text: qsTr("Ethernet hotspot instructions")
@@ -295,7 +296,7 @@ Rectangle {
                         onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetHotspotButton)
                         Keys.onPressed: root.handleButtonKey(event)
                         background: Rectangle { radius: 9; color: ethernetHotspotButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: ethernetHotspotButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ethernetHotspotButton.activeFocus ? 2 : 1 }
-                        contentItem: Text { text: ethernetHotspotButton.text; color: settings_form.primaryText; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                        contentItem: Text { text: ethernetHotspotButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                     }
                 }
             }
@@ -313,7 +314,7 @@ Rectangle {
                     anchors.top: parent.top
                     anchors.margins: 13
                     spacing: 10
-                    Text { text: qsTr("TCP TARGET"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true }
+                    Text { text: qsTr("TCP TARGET"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 8
                         TextField {
@@ -325,7 +326,7 @@ Rectangle {
                             text: settings.qopenhd_mavlink_connection_manual_tcp_ip
                             placeholderText: qsTr("192.168.x.x")
                             color: settings_form.primaryText
-                            font.pixelSize: 12
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             leftPadding: 12
                             rightPadding: 12
                             topPadding: 0
@@ -341,7 +342,7 @@ Rectangle {
                             Keys.onEscapePressed: settings_form.side_bar_regain_focus()
                             background: Rectangle { radius: 9; color: settings_form.panelBackgroundRaised; border.color: ipField.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ipField.activeFocus ? 2 : 1 }
                         }
-                        Button {
+                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: saveButton
                             Layout.preferredWidth: 90
                             Layout.minimumWidth: 90
@@ -354,12 +355,12 @@ Rectangle {
                             onActiveFocusChanged: if (activeFocus) root.syncFocus(saveButton)
                             Keys.onPressed: root.handleButtonKey(event)
                             background: Rectangle { radius: 9; color: saveButton.hovered ? "#176fc7" : settings_form.accentColor; border.color: saveButton.activeFocus ? "white" : "transparent"; border.width: 2 }
-                            contentItem: Text { text: saveButton.text; color: "white"; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                            contentItem: Text { text: saveButton.text; color: "white"; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
                     }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 8
-                        Button {
+                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: scanButton
                             Layout.fillWidth: true; height: 40
                             text: root.isScanning ? qsTr("SCANNING %1%").arg(root.scanProgress) : qsTr("SCAN ETHERNET FOR OPENHD")
@@ -368,9 +369,9 @@ Rectangle {
                             onActiveFocusChanged: if (activeFocus) root.syncFocus(scanButton)
                             Keys.onPressed: root.handleButtonKey(event)
                             background: Rectangle { radius: 9; color: scanButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; opacity: scanButton.enabled ? 1 : 0.5; border.color: scanButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: scanButton.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: scanButton.text; color: settings_form.primaryText; opacity: scanButton.enabled ? 1 : 0.5; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                            contentItem: Text { text: scanButton.text; color: settings_form.primaryText; opacity: scanButton.enabled ? 1 : 0.5; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                         }
-                        Text { text: root.scanPrefix + ".x"; color: settings_form.secondaryText; font.pixelSize: 11 }
+                        Text { text: root.scanPrefix + ".x"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
                     }
                     Rectangle {
                         Layout.fillWidth: true; height: 5; radius: 3
@@ -383,14 +384,14 @@ Rectangle {
                         text: scanResultsModel.count === 0
                               ? (root.isScanning ? qsTr("Searching for responsive hosts…") : qsTr("No devices discovered yet."))
                               : qsTr("Discovered devices")
-                        color: settings_form.secondaryText; font.pixelSize: 11
+                        color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     }
                     ColumnLayout {
                         Layout.fillWidth: true; spacing: 6
                         Repeater {
                             id: resultsRepeater
                             model: scanResultsModel
-                            delegate: Button {
+                            delegate: Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: resultButton
                                 Layout.fillWidth: true; height: 40
                                 text: ip + "    " + qsTr("CONNECT")
@@ -398,7 +399,7 @@ Rectangle {
                                 onActiveFocusChanged: if (activeFocus) root.syncFocus(resultButton)
                                 Keys.onPressed: root.handleButtonKey(event)
                                 background: Rectangle { radius: 9; color: resultButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: resultButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: resultButton.activeFocus ? 2 : 1 }
-                                contentItem: Text { text: resultButton.text; color: settings_form.primaryText; font.pixelSize: 11; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                                contentItem: Text { text: resultButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                             }
                         }
                     }

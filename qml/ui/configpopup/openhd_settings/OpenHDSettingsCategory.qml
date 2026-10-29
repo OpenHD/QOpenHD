@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 
 Column {
@@ -39,7 +40,7 @@ Column {
             Text {
                 text: category.m_description
                 color: settings_form.primaryText
-                font.pixelSize: 12
+                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 font.bold: true
                 anchors.verticalCenter: parent.verticalCenter
             }

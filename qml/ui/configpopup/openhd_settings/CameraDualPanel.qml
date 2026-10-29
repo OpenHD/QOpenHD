@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -12,13 +13,27 @@ FocusScope {
 
     // 0 = Camera 1 active, 1 = Camera 2 active
     property int activeCamera: 0
-    property string activeCategory: "VIDEO"
+    property string activeCategory: "CAMERA"
 
     readonly property var settingsModel: activeCamera === 0 ? _airCameraSettingsModel : _airCameraSettingsModel2
     readonly property var streamModel: activeCamera === 0 ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
-    readonly property bool cam2Available: _airCameraSettingsModel2.has_params_fetched &&
-                                          (_airCameraSettingsModel2.param_int_exists("CAMERA_TYPE") ||
-                                           _airCameraSettingsModel2.param_string_exists("IP_CAM_PIPELINE"))
+    function cameraModel(index) { return index === 0 ? _airCameraSettingsModel : _airCameraSettingsModel2 }
+    function cameraEnabled(index) {
+        var model = cameraModel(index)
+        var revision = model.update_count
+        if (model.param_int_exists("STREAMING_E")) return model.get_cached_int("STREAMING_E") !== 0
+        return (index === 0 ? _cameraStreamModelPrimary : _cameraStreamModelSecondary).camera_status === 1
+    }
+    function canToggleCamera(index) {
+        var model = cameraModel(index)
+        var revision = model.update_count
+        var stream = index === 0 ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
+        return !_qopenhd.debugMenuPreview && _ohdSystemAir.is_alive && !model.ui_is_busy &&
+                (model.param_int_exists("STREAMING_E") || stream.camera_status >= 0)
+    }
+    function setCameraEnabled(index, value) {
+        if (canToggleCamera(index)) cameraModel(index).try_set_param_int_async("STREAMING_E", value ? 1 : 0, true)
+    }
 
     readonly property bool raspberryPi: _ohdSystemAir.ohd_platform_type >= 10 &&
                                         _ohdSystemAir.ohd_platform_type <= 13
@@ -37,8 +52,8 @@ FocusScope {
     // ── Category model (shared between both cameras) ──
     ListModel {
         id: categoryModel
-        ListElement { categoryKey: "VIDEO"; title: qsTr("VIDEO"); icon: "\uf03d" }
         ListElement { categoryKey: "CAMERA"; title: qsTr("CAMERA"); icon: "\uf030" }
+        ListElement { categoryKey: "VIDEO"; title: qsTr("STREAM"); icon: "\uf03d" }
         ListElement { categoryKey: "IMAGE"; title: qsTr("IMAGE"); icon: "\uf03e" }
         ListElement { categoryKey: "COLOR"; title: qsTr("COLOR"); icon: "\uf53f" }
         ListElement { categoryKey: "EXPOSURE"; title: qsTr("EXPOSURE"); icon: "\uf042" }
@@ -197,8 +212,14 @@ FocusScope {
     }
 
     // ── Camera status helpers ──
+    function explicitlyDisabled(stream) {
+        var model = stream === _cameraStreamModelPrimary ? _airCameraSettingsModel : _airCameraSettingsModel2
+        var revision = model.update_count
+        return model.has_params_fetched && model.param_int_exists("STREAMING_E") && model.get_cached_int("STREAMING_E") === 0
+    }
     function camStatusText(stream) {
         if (!_ohdSystemAir.is_alive) return qsTr("Air unit offline")
+        if (explicitlyDisabled(stream) || stream.camera_status === 3) return qsTr("Disabled")
         if (stream.camera_status === 1) return qsTr("Streaming")
         if (stream.camera_status === 2) return qsTr("Restarting")
         if (stream.camera_status === 0) return qsTr("Camera detected")
@@ -206,6 +227,7 @@ FocusScope {
     }
 
     function camStatusColor(stream) {
+        if (explicitlyDisabled(stream) || stream.camera_status === 3) return settings_form.secondaryText
         if (!_ohdSystemAir.is_alive || stream.camera_status < 0) return settings_form.secondaryText
         if (stream.camera_status === 1) return settings_form.goodColor
         if (stream.camera_status === 2) return settings_form.darkMode ? "#ffd479" : "#936300"
@@ -234,7 +256,7 @@ FocusScope {
     // ── Camera card focus ──
     function focusCameraCard(camIndex) {
         if (camIndex === 0) cam1Card.forceActiveFocus()
-        else if (camIndex === 1 && cam2Available) cam2Card.forceActiveFocus()
+        else if (camIndex === 1) cam2Card.forceActiveFocus()
         else cam1Card.forceActiveFocus()
     }
 
@@ -247,21 +269,36 @@ FocusScope {
     Connections {
         target: _qopenhd
         function onDebugMenuPreviewChanged() {
-            if (!_qopenhd.debugMenuPreview && !root.cam2Available) root.activeCamera = 0
             root.ensureActiveCategory()
         }
     }
     onParamRevisionChanged: ensureActiveCategory()
     onActiveCameraChanged: {
+        if (!_qopenhd.debugMenuPreview && _ohdSystemAir.is_alive && !settingsModel.has_params_fetched && !settingsModel.ui_is_busy)
+            settingsModel.ensure_parameters_available()
         ensureActiveCategory()
         settingsFlick.contentY = 0
     }
+    function fetchCameraSettings() {
+        if (!visible || !_ohdSystemAir.is_alive || _qopenhd.debugMenuPreview) return
+        for (var i=0; i<2; i++) {
+            var model = cameraModel(i)
+            if (!model.has_params_fetched && !model.ui_is_busy) model.ensure_parameters_available()
+        }
+    }
+    Connections { target: _ohdSystemAir; function onIs_aliveChanged() { root.fetchCameraSettings() } }
+    // The first fetch owns the shared parameter queue. Retry the other camera
+    // after it finishes, including cameras whose stream is disabled.
+    Timer {
+        interval: 1000; repeat: true
+        running: root.visible && _ohdSystemAir.is_alive && !_qopenhd.debugMenuPreview
+        onTriggered: root.fetchCameraSettings()
+    }
     onVisibleChanged: {
-        if (visible && _ohdSystemAir.is_alive && !settingsModel.has_params_fetched && !settingsModel.ui_is_busy)
-            settingsModel.ensure_parameters_available()
+        fetchCameraSettings()
         if (visible) Qt.callLater(ensureActiveCategory)
     }
-    Component.onCompleted: ensureActiveCategory()
+    Component.onCompleted: { fetchCameraSettings(); ensureActiveCategory() }
     Keys.onEscapePressed: root.backRequested()
 
     ColumnLayout {
@@ -291,7 +328,7 @@ FocusScope {
                 property bool isFocused: activeFocus
 
                 Keys.onPressed: function(event) {
-                    if (event.key === Qt.Key_Right && cam2Available) {
+                    if (event.key === Qt.Key_Right) {
                         activeCamera = 1
                         cam2Card.forceActiveFocus()
                         event.accepted = true
@@ -356,7 +393,7 @@ FocusScope {
                             Layout.fillWidth: true
                             text: qsTr("CAMERA 1")
                             color: settings_form.primaryText
-                            font.pixelSize: 14
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                             elide: Text.ElideRight
                         }
@@ -372,20 +409,29 @@ FocusScope {
                             Text {
                                 text: camStatusText(_cameraStreamModelPrimary)
                                 color: camStatusColor(_cameraStreamModelPrimary)
-                                font.pixelSize: 9
+                                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                                 font.bold: true
                             }
-                            Text { text: "\u2022"; color: settings_form.secondaryText; font.pixelSize: 8 }
+                            Text { text: "\u2022"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                             Text {
                                 Layout.fillWidth: true
                                 text: camName(_cameraStreamModelPrimary)
                                 color: settings_form.secondaryText
-                                font.pixelSize: 9
+                                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                                 elide: Text.ElideRight
                             }
                         }
                     }
 
+                    CheckBox {
+                        id: cameraEnabled0
+                        objectName: "cameraEnabled0"
+                        text: checked ? qsTr("Enabled") : qsTr("Disabled")
+                        font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
+                        enabled: root.canToggleCamera(0)
+                        onClicked: root.setCameraEnabled(0, checked)
+                    }
+                    Binding { target: cameraEnabled0; property: "checked"; value: root.cameraEnabled(0) }
                     BusyIndicator {
                         Layout.preferredWidth: 20
                         Layout.preferredHeight: 20
@@ -401,7 +447,6 @@ FocusScope {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 78
                 radius: 11
-                visible: _qopenhd.debugMenuPreview || cam2Available
                 color: settings_form.panelBackgroundRaised
                 border.width: activeCamera === 1 ? 2 : 1
                 border.color: activeCamera === 1 ? settings_form.accentColor
@@ -475,7 +520,7 @@ FocusScope {
                             Layout.fillWidth: true
                             text: qsTr("CAMERA 2")
                             color: settings_form.primaryText
-                            font.pixelSize: 14
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                             elide: Text.ElideRight
                         }
@@ -491,20 +536,29 @@ FocusScope {
                             Text {
                                 text: camStatusText(_cameraStreamModelSecondary)
                                 color: camStatusColor(_cameraStreamModelSecondary)
-                                font.pixelSize: 9
+                                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                                 font.bold: true
                             }
-                            Text { text: "\u2022"; color: settings_form.secondaryText; font.pixelSize: 8 }
+                            Text { text: "\u2022"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                             Text {
                                 Layout.fillWidth: true
                                 text: camName(_cameraStreamModelSecondary)
                                 color: settings_form.secondaryText
-                                font.pixelSize: 9
+                                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                                 elide: Text.ElideRight
                             }
                         }
                     }
 
+                    CheckBox {
+                        id: cameraEnabled1
+                        objectName: "cameraEnabled1"
+                        text: checked ? qsTr("Enabled") : qsTr("Disabled")
+                        font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
+                        enabled: root.canToggleCamera(1)
+                        onClicked: root.setCameraEnabled(1, checked)
+                    }
+                    Binding { target: cameraEnabled1; property: "checked"; value: root.cameraEnabled(1) }
                     BusyIndicator {
                         Layout.preferredWidth: 20
                         Layout.preferredHeight: 20
@@ -606,14 +660,14 @@ FocusScope {
                         Text {
                             text: categoryModel.get(Math.max(0, root.categoryIndex(root.activeCategory))).title
                             color: settings_form.primaryText
-                            font.pixelSize: 14
+                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                             font.bold: true
                         }
                         Text {
                             Layout.fillWidth: true
                             text: root.categoryDescription(root.activeCategory)
                             color: settings_form.secondaryText
-                            font.pixelSize: 10
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             elide: Text.ElideRight
                         }
                     }
@@ -630,7 +684,7 @@ FocusScope {
                             text: root.activeCategory === "CONNECTION"
                                   ? qsTr("SETUP") : (root.activeCamera === 0 ? qsTr("CAM 1") : qsTr("CAM 2"))
                             color: settings_form.secondaryText
-                            font.pixelSize: 9
+                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                         }
                     }
@@ -736,7 +790,7 @@ FocusScope {
                           : (settingsModel.ui_is_busy ? qsTr("Loading camera settings")
                                                      : qsTr("Camera settings are not loaded"))
                     color: settings_form.primaryText
-                    font.pixelSize: 16
+                    font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                 }
@@ -746,7 +800,7 @@ FocusScope {
                           ? qsTr("Connect the air unit to view and change camera settings.")
                           : qsTr("Load the parameters reported by the active camera.")
                     color: settings_form.secondaryText
-                    font.pixelSize: 11
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignHCenter
                 }
@@ -756,7 +810,7 @@ FocusScope {
                     from: 0; to: 100
                     value: Math.max(0, settingsModel.curr_get_all_progress_perc)
                 }
-                AdvancedActionButton {
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: reloadButton
                     Layout.alignment: Qt.AlignHCenter
                     visible: _ohdSystemAir.is_alive && !settingsModel.ui_is_busy

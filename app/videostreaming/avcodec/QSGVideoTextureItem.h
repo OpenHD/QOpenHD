@@ -6,6 +6,7 @@
 
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
+#include <QPointer>
 
 #include "texturerenderer.h"
 
@@ -45,6 +46,7 @@ private:
     void releaseResources() override;
 
     TextureRenderer* m_renderer=nullptr;
+    QPointer<QQuickWindow> m_connected_window;
 public slots:
     void m_QQuickWindow_beforeRendering();
     void m_QQuickWindow_beforeRenderPassRecording();

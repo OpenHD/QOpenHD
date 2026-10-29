@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
@@ -103,7 +104,7 @@ FocusScope {
             value: Number(root.paramValue)
             editable: true
             enabled: !root.busy
-            font.pixelSize: 12
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             onValueModified: root.commitInt(value)
         }
     }
@@ -115,7 +116,7 @@ FocusScope {
             text: String(root.paramValue)
             enabled: !root.busy
             selectByMouse: true
-            font.pixelSize: 12
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             color: settings_form.primaryText
             onEditingFinished: {
                 if (text !== String(root.paramValue))
@@ -142,7 +143,7 @@ FocusScope {
                 anchors.rightMargin: 10
                 text: root.displayValue
                 color: settings_form.secondaryText
-                font.pixelSize: 12
+                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideLeft

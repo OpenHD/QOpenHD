@@ -99,8 +99,11 @@ def main():
     with tempfile.TemporaryDirectory(prefix="qopenhd-link-layout-") as temp:
         folder = Path(temp)
         source = ROOT / "qml/ui/configpopup/openhd_settings"
-        for name in ("LinkQuickPanel", "LinkUsageMeter", "LinkSegmentsBar", "LinkAllocationPopup"):
-            shutil.copy(source / (name + ".qml"), folder)
+        for name in ("LinkQuickPanel", "LinkUsageMeter", "LinkSegmentsBar", "LinkAllocationPopup", "LinkAllocationSection"):
+            content = (source / (name + ".qml")).read_text(encoding="utf-8")
+            (folder / (name + ".qml")).write_text(content.replace('../MenuTypography.js', 'MenuTypography.js'), encoding="utf-8")
+        shutil.copy(source.parent / "MenuTypography.js", folder)
+        (folder / "DynamicLinkSetting.qml").write_text("import QtQuick 2.12\nItem {property var settingsModel;property string paramId;property string label;property string valueSuffix;property bool editorEnabled;property var commitHandler}\n", encoding="utf-8")
         # Keep the real scrolling/Flow/Loader hierarchy; replace backend-heavy
         # card contents with a tall deterministic card that reproduces clipping.
         stub = '''import QtQuick 2.12

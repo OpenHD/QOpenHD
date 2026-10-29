@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -5,17 +6,19 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 
 import "../../elements"
+import ".."
 
 // Dialoque that is shown to the user when the FC is armed and he wants to change frequency
 // Once the user clicks the warning away, proceed as if FC is not armed
 Card {
+    dialogStyle: true
     id: dialoqueFreqChangeAirGnd
     width: 360
     height: 340
     z: 5.0
     anchors.centerIn: parent
     cardName: get_card_title_string()
-    cardNameColor: "black"
+    cardNameColor: "#edf4fa"
     visible: false
 
     property int m_wanted_frequency: -1
@@ -57,7 +60,7 @@ Card {
         height: 200
         width: 320
 
-        Text{
+        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: description
             width: parent.width
             height: parent.height /2;
@@ -67,7 +70,7 @@ Card {
             text: get_card_body_string();
             color: settings_form.primaryText
         }
-        Text{
+        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             anchors.top: description.bottom
             anchors.left: parent.left
             anchors.right: parent.right
@@ -86,7 +89,7 @@ Card {
         RowLayout{
             anchors.fill: parent
 
-            Button{
+            AdvancedDialogButton {
                 Layout.preferredWidth: 150
                 text: qsTr("CANCEL")
                 onPressed: {
@@ -94,10 +97,10 @@ Card {
                 }
             }
 
-            Button{
+            AdvancedDialogButton {
                 Layout.preferredWidth: 150
                 text: qsTr("YES");
-                Material.accent: m_fc_is_armed ?  Material.Red : Material.Grey
+                destructive: m_fc_is_armed
                 highlighted: m_fc_is_armed ? true : false;
 
                 onPressed: {

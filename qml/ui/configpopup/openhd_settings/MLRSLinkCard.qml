@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -15,9 +16,9 @@ Rectangle {
         anchors.fill: parent; anchors.margins: 8; spacing: 5
         RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
             Text { text: "\uf519"; color: "#b06cff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 17 }
-            Text { text: qsTr("mLRS Link"); color: settings_form.primaryText; font.pixelSize: 12; font.bold: true; Layout.fillWidth: true }
+            Text { text: qsTr("mLRS Link"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Rectangle { width: activeText.implicitWidth + 14; height: 21; radius: 7; color: Qt.rgba(0.1,0.8,0.35,0.12)
-                Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: 8; font.bold: true }
+                Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
         LinkUsageMeter { Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("mlrs") : null }

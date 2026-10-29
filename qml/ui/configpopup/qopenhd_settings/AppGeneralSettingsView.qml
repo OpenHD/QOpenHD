@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -33,7 +34,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Enable text to speech")
 
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -47,7 +48,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Use Imperial units")
 
-                Switch {
+                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -69,7 +70,7 @@ ScrollView {
                 StyledText {
                     text: qsTr("Animation Smoothing")
                     font.weight: Font.Bold
-                    font.pixelSize: 13
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -80,7 +81,7 @@ ScrollView {
 
                 StyledText {
                     text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "ms";
-                    font.pixelSize: 16
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: smoothing_Slider.left
                     anchors.rightMargin: 12
                     verticalAlignment: Text.AlignVCenter
@@ -94,7 +95,7 @@ ScrollView {
                     id: smoothing_Slider
                     height: elementHeight
                     width: 210
-                    font.pixelSize: 14
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     to : 1000
@@ -118,7 +119,7 @@ ScrollView {
                     id: gndBatteryCellspinBox
                     height: elementHeight
                     width: 210
-                    font.pixelSize: 14
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     from: 1
@@ -154,7 +155,7 @@ ScrollView {
                     id: mavlinkSysIDSpinBox
                     height: elementHeight
                     width: 210
-                    font.pixelSize: 14
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     from: 1
@@ -179,7 +180,7 @@ ScrollView {
                 /*SpinBox {
                     height: elementHeight
                     width: 210
-                    font.pixelSize: 14
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
@@ -196,7 +197,7 @@ ScrollView {
                 XDecimalSpinBox{
                     height: elementHeight
                     width: 210
-                    font.pixelSize: 14
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
@@ -219,7 +220,7 @@ ScrollView {
                 XDecimalSpinBox{
                     height: elementHeight
                     width: 210
-                    font.pixelSize: 14
+                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
