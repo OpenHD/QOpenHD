@@ -23,7 +23,7 @@ Item {
     height:  46
     width: parent.width
 
-    Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+    AdvancedActionButton{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
         id: genericButton
 
         height: parent.height
@@ -37,7 +37,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
-            font.pixelSize: 18
+            font.pixelSize: MenuTypography.rowIcon
             height: parent.height
             width: 24
             anchors.left: parent.left

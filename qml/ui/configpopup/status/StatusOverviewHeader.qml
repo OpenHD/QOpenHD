@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -27,9 +28,19 @@ Item {
     Item {
         width: header.width / header.headerScale; height: 72
         scale: header.headerScale; transformOrigin: Item.TopLeft
-        Text { x: 0; y: 12; objectName: "menuHeaderIcon"; text: settings_form.menuPageIcon; color: "#38a5ff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 40 }
-        Text { x: 66; y: 5; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
-        Text { x: 66; y: 47; text: settings_form.menuPageSubtitle; color: settings_form.secondaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+        Text {
+            x: 0; y: 12; objectName: "menuHeaderIcon"; text: settings_form.menuPageIcon
+            color: "#38a5ff"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.pageIcon
+            MouseArea {
+                objectName: "creditsStarUnlockArea"
+                anchors.fill: parent; anchors.margins: -6
+                enabled: settings_form.menuPageIcon === "\uf005"
+                cursorShape: Qt.PointingHandCursor
+                onClicked: settings_form.creditsStarClicked()
+            }
+        }
+        Text { x: 66; y: 5; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
+        Text { x: 66; y: 47; text: settings_form.menuPageSubtitle; color: settings_form.secondaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
         Rectangle {
             x: header.compactTelemetry ? 0 : parent.width - 960; y: header.compactTelemetry ? 80 : 0; width: 424; height: 56; radius: 28
             color: "transparent"; border.color: "transparent"
@@ -44,8 +55,8 @@ Item {
                     Row {
                         spacing: 12
                         Rectangle { visible: index > 0; anchors.verticalCenter: parent.verticalCenter; width: 1; height: 28; color: "#153c53" }
-                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: index < 2 ? "#12a8f3" : "#d5e7f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: 23 }
-                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.value; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.body; width: Math.min(implicitWidth, 126); elide: Text.ElideRight }
+                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: index < 2 ? "#12a8f3" : "#d5e7f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon }
+                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.value; color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; width: Math.min(implicitWidth, 126); elide: Text.ElideRight }
                     }
                 }
             }
@@ -68,7 +79,7 @@ Item {
                     contentItem: Text {
                         text: header.audio && header.audio.playbackVolume > 0 ? "\uf028" : "\uf6a9"
                         color: soundButton.enabled ? "#d5e7f5" : settings_form.secondaryText
-                        font.family: "Font Awesome 5 Free"; font.pixelSize: 23
+                        font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon
                         horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                     }
                 }
@@ -84,7 +95,7 @@ Item {
                         }
                     }
                 }
-                Text { anchors.verticalCenter: parent.verticalCenter; text: header.clockText; color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                Text { anchors.verticalCenter: parent.verticalCenter; text: header.clockText; color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
             }
         }
     }
@@ -103,7 +114,7 @@ Item {
         contentItem: Column {
             id: volumeContent
             spacing: 12
-            Text { text: qsTr("Audio"); color: settings_form.primaryText; font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true }
+            Text { text: qsTr("Audio"); color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true }
             Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 objectName: "statusPlaybackSwitch"
                 width: parent.width
@@ -127,7 +138,7 @@ Item {
                 onMoved: header.audio.playbackVolume = Math.round(value)
                 Accessible.name: qsTr("Playback volume")
             }
-            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 objectName: "statusMuteButton"
                 width: parent.width
                 enabled: header.audio !== null

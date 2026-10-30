@@ -50,7 +50,7 @@ FocusScope {
                 text: root.pageIcon
                 color: settings_form.accentColor
                 font.family: "Font Awesome 5 Free"
-                font.pixelSize: 21
+                font.pixelSize: MenuTypography.sectionIcon
             }
         }
 

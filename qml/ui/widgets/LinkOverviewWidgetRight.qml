@@ -29,8 +29,8 @@ BaseWidget {
     bw_background_color_identifier: "link_overview_widget_bg_color"
     bw_opacity_identifier: "link_overview_widget_opacity"
 
-    property string linkFont: "Quicksand"
-    property string linkMonoFont: "ShareTechMono"
+    property string linkFont: settings.osd_top_bar_font || "Quicksand"
+    property string linkMonoFont: settings.osd_top_bar_font || "ShareTechMono"
 
     property var m_camera_stream_model: _cameraStreamModelPrimary
     property bool m_camera_is_currently_recording: _cameraStreamModelPrimary.air_recording_active
@@ -329,7 +329,7 @@ BaseWidget {
             anchors.fill: parent
             opacity: 0.5
             property real cutXRatio: 0.80
-            property color fillColor: bw_current_background_color
+            property color fillColor: settings.osd_top_bar_background_color || bw_current_background_color
 
             ShapePath {
                 strokeWidth: 0
@@ -360,7 +360,7 @@ BaseWidget {
                 anchors.centerIn: parent
                 color: m_camera_is_currently_recording ? "red" : "transparent"
                 border.width: 2
-                border.color: m_camera_is_currently_recording ? "red" : settings.color_text
+                border.color: m_camera_is_currently_recording ? "red" : (settings.osd_top_bar_text_color || settings.color_text)
             }
 
             MouseArea {
@@ -423,7 +423,7 @@ BaseWidget {
 
             Text {
                 text: get_frequency_text()
-                color: settings.color_text
+                color: settings.osd_top_bar_text_color || settings.color_text
                 font.pixelSize: 16
                 font.family: linkFont
                 verticalAlignment: Text.AlignVCenter
@@ -462,7 +462,7 @@ BaseWidget {
                         width: rcBlockWidth + rcBlockSkew
                         height: rcBlockHeight
                         property bool isActive: rc_rssi_is_valid() && rc_rssi_percentage >= rcBlockThresholds[index]
-                        property color shapeColor: settings.color_shape
+                        property color shapeColor: settings.osd_top_bar_text_color || settings.color_shape
 
                         Rectangle {
                             visible: useSimpleBlocks

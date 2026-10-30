@@ -40,6 +40,10 @@ public:
     // (aka what for example mission planner would show)
     //static MavlinkSettingsModel& instanceFC();
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
+    // Isolated, writable simulator cache. Never used by live singletons.
+    void initializeSimulation(const QVariantMap& values);
+    bool isSimulation() const { return m_simulation; }
+    bool setSimulationValue(const QString& id, const QVariant& value);
     //
     static bool is_air_or_cam_param_busy();
 public:
@@ -105,6 +109,7 @@ public slots:
     void updateData(std::optional<int> row,MavlinkSettingsModel::SettingData new_data);
     void addData(MavlinkSettingsModel::SettingData data);
 private:
+    bool m_simulation = false;
     std::atomic<int64_t> m_next_auto_fetch_ms{0};
     QVector<MavlinkSettingsModel::SettingData> m_data;
     // Dedicated Link controls need parameters hidden from the generic list.

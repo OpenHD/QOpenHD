@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -145,8 +146,8 @@ Rectangle {
         anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
         anchors.margins: 8; spacing: 7
         RowLayout {
-            Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
-            Text { text: "\uf1eb"; color: "#55aaff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 18 }
+            Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; spacing: 8
+            Text { text: "\uf1eb"; color: "#55aaff"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.rowIcon }
             Text { text: qsTr("WiFiBroadcast Link"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: linkSwitch
@@ -163,7 +164,7 @@ Rectangle {
         }
 
         GridLayout {
-            visible: settings.dev_show_advanced_button
+            visible: settings_form.showAdvancedSettings
             Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 88 : 44; Layout.maximumHeight: Layout.preferredHeight; columns: root.width < 360 ? 2 : 4; columnSpacing: 4; rowSpacing: 4
             Repeater {
                 model: [
@@ -207,9 +208,9 @@ Rectangle {
                             Text { Layout.fillWidth: true; text: qsTr("Scan to find your Air unit, or analyze interference before choosing a frequency."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap }
                             RowLayout {
                                 Layout.fillWidth: true; spacing: 8
-                                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     id: scan
-                                    Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: 64
+                                    Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: MenuTypography.controlHeight
                                     enabled: !root.simulated; text: qsTr("Scan"); hoverEnabled: true
                                     contentItem: Item {
                                       Column {
@@ -222,9 +223,9 @@ Rectangle {
                                     onClicked: if (host) host.openScan()
                                     Keys.onPressed: root.keyNav(event)
                                 }
-                                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                     id: analyze
-                                    Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: 64
+                                    Layout.fillWidth: true; Layout.preferredWidth: 1; Layout.minimumWidth: 0; Layout.preferredHeight: MenuTypography.controlHeight
                                     enabled: !root.simulated; text: qsTr("Analyze"); hoverEnabled: true
                                     contentItem: Item {
                                       Column {
@@ -254,7 +255,7 @@ Rectangle {
                                 Text { Layout.fillWidth: true; text: qsTr("Radio settings"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                                 CompactLinkComboBox {
                                     id: frequencyFilter
-                                    Layout.preferredWidth: Math.max(200, preferredTextWidth); Layout.minimumWidth: Layout.preferredWidth; Layout.fillWidth: channelContent.width < 420; Layout.preferredHeight: 36; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
+                                    Layout.preferredWidth: Math.max(200, preferredTextWidth); Layout.minimumWidth: Layout.preferredWidth; Layout.fillWidth: channelContent.width < 420; Layout.preferredHeight: MenuTypography.controlHeight; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                                     model: frequencyFilters; textRole: "title"
                                     currentIndex: root.modelIndex(frequencyFilters, settings.qopenhd_frequency_filter_selection)
                                     onActivated: { settings.qopenhd_frequency_filter_selection = frequencyFilters.get(currentIndex).value; root.syncRadio() }
@@ -264,7 +265,7 @@ Rectangle {
                             Text { text: qsTr("Channel / frequency"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
                             CompactLinkComboBox {
                                 id: frequency
-                                Layout.fillWidth: true; Layout.preferredHeight: 44; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true
+                                Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true
                                 model: host ? host.frequencyModel : null; textRole: "title"; popupWidth: Math.max(width, 250)
                                 displayText: root.currentFrequency > 0 && host ? host.formatFrequency(root.currentFrequency) : qsTr("N/A")
                                 enabled: !root.simulated
@@ -276,12 +277,12 @@ Rectangle {
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 4
                                     Text { text: qsTr("Channel width"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
-                                    CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
+                                    CompactLinkComboBox { id: bandwidth; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; model: bandwidths; textRole: "title"; displayText: root.currentBandwidth > 0 ? qsTr("%1 MHz").arg(root.currentBandwidth) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.change_param_air_channel_width_async(bandwidths.get(currentIndex).value, true); Keys.onPressed: root.keyNav(event) }
                                 }
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 4
                                     Text { text: qsTr("MCS"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
-                                    CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
+                                    CompactLinkComboBox { id: mcs; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; model: mcsValues; textRole: "title"; displayText: root.currentMcs >= 0 ? qsTr("MCS %1").arg(root.currentMcs) : qsTr("N/A"); enabled: !root.simulated && _ohdSystemAir.is_alive; onActivated: if (currentIndex >= 0) _wbLinkSettingsHelper.set_param_air_only_mcs_async(mcsValues.get(currentIndex).value); Keys.onPressed: root.keyNav(event) }
                                 }
                             }
                         }
@@ -299,7 +300,7 @@ Rectangle {
                     id: pitMode
                     Layout.preferredWidth: root.width < 650 ? parent.width : Math.min(220, parent.width * 0.24)
                     Layout.fillWidth: root.width < 650
-                    Layout.preferredHeight: 48
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     Layout.fillHeight: true
                     visible: _qopenhd.debugMenuPreview || (root.pitModeAvailable)
                     editorEnabled: root.pitModeAvailable
@@ -319,8 +320,8 @@ Rectangle {
                     Layout.fillWidth: true; Layout.fillHeight: true; spacing: 1
                     Text { text: qsTr("TX POWER"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
                     RowLayout { Layout.fillWidth: true; spacing: 14
-                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings.dev_show_advanced_button || _qopenhd.debugMenuPreview) ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings.dev_show_advanced_button || _qopenhd.debugMenuPreview) ? 150 : 100; dangerAboveEnabled: settings.dev_show_advanced_button; dangerAbove: 100; detentEnabled: settings.dev_show_advanced_button; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: airPower; Layout.fillWidth: true; visible: root.showAirPower; editorEnabled: root.airPowerAvailable; settingsModel: _ohdSystemAirSettingsModel; paramId: "TX_PWR_LVL"; label: qsTr("Air"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings_form.showAdvancedSettings) ? 150 : 100; dangerAboveEnabled: settings_form.showAdvancedSettings; dangerAbove: 100; detentEnabled: settings_form.showAdvancedSettings; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
+                        DynamicLinkSetting { id: groundPower; Layout.fillWidth: true; visible: root.showGroundPower; editorEnabled: root.groundPowerAvailable; settingsModel: _ohdSystemGroundSettings; paramId: "TX_PWR_LVL"; label: qsTr("Ground"); valueSuffix: "%"; preferSlider: true; preferredStepSize: 10; overrideSliderRange: true; preferredMinimum: 0; preferredMaximum: (settings_form.showAdvancedSettings) ? 150 : 100; dangerAboveEnabled: settings_form.showAdvancedSettings; dangerAbove: 100; detentEnabled: settings_form.showAdvancedSettings; detentValue: 100; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                     }
                 }
             }
@@ -328,9 +329,9 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true
-            visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button && root.settingsRevision >= 0 &&
+            visible: settings_form.showAdvancedSettings && (_qopenhd.debugMenuPreview || ( root.settingsRevision >= 0 &&
                      (_ohdSystemAirSettingsModel.param_int_exists("ESP_ANALYSE") ||
-                      _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE")))
+                      _ohdSystemGroundSettings.param_int_exists("ESP_ANALYSE"))))
             DynamicLinkSetting {
                 id: espAnalyseAir
                 Layout.fillWidth: true
@@ -356,13 +357,13 @@ Rectangle {
         }
 
         Rectangle {
-            visible: _qopenhd.debugMenuPreview || (root.adaptiveAvailable || (settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable)))
+            visible: _qopenhd.debugMenuPreview || (root.adaptiveAvailable || (settings_form.showAdvancedSettings && (root.fhssAvailable || root.dwellAvailable)))
             Layout.fillWidth: true; Layout.preferredHeight: visible ? 66 : 0
             radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
             RowLayout { anchors.fill: parent; anchors.margins: 7; spacing: 10
                 DynamicLinkSetting { id: adaptive; Layout.fillWidth: true; visible: _qopenhd.debugMenuPreview || (root.adaptiveAvailable); settingsModel: _ohdSystemAirSettingsModel; paramId: "WB_ADAPT_CH"; label: qsTr("Adaptive Link"); preferRadioToggle: true; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
                 ColumnLayout {
-                    visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button && (root.fhssAvailable || root.dwellAvailable))
+                    visible: settings_form.showAdvancedSettings && (_qopenhd.debugMenuPreview || root.fhssAvailable || root.dwellAvailable)
                     Layout.fillWidth: true
                     Layout.minimumWidth: root.dwellAvailable ? 210 : 120
                     spacing: 1
@@ -377,7 +378,7 @@ Rectangle {
         }
 
         LinkUsageMeter {
-            visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button)
+            visible: settings_form.showAdvancedSettings
             Layout.fillWidth: true
             Layout.preferredHeight: implicitHeight
             usage: root.host ? root.host.usageFor("wifi") : null

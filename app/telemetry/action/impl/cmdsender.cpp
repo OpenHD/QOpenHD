@@ -1,3 +1,4 @@
+#include "util/uisimulator.h"
 #include "cmdsender.h"
 
 #include <qdebug.h>
@@ -54,6 +55,13 @@ bool CmdSender::process_message(const mavlink_message_t &msg)
 
 bool CmdSender::send_command_long_async(mavlink_command_long_t cmd, RESULT_CB result_cb,std::chrono::milliseconds retransmit_delay,int n_wanted_retransmissions)
 {
+    if (UiSimulator::isActive()) {
+        auto* simulator=&UiSimulator::instance();
+        QMetaObject::invokeMethod(simulator,[simulator,cmd]{ simulator->recordAction(QString("Simulated command %1 - no device contacted").arg(cmd.command)); },Qt::QueuedConnection);
+        mavlink_command_ack_t ack{};ack.command=cmd.command;ack.result=MAV_RESULT_ACCEPTED;
+        if(result_cb)result_cb(RunCommandResult{ack,0});
+        return true;
+    }
     assert(n_wanted_retransmissions>=1);
     assert(retransmit_delay.count()>=10);
     if(!result_cb){

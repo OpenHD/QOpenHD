@@ -40,14 +40,14 @@ Popup {
             id: titleRow
             anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
             height: 38; spacing: 18
-            Text { text: "\uf0c1"; font.family: "Font Awesome 5 Free"; font.pixelSize: 30; color: "#00a8ed" }
+            Text { text: "\uf0c1"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#00a8ed" }
             Text { Layout.fillWidth: true; text: qsTr("Link Allocation"); color: "#edf4fa"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.dialogTitle; font.bold: true }
             ToolButton {
-                objectName: "closeLinkAllocation"; implicitWidth: 40; implicitHeight: 38
+                objectName: "closeLinkAllocation"; implicitWidth: 40; implicitHeight: MenuTypography.controlHeight
                 Accessible.name: qsTr("Close link allocation")
                 onClicked: popup.close()
                 background: Rectangle { radius: 9; color: parent.hovered ? "#15435b" : "#092a3c"; border.color: "#10374b" }
-                contentItem: Text { text: "\uf00d"; font.family: "Font Awesome 5 Free"; font.pixelSize: 21; color: "#edf4fa"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                contentItem: Text { text: "\uf00d"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#edf4fa"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
         }
         Flickable {

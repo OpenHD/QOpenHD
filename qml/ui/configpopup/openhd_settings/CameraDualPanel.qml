@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 
 import ".."
+import "CameraSettingsLayout.js" as CameraLayout
 
 FocusScope {
     id: root
@@ -62,26 +63,7 @@ FocusScope {
     }
 
     // ── Category helper functions ──
-    function categoryFor(id) {
-        if (["IP_CAM_ADDRESS", "IP_CAM_PIPELINE"].indexOf(id) >= 0)
-            return "CONNECTION"
-        if (["AIR_RECORDING_E", "STREAMING_E", "BITRATE_MBITS", "VIDEO_CODEC",
-             "KEYFRAME_I", "RESOLUTION_FPS"].indexOf(id) >= 0)
-            return "VIDEO"
-        if (id.indexOf("AWB") >= 0 || id.indexOf("WHITE_BALANCE") >= 0)
-            return "COLOR"
-        if (id.indexOf("EXP") >= 0 || id.indexOf("SHUTTER") >= 0 ||
-                id.indexOf("METERING") >= 0 || id === "ISO")
-            return "EXPOSURE"
-        if (id.indexOf("BRIGHTNESS") >= 0 || id.indexOf("CONTRAST") >= 0 ||
-                id.indexOf("SATURATION") >= 0 || id.indexOf("SHARPNESS") >= 0 ||
-                id.indexOf("DENOISE") >= 0)
-            return "IMAGE"
-        if (["CAMERA_TYPE", "ROCKCHIP_IMPL",
-             "ROTATION_FLIP", "ROTATION_DEG"].indexOf(id) >= 0)
-            return "CAMERA"
-        return "ADVANCED"
-    }
+    function categoryFor(id) { return CameraLayout.categoryFor(id) }
 
     function categoryDescription(category) {
         if (category === "VIDEO") return qsTr("Streaming, recording, format and encoder settings")
@@ -98,7 +80,7 @@ FocusScope {
         var count = 0
         var ids = settingsModel ? settingsModel.param_ids() : []
         for (var i = 0; i < ids.length; ++i) {
-            if (["SENSOR_MODE", "LIBCAMERA_IMPL"].indexOf(ids[i]) >= 0 && !settings.dev_show_advanced_button && !_qopenhd.debugMenuPreview) continue
+            if (!CameraLayout.visibleInMode(ids[i], settings_form.showAdvancedSettings, settingsModel)) continue
             if (categoryFor(ids[i]) === category) ++count
         }
         return count
@@ -111,8 +93,9 @@ FocusScope {
     }
 
     function categoryAvailable(index) {
+        if (index >= 0 && index < categoryModel.count && categoryModel.get(index).categoryKey === "ADVANCED" && !settings_form.showAdvancedSettings) return false
         return index >= 0 && index < categoryModel.count &&
-               (_qopenhd.debugMenuPreview || categoryCount(categoryModel.get(index).categoryKey) > 0)
+               categoryCount(categoryModel.get(index).categoryKey) > 0
     }
 
     function firstAvailableCategory(from, step) {
@@ -125,7 +108,7 @@ FocusScope {
         var current = categoryIndex(activeCategory)
         if (categoryAvailable(current)) return
         var first = firstAvailableCategory(0, 1)
-        if (first >= 0) activeCategory = categoryModel.get(first).categoryKey
+        activeCategory = first >= 0 ? categoryModel.get(first).categoryKey : ""
     }
 
     function focusCategory(index) {
@@ -272,6 +255,11 @@ FocusScope {
             root.ensureActiveCategory()
         }
     }
+    Connections {
+        target: settings_form
+        function onShowAdvancedSettingsChanged() { root.ensureActiveCategory() }
+    }
+    onSettingsModelChanged: Qt.callLater(ensureActiveCategory)
     onParamRevisionChanged: ensureActiveCategory()
     onActiveCameraChanged: {
         if (!_qopenhd.debugMenuPreview && _ohdSystemAir.is_alive && !settingsModel.has_params_fetched && !settingsModel.ui_is_busy)
@@ -373,7 +361,7 @@ FocusScope {
 
                     Rectangle {
                         Layout.preferredWidth: 42
-                        Layout.preferredHeight: 42
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         radius: 10
                         color: activeCamera === 0 ? (settings_form.darkMode ? "#173b61" : "#dcecff")
                                                   : (settings_form.darkMode ? "#0e1f33" : "#edf2f7")
@@ -381,7 +369,7 @@ FocusScope {
                             anchors.centerIn: parent
                             text: "\uf030"
                             font.family: "Font Awesome 5 Free"
-                            font.pixelSize: 18
+                            font.pixelSize: MenuTypography.rowIcon
                             color: activeCamera === 0 ? settings_form.accentColor : settings_form.secondaryText
                         }
                     }
@@ -500,7 +488,7 @@ FocusScope {
 
                     Rectangle {
                         Layout.preferredWidth: 42
-                        Layout.preferredHeight: 42
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         radius: 10
                         color: activeCamera === 1 ? (settings_form.darkMode ? "#173b61" : "#dcecff")
                                                   : (settings_form.darkMode ? "#0e1f33" : "#edf2f7")
@@ -508,7 +496,7 @@ FocusScope {
                             anchors.centerIn: parent
                             text: "\uf030"
                             font.family: "Font Awesome 5 Free"
-                            font.pixelSize: 18
+                            font.pixelSize: MenuTypography.rowIcon
                             color: activeCamera === 1 ? settings_form.accentColor : settings_form.secondaryText
                         }
                     }
@@ -600,8 +588,7 @@ FocusScope {
                     model: categoryModel
                     delegate: AdvancedTabButton {
                         id: categoryButton
-                        property int itemCount: root.categoryCount(model.categoryKey)
-                        visible: _qopenhd.debugMenuPreview || itemCount > 0
+                        visible: root.categoryAvailable(index)
                         width: visible ? implicitWidth : 0
                         height: 36
                         text: model.title
@@ -641,58 +628,6 @@ FocusScope {
                 anchors.fill: parent
                 spacing: 0
 
-                // Category header
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 62
-                    Layout.leftMargin: 18
-                    Layout.rightMargin: 18
-                    spacing: 10
-                    Text {
-                        text: categoryModel.get(Math.max(0, root.categoryIndex(root.activeCategory))).icon
-                        color: settings_form.accentColor
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 15
-                    }
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 2
-                        Text {
-                            text: categoryModel.get(Math.max(0, root.categoryIndex(root.activeCategory))).title
-                            color: settings_form.primaryText
-                            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                            font.bold: true
-                        }
-                        Text {
-                            Layout.fillWidth: true
-                            text: root.categoryDescription(root.activeCategory)
-                            color: settings_form.secondaryText
-                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                            elide: Text.ElideRight
-                        }
-                    }
-                    // Active camera badge
-                    Rectangle {
-                        implicitWidth: camBadgeLabel.implicitWidth + 16
-                        implicitHeight: 26
-                        radius: 7
-                        color: settings_form.panelBackground
-                        border.color: settings_form.lineColor
-                        Text {
-                            id: camBadgeLabel
-                            anchors.centerIn: parent
-                            text: root.activeCategory === "CONNECTION"
-                                  ? qsTr("SETUP") : (root.activeCamera === 0 ? qsTr("CAM 1") : qsTr("CAM 2"))
-                            color: settings_form.secondaryText
-                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                            font.bold: true
-                        }
-                    }
-                }
-
-                Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; color: settings_form.lineColor }
-
-                // Settings list
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -701,7 +636,7 @@ FocusScope {
                         id: settingsFlick
                         anchors.fill: parent
                         anchors.margins: 8
-                        visible: root.activeCategory !== "CONNECTION"
+                        visible: root.activeCategory !== "" && root.activeCategory !== "CONNECTION"
                         contentWidth: width
                         contentHeight: Math.max(height, settingsColumn.height + 8)
                         clip: true
@@ -723,7 +658,8 @@ FocusScope {
                                     width: settingsColumn.width
                                     visible: root.categoryFor(model.unique_id) === root.activeCategory &&
                                              root.activeCategory !== "CONNECTION" &&
-                                             (["SENSOR_MODE", "LIBCAMERA_IMPL"].indexOf(model.unique_id) < 0 || settings.dev_show_advanced_button || _qopenhd.debugMenuPreview)
+                                             (settings_form.showAdvancedSettings || !model.whitelisted) &&
+                                             CameraLayout.visibleInMode(model.unique_id, settings_form.showAdvancedSettings, root.settingsModel)
                                     settingsModel: root.settingsModel
                                     categoryKey: root.activeCategory
                                     modelIndex: index
@@ -780,7 +716,7 @@ FocusScope {
                     Layout.alignment: Qt.AlignHCenter
                     text: _ohdSystemAir.is_alive ? "\uf030" : "\uf127"
                     font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 42
+                    font.pixelSize: MenuTypography.pageIcon
                     color: settings_form.secondaryText
                     opacity: 0.7
                 }

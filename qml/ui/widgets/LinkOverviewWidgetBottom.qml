@@ -27,14 +27,15 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
-    disable_dragging: false
+    disable_dragging: true
+    spanParentWidth: true
 
     bw_scale_identifier: "link_overview_widget_scale"
     bw_background_color_identifier: "link_overview_widget_bg_color"
     bw_opacity_identifier: "link_overview_widget_opacity"
 
-    property string linkFont: "Quicksand"
-    property string linkMonoFont: "ShareTechMono"
+    property string linkFont: settings.osd_bottom_bar_font || "Quicksand"
+    property string linkMonoFont: settings.osd_bottom_bar_font || "ShareTechMono"
     property real notchWidth: 140
     property real notchDepth: 8
     property real notchSlope: 14
@@ -462,7 +463,7 @@ BaseWidget {
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
-        return Math.round(alt) + "m";
+        return (settings.enable_imperial || settings.enable_hybrid) ? Math.round(alt * 3.28084) + "ft" : Math.round(alt) + "m";
     }
 
     function format_nav_time() {
@@ -760,16 +761,24 @@ BaseWidget {
 
     Item {
         id: widgetInner
-        anchors.fill: parent
+        objectName: "bottomBarVisual"
+        // Scale the content without narrowing the full-width bar.
+        width: parent.width / Math.max(0.01,bw_current_scale)
+        height: parent.height
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.alignWhenCentered: false
+        anchors.bottom: parent.bottom
+        transformOrigin: Item.Bottom
         opacity: bw_current_opacity
         scale: bw_current_scale
         clip: false
 
         Shape {
             id: baseShape
+            objectName: "bottomBarBackground"
             anchors.fill: parent
             opacity: 0.5
-            property color fillColor: bw_current_background_color
+            property color fillColor: settings.osd_bottom_bar_background_color || bw_current_background_color
             property real topY: notchDepth
             property real notchStartX: (width - notchWidth) / 2
             property real notchEndX: notchStartX + notchWidth
@@ -804,11 +813,12 @@ BaseWidget {
 
         Text {
             id: flightModeText
+            objectName: "bottomBarFlightModeText"
             text: flight_mode_display_text()
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 1
-            color: settings.color_text
+            color: settings.osd_bottom_bar_text_color || settings.color_text
             font.pixelSize: 16
             font.family: linkFont
             font.bold: _fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed
@@ -865,7 +875,7 @@ BaseWidget {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: flightModeText.bottom
             anchors.topMargin: -2
-            color: settings.color_text
+            color: settings.osd_bottom_bar_text_color || settings.color_text
             font.pixelSize: 16
             font.family: linkMonoFont
             style: Text.Outline
@@ -899,7 +909,7 @@ BaseWidget {
                             Text {
                                 visible: slot_icon(get_slot_selection(modelData)) !== ""
                                 text: slot_icon(get_slot_selection(modelData))
-                                color: settings.color_shape
+                                color: settings.osd_bottom_bar_text_color || settings.color_shape
                                 font.pixelSize: 16
                                 font.family: "Font Awesome 5 Free"
                                 style: Text.Outline
@@ -907,7 +917,7 @@ BaseWidget {
                             }
                             Text {
                                 text: slot_text(get_slot_selection(modelData))
-                                color: settings.color_text
+                                color: settings.osd_bottom_bar_text_color || settings.color_text
                                 font.pixelSize: 16
                                 font.family: linkFont
                                 style: Text.Outline
@@ -948,7 +958,7 @@ BaseWidget {
                             Text {
                                 visible: slot_icon(get_slot_selection(modelData)) !== ""
                                 text: slot_icon(get_slot_selection(modelData))
-                                color: settings.color_shape
+                                color: settings.osd_bottom_bar_text_color || settings.color_shape
                                 font.pixelSize: 16
                                 font.family: "Font Awesome 5 Free"
                                 style: Text.Outline
@@ -956,7 +966,7 @@ BaseWidget {
                             }
                             Text {
                                 text: slot_text(get_slot_selection(modelData))
-                                color: settings.color_text
+                                color: settings.osd_bottom_bar_text_color || settings.color_text
                                 font.pixelSize: 16
                                 font.family: linkFont
                                 style: Text.Outline

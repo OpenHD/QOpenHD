@@ -14,8 +14,8 @@ Rectangle {
     function gainFocus() { panel.gainFocus() }
     ColumnLayout {
         anchors.fill: parent; anchors.margins: 8; spacing: 5
-        RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
-            Text { text: "\uf519"; color: "#b06cff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 17 }
+        RowLayout { Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; spacing: 8
+            Text { text: "\uf519"; color: "#b06cff"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.rowIcon }
             Text { text: qsTr("mLRS Link"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Rectangle { width: activeText.implicitWidth + 14; height: 21; radius: 7; color: Qt.rgba(0.1,0.8,0.35,0.12)
                 Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }

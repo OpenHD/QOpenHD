@@ -453,7 +453,7 @@ Map {
                                             return "---";
                                         } else {
                                             if(object.verticalVel > .2){ //climbing
-                                                if (settings.enable_imperial === false){
+                                                if (!(settings.enable_imperial || settings.enable_hybrid)){
                                                     return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\ue696"
                                                 }
                                                 else{
@@ -461,7 +461,7 @@ Map {
                                                 }
                                             }
                                             else if (object.verticalVel < -.2){//descending
-                                                if (settings.enable_imperial === false){
+                                                if (!(settings.enable_imperial || settings.enable_hybrid)){
                                                     return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\ue697"
                                                 }
                                                 else{
@@ -469,7 +469,7 @@ Map {
                                                 }
                                             }
                                             else {
-                                                if (settings.enable_imperial === false){//level
+                                                if (!(settings.enable_imperial || settings.enable_hybrid)){//level
                                                     return Math.floor(object.altitude - _fcMavlinkSystem.altitude_msl_m) + "m " + "\u2501"
                                                 }
                                                 else{

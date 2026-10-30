@@ -1,3 +1,5 @@
+import ".."
+import "AirSettingsLayout.js" as AirLayout
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -182,7 +184,7 @@ Rectangle {
                    : (index % 2 === 0 ? settings_form.panelBackgroundRaised : "transparent")
             property bool isIpCameraQuickSetting: model.unique_id === "IP_CAM_ADDRESS" || model.unique_id === "IP_CAM_PIPELINE"
             property bool isRawActiveLinks: root.m_show_link_status && (model.unique_id === "ACTIVE_LINKS" || model.unique_id === "VARIABLE_BITRATE" || model.unique_id === "V_PRIMARY_PERC")
-            property bool groupCollapsed: groupIsCollapsed(model.group)
+            property bool groupCollapsed: groupIsCollapsed(model.group) || (AirLayout.isLinkRecoveryParameter(model.unique_id) && !settings_form.showAdvancedSettings)
             function activate() {
                 inlineEditor.gainFocus()
             }
@@ -286,7 +288,7 @@ Rectangle {
                                 anchors.centerIn: parent
                                 text: "\uf1eb"
                                 font.family: "Font Awesome 5 Free"
-                                font.pixelSize: 13
+                                font.pixelSize: MenuTypography.controlIcon
                                 color: root.activeLinkNames.length > 0 ? settings_form.goodColor : "#f0a43c"
                             }
                         }
@@ -390,7 +392,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         text: groupIsCollapsed(section) ? "\uf0d7" : "\uf0d8"
                         font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 13
+                        font.pixelSize: MenuTypography.controlIcon
                         color: settings_form.accentColor
                     }
                     MouseArea {
@@ -468,7 +470,7 @@ Rectangle {
                             elide: Text.ElideMiddle
                             color: settings_form.secondaryText
                         }
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             Layout.fillWidth: true
                             text: qsTr("SAVE CAMERA CONNECTION")
                             enabled: !m_any_param_busy
@@ -484,12 +486,12 @@ Rectangle {
                                 value: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") ? _ohdSystemAirSettingsModel.get_cached_int("V_IP_CAM_MBITS") : 2
                                 editable: true
                             }
-                            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 text: qsTr("Save Mbit/s")
                                 enabled: _ohdSystemAirSettingsModel.param_int_exists("V_IP_CAM_MBITS") && !m_any_param_busy
                                 onClicked: _ohdSystemAirSettingsModel.try_set_param_int_async("V_IP_CAM_MBITS", ipCameraBitrateField.value, true)
                             }
-                            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 text: qsTr("Open WebUI")
                                 enabled: ipCameraAddressField.text.length > 0
                                 onClicked: Qt.openUrlExternally("http://" + ipCameraAddressField.text)
@@ -549,7 +551,7 @@ Rectangle {
                 color: settings_form.secondaryText
                 //fontSizeMode: Text.Fit
                 //font.pointSize: 100000
-                font.pixelSize: 100
+                font.pixelSize: MenuTypography.pageIcon
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 opacity: 0.5

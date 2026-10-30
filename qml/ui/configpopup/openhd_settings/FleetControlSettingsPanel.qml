@@ -87,14 +87,14 @@ ScrollView {
             Layout.fillWidth: true; Layout.margins: 12; spacing: 10
             Text { text: qsTr("Sign in to assign your craft to a certificate."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; wrapMode: Text.WordWrap; Layout.fillWidth: true }
             TextField {
-                id: username; objectName: "fleetUsername"; Layout.fillWidth: true; Layout.preferredHeight: 40
+                id: username; objectName: "fleetUsername"; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight
                 placeholderText: qsTr("Username or email"); selectByMouse: true; enabled: !root.working; onAccepted: password.forceActiveFocus()
                 font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
                 leftPadding: 12; rightPadding: 12
                 background: Rectangle { radius: 8; color: settings_form.panelBackground; border.color: username.activeFocus ? settings_form.accentColor : settings_form.lineColor }
             }
             TextField {
-                id: password; objectName: "fleetPassword"; Layout.fillWidth: true; Layout.preferredHeight: 40
+                id: password; objectName: "fleetPassword"; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight
                 placeholderText: qsTr("Password"); echoMode: TextInput.Password; enabled: !root.working; onAccepted: { if (signIn.enabled) signIn.clicked() }
                 font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
                 leftPadding: 12; rightPadding: 12
@@ -117,7 +117,7 @@ ScrollView {
                     spacing: 10
                     Text { text: qsTr("Certificate"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     CompactLinkComboBox {
-                        id: certificateBox; objectName: "fleetCertificate"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
+                        id: certificateBox; objectName: "fleetCertificate"; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         model: root.fleetBackend ? root.fleetBackend.licenses.map(function(license) { return license.plan + " · " + license.id.slice(-6) }) : []
                         currentIndex: root.licenseIndex; enabled: !root.working && count > 1
                         displayText: root.selectedLicense ? model[root.licenseIndex] : qsTr("No certificates in this account")
@@ -132,7 +132,7 @@ ScrollView {
                     Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
                     Text { text: qsTr("Craft"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     CompactLinkComboBox {
-                        id: craftBox; objectName: "fleetCraft"; Layout.fillWidth: true; Layout.preferredHeight: 40; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
+                        id: craftBox; objectName: "fleetCraft"; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         model: root.availableCrafts.map(function(craft) { return craft.name })
                         enabled: !root.working && root.selectedLicense && !root.selectedLicense.craftId && count > 0
                         displayText: root.selectedCraft ? root.selectedCraft.name : qsTr("No available craft")

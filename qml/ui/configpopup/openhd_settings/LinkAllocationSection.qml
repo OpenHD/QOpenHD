@@ -111,7 +111,7 @@ Column {
                     anchors.fill: parent; anchors.margins: 12; spacing: section.compact ? 12 : 18
                     Rectangle {
                         Layout.preferredWidth: 62; Layout.preferredHeight: 60; radius: 12; color: "#063c59"
-                        Text { anchors.centerIn: parent; text: section.linkIcon; color: "#00b9ed"; font.family: "Font Awesome 5 Free"; font.pixelSize: 30 }
+                        Text { anchors.centerIn: parent; text: section.linkIcon; color: "#00b9ed"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon }
                     }
                     Column {
                         Layout.fillWidth: section.compact; Layout.preferredWidth: section.compact ? 100 : 148; spacing: 6
@@ -122,7 +122,7 @@ Column {
                             Text { text: section.connected ? qsTr("Connected") : section.usage && _ohdSystemAir.is_alive ? qsTr("Reported") : qsTr("Disconnected"); color: "#adc8da"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.helper }
                         }
                     }
-                    Rectangle { visible: !section.compact; Layout.preferredWidth: 1; Layout.preferredHeight: 46; color: "#123c52" }
+                    Rectangle { visible: !section.compact; Layout.preferredWidth: 1; Layout.preferredHeight: MenuTypography.controlHeight; color: "#123c52" }
                     Column {
                         Layout.fillWidth: !section.compact; spacing: 3
                         Text { objectName: "allocationCapacity"; text: section.capacityBps > 0 ? section.rateBps(section.capacityBps) : qsTr("Not reported"); color: "#edf4fa"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true }
@@ -160,7 +160,7 @@ Column {
                                     Rectangle {
                                         width: section.compact ? 30 : 44; height: 40; radius: 9
                                         color: trafficRow.entry.bps > 0 ? trafficRow.entry.tint : "#173343"
-                                        Text { anchors.centerIn: parent; text: trafficRow.entry.icon; color: trafficRow.entry.bps > 0 ? trafficRow.entry.color : "#7799af"; font.family: "Font Awesome 5 Free"; font.pixelSize: section.compact ? 19 : 24 }
+                                        Text { anchors.centerIn: parent; text: trafficRow.entry.icon; color: trafficRow.entry.bps > 0 ? trafficRow.entry.color : "#7799af"; font.family: "Font Awesome 5 Free"; font.pixelSize: section.compact ? MenuTypography.rowIcon : MenuTypography.sectionIcon }
                                     }
                                     Text { anchors.verticalCenter: parent.verticalCenter; width: section.labelWidth - (section.compact ? 38 : 60); wrapMode: Text.WordWrap; text: trafficRow.entry.name; color: trafficRow.entry.bps > 0 ? "#edf4fa" : "#adc8da"; font.family: MenuTypography.family; font.pixelSize: section.compact ? MenuTypography.helper : MenuTypography.body }
                                 }

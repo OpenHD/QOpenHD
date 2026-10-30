@@ -26,6 +26,7 @@ BaseWidget {
 
     function get_text_altitude(){
         var altitude_m=settings.altitude_second_msl_rel ? _fcMavlinkSystem.altitude_msl_m : _fcMavlinkSystem.altitude_rel_m;
+        if (settings.enable_imperial || settings.enable_hybrid) altitude_m *= 3.28084;
         return Number(altitude_m).toLocaleString(Qt.locale(), 'f', 0)
     }
 

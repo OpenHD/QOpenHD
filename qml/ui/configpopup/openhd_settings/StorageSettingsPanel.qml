@@ -113,7 +113,7 @@ FocusScope {
             width: parent ? parent.width : 0
             height: 112
             radius: 9
-            color: settings_form.darkMode ? "#102438" : "#f3f7fb"
+            color: settings_form.panelBackgroundRaised
             border.width: storageItem && storageItem.mountedAtVideo ? 2 : 1
             border.color: storageItem && storageItem.mountedAtVideo ? settings_form.accentColor : settings_form.lineColor
 
@@ -136,12 +136,12 @@ FocusScope {
                         implicitWidth: activeText.implicitWidth + 14
                         implicitHeight: 22
                         radius: 11
-                        color: settings_form.darkMode ? "#174733" : "#dff5e8"
+                        color: Qt.rgba(settings_form.goodColor.r, settings_form.goodColor.g, settings_form.goodColor.b, 0.12)
                         Text {
                             id: activeText
                             anchors.centerIn: parent
                             text: qsTr("IN USE")
-                            color: settings_form.darkMode ? "#62d99b" : "#16744a"
+                            color: settings_form.goodColor
                             font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                             font.bold: true
                         }
@@ -158,13 +158,13 @@ FocusScope {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 8
                     radius: 4
-                    color: settings_form.darkMode ? "#263b4e" : "#dce5ed"
+                    color: settings_form.lineColor
                     Rectangle {
                         width: storageItem ? parent.width * root.usage(storageItem) : 0
                         height: parent.height
                         radius: 4
                         color: storageItem && root.usage(storageItem) > 0.9
-                               ? (settings_form.darkMode ? "#f4b844" : "#c47b00")
+                               ? settings_form.errorColor
                                : settings_form.accentColor
                     }
                 }
@@ -230,15 +230,15 @@ FocusScope {
                 spacing: 13
                 Rectangle {
                     Layout.preferredWidth: 48
-                    Layout.preferredHeight: 48
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     radius: 13
-                    color: root.activePartition() ? (settings_form.darkMode ? "#173b61" : "#dcecff") : (settings_form.darkMode ? "#3d3020" : "#fff1d6")
+                    color: settings_form.panelBackgroundRaised
                     Text {
                         anchors.centerIn: parent
                         text: "\uf51f"
-                        color: root.activePartition() ? settings_form.accentColor : "#e6a52e"
+                        color: settings_form.accentColor
                         font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 21
+                        font.pixelSize: MenuTypography.sectionIcon
                     }
                 }
                 ColumnLayout {
@@ -260,8 +260,8 @@ FocusScope {
                                     ? qsTr("Ready · %1 available").arg(root.sizeText(root.activePartition().freeMiB))
                                     : qsTr("Choose where Air recordings should be saved")))
                         color: root.activePartition() && Number(root.activePartition().freeMiB) < 300
-                               ? (settings_form.darkMode ? "#f4b844" : "#9a6200")
-                               : (root.activePartition() ? settings_form.secondaryText : "#e6a52e")
+                               ? settings_form.errorColor
+                               : settings_form.secondaryText
                         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     }
                 }
@@ -299,7 +299,7 @@ FocusScope {
                     property var diskPartitions: root.partitionsFor(diskItem)
                     Layout.fillWidth: true
                     Layout.preferredHeight: diskContents.implicitHeight + 32
-                    color: settings_form.panelBackgroundRaised
+                    color: settings_form.panelBackground
 
                     ColumnLayout {
                         id: diskContents
@@ -310,15 +310,15 @@ FocusScope {
                             spacing: 11
                             Rectangle {
                                 Layout.preferredWidth: 40
-                                Layout.preferredHeight: 40
+                                Layout.preferredHeight: MenuTypography.controlHeight
                                 radius: 10
-                                color: settings_form.darkMode ? "#1a344b" : "#e5f0fa"
+                                color: settings_form.panelBackgroundRaised
                                 Text {
                                     anchors.centerIn: parent
                                     text: diskCard.diskItem.internal ? "\uf0a0" : "\uf8e9"
                                     color: settings_form.accentColor
                                     font.family: "Font Awesome 5 Free"
-                                    font.pixelSize: 18
+                                    font.pixelSize: MenuTypography.rowIcon
                                 }
                             }
                             ColumnLayout {
@@ -340,7 +340,7 @@ FocusScope {
                                 implicitWidth: typeText.implicitWidth + 16
                                 implicitHeight: 24
                                 radius: 12
-                                color: settings_form.darkMode ? "#20384e" : "#e8f0f7"
+                                color: settings_form.panelBackgroundRaised
                                 Text {
                                     id: typeText
                                     anchors.centerIn: parent
@@ -368,16 +368,16 @@ FocusScope {
                             visible: diskCard.diskPartitions.length > 0 &&
                                      Number(diskCard.diskItem.freeMiB) >= 1024
                             radius: 9
-                            color: settings_form.darkMode ? "#142c2a" : "#eaf7f1"
+                            color: settings_form.panelBackgroundRaised
                             RowLayout {
                                 anchors.fill: parent
                                 anchors.margins: 10
                                 spacing: 9
                                 Text {
                                     text: "\uf067"
-                                    color: "#46c889"
+                                    color: settings_form.accentColor
                                     font.family: "Font Awesome 5 Free"
-                                    font.pixelSize: 14
+                                    font.pixelSize: MenuTypography.controlIcon
                                 }
                                 Text {
                                     Layout.fillWidth: true
@@ -441,7 +441,7 @@ FocusScope {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 132
                 visible: _ohdSystemAir.is_alive && root.devices.length === 0 && !_ohdAction.formatAirSdCardBusy
-                color: settings_form.panelBackgroundRaised
+                color: settings_form.panelBackground
                 ColumnLayout {
                     anchors.centerIn: parent
                     width: parent.width
@@ -451,7 +451,7 @@ FocusScope {
                         text: "\uf287"
                         color: settings_form.secondaryText
                         font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 25
+                        font.pixelSize: MenuTypography.sectionIcon
                     }
                     Text {
                         Layout.alignment: Qt.AlignHCenter
@@ -518,6 +518,7 @@ FocusScope {
 
         contentItem: Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             width: confirmDialog.width - 48
+            color: confirmDialog.palette.text
             wrapMode: Text.WordWrap
             text: confirmDialog.action === "mount" ? qsTr("New Air recordings will be saved on this partition. Existing recordings stay where they are.") : confirmDialog.action === "format" ? qsTr("This partition will be erased and prepared automatically for OpenHD recordings.") : confirmDialog.action === "create" ? qsTr("OpenHD will use the available unallocated space to create a recording partition. Existing partitions are left unchanged.") : confirmDialog.action === "resize" ? qsTr("OpenHD will reduce the main partition and create dedicated recording space. Back up important data before continuing.") : qsTr("This USB drive will be erased and prepared automatically for OpenHD recordings.")
         }

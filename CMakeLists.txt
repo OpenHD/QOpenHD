@@ -17,6 +17,7 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Network)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS LinguistTools)
 find_package(Qt6 ${X_QT_VERSION} QUIET COMPONENTS Multimedia)
+find_package(Qt6 ${X_QT_VERSION} QUIET COMPONENTS TextToSpeech)
 
 qt_standard_project_setup(REQUIRES ${X_QT_VERSION})
 
@@ -29,6 +30,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     #
     app/util/WorkaroundMessageBox.cpp
     app/util/mousehelper.cpp
+    app/util/uisimulator.cpp
     app/util/qopenhd.cpp
     app/util/asyncping.cpp
     app/util/asynccommandrunner.cpp
@@ -166,6 +168,10 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 target_link_libraries(QOpenHDApp
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Network
 )
+if(TARGET Qt6::TextToSpeech)
+    target_link_libraries(QOpenHDApp PRIVATE Qt6::TextToSpeech)
+    target_compile_definitions(QOpenHDApp PRIVATE ENABLE_SPEECH)
+endif()
 if(TARGET Qt6::Multimedia)
     target_sources(QOpenHDApp PRIVATE
         app/videostreaming/vscommon/qt_audio_player.cpp

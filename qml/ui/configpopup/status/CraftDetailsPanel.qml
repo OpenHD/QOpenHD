@@ -288,18 +288,18 @@ Rectangle {
         anchors.fill: parent; anchors.margins: root.width < 500 ? 16 : 24; spacing: 12
         RowLayout {
             Layout.fillWidth: true; spacing: 18
-            Text { text: "\uf2db"; font.family: "Font Awesome 5 Free"; font.pixelSize: 40; color: "#d5e8f5" }
+            Text { text: "\uf2db"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.pageIcon; color: "#d5e8f5" }
             ColumnLayout {
                 Layout.fillWidth: true; spacing: 3
-                Text { text: qsTr("Flight Controller Details"); color: "#edf4fa"; font.family: "Archivo"; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
-                Text { objectName: "craftFirmwareTitle"; Layout.fillWidth: true; text: root.firmwareLabel + (root.hasMessage(0) ? " - " + root.fc.mav_type_str : ""); color: "#d5e8f5"; font.family: "Archivo"; font.pixelSize: MenuTypography.body; elide: Text.ElideRight }
-                Text { text: root.heartbeatFresh ? qsTr("Connected - System %1 - Last heartbeat %2 ago").arg(root.fc.for_osd_sys_id).arg(root.age(root.diagnostics.heartbeatAge)) : root.online ? qsTr("Telemetry received - waiting for heartbeat") : qsTr("Disconnected - last received values retained"); color: root.heartbeatFresh ? "#00d684" : "#f0bb67"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                Text { text: qsTr("Flight Controller Details"); color: "#edf4fa"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
+                Text { objectName: "craftFirmwareTitle"; Layout.fillWidth: true; text: root.firmwareLabel + (root.hasMessage(0) ? " - " + root.fc.mav_type_str : ""); color: "#d5e8f5"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; elide: Text.ElideRight }
+                Text { text: root.heartbeatFresh ? qsTr("Connected - System %1 - Last heartbeat %2 ago").arg(root.fc.for_osd_sys_id).arg(root.age(root.diagnostics.heartbeatAge)) : root.online ? qsTr("Telemetry received - waiting for heartbeat") : qsTr("Disconnected - last received values retained"); color: root.heartbeatFresh ? "#00d684" : "#f0bb67"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
             }
             ToolButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: backButton; objectName: "craftBack"; Layout.alignment: Qt.AlignTop; implicitWidth: 44; implicitHeight: 44
                 text: "\uf00d"; onClicked: root.closeRequested(); Accessible.name: qsTr("Close flight controller details")
                 background: Rectangle { radius: 8; color: parent.hovered || parent.activeFocus ? "#153c53" : "transparent" }
-                contentItem: Text { text: parent.text; color: "#edf4fa"; font.family: "Font Awesome 5 Free"; font.pixelSize: 26; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                contentItem: Text { text: parent.text; color: "#edf4fa"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
         }
         ScrollView {
@@ -323,16 +323,16 @@ Rectangle {
                                 Rectangle { width: parent.width; height: 2; y: parent.height/2 + root.fc.pitch*1.4; color: "#d2e7ed" }
                             }
                             Repeater { model: 5; Rectangle { x: parent.width/2-width/2; y: parent.height/2+(index-2)*20; width: index===2?110:20; height: 1; color: index===2?"#ffe399":"#9fbed3"; visible: parent.validAttitude } }
-                            Text { anchors.centerIn: parent; text: parent.validAttitude ? "- + -" : qsTr("Not reported"); color: "#ffe399"; font.family: "Archivo"; font.pixelSize: MenuTypography.metric }
-                            Text { anchors.bottom: parent.bottom; anchors.bottomMargin: 7; anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("ATTITUDE"); color: "white"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                            Text { anchors.centerIn: parent; text: parent.validAttitude ? "- + -" : qsTr("Not reported"); color: "#ffe399"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.metric }
+                            Text { anchors.bottom: parent.bottom; anchors.bottomMargin: 7; anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("ATTITUDE"); color: "white"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
                         }
                         ColumnLayout {
                             Layout.preferredWidth: Math.min(230,root.width * .23); Layout.maximumWidth: Math.min(230,root.width * .23); Layout.minimumWidth: 0; spacing: 6
                             Row { spacing: 12
-                                Text { text: "\uf3ed"; color: "#12a8f3"; font.family: "Font Awesome 5 Free"; font.pixelSize: 32 }
+                                Text { text: "\uf3ed"; color: "#12a8f3"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.pageIcon }
                                 Column { spacing: 3
-                                    Text { text: root.heartbeatFresh ? (root.fc.armed ? qsTr("ARMED") : qsTr("DISARMED")) : qsTr("Not reported"); color: root.fc.armed ? "#ff6470" : "#12a8f3"; font.bold: true; font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle }
-                                    Text { text: root.heartbeatFresh ? root.fc.flight_mode : qsTr("Not reported"); color: "#a9c2d3"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                                    Text { text: root.heartbeatFresh ? (root.fc.armed ? qsTr("ARMED") : qsTr("DISARMED")) : qsTr("Not reported"); color: root.fc.armed ? "#ff6470" : "#12a8f3"; font.bold: true; font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle }
+                                    Text { text: root.heartbeatFresh ? root.fc.flight_mode : qsTr("Not reported"); color: "#a9c2d3"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
                                 }
                             }
                             FcDetailsRow { label: qsTr("Roll"); value: root.display("roll",1," deg"); implicitHeight: 29 }
@@ -380,35 +380,34 @@ Rectangle {
                             ColumnLayout {
                                 Layout.fillWidth: true; spacing: 7
                                 Row { spacing: 9
-                                    Text { text: modelData.icon; font.family:"Font Awesome 5 Free"; font.pixelSize:24;color:"#b8d9ec" }
-                                    Text { text: modelData.label; font.family: "Archivo"; font.pixelSize: MenuTypography.body;color:"#a9c2d3" }
+                                    Text { text: modelData.icon; font.family:"Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon;color:"#b8d9ec" }
+                                    Text { text: modelData.label; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;color:"#a9c2d3" }
                                 }
-                                Text { text:modelData.value;font.family: "Archivo"; font.pixelSize: MenuTypography.body;color:index===3?root.healthColor:"#edf4fa" }
+                                Text { text:modelData.value;font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;color:index===3?root.healthColor:"#edf4fa" }
                             }
                         }
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                            objectName: "craftReboot"; text: qsTr("Reboot"); implicitWidth: 140; implicitHeight: 46
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            objectName: "craftReboot"; text: qsTr("Reboot"); implicitWidth: 140; implicitHeight: MenuTypography.controlHeight
                             enabled: root.heartbeatFresh && !root.fc.armed && typeof root.fcAction.send_command_reboot === "function" && !(typeof _qopenhd !== "undefined" && _qopenhd.debugMenuPreview)
                             onClicked: rebootDialog.open()
-                            contentItem: Text { text:parent.text;font.family:"Archivo"; font.pixelSize: MenuTypography.body;color:parent.enabled?"#edf4fa":"#7694a7";horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter }
-                            background: Rectangle {radius:12;color:"#062b42";border.color:"#006997"}
+
                         }
                     }
                 }
                 RowLayout {
                     Layout.fillWidth: true; visible: root.hasCapacity || root.hasRemoteId
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; objectName:"craftBatteryCapacityCard"; visible:root.hasCapacity; enabled:root.online&&!root.fc.armed; text:qsTr("Battery capacity: %1 mAh").arg(root.capacityParameter.value || "");onClicked:root.openCapacityEditor() }
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; objectName:"craftRemoteIdCard"; visible:root.hasRemoteId; text:qsTr("Remote ID");onClicked:root.openRemoteId() }
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; objectName:"craftBatteryCapacityCard"; visible:root.hasCapacity; enabled:root.online&&!root.fc.armed; text:qsTr("Battery capacity: %1 mAh").arg(root.capacityParameter.value || "");onClicked:root.openCapacityEditor() }
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; objectName:"craftRemoteIdCard"; visible:root.hasRemoteId; text:qsTr("Remote ID");onClicked:root.openRemoteId() }
                 }
                 ColumnLayout {
                     objectName:"craftHealthEvents";Layout.fillWidth:true;spacing:8;visible:root.hasHealth
                     Repeater { model:sensorRows; delegate: FcDetailsRow { icon:"\uf2db";label:entry.name;value:!root.sensorsFresh?qsTr("Not reported"):!entry.enabled?qsTr("Disabled"):entry.healthy?qsTr("Healthy"):qsTr("Fault");valueColor:entry.healthy?"#25d780":"#ff6470" } }
-                    Text { visible:eventRows.count>0;text:qsTr("Recent FC Events");font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle;font.bold:true;color:"#edf4fa";Layout.topMargin:8 }
+                    Text { visible:eventRows.count>0;text:qsTr("Recent FC Events");font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle;font.bold:true;color:"#edf4fa";Layout.topMargin:8 }
                     Repeater { model:eventRows;delegate:Rectangle {
                         objectName:"craftEvent_"+index;Layout.fillWidth:true;implicitHeight:eventLabel.implicitHeight+42;radius:10;color:"#051f2f";border.color:"#0d4059"
                         Column { anchors.fill:parent;anchors.margins:12;spacing:6
-                            Text { id:eventLabel;width:parent.width;text:entry.text;wrapMode:Text.WordWrap;color:entry.severity<=4?"#ff9b86":"#edf4fa";font.family: "Archivo"; font.pixelSize: MenuTypography.body }
-                            Text {text:qsTr("%1 s ago - %2 occurrences").arg(Math.max(0,(root.diagnostics.nowMs-entry.receivedMs)/1000).toFixed(0)).arg(entry.count);font.family: "Archivo"; font.pixelSize: MenuTypography.body;color:"#a9c2d3"}
+                            Text { id:eventLabel;width:parent.width;text:entry.text;wrapMode:Text.WordWrap;color:entry.severity<=4?"#ff9b86":"#edf4fa";font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
+                            Text {text:qsTr("%1 s ago - %2 occurrences").arg(Math.max(0,(root.diagnostics.nowMs-entry.receivedMs)/1000).toFixed(0)).arg(entry.count);font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;color:"#a9c2d3"}
                         }
                     } }
                 }
@@ -419,7 +418,7 @@ Rectangle {
         id: rebootDialog; objectName: "craftRebootDialog"
         title:qsTr("Reboot flight controller?");parent:Overlay.overlay;anchors.centerIn:parent
         width: Math.min(420, parent.width - 24)
-        contentItem: Text { text: qsTr("The flight controller will briefly disconnect while it restarts."); wrapMode: Text.WordWrap; color: "#a9c2d3"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+        contentItem: Text { text: qsTr("The flight controller will briefly disconnect while it restarts."); wrapMode: Text.WordWrap; color: "#a9c2d3"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
         footer: DialogButtonBox {
             padding: 16; spacing: 10; background: Item {}
             AdvancedDialogButton { text: qsTr("Cancel"); onClicked: rebootDialog.reject() }

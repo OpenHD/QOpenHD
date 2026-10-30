@@ -39,6 +39,7 @@ public:
 public: // public for QT
     Q_PROPERTY(QVariantList link_usage READ link_usage NOTIFY link_usage_changed)
     QVariantList link_usage() const { return m_link_usage; }
+    void setSimulationLinkUsage(const QVariantList& usage) { m_link_usage=usage; emit link_usage_changed(); }
 signals:
     void link_usage_changed();
 public:

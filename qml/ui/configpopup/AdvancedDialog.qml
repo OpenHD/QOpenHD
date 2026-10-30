@@ -8,7 +8,7 @@ Dialog {
     modal: true; dim: true; focus: true
     closePolicy: Popup.CloseOnEscape
     padding: 20
-    font.family: "Archivo"; font.pixelSize: MenuTypography.body
+    font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
     Material.theme: Material.Dark
     Material.accent: "#12a8f3"
     Material.foreground: "#edf4fa"
@@ -28,14 +28,14 @@ Dialog {
             id: titleText
             anchors.left: parent.left; anchors.right: closeButton.left; anchors.top: parent.top
             anchors.leftMargin: 20; anchors.topMargin: 20
-            text: control.title; color: "#edf4fa"; font.family: "Archivo"; font.pixelSize: MenuTypography.dialogTitle; font.bold: true; wrapMode: Text.WordWrap
+            text: control.title; color: "#edf4fa"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.dialogTitle; font.bold: true; wrapMode: Text.WordWrap
         }
         ToolButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: closeButton; anchors.right: parent.right; anchors.rightMargin: 12; y: 12; width: 36; height: 36
             Accessible.name: qsTr("Close dialog")
             onClicked: control.reject()
             background: Rectangle { radius: 8; color: parent.hovered || parent.activeFocus ? "#153c53" : "transparent" }
-            contentItem: Text { text: "\uf00d"; font.family: "Font Awesome 5 Free"; color: "#edf4fa"; font.pixelSize: 23; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+            contentItem: Text { text: "\uf00d"; font.family: "Font Awesome 5 Free"; color: "#edf4fa"; font.pixelSize: MenuTypography.sectionIcon; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
         }
     }
     footer: DialogButtonBox {

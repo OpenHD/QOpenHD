@@ -1,3 +1,4 @@
+#include "util/uisimulator.h"
 #include <QLoggingCategory>
 Q_LOGGING_CATEGORY(mavlinkRoutingLog, "qopenhd.mavlink.unhandled.routing", QtWarningMsg)
 
@@ -108,6 +109,7 @@ bool MavlinkTelemetry::has_active_tcp_connection() const
 }
 
 bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
+    if (UiSimulator::isActive()) return false; // Never transmit simulator actions.
     const auto sys_id=QOpenHDMavlinkHelper::get_own_sys_id();
     const auto comp_id=QOpenHDMavlinkHelper::get_own_comp_id();
     if(msg.sysid!=sys_id){

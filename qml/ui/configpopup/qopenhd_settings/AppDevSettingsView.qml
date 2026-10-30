@@ -31,23 +31,15 @@ ScrollView {
             spacing: 5
             anchors.left: parent.left
             anchors.right: parent.right
-            //
-            SettingBaseElement{
-                m_short_description: qsTr("Enable advanced settings")
-                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_show_whitelisted_params
-                    onCheckedChanged: {
-                        settings.dev_show_whitelisted_params = checked
-                        settings.dev_show_advanced_button = checked
-                    }
-                }
+            AppGeneralDeveloperSettings {width:parent.width;height:implicitHeight}
+            AdvancedActionButton {
+                objectName:"openSimulatorButton"
+                text:qsTr("Simulate Air / Ground...")
+                iconText:"\uf1b2"
+                onClicked:settings_form.openSimulator()
             }
+            Text { width:parent.width; text:qsTr("Shortcut: Ctrl+Shift+S after the developer unlock");color:settings_form.secondaryText;font.pixelSize: MenuTypography.helper;wrapMode:Text.WordWrap }
+            //
             SettingBaseElement{
                 m_short_description: qsTr("Allow frequency change when armed")
                 Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
@@ -161,7 +153,7 @@ ScrollView {
                 m_short_description: qsTr("Save Settings to file")
                 m_long_description: qsTr("Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux.")
 
-                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id:save
                     width: 128
                     height: elementHeight
@@ -185,7 +177,7 @@ ScrollView {
                 m_short_description: qsTr("Load Settings from file")
                 m_long_description: qsTr("Load a previosly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux.")
 
-                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id:load
                     width: 128
                     height: elementHeight
@@ -208,7 +200,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: qsTr("Reset all QOpenHD Settings")
 
-                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id:reset
                     width: 128
                     height: elementHeight

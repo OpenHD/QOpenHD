@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -55,7 +56,7 @@ Item {
     RowLayout{
         anchors.fill: parent
         //visible: get_show_power_actions()
-        Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+        AdvancedActionButton{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             visible: get_show_power_actions() && m_supports_reboot_actions
             Layout.alignment: {
                 if (m_type === 2)
@@ -71,7 +72,7 @@ Item {
                 open_power_action_dialoque(m_type,true)
             }
         }
-        Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+        AdvancedActionButton{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             visible: get_show_power_actions() && m_type==2
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 10
@@ -85,7 +86,7 @@ Item {
                 }
             }
         }
-        Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+        AdvancedActionButton{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             visible: get_show_power_actions() && m_supports_shutdown_actions
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 10

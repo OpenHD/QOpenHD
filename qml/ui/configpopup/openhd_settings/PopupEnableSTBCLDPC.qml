@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.0
 
@@ -85,7 +86,7 @@ PopupBigGeneric{
                 }
             }
         }
-        Button{
+        AdvancedActionButton{
             id: button_enable
             text: qsTr("ENABLE")
             enabled: comboBoxNAntennasAir.currentIndex==2 && comboBoxNAntennasGnd.currentIndex==2;
@@ -101,7 +102,7 @@ PopupBigGeneric{
         }
         Text{
             Layout.fillWidth: true
-            Layout.preferredHeight: 40
+            Layout.preferredHeight: MenuTypography.controlHeight
             visible: !button_enable.enabled
             text: qsTr("CAN ONLY BE ENABLED IF BOTH AIR AND GND UNIT HAVE 2 RF PATHS / ANTENNAS");
             font.pixelSize: MenuTypography.body; font.family: MenuTypography.family

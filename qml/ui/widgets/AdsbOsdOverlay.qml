@@ -58,7 +58,7 @@ Item {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: 2
                 text: (settings.enable_imperial ? (modelData.distance * 0.621371).toFixed(1) + " mi" : modelData.distance.toFixed(1) + " km")
-                      + (isFinite(modelData.altitude) ? "  " + (altitudeDelta >= 0 ? "+" : "") + Math.round(settings.enable_imperial ? altitudeDelta * 3.28084 : altitudeDelta) + (settings.enable_imperial ? " ft" : " m") : "")
+                      + (isFinite(modelData.altitude) ? "  " + (altitudeDelta >= 0 ? "+" : "") + Math.round((settings.enable_imperial || settings.enable_hybrid) ? altitudeDelta * 3.28084 : altitudeDelta) + ((settings.enable_imperial || settings.enable_hybrid) ? " ft" : " m") : "")
                 font.pixelSize: 10; color: "white"
             }
         }

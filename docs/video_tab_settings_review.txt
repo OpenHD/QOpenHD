@@ -1,0 +1,194 @@
+QOPENHD - VIDEO TAB: ALL SETTINGS AND OPTIONS
+===========================================
+
+Current location: Application > Video.
+Requested as OSD > Video; Video moved to Application when the menus were split.
+Source inventory, not a live device dump. Defaults below are factory defaults;
+your saved settings can differ. 26 active settings are listed.
+
+VIDEO (always-present rows)
+--------------------------
+1. Scale primary video to fit screen
+   Options: Off / On. Default: Off.
+   Setting: primary_video_scale_to_fit
+   Control enabled on Android and Linux desktops other than Raspberry Pi/Rock.
+   The row remains present on other platforms, but its switch is disabled.
+
+2. Switch primary / secondary video
+   Options: Off / On. Default: Off.
+   Setting: qopenhd_switch_primary_secondary
+   Swaps the displayed primary and secondary feeds locally in QOpenHD.
+
+ADVANCED VIDEO SETTINGS (collapsible; initially closed)
+------------------------------------------------------
+3. Primary video codec
+   Options: H264 (0), H265 (1). Default: H264.
+   Setting: qopenhd_primary_video_codec
+   The preference also documents MJPEG (2), but this dropdown does not offer it.
+
+4. Use low latency RTP parser
+   Options: Off / On. Default: On.
+   Setting: dev_use_low_latency_parser_when_possible
+   Declared visibility: NXP platforms or debug preview.
+
+5. Enable audio playback (experimental)
+   Options: Off / On. Default: Off.
+   Setting: dev_enable_live_audio_playback
+   Plays incoming audio locally. Audio must also be enabled on the Air unit.
+
+6. Use Software Decode
+   Options: Off / On. Default: Off.
+   Writes BOTH qopenhd_primary_video_force_sw and
+   qopenhd_secondary_video_force_sw. The switch displays the primary value.
+
+7. Primary video udp port
+   Range: 1-6900; step 1; editable. Default: 5600.
+   Setting: qopenhd_primary_video_rtp_input_port
+
+8. Secondary video codec
+   Options: H264 (0), H265 (1). Default: H264.
+   Setting: qopenhd_secondary_video_codec
+   Declared visibility: two-camera mode or debug preview.
+
+9. Secondary video udp port
+   Range: 1-6900; step 1; editable. Default: 5601.
+   Setting: qopenhd_secondary_video_rtp_input_port
+   Declared visibility: two-camera mode or debug preview.
+
+10. Secondary video input (Android dev)
+    Options:
+      0 - UDP secondary port (default)
+      1 - UDP primary port
+      2 - HTTP test clip
+    Setting: dev_secondary_video_input_mode
+    Declared visibility: Android or debug preview.
+
+11. Disable primary video (Android)
+    Options: Off / On. Default: Off.
+    Setting: dev_disable_primary_video
+    Declared visibility: Android or debug preview.
+    Stops primary rendering to debug the secondary feed; requests restart.
+
+12. Video test mode
+    Options:
+      0 - DISABLE (default)
+      1 - RAW_VIDEO
+      2 - RAW_DECODE_ENCODE
+    Setting: dev_test_video_mode
+    Uses a test video source where the selected platform supports it.
+
+13. Limit FPS in test file
+    Range: -1 to 240; step 1; editable. Default: -1.
+    Setting: dev_limit_fps_on_test_file
+    Applies to the test-file video path; -1 disables this explicit limit.
+
+14. Use RPI decoding
+    Options: Off / On. Default: On.
+    Setting: dev_rpi_use_external_omx_decode_service
+    Selects the external Raspberry Pi OMX decoding service.
+    No Raspberry Pi-only visibility condition is applied to this row.
+
+15. Use external decoding service
+    Options: Off / On. Default: Off.
+    Setting: dev_always_use_generic_external_decode_service
+    Generic external decoding service rather than decoding inside QOpenHD.
+
+16. Use KMS DRM overlay renderer (experimental)
+    Options: Off / On. Default: Off.
+    Setting: enable_kms_renderer
+    Linux only; requires restart. External decoding must be disabled for it
+    to take effect. The row itself has no Linux-only visibility condition.
+
+SCREEN & DISPLAY (collapsible; initially open)
+---------------------------------------------
+17. Screen Scale
+    Range: 0.3x-2.5x; step 0.1. Default: 1.0x.
+    Setting: global_scale
+    Shows a restart message when changed.
+
+18. Auto hide cursor
+    Options: Off / On. Default: Off.
+    Setting: enable_cursor_auto_hide
+    Updates the mouse helper immediately.
+
+19. Set cursor Skin
+    Options: integer IDs 0-7; step 1. Default: 0.
+    Setting: custom_cursor_type
+    0 is the standard application cursor. The menu shows numeric IDs,
+    not named skin choices. Updates the mouse helper immediately.
+
+20. Cursor Scale
+    Range: integer values 0-7; step 1. Default: 1.
+    Setting: custom_cursor_scale
+    Updates the mouse helper immediately.
+
+  ADVANCED SCREEN SETTINGS (nested; initially closed)
+  --------------------------------------------------
+21. Screen rotation
+    Options: 0 degrees, 90 degrees (WARNING), 180 degrees,
+             270 degrees (WARNING).
+    Default: 0 degrees.
+    Setting: general_screen_rotation
+
+22. Transparent Background
+    Options: Off / On. Default: On.
+    Setting: app_background_transparent
+
+23. Full screen
+    Options: Off / On. Default: Off.
+    Setting: dev_force_show_full_screen
+    Some mobile/native rendering platforms enforce full screen independently.
+
+24. Swap interval 0
+    Options: Off / On. Default: Off.
+    Setting: dev_set_swap_interval_zero
+    Experimental desktop latency option; requires restart.
+
+25. Transparent settings
+    Options: Off / On. Default: Off.
+    Setting: screen_settings_openhd_parameters_transparent
+
+26. Font DPI
+    Options:
+      -1  - Disable
+       0  - Auto (Recommended; default)
+      50  - ultra small
+      72  - smaller
+     100
+     120  - bigger
+     150  - ultra big
+    Setting: screen_custom_font_dpi
+    Changes text/line sizing for the artificial horizon and ladders.
+    Shows a restart message when changed.
+
+VISIBILITY / SCOPE NOTES
+------------------------
+- All active rows are included above, including platform-specific and debug
+  controls. Actual usefulness depends on the decoder/backend/platform.
+- "Advanced video settings" and "Advanced screen settings" are expandable
+  categories in this file. They are not gated here by the shared Advanced
+  or Developer access-mode flags.
+- SettingsCategory currently assigns child visibility directly when a category
+  opens/closes. This can override a row's declared visibility condition.
+  Therefore the per-row conditions above describe the declarations, not a
+  guarantee that unsupported controls remain hidden after expanding a category.
+- Camera enable/disable, sensor, encoder and image settings in OpenHD > Camera
+  are separate controls and are not part of this local Video page.
+- Animation smoothing is now in OSD > Style > Effects & appearance.
+
+COMMENTED OUT / NOT ACTIVE MENU SETTINGS
+---------------------------------------
+These exist only as commented-out UI blocks and are not counted in the 26:
+- Secondary video force SW (a separate switch; active setting 6 controls both).
+- Draw RGB dummy frames.
+- A second low-latency-parser row.
+- Feed incomplete frames to decoder.
+- Settings window scale.
+
+SOURCES
+-------
+qml/ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml
+qml/ui/configpopup/qopenhd_settings/AppSettingsPanel.qml
+qml/ui/elements/AppSettings.qml
+qml/ui/elements/SettingsCategory.qml
+app/util/mousehelper.cpp

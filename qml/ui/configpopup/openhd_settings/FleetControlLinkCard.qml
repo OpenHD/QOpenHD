@@ -41,7 +41,7 @@ Rectangle {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 36
+            Layout.preferredHeight: MenuTypography.controlHeight
             spacing: 8
             Rectangle {
                 width: 28; height: 28; radius: 8
@@ -51,7 +51,7 @@ Rectangle {
                     text: "\uf1eb"
                     color: root.linkActive ? settings_form.goodColor : "#f0a43c"
                     font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 15
+                    font.pixelSize: MenuTypography.rowIcon
                 }
             }
             ColumnLayout {

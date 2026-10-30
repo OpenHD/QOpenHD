@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.0
 
@@ -70,7 +71,7 @@ Rectangle{
             font.family: MenuTypography.family
             font.pixelSize: MenuTypography.sectionTitle
         }
-        Button {
+        AdvancedActionButton {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: m_modern_style ? 9 : 2

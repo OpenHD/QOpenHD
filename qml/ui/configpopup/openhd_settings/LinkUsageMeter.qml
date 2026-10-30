@@ -195,7 +195,7 @@ Item {
                 model: root.segments()
                 delegate: Row {
                     spacing: 3
-                    Text { text: root.iconFor(Number(modelData.id)); color: root.colorFor(Number(modelData.id)); font.family: "Font Awesome 5 Free"; font.pixelSize: 9 }
+                    Text { text: root.iconFor(Number(modelData.id)); color: root.colorFor(Number(modelData.id)); font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.controlIcon }
                     Text { text: root.labelFor(Number(modelData.id)) + " " + root.rate(Number(modelData.bps)); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                 }
             }

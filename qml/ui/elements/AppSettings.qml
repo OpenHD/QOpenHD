@@ -127,6 +127,10 @@ Settings {
 
     property bool enable_speech: true
     property bool enable_imperial: false
+    property bool enable_hybrid: false
+    property string speech_voice: ""
+    property double speech_rate: 1.0
+    property double speech_volume: 1.0
     property bool enable_rc: false
 
     property string color_shape: "white"
@@ -135,6 +139,14 @@ Settings {
     property string color_warn: "red"
     property string color_caution: "yellow"
     property string font_text: "Sans Serif"
+    property double osd_opacity: 1.0
+    // Empty bar overrides preserve the original shared HUD style.
+    property string osd_top_bar_background_color: ""
+    property string osd_top_bar_text_color: ""
+    property string osd_top_bar_font: ""
+    property string osd_bottom_bar_background_color: ""
+    property string osd_bottom_bar_text_color: ""
+    property string osd_bottom_bar_font: ""
 
     // animation smoothing value, in ms
     // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here

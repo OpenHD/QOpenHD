@@ -73,7 +73,7 @@ AdvancedPage {
                                               : (styleData.row % 2 ? settings_form.panelBackgroundRaised : settings_form.panelBackground)
                 }
                 headerDelegate: Rectangle {
-                    implicitHeight: 34
+                    implicitHeight: MenuTypography.controlHeight
                     color: settings_form.panelBackgroundRaised
                     border.color: settings_form.lineColor
                     Text { anchors.centerIn: parent; text: styleData.value; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }

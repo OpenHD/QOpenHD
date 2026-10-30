@@ -45,6 +45,8 @@ ComboBox {
         event.accepted = true
     }
 
+    implicitHeight: MenuTypography.controlHeight
+    topInset: 0; bottomInset: 0; leftInset: 0; rightInset: 0
     hoverEnabled: true
     leftPadding: 12
     rightPadding: 36
@@ -56,7 +58,7 @@ ComboBox {
             anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
             text: control.detail(control.currentIndex).icon || control.optionIcon
             color: control.detail(control.currentIndex).color || control.focusColor
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 19
+            font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.controlIcon
         }
         Text {
             id: selectedLabel
@@ -80,7 +82,7 @@ ComboBox {
     }
 
     background: Rectangle {
-        radius: 8
+        radius: MenuTypography.controlRadius
         color: control.down || control.popup.visible
                ? "#243f5a" : (control.hovered ? control.popupColor : control.panelColor)
         border.color: control.activeFocus || control.popup.visible
@@ -94,7 +96,7 @@ ComboBox {
         readonly property string label: control.optionLabel(control.textRole.length > 0
             ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole]) : modelData)
         width: ListView.view ? ListView.view.width : control.popupWidth - 16
-        height: details.description ? 48 : 36
+        height: details.description ? MenuTypography.rowHeight : MenuTypography.controlHeight
         hoverEnabled: true
         highlighted: hovered || (control.popup.visible && popupList.currentIndex === index)
         contentItem: Item {
@@ -102,7 +104,7 @@ ComboBox {
                 x: 10; anchors.verticalCenter: parent.verticalCenter
                 text: option.details.icon || control.optionIcon
                 color: option.details.color || control.focusColor
-                font.family: "Font Awesome 5 Free"; font.pixelSize: 20
+                font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.rowIcon
             }
             Column {
                 x: 38; width: Math.max(0, parent.width - 66)
@@ -114,7 +116,7 @@ ComboBox {
                 anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter
                 visible: control.currentIndex === index
                 text: "\uf00c"; color: control.focusColor
-                font.family: "Font Awesome 5 Free"; font.pixelSize: 16
+                font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.controlIcon
             }
         }
         background: Rectangle {
@@ -127,23 +129,37 @@ ComboBox {
         id: dropdownPopup
         parent: Overlay.overlay
         z: 10000
+        function viewportBounds() {
+            var bounds = {x:0, y:0, width:parent ? parent.width : 0, height:parent ? parent.height : 0}
+            if (parent && typeof settings_form !== "undefined" && typeof settings_form.mapToItem === "function") {
+                var origin = settings_form.mapToItem(parent, 0, 0)
+                bounds.x = Math.max(0, origin.x); bounds.y = Math.max(0, origin.y)
+                bounds.width = Math.min(bounds.width - bounds.x, settings_form.width)
+                bounds.height = Math.min(bounds.height - bounds.y, settings_form.height)
+            }
+            return bounds
+        }
         function positionInsideWindow() {
             if (!parent) return
+            var bounds = viewportBounds()
             var point = control.mapToItem(parent, 0, 0)
             var below = control.mapToItem(parent, 0, control.height)
             var popupHeight = height * scale
             var popupWidth = width * scale
-            x = Math.max(8, Math.min(point.x, parent.width - popupWidth - 8))
+            x = Math.max(bounds.x + 8, Math.min(point.x, bounds.x + bounds.width - popupWidth - 8))
             var desiredY = below.y + 4
-            if (desiredY + popupHeight > parent.height - 8)
+            if (desiredY + popupHeight > bounds.y + bounds.height - 8)
                 desiredY = point.y - popupHeight - 4
-            y = Math.max(8, Math.min(desiredY, parent.height - popupHeight - 8))
+            y = Math.max(bounds.y + 8, Math.min(desiredY, bounds.y + bounds.height - popupHeight - 8))
         }
         onAboutToShow: positionInsideWindow()
         width: control.popupWidth
+        // Native popup transitions animate scale to 1, overriding scaled dialogs.
+        enter: Transition {}
+        exit: Transition {}
         scale: control.popupScale
         transformOrigin: Item.TopLeft
-        implicitHeight: Math.min(contentItem.implicitHeight + 12, 280, parent ? (parent.height - 16) / scale : 280)
+        implicitHeight: Math.min(contentItem.implicitHeight + 12, 280, parent ? (viewportBounds().height - 16) / scale : 280)
         padding: 6
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         onOpened: {

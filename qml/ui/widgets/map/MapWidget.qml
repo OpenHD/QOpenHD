@@ -26,6 +26,10 @@ MapWidgetForm {
     property string mapFailure: ""
     property bool apiKeyMissing: false
     property string activeProviderName: ""
+    // Settings borrow this map's viewport while the HUD is hidden.
+    property size settingsPreviewSize: Qt.size(0,0)
+    readonly property bool settingsPreviewActive: settingsPreviewSize.width>0 && settingsPreviewSize.height>0
+    onSettingsPreviewActiveChanged: scheduleMapConfigure()
     property var supportedMapTypes: []
     property int activeMapTypeIndex: -1
 
@@ -40,7 +44,7 @@ MapWidgetForm {
         id: mapReconfigure
         interval: 0
         onTriggered: {
-            if (settings.show_map) configure()
+            if (settings.show_map || settingsPreviewActive) configure()
             else clearMap()
         }
     }
@@ -150,7 +154,9 @@ MapWidgetForm {
                 mapFailure = qsTr("Unable to load the map. Choose another provider or retry in map settings.")
                 return
             }
-            map = component.createObject(parent, {"anchors.fill": parent,
+            map = component.createObject(parent, {
+                "width": Qt.binding(function(){return mapWidget.settingsPreviewActive?mapWidget.settingsPreviewSize.width:parent.width}),
+                "height": Qt.binding(function(){return mapWidget.settingsPreviewActive?mapWidget.settingsPreviewSize.height:parent.height}),
                 "plugin": mapPlugin, "forceCustomMapType": provider === "openhd_offline",
                 "compassMode": Qt.binding(function() { return mapWidget.roundMap }),
                 "demoFlight": Qt.binding(function() { return mapWidget.demoFlight })})

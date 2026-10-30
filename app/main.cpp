@@ -1,3 +1,4 @@
+#include "util/uisimulator.h"
 #include "qqmlcontext.h"
 #include "qscreen.h"
 #include <QApplication>
@@ -679,6 +680,7 @@ int main(int argc, char *argv[]) {
 #endif
      );
 
+    UiSimulator::instance().install(engine.rootContext());
     //engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     //const QUrl url("qrc:/qt/qml/hello/qml/main.qml");
     //const QUrl url(QStringLiteral("qrc:/qt/qml/main.qml"));

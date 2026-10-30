@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -66,13 +67,13 @@ Popup {
                 }
             }
         }
-        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: closeButton
             objectName: "creditArchiveClose"
             anchors.top: parent.top
             anchors.right: parent.right
             width: 76
-            height: 36
+            height: MenuTypography.controlHeight
             text: qsTr("Close")
             Accessible.name: qsTr("Close developer terminal")
             onClicked: terminal.close()

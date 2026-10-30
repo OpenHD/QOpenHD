@@ -18,6 +18,22 @@ BaseWidgetForm {
 
     // Used to uniquely identify persistent settings for this widget. Should only contain lowercase letters and "_" (aka no blank space, extra characters and more)
     property string widgetIdentifier
+    // Visual extent used by the widget gallery; subclasses may draw beyond their root.
+    property rect widgetPreviewRect: Qt.rect(Math.min(0,width*(1-bw_current_scale)/2), Math.min(0,height*(1-bw_current_scale)/2), width*Math.max(1,bw_current_scale), height*Math.max(1,bw_current_scale))
+    // Include transformed drawings outside the widget's placement rectangle.
+    // This is capture metadata only; it never resizes or moves the live widget.
+    function previewBoundsFor(item, area, includePlacement) {
+        var r = area || Qt.rect(0,0,item.width,item.height)
+        var points = [item.mapToItem(widgetBase,r.x,r.y), item.mapToItem(widgetBase,r.x+r.width,r.y),
+                      item.mapToItem(widgetBase,r.x,r.y+r.height), item.mapToItem(widgetBase,r.x+r.width,r.y+r.height)]
+        var include=includePlacement !== false
+        var left=include?0:Infinity,top=include?0:Infinity,right=include?width:-Infinity,bottom=include?height:-Infinity
+        for(var i=0;i<points.length;i++) {
+            left=Math.min(left,points[i].x);top=Math.min(top,points[i].y)
+            right=Math.max(right,points[i].x);bottom=Math.max(bottom,points[i].y)
+        }
+        return Qt.rect(left-3,top-3,right-left+6,bottom-top+6)
+    }
     // Shown to the user as a more verbose description of what this widget does
     property string bw_verbose_name: qsTr("PLS FILL ME")
 
@@ -155,6 +171,7 @@ BaseWidgetForm {
     // Needed for the HUD log messages element, since it sits above the secondary video and disabling its "mouse area"
     // Was the easiest fix
     property bool disable_dragging: false
+    property bool spanParentWidth: false
     // ---------------------------------------------------------------------
     // Custom keyboard KeyNavigation
     // DIRTY
@@ -523,6 +540,13 @@ BaseWidgetForm {
                 anchors.left = parent.left;
                 anchors.leftMargin = xOffset;
             }
+        }
+        if (spanParentWidth && !full) {
+            anchors.horizontalCenter = undefined;
+            anchors.left = parent.left;
+            anchors.right = parent.right;
+            anchors.leftMargin = 0;
+            anchors.rightMargin = 0;
         }
     }
 

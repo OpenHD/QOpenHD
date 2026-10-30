@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_horizon && settings.show_widgets
 
+    widgetPreviewRect: previewBoundsFor(horizonLadderC)
     widgetIdentifier: "horizon_widget"
     bw_verbose_name: qsTr("ARTIFICIAL HORIZON")
 

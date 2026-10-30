@@ -83,6 +83,8 @@ Item {
         id: settings_form
         function close_all() {}
         property bool darkMode: false
+        property bool showDeveloperSettings: true
+        property color pageBackground: "white"
         property color accentColor: "#278cff"
         property color panelBackground: "white"
         property color errorColor: "red"
@@ -120,6 +122,11 @@ Item {
     }
     QtObject {
         id: _offlineMapBuilder
+        property bool busy:false
+        property bool searching:false
+        property string status:""
+        property real progress:0
+        property var searchResults:[]
         function mapCacheDirectory(source) { return "CACHE_DIRECTORY/" + source }
     }
     Item {
@@ -128,7 +135,7 @@ Item {
         height: widget.height + 40
         MapWidget { id: widget; x: 20; y: 20 }
     }
-    AppMapSettingsView { id: mapSettings; anchors.fill: parent }
+    AppMapSettingsView { id: mapSettings; anchors.fill: parent; visible:false }
     TestCase {
         name: "MapProviderRecovery"; when: windowShown
         function test_z_stylePreview() {
@@ -245,9 +252,7 @@ Item {
             compare(settings.map_size, 2)
             compare(widget.width, 400)
             compare(widget.height, 270)
-            var shape = findChild(mapSettings, "mapShape")
-            shape.currentIndex = 1
-            shape.activated(1)
+            findChild(mapSettings, "mapShapeRound").clicked()
             verify(settings.map_round)
             compare(widget.width, 280)
             compare(widget.height, 280)
@@ -267,7 +272,14 @@ Item {
             widget.map.bearing = 0
             compare(findChild(widget, "mapControlDock"), null)
             verify(!findChild(widget, "mapAttribution").visible)
+            mapSettings.visible = true
+            wait(50)
             verify(findChild(mapSettings, "mapMenuAttribution").visible)
+            verify(widget.settingsPreviewActive)
+            compare(widget.map.width, widget.settingsPreviewSize.width)
+            mapSettings.visible = false
+            wait(50)
+            verify(!widget.settingsPreviewActive)
             verify(findChild(mapSettings, "mapMenuAttribution").text.indexOf("openstreetmap.org/copyright") >= 0)
             compare(findChild(widget, "mapExpand"), null)
             var compactZoom = findChild(widget, "compactMapZoom")
@@ -295,7 +307,6 @@ Item {
             verify(widget.x > previousX)
             compare(widget.savedMoves, savedMoves + 1)
             verify(!widget.dragging)
-            mapSettings.visible = true
             widget.map.expandRequested()
             verify(widget.mapExpanded)
             verify(findChild(widget, "mapAttribution").visible)
@@ -305,8 +316,7 @@ Item {
             verify(!widget.mapExpanded)
             verify(!findChild(widget, "mapAttribution").visible)
             verify(widget.roundMap)
-            shape.currentIndex = 0
-            shape.activated(0)
+            findChild(mapSettings, "mapShapeRectangle").clicked()
             verify(!settings.map_round)
             compare(widget.height, 270)
             widget.configureLargeMap()
@@ -475,10 +485,15 @@ def main():
         shutil.copyfile(ROOT / "qml/ui/configpopup/MenuTypography.js", folder / "MenuTypography.js")
         (folder / "DarkComboBox.qml").write_text((ROOT / "qml/ui/elements/DarkComboBox.qml").read_text(encoding="utf-8").replace('../configpopup/MenuTypography.js', 'MenuTypography.js'), encoding="utf-8")
         view = (ROOT / "qml/ui/configpopup/qopenhd_settings/AppMapSettingsView.qml").read_text(encoding="utf-8")
-        (folder / "AppMapSettingsView.qml").write_text(view.replace('import "../../elements"', '').replace('import ".."', '').replace('../MenuTypography.js', 'MenuTypography.js'), encoding="utf-8")
+        (folder / "AppMapSettingsView.qml").write_text(view.replace('import "../../elements"', '').replace('import ".."', '').replace('import "../openhd_settings"', '').replace('../MenuTypography.js', 'MenuTypography.js'), encoding="utf-8")
         (folder / "SettingBaseElement.qml").write_text(
             (ROOT / "qml/ui/elements/SettingBaseElement.qml").read_text(encoding="utf-8").replace('../configpopup/MenuTypography.js', 'MenuTypography.js'), encoding="utf-8")
         (folder / "AdvancedActionButton.qml").write_text((ROOT / "qml/ui/configpopup/AdvancedActionButton.qml").read_text(encoding="utf-8"), encoding="utf-8")
+        for name in ["MapSettingsCard.qml", "MapSettingRow.qml", "WidgetToggle.qml", "MapActionButton.qml", "MapValueSlider.qml"]:
+            content = (ROOT / "qml/ui/configpopup/qopenhd_settings" / name).read_text(encoding="utf-8")
+            (folder / name).write_text(content.replace('../MenuTypography.js', 'MenuTypography.js').replace('import ".."', ''), encoding="utf-8")
+        compact = (ROOT / "qml/ui/configpopup/openhd_settings/CompactLinkComboBox.qml").read_text(encoding="utf-8")
+        (folder / "CompactLinkComboBox.qml").write_text(compact.replace('import "../../elements"',''), encoding="utf-8")
         real_canvas = (ROOT / "qml/ui/widgets/map/MapComponent.qml").read_text(encoding="utf-8")
         real_canvas = real_canvas.replace("import OpenHD 1.0", "").replace("AdsbVehicleManager.adsbVehicles", "[]")
         (folder / "RealMapComponent.qml").write_text(real_canvas, encoding="utf-8")

@@ -33,9 +33,9 @@ Item {
  property var _fcMavlinkSystem: fc
  property var _wifi_card_air: wifi
  property var _wifi_card_gnd0: wifi
- property var _wifi_card_gnd1: wifi
- property var _wifi_card_gnd2: wifi
- property var _wifi_card_gnd3: wifi
+ property var _wifi_card_gnd1: wifiUnused
+ property var _wifi_card_gnd2: wifiUnused
+ property var _wifi_card_gnd3: wifiUnused
  property var _qopenhd: ({version_string: "3.0.0-evo", debugMenuPreview: false, launchedFromQtCreator: true})
  QtObject {
   id: settings
@@ -70,8 +70,9 @@ Item {
   property string writtenParam: ""
   property int writtenValue: -1
   function try_set_param_int_async(id,value,confirm) { writtenParam=id; writtenValue=value }
-  function param_int_exists(id) { return true }
-  function get_cached_int(id) { return encryption }
+  property var cardTypes: ({})
+  function param_int_exists(id) { return id.indexOf("CARD_TYPE_")===0 ? cardTypes[id] !== undefined : true }
+  function get_cached_int(id) { return cardTypes[id] !== undefined ? cardTypes[id] : encryption }
   function system_is_alive() { return true }
   function param_string_exists(id) { return false }
  }
@@ -103,7 +104,8 @@ Item {
   property int battery_percent: 62
   property var link_usage: [{id: 1, total_bps: 13200000}]
  }
- QtObject { id: wifi; property bool alive: true; property bool card_type_supported: true; property string card_type_as_string: "Devourer RTL822C" }
+ QtObject { id: wifi; property bool alive: true; property bool card_type_supported: true; property string card_type_as_string: "Devourer RTL822C"; function cardTypeName(type) { return type===51 ? "RTL8812AU" : type===52 ? "Devourer RTL8822C" : "UNKNOWN" } }
+ QtObject { id: wifiUnused;property bool alive:false;property string card_type_as_string:"N/A" }
  QtObject {
   id: fc
   property bool is_alive: true
@@ -123,6 +125,7 @@ Item {
  Menu.ConfigPopup { id: menu; anchors.fill: parent }
  TestCase {
   name: "FullStatusLayout"; when: windowShown
+  function cleanup(){wait(200)}
   function visualChild(item,name) {
    if(item.objectName===name) return item
    if(item.children) for(var i=0;i<item.children.length;i++) { var found=visualChild(item.children[i],name);if(found) return found }
@@ -160,7 +163,7 @@ Item {
     var dropdown=chemistry.popup
     verify(dropdown.x>=0 && dropdown.y>=0)
     verify(dropdown.x+dropdown.width*dropdown.scale<=scene.width)
-    verify(dropdown.y+dropdown.height*dropdown.scale<=scene.height)
+    verify(dropdown.y+dropdown.height*dropdown.scale<=scene.height,"Dropdown bounds: y="+dropdown.y+", height="+dropdown.height+", scale="+dropdown.scale+", scene="+scene.height+", menu="+menu.height+", viewport="+JSON.stringify(dropdown.viewportBounds()))
     verify(dropdown.height>=150, "All three chemistry rows should fit")
     dropdown.close()
    }
@@ -221,12 +224,43 @@ Item {
    compare(airPopup.details.hotspot_clients,2)
    airPopup.close()
   }
+  function test_wifi_chipsets() {
+   tryVerify(function() { return menu.statusPanel !== null })
+   var cards=findChild(menu,"statusOverviewCards")
+   cards.unitDetailsRequested(0)
+   tryVerify(function() { return findChild(menu,"groundStationDetailsPopup") !== null })
+   var popup=findChild(menu,"groundStationDetailsPopup")
+   tryCompare(popup,"visible",true)
+   compare(popup.wifiChipsets.join(","),"Devourer RTL822C")
+   params.cardTypes=({CARD_TYPE_0:51,CARD_TYPE_1:52});params.update_count++
+   compare(popup.wifiChipsets.join(","),"RTL8812AU,Devourer RTL8822C")
+   var chipsets=visualChild(popup.contentItem,"systemWifiChipsets")
+   compare(chipsets.text,"RTL8812AU\nDevourer RTL8822C")
+   verify(chipsets.contentHeight<=88)
+   popup.close()
+   cards.unitDetailsRequested(1)
+   tryVerify(function() { return findChild(menu,"airUnitDetailsPopup") !== null })
+   var airPopup=findChild(menu,"airUnitDetailsPopup")
+   tryCompare(airPopup,"visible",true)
+   compare(airPopup.wifiChipsets.join(","),"RTL8812AU,Devourer RTL8822C")
+   air.is_alive=false
+   compare(airPopup.wifiChipsets.length,0)
+   compare(visualChild(airPopup.contentItem,"systemWifiChipsets").text,"Not reported")
+   air.is_alive=true
+   params.cardTypes=({});params.update_count++
+   wifi.alive=false
+   compare(airPopup.wifiChipsets.length,0)
+   wifi.alive=true
+   airPopup.close()
+  }
   function test_resize_and_alignment() {
    tryVerify(function() { return menu.statusPanel !== null })
    var cards=findChild(menu,"statusOverviewCards")
    verify(cards !== null)
    var sound=findChild(menu,"statusSoundButton")
    verify(sound!==null)
+   verify(waitForRendering(scene));wait(100)
+
    mouseClick(sound)
    var popup=findChild(menu,"statusVolumePopup")
    tryCompare(popup,"visible",true)

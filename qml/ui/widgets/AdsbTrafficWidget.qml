@@ -106,7 +106,7 @@ BaseWidget {
 
     function formatAltitude(value) {
         if (!validNumber(value)) return qsTr("--")
-        return settings.enable_imperial
+        return (settings.enable_imperial || settings.enable_hybrid)
                 ? Math.round(value * 3.28084) + " ft"
                 : Math.round(value) + " m"
     }
@@ -114,9 +114,9 @@ BaseWidget {
     function formatAltitudeDelta(vehicle) {
         var delta = altitudeDelta(vehicle)
         if (!validNumber(delta)) return qsTr("--")
-        var converted = settings.enable_imperial ? delta * 3.28084 : delta
+        var converted = (settings.enable_imperial || settings.enable_hybrid) ? delta * 3.28084 : delta
         return (converted > 0 ? "+" : "") + Math.round(converted)
-                + (settings.enable_imperial ? " ft" : " m")
+                + ((settings.enable_imperial || settings.enable_hybrid) ? " ft" : " m")
     }
 
     function formatSpeed(value) {

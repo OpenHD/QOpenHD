@@ -1,3 +1,4 @@
+#include "util/uisimulator.h"
 #include "ohdaction.h"
 #include "../settings/mavlinksettingsmodel.h"
 
@@ -108,6 +109,7 @@ bool OHDAction::format_air_storage(int storageId)
 bool OHDAction::send_storage_action(int action, int storageId,
                                     const QString& runningText)
 {
+    if (UiSimulator::isActive()) return UiSimulator::instance().storageAction(action,storageId);
     if(m_format_air_sd_card_busy){
         return false;
     }
@@ -149,6 +151,7 @@ bool OHDAction::send_storage_action(int action, int storageId,
 
 bool OHDAction::refresh_air_storage()
 {
+    if (UiSimulator::isActive()) return UiSimulator::instance().storageAction(1,0);
     m_air_storage_devices.clear();
     emit airStorageDevicesChanged();
     return send_storage_action(1,0,"Refreshing storage devices");

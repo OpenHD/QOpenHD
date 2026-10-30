@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -81,7 +82,7 @@ ScrollView {
                         onValueModified: settings.air_battery_capacity_mah = value
                     }
 
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         height: elementHeight
                         text: qsTr("Apply")
                         onClicked: _fcMavlinkAction.set_battery_capacity_async(settings.air_battery_capacity_mah)

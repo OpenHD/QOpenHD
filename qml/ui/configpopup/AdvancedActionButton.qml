@@ -7,8 +7,11 @@ Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
     property bool primary: false
     property bool destructive: false
     property string iconText: ""
-    implicitHeight: 38
-    implicitWidth: Math.max(112, contentRow.implicitWidth + 30)
+    implicitHeight: MenuTypography.controlHeight
+    implicitWidth: Math.max(MenuTypography.controlMinWidth, buttonLabel.implicitWidth + (control.iconText.length ? MenuTypography.controlIcon + 8 : 0) + MenuTypography.controlPadding * 2)
+    topInset: 0; bottomInset: 0; leftInset: 0; rightInset: 0
+    leftPadding: MenuTypography.controlPadding; rightPadding: MenuTypography.controlPadding
+    topPadding: 0; bottomPadding: 0
     hoverEnabled: true
     activeFocusOnTab: true
     font.capitalization: Font.MixedCase
@@ -28,7 +31,7 @@ Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
     readonly property var _theme: _sf ? _sf : _fallback
 
     background: Rectangle {
-        radius: 8
+        radius: MenuTypography.controlRadius
         color: control.primary ? _theme.accentColor
                                : (control.down || control.hovered
                                   ? _theme.panelBackgroundRaised
@@ -37,22 +40,23 @@ Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
         border.color: control.activeFocus ? _theme.accentColor
                                          : (control.destructive ? _theme.errorColor : _theme.lineColor)
     }
-    contentItem: Row {
-        id: contentRow
-        spacing: 8
-        anchors.centerIn: parent
+    contentItem: Item {
         Text {
+            id: buttonIcon
             visible: control.iconText.length > 0
+            anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
             text: control.iconText
             color: control.primary ? "white" : (control.destructive ? _theme.errorColor : _theme.primaryText)
-            font.family: "Font Awesome 5 Free"
-            font.pixelSize: 14
+            font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.controlIcon
         }
         Text {
+            id: buttonLabel; objectName: "actionButtonLabel"
+            anchors.fill: parent; anchors.leftMargin: buttonIcon.visible ? MenuTypography.controlIcon + 8 : 0
             text: control.text
             color: control.primary ? "white" : (control.destructive ? _theme.errorColor : _theme.primaryText)
-            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-            font.bold: true
+            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true
+            horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+            wrapMode: Text.WordWrap; clip: true
         }
     }
 }

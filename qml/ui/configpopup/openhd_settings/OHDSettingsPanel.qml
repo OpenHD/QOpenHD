@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -5,6 +6,8 @@ import QtQuick.Layouts 1.12
 import OpenHD 1.0
 import ".."
 import "../features"
+import "AirSettingsLayout.js" as AirLayout
+import "CameraSettingsLayout.js" as CameraLayout
 
 Rectangle {
     id: root
@@ -26,9 +29,29 @@ Rectangle {
         ListElement { title: qsTr("EXTRAS"); icon: "\uf067" }
     }
 
-    function tabIsAvailable(index) {
-        return true
+    readonly property var availablePages: {
+        _airCameraSettingsModel.update_count
+        _airCameraSettingsModel2.update_count
+        _ohdSystemAirSettingsModel.update_count
+        _ohdSystemGroundSettings.update_count
+        var cameraIds = CameraLayout.availableParameterIds(_airCameraSettingsModel, settings_form.showAdvancedSettings)
+            .concat(CameraLayout.availableParameterIds(_airCameraSettingsModel2, settings_form.showAdvancedSettings))
+        var airIds = AirLayout.availableParameterIds(_ohdSystemAirSettingsModel,
+            settings_form.showAdvancedSettings, settings_form.showDeveloperSettings === true,
+            _qopenhd.debugMenuPreview)
+        // Link, Storage and Extras include local actions/status. Camera, Air
+        // and Ground need actual parameters, including preview fixture data.
+        return [true, cameraIds.length > 0, true, airIds.length > 0,
+                _ohdSystemGroundSettings.param_ids().length > 0, true]
     }
+    function tabIsAvailable(index) {
+        return index >= 0 && index < availablePages.length && availablePages[index]
+    }
+    function ensureAvailablePage() {
+        if (!tabIsAvailable(currentPage)) currentPage = firstAvailableTab(0, 1)
+    }
+    onAvailablePagesChanged: ensureAvailablePage()
+    Component.onCompleted: ensureAvailablePage()
 
     function tabTitle(index) {
         if (index === 0) return qsTr("LINK")
@@ -94,7 +117,7 @@ Rectangle {
         Flickable {
             id: tabScroller
             Layout.fillWidth: true
-            Layout.preferredHeight: 36
+            Layout.preferredHeight: MenuTypography.controlHeight
             contentWidth: tabRow.width
             contentHeight: height
             flickableDirection: Flickable.HorizontalFlick
@@ -126,7 +149,7 @@ Rectangle {
                         text: model.title
                         iconText: model.icon
                         hoverEnabled: true
-                        onClicked: root.currentPage = index
+                        onClicked: if (root.tabIsAvailable(index)) root.currentPage = index
                         Keys.onPressed: function(event) {
                             if (event.key === Qt.Key_Left) {
                                 root.moveTab(index, -1)
@@ -175,13 +198,8 @@ Rectangle {
                     StorageSettingsPanel { id: storagePanel; onBackRequested: root.focusTab(2) }
                 }
                 AdvancedPageLoader { selected: root.currentPage === 3; sourceComponent:
-                    MavlinkParamPanel {
+                    AirSettingsPanel {
                         id: airPanel
-                        m_name: "AIR"
-                        m_show_link_status: true
-                        m_instanceMavlinkSettingsModel: _ohdSystemAirSettingsModel
-                        m_instanceCheckIsAvlie: _ohdSystemAir
-                        m_requires_alive_air: true
                         onBackRequested: root.focusTab(3)
                     }
                 }

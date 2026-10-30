@@ -4,12 +4,23 @@ import QtQuick.Controls 2.12
 
 TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
     id: control
+    // Declare availability independently of effective visibility: a hidden
+    // parent page must not make every child tab appear empty.
+    property bool hasContent: true
+    Keys.forwardTo: TabBar.tabBar ? [TabBar.tabBar] : []
+    visible: hasContent
+    width: hasContent ? implicitWidth : 0
+    onHasContentChanged: {
+        if (TabBar.tabBar && typeof TabBar.tabBar.ensureAvailableTab === "function")
+            Qt.callLater(TabBar.tabBar.ensureAvailableTab)
+    }
     property string iconText: ""
-    implicitHeight: 34
-    implicitWidth: Math.max(92, tabContent.implicitWidth + 26)
+    implicitHeight: MenuTypography.controlHeight
+    implicitWidth: Math.max(MenuTypography.controlMinWidth, tabContent.implicitWidth + MenuTypography.controlPadding * 2)
     hoverEnabled: true
     activeFocusOnTab: true
     padding: 0
+    topInset: 0; bottomInset: 0; leftInset: 0; rightInset: 0
 
     contentItem: Item {
         Row {
@@ -24,7 +35,7 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
                 text: control.iconText
                 color: control.checked ? "white" : settings_form.secondaryText
                 font.family: "Font Awesome 5 Free"
-                font.pixelSize: 11
+                font.pixelSize: MenuTypography.controlIcon
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -41,7 +52,7 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
         }
     }
     background: Rectangle {
-        radius: 7
+        radius: MenuTypography.controlRadius
         color: control.checked ? settings_form.accentColor
                                : (control.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground)
         border.width: control.activeFocus ? 2 : 1

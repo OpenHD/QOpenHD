@@ -1,0 +1,80 @@
+QOPENHD - WIDGETS MENU
+Master: Enable OSD widgets [show_widgets]
+Tools: Preset (Custom / Minimal / Flight / All widgets)
+
+FLIGHT INSTRUMENTS
+  - Flight Mode [show_flight_mode]
+  - Horizon [show_horizon]
+  - Perf. horizon [show_performance_horizon]
+  - Flight Path Vector [show_flight_path_vector]
+  - Altitude [altitude_ladder_show]
+  - Speed [speed_ladder_show]
+  - Heading [show_heading]
+  - Bank Angle Indicator [bank_angle_indicator_widget_show]
+  - Vertical Speed Gauge [show_vertical_speed_gauge_widget]
+  - Angle of Attack [show_aoa]
+  - Second Speed [show_speed_second]
+  - Throttle [show_throttle]
+  - Vertical Speed (minimal) [show_vertical_speed_simple_widget]
+  - Second Altitude [show_altitude_second]
+
+NAVIGATION
+  - Home Arrow [show_arrow]
+  - Map [show_map]
+  - Total Flight Distance [show_flight_distance]
+  - Wind [show_wind]
+  - GPS [show_gps]
+  - Home Distance [show_home_distance]
+  - Flight Timer [show_flight_time]
+  - Missions [show_mission]
+
+POWER & BATTERY
+  - Battery Temperature [show_battery_temp]
+  - Air Battery [show_air_battery]
+  - Ground Battery [show_ground_battery]
+  - Consumed charge [show_flight_mah]
+  - Efficiency [show_flight_mah_km]
+
+LINK & VIDEO
+  - Link Overview [show_link_overview_widget]
+  - Bottom Link Bar [show_link_overview_widget_bottom]
+  - Retransmission Stats [show_retransmission_stats]
+  - Downlink RSSI [show_downlink_rssi]
+  - Uplink RSSI [show_uplink_rssi]
+  - Live rate control [wb_link_rate_control_widget_show]
+  - Video bitrate [show_bitrate]
+  - Ground Status [show_ground_status]
+  - Air Status [show_air_status]
+
+SENSORS
+  - IMU temperature [show_imu_temp]
+  - Pressure temperature [show_press_temp]
+  - Pressure temperature 2 [show_press_temp2]
+  - Pressure temperature 3 [show_press_temp3]
+  - Airspeed temperature [show_airspeed_temp]
+  - ESC temperature [show_esc_temp]
+  - Vibration [show_vibration]
+  - distance sensor [show_distance_sensor_widget]
+  - TX Temperature [show_txc_temp_air]
+  - RX Temperature [show_txc_temp_gnd]
+
+CONTROLS
+  - Control Inputs [show_control]
+  - IP Camera Control [show_ip_camera_control_widget]
+  - GPIO [show_gpio]
+  - RC signal [show_rc_rssi]
+
+UTILITIES
+  - GPS time [show_time_widget]
+  - ADSB [adsb_enable]
+  - Log messages [show_message_hud]
+  - Sidebar [show_sidebar]
+
+DEVELOPER (Developer mode only)
+  - Video Debug Widget [show_video_pipeline_debug_widget]
+  - Artosyn Debug Widget [show_artosyn_debug_widget]
+  - Qt render statistics [qrenderstats_show]
+
+Total: 57 widget switches plus the master switch.
+Previews render the existing HUD widget visuals; no generic illustrations or additional HUD/map/video instances.
+Source: qml/ui/configpopup/qopenhd_settings/WidgetCatalog.js

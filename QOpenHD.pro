@@ -201,6 +201,7 @@ SOURCES += \
     app/map/offlinemapbuilder.cpp \
     app/fleetcontrol/fleetcontrollte.cpp \
     app/util/mousehelper.cpp \
+    app/util/uisimulator.cpp \
     app/util/qopenhd.cpp \
     app/util/asyncping.cpp \
     app/util/asynccommandrunner.cpp \
@@ -225,6 +226,7 @@ HEADERS += \
     app/map/offlinemapbuilder.h \
     app/fleetcontrol/fleetcontrollte.h \
     app/util/mousehelper.h \
+    app/util/uisimulator.h \
     app/util/qopenhd.h \
     app/util/qtcreatorlaunch.h \
     app/util/asyncping.h \
@@ -340,6 +342,7 @@ JetsonBuild {
 }
 
 WindowsBuild {
+    qtHaveModule(texttospeech): CONFIG += EnableSpeech
     # This aparently makes qt use absolute paths, otherwise we get compile issues ?
     QMAKE_PROJECT_DEPTH = 0
 }

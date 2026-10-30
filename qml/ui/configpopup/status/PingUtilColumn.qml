@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -36,11 +37,11 @@ Item {
         spacing: 10
         height: childrenRect.height
 
-        Button {
+        AdvancedActionButton {
             id: pingButton
-            width: Math.min(176, Math.max(150, actionFlow.width * 0.25)); height: 43
+            width: Math.min(176, Math.max(150, actionFlow.width * 0.25)); height: MenuTypography.controlHeight
             text: "\uf140  " + qsTr("PING ALL SYSTEMS")
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 11
+            font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.controlIcon
             onClicked: _mavlinkTelemetry.ping_all_systems()
             background: Rectangle { radius: 10; color: parent.hovered ? "#20384f" : settings_form.panelBackgroundRaised; border.color: parent.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: parent.activeFocus ? 2 : 1 }
             contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }

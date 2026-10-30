@@ -67,6 +67,8 @@ public:
     static WiFiCard& instance_air();
     //
     void process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg);
+    // Decode CARD_TYPE_n parameters with the same names as live card statistics.
+    Q_INVOKABLE QString cardTypeName(int type) const;
 
     static int helper_get_gnd_curr_best_rssi();
     static int helper_get_gnd_worst_temperature_state();

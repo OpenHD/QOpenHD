@@ -1,3 +1,4 @@
+#include "util/uisimulator.h"
 #include "xparam.h"
 #include "tutil/qopenhdmavlinkhelper.hpp"
 
@@ -107,6 +108,16 @@ void XParam::poll_metadata()
 
 bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RESULT_CB result_cb,PROGRESS_CB opt_progress_cb, std::chrono::milliseconds retransmit_delay, int n_wanted_retransmissions)
 {
+    if (UiSimulator::isActive()) {
+        const QString id=QString::fromLatin1(cmd.param_id, int(strnlen(cmd.param_id,16)));
+        QVariant value;
+        if(cmd.param_type==MAV_PARAM_EXT_TYPE_INT32) { int32_t number; std::memcpy(&number,cmd.param_value,4); value=number; }
+        else value=QString::fromUtf8(cmd.param_value,int(strnlen(cmd.param_value,128)));
+        const bool accepted=UiSimulator::instance().setParameter(cmd.target_system,cmd.target_component,id,value);
+        mavlink_param_ext_ack_t ack{};ack.param_result=accepted?PARAM_ACK_ACCEPTED:PARAM_ACK_VALUE_UNSUPPORTED;
+        if(result_cb) result_cb(SetParamResult{ack,0});
+        return true;
+    }
     assert(n_wanted_retransmissions>=1);
     assert(retransmit_delay.count()>=10);
     if(!result_cb){

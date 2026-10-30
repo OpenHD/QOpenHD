@@ -88,6 +88,15 @@ $qtDlls = @(
     "Qt5Xml.dll"
 )
 
+# Speech is optional across Qt kits. Ship the native backend when installed.
+if (Test-Path -LiteralPath (Join-Path $qtBin "Qt5TextToSpeech.dll")) {
+    Copy-ExistingFile (Join-Path $qtBin "Qt5TextToSpeech.dll") (Join-Path $TargetDir "Qt5TextToSpeech.dll")
+    $speechPlugin = Join-Path $qtPlugins "texttospeech/qtexttospeech_sapi.dll"
+    if (Test-Path -LiteralPath $speechPlugin) {
+        Copy-ExistingFile $speechPlugin (Join-Path $TargetDir "texttospeech/qtexttospeech_sapi.dll")
+    }
+}
+
 foreach ($dll in $qtDlls) {
     Copy-ExistingFile (Join-Path $qtBin $dll) (Join-Path $TargetDir $dll)
 }

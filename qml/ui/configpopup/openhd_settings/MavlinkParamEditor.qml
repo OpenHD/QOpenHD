@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.4
@@ -244,7 +245,7 @@ Rectangle{
     }
 
     // This button closes the param editor
-    Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+    AdvancedActionButton{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
         id:exit_button
         text: qsTr("x")
         anchors.right: parent.right
@@ -252,7 +253,7 @@ Rectangle{
         anchors.topMargin: 5
         anchors.rightMargin: 25
         width: 30
-        height: 30
+        height: MenuTypography.controlHeight
         contentItem: Text {
             text: exit_button.text
             font: exit_button.font
@@ -420,9 +421,9 @@ Rectangle{
             spacing: 10
             Layout.alignment: Qt.AlignHCenter
 
-            Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+            AdvancedActionButton{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 text: qsTr("Advanced")
-                visible: settings.dev_show_advanced_button
+                visible: settings_form.showAdvancedSettings
                 Layout.alignment: Qt.AlignLeft
                 onClicked: {
                     enableAdvanced= !enableAdvanced
@@ -432,7 +433,7 @@ Rectangle{
                 }
                 enabled: !instanceMavlinkSettingsModel.ui_is_busy
             }
-            Button{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+            AdvancedActionButton{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 text: qsTr("Save")
                 Layout.alignment: Qt.AlignRight
                 onClicked: {

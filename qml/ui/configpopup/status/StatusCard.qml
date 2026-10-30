@@ -1,4 +1,5 @@
 import "../MenuTypography.js" as MenuTypography
+import ".."
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -58,7 +59,7 @@ Item {
                     GradientStop { position: 0; color: "#0c3a5b" }
                     GradientStop { position: 1; color: "#0a3150" }
                 }
-                Text { anchors.centerIn: parent; text: card.iconText; color: card.iconColor; font.family: "Font Awesome 5 Free"; font.pixelSize: header.height * 0.56 }
+                Text { anchors.centerIn: parent; text: card.iconText; color: card.iconColor; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.pageIcon }
             }
             ColumnLayout {
                 Layout.fillWidth: true
@@ -66,7 +67,7 @@ Item {
                 Text {
                     Layout.fillWidth: true
                     text: card.title.toUpperCase(); color: "#edf3fa"
-                    font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true
+                    font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true
                     elide: Text.ElideRight
                 }
                 Row {
@@ -76,7 +77,7 @@ Item {
                         id: statusText
                         text: card.alive ? (card.systemType === 2 ? qsTr("Connected") : qsTr("Online")) : qsTr("Offline")
                         color: card.alive ? "#3bda69" : "#94a9b9"
-                        font.family: "Archivo"; font.pixelSize: MenuTypography.body
+                        font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
                     }
                 }
             }
@@ -88,16 +89,16 @@ Item {
             height: item ? item.implicitHeight : 0
             sourceComponent: card.bodyComponent
         }
-        Button {
+        AdvancedActionButton {
             id: detailsButton
             objectName: "craftDetailsButton"
             anchors.top: bodyLoader.bottom; anchors.topMargin: 20
             anchors.left: parent.left; anchors.right: parent.right
             anchors.leftMargin: 20; anchors.rightMargin: 20
-            height: 52
+            height: MenuTypography.controlHeight
             text: qsTr("Details")
             font.capitalization: Font.MixedCase
-            font.family: "Archivo"; font.pixelSize: MenuTypography.body
+            font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
             Accessible.name: qsTr("%1 details").arg(card.title)
             onClicked: card.detailsRequested()
             onActiveFocusChanged: if (activeFocus) statusPanel.syncFocus(detailsButton)
@@ -106,13 +107,7 @@ Item {
                     card.detailsRequested(); event.accepted = true
                 } else card.handleNavigation(event)
             }
-            background: Rectangle {
-                radius: 11
-                color: detailsButton.down ? "#105384" : (detailsButton.hovered ? "#104670" : "#0b395f")
-                border.color: detailsButton.activeFocus ? "#38a5ff" : "#075080"
-                border.width: detailsButton.activeFocus ? 2 : 1
-            }
-            contentItem: Text { text: detailsButton.text; font: detailsButton.font; color: "#e4edf7"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+
         }
     }
 }

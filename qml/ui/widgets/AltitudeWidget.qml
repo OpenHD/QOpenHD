@@ -21,6 +21,7 @@ BaseWidget {
 
     visible: settings.altitude_ladder_show && settings.show_widgets
 
+    widgetPreviewRect: previewBoundsFor(altitudeLadderC)
     widgetIdentifier: "altitude_widget"
     bw_verbose_name: qsTr("ALTITUDE")
 
@@ -32,7 +33,7 @@ BaseWidget {
 
     function get_altitude_value(){
         var altitude_m_or_foot = settings.altitude_ladder_use_msl ? _fcMavlinkSystem.altitude_msl_m : _fcMavlinkSystem.altitude_rel_m;
-        if(settings.enable_imperial){
+        if((settings.enable_imperial || settings.enable_hybrid)){
             altitude_m_or_foot *= 3.28;
         }
         return altitude_m_or_foot;
@@ -42,7 +43,7 @@ BaseWidget {
         var alt = get_altitude_value();
         var alt_str=Number(alt).toLocaleString(Qt.locale(), 'f', 0);
         if(settings.altitude_ladder_show_unit && alt<999 ){
-            if(settings.enable_imperial){
+            if((settings.enable_imperial || settings.enable_hybrid)){
                 alt_str+=" ft";
             }else{
                 alt_str+=" m";

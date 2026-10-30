@@ -34,7 +34,7 @@ Column {
                 text: category.m_hide_elements ? "\uf0da" : "\uf0d7"
                 color: settings_form.accentColor
                 font.family: "Font Awesome 5 Free"
-                font.pixelSize: 12
+                font.pixelSize: MenuTypography.controlIcon
                 anchors.verticalCenter: parent.verticalCenter
             }
             Text {

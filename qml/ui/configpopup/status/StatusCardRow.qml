@@ -27,7 +27,7 @@ Item {
         anchors.left: parent.left; anchors.leftMargin: 28; anchors.verticalCenter: parent.verticalCenter
         width: 24
         text: row.m_icon; color: "#d9e9f6"
-        font.family: "Font Awesome 5 Free"; font.pixelSize: 23
+        font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon
         horizontalAlignment: Text.AlignHCenter
     }
     Text {
@@ -35,7 +35,7 @@ Item {
         anchors.left: icon.right; anchors.leftMargin: 24
         anchors.verticalCenter: parent.verticalCenter
         text: row.m_left_text.replace(":", ""); color: "#dce6ef"
-        font.family: "Archivo"; font.pixelSize: MenuTypography.body
+        font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
         width: row.width * 0.35
         elide: Text.ElideRight
     }
@@ -58,7 +58,7 @@ Item {
                 visible: row.m_value_icon !== ""
                 anchors.verticalCenter: parent.verticalCenter
                 text: row.m_value_icon; color: "#38a5ff"
-                font.family: "Font Awesome 5 Free"; font.pixelSize: 26
+                font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon
             }
             Text {
                 id: value
@@ -67,7 +67,7 @@ Item {
                 width: Math.min(implicitWidth, Math.max(0, valueColumn.width - (row.m_status_dot ? 32 : 0) - (row.m_value_icon !== "" ? 42 : 0)))
                 text: row.m_right_text
                 color: row.m_has_error ? row.m_right_text_color_error : row.m_right_text_color
-                font.family: "Archivo"; font.pixelSize: MenuTypography.body
+                font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
                 horizontalAlignment: Text.AlignRight; elide: Text.ElideRight
             }
         }

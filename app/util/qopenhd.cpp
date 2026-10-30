@@ -1,3 +1,4 @@
+#include "uisimulator.h"
 #include "qopenhd.h"
 #include "qtcreatorlaunch.h"
 #include "qpixmap.h"
@@ -56,10 +57,18 @@ QString QOpenHD::credit_archive_text() const
 
 void QOpenHD::setDebugMenuPreview(bool enabled)
 {
+    setDebugMenuPreviewLevel(enabled ? 1 : 0);
+}
+
+void QOpenHD::setDebugMenuPreviewLevel(int level)
+{
+    if (UiSimulator::isActive()) level=0;
     // The setter is guarded as well as the button; production QML cannot opt in.
-    enabled = enabled && m_launchedFromQtCreator;
-    if (m_debugMenuPreview.exchange(enabled) == enabled) return;
-    emit debugMenuPreviewChanged();
+    level = m_launchedFromQtCreator ? qBound(0, level, 2) : 0;
+    const int previous = m_debugMenuPreviewLevel.exchange(level);
+    if (previous == level) return;
+    emit debugMenuPreviewLevelChanged();
+    if ((previous > 0) != (level > 0)) emit debugMenuPreviewChanged();
 }
 
 QOpenHD::QOpenHD(QObject *parent)
@@ -98,6 +107,12 @@ QOpenHD::QOpenHD(QObject *parent)
     qDebug() << "Voice:" << m_speech->voice().name();
     qDebug() << "Volume:" << m_speech->volume();
     qDebug() << "State:" << m_speech->state();
+    m_defaultSpeechVoice = m_speech->voice();
+    connect(m_speech, &QTextToSpeech::stateChanged, this, [this](QTextToSpeech::State) { emit speechVoicesChanged(); });
+    QSettings speechSettings;
+    configureSpeech(speechSettings.value("speech_voice", "").toString(),
+                    speechSettings.value("speech_rate", 1.0).toDouble(),
+                    speechSettings.value("speech_volume", 1.0).toDouble());
 #endif
 }
 
@@ -156,12 +171,50 @@ void QOpenHD::setFontFamily(QString fontFamily) {
 
 }
 
+bool QOpenHD::speechAvailable() const
+{
+#ifdef ENABLE_SPEECH
+    // BackendError is Qt 5's name; Qt 6 renamed the same state to Error.
+    return m_speech && static_cast<int>(m_speech->state()) != 3 && !QTextToSpeech::availableEngines().isEmpty();
+#else
+    return false;
+#endif
+}
+
+QStringList QOpenHD::speechVoices() const
+{
+    QStringList result;
+#ifdef ENABLE_SPEECH
+    if (m_speech) for (const auto& voice : m_speech->availableVoices())
+        if (!result.contains(voice.name())) result.append(voice.name());
+#endif
+    return result;
+}
+
+void QOpenHD::configureSpeech(const QString& voice, double rate, double volume)
+{
+    rate = qBound(0.5, rate, 2.0);
+    volume = qBound(0.0, volume, 1.0);
+    QSettings preferences;
+    preferences.setValue("speech_voice", voice);
+    preferences.setValue("speech_rate", rate);
+    preferences.setValue("speech_volume", volume);
+#ifdef ENABLE_SPEECH
+    if (!m_speech) return;
+    m_speech->setRate(rate - 1.0); // 100% is Qt's normal rate (0).
+    m_speech->setVolume(volume);
+    m_speech->setVoice(m_defaultSpeechVoice);
+    if (!voice.isEmpty()) for (const auto& available : m_speech->availableVoices())
+        if (available.name() == voice) { m_speech->setVoice(available); break; }
+#endif
+}
+
 void QOpenHD::textToSpeech_sayMessage(QString message)
 {
 #if defined(ENABLE_SPEECH)  
     QSettings settings;
-    if (settings.value("enable_speech", false).toBool() == true){
-        //m_speech->setVolume(m_volume/100.0);
+    if (speechAvailable() && settings.value("enable_speech", true).toBool()) {
+
         qDebug() << "QOpenHD::textToSpeech_sayMessage say:" << message;
         m_speech->say(message);
     }else{
@@ -174,6 +227,7 @@ void QOpenHD::textToSpeech_sayMessage(QString message)
 
 void QOpenHD::quit_qopenhd()
 {
+    if (UiSimulator::isActive()) { UiSimulator::instance().recordAction(QStringLiteral("Simulated quit_qopenhd - no host action performed")); return; }
     qDebug()<<"quit_qopenhd() begin";
     QApplication::quit();
     qDebug()<<"quit_qopenhd() end";
@@ -181,6 +235,7 @@ void QOpenHD::quit_qopenhd()
 
 void QOpenHD::disable_service_and_quit()
 {
+    if (UiSimulator::isActive()) { UiSimulator::instance().recordAction(QStringLiteral("Simulated disable_service_and_quit - no host action performed")); return; }
 #ifdef __linux__
     OHDUtil::run_command("sudo systemctl stop qopenhd",{""},true);
 #endif
@@ -189,6 +244,7 @@ void QOpenHD::disable_service_and_quit()
 
 void QOpenHD::restart_local_oenhd_service()
 {
+    if (UiSimulator::isActive()) { UiSimulator::instance().recordAction(QStringLiteral("Simulated restart_local_oenhd_service - no host action performed")); return; }
 #ifdef __linux__
 
     m_commands.run("service", "sudo", {"systemctl", "restart", "openhd"}, tr("OpenHD service restarted"));
@@ -197,6 +253,7 @@ void QOpenHD::restart_local_oenhd_service()
 
 void QOpenHD::run_dhclient_eth0()
 {
+    if (UiSimulator::isActive()) { UiSimulator::instance().recordAction(QStringLiteral("Simulated run_dhclient_eth0 - no host action performed")); return; }
 #ifdef __linux__
     m_commands.run("dhcp", "sudo", {"dhclient", "eth0"}, tr("Ethernet address request completed"));
 #endif
@@ -353,6 +410,7 @@ void QOpenHD::android_open_tethering_settings()
 
 void QOpenHD::sysctl_openhd(int task)
 {
+    if (UiSimulator::isActive()) { UiSimulator::instance().recordAction(QStringLiteral("Simulated sysctl_openhd - no host action performed")); return; }
 #ifdef __linux__
     const QStringList actions{"start", "stop", "enable", "disable"};
     if (task < 0 || task >= actions.size()) return;

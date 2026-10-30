@@ -2,35 +2,17 @@ import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-
-import QtQuick.Controls.Material 2.12
-
-import Qt.labs.settings 1.0
-
-import OpenHD 1.0
-
-import "../../../ui" as Ui
-import "../../elements"
 import ".."
 
-
-// Dialoque that does all the power commands (reboot / shutdown)
-Card {
-    dialogStyle: true
+AdvancedDialog {
     id: powerDialog
-    height: 240
-    width: 400
-    z: 5.0
+    objectName: "powerActionDialog"
+    parent: Overlay.overlay
     anchors.centerIn: parent
-    cardNameColor: "#edf4fa"
-    cardBackgroundColor: "#041d2c"
-    cardFooterColor: "#041d2c"
-    borderColor: "#0089c4"
-    hasHeaderImage: true
+    width: Math.min(480, parent ? parent.width - 32 : 480)
+    title: qsTr("Confirm power change")
+    closePolicy: powerRequestPending ? Popup.NoAutoClose : Popup.CloseOnEscape
 
-    Component.onCompleted: visible = false
-
-    property bool stateVisible: visible
     property bool powerRequestPending: false
     property bool pendingGround: false
     property bool pendingReboot: false
@@ -77,7 +59,7 @@ Card {
             action = reboot ? PowerActionDialoque.PowerAction.RebootFC : PowerActionDialoque.PowerAction.ShutdownFC
         }
         powerDialog.powerAction=action
-        powerDialog.visible=true
+        powerDialog.open()
     }
 
     enum PowerAction {
@@ -90,76 +72,7 @@ Card {
     }
     property int powerAction: PowerActionDialoque.PowerAction.RebootGround
 
-
-    states: [
-        State {
-            when: powerDialog.stateVisible;
-            PropertyChanges {
-                target: powerDialog
-                opacity: 1.0
-            }
-        },
-        State {
-            when: !powerDialog.stateVisible;
-            PropertyChanges {
-                target: powerDialog
-                opacity: 0.0
-            }
-        }
-    ]
-    transitions: [ Transition { NumberAnimation { property: "opacity"; duration: 250}} ]
-
-    cardName: qsTr("Confirm Power Change")
-    cardBody: Column {
-        height: powerDialog.height
-        width: powerDialog.width
-
-        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-            text: qsTr("If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode!")
-            width: parent.width
-            leftPadding: 12
-            rightPadding: 12
-            wrapMode: Text.WordWrap
-            color: settings_form.primaryText
-        }
-    }
-
-    hasFooter: true
-    cardFooter: Item {
-        anchors.fill: parent
-        AdvancedDialogButton {
-            id: groundReboot
-            enabled: !powerDialog.powerRequestPending
-            width: 96
-            height: 48
-            text: qsTr("Cancel")
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 6
-            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-            font.capitalization: Font.MixedCase
-
-            onPressed: {
-                powerDialog.visible = false
-            }
-        }
-
-        AdvancedDialogButton {
-            id: groundShutdown
-            enabled: !powerDialog.powerRequestPending && !_ohdAction.powerActionBusy
-            width: 140
-            height: 48
-            anchors.right: parent.right
-            anchors.rightMargin: 12
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 6
-            font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-            font.capitalization: Font.MixedCase
-            destructive: true
-            highlighted: true
-
-            text:  {
+    readonly property string actionLabel: {
                 if (powerDialog.powerRequestPending) return qsTr("Sending...")
                 if (powerAction === PowerActionDialoque.PowerAction.RebootGround) {
                     return qsTr("Reboot Ground")
@@ -182,31 +95,65 @@ Card {
                 return qsTr("Yes")
             }
 
-
-
-            onPressed: {
-                var isGround = powerAction === PowerActionDialoque.PowerAction.RebootGround
-                        || powerAction === PowerActionDialoque.PowerAction.ShutdownGround
-                var isAir = powerAction === PowerActionDialoque.PowerAction.RebootAir
-                        || powerAction === PowerActionDialoque.PowerAction.ShutdownAir
-                var reboot = powerAction === PowerActionDialoque.PowerAction.RebootGround
-                        || powerAction === PowerActionDialoque.PowerAction.RebootAir
-                        || powerAction === PowerActionDialoque.PowerAction.RebootFC
-                var result
-                if (isGround || isAir) {
-                    powerDialog.pendingGround = isGround
-                    powerDialog.pendingReboot = reboot
-                    result = _ohdAction.request_power_action(isGround, reboot)
-                    if (result === "queued") {
-                        powerDialog.powerRequestPending = true
-                        return
+    contentItem: Text {
+        objectName: "powerActionWarning"
+        text: qsTr("Rebooting or shutting down during flight may cause a crash or trigger failsafe mode.")
+        color: "#edf4fa"
+        font.family: MenuTypography.family
+        font.pixelSize: MenuTypography.body
+        wrapMode: Text.WordWrap
+    }
+    footer: Item {
+        implicitHeight: actions.implicitHeight + 32
+        RowLayout {
+            id: actions
+            anchors.left: parent.left; anchors.right: parent.right
+            anchors.margins: 20
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 12
+            AdvancedDialogButton {
+                objectName: "powerActionCancel"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                topInset: 0; bottomInset: 0
+                font.capitalization: Font.MixedCase
+                enabled: !powerDialog.powerRequestPending
+                text: qsTr("Cancel")
+                onClicked: powerDialog.reject()
+            }
+            AdvancedDialogButton {
+                objectName: "powerActionConfirm"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                topInset: 0; bottomInset: 0
+                font.capitalization: Font.MixedCase
+                enabled: !powerDialog.powerRequestPending && !_ohdAction.powerActionBusy
+                destructive: true
+                text: powerDialog.actionLabel
+                onClicked: {
+                    var isGround = powerAction === PowerActionDialoque.PowerAction.RebootGround
+                            || powerAction === PowerActionDialoque.PowerAction.ShutdownGround
+                    var isAir = powerAction === PowerActionDialoque.PowerAction.RebootAir
+                            || powerAction === PowerActionDialoque.PowerAction.ShutdownAir
+                    var reboot = powerAction === PowerActionDialoque.PowerAction.RebootGround
+                            || powerAction === PowerActionDialoque.PowerAction.RebootAir
+                            || powerAction === PowerActionDialoque.PowerAction.RebootFC
+                    var result
+                    if (isGround || isAir) {
+                        powerDialog.pendingGround = isGround
+                        powerDialog.pendingReboot = reboot
+                        result = _ohdAction.request_power_action(isGround, reboot)
+                        if (result === "queued") {
+                            powerDialog.powerRequestPending = true
+                            return
+                        }
+                    } else {
+                        result = _fcMavlinkAction.send_command_reboot(reboot) ? "accepted" : "unconfirmed"
                     }
-                } else {
-                    result = _fcMavlinkAction.send_command_reboot(reboot) ? "accepted" : "unconfirmed"
+                    powerDialog.finish_power_action(result, reboot)
                 }
-                powerDialog.finish_power_action(result, reboot)
+
             }
         }
     }
 }
-

@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -119,7 +120,7 @@ ScrollView {
             wrapMode: Text.WordWrap
         }
 
-        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
             id: refreshButton
             Layout.alignment: Qt.AlignHCenter
             text: qsTr("REFRESH")
@@ -215,7 +216,7 @@ ScrollView {
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
             spacing: 20
-            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: applyButton
                 text: qsTr("APPLY")
                 enabled: _mlrsController.alive && _mlrsController.parametersLoaded
@@ -224,7 +225,7 @@ ScrollView {
                                                           rfOrtho.currentIndex, bindPhrase.text)
                 Keys.onPressed: root.handleKeys(event, applyButton)
             }
-            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: saveButton
                 text: qsTr("SAVE TO RADIO")
                 enabled: _mlrsController.alive && _mlrsController.parametersLoaded

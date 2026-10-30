@@ -1,0 +1,224 @@
+  QOPENHD - MAP MENU: SETTINGS AND OPTIONS
+  Location: OSD > Map
+  Inventory from the current source, not a live map-provider or device dump.
+
+  DISPLAY AND POSITION
+  ====================
+  1. Show map
+     Options: Off / On
+     Default: Off
+     Setting: show_map
+
+  2. Follow aircraft
+     Options: Off / On
+     Initial state: On; current state belongs to the map widget.
+     Property: mapTarget.followDrone
+
+  3. Zoom
+     Options: integer levels 1 through 30; step 1
+     Default: 18
+     The active map provider can constrain its effective zoom range.
+     Setting: map_zoom
+
+  4. Small map shape
+     Options: Rounded rectangle / Round
+     Default: Round
+     Setting: map_round
+
+  5. Small map size
+     Options: 0.25 through 8.00; step 0.05 (size multiplier)
+     Default: 1.00
+     Setting: map_size
+
+  6. Small map opacity
+     Options: 0.1 through 1.0; step 0.1 (10% through 100%)
+     Default: 1.0
+     Setting: map_opacity_minimized
+
+  7. Expanded map opacity
+     Options: 0.1 through 1.0; step 0.1 (10% through 100%)
+     Default: 1.0
+     Setting: map_opacity_maximized
+
+  8. Lock map to drone direction
+     Options: Off / On
+     Default: Off
+     Setting: map_orientation
+
+  9. Show drone track
+     Options: Off / On
+     Default: On
+     Setting: map_drone_track
+
+  10. Show mission waypoints
+      Options: Off / On
+      Default: On
+      Setting: map_show_mission_waypoints
+
+  MAP PROVIDER AND STYLE
+  ======================
+  11. Map provider
+      Options:
+        0 - OpenStreetMap (osm)
+        1 - Mapbox (API key) (mapboxgl)
+        2 - OpenHD Offline (openhd_offline)
+      Default: OpenStreetMap
+      Setting: selected_map_provider
+      Mapbox can use a raster fallback when the native Mapbox GL plugin is unavailable.
+
+  12. Map style
+      Options: descriptions returned by the active map's supportedMapTypes model.
+      This dropdown is enabled only for an active native Mapbox GL provider with
+      at least one supported type. The source does not hardcode a complete list
+      of style names; they depend on the installed Qt map plugin at runtime.
+      OpenStreetMap / OpenHD Offline use their configured custom map type.
+      Mapbox raster fallback uses Streets v11; its style dropdown is disabled.
+      Saved default index: 0
+      Setting: selected_map_variant
+
+  13. Mapbox API key
+      Options: editable public access-token text; surrounding whitespace is removed.
+      Default: empty
+      Setting: map_api_key
+      OpenStreetMap and OpenHD Offline do not require this key.
+
+  14. Reload map
+      Action: recreate/reconfigure the current map provider.
+
+  SAVED OFFLINE MAPS
+  ==================
+  15. Installed package count
+      Read-only: number of locally installed offline packages.
+
+  16. Offline package selector
+      Options: names in the current installed-package list.
+      These options are local data, not a fixed preset list.
+      Visible when packages exist, or in menu preview mode.
+
+  17. Jump to map
+      Action: jump to the selected offline package and close the settings menu.
+      Enabled when an offline package is selected.
+
+  18. Create offline map...
+      Action: open the offline map creation dialog described below.
+      A completed package is reloaded and OpenHD Offline becomes the selected
+      provider if it was not already selected.
+
+  ADS-B
+  =====
+  19. Enable ADS-B
+      Options: Off / On
+      Default: Off
+      Setting: adsb_enable
+
+  20. ADS-B SDR source
+      Options:
+        Off - public internet feed (adsb_source = 0)
+        On  - OpenHD / dump1090 SDR feed (adsb_source = 1)
+      Default: Off / internet feed
+      Visible when ADS-B is enabled, or in menu preview mode.
+
+  21. ADS-B radius
+      Options in this menu: 5 through 100 km; step 1 km
+      Default: 50 km
+      Stored in metres: 5000 through 100000; step 1000
+      Visible when ADS-B is enabled, or in menu preview mode.
+      Setting: adsb_radius
+
+  DEBUG ACTION
+  ============
+  22. Debug: circling plane / Stop demo flight
+      Options/actions: Start demo / Stop demo
+      State: mapTarget.demoFlight
+      Starting the demo enables the map and turns aircraft follow on.
+      This is a map demonstration, not real aircraft telemetry.
+      Visible only in Developer mode. The menu stays open for previewing.
+
+  INLINE OFFLINE MAP CREATION - ALL CONTROLS
+  =========================================
+  A. Town or region
+     Editable place-search text. Enter or Find region starts a search.
+     Search results come from the configured geocoder; up to 5 results are requested.
+
+  B. Find region / Searching...
+     Action/status. Disabled for empty text or while a job/search is running.
+
+  C. Search-result selector
+     Options: names returned by the current search (not a fixed list).
+     Visible when results exist. One result is selected automatically.
+     Selecting a result fits the preview to that region.
+
+  D. Selection mode: 50 km radius
+     Fixed radius: 50 km. Tap the map to choose the centre.
+     Radius is fixed at 50 km in this page.
+
+  E. Selection mode: Rectangle
+     Draw rectangle: drag to select a rectangular area.
+     Circle (50 km): return to choosing a centre.
+
+  F. Detail level
+     Options:
+       Overview        - maximum generated zoom 13
+       Standard detail - maximum generated zoom 14 (default)
+       High detail     - maximum generated zoom 15
+       Maximum detail  - maximum generated zoom 16
+     Packages include zoom levels 0 through the selected maximum.
+
+  G. Preview zoom buttons
+     + / -; the selection preview limits zoom to levels 3 through 18.
+     Map navigation also supports the available map gestures.
+
+  H. Tile-count estimate
+     Read-only tile estimate, or a validation/selection message.
+     Current builder limits: 262144 tiles and approximately 11000 square km.
+     Polar/date-line-invalid selections are rejected.
+
+  I. Status and progress
+     Read-only generation/search status and progress indicator.
+
+  J. Create map
+     Action: build the selected area using the selected detail level.
+     Enabled only for a valid area with a positive tile estimate and no active job.
+
+  K. Cancel / Close
+     During generation/search: cancel the current job.
+     Close selection: return to the current map preview.
+
+  L. Preview imagery
+     Uses Mapbox when a public key is supplied; otherwise OpenStreetMap.
+     This is a consequence of the key/provider setup, not another dropdown.
+
+  MAP PREVIEW
+  ===========
+  - Uses the existing map renderer; it does not change the Show map preference.
+  - Snapshot refresh on opening, setting changes and Refresh preview.
+  - Preview + / - changes the real map zoom.
+  - Offline area selection replaces the preview while choosing an area.
+  - Circular map remains the standard HUD shape.
+
+  OTHER VISIBLE ITEMS / MAP INTERACTIONS
+  ======================================
+  - OpenStreetMap contributor attribution and copyright link.
+  - Mapbox token guidance and account link text.
+  - On the actual map widget: + / - zoom controls, double-click expand/collapse,
+    centre panning, edge dragging, and clicking the plane to restore follow.
+    These are direct map interactions, not extra Map-menu settings.
+
+  NOT EXPOSED IN THIS MENU
+  ========================
+  Other ADS-B flags exist elsewhere in settings, such as unknown/zero-altitude
+  traffic, nearest-aircraft widget visibility and OSD markers. They are not
+  listed as editable Map-menu controls because this page does not expose them.
+
+  SOURCES
+  =======
+  qml/ui/configpopup/qopenhd_settings/AppMapSettingsView.qml
+  qml/ui/widgets/map/MapWidget.qml
+  qml/ui/widgets/map/MapWidgetForm.ui.qml
+  qml/ui/widgets/map/OfflineMapDialog.qml
+  qml/ui/widgets/map/OfflineMapSelection.qml
+  qml/ui/widgets/map/PlaneMapMarker.qml
+  qml/ui/elements/AppSettings.qml
+  app/map/offlinemapbuilder.cpp
+  app/adsb/adsbvehiclemanager.cpp
+  

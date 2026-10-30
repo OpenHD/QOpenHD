@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -420,7 +421,7 @@ FocusScope {
                 CompactLinkComboBox {
                     id: resolutionBox
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 38
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     model: root.uniqueResolutions()
                     currentIndex: model.indexOf(formatEditor.selectedResolution)
                     displayText: currentIndex >= 0
@@ -450,9 +451,9 @@ FocusScope {
                 }
                 CompactLinkComboBox {
                     id: fpsBox
-                    visible: _qopenhd.debugMenuPreview || (settings.dev_show_advanced_button)
+                    visible: settings_form.showAdvancedSettings
                     Layout.preferredWidth: 96
-                    Layout.preferredHeight: 38
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     model: root.fpsForResolution(formatEditor.selectedResolution)
                     currentIndex: model.indexOf(formatEditor.selectedFps)
                     displayText: (currentIndex >= 0 ? model[currentIndex] : formatEditor.selectedFps) + qsTr(" fps")
@@ -472,10 +473,10 @@ FocusScope {
                     }
                     onActivated: formatEditor.selectedFps = String(model[currentIndex])
                 }
-                Button {
+                AdvancedActionButton {
                     id: formatApplyButton
                     Layout.preferredWidth: 68
-                    Layout.preferredHeight: 38
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     text: qsTr("Apply")
                     enabled: formatEditor.dirty && !root.busy && !root.readOnly
                     hoverEnabled: true
@@ -527,7 +528,7 @@ FocusScope {
                 CompactLinkComboBox {
                     id: sensorModeBox
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 38
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     model: root.sensorModes()
                     currentIndex: model.indexOf(sensorEditor.selectedSensorMode)
                     displayText: root.readableMode(currentIndex >= 0
@@ -549,10 +550,10 @@ FocusScope {
                     }
                     onActivated: sensorEditor.selectedSensorMode = String(model[currentIndex])
                 }
-                Button {
+                AdvancedActionButton {
                     id: sensorModeApplyButton
                     Layout.preferredWidth: 68
-                    Layout.preferredHeight: 38
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     text: qsTr("Apply")
                     enabled: sensorEditor.sensorModeDirty && !root.busy && !root.readOnly
                     hoverEnabled: true
@@ -606,7 +607,7 @@ FocusScope {
                     property bool locallyEdited: false
                     property int observedRevision: root.modelUpdate
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 34
+                    Layout.preferredHeight: MenuTypography.controlHeight
                     hoverEnabled: true
                     from: root.sliderMinimum()
                     to: root.sliderMaximum()
@@ -720,7 +721,7 @@ FocusScope {
             CompactLinkComboBox {
                 id: cameraTypeBox
                 Layout.fillWidth: true
-                Layout.preferredHeight: 38
+                Layout.preferredHeight: MenuTypography.controlHeight
                 model: root.streamModel
                        ? root.streamModel.get_supported_camera_names(root.platformType) : []
                 currentIndex: cameraEditor.selectedIndex
@@ -741,10 +742,10 @@ FocusScope {
                 }
                 onActivated: cameraEditor.selectedIndex = currentIndex
             }
-            Button {
+            AdvancedActionButton {
                 id: cameraApplyButton
                 Layout.preferredWidth: 68
-                Layout.preferredHeight: 38
+                Layout.preferredHeight: MenuTypography.controlHeight
                 text: qsTr("Apply")
                 enabled: cameraEditor.dirty && !root.busy && !root.readOnly
                 hoverEnabled: true

@@ -18,6 +18,7 @@ BaseWidget {
     defaultXOffset: 20
     defaultVCenter: true
 
+    widgetPreviewRect: previewBoundsFor(speedLadderC)
     widgetIdentifier: "speed_widget"
     bw_verbose_name: qsTr("SPEED")
 

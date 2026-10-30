@@ -15,7 +15,7 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent; anchors.margins: 8; spacing: 7
-        RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 36; spacing: 8
+        RowLayout { Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight; spacing: 8
             Text { text: "M"; color: "#36c88a"; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
             Text { text: qsTr("Microhard Link 1"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Rectangle { width: activeText.implicitWidth + 14; height: 21; radius: 7; color: Qt.rgba(0.1, 0.8, 0.35, 0.12)

@@ -16,6 +16,7 @@ BaseWidget {
 
     defaultYOffset: 50
 
+    widgetPreviewRect: previewBoundsFor(headingLadderC)
     widgetIdentifier: "heading_widget"
     bw_verbose_name: qsTr("HEADING")
 

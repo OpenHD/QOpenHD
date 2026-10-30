@@ -59,6 +59,10 @@ static std::string wifi_card_type_to_string(const int card_type) {
         return "UNKNOWN";
     }
 }
+QString WiFiCard::cardTypeName(int type) const {
+    return QString::fromStdString(wifi_card_type_to_string(type));
+}
+
 static bool is_devourer_card_type(const int card_type) {
     return card_type >= openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8812A) &&
            card_type <= openhd::wifi_card_type_to_int(openhd::WiFiCardType::DEVOURER_RTL8811A);

@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -179,7 +180,7 @@ Rectangle {
                     Rectangle {
                         width: 34; height: 34; radius: 9
                         color: root.connected ? Qt.rgba(0.03, 0.5, 0.25, 0.12) : Qt.rgba(0.75, 0.35, 0.05, 0.12)
-                        Text { anchors.centerIn: parent; text: "\uf1eb"; color: root.connected ? settings_form.goodColor : "#d97706"; font.family: "Font Awesome 5 Free"; font.pixelSize: 16 }
+                        Text { anchors.centerIn: parent; text: "\uf1eb"; color: root.connected ? settings_form.goodColor : "#d97706"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.rowIcon }
                     }
                     ColumnLayout {
                         Layout.fillWidth: true; spacing: 0
@@ -209,9 +210,9 @@ Rectangle {
                     }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 8
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: autoMode
-                            Layout.fillWidth: true; height: 40
+                            Layout.fillWidth: true; height: MenuTypography.controlHeight
                             text: qsTr("AUTO")
                             highlighted: settings.qopenhd_mavlink_connection_mode === 0
                             onClicked: root.setMode(0)
@@ -220,9 +221,9 @@ Rectangle {
                             background: Rectangle { radius: 9; color: autoMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: autoMode.activeFocus ? (autoMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: autoMode.activeFocus ? 2 : 1 }
                             contentItem: Text { text: autoMode.text; color: autoMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: udpMode
-                            Layout.fillWidth: true; height: 40
+                            Layout.fillWidth: true; height: MenuTypography.controlHeight
                             text: qsTr("MANUAL UDP")
                             highlighted: settings.qopenhd_mavlink_connection_mode === 1
                             onClicked: root.setMode(1)
@@ -231,9 +232,9 @@ Rectangle {
                             background: Rectangle { radius: 9; color: udpMode.highlighted ? settings_form.accentColor : settings_form.panelBackgroundRaised; border.color: udpMode.activeFocus ? (udpMode.highlighted ? "white" : settings_form.accentColor) : settings_form.lineColor; border.width: udpMode.activeFocus ? 2 : 1 }
                             contentItem: Text { text: udpMode.text; color: udpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: tcpMode
-                            Layout.fillWidth: true; height: 40
+                            Layout.fillWidth: true; height: MenuTypography.controlHeight
                             text: qsTr("MANUAL TCP")
                             highlighted: settings.qopenhd_mavlink_connection_mode === 2
                             onClicked: root.setMode(2)
@@ -268,9 +269,9 @@ Rectangle {
                     anchors.margins: 13
                     spacing: 8
                     Text { text: qsTr("AUTOMATIC CONNECTION OPTIONS"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: androidButton
-                        Layout.fillWidth: true; height: 40
+                        Layout.fillWidth: true; height: MenuTypography.controlHeight
                         text: qsTr("Open Android tethering settings")
                         onClicked: _qopenhd.is_android() ? _qopenhd.android_open_tethering_settings() : _messageBoxInstance.set_text_and_show(qsTr("This feature is only available on Android"))
                         onActiveFocusChanged: if (activeFocus) root.syncFocus(androidButton)
@@ -278,9 +279,9 @@ Rectangle {
                         background: Rectangle { radius: 9; color: androidButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: androidButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: androidButton.activeFocus ? 2 : 1 }
                         contentItem: Text { text: androidButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                     }
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: ethernetForwardButton
-                        Layout.fillWidth: true; height: 40
+                        Layout.fillWidth: true; height: MenuTypography.controlHeight
                         text: qsTr("Ethernet forward + internet instructions")
                         onClicked: _messageBoxInstance.set_text_and_show(qsTr("Set Ethernet to FORWARD+INTERNET, reboot the ground unit, then connect this device by Ethernet. Video and telemetry forwarding start automatically."))
                         onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetForwardButton)
@@ -288,9 +289,9 @@ Rectangle {
                         background: Rectangle { radius: 9; color: ethernetForwardButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: ethernetForwardButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ethernetForwardButton.activeFocus ? 2 : 1 }
                         contentItem: Text { text: ethernetForwardButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                     }
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: ethernetHotspotButton
-                        Layout.fillWidth: true; height: 40
+                        Layout.fillWidth: true; height: MenuTypography.controlHeight
                         text: qsTr("Ethernet hotspot instructions")
                         onClicked: _messageBoxInstance.set_text_and_show(qsTr("Set Ethernet to HOTSPOT, reboot the ground unit, then connect this device by Ethernet. You may need to disable Wi-Fi and cellular data."))
                         onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetHotspotButton)
@@ -320,7 +321,7 @@ Rectangle {
                         TextField {
                             id: ipField
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 40
+                            Layout.preferredHeight: MenuTypography.controlHeight
                             Layout.minimumHeight: 40
                             Layout.maximumHeight: 40
                             text: settings.qopenhd_mavlink_connection_manual_tcp_ip
@@ -342,12 +343,12 @@ Rectangle {
                             Keys.onEscapePressed: settings_form.side_bar_regain_focus()
                             background: Rectangle { radius: 9; color: settings_form.panelBackgroundRaised; border.color: ipField.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ipField.activeFocus ? 2 : 1 }
                         }
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: saveButton
                             Layout.preferredWidth: 90
                             Layout.minimumWidth: 90
                             Layout.maximumWidth: 90
-                            Layout.preferredHeight: 40
+                            Layout.preferredHeight: MenuTypography.controlHeight
                             Layout.minimumHeight: 40
                             Layout.maximumHeight: 40
                             text: qsTr("SAVE")
@@ -360,9 +361,9 @@ Rectangle {
                     }
                     RowLayout {
                         Layout.fillWidth: true; spacing: 8
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: scanButton
-                            Layout.fillWidth: true; height: 40
+                            Layout.fillWidth: true; height: MenuTypography.controlHeight
                             text: root.isScanning ? qsTr("SCANNING %1%").arg(root.scanProgress) : qsTr("SCAN ETHERNET FOR OPENHD")
                             enabled: !root.isScanning
                             onClicked: root.startScan()
@@ -391,9 +392,9 @@ Rectangle {
                         Repeater {
                             id: resultsRepeater
                             model: scanResultsModel
-                            delegate: Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            delegate: AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: resultButton
-                                Layout.fillWidth: true; height: 40
+                                Layout.fillWidth: true; height: MenuTypography.controlHeight
                                 text: ip + "    " + qsTr("CONNECT")
                                 onClicked: root.applyTcpTarget(ip)
                                 onActiveFocusChanged: if (activeFocus) root.syncFocus(resultButton)

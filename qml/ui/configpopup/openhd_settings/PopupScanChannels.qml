@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -174,7 +175,7 @@ PopupBigGeneric {
                         text: "\uf1eb"
                         color: settings_form.accentColor
                         font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 16
+                        font.pixelSize: MenuTypography.rowIcon
                     }
                 }
                 ColumnLayout {
@@ -224,7 +225,7 @@ PopupBigGeneric {
                         CompactLinkComboBox {
                             id: rangeCombo
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 34
+                            Layout.preferredHeight: MenuTypography.controlHeight
                             model: channelModel
                             textRole: "title"
                             enabled: _ohdSystemGround.is_alive && !root.scanning
@@ -245,7 +246,7 @@ PopupBigGeneric {
                         CompactLinkComboBox {
                             id: bandwidthCombo
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 34
+                            Layout.preferredHeight: MenuTypography.controlHeight
                             model: bandwidthModel
                             textRole: "title"
                             enabled: _ohdSystemGround.is_alive && !root.scanning
@@ -257,11 +258,11 @@ PopupBigGeneric {
                         }
                     }
 
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: startButton
                         Layout.fillWidth: true
                         Layout.columnSpan: root.width >= 560 ? 2 : 1
-                        Layout.preferredHeight: 36
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         text: root.scanning ? qsTr("SCANNING…") : qsTr("START SCAN")
                         enabled: _ohdSystemGround.is_alive && !root.scanning &&
                                  _ohdSystemGround.wb_gnd_operating_mode === 0
@@ -348,7 +349,7 @@ PopupBigGeneric {
                         text: root.scanFinished ? "\uf00c" : (root.scanning ? "\uf110" : "\uf05a")
                         color: root.scanFinished ? settings_form.goodColor : settings_form.accentColor
                         font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 17
+                        font.pixelSize: MenuTypography.rowIcon
                     }
                     ColumnLayout {
                         Layout.fillWidth: true

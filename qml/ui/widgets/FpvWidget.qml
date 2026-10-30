@@ -14,6 +14,20 @@ BaseWidget {
 
     visible: settings.show_flight_path_vector && settings.show_widgets
 
+    widgetPreviewRect: previewBoundsFor(fpvC, vectorPreviewArea(), false)
+    function vectorPreviewArea() {
+        // Capture the moving pipper, not its large transparent flight-screen canvas.
+        var vertical=Math.max(-fpvC.verticalLimit,Math.min(fpvC.verticalLimit,-fpvC.vertical))
+        var lateral=Math.max(-fpvC.lateralLimit,Math.min(fpvC.lateralLimit,fpvC.lateral))
+        var pitch=fpvC.fpvInvertPitch ? -fpvC.pitch : fpvC.pitch
+        var dx=lateral*(fpvC.horizonWidth*250/180)
+        var dy=(pitch+vertical)*fpvC.height/Math.max(1,fpvC.horizonSpacing)
+        var angle=-fpvC.roll*Math.PI/180
+        var x=fpvC.width/2+dx*Math.cos(angle)-dy*Math.sin(angle)
+        var y=fpvC.height/2+dx*Math.sin(angle)+dy*Math.cos(angle)
+        var size=Math.max(28,32*fpvC.fpvSize)
+        return Qt.rect(x-size/4,y-size,size*1.5,size*1.5)
+    }
     widgetIdentifier: "fpv_widget"
     bw_verbose_name: qsTr("FLIGHT PATH VECTOR")
 

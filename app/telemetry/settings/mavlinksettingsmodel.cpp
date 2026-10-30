@@ -62,6 +62,7 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
 
 bool MavlinkSettingsModel::system_is_alive()
 {
+    if (m_simulation) return true;
     if(m_sys_id==OHD_SYS_ID_AIR){
         return AOHDSystem::instanceAir().is_alive();
     }
@@ -103,7 +104,7 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
 
     qRegisterMetaType<MavlinkSettingsModel::QtParamValue>("QtParamValue");
     qRegisterMetaType<MavlinkSettingsModel::QtParamSet>("QtParamSet");
-    connect(&QOpenHD::instance(), &QOpenHD::debugMenuPreviewChanged,
+    connect(&QOpenHD::instance(), &QOpenHD::debugMenuPreviewLevelChanged,
             this, &MavlinkSettingsModel::refresh_debug_preview);
     if (QOpenHD::instance().debugMenuPreview()) refresh_debug_preview();
     //m_data.push_back({"VIDEO_WIDTH",0});
@@ -116,21 +117,22 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
 
 const QVector<MavlinkSettingsModel::SettingData>& MavlinkSettingsModel::display_data() const
 {
-    return QOpenHD::instance().debugMenuPreview() ? m_preview_data : m_data;
+    return !m_simulation && QOpenHD::instance().debugMenuPreview() ? m_preview_data : m_data;
 }
 
 int MavlinkSettingsModel::metadata_sys_id() const
 {
-    return QOpenHD::instance().debugMenuPreview() ? -1 : m_sys_id;
+    return m_simulation ? -int(m_sys_id) : QOpenHD::instance().debugMenuPreview() ? -1 : m_sys_id;
 }
 
 int MavlinkSettingsModel::metadata_comp_id() const
 {
-    return QOpenHD::instance().debugMenuPreview() ? -1 : m_comp_id;
+    return !m_simulation && QOpenHD::instance().debugMenuPreview() ? -1 : m_comp_id;
 }
 
 void MavlinkSettingsModel::refresh_debug_preview()
 {
+    if (m_simulation) return;
     beginResetModel();
     m_preview_data.clear();
     if (QOpenHD::instance().debugMenuPreview()) {
@@ -139,6 +141,10 @@ void MavlinkSettingsModel::refresh_debug_preview()
             const auto settings = QJsonDocument::fromJson(file.readAll()).object()["settings"].toArray();
             for (const auto& value : settings) {
                 const auto entry = value.toObject();
+                if (QOpenHD::instance().debugMenuPreviewLevel() < 2 &&
+                    entry["id"].toString() != "FC_FW_INFO" && entry["id"].toString() != "FC_FW_EVID" &&
+                    (entry["hidden"].toBool() || DocumentedParam::is_param_whitelisted(
+                         entry["id"].toString().toStdString(), -1, -1))) continue;
                 SettingData row;
                 row.unique_id = entry["id"].toString();
                 const auto choices = entry["choices"].toArray();
@@ -150,12 +156,16 @@ void MavlinkSettingsModel::refresh_debug_preview()
             }
         }
         m_preview_data.append({"CAMERA_TYPE", int32_t(0)});
-        m_preview_data.append({"SENSOR_MODE", std::string("Automatic")});
+        if (QOpenHD::instance().debugMenuPreviewLevel() == 2)
+            m_preview_data.append({"SENSOR_MODE", std::string("Automatic")});
         // Optional features not yet present in the bundled metadata catalog.
         for (const auto& id : {"AUDIO_GAIN", "AUDIO_EXAMPLE", "ADSB_ENABLE", "WB_DEV_LOGS",
                 "LOG_OPENHD", "LOG_MAVLINK", "WB_UDP_ENABLE", "WB_UDP_FEC", "WB_UDP_BUDGET",
-                "WB_UDP_MAX_KBPS", "WB_UDP_IN_PORT", "WB_UDP_OUT_PORT", "WFB_LINK_EN", "ETH_LINK_EN"})
+                "WB_UDP_MAX_KBPS", "WB_UDP_IN_PORT", "WB_UDP_OUT_PORT", "WFB_LINK_EN", "ETH_LINK_EN"}) {
+            if (QOpenHD::instance().debugMenuPreviewLevel() < 2 &&
+                (QString::fromLatin1(id).startsWith("LOG_") || QString::fromLatin1(id) == "WB_DEV_LOGS")) continue;
             m_preview_data.append({QString::fromLatin1(id), int32_t(0)});
+        }
     }
     endResetModel();
     set_update_count(m_update_count + 1);
@@ -187,6 +197,7 @@ bool MavlinkSettingsModel::is_x_busy()
 
 void MavlinkSettingsModel::ensure_parameters_available()
 {
+    if (m_simulation) return;
     if (QOpenHD::instance().debugMenuPreview()) return;
     if (m_has_params_fetched || !m_is_ready || m_is_currently_busy || !system_is_alive()) return;
     const auto& ground = AOHDSystem::instanceGround();
@@ -201,6 +212,7 @@ void MavlinkSettingsModel::ensure_parameters_available()
 
 void MavlinkSettingsModel::try_refetch_all_parameters_async(bool log_result)
 {
+    if (m_simulation) return;
     if (QOpenHD::instance().debugMenuPreview()) return;
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(!m_is_ready){
@@ -294,6 +306,7 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
 
 void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int value,bool log_result)
 {
+    if (m_simulation) { setSimulationValue(param_id, value); return; }
     if (QOpenHD::instance().debugMenuPreview()) return;
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
@@ -328,6 +341,7 @@ void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int v
 
 void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QString value,bool log_result)
 {
+    if (m_simulation) { setSimulationValue(param_id, value); return; }
     if (QOpenHD::instance().debugMenuPreview()) return;
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
@@ -363,6 +377,7 @@ void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QSt
 
 QString MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
 {
+    if (m_simulation) return setSimulationValue(param_id, value) ? QString() : QStringLiteral("Unsupported simulated setting");
     if (QOpenHD::instance().debugMenuPreview()) return QStringLiteral("Menu preview: parameter writes disabled");
     qDebug()<<"try_update_parameter_int:"<<param_id<<","<<value;
     const auto result=try_set_param_int_impl(param_id,value);
@@ -385,6 +400,7 @@ QString MavlinkSettingsModel::try_update_parameter_int(const QString param_id,in
 
 QString MavlinkSettingsModel::try_update_parameter_string(const QString param_id,QString value)
 {
+    if (m_simulation) return setSimulationValue(param_id, value) ? QString() : QStringLiteral("Unsupported simulated setting");
     if (QOpenHD::instance().debugMenuPreview()) return QStringLiteral("Menu preview: parameter writes disabled");
     qDebug()<<"try_update_parameter_string:"<<param_id<<","<<value;
     const auto result=try_set_param_string_impl(param_id,value);
@@ -717,8 +733,8 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 
 bool MavlinkSettingsModel::param_int_exists(QString param_id)
 {
-    if(!QOpenHD::instance().debugMenuPreview() && DocumentedParam::has_device_metadata(metadata_sys_id(),metadata_comp_id()) && DocumentedParam::metadata(param_id.toStdString(),metadata_sys_id(),metadata_comp_id()).isEmpty()) return false;
-    for (const auto& tmp : (QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
+    if(!m_simulation && !QOpenHD::instance().debugMenuPreview() && DocumentedParam::has_device_metadata(metadata_sys_id(),metadata_comp_id()) && DocumentedParam::metadata(param_id.toStdString(),metadata_sys_id(),metadata_comp_id()).isEmpty()) return false;
+    for (const auto& tmp : (!m_simulation && QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
         if (tmp.unique_id == param_id && std::holds_alternative<int>(tmp.value)) return true;
     //qDebug()<<"Size:"<<m_data.size();
     for(const auto& tmp:display_data()){
@@ -734,8 +750,8 @@ bool MavlinkSettingsModel::param_int_exists(QString param_id)
 
 bool MavlinkSettingsModel::param_string_exists(QString param_id)
 {
-    if(!QOpenHD::instance().debugMenuPreview() && DocumentedParam::has_device_metadata(metadata_sys_id(),metadata_comp_id()) && DocumentedParam::metadata(param_id.toStdString(),metadata_sys_id(),metadata_comp_id()).isEmpty()) return false;
-    for (const auto& tmp : (QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
+    if(!m_simulation && !QOpenHD::instance().debugMenuPreview() && DocumentedParam::has_device_metadata(metadata_sys_id(),metadata_comp_id()) && DocumentedParam::metadata(param_id.toStdString(),metadata_sys_id(),metadata_comp_id()).isEmpty()) return false;
+    for (const auto& tmp : (!m_simulation && QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
         if (tmp.unique_id == param_id && std::holds_alternative<std::string>(tmp.value)) return true;
     for(const auto& tmp:display_data()){
         if(tmp.unique_id==param_id && std::holds_alternative<std::string>(tmp.value)){
@@ -749,7 +765,7 @@ bool MavlinkSettingsModel::param_string_exists(QString param_id)
 
 int MavlinkSettingsModel::get_cached_int(QString param_id)
 {
-    for (const auto& tmp : (QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
+    for (const auto& tmp : (!m_simulation && QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
         if (tmp.unique_id == param_id && std::holds_alternative<int>(tmp.value)) return std::get<int>(tmp.value);
     for(const auto& tmp:display_data()){
         if(tmp.unique_id.compare(param_id)==0 && std::holds_alternative<int>(tmp.value)){
@@ -762,7 +778,7 @@ int MavlinkSettingsModel::get_cached_int(QString param_id)
 
 QString MavlinkSettingsModel::get_cached_string(QString param_id)
 {
-    for (const auto& tmp : (QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
+    for (const auto& tmp : (!m_simulation && QOpenHD::instance().debugMenuPreview() ? QVector<SettingData>{} : m_hidden_data))
         if (tmp.unique_id == param_id && std::holds_alternative<std::string>(tmp.value)) return QString::fromStdString(std::get<std::string>(tmp.value));
     for(const auto& tmp:display_data()){
         if(tmp.unique_id.compare(param_id)==0 && std::holds_alternative<std::string>(tmp.value)){
@@ -839,6 +855,7 @@ QVariantMap MavlinkSettingsModel::get_ui_metadata(QString param_id) const
     if(!exists){ result.insert("control","unsupported"); return result; }
     const auto documented = DocumentedParam::find_param(param_id.toStdString(),metadata_sys_id(),metadata_comp_id());
     const auto resolved=DocumentedParam::metadata(param_id.toStdString(),metadata_sys_id(),metadata_comp_id());
+    result.insert("hidden",resolved["hidden"].toBool());
     result.insert("label",resolved["label"].toString(param_id));
     result.insert("group",resolved["group"].toString());
     if(!resolved.isEmpty() && !resolved["writable"].toBool(true)) {
@@ -940,4 +957,42 @@ void MavlinkSettingsModel::perform_dirty_actions(const SettingData &data)
             }
         }
     }
+}
+
+void MavlinkSettingsModel::initializeSimulation(const QVariantMap& values) {
+    m_simulation = true;
+    beginResetModel();
+    m_data.clear(); m_hidden_data.clear();
+    for (auto it=values.begin(); it!=values.end(); ++it) {
+        SettingData row{it.key(), int32_t(0)};
+        if (it.value().userType()==QMetaType::QString) row.value=it.value().toString().toStdString();
+        else row.value=int32_t(it.value().toInt());
+        m_data.append(row);
+    }
+    endResetModel();
+    set_has_params_fetched(true);
+    set_update_count(m_update_count+1);
+}
+
+bool MavlinkSettingsModel::setSimulationValue(const QString& id, const QVariant& value) {
+    if (!m_simulation) return false;
+    for (int i=0;i<m_data.size();++i) {
+        if (m_data[i].unique_id!=id) continue;
+        const auto meta=get_ui_metadata(id);
+        if (meta.value("readOnly").toBool()) return false;
+        if (std::holds_alternative<std::string>(m_data[i].value)) m_data[i].value=value.toString().toStdString();
+        else {
+            const int number=value.toInt();
+            const auto enumValues=meta.value("values").value<QList<int>>();
+            if(!enumValues.isEmpty() && !enumValues.contains(number))return false;
+            if (meta.contains("minimum") && number<meta.value("minimum").toInt()) return false;
+            if (meta.contains("maximum") && number>meta.value("maximum").toInt()) return false;
+            m_data[i].value=int32_t(number);
+        }
+        emit dataChanged(index(i),index(i));
+        set_last_updated_param_id(id); set_last_updated_param_success(true);
+        set_update_count(m_update_count+1);
+        return true;
+    }
+    return false;
 }

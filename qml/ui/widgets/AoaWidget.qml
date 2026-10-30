@@ -20,6 +20,7 @@ BaseWidget {
 
     visible: settings.show_aoa && settings.show_widgets
 
+    widgetPreviewRect: previewBoundsFor(aoaGaugeC)
     widgetIdentifier: "aoa_widget"
     bw_verbose_name: qsTr("ANGLE OF ATTACK")
 

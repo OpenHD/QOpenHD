@@ -1,3 +1,4 @@
+#include "util/uisimulator.h"
 #include "wblinksettingshelper.h"
 #include "../action/impl/xparam.h"
 
@@ -51,6 +52,7 @@ WBLinkSettingsHelper& WBLinkSettingsHelper::instance()
 
 bool WBLinkSettingsHelper::start_analyze_channels(int freq_bands, int scan_profile)
 {
+    if (UiSimulator::isActive()) { UiSimulator::instance().startRadioOperation(true); return true; }
     if (m_analyze_request_pending || scan_profile < 0 || scan_profile > 2) return false;
     set_analyze_request_pending(true);
     const bool queued = OHDAction::instance().send_command_analyze_channels_async(freq_bands, scan_profile,
@@ -73,6 +75,7 @@ bool WBLinkSettingsHelper::start_analyze_channels(int freq_bands, int scan_profi
 
 bool WBLinkSettingsHelper::start_scan_channels(int freq_bands,int channel_widths,bool passive)
 {
+    if (UiSimulator::isActive()) { UiSimulator::instance().startRadioOperation(false); return true; }
     if(OHDAction::instance().send_command_start_scan_channels_blocking(freq_bands,channel_widths,passive)){
         set_scan_progress_perc(0);
         set_scanning_text_for_ui("SCANNING");
@@ -384,6 +387,11 @@ bool WBLinkSettingsHelper::set_param_stbc_ldpc_enable_air_ground()
 
 void WBLinkSettingsHelper::change_param_air_async(const int comp_id,const std::string param_id,std::variant<int32_t,std::string> param_value,const std::string tag)
 {
+    if (UiSimulator::isActive()) {
+        QVariant value=std::holds_alternative<int32_t>(param_value)?QVariant(std::get<int32_t>(param_value)):QVariant(QString::fromStdString(std::get<std::string>(param_value)));
+        UiSimulator::instance().setParameter(OHD_SYS_ID_AIR,comp_id,QString::fromStdString(param_id),value);
+        return;
+    }
     mavlink_param_ext_set_t command;
     if(std::holds_alternative<int32_t>(param_value)){
         auto value=std::get<int32_t>(param_value);

@@ -104,7 +104,12 @@
         <file>ui/configpopup/AdvancedCard.qml</file>
         <file>ui/configpopup/AdvancedActionButton.qml</file>
         <file>ui/configpopup/AdvancedTabButton.qml</file>
+        <file>ui/configpopup/openhd_settings/AirSettingsPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/AirSettingRow.qml</file>
+        <file>ui/configpopup/openhd_settings/AirSettingsLayout.js</file>
+        <file>ui/configpopup/AdvancedTabBar.qml</file>
         <file>ui/configpopup/AdvancedDialog.qml</file>
+        <file>ui/configpopup/dev/SimulationPopup.qml</file>
         <file>ui/configpopup/MenuTypography.js</file>
         <file>ui/configpopup/AdvancedDialogButton.qml</file>
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
@@ -135,16 +140,28 @@
         <file>ui/elements/XDecimalSpinBox.qml</file>
         <file>ui/elements/ButtonIconWarning.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppWidgetSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/WidgetCatalog.js</file>
+        <file>ui/configpopup/qopenhd_settings/WidgetPreview.qml</file>
+        <file>ui/configpopup/qopenhd_settings/WidgetToggle.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml</file>
         <file>ui/configpopup/openhd_settings/FleetControlLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/FleetControlSettingsPanel.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVehicleSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppSettingsPanel.qml</file>
+        <file>ui/configpopup/qopenhd_settings/OsdSettingsPanel.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppSettingsPageFrame.qml</file>
         <file>ui/configpopup/qopenhd_settings/StyledText.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppGeneralSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/GeneralSettingsCard.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppGeneralDeveloperSettings.qml</file>
+        <file>resources/flags/gb.svg</file>
+        <file>resources/flags/de.svg</file>
         <file>ui/configpopup/qopenhd_settings/AppDevSettingsView.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppMapSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/MapSettingsCard.qml</file>
+        <file>ui/configpopup/qopenhd_settings/MapActionButton.qml</file>
+        <file>ui/configpopup/qopenhd_settings/MapValueSlider.qml</file>
+        <file>ui/configpopup/qopenhd_settings/MapSettingRow.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamPanel.qml</file>
         <file>ui/configpopup/openhd_settings/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/openhd_settings/OHDSettingsPanel.qml</file>
@@ -230,6 +247,8 @@
         <file>video/SecondaryVideoGstreamerPane.qml</file>
         <file>ui/elements/SettingsHeaderElement.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppWidgetStyleSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/StyleColorControl.qml</file>
+        <file>resources/osd-style-alpine.png</file>
         <file>ui/elements/BaseHeaderItem.qml</file>
         <file>ui/elements/ButtonIconInfo2.qml</file>
         <file>ui/elements/CardBasic.qml</file>
@@ -250,6 +269,7 @@
         <file>ui/configpopup/openhd_settings/CameraConnectionPanel.qml</file>
         <file>ui/configpopup/openhd_settings/CameraSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/CameraDualPanel.qml</file>
+        <file>ui/configpopup/openhd_settings/CameraSettingsLayout.js</file>
         <file>ui/elements/ButtonIconGear.qml</file>
         <file>ui/widgets/DevStreamingInfo.qml</file>
         <file>ui/widgets/DevStreamingInfoText.qml</file>

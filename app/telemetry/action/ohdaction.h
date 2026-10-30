@@ -83,6 +83,7 @@ public:
     bool formatAirSdCardBusy() const { return m_format_air_sd_card_busy; }
     QString formatAirSdCardStatus() const { return m_format_air_sd_card_status; }
     QVariantList airStorageDevices() const { return m_air_storage_devices; }
+    void setSimulationStorage(const QVariantList& devices) { m_air_storage_devices=devices; emit airStorageDevicesChanged(); }
 
     // Sent to the ground unit only
     bool send_command_analyze_channels_async(int freq_bands, int scan_profile, std::function<void(QString)> completion);

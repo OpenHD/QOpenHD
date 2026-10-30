@@ -14,3 +14,9 @@ battery chemistry thresholds, capacity, cell count, preview write blocking and c
 No hardware commands are sent. Telemetry gaps remain `Not reported`; channel selection
 is read-only because current firmware does not offer a hotspot-channel parameter.
 Ground capacity is local configuration and is not sent to the FC.
+
+Wi-Fi chipset coverage can also be run alone with
+`FullStatusLayout::test_wifi_chipsets`. It checks live card-statistics fallback,
+multiple CARD_TYPE_n parameters (including a second Air adapter), and clears
+reported chipset names when the unit disconnects. The type labels reuse the
+native WiFiCard decoder rather than maintaining a separate QML enum table.

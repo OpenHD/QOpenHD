@@ -89,7 +89,7 @@ Item {
         spacing: 4
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 38
+            Layout.preferredHeight: MenuTypography.controlHeight
             spacing: 10
             ColumnLayout {
                 Layout.fillWidth: true
@@ -118,7 +118,7 @@ Item {
                 Layout.preferredWidth: root.controlType === "toggle"
                                        ? (root.preferRadioToggle ? 122 : 62)
                                        : Math.min(190, root.width * 0.45)
-                Layout.preferredHeight: 36
+                Layout.preferredHeight: MenuTypography.controlHeight
                 sourceComponent: root.controlType === "toggle"
                                  ? (root.preferRadioToggle ? radioToggleEditor : toggleEditor)
                                  : (root.controlType === "dropdown" ? dropdownEditor

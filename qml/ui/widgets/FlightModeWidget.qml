@@ -15,6 +15,7 @@ BaseWidget {
 
     visible: settings.show_flight_mode && settings.show_widgets
 
+    widgetPreviewRect: settings.flight_mode_show_disarmed && !_fcMavlinkSystem.armed && _fcMavlinkSystem.is_alive ? Qt.rect(0,-48,width,height+48) : Qt.rect(0,0,width,height)
     widgetIdentifier: "flight_mode_widget"
     bw_verbose_name: qsTr("FLIGHT MODE")
 

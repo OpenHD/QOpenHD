@@ -3,6 +3,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import "../../elements"
+import ".."
 
 Popup {
     id: dialog
@@ -10,6 +11,7 @@ Popup {
     property int systemType: 0
     readonly property bool isGround: systemType === 0
     readonly property real designHeight: 800
+    readonly property var batterySettings: typeof _uiSimulator !== "undefined" && _uiSimulator.active ? _uiSimulator.localSettings : settings
     readonly property string batteryPrefix: "ground_battery_"
     parent: Overlay.overlay
     anchors.centerIn: parent
@@ -30,6 +32,24 @@ Popup {
         return live && params.has_params_fetched && params.param_int_exists("WIFI_HOTSPOT_E") ? params.get_cached_int("WIFI_HOTSPOT_E") : -1
     }
     readonly property var details: live && unit.ground_details ? unit.ground_details : ({})
+    readonly property var wifiChipsets: {
+        var revision = params.update_count
+        if (!live) return []
+        var cards = isGround ? [_wifi_card_gnd0, _wifi_card_gnd1, _wifi_card_gnd2, _wifi_card_gnd3] : [_wifi_card_air]
+        var names = []
+        // Air card statistics currently expose only the first card. The local
+        // CARD_TYPE_n parameters also identify additional broadcast adapters.
+        for (var i = 0; i < 4; ++i) {
+            var name = "", id = "CARD_TYPE_" + i
+            if (params.has_params_fetched && params.param_int_exists(id) && typeof _wifi_card_air.cardTypeName === "function")
+                name = _wifi_card_air.cardTypeName(params.get_cached_int(id))
+            if ((!name.length || name === "UNKNOWN") && i < cards.length && cards[i].alive)
+                name = cards[i].card_type_as_string
+            if (name.length && ["N/A", "UNKNOWN", "ARTOSYN", "OPENHD_EMULATED"].indexOf(name) < 0)
+                names.push(name)
+        }
+        return names
+    }
     function storageText(prefix) {
         var used=details[prefix+"_used_bytes"],total=details[prefix+"_total_bytes"]
         if (!(total > 0) || used < 0 || used > total) return unavailable
@@ -43,12 +63,12 @@ Popup {
     readonly property real ramTotal: unit.onboard_ram_total_mib / 1024
     function open_dialoque(system) { systemType = system; open() }
     function chemistryChanged(index) {
-        settings[batteryPrefix + "type"] = index
+        batterySettings[batteryPrefix + "type"] = index
         var limits = [[33, 37, 42], [27, 34, 42], [31, 35, 37]]
         if (index < limits.length) {
-            settings[batteryPrefix + "low"] = limits[index][0]
-            settings[batteryPrefix + "mid"] = limits[index][1]
-            settings[batteryPrefix + "full"] = limits[index][2]
+            batterySettings[batteryPrefix + "low"] = limits[index][0]
+            batterySettings[batteryPrefix + "mid"] = limits[index][1]
+            batterySettings[batteryPrefix + "full"] = limits[index][2]
         }
     }
     function channelText() {
@@ -63,11 +83,11 @@ Popup {
             id: canvas
             width: 1080; height: dialog.designHeight
             scale: dialog.uiScale; transformOrigin: Item.TopLeft
-            Text { x: 36; y: 32; text: dialog.isGround ? qsTr("Ground Station Details") : qsTr("Air Unit Details"); font.family: "Archivo"; font.pixelSize: MenuTypography.pageTitle; font.bold: true; color: "#edf4fa" }
+            Text { x: 36; y: 32; text: dialog.isGround ? qsTr("Ground Station Details") : qsTr("Air Unit Details"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.pageTitle; font.bold: true; color: "#edf4fa" }
             ToolButton {
                 objectName: "groundDetailsClose"
                 x: 1016; y: 22; width: 44; height: 44
-                text: "\uf00d"; font.family: "Font Awesome 5 Free"; font.pixelSize: 26
+                text: "\uf00d"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon
                 Accessible.name: qsTr("Close ground station details")
                 onClicked: dialog.close()
                 background: Rectangle { radius: 8; color: parent.hovered || parent.activeFocus ? "#153c53" : "transparent" }
@@ -77,8 +97,8 @@ Popup {
                 id: resourcePanel
                 x: 22; y: 96; width: 516; height: 340; radius: 14
                 color: "#051f2f"; border.color: "#0d4059"
-                Text { x: 24; y: 21; text: "\uf2db"; font.family: "Font Awesome 5 Free"; font.pixelSize: 28; color: "#bbd9ec" }
-                Text { x: 74; y: 23; text: qsTr("System Resources"); font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
+                Text { x: 24; y: 21; text: "\uf2db"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#bbd9ec" }
+                Text { x: 74; y: 23; text: qsTr("System Resources"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
                 Repeater {
                     model: [
                         {label: qsTr("CPU Usage"), icon: "\uf2db", value: dialog.live && (unit.onboard_uptime_ms >= 0 || unit.curr_soc_temp_degree > 0) ? unit.curr_cpuload_perc + " %" : dialog.unavailable},
@@ -88,10 +108,23 @@ Popup {
                     Item {
                         x: 16; y: 62 + index * 58; width: resourcePanel.width - 32; height: 58
                         Rectangle { width: parent.width; height: 1; color: "#11384b" }
-                        Text { x: 8; anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: 27 }
-                        Text { x: 62; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
-                        Text { anchors.right: parent.right; anchors.rightMargin: 4; y: index >= 2 ? 11 : 19; text: modelData.value; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                        Text { x: 8; anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon }
+                        Text { x: 62; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
+                        Text { anchors.right: parent.right; anchors.rightMargin: 4; y: index >= 2 ? 11 : 19; text: modelData.value; color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
 
+                    }
+                }
+                Item {
+                    x: 16; y: 236; width: resourcePanel.width - 32; height: 88
+                    Rectangle { width: parent.width; height: 1; color: "#11384b" }
+                    Text { x: 8; y: 18; text: "\uf1eb"; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon }
+                    Text { x: 62; y: 20; text: qsTr("Wi-Fi modules"); color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
+                    Text {
+                        objectName: "systemWifiChipsets"
+                        x: 200; y: 18; width: parent.width - x - 4
+                        text: dialog.wifiChipsets.length ? dialog.wifiChipsets.join("\n") : dialog.unavailable
+                        horizontalAlignment: Text.AlignRight; wrapMode: Text.WordWrap
+                        color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
                     }
                 }
             }
@@ -99,8 +132,8 @@ Popup {
                 id: network
                 x: 556; y: 96; width: 502; height: 340; radius: 14
                 color: "#051f2f"; border.color: "#0d4059"
-                Text { x: 24; y: 21; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: 28; color: "#009fff" }
-                Text { x: 74; y: 23; text: qsTr("Network / Hotspot"); font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
+                Text { x: 24; y: 21; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#009fff" }
+                Text { x: 74; y: 23; text: qsTr("Network / Hotspot"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
                 Repeater {
                     model: [
                         {label: qsTr("Hotspot Mode"), icon: "\uf1eb", value: ""},
@@ -112,23 +145,23 @@ Popup {
                     Item {
                         x: 16; y: 62 + index * 53; width: network.width - 32; height: 53
                         Rectangle { width: parent.width; height: 1; color: "#11384b" }
-                        Text { x: 8; anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: 27 }
-                        Text { x: 62; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
-                        Text { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; text: modelData.value; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                        Text { x: 8; anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon }
+                        Text { x: 62; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
+                        Text { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; text: modelData.value; color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
                     }
                 }
                 Row {
                     x: 240; y: 69; spacing: 0
                     Repeater {
                         model: [{label: qsTr("Off"), value: 1}, {label: qsTr("On"), value: 2}, {label: qsTr("Auto"), value: 0}]
-                        Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             objectName: "groundHotspotMode" + modelData.value
-                            width: 80; height: 44
+                            width: 80; height: MenuTypography.controlHeight
                             enabled: dialog.hotspotWritable
                             text: modelData.label
                             onClicked: params.try_set_param_int_async("WIFI_HOTSPOT_E", modelData.value, true)
                             background: Rectangle { radius: 7; color: dialog.hotspotMode === modelData.value ? "#009cff" : "#062b42"; border.color: "#006997" }
-                            contentItem: Text { text: parent.text; color: parent.enabled ? "#edf4fa" : "#7694a7"; font.family: "Archivo"; font.pixelSize: MenuTypography.body; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                            contentItem: Text { text: parent.text; color: parent.enabled ? "#edf4fa" : "#7694a7"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
                     }
                 }
@@ -137,7 +170,7 @@ Popup {
                     enabled: false
                     x: 288; y: 122; width: 192; height: 44
                     text: dialog.channelText()
-                    color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: MenuTypography.body
+                    color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
                     horizontalAlignment: Text.AlignRight; verticalAlignment: Text.AlignVCenter
                 }
                 Text {
@@ -156,15 +189,15 @@ Popup {
                 visible: dialog.isGround
                 x: 22; y: 454; width: 1036; height: 236; radius: 14
                 color: "#051f2f"; border.color: "#0d4059"
-                Text { x: 24; y: 19; text: "\uf2c2"; font.family: "Font Awesome 5 Free"; font.pixelSize: 28; color: "#d5e8f5" }
-                Text { x: 74; y: 21; text: qsTr("Battery Configuration"); font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
+                Text { x: 24; y: 19; text: "\uf2c2"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#d5e8f5" }
+                Text { x: 74; y: 21; text: qsTr("Battery Configuration"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
                 Rectangle { x: 16; y: 56; width: parent.width - 32; height: 1; color: "#11384b" }
                 Repeater {
                     model: [{label: qsTr("Battery Chemistry"), icon: "\uf0ae"}, {label: qsTr("Capacity"), icon: "\uf2c2"}, {label: qsTr("Cell Count"), icon: "\uf009"}]
                     Item {
                         x: 24; y: 64 + index * 54; height: 44
-                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: 27 }
-                        Text { x: 68; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#d5e8f5"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon }
+                        Text { x: 68; anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#dce7f0"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
                     }
                 }
                 DarkComboBox {
@@ -173,7 +206,7 @@ Popup {
 
                     x: 310; y: 64; width: 200; height: 44
                     model: ["Li-Po", "Li-Ion", "LiFe"]
-                    currentIndex: settings[dialog.batteryPrefix + "type"] >= 0 && settings[dialog.batteryPrefix + "type"] < count ? settings[dialog.batteryPrefix + "type"] : -1
+                    currentIndex: dialog.batterySettings[dialog.batteryPrefix + "type"] >= 0 && dialog.batterySettings[dialog.batteryPrefix + "type"] < count ? dialog.batterySettings[dialog.batteryPrefix + "type"] : -1
                     displayText: currentIndex >= 0 ? currentText : qsTr("Choose chemistry")
                     enabled: !dialog.preview
                     onActivated: dialog.chemistryChanged(currentIndex)
@@ -194,7 +227,7 @@ Popup {
                         var values = [500, 650, 850, 1000, 1300, 1500, 1800, 2200, 2600, 3000,
                                       3300, 3500, 4000, 4500, 5000, 5200, 6000, 6600, 7000, 8000,
                                       10000, 12000, 16000, 20000, 22000, 24000, 30000]
-                        var saved = settings[dialog.batteryPrefix + "capacity_mah"]
+                        var saved = dialog.batterySettings[dialog.batteryPrefix + "capacity_mah"]
                         if (saved > 0 && values.indexOf(saved) < 0) {
                             values.push(saved)
                             values.sort(function(a,b) { return a-b })
@@ -202,14 +235,14 @@ Popup {
                         return values
                     }
                     model: capacities.map(function(value) { return value + " mAh" })
-                    currentIndex: capacities.indexOf(settings[dialog.batteryPrefix + "capacity_mah"])
+                    currentIndex: capacities.indexOf(dialog.batterySettings[dialog.batteryPrefix + "capacity_mah"])
                     displayText: currentIndex >= 0 ? currentText : qsTr("Choose capacity")
                     optionIcon: "\uf243"
                     optionDescription: qsTr("Rated battery pack capacity")
                     enabled: !dialog.preview
                     font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     popupWidth: 270; popupScale: dialog.uiScale
-                    onActivated: settings[dialog.batteryPrefix + "capacity_mah"] = capacities[index]
+                    onActivated: dialog.batterySettings[dialog.batteryPrefix + "capacity_mah"] = capacities[index]
                 }
                 DarkComboBox {
                     id: cellCount
@@ -217,13 +250,13 @@ Popup {
                     x: 310; y: 172; width: 200; height: 44
                     model: ["2S", "3S", "4S", "5S", "6S", "7S", "8S"]
                     currentIndex: {
-                        var cells = settings[dialog.batteryPrefix + "cells"]
+                        var cells = dialog.batterySettings[dialog.batteryPrefix + "cells"]
                         return cells >= 2 && cells <= 8 ? cells - 2 : -1
                     }
                     displayText: currentIndex >= 0 ? currentText : qsTr("Choose cell count")
                     optionIcon: "\uf009"
                     optionDetails: {
-                        var chemistry = settings[dialog.batteryPrefix + "type"]
+                        var chemistry = dialog.batterySettings[dialog.batteryPrefix + "type"]
                         var nominalCellVoltage = [3.7, 3.6, 3.2]
                         return [2,3,4,5,6,7,8].map(function(cells) {
                             return {description: chemistry === 0
@@ -239,7 +272,7 @@ Popup {
                     enabled: !dialog.preview
                     font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     popupWidth: 270; popupScale: dialog.uiScale
-                    onActivated: settings[dialog.batteryPrefix + "cells"] = index + 2
+                    onActivated: dialog.batterySettings[dialog.batteryPrefix + "cells"] = index + 2
                 }
             }
             Rectangle {
@@ -251,8 +284,8 @@ Popup {
                 readonly property int reportedCount: !dialog.live ? 0
                     : ((typeof _cameraStreamModelPrimary !== "undefined" && _cameraStreamModelPrimary.camera_status >= 0) ? 1 : 0)
                     + ((typeof _cameraStreamModelSecondary !== "undefined" && _cameraStreamModelSecondary.camera_status >= 0) ? 1 : 0)
-                Text { x: 24; y: 16; text: "\uf030"; font.family: "Font Awesome 5 Free"; font.pixelSize: 26; color: "#d5e8f5" }
-                Text { x: 74; y: 18; text: qsTr("Camera Status"); font.family: "Archivo"; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
+                Text { x: 24; y: 16; text: "\uf030"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#d5e8f5" }
+                Text { x: 74; y: 18; text: qsTr("Camera Status"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
                 Rectangle {
                     anchors.right: parent.right; anchors.rightMargin: 18; y: 16; width: countLabel.implicitWidth + 20; height: 28; radius: 7
                     color: "#052536"; border.color: "#10526c"
@@ -293,8 +326,8 @@ Popup {
                             if (stream.encoding_codec === 2) return "MJPEG"
                             return dialog.unavailable
                         }
-                        Text { x: 16; y: 10; text: "\uf030"; font.family: "Font Awesome 5 Free"; font.pixelSize: 20; color: "#d5e8f5" }
-                        Text { x: 48; y: 10; text: qsTr("Camera %1").arg(camera.streamIndex + 1); font.family: "Archivo"; font.bold: true; font.pixelSize: MenuTypography.sectionTitle; color: "#edf4fa" }
+                        Text { x: 16; y: 10; text: "\uf030"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#d5e8f5" }
+                        Text { x: 48; y: 10; text: qsTr("Camera %1").arg(camera.streamIndex + 1); font.family: MenuTypography.family; font.bold: true; font.pixelSize: MenuTypography.sectionTitle; color: "#edf4fa" }
                         Rectangle {
                             anchors.right: parent.right; anchors.rightMargin: 14; y: 7; height: 26; width: badgeText.implicitWidth + 30; radius: 10
                             color: "#082a31"; border.color: camera.statusColor
@@ -313,9 +346,9 @@ Popup {
                                 ]
                                 Item {
                                     width: camera.width - 28; height: 27
-                                    Text { x: 4; anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#b8d9ec"; font.family: "Font Awesome 5 Free"; font.pixelSize: 17 }
-                                    Text { x: 36; anchors.verticalCenter: parent.verticalCenter; width: 132; text: modelData.label; color: "#94b3c5"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
-                                    Text { objectName: "airCamera" + camera.streamIndex + "Value" + index; anchors.right: parent.right; anchors.rightMargin: 4; anchors.verticalCenter: parent.verticalCenter; width: parent.width - 180; horizontalAlignment: Text.AlignRight; elide: Text.ElideRight; text: modelData.value; color: "#e0edf6"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
+                                    Text { x: 4; anchors.verticalCenter: parent.verticalCenter; text: modelData.icon; color: "#b8d9ec"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.rowIcon }
+                                    Text { x: 36; anchors.verticalCenter: parent.verticalCenter; width: 132; text: modelData.label; color: "#94b3c5"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
+                                    Text { objectName: "airCamera" + camera.streamIndex + "Value" + index; anchors.right: parent.right; anchors.rightMargin: 4; anchors.verticalCenter: parent.verticalCenter; width: parent.width - 180; horizontalAlignment: Text.AlignRight; elide: Text.ElideRight; text: modelData.value; color: "#e0edf6"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
                                     Rectangle { x: 36; y: parent.height - 1; width: parent.width - 40; height: 1; visible: index < 3; color: "#11384b" }
                                 }
                             }
@@ -326,20 +359,12 @@ Popup {
             Rectangle { x: 22; y: 708; width: 1036; height: 1; color: "#115071" }
             Repeater {
                 model: [{label: qsTr("Reboot"), reboot: true}, {label: qsTr("Shutdown"), reboot: false}]
-                Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                AdvancedActionButton {
                     objectName: modelData.reboot ? "groundDetailsReboot" : "groundDetailsShutdown"
-                    x: 22 + index * 528; y: 724; width: 508; height: 58
+                    x: 22 + index * 528; y: 724; width: 508; height: MenuTypography.controlHeight
+                    text: modelData.label; iconText: "\uf011"; destructive: !modelData.reboot
                     enabled: dialog.live && !dialog.preview
                     onClicked: { dialog.close(); statusPanel.open_power_action_dialoque(dialog.systemType, modelData.reboot) }
-                    background: Rectangle { radius: 12; color: index === 0 ? "#063552" : "#8d1e2a"; border.color: index === 0 ? "#006a9a" : "#a42c37"; opacity: parent.enabled ? 1 : 0.45 }
-                    contentItem: Item {
-                      Row {
-                        anchors.centerIn: parent
-                        spacing: 20
-                        Text { anchors.verticalCenter: parent.verticalCenter; text: "\uf011"; color: "#edf4fa"; font.family: "Font Awesome 5 Free"; font.pixelSize: 25 }
-                        Text { anchors.verticalCenter: parent.verticalCenter; text: modelData.label; color: "#edf4fa"; font.family: "Archivo"; font.pixelSize: MenuTypography.body }
-                      }
-                    }
                 }
             }
         }

@@ -38,7 +38,7 @@ Rectangle {
         anchors.fill: parent; anchors.margins: 12; spacing: 10
         RowLayout {
             Layout.fillWidth: true
-            Text { text: root.icon; color: ethernet ? "#49a6ff" : "#c98cff"; font.family: "Font Awesome 5 Free"; font.pixelSize: 19 }
+            Text { text: root.icon; color: ethernet ? "#49a6ff" : "#c98cff"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon }
             Text { text: root.title; color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true; Layout.fillWidth: true }
             Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: linkSwitch
@@ -62,7 +62,7 @@ Rectangle {
             }
         }
         LinkUsageMeter {
-            visible: settings.dev_show_advanced_button
+            visible: settings_form.showAdvancedSettings
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? (root.width < 360 ? 100 : 78) : 0
             usage: root.host ? root.host.usageFor(root.linkKind) : null

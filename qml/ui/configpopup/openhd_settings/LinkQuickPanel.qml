@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -9,6 +10,10 @@ Rectangle {
     id: root
     color: "transparent"
     signal backRequested()
+    readonly property bool simulatedSystem: typeof _uiSimulator !== "undefined" && _uiSimulator.active
+    readonly property bool developer: settings_form.showDeveloperSettings === true
+    function linkVisible(kind) { return kind === "ethernet" || kind === "wifi" || developer }
+    readonly property var visibleReportedUsage: reportedUsage.filter(function(link) { return link.id === 1 || link.id === 2 || root.developer })
     readonly property var fleetBackend: (typeof _fleetControlLte !== "undefined") ? _fleetControlLte : null
     property alias frequencyModel: frequencyChoices
     property int availableCardColumns: width >= 1050 ? 3 : (width >= 700 ? 2 : 1)
@@ -85,6 +90,7 @@ Rectangle {
     }
 
     function wifiActive() {
+        if (simulatedSystem) return hasReportedUsage(1)
         if (_ohdSystemGroundSettings.param_int_exists("WFB_LINK_EN")) return true
         if (settings.dev_simulate_wifibroadcast_link) return true
         if (hasReportedUsage(1)) return true
@@ -139,6 +145,7 @@ Rectangle {
         return null
     }
     function ethernetActive() {
+        if (simulatedSystem) return hasReportedUsage(2)
         if (settings.dev_simulate_ethernet_link) return true
         if (_ohdSystemGroundSettings.param_int_exists("ETH_LINK_EN"))
             return _ohdSystemGroundSettings.get_cached_int("ETH_LINK_EN") === 1
@@ -146,12 +153,13 @@ Rectangle {
         return hasReportedUsage(2) || _ohdSystemGround.primary_link_type === 2 ||
                _ohdSystemAir.primary_link_type === 2
     }
-    function uartActive() { return settings.dev_simulate_uart_link || hasReportedUsage(3) }
+    function uartActive() { if (simulatedSystem) return hasReportedUsage(3); return settings.dev_simulate_uart_link || hasReportedUsage(3) }
     function artosynActive() {
+        if (simulatedSystem) return hasReportedUsage(5)
         return hasReportedUsage(5) || _ohdSystemGround.artosyn_link_detected || _ohdSystemAir.artosyn_link_detected ||
                _ohdSystemGround.primary_link_type === 4 || _ohdSystemAir.primary_link_type === 4
     }
-    function microhardActive() { return hasReportedUsage(4) || _ohdSystemGround.microhard_enabled > 0 || _ohdSystemAir.microhard_enabled > 0 }
+    function microhardActive() { if (simulatedSystem) return hasReportedUsage(4); return hasReportedUsage(4) || _ohdSystemGround.microhard_enabled > 0 || _ohdSystemAir.microhard_enabled > 0 }
 
     function rebuildLinks() {
         expandedCardIndex = -1
@@ -159,16 +167,16 @@ Rectangle {
         if (_qopenhd.debugMenuPreview) {
             var kinds = ["wifi", "ethernet", "uart", "microhard", "artosyn", "mlrs", "fleetcontrol"]
             for (var debugIndex = 0; debugIndex < kinds.length; ++debugIndex)
-                activeLinks.append({kind: kinds[debugIndex]})
+                if (linkVisible(kinds[debugIndex])) activeLinks.append({kind: kinds[debugIndex]})
             return
         }
         if (wifiActive()) activeLinks.append({kind: "wifi"})
         if (ethernetActive()) activeLinks.append({kind: "ethernet"})
-        if (uartActive()) activeLinks.append({kind: "uart"})
-        if (microhardActive()) activeLinks.append({kind: "microhard"})
-        if (artosynActive()) activeLinks.append({kind: "artosyn"})
-        if (_mlrsController.alive || hasReportedUsage(7)) activeLinks.append({kind: "mlrs"})
-        if (fleetConfigured) activeLinks.append({kind: "fleetcontrol"})
+        if (developer && (uartActive())) activeLinks.append({kind: "uart"})
+        if (developer && (microhardActive())) activeLinks.append({kind: "microhard"})
+        if (developer && (artosynActive())) activeLinks.append({kind: "artosyn"})
+        if (developer && (_mlrsController.alive || hasReportedUsage(7))) activeLinks.append({kind: "mlrs"})
+        if (developer && (fleetConfigured)) activeLinks.append({kind: "fleetcontrol"})
     }
     Connections {
         target: _qopenhd
@@ -294,6 +302,7 @@ Rectangle {
             if (activeLinks.get(i).kind === "wifi" && cards.itemAt(i).loadedCard) cards.itemAt(i).loadedCard.animateScan()
     }
 
+    onDeveloperChanged: { rebuildLinks(); allocationPopup.close() }
     onLinkRevisionChanged: rebuildLinks()
     onReportedLinkKindsChanged: rebuildLinks()
     onFleetConfiguredChanged: rebuildLinks()
@@ -316,7 +325,8 @@ Rectangle {
         spacing: 9
 
         Rectangle {
-            visible: _qopenhd.debugMenuPreview || settings.dev_show_link_routing
+            objectName: "linkRoutingSection"
+            visible: root.developer && (_qopenhd.debugMenuPreview || settings.dev_show_link_routing)
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? (modeLayout.implicitHeight + 18) : 0
             radius: 10
@@ -335,7 +345,7 @@ Rectangle {
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         text: root.wifiActive() ? qsTr("WiFiBroadcast only + UART") : qsTr("One link + UART")
                         highlighted: root.bothSingleEnabled
                         enabled: root.linkModeAvailable &&
@@ -343,7 +353,7 @@ Rectangle {
                                  !_ohdSystemAirSettingsModel.ui_is_busy
                         onClicked: root.setBoth("MULTI_LINK_EN", 0)
                     }
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         text: qsTr("Multiple links (Enterprise)")
                         highlighted: root.bothMultiEnabled
                         enabled: root.enterpriseEligible &&
@@ -434,15 +444,15 @@ Rectangle {
                         color: settings_form.panelBackgroundRaised; border.color: settings_form.lineColor
                         Column {
                             anchors.centerIn: parent; spacing: 8
-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: 22; color: settings_form.secondaryText }
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: settings_form.secondaryText }
                             Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("No active links yet"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Connect an OpenHD unit or add an optional Air link above."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
+                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: qsTr("Connect an OpenHD unit using WiFiBroadcast or Ethernet."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                         }
                     }
                 }
                 Rectangle {
                     objectName: "totalLinkUsageSection"
-                    visible: _qopenhd.debugMenuPreview || settings.dev_show_link_usage || root.wifiActive()
+                    visible: root.wifiActive() || root.ethernetActive() || (root.developer && (_qopenhd.debugMenuPreview || settings.dev_show_link_usage))
                     width: parent.width
                     height: visible ? totalUsageMeter.implicitHeight + 24 : 0
                     radius: 10
@@ -452,7 +462,7 @@ Rectangle {
                         id: totalUsageMeter
                         anchors.fill: parent
                         anchors.margins: 12
-                        usage: root.wifiActive() ? root.usageFor("wifi") : root.totalUsage
+                        usage: root.wifiActive() ? root.usageFor("wifi") : root.developer ? root.totalUsage : root.usageFor("ethernet")
                         title: qsTr("Total Link Usage")
                         allocationControls: root.wifiActive()
                         onAllocationRequested: allocationPopup.open()
@@ -462,7 +472,7 @@ Rectangle {
         }
     }
 
-    LinkAllocationPopup { id: allocationPopup; usage: root.usageFor("wifi"); linkUsages: root.reportedUsage }
+    LinkAllocationPopup { id: allocationPopup; usage: root.usageFor("wifi"); linkUsages: root.visibleReportedUsage }
     onVisibleChanged: if (!visible) allocationPopup.close()
 
     Component { id: wifiCard; WifiBroadcastLinkCard {} }

@@ -92,7 +92,7 @@ AdvancedPage {
         anchors.fill: parent
         spacing: 12
 
-        TabBar {
+        AdvancedTabBar {
             id: tabs
             Layout.fillWidth: true
             spacing: 6
@@ -100,7 +100,14 @@ AdvancedPage {
             AdvancedTabButton { id: audioTab; text: qsTr("AUDIO"); iconText: "\uf028" }
             AdvancedTabButton { text: qsTr("ADS-B"); iconText: "\uf072" }
             AdvancedTabButton { text: qsTr("RC / LOGS"); iconText: "\uf11b" }
-            AdvancedTabButton { text: qsTr("DATA LINK"); iconText: "\uf1eb" }
+            AdvancedTabButton {
+                text: qsTr("DATA LINK"); iconText: "\uf1eb"
+                hasContent: {
+                    root.airRevision; root.groundRevision
+                    return _ohdSystemAirSettingsModel.param_int_exists("WB_UDP_ENABLE") ||
+                           _ohdSystemGroundSettings.param_int_exists("WB_UDP_ENABLE")
+                }
+            }
             AdvancedTabButton { text: qsTr("FLEETCONTROL"); iconText: "\uf0c0" }
         }
 
@@ -203,7 +210,7 @@ AdvancedPage {
                                     onActivated: root.setAirString("AUDIO_DEVICE", ids[index])
                                     Connections { target: _ohdSystemAirSettingsModel; onUpdate_countChanged: captureDevice.reload() }
                                 }
-                                Button { text: "\uf2f1"; font.family: "Font Awesome 5 Free"; onClicked: _ohdSystemAirSettingsModel.try_refetch_all_parameters_async(false) }
+                                AdvancedActionButton { text: "\uf2f1"; font.family: "Font Awesome 5 Free"; onClicked: _ohdSystemAirSettingsModel.try_refetch_all_parameters_async(false) }
                             }
                             RowLayout {
                                 Layout.fillWidth: true
@@ -579,7 +586,7 @@ AdvancedPage {
                         currentIndex: Math.max(0, _audioControl.outputDeviceIds.indexOf(_audioControl.selectedOutputDevice))
                         onActivated: _audioControl.selectedOutputDevice = _audioControl.outputDeviceIds[index]
                     }
-                    Button { text: "\uf2f1"; font.family: "Font Awesome 5 Free"; onClicked: _audioControl.refreshDevices() }
+                    AdvancedActionButton { text: "\uf2f1"; font.family: "Font Awesome 5 Free"; onClicked: _audioControl.refreshDevices() }
                 }
                 RowLayout {
                     Layout.fillWidth: true

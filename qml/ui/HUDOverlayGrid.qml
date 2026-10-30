@@ -24,6 +24,69 @@ Item {
     property bool m_show_vertical_center_indicator: false
     property bool m_show_horizontal_center_indicator: false
     property Item colorPicker: null
+    // Gallery thumbnails sample these existing visual items. No duplicate HUD,
+    // telemetry consumer, map provider or video receiver is created.
+    readonly property alias osdStylePreviewItem: actual_hud_elements
+    property bool widgetGalleryPreviewActive: false
+    readonly property var widgetPreviewTargets: ({
+        "show_flight_mode": flight_mode,
+        "show_imu_temp": imu_temp,
+        "show_press_temp": press_temp,
+        "show_press_temp2": press_temp2,
+        "show_press_temp3": press_temp3,
+        "show_airspeed_temp": airspeed_temp,
+        "show_esc_temp": esc_temp,
+        "show_battery_temp": battery_temp,
+        "show_horizon": horizonWidget,
+        "show_performance_horizon": performanceHorizonWidget,
+        "show_flight_path_vector": fpvWidget,
+        "altitude_ladder_show": altitudeWidget,
+        "speed_ladder_show": speedWidget,
+        "show_heading": headingWidget,
+        "bank_angle_indicator_widget_show": rollWidget,
+        "show_arrow": arrowWidget,
+        "show_control": controlWidget,
+        "show_vibration": vibrationWidget,
+        "show_vertical_speed_gauge_widget": vsgaugewidget,
+        "show_aoa": aoaWidget,
+        "show_distance_sensor_widget": distancesensorwidget,
+        "show_time_widget": uavtimewidget,
+        "show_map": mapWidget,
+        "adsb_enable": adsbTrafficWidget,
+        "show_message_hud": messageHUD,
+        "show_sidebar": sidebar,
+        "qrenderstats_show": qRenderStatsWidget.item,
+        "show_ip_camera_control_widget": ipCameraControlWidget,
+        "show_gpio": gpioWidget,
+        "show_txc_temp_air": airTempTxc,
+        "show_txc_temp_gnd": gndTempTxc,
+        "show_retransmission_stats": retransmissionStarsWidget,
+        "show_downlink_rssi": downlink,
+        "show_uplink_rssi": uplink,
+        "wb_link_rate_control_widget_show": wBLinkRateControlWidget,
+        "show_bitrate": bitrate1,
+        "show_rc_rssi": rc_rssi_widget,
+        "show_ground_status": ground_status,
+        "show_air_status": air_status,
+        "show_air_battery": air_battery,
+        "show_ground_battery": groundPowerWidget,
+        "show_flight_mah": flight_mah,
+        "show_flight_mah_km": flight_mah_km,
+        "show_flight_distance": flight_distance,
+        "show_wind": windWidget,
+        "show_gps": gps,
+        "show_home_distance": home_distance,
+        "show_flight_time": flight_timer,
+        "show_speed_second": speedSecondWidget,
+        "show_throttle": throttleWidget,
+        "show_mission": missionWidget,
+        "show_vertical_speed_simple_widget": vssimpleWidget,
+        "show_altitude_second": altitudesecondWidget,
+        "show_link_overview_widget": linkOverviewWidget,
+        "show_link_overview_widget_bottom": linkOverviewWidgetBottom,
+        "show_video_pipeline_debug_widget": videoPipelineDebugWidget,
+        "show_artosyn_debug_widget": artosynDebugWidget
+    })
     readonly property alias mapSettingsTarget: mapWidget
 
     //scale: settings.dev_some_scale
@@ -280,6 +343,7 @@ Item {
 
     Item{
         id: actual_hud_elements
+        opacity: settings.osd_opacity
         width: parent.width
         height: parent.height
         visible: !quickPanel.visible
@@ -326,8 +390,8 @@ Item {
         // exp
         Loader {
             id: qRenderStatsWidget
-            active: settings.qrenderstats_show
-            visible: active
+            active: settings.qrenderstats_show || hudOverlayGrid.widgetGalleryPreviewActive
+            visible: settings.qrenderstats_show
             sourceComponent: QRenderStatsWidget { }
         }
         VideoBitrateWidgetPrimary {

@@ -1,241 +1,95 @@
-import "../MenuTypography.js" as MenuTypography
+import "../MenuTypography.js" as Typography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import "../openhd_settings"
 
-import QtQuick.Controls.Material 2.12
-
-import Qt.labs.settings 1.0
-
-import OpenHD 1.0
-
-import "../../../ui" as Ui
-import "../../elements"
-
-ScrollView {
-    id: appGeneralSettingsView
-    width: parent.width
-    height: parent.height
-    contentHeight: generalColumn.height
-
-    clip: true
-    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-
-    Item {
-        anchors.fill: parent
-
-        Column {
-            id: generalColumn
-            spacing: 5
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            SettingBaseElement{
-                m_short_description: qsTr("Enable text to speech")
-
-                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_speech
-                    onCheckedChanged: settings.enable_speech = checked
-                }
-            }
-
-            SettingBaseElement{
-                m_short_description: qsTr("Use Imperial units")
-
-                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_imperial
-                    onCheckedChanged: settings.enable_imperial = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                radius: 7
-                color: (Positioner.index % 2 === 0) ? settings_form.panelBackgroundRaised : "transparent"
-                border.color: settings_form.lineColor
-                border.width: Positioner.index % 2 === 0 ? 1 : 0
-                StyledText {
-                    text: qsTr("Animation Smoothing")
-                    font.weight: Font.Bold
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                StyledText {
-                    text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "ms";
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.right: smoothing_Slider.left
-                    anchors.rightMargin: 12
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 32
-                    height: elementHeight
-
-                }
-
-                Slider {
-                    id: smoothing_Slider
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    to : 1000
-                    from : 0
-                    stepSize: 25
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.smoothing
-
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.smoothing = smoothing_Slider.value
-                    }
-                }
-            }
-
-            SettingBaseElement{
-                m_short_description: qsTr("Ground Battery Cells")
-
-                SpinBox {
-                    id: gndBatteryCellspinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 1
-                    to: 6
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.ground_battery_cells
-                    onValueChanged: settings.ground_battery_cells = value
-                }
-            }
-
-            SettingBaseElement{
-                m_short_description: qsTr("Language")
-
-                LanguageSelect {
-                    id: languageSelectBox
-                    height: elementHeight
-                    width: 210
-                    anchors.right: parent.right
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizonatalCenter
-                }
-            }
-
-            // exp
-            SettingBaseElement{
-                m_short_description: qsTr("Mavlink sys id")
-                m_long_description: qsTr("Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart.")
-
-                SpinBox {
-                    id: mavlinkSysIDSpinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 1
-                    to: 255
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.qopenhd_mavlink_sysid
-                    onValueChanged: {
-                        if(value==100 || value==101){
-                            // openhd air and ground unit sys id are hard coded, one should never use them
-                            _messageBoxInstance.set_text_and_show(qsTr("Do not use 100 or 101 for QOpenHD sys id"))
-                        }
-                        settings.qopenhd_mavlink_sysid = value
-                    }
-                }
-            }
-            SettingBaseElement{
-                m_short_description: qsTr("Latitude GPS offset")
-                m_long_description: qsTr("Set this to a random value only you know to hide lat identity")
-
-                /*SpinBox {
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    from: -10
-                    to: 10
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.hide_identity_latitude_offset
-                    onValueChanged: {
-                        settings.hide_identity_latitude_offset = value
-                    }
-                }*/
-                XDecimalSpinBox{
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    m_default_value: settings.hide_identity_latitude_offset
-
-                    onRealValueChanged: {
-                        if(settings.hide_identity_latitude_offset!=realValue){
-                            settings.hide_identity_latitude_offset=realValue
-                            console.log("Value is: "+settings.hide_identity_latitude_offset)
-                        }
-                    }
-                }
-
-            }
-            SettingBaseElement{
-                m_short_description: qsTr("Longitude GPS offset")
-                m_long_description: qsTr("Set this to a random value only you know to hide lon identity")
-
-                XDecimalSpinBox{
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    m_default_value: settings.hide_identity_longitude_offset
-
-                    onRealValueChanged: {
-                        if(settings.hide_identity_longitude_offset!=realValue){
-                            settings.hide_identity_longitude_offset=realValue
-                            console.log("Value is: "+settings.hide_identity_longitude_offset)
-                        }
-                    }
-                }
-            }
-
-        }
+FocusScope {
+ id:root
+ objectName:"generalSettingsPage"
+ readonly property bool hybrid:settings.enable_hybrid
+ readonly property int unitMode:hybrid?2:settings.enable_imperial?1:0
+ readonly property bool speechAvailable:typeof _qopenhd!=="undefined"&&_qopenhd.speechAvailable===true
+ readonly property var languages:[{text:qsTr("English (Default)"),locale:"en",flag:"../../../resources/flags/gb.svg"},{text:qsTr("Deutsch"),locale:"de",flag:"../../../resources/flags/de.svg"}]
+ readonly property var voiceNames:typeof _qopenhd!=="undefined"&&_qopenhd.speechVoices?_qopenhd.speechVoices:[]
+ readonly property var voiceOptions:[qsTr("System Default")].concat(voiceNames)
+ function gainFocus(){language.forceActiveFocus()}
+ function setUnits(mode){settings.enable_hybrid=mode===2;settings.enable_imperial=mode===1}
+ function updateSpeech(){if(speechAvailable)_qopenhd.configureSpeech(settings.speech_voice,settings.speech_rate,settings.speech_volume)}
+ Flickable {
+  id:scroll;objectName:"generalPageScroll";anchors.fill:parent;anchors.margins:10
+  contentWidth:width;contentHeight:cards.height;clip:true;boundsBehavior:Flickable.StopAtBounds
+  Column {
+   id:cards;width:scroll.width;spacing:14
+   GeneralSettingsCard {
+    width:parent.width;height:implicitHeight;title:qsTr("Language");hint:qsTr("Select the application language.");icon:"\uf0ac";controlWidth:360
+    headerControls:CompactLinkComboBox {
+     id:language;objectName:"generalLanguage";anchors.fill:parent;topInset:0;bottomInset:0
+     model:root.languages;textRole:"text";currentIndex:settings.locale==="de"?1:0;optionIcon:"\uf0ac"
+     font.pixelSize:Typography.body;leftPadding:16;rightPadding:35
+     contentItem:Item {
+      Image {id:flag;width:28;height:19;anchors.left:parent.left;anchors.verticalCenter:parent.verticalCenter;source:root.languages[language.currentIndex>=0?language.currentIndex:0].flag;fillMode:Image.PreserveAspectFit}
+      Text {anchors.left:flag.right;anchors.leftMargin:14;anchors.right:parent.right;anchors.verticalCenter:parent.verticalCenter;text:language.currentText;font.family:Typography.family;font.pixelSize:Typography.body;color:settings_form.primaryText;elide:Text.ElideRight}
+     }
+     onActivated:{settings.locale=model[currentIndex].locale;_qopenhd.switchToLanguage(settings.locale);_restartqopenhdmessagebox.show_with_text(qsTr("Language change will apply after restart."))}
     }
+   }
+   GeneralSettingsCard {
+    id:unitsCard;width:parent.width;height:implicitHeight;title:qsTr("Units");hint:qsTr("Choose the units used throughout the application.");icon:"\uf546";controlWidth:450
+    headerControls:RowLayout {anchors.fill:parent;spacing:0
+     MapActionButton {objectName:"generalMetric";Layout.fillWidth:true;Layout.fillHeight:true;text:qsTr("Metric");primary:root.unitMode===0;onClicked:root.setUnits(0)}
+     MapActionButton {objectName:"generalImperial";Layout.fillWidth:true;Layout.fillHeight:true;text:qsTr("Imperial");primary:root.unitMode===1;onClicked:root.setUnits(1)}
+     MapActionButton {objectName:"generalHybrid";Layout.fillWidth:true;Layout.fillHeight:true;text:qsTr("Hybrid");primary:root.unitMode===2;onClicked:root.setUnits(2)}
+    }
+    Rectangle {
+     width:parent.width;height:width<700?218:132;radius:9;color:settings_form.darkMode?"#09273d":settings_form.panelBackground;border.color:settings_form.lineColor
+     Rectangle {width:5;height:parent.height-2;x:1;y:1;radius:2;color:settings_form.accentColor}
+     Column {x:28;y:22;width:parent.width<700?parent.width-50:parent.width-360;spacing:7
+      Text {text:root.unitMode===0?qsTr("Metric Units"):root.unitMode===1?qsTr("Imperial Units"):qsTr("Hybrid Units");font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true;color:settings_form.accentColor}
+      Text {width:parent.width;text:root.unitMode===0?qsTr("Distance in meters and kilometers, speed in km/h, altitude in meters."):root.unitMode===1?qsTr("Distance in feet and miles, speed in mph, altitude in feet."):qsTr("Distance in meters and kilometers, speed in km/h, altitude in feet.");font.family:Typography.family;font.pixelSize:Typography.body;color:settings_form.secondaryText;wrapMode:Text.WordWrap}
+     }
+     Column {
+      x:parent.width<700?28:parent.width-310;y:parent.width<700?112:22;width:Math.min(280,parent.width-55);spacing:12
+      Repeater {
+       model:[{icon:"\uf546",label:qsTr("Distance"),value:root.unitMode===1?"0.7 mi":"1.2 km"},{icon:"\uf3fd",label:qsTr("Speed"),value:root.unitMode===1?"45 mph":"72 km/h"},{icon:"\uf6fc",label:qsTr("Altitude"),value:root.unitMode===0?"250 m":"820 ft"}]
+       delegate:RowLayout {width:parent.width;spacing:14
+        Text {text:modelData.icon;color:settings_form.accentColor;font.family:"Font Awesome 5 Free";font.pixelSize:Typography.rowIcon;Layout.preferredWidth:28}
+        Text {Layout.fillWidth:true;text:modelData.label;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.body}
+        Text {objectName:"generalUnitExample"+index;Layout.preferredWidth:90;text:modelData.value;color:settings_form.accentColor;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
+       }
+      }
+     }
+    }
+   }
+   GeneralSettingsCard {
+    width:parent.width;height:implicitHeight;title:qsTr("Text to Speech");hint:qsTr("Read important events and alerts aloud.");icon:"\uf028";controlWidth:48
+    headerControls:WidgetToggle {objectName:"generalSpeechEnabled";anchors.fill:parent;checked:settings.enable_speech;enabled:root.speechAvailable;onToggled:settings.enable_speech=checked}
+    Rectangle {
+     width:parent.width;height:speechRows.height;radius:9;color:"transparent";border.color:settings_form.lineColor
+     Column {
+      id:speechRows;width:parent.width
+      Repeater {
+       model:3
+       delegate:Item {
+        width:parent.width;height:width<640?98:Typography.rowHeight
+        Text {x:18;y:parent.width<640?15:(parent.height-height)/2;text:index===0?qsTr("Voice"):index===1?qsTr("Speech Rate"):qsTr("Volume");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
+        Item {
+         width:parent.width<640?parent.width-36:Math.min(450,parent.width*0.48);height:Typography.controlHeight;x:parent.width-width-18;y:parent.width<640?50:(parent.height-height)/2
+         CompactLinkComboBox {
+          objectName:"generalSpeechVoice";anchors.fill:parent;visible:index===0;topInset:0;bottomInset:0;optionIcon:"\uf550";font.pixelSize:Typography.body
+          model:root.voiceOptions;currentIndex:Math.max(0,root.voiceNames.indexOf(settings.speech_voice)+1);enabled:root.speechAvailable&&settings.enable_speech
+          onActivated:{settings.speech_voice=currentIndex===0?"":root.voiceNames[currentIndex-1];root.updateSpeech()}
+         }
+         MapValueSlider {objectName:"generalSpeechRate";anchors.fill:parent;visible:index===1;from:0.5;to:2;stepSize:0.05;value:settings.speech_rate;displayText:Math.round(value*100)+"%";enabled:root.speechAvailable&&settings.enable_speech;onMoved:{settings.speech_rate=value;root.updateSpeech()}}
+         MapValueSlider {objectName:"generalSpeechVolume";anchors.fill:parent;visible:index===2;from:0;to:1;stepSize:0.01;value:settings.speech_volume;displayText:Math.round(value*100)+"%";enabled:root.speechAvailable&&settings.enable_speech;onMoved:{settings.speech_volume=value;root.updateSpeech()}}
+        }
+        Rectangle {visible:index>0;width:parent.width;y:0;height:1;color:settings_form.lineColor}
+       }
+      }
+     }
+    }
+    Text {width:parent.width;visible:!root.speechAvailable;text:qsTr("No speech engine is available in this installation.");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
+   }
+  }
+ }
 }

@@ -16,6 +16,7 @@ Item {
     QtObject {
         id: settings_form
         property bool darkMode: true
+        property bool showDeveloperSettings: true
         property color accentColor: "#278cff"
         property color primaryText: "white"
         property color secondaryText: "#aebdcb"
@@ -63,6 +64,37 @@ Item {
     LinkQuickPanel { id: page; anchors.fill: parent }
     TestCase {
         name: "LinkPageLayout"; when: windowShown
+        function test_developer_link_visibility() {
+            settings_form.showDeveloperSettings=false
+            _qopenhd.debugMenuPreview=true
+            settings.dev_show_link_routing=true
+            wait(30)
+            compare(page.linkVisible("ethernet"),true)
+            compare(page.linkVisible("wifi"),true)
+            var kinds=["uart","microhard","artosyn","mlrs","fleetcontrol"]
+            for(var i=0;i<kinds.length;i++) compare(page.linkVisible(kinds[i]),false,kinds[i])
+            compare(findChild(page,"linkRoutingSection").visible,false)
+            var cards=findChild(page,"linkTransportCards")
+            compare(cards.children[0].loadedCard.objectName,"testWifiBroadcastLinkCard")
+            settings_form.showDeveloperSettings=true
+            wait(30)
+            compare(findChild(page,"linkRoutingSection").visible,true)
+            for(var j=0;j<kinds.length;j++) compare(page.linkVisible(kinds[j]),true,kinds[j])
+            _qopenhd.debugMenuPreview=false
+            settings.dev_show_link_routing=false
+        }
+        function test_normal_wifibroadcast_usage() {
+            settings_form.showDeveloperSettings=false
+            _qopenhd.debugMenuPreview=false
+            _ohdSystemAir.link_usage=[{id:1,total_bps:1000000,capacity_bps:40000000,categories:[]}]
+            wait(60)
+            var cards=findChild(page,"linkTransportCards")
+            compare(cards.children[0].loadedCard.objectName,"testWifiBroadcastLinkCard")
+            compare(findChild(page,"totalLinkUsageSection").visible,true)
+            compare(page.visibleReportedUsage.length,1)
+            compare(page.visibleReportedUsage[0].id,1)
+            settings_form.showDeveloperSettings=true
+        }
         function test_scroll_geometry_data() {
             return [{tag:"normal-offline",w:750,h:300,live:false},
                     {tag:"normal-live",w:750,h:300,live:true},
@@ -103,6 +135,7 @@ def main():
             content = (source / (name + ".qml")).read_text(encoding="utf-8")
             (folder / (name + ".qml")).write_text(content.replace('../MenuTypography.js', 'MenuTypography.js'), encoding="utf-8")
         shutil.copy(source.parent / "MenuTypography.js", folder)
+        shutil.copy(source.parent / "AdvancedActionButton.qml", folder)
         (folder / "DynamicLinkSetting.qml").write_text("import QtQuick 2.12\nItem {property var settingsModel;property string paramId;property string label;property string valueSuffix;property bool editorEnabled;property var commitHandler}\n", encoding="utf-8")
         # Keep the real scrolling/Flow/Loader hierarchy; replace backend-heavy
         # card contents with a tall deterministic card that reproduces clipping.
@@ -118,7 +151,7 @@ Item {
 }
 '''
         for name in ("WifiBroadcastLinkCard", "SimulatedLinkCard", "MicrohardLinkCard", "ArtosynLinkCard", "MLRSLinkCard", "FleetControlLinkCard"):
-            (folder / (name + ".qml")).write_text(stub, encoding="utf-8")
+            (folder / (name + ".qml")).write_text(stub.replace("implicitHeight: 650", 'objectName: "test' + name + '"; implicitHeight: 650'), encoding="utf-8")
         for name in ("PopupScanChannels", "PopupAnalyzeChannels", "DialoqueFreqChangeGndOnly", "DialoqueFreqChangeAirGnd"):
             (folder / (name + ".qml")).write_text("import QtQuick.Controls 2.12\nPopup {}\n", encoding="utf-8")
         module = folder / "OpenHD"

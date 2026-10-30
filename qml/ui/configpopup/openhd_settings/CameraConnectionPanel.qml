@@ -211,7 +211,7 @@ FocusScope {
                             text: "\uf1eb"
                             color: settings_form.accentColor
                             font.family: "Font Awesome 5 Free"
-                            font.pixelSize: 14
+                            font.pixelSize: MenuTypography.controlIcon
                         }
                         Text {
                             text: qsTr("RTSP source")
@@ -242,7 +242,7 @@ FocusScope {
                             CompactLinkComboBox {
                                 id: profileBox
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 40
+                                Layout.preferredHeight: MenuTypography.controlHeight
                                 model: [qsTr("SIYI camera"), qsTr("Generic RTSP camera"), qsTr("Custom")]
                                 popupWidth: Math.max(width, 240)
                                 Keys.priority: Keys.BeforeItem
@@ -266,7 +266,7 @@ FocusScope {
                             TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: addressField
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 40
+                                Layout.preferredHeight: MenuTypography.controlHeight
                                 placeholderText: "192.168.1.12"
                                 maximumLength: 15
                                 selectByMouse: true
@@ -290,7 +290,7 @@ FocusScope {
                             TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: portField
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 40
+                                Layout.preferredHeight: MenuTypography.controlHeight
                                 placeholderText: "554"
                                 maximumLength: 5
                                 selectByMouse: true
@@ -314,7 +314,7 @@ FocusScope {
                             TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: pathField
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: 40
+                                Layout.preferredHeight: MenuTypography.controlHeight
                                 placeholderText: "/stream=0"
                                 maximumLength: 64
                                 selectByMouse: true
@@ -333,7 +333,7 @@ FocusScope {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        implicitHeight: 34
+                        implicitHeight: MenuTypography.controlHeight
                         radius: 7
                         color: settings_form.panelBackground
                         border.color: settings_form.lineColor
@@ -377,6 +377,7 @@ FocusScope {
 
                     CheckBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: expertPipeline
+                        visible: settings_form.showAdvancedSettings
                         text: qsTr("Expert: edit the GStreamer source pipeline")
                         Keys.priority: Keys.BeforeItem
                         Keys.onPressed: root.handleNavigation(event, expertPipeline)
@@ -387,8 +388,8 @@ FocusScope {
                     TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: pipelineField
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 42
-                        visible: _qopenhd.debugMenuPreview || (expertPipeline.checked)
+                        Layout.preferredHeight: MenuTypography.controlHeight
+                        visible: settings_form.showAdvancedSettings && (_qopenhd.debugMenuPreview || expertPipeline.checked)
                         maximumLength: 127
                         selectByMouse: true
                         color: settings_form.primaryText
@@ -438,7 +439,7 @@ FocusScope {
                     SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: reservationBox
                         Layout.preferredWidth: 118
-                        Layout.preferredHeight: 40
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         from: 1; to: 20
                         editable: true
                         textFromValue: function(value) { return value + qsTr(" Mbit/s") }

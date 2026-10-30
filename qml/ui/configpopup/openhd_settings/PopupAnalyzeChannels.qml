@@ -1,3 +1,4 @@
+import ".."
 import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -132,7 +133,7 @@ PopupBigGeneric {
                         Layout.minimumWidth: preferredTextWidth
                         Layout.preferredWidth: preferredTextWidth
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 38
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         model: filterModel
                         textRole: "title"
                         enabled: !root.analyzing
@@ -147,7 +148,7 @@ PopupBigGeneric {
                         Layout.preferredWidth: preferredTextWidth
                         currentIndex: 0
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 38
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         model: [qsTr("Energy above noise floor (%)"), qsTr("Channel busy (%)"),
                                 qsTr("Wi-Fi packets"), qsTr("Wi-Fi packets (relative)")]
                         enabled: !root.analyzing
@@ -162,17 +163,17 @@ PopupBigGeneric {
                         Layout.preferredWidth: preferredTextWidth
                         currentIndex: 1
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 38
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         model: [qsTr("Quick"), qsTr("Medium"), qsTr("Detailed")]
                         enabled: !root.analyzing
                         Keys.onPressed: root.handleKey(durationCombo, event)
                     }
 
-                    Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: startButton
                         Layout.minimumWidth: implicitContentWidth + 24
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 38
+                        Layout.preferredHeight: MenuTypography.controlHeight
                         text: root.analyzing ? qsTr("ANALYZING…") : qsTr("START ANALYSIS")
                         enabled: _ohdSystemGround.is_alive && !root.analyzing &&
                                  _ohdSystemGround.wb_gnd_operating_mode === 0

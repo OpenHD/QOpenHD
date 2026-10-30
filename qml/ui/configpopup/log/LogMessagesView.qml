@@ -5,6 +5,7 @@ import QtQuick.Controls 2.12
 FocusScope {
     id: root
     property var m_log_model: _logQOpenHD
+    readonly property bool hasMessages: logList.count > 0
     signal backRequested()
     function gainFocus() { logList.forceActiveFocus() }
 

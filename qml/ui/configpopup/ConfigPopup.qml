@@ -36,11 +36,64 @@ Rectangle {
     // Compact rail keeps the complete status overview on portrait/embedded
     // displays while retaining the labelled sidebar on desktop.
     property bool compactSidebar: true
+    readonly property bool simulatorActive: typeof _uiSimulator !== "undefined" && _uiSimulator.active
+    readonly property int simulatorAccessMode: simulatorActive ? Number(_uiSimulator.profile.accessMode || 0) : 0
+    readonly property bool showDeveloperSettings: simulatorActive ? simulatorAccessMode === 2 : diagnosticsUnlocked
+    readonly property bool showAdvancedSettings: simulatorActive ? simulatorAccessMode >= 1 : _qopenhd.debugMenuPreviewLevel === 2 ||
+        (!_qopenhd.debugMenuPreview && typeof settings !== "undefined" && settings.dev_show_advanced_button === true)
+    function openSimulator() {
+        if (!diagnosticsUnlocked || typeof _uiSimulator === "undefined") return
+        _uiSimulator.developerUnlocked = true
+        simulationDialog.active = true
+        if(simulationDialog.item)simulationDialog.item.open()
+    }
+    Loader {
+        id:simulationDialog
+        active:false
+        source: "dev/SimulationPopup.qml"
+        onLoaded:item.open()
+    }
+    Shortcut { sequence:"Ctrl+Shift+S"; enabled:settings_form.visible && settings_form.diagnosticsUnlocked; onActivated:settings_form.openSimulator() }
+    Rectangle {
+        z: 100
+        anchors.bottom: parent.bottom; anchors.horizontalCenter: parent.horizontalCenter
+        width: simulationRow.implicitWidth + 24; height: 34; radius: 8
+        visible: typeof _uiSimulator !== "undefined" && _uiSimulator.active
+        color: "#663f0c"; border.color: "#eaa33d"
+        Row {
+            id: simulationRow;anchors.centerIn:parent;spacing:12
+            Text { text:qsTr("SIMULATION - no device writes");color:"#fff0d6";font.pixelSize: MenuTypography.body;anchors.verticalCenter:parent.verticalCenter }
+            AdvancedActionButton { text:qsTr("Configure / Stop");height:MenuTypography.controlHeight;onClicked:settings_form.openSimulator() }
+        }
+    }
+    property bool diagnosticsUnlocked: false
+    property int creditsStarClickCount: 0
+    property bool updatingNavigation: false
+    readonly property var navigationPageIds: showDeveloperSettings ? [0, 1, 2, 8, 3, 4, 5, 6, 7] : [0, 1, 2, 8, 4, 5, 6]
+    onShowDeveloperSettingsChanged: {
+        if (!showDeveloperSettings && (mainStackLayout.currentIndex === 3 || mainStackLayout.currentIndex === 7 || mainStackLayout.currentIndex === 9)) {
+            mainStackLayout.currentIndex = 0
+            navigation.currentIndex = navigationPageIds.indexOf(0)
+        }
+    }
+    function creditsStarClicked() {
+        if (mainStackLayout.currentIndex !== 6 || diagnosticsUnlocked) return
+        creditsStarClickCount++
+        if (creditsStarClickCount < 5) return
+        updatingNavigation = true
+        diagnosticsUnlocked = true
+        navigation.currentIndex = navigationPageIds.indexOf(6)
+        Qt.callLater(function() {
+            navigation.currentIndex = navigationPageIds.indexOf(mainStackLayout.currentIndex)
+            updatingNavigation = false
+        })
+    }
+    onMenuPageTitleChanged: if (mainStackLayout.currentIndex !== 6) creditsStarClickCount = 0
     property int sidebarWidth: compactSidebar ? 72 : Math.max(160, Math.min(210, width * 0.17))
 
-    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD & APPLICATION"), qsTr("SYSTEM LOGS"), qsTr("RC CONTROL"), qsTr("CONNECT"), qsTr("CREDITS"), qsTr("MAVLINK DEBUG"), qsTr("DEVELOPER TOOLS")][mainStackLayout.currentIndex]
-    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Display, widgets and vehicle presentation"), qsTr("Live system messages"), qsTr("Configure and monitor RC over OpenHD"), qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("Inspect incoming MAVLink messages"), qsTr("Diagnostics and system information")][mainStackLayout.currentIndex]
-    readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf0ad"][mainStackLayout.currentIndex]
+    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), qsTr("RC CONTROL"), qsTr("CONNECT"), qsTr("CREDITS"), qsTr("MAVLINK DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS")][mainStackLayout.currentIndex]
+    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), "", qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("Inspect incoming MAVLink messages"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information")][mainStackLayout.currentIndex]
+    readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf013", "\uf0ad"][mainStackLayout.currentIndex]
 
     Settings {
         id: advancedThemeSettings
@@ -62,18 +115,19 @@ Rectangle {
     function user_quidance_open_connect_screen() {
         openSettings()
         mainStackLayout.currentIndex = 5
-        navigation.currentIndex = 5
+        navigation.currentIndex = navigationPageIds.indexOf(5)
     }
     function openDeveloperTools() {
+        if (!diagnosticsUnlocked) return
         openSettings()
-        mainStackLayout.currentIndex = 8
+        mainStackLayout.currentIndex = 9
         navigation.currentIndex = -1
         developerPage.gainFocus()
     }
     function user_guidance_open_openhd_settings_find_air_unit_location() {
         openSettings()
         mainStackLayout.currentIndex = 1
-        navigation.currentIndex = 1
+        navigation.currentIndex = navigationPageIds.indexOf(1)
         openhdPage.invokeWhenReady("user_quidance_animate_channel_scan")
     }
     function gain_focus() { navigation.forceActiveFocus() }
@@ -108,6 +162,7 @@ Rectangle {
         ListElement { title: qsTr("Connect"); icon: "\uf6ff" }
         ListElement { title: qsTr("Credits"); icon: "\uf005" }
         ListElement { title: qsTr("MAV Debug"); icon: "\uf188" }
+        ListElement { title: qsTr("Application"); icon: "\uf013" }
     }
 
     Rectangle {
@@ -127,10 +182,10 @@ Rectangle {
             anchors.right: parent.right
             anchors.margins: settings_form.compactSidebar ? 10 : 20
             spacing: 3
-            Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: logoBackButton
                 width: 52
-                height: 52
+                height: MenuTypography.controlHeight
                 x: Math.round((brand.width - width) / 2)
                 hoverEnabled: true
                 activeFocusOnTab: true
@@ -182,6 +237,7 @@ Rectangle {
 
         ListView {
             id: navigation
+            objectName: "advancedNavigation"
             anchors.top: brand.bottom
             anchors.topMargin: 18
             anchors.left: parent.left
@@ -192,8 +248,8 @@ Rectangle {
             anchors.rightMargin: 12
             clip: true
             spacing: 4
-            model: navigationModel
-            currentIndex: mainStackLayout.currentIndex
+            model: settings_form.navigationPageIds
+            currentIndex: settings_form.navigationPageIds.indexOf(mainStackLayout.currentIndex)
             keyNavigationWraps: true
             highlightMoveDuration: 120
             focus: true
@@ -201,21 +257,22 @@ Rectangle {
 
             delegate: ItemDelegate {
                 id: navDelegate
+                objectName: "navigationPage" + modelData
                 width: navigation.width
                 height: 43
                 leftPadding: 0
                 rightPadding: 0
                 hoverEnabled: true
-                highlighted: ListView.isCurrentItem
+                highlighted: mainStackLayout.currentIndex === modelData
                 contentItem: Item {
                     Text {
                         width: 25
                         anchors.verticalCenter: parent.verticalCenter
                         x: settings_form.compactSidebar ? Math.round((parent.width - width) / 2) : 14
-                        text: model.icon
+                        text: navigationModel.get(modelData).icon
                         color: navDelegate.highlighted ? "#ffffff" : settings_form.primaryText
                         font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 16
+                        font.pixelSize: MenuTypography.rowIcon
                         horizontalAlignment: Text.AlignHCenter
                     }
                     Text {
@@ -223,7 +280,7 @@ Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: 50
                         anchors.verticalCenter: parent.verticalCenter
-                        text: model.title
+                        text: navigationModel.get(modelData).title
                         color: navDelegate.highlighted ? "#ffffff" : settings_form.primaryText
                         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         font.bold: navDelegate.highlighted
@@ -242,17 +299,18 @@ Rectangle {
                 }
                 onClicked: {
                     navigation.currentIndex = index
-                    mainStackLayout.currentIndex = index
+                    mainStackLayout.currentIndex = modelData
+                    if (modelData === 6) settings_form.creditsStarClicked()
                     navigation.forceActiveFocus()
                 }
             }
 
             Keys.onPressed: function(event) {
                 if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
-                    mainStackLayout.currentIndex = currentIndex
+                    mainStackLayout.currentIndex = settings_form.navigationPageIds[currentIndex]
                     event.accepted = true
                 } else if (event.key === Qt.Key_Right) {
-                    var page = mainStackLayout.children[currentIndex]
+                    var page = mainStackLayout.children[settings_form.navigationPageIds[currentIndex]]
                     if (page) page.gainFocus()
                     event.accepted = true
                 } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Escape) {
@@ -261,8 +319,8 @@ Rectangle {
                 }
             }
             onCurrentIndexChanged: {
-                if (activeFocus && currentIndex >= 0)
-                    mainStackLayout.currentIndex = currentIndex
+                if (activeFocus && currentIndex >= 0 && !settings_form.updatingNavigation)
+                    mainStackLayout.currentIndex = settings_form.navigationPageIds[currentIndex]
             }
         }
 
@@ -325,41 +383,44 @@ Rectangle {
             source: "status/StatusOverviewHeader.qml"
         }
 
-        Button {
+        AdvancedActionButton {
             id: debugPreviewButton
             objectName: "debugMenuPreviewButton"
             hoverEnabled: true
             z: 10
             anchors.top: parent.top; anchors.right: refreshButton.left
             anchors.topMargin: 16; anchors.rightMargin: 10 * contentFrame.toolbarScale
-            width: 90 * contentFrame.toolbarScale; height: 56 * contentFrame.toolbarScale
+            width: 90 * contentFrame.toolbarScale; height: MenuTypography.controlHeight * contentFrame.toolbarScale
             visible: _qopenhd.launchedFromQtCreator === true
-            checkable: true
             checked: _qopenhd.debugMenuPreview === true
             text: "\uf188"
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 23 * contentFrame.toolbarScale
-            Accessible.name: qsTr("Debug: show all menu settings")
-            onClicked: _qopenhd.debugMenuPreview = checked
+            font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon * contentFrame.toolbarScale
+            Accessible.name: qsTr("Debug view: normal, all basic settings, all settings")
+            onClicked: {
+                if(typeof _uiSimulator !== "undefined" && _uiSimulator.active)settings_form.openSimulator()
+                else _qopenhd.debugMenuPreviewLevel = (_qopenhd.debugMenuPreviewLevel + 1) % 3
+            }
+            onPressAndHold: settings_form.openSimulator()
             KeyNavigation.right: refreshButton
             Keys.onEscapePressed: settings_form.side_bar_regain_focus()
             onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0 && statusPanel) statusPanel.syncFocus(debugPreviewButton)
             background: Rectangle {
                 radius: 20
-                color: debugPreviewButton.checked ? "#805c20" : panelBackground
+                color: _qopenhd.debugMenuPreviewLevel === 2 ? "#713b85" : debugPreviewButton.checked ? "#805c20" : panelBackground
                 border.color: debugPreviewButton.activeFocus ? accentColor : lineColor
                 border.width: debugPreviewButton.activeFocus ? 2 : 1
             }
             contentItem: Text { text: debugPreviewButton.text; font: debugPreviewButton.font; color: primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
         }
 
-        Button {
+        AdvancedActionButton {
             id: refreshButton
             z: 10
             anchors.top: parent.top; anchors.right: themeButton.left
             anchors.topMargin: 16; anchors.rightMargin: 10 * contentFrame.toolbarScale
-            width: 90 * contentFrame.toolbarScale; height: 56 * contentFrame.toolbarScale
+            width: 90 * contentFrame.toolbarScale; height: MenuTypography.controlHeight * contentFrame.toolbarScale
             text: "\uf2f1"
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 23 * contentFrame.toolbarScale
+            font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon * contentFrame.toolbarScale
             onClicked: settings_form.runHeaderRefresh()
             onActiveFocusChanged: if (activeFocus && mainStackLayout.currentIndex === 0 && statusPanel) statusPanel.syncFocus(refreshButton)
             Keys.onPressed: function(event) {
@@ -384,14 +445,14 @@ Rectangle {
             contentItem: Text { text: refreshButton.text; font: refreshButton.font; color: primaryText; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
         }
 
-        Button {
+        AdvancedActionButton {
             id: themeButton
             z: 10
             anchors.top: parent.top; anchors.right: parent.right
             anchors.topMargin: 16; anchors.rightMargin: statusHeader.anchors.rightMargin
-            width: 90 * contentFrame.toolbarScale; height: 56 * contentFrame.toolbarScale
+            width: 90 * contentFrame.toolbarScale; height: MenuTypography.controlHeight * contentFrame.toolbarScale
             text: darkMode ? "\uf185" : "\uf186"
-            font.family: "Font Awesome 5 Free"; font.pixelSize: 23 * contentFrame.toolbarScale
+            font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon * contentFrame.toolbarScale
             onClicked: {
                 darkMode = !darkMode
                 advancedThemeSettings.darkMode = darkMode
@@ -436,13 +497,14 @@ Rectangle {
             // Inline sourceComponents still resolve every page when this menu loads.
             AdvancedPageLoader { id: statusPage; selected: mainStackLayout.currentIndex === 0; source: "status/PanelStatus.qml" }
             AdvancedPageLoader { id: openhdPage; selected: mainStackLayout.currentIndex === 1; source: "openhd_settings/OHDSettingsPanel.qml" }
-            AdvancedPageLoader { id: osdPage; selected: mainStackLayout.currentIndex === 2; source: "qopenhd_settings/AppSettingsPanel.qml" }
+            AdvancedPageLoader { id: osdPage; selected: mainStackLayout.currentIndex === 2; source: "qopenhd_settings/OsdSettingsPanel.qml" }
             AdvancedPageLoader { id: logPage; selected: mainStackLayout.currentIndex === 3; source: "log/LogMessagesStatusView.qml" }
             AdvancedPageLoader { id: rcPage; selected: mainStackLayout.currentIndex === 4; source: "rc/RcInfoPanel.qml" }
             AdvancedPageLoader { id: connectPage; selected: mainStackLayout.currentIndex === 5; source: "connect/ConnectPanel.qml" }
             AdvancedPageLoader { id: creditsPage; selected: mainStackLayout.currentIndex === 6; source: "credits/Credits.qml" }
             AdvancedPageLoader { id: mavDebugPage; selected: mainStackLayout.currentIndex === 7; source: "dev/MavlinkDebugPanel.qml" }
-            AdvancedPageLoader { id: developerPage; selected: mainStackLayout.currentIndex === 8; source: "dev/AppDeveloperStatsPanel.qml" }
+            AdvancedPageLoader { id: applicationPage; selected: mainStackLayout.currentIndex === 8; source: "qopenhd_settings/AppSettingsPanel.qml" }
+            AdvancedPageLoader { id: developerPage; selected: mainStackLayout.currentIndex === 9; source: "dev/AppDeveloperStatsPanel.qml" }
         }
     }
 }

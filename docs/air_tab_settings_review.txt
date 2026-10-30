@@ -1,0 +1,539 @@
+OPENHD - COMPLETE AIR TAB SETTINGS
+
+Review copy: normal, advanced, developer-only, read-only and hardware-specific options.
+Availability depends on the connected hardware and firmware.
+Camera-specific settings are in the Camera tab and are not included here.
+
+For each item, mark: KEEP / REMOVE / ADVANCED / DEVELOPER.
+
+
+TELEMETRY
+---------
+
+001. Flight-controller serial port
+     Parameter: FC_UART_CONN
+     Decision: KEEP 
+
+002. Flight-controller baud rate
+     Parameter: FC_UART_BAUD
+     Decision: KEEP
+
+003. Flight-controller flow control
+     Parameter: FC_UART_FLWCTL
+     Decision: KEEP
+
+004. Flight-controller battery cell count
+     Parameter: FC_BATT_N_CELLS
+     Decision: KEEP
+
+005. Flight-controller MAVLink system ID (advanced setting in Identification)
+     Parameter: FC_SYS_ID
+     Decision: ADVANCED
+
+006. OpenHD telemetry serial port
+     Parameter: OHD_UART_TLM
+     Decision: ADVANCED
+
+007. OpenHD UART telemetry enabled
+     Parameter: OHD_UART_EN
+     Decision: ADVANCED
+
+008. OpenHD UART baud rate
+     Parameter: OHD_UART_BAUD
+     Decision: ADVANCED
+
+009. OpenHD UART flow control
+     Parameter: OHD_UART_FLW
+     Decision: ADVANCED
+
+010. UART priority for RC
+     Parameter: UART_PRI_RC
+     Decision: ADVANCED
+
+011. UART priority for OpenHD
+     Parameter: UART_PRI_OHD
+     Decision: ADVANCED
+
+012. UART priority for flight-controller telemetry
+     Parameter: UART_PRI_FC
+     Decision: ADVANCED
+
+013. MAVLink recording
+     Parameter: LOG_MAVLINK
+     Decision: ADVANCED
+
+014. OpenHD logging
+     Parameter: LOG_OPENHD
+     Decision: ADVANCED
+
+015. Adsb Enable
+     Parameter: ADSB_ENABLE
+     Decision: KEEP
+
+016. SBUS output enabled
+     Parameter: SBUS_EN
+     Decision: ADVANCED
+
+017. SBUS output serial device
+     Parameter: SBUS_DEV
+     Decision: ADVANCED
+
+018. SBUS output update rate
+     Parameter: SBUS_HZ
+     Decision: ADVANCED
+
+019. SIYI plugin active (read-only)
+     Parameter: SIYI_ACTIVE
+     Decision: ADVANCED
+
+020. Topotek plugin active (read-only)
+     Parameter: TOPOTEK_ACTIVE
+     Decision: ADVANCED
+
+021. Camera-control plugin active (read-only)
+     Parameter: CAM_CTRL_ACTIVE
+     Decision: ADVANCED
+
+022. Boot role: Air/Ground
+     Parameter: CONFIG_BOOT_AIR
+     Decision: ADVANCED
+
+023. Detected flight-controller firmware information (read-only)
+     Parameter: FC_FW_INFO
+     Decision: KEEP
+
+024. Flight-controller detection evidence (read-only)
+     Parameter: FC_FW_EVID
+     Decision: KEEP
+
+
+NETWORK
+-------
+
+025. Multiple-link capability (read-only)
+     Parameter: MULTI_LINK_CAP
+     Decision: ____________________
+
+026. Multiple-link operation enabled
+     Parameter: MULTI_LINK_EN
+     Decision: ____________________
+
+027. Wi-Fi operating mode
+     Parameter: WIFI_MODE
+     Decision: ____________________
+
+028. Wi-Fi interface information (read-only)
+     Parameter: WIFI_IFACES
+     Decision: ____________________
+
+029. Primary link type (read-only)
+     Parameter: PRIMARY_LINK
+     Decision: ____________________
+
+030. Hotspot mode
+     Parameter: WIFI_HOTSPOT_E
+     Decision: ____________________
+
+031. Hotspot interface
+     Parameter: WIFI_HS_IFACE
+     Decision: ____________________
+
+032. Hotspot network name
+     Parameter: WIFI_HS_SSID
+     Decision: ____________________
+
+033. Hotspot password
+     Parameter: WIFI_HS_PW
+     Decision: ____________________
+
+034. Wi-Fi client interface
+     Parameter: WIFI_CL_IFACE
+     Decision: ____________________
+
+035. Wi-Fi client network name
+     Parameter: WIFI_CL_SSID
+     Decision: ____________________
+
+036. Wi-Fi client password
+     Parameter: WIFI_CL_PW
+     Decision: ____________________
+
+
+WIFIBROADCAST
+-------------
+
+037. Wb N Cards
+     Parameter: WB_N_CARDS
+     Decision: ____________________
+
+038. !!!Editing this param manually without care will result in a broken link!!!
+     Parameter: WB_FREQUENCY
+     Decision: ____________________
+
+039. !!!Editing this param manually without care will result in a broken link!!!
+     Parameter: WB_CHANNEL_W
+     Decision: ____________________
+
+040. !!!Editing this param manually without care will result in a broken link!!!
+     Parameter: WB_MCS_INDEX
+     Decision: ____________________
+
+041. WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). The best value depends on your rf environment - recommended is about ~20% in low rf enironemnts(e.g. nature), and ~50% in high rf noise environments(populated areas).Note that your rf interference/ packet loss will increase during flight, it is not recommended to decrase this value below 20%.
+     Parameter: WB_V_FEC_PERC
+     Decision: ____________________
+
+042. Automatically allocate the WiFiBroadcast video pool using its MCS/FEC-derived capacity, measured priority and fixed traffic, and encoder capabilities. Does not enable loss or TX-drop-driven rate reduction. Disabled preserves manual bitrate settings.
+     Parameter: VARIABLE_BITRATE
+     Decision: ____________________
+
+043. Maximum encoder QP. Lower values improve quality but increase required bitrate.
+     Parameter: QP_MAX
+     Decision: ____________________
+
+044. Minimum encoder QP. Higher values reduce bitrate but can reduce image quality.
+     Parameter: QP_MIN
+     Decision: ____________________
+
+045. Developer only, max FEC block size.
+     Parameter: WB_MAX_D_BZ
+     Decision: ____________________
+
+046. Reduce used data rate per mcs index by fixed value (not needed in most cases)
+     Parameter: WB_V_RATE_PERC
+     Decision: ____________________
+
+047. Enable OpenHD settings commands from the EdgeTX/OpenTX Lua tool. The transport uses four consecutive RC channels.
+     Parameter: RC_OHD_CTRL
+     Decision: ____________________
+
+048. First RC channel used by the Lua settings protocol. The mapping is D2, D1, D0 and CLK; zero disables the protocol.
+     Parameter: RC_SET_BASE
+     Decision: ____________________
+
+049. Dynamically change the MCS Index (Trade range <-> image quality (bitrate)) during flight using your RC and a specific channel (similar to how flight modes work).
+     Parameter: MCS_VIA_RC
+     Decision: ____________________
+
+050. Dynamically change the BW via RC. NOT ALWAYS SAFE TO USE !
+     Parameter: BW_VIA_RC
+     Decision: ____________________
+
+051. Txmode Via Rc
+     Parameter: TXMODE_VIA_RC
+     Decision: ____________________
+
+052. Fhss Via Rc
+     Parameter: FHSS_VIA_RC
+     Decision: ____________________
+
+053. DEV ONLY - DO NOT TOUCH (LEAVE DISABLED). Sets a wifi param that needs to be investigated.
+     Parameter: DEV_HIGH_RETR
+     Decision: ____________________
+
+054. Use the connected ESP background RF survey for analysis and prioritize air discovery. Legacy scanning remains the fallback.
+     Parameter: ESP_ANALYSE
+     Decision: ____________________
+
+055. Use the second Devourer radio on Air to survey channels and automatically move the link when a persistently cleaner channel is found. Redundant TX is disabled while active.
+     Parameter: WB_ADAPT_CH
+     Decision: ____________________
+
+056. Devourer frequency hopping. Devourer handles synchronization and its Wi-Fi control channel; mLRS UART or another live independent telemetry link is required as the OpenHD uplink/recovery path.
+     Parameter: WB_FHSS
+     Decision: ____________________
+
+057. Devourer FHSS dwell time. 50 ms is recommended.
+     Parameter: WB_FHSS_SLOT
+     Decision: ____________________
+
+058. Enable ARQ retransmission for video. Requires restart to take effect.
+     Parameter: WB_ENABLE_RETRA
+     Decision: ____________________
+
+059. Enable ARQ retransmission for video packets. Requires restart to take effect.
+     Parameter: WB_RTX_VIDEO
+     Decision: ____________________
+
+060. Enable ARQ retransmission for telemetry packets. Requires restart to take effect.
+     Parameter: WB_RTX_TELEM
+     Decision: ____________________
+
+061. Enable ARQ retransmission for RC packets. Requires restart to take effect.
+     Parameter: WB_RTX_RC
+     Decision: ____________________
+
+062. Max retransmission history window for video in milliseconds. Larger values allow longer recovery but use more memory.
+     Parameter: WB_RTX_V_MAXMS
+     Decision: ____________________
+
+063. Max retransmission history window for telemetry in milliseconds. Larger values allow longer recovery but use more memory.
+     Parameter: WB_RTX_T_MAXMS
+     Decision: ____________________
+
+064. Max retransmission history window for RC in milliseconds. Larger values allow longer recovery but use more memory.
+     Parameter: WB_RTX_R_MAXMS
+     Decision: ____________________
+
+065. How often each retransmission request is sent. Higher values increase reliability but add overhead.
+     Parameter: WB_RTX_REQ_REP
+     Decision: ____________________
+
+066. !! Advanced users only, changing this param can result in no connection !!. This param is not automatically synchronized between air/ground. Specifies the difference between the number of space-time streams and the number of spatial streams. Use +1 only if you have 2 antennas.
+     Parameter: WB_E_STBC
+     Decision: ____________________
+
+067. !! Advanced users only, changing this param can result in no connection !!. This param is not automatically synchronized between air/ground. Enable Low density parity check. Needs to be supported by both your tx and rxes.
+     Parameter: WB_E_LDPC
+     Decision: ____________________
+
+068. !! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, but increases packet collisions.
+     Parameter: WB_E_SHORT_GUARD
+     Decision: ____________________
+
+069. Normalized TX power target. Values through 100% use the normal calibrated range. Values above 100% are hardware-stressing Devourer overdrive and require Advanced Settings in the link control.
+     Parameter: TX_PWR_LVL
+     Decision: ____________________
+
+070. Pit mode: when enabled, disarmed uses the 20% TX power target and armed uses the selected target.
+     Parameter: WB_PIT_MODE
+     Decision: ____________________
+
+071. Wb Dev Logs
+     Parameter: WB_DEV_LOGS
+     Decision: ____________________
+
+072. Wb Udp Enable
+     Parameter: WB_UDP_ENABLE
+     Decision: ____________________
+
+073. Wb Udp Fec
+     Parameter: WB_UDP_FEC
+     Decision: ____________________
+
+074. Wb Udp Budget
+     Parameter: WB_UDP_BUDGET
+     Decision: ____________________
+
+075. Wb Udp Max Kbps
+     Parameter: WB_UDP_MAX_KBPS
+     Decision: ____________________
+
+076. Wb Udp In Port
+     Parameter: WB_UDP_IN_PORT
+     Decision: ____________________
+
+077. Wb Udp Out Port
+     Parameter: WB_UDP_OUT_PORT
+     Decision: ____________________
+
+
+VIDEO/AUDIO
+-----------
+
+078. Swap primary/secondary cameras
+     Parameter: V_SWITCH_CAM
+     Decision: ____________________
+
+079. IP-camera bitrate reservation
+     Parameter: V_IP_CAM_MBITS
+     Decision: ____________________
+
+080. Primary-camera share of video bandwidth
+     Parameter: V_PRIMARY_PERC
+     Decision: ____________________
+
+081. Audio capture mode
+     Parameter: AUDIO_ENABLE
+     Decision: ____________________
+
+082. Example-audio capability (read-only)
+     Parameter: AUDIO_EXAMPLE
+     Decision: ____________________
+
+083. Microphone gain
+     Parameter: AUDIO_GAIN
+     Decision: ____________________
+
+084. USB audio device count (read-only)
+     Parameter: AUDIO_USB_COUNT
+     Decision: ____________________
+
+085. USB audio device names (read-only)
+     Parameter: AUD_USB_NAMES
+     Decision: ____________________
+
+086. Audio capture device count (read-only)
+     Parameter: AUDIO_DEV_COUNT
+     Decision: ____________________
+
+087. Audio capture device
+     Parameter: AUDIO_DEVICE
+     Decision: ____________________
+
+
+HARDWARE-SPECIFIC GPIO
+----------------------
+
+088. Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...
+     Parameter: GPIO_2
+     Decision: ____________________
+
+089. Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...
+     Parameter: GPIO_26
+     Decision: ____________________
+
+
+HARDWARE-SPECIFIC ARTOSYN
+-------------------------
+
+090. Artosyn daemon address (host/IP). Changing this reconnects to the daemon.
+     Parameter: AR_ADDR
+     Decision: ____________________
+
+091. Artosyn daemon TCP port.
+     Parameter: AR_PORT
+     Decision: ____________________
+
+092. Artosyn slot index used by the OpenHD link.
+     Parameter: AR_SLOT
+     Decision: ____________________
+
+093. Artosyn video socket port id.
+     Parameter: AR_VPORT
+     Decision: ____________________
+
+094. Artosyn telemetry socket port id.
+     Parameter: AR_TPORT
+     Decision: ____________________
+
+095. Enable Artosyn datagram socket mode.
+     Parameter: AR_DGRAM
+     Decision: ____________________
+
+096. Artosyn socket RX buffer size (bytes).
+     Parameter: AR_RXBUF
+     Decision: ____________________
+
+097. Artosyn socket TX buffer size (bytes).
+     Parameter: AR_TXBUF
+     Decision: ____________________
+
+098. Artosyn socket read timeout (ms).
+     Parameter: AR_RDTMO
+     Decision: ____________________
+
+099. Ar Reset Cmd
+     Parameter: AR_RESET_CMD
+     Decision: ____________________
+
+100. Ar Pair Cmd
+     Parameter: AR_PAIR_CMD
+     Decision: ____________________
+
+101. MCS mode. Manual uses AR_MCS_VAL; Auto uses internal adaptation.
+     Parameter: AR_MCS_MD
+     Decision: ____________________
+
+102. Manual MCS value (bb_phy_mcs_e). Use -1 to keep current.
+     Parameter: AR_MCS_VAL
+     Decision: ____________________
+
+103. Auto MCS minimum limit (bb_phy_mcs_e). -1 disables the limit.
+     Parameter: AR_MCS_MIN
+     Decision: ____________________
+
+104. Auto MCS maximum limit (bb_phy_mcs_e). -1 disables the limit.
+     Parameter: AR_MCS_MAX
+     Decision: ____________________
+
+105. Bandwidth mode. Manual uses AR_BW_VAL; Auto uses internal adaptation.
+     Parameter: AR_BW_MD
+     Decision: ____________________
+
+106. Manual bandwidth selection (bb_bandwidth_e).
+     Parameter: AR_BW_VAL
+     Decision: ____________________
+
+107. Channel mode. Manual uses AR_CHN_IDX; Auto uses internal adaptation.
+     Parameter: AR_CHN_MD
+     Decision: ____________________
+
+108. Manual channel index. -1 keeps current.
+     Parameter: AR_CHN_IDX
+     Decision: ____________________
+
+109. Power control mode. Manual uses AR_PWR_DBM.
+     Parameter: AR_PWR_ATO
+     Decision: ____________________
+
+110. Manual TX power target (dBm). -1 keeps current.
+     Parameter: AR_PWR_DBM
+     Decision: ____________________
+
+111. Band mode control. -1 keeps current.
+     Parameter: AR_BND_MD
+     Decision: ____________________
+
+112. Manual band selection (bb_band_e). -1 keeps current.
+     Parameter: AR_BND_VAL
+     Decision: ____________________
+
+113. Compliance mode control. -1 keeps current.
+     Parameter: AR_CMP_MD
+     Decision: ____________________
+
+114. Power mode (bb_phy_pwr_mode_e). -1 keeps current.
+     Parameter: AR_PWR_MD
+     Decision: ____________________
+
+115. LNA mode control. -1 keeps current.
+     Parameter: AR_LNA_MD
+     Decision: ____________________
+
+116. LNA bypass control. -1 keeps current.
+     Parameter: AR_LNA_BP
+     Decision: ____________________
+
+117. RF path A TX enable. -1 keeps current.
+     Parameter: AR_RF_ATX
+     Decision: ____________________
+
+118. RF path A RX enable. -1 keeps current.
+     Parameter: AR_RF_ARX
+     Decision: ____________________
+
+119. RF path B TX enable. -1 keeps current.
+     Parameter: AR_RF_BTX
+     Decision: ____________________
+
+120. RF path B RX enable. -1 keeps current.
+     Parameter: AR_RF_BRX
+     Decision: ____________________
+
+
+HARDWARE-SPECIFIC MICROHARD
+---------------------------
+
+121. Legacy placeholder; has no functional setting effect
+     Parameter: MICROHARD_DUMMY0
+     Decision: ____________________
+
+
+IP CAMERA CONNECTION CONTROLS
+-----------------------------
+
+[ ] Camera preset: SIYI, generic RTSP, or custom.
+[ ] Camera IP address.
+[ ] RTSP port.
+[ ] RTSP path.
+[ ] Save camera connection.
+[ ] IP-camera link reservation in Mbit/s, with a Save action.
+[ ] Open camera WebUI.
+[ ] Expert GStreamer pipeline editing.
+
+ADDITIONAL READ-ONLY INFORMATION
+--------------------------------
+ACTIVE_LINKS - Active transport links; displayed as link status.
+CARD_TYPE_<index> - Radio card type, generated for each detected card.
+
+Total: 121 named parameters, plus the IP-camera connection controls and generated status fields.

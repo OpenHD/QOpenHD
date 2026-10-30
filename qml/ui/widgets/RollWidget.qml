@@ -14,6 +14,7 @@ BaseWidget {
 
     visible: settings.bank_angle_indicator_widget_show && settings.show_widgets
 
+    widgetPreviewRect: previewBoundsFor(rollTicks, Qt.rect(-8,30,216,105))
     widgetIdentifier: "roll_widget"
     bw_verbose_name: qsTr("BANK ANGLE INDICATOR")
 

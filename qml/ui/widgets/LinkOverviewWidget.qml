@@ -44,8 +44,8 @@ BaseWidget {
     property bool use_artosyn_quality: _ohdSystemGround.artosyn_link_detected
     property real m_quality_raw: calculate_quality_raw()
     property real m_quality_smoothed: -1
-    property string linkFont: "Quicksand"
-    property string linkMonoFont: "ShareTechMono"
+    property string linkFont: settings.osd_top_bar_font || "Quicksand"
+    property string linkMonoFont: settings.osd_top_bar_font || "ShareTechMono"
     property int snrBlockCount: 8
     property real snrBlockWidth: 12
     property real snrBlockHeight: 8
@@ -1100,7 +1100,7 @@ BaseWidget {
             anchors.fill: parent
             opacity: 0.5
             property real cutXRatio: 0.80
-            property color fillColor: bw_current_background_color
+            property color fillColor: settings.osd_top_bar_background_color || bw_current_background_color
 
             ShapePath {
                 strokeWidth: 0
@@ -1164,7 +1164,7 @@ BaseWidget {
                 }
                 Text {
                     text: qsTr("MCS: %1").arg(m_curr_mcs_index >= 0 ? m_curr_mcs_index : qsTr("N/A"))
-                    color: settings.color_text
+                    color: settings.osd_top_bar_text_color || settings.color_text
                     font.pixelSize: 12
                     font.family: linkFont
                     x: -4
@@ -1191,7 +1191,7 @@ BaseWidget {
                 Layout.fillWidth: true
                 fontSizeMode: Text.Fit
                 minimumPixelSize: 11
-                color: settings.color_text
+                color: settings.osd_top_bar_text_color || settings.color_text
                 font.pixelSize: 16
                 font.family: linkFont
                 verticalAlignment: Text.AlignVCenter
@@ -1224,7 +1224,7 @@ BaseWidget {
                         property bool isActive: use_calculated_quality
                             ? (m_snr_value >= snrBlockThresholds[index])
                             : (snr_is_valid(m_best_snr_db) && m_best_snr_db >= snrBlockThresholds[index])
-                        property color shapeColor: settings.color_shape
+                        property color shapeColor: settings.osd_top_bar_text_color || settings.color_shape
 
                         Rectangle {
                             visible: useSimpleBlocks

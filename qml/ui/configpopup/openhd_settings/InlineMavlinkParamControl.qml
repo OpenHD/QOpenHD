@@ -11,6 +11,8 @@ FocusScope {
     property string displayValue: ""
     property bool readOnly: false
     property bool busy: false
+    property var minimumOverride: undefined
+    property var maximumOverride: undefined
     // Values which are documented globally but unsupported by the active hardware.
     property var blockedEnumValues: []
 
@@ -97,15 +99,34 @@ FocusScope {
         id: integerEditor
         SpinBox {
             id: spin
-            from: root.settingsModel.int_param_has_min_max(root.paramId)
+            from: root.minimumOverride !== undefined ? Number(root.minimumOverride) : root.settingsModel.int_param_has_min_max(root.paramId)
                   ? root.settingsModel.int_param_get_min_value(root.paramId) : 0
-            to: root.settingsModel.int_param_has_min_max(root.paramId)
+            to: root.maximumOverride !== undefined ? Number(root.maximumOverride) : root.settingsModel.int_param_has_min_max(root.paramId)
                 ? root.settingsModel.int_param_get_max_value(root.paramId) : 2147483647
             value: Number(root.paramValue)
             editable: true
             enabled: !root.busy
             font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
             onValueModified: root.commitInt(value)
+            textFromValue: function(value, locale) { return String(value) }
+            valueFromText: function(text, locale) { return Number(text) }
+            leftPadding: 28; rightPadding: 28
+            contentItem: TextInput {
+                text: spin.textFromValue(spin.value, spin.locale)
+                font: spin.font; color: settings_form.primaryText
+                horizontalAlignment: TextInput.AlignHCenter; verticalAlignment: TextInput.AlignVCenter
+                readOnly: !spin.editable; validator: spin.validator
+                inputMethodHints: Qt.ImhFormattedNumbersOnly
+            }
+            background: Rectangle { radius: 7; color: settings_form.panelBackground; border.color: spin.activeFocus ? settings_form.accentColor : settings_form.lineColor }
+            up.indicator: Item {
+                x: spin.width - width; width: 28; height: spin.height
+                Text { anchors.centerIn: parent; text: "+"; color: spin.up.enabled ? settings_form.primaryText : settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle }
+            }
+            down.indicator: Item {
+                width: 28; height: spin.height
+                Text { anchors.centerIn: parent; text: "-"; color: spin.down.enabled ? settings_form.primaryText : settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle }
+            }
         }
     }
 

@@ -19,6 +19,7 @@ FocusScope {
             anchors.fill: parent
             spacing: 8
             RowLayout {
+                visible: root.title.length > 0 || root.description.length > 0
                 Layout.fillWidth: true
                 ColumnLayout {
                     Layout.fillWidth: true

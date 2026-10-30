@@ -2,6 +2,7 @@
 #define QOPENHD_H
 
 #include <QFont>
+#include <QStringList>
 #include <atomic>
 #include <QObject>
 #include <QQmlApplicationEngine>
@@ -27,11 +28,14 @@ class QOpenHD : public QObject
     Q_OBJECT
     Q_PROPERTY(bool launchedFromQtCreator READ launchedFromQtCreator CONSTANT)
     Q_PROPERTY(bool debugMenuPreview READ debugMenuPreview WRITE setDebugMenuPreview NOTIFY debugMenuPreviewChanged)
+    Q_PROPERTY(int debugMenuPreviewLevel READ debugMenuPreviewLevel WRITE setDebugMenuPreviewLevel NOTIFY debugMenuPreviewLevelChanged)
 public:
     explicit QOpenHD(QObject *parent = nullptr);
     static QOpenHD& instance();
     bool launchedFromQtCreator() const { return m_launchedFromQtCreator; }
-    bool debugMenuPreview() const { return m_debugMenuPreview.load(); }
+    bool debugMenuPreview() const { return debugMenuPreviewLevel() > 0; }
+    int debugMenuPreviewLevel() const { return m_debugMenuPreviewLevel.load(); }
+    void setDebugMenuPreviewLevel(int level);
     void setDebugMenuPreview(bool enabled);
 
     Q_INVOKABLE void switchToLanguage(const QString &language);
@@ -39,6 +43,11 @@ public:
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     void setFontFamily(QString fontFamily);
     void textToSpeech_sayMessage(QString message);
+    Q_PROPERTY(bool speechAvailable READ speechAvailable NOTIFY speechVoicesChanged)
+    Q_PROPERTY(QStringList speechVoices READ speechVoices NOTIFY speechVoicesChanged)
+    bool speechAvailable() const;
+    QStringList speechVoices() const;
+    Q_INVOKABLE void configureSpeech(const QString& voice, double rate, double volume);
 
     // This only terminates the App, on most OpenHD images the system service will then restart
     // QOpenHD. Can be usefully for debugging, if something's wrong with the app and you need to restart it
@@ -108,13 +117,15 @@ public:
     bool loadTranslator(const QString &language, QSettings *settings);
  public:
  signals:
+    void speechVoicesChanged();
     void fontFamilyChanged(QString fontFamily);
     void debugMenuPreviewChanged();
+    void debugMenuPreviewLevelChanged();
     void pingFinished(QString ip, bool reachable);
     void systemActionFinished(QString id, QString result, bool success);
 private:
     const bool m_launchedFromQtCreator;
-    std::atomic_bool m_debugMenuPreview{false};
+    std::atomic_int m_debugMenuPreviewLevel{0};
      AsyncPing m_ping;
      AsyncCommandRunner m_commands;
      QQmlApplicationEngine *m_engine = nullptr;
@@ -122,7 +133,8 @@ private:
      QString m_fontFamily;
      QFont m_font;
 #if defined(ENABLE_SPEECH)
-    QTextToSpeech *m_speech;
+    QTextToSpeech *m_speech = nullptr;
+    QVoice m_defaultSpeechVoice;
 #endif
 public:
     // We always want the screen to be kept "On" while QOpenHD is running -

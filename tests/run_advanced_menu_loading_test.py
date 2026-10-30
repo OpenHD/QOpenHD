@@ -24,7 +24,7 @@ def main():
     # Support both old inline declarations and URL sources for regression checks.
     pages = {
         "status/PanelStatus.qml", "openhd_settings/OHDSettingsPanel.qml",
-        "qopenhd_settings/AppSettingsPanel.qml", "log/LogMessagesStatusView.qml",
+        "qopenhd_settings/AppSettingsPanel.qml", "qopenhd_settings/OsdSettingsPanel.qml", "log/LogMessagesStatusView.qml",
         "rc/RcInfoPanel.qml", "connect/ConnectPanel.qml", "credits/Credits.qml",
         "dev/MavlinkDebugPanel.qml", "dev/AppDeveloperStatsPanel.qml",
     }
@@ -43,7 +43,8 @@ Item {
 import QtTest 1.2
 Item {
     width: 850; height: 480
-    QtObject { id: _qopenhd; property string version_string: "test"; property bool launchedFromQtCreator: false; property bool debugMenuPreview: false }
+    QtObject { id: _qopenhd; property string version_string: "test"; property bool launchedFromQtCreator: false; property bool debugMenuPreview: false; property int debugMenuPreviewLevel: 0; onDebugMenuPreviewLevelChanged: debugMenuPreview = debugMenuPreviewLevel > 0 }
+    QtObject { id: _uiSimulator; property bool active: false; property var profile: ({accessMode:0}) }
     QtObject { id: hudOverlayGrid; function regain_focus() {} }
     Loader { id: menu; anchors.fill: parent; source: "ConfigPopup.qml" }
     TestCase {
@@ -58,8 +59,16 @@ Item {
             mouseClick(button)
             compare(_qopenhd.debugMenuPreview, true)
             compare(button.checked, true)
+            compare(_qopenhd.debugMenuPreviewLevel, 1)
+            compare(menu.item.showAdvancedSettings, false)
+            mouseClick(button)
+            compare(_qopenhd.debugMenuPreview, true)
+            compare(_qopenhd.debugMenuPreviewLevel, 2)
+            compare(menu.item.showAdvancedSettings, true)
+            compare(menu.item.showDeveloperSettings, false)
             mouseClick(button)
             compare(_qopenhd.debugMenuPreview, false)
+            compare(_qopenhd.debugMenuPreviewLevel, 0)
             compare(button.checked, false)
             _qopenhd.launchedFromQtCreator = false
             tryCompare(button, "visible", false)
@@ -84,17 +93,76 @@ Item {
             verify(findChild(root,"statusSoundButton").visible)
             var cached = root.ohdSettingsPanel
             root.openDeveloperTools()
-            tryVerify(function() { return root.appDeveloperStatsPanel !== null })
-            tryCompare(root.appDeveloperStatsPanel, "focusCalls", 1)
-            compare(root.menuPageTitle, "DEVELOPER TOOLS")
-            compare(headerTitle.text, "DEVELOPER TOOLS")
-            verify(findChild(root,"statusSoundButton").visible)
+            compare(root.appDeveloperStatsPanel, null)
+            compare(root.showDeveloperSettings, false)
+            compare(root.menuPageTitle, "OPENHD")
             root.user_guidance_open_openhd_settings_find_air_unit_location()
             compare(root.ohdSettingsPanel, cached)
             compare(cached.guidanceCalls, 2)
             root.close_all()
             root.openSettings()
             compare(root.ohdSettingsPanel, cached)
+        }
+        function test_diagnostics_unlock_after_five_star_clicks() {
+            tryCompare(menu, "status", Loader.Ready)
+            var root = menu.item
+            compare(root.diagnosticsUnlocked, false)
+            compare(root.showDeveloperSettings, false)
+            compare(root.navigationPageIds.indexOf(3), -1)
+            compare(root.navigationPageIds.indexOf(7), -1)
+            var navigation = findChild(root, "advancedNavigation")
+            navigation.positionViewAtIndex(root.navigationPageIds.indexOf(6), ListView.Contain)
+            wait(50)
+            mouseClick(findChild(root, "navigationPage6"))
+            compare(root.menuPageTitle, "CREDITS")
+            compare(root.creditsStarClickCount, 1)
+            var star = findChild(root, "creditsStarUnlockArea")
+            for (var i = 0; i < 3; ++i) mouseClick(star)
+            compare(root.diagnosticsUnlocked, false)
+            mouseClick(star)
+            tryCompare(root, "diagnosticsUnlocked", true)
+            compare(root.showDeveloperSettings, true)
+            verify(root.navigationPageIds.indexOf(3) >= 0)
+            verify(root.navigationPageIds.indexOf(7) >= 0)
+            compare(root.menuPageTitle, "CREDITS")
+            wait(50)
+            navigation.positionViewAtIndex(root.navigationPageIds.indexOf(3), ListView.Contain)
+            mouseClick(findChild(root, "navigationPage3"))
+            compare(root.menuPageTitle, "SYSTEM LOGS")
+            root.openDeveloperTools()
+            tryVerify(function() { return root.appDeveloperStatsPanel !== null })
+            tryCompare(root.appDeveloperStatsPanel, "focusCalls", 1)
+            compare(root.menuPageTitle, "DEVELOPER TOOLS")
+        }
+        function test_osd_and_application_are_separate() {
+            var root = menu.item
+            var navigation=findChild(root,"advancedNavigation")
+            navigation.positionViewAtIndex(root.navigationPageIds.indexOf(2),ListView.Contain)
+            wait(50);mouseClick(findChild(root,"navigationPage2"))
+            compare(root.menuPageTitle,"OSD")
+            navigation.positionViewAtIndex(root.navigationPageIds.indexOf(8),ListView.Contain)
+            wait(50);mouseClick(findChild(root,"navigationPage8"))
+            compare(root.menuPageTitle,"APPLICATION")
+            compare(findChild(root,"menuHeaderTitle").text,"APPLICATION")
+        }
+        function test_simulator_access_modes() {
+            var root = menu.item
+            root.diagnosticsUnlocked = true
+            _uiSimulator.profile = {accessMode:0}
+            _uiSimulator.active = true
+            compare(root.showAdvancedSettings, false)
+            compare(root.showDeveloperSettings, false)
+            compare(root.navigationPageIds.indexOf(3), -1)
+            _uiSimulator.profile = {accessMode:1}
+            compare(root.showAdvancedSettings, true)
+            compare(root.showDeveloperSettings, false)
+            _uiSimulator.profile = {accessMode:2}
+            compare(root.showAdvancedSettings, true)
+            compare(root.showDeveloperSettings, true)
+            verify(root.navigationPageIds.indexOf(3) >= 0)
+            _uiSimulator.active = false
+            compare(root.showDeveloperSettings, true)
+            compare(root.diagnosticsUnlocked, true)
         }
         function test_deferred_dialog_cancels_pending_request() {
             var component = Qt.createComponent("status/DeferredStatusDialog.qml")
@@ -149,6 +217,7 @@ Item {
         (folder / "Basic.qml").write_text(stub.replace("settings_form.pageBackground", '"black"'), encoding="utf-8")
         (folder / "features").mkdir()
         shutil.copy(menu_dir / "MenuTypography.js", folder)
+        shutil.copy(menu_dir / "AdvancedActionButton.qml", folder)
         (folder / "ConfigPopup.qml").write_text(menu, encoding="utf-8")
         shutil.copy(menu_dir / "AdvancedPageLoader.qml", folder)
         for name in pages:

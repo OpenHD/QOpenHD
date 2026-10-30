@@ -1,3 +1,4 @@
+import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -10,10 +11,14 @@ Rectangle {
     color: settings_form.pageBackground
     focus: false
 
-    property int currentPage: 0
+    property bool osdMenu: false
+    property int currentPage: osdMenu ? 0 : 2
+    readonly property var availablePageIds: osdMenu ? [0,1,5] : (settings_form.showDeveloperSettings ? [2,3,4,6] : [2,3,4])
+    readonly property int availableTabCount: availablePageIds.length
+    onAvailablePageIdsChanged: if (availablePageIds.indexOf(currentPage)<0) currentPage=availablePageIds[0]
     // Shared sizing contract used by the existing application-setting rows.
-    property int rowHeight: 64
-    property int elementHeight: 48
+    property int rowHeight: MenuTypography.rowHeight
+    property int elementHeight: MenuTypography.controlHeight
 
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
     Material.accent: settings_form.accentColor
@@ -32,7 +37,7 @@ Rectangle {
     }
 
     function focusTab(index) {
-        var item = tabRepeater.itemAt(Math.max(0, Math.min(pageModel.count - 1, index)))
+        var item = tabRepeater.itemAt(availablePageIds.indexOf(index))
         if (item) {
             item.forceActiveFocus()
             tabScroller.ensureVisible(item)
@@ -47,17 +52,17 @@ Rectangle {
     }
 
     function moveTab(index, step) {
-        var next = index + step
+        var next = availablePageIds.indexOf(index) + step
         if (next < 0) {
             settings_form.side_bar_regain_focus()
             return
         }
-        if (next >= pageModel.count) {
+        if (next >= availableTabCount) {
             settings_form.frameworkActionButtons()[0].forceActiveFocus()
             return
         }
-        currentPage = next
-        focusTab(next)
+        currentPage = availablePageIds[next]
+        focusTab(currentPage)
     }
 
     function leaveContent() { focusTab(currentPage) }
@@ -73,7 +78,7 @@ Rectangle {
         Flickable {
             id: tabScroller
             Layout.fillWidth: true
-            Layout.preferredHeight: 36
+            Layout.preferredHeight: MenuTypography.controlHeight
             contentWidth: tabRow.width
             contentHeight: height
             flickableDirection: Flickable.HorizontalFlick
@@ -95,24 +100,25 @@ Rectangle {
                 spacing: 7
                 Repeater {
                     id: tabRepeater
-                    model: pageModel
+                    model: root.availablePageIds
                     delegate: AdvancedTabButton {
                         id: tabButton
-                        property bool selected: root.currentPage === index
+                        objectName: "settingsTab"+modelData
+                        property bool selected: root.currentPage === modelData
                         checked: selected
-                        width: implicitWidth
+                        width: visible ? implicitWidth : 0
                         height: 34
-                        text: model.title
-                        iconText: model.icon
+                        text: pageModel.get(modelData).title
+                        iconText: pageModel.get(modelData).icon
                         hoverEnabled: true
-                        onClicked: root.currentPage = index
+                        onClicked: root.currentPage = modelData
                         Keys.onPressed: function(event) {
                             if (event.key === Qt.Key_Left) {
-                                root.moveTab(index, -1); event.accepted = true
+                                root.moveTab(modelData, -1); event.accepted = true
                             } else if (event.key === Qt.Key_Right) {
-                                root.moveTab(index, 1); event.accepted = true
+                                root.moveTab(modelData, 1); event.accepted = true
                             } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                root.currentPage = index
+                                root.currentPage = modelData
                                 root.focusCurrentPage()
                                 event.accepted = true
                             } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Escape) {
@@ -145,7 +151,7 @@ Rectangle {
                 AdvancedPageLoader { selected: root.currentPage === 3; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVehicleSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 4; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVideoSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 5; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppMapSettingsView { anchors.fill: parent } } }
-                AdvancedPageLoader { selected: root.currentPage === 6; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppDevSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: root.currentPage === 6 && settings_form.showDeveloperSettings; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppDevSettingsView { anchors.fill: parent } } }
             }
         }
 
