@@ -126,6 +126,7 @@ Settings {
 
 
     property bool enable_speech: true
+    property bool wifi_temperature_alarm_sound: true
     property bool enable_imperial: false
     property bool enable_hybrid: false
     property string speech_voice: ""

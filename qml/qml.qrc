@@ -14,6 +14,10 @@
 </qresource>
 <qresource prefix="/">
         <file>main.qml</file>
+        <file>RadioTemperatureWarning.qml</file>
+        <file>RadioTemperatureAlarmSound.qml</file>
+        <file>RadioTemperatureAlarmSoundQt6.qml</file>
+        <file>resources/radio-temperature-alarm.wav</file>
         <file>video/ColorPreviewMath.js</file>
         <file>ui/sidebar/ColorPreviewControls.qml</file>
         <file>HudContent.qml</file>

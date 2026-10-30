@@ -79,6 +79,7 @@ public:
     L_RO_PROP(int,radio_temperature_state,set_radio_temperature_state,-1)
     L_RO_PROP(QString,radio_temperature_state_text,set_radio_temperature_state_text,"N/A")
     L_RO_PROP(QString,radio_temperature_display_text,set_radio_temperature_display_text,"N/A")
+    L_RO_PROP(QVariantList,radio_temperature_warnings,set_radio_temperature_warnings,QVariantList())
     L_RO_PROP(int,curr_cpu_freq_mhz,set_curr_cpu_freq_mhz,0)
     L_RO_PROP(int,curr_isp_freq_mhz,set_curr_isp_freq_mhz,0)
     L_RO_PROP(int,curr_h264_freq_mhz,set_curr_h264_freq_mhz,0)
@@ -231,6 +232,7 @@ private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     std::unique_ptr<QTimer> m_alive_timer = nullptr;
     void update_alive();
+    void update_radio_temperature();
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end
 private:
@@ -256,6 +258,7 @@ private:
     std::array<uint8_t, 10> m_onboard_gpu_combined{};
     std::array<int8_t, 8> m_onboard_temperature_core{};
     bool m_has_per_card_temperature=false;
+    qint64 m_received_radio_temperature_ms = -1;
 };
 
 

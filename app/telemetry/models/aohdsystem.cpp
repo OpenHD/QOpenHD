@@ -562,16 +562,8 @@ void AOHDSystem::process_openhd_core_status(const mavlink_openhd_core_status_t &
     set_curr_soc_temp_degree(msg.cpu_temp);
     set_curr_txc_temp_degree_1(msg.wifi0_temp);
     set_curr_txc_temp_degree_2(msg.wifi1_temp);
-    // Compatibility adapter for old senders. Per-card telemetry is preferred
-    // because it also carries the normalized Devourer thermal state.
-    if(!m_has_per_card_temperature){
-        const int radioTemperatureState = TemperatureTelemetry::worst(
-            TemperatureTelemetry::fromLegacyCelsius(msg.wifi0_temp),
-            TemperatureTelemetry::fromLegacyCelsius(msg.wifi1_temp));
-        set_radio_temperature_state(radioTemperatureState);
-        set_radio_temperature_state_text(TemperatureTelemetry::toString(radioTemperatureState));
-        set_radio_temperature_display_text(TemperatureTelemetry::displayCelsius(std::max(msg.wifi0_temp, msg.wifi1_temp)));
-    }
+    m_received_radio_temperature_ms = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    update_radio_temperature();
     set_curr_cpu_freq_mhz(msg.cpu_clock);
     set_curr_isp_freq_mhz(msg.isp_clock);
     set_curr_h264_freq_mhz(msg.h264_clock);
@@ -616,41 +608,62 @@ void AOHDSystem::process_openhd_microhard_status(const mavlink_openhd_microhard_
     set_microhard_snr(msg.snr);
 }
 
+void AOHDSystem::update_radio_temperature()
+{
+    int worst = TemperatureTelemetry::Unknown;
+    int hottestReading = std::numeric_limits<int>::min();
+    bool hottestRelative = false;
+    QString display = QStringLiteral("N/A");
+    QVariantList warnings;
+    const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
+    for (int i = 0; i < (m_has_per_card_temperature ? WiFiCard::N_CARDS : 2); ++i) {
+        int state = TemperatureTelemetry::Unknown;
+        int reading = std::numeric_limits<int>::min();
+        bool relative = false;
+        QString value;
+        if (m_has_per_card_temperature) {
+            const auto& card = m_is_air ? WiFiCard::instance_air(i) : WiFiCard::instance_gnd(i);
+            if (!card.alive()) continue;
+            state = card.temperature_state();
+            value = card.card_temperature_status();
+            relative = card.thermal_valid();
+            reading = relative ? card.thermal_delta() : card.card_temperature();
+        } else if (m_received_radio_temperature_ms >= 0 && now - m_received_radio_temperature_ms < 5000) {
+            const int celsius = i == 0 ? curr_txc_temp_degree_1() : curr_txc_temp_degree_2();
+            state = TemperatureTelemetry::fromLegacyCelsius(celsius);
+            value = TemperatureTelemetry::displayCelsius(celsius);
+            reading = celsius;
+        }
+        if (state > worst || (state == worst && relative == hottestRelative && reading > hottestReading)) {
+            worst = state;
+            display = value;
+            hottestReading = reading;
+            hottestRelative = relative;
+        }
+        if (state >= TemperatureTelemetry::Hot)
+            warnings.append(QVariantMap{{"index", i}, {"state", state}, {"value", value}});
+    }
+    set_radio_temperature_state(worst);
+    set_radio_temperature_state_text(TemperatureTelemetry::toString(worst));
+    set_radio_temperature_display_text(display);
+    set_radio_temperature_warnings(warnings);
+}
+
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
-    if(m_is_air && msg.card_index>1){
-        qDebug()<<"Air only has 1 wifibroadcats card";
+    if(msg.card_index >= WiFiCard::N_CARDS){
+        qDebug()<<"Invalid Wi-Fi card index"<<msg.card_index;
         return;
     }
-    //qDebug()<<"Got mavlink_openhd_stats_monitor_mode_wifi_card_t";
+    auto& card = m_is_air ? WiFiCard::instance_air(msg.card_index)
+                          : WiFiCard::instance_gnd(msg.card_index);
+    card.process_mavlink(msg);
+    // Invalid modern telemetry is unavailable, never legacy Celsius.
+    m_has_per_card_temperature = true;
+    update_radio_temperature();
     if(m_is_air){
-        if(msg.card_index!=0){
-            qDebug()<<"Air only has 1 wifibroadcats card";
-            return;
-        }
-        auto& card=WiFiCard::instance_air();
-        card.process_mavlink(msg);
-        set_current_rx_rssi(card.curr_rx_rssi_dbm());
-        set_radio_temperature_display_text(card.card_temperature_status());
-        if(card.temperature_state()!=TemperatureTelemetry::Unknown){
-            m_has_per_card_temperature=true;
-            set_radio_temperature_state(card.temperature_state());
-            set_radio_temperature_state_text(card.temperature_state_text());
-        }
+        if(msg.card_index == 0) set_current_rx_rssi(card.curr_rx_rssi_dbm());
     }else{
-        if(msg.card_index<0 || msg.card_index>=4){
-            qDebug()<<"Gnd invalid card index"<<msg.card_index;
-            return;
-        }
-        auto& card=WiFiCard::instance_gnd(msg.card_index);
-        card.process_mavlink(msg);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
-        const int temperatureState=WiFiCard::helper_get_gnd_worst_temperature_state();
-        set_radio_temperature_display_text(WiFiCard::helper_get_gnd_temperature_display());
-        if(temperatureState!=TemperatureTelemetry::Unknown){
-            m_has_per_card_temperature=true;
-            set_radio_temperature_state(temperatureState);
-            set_radio_temperature_state_text(TemperatureTelemetry::toString(temperatureState));
-        }
     }
     // TODO: r.n we don't differentiate signal quality per card
     if(msg.card_index==0){
@@ -891,6 +904,7 @@ void AOHDSystem::autofech_params_if_apropriate()
 
 void AOHDSystem::update_alive()
 {
+    update_radio_temperature();
     if(m_received_link_bitrate_update_ms < 0 ||
        QOpenHDMavlinkHelper::getTimeMilliseconds()-m_received_link_bitrate_update_ms > 4000)
         set_received_link_bitrate_bps(-1);

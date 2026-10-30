@@ -8,7 +8,7 @@
 #include "../tutil/mavlink_include.h"
 
 // Stats unique per each connected (wifibroadcast) wfi card
-// Air has only one card, ground can have one or more card(s)
+// Air and Ground can each report up to four cards.
 class WiFiCard : public QObject
 {
     Q_OBJECT
@@ -63,8 +63,9 @@ public:
     static constexpr int N_CARDS=4;
     // Ground might have multiple rx-es
     static WiFiCard& instance_gnd(int index);
-    // air always has only one rx
+    // Keep the default primary Air card accessor for existing widgets.
     static WiFiCard& instance_air();
+    static WiFiCard& instance_air(int index);
     //
     void process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg);
     // Decode CARD_TYPE_n parameters with the same names as live card statistics.
@@ -81,7 +82,7 @@ private:
     // On the OSD, we show how many packets were received on each card in X seconds intervals
     std::chrono::steady_clock::time_point m_last_packets_in_X_second_recalculation=std::chrono::steady_clock::now();
     int64_t m_last_packets_in_X_second_value=-1;
-    // Card alive - ONLY USED FOR GROUND CARD(s)
+    // Expire per-card telemetry on both Air and Ground.
     std::unique_ptr<QTimer> m_alive_timer = nullptr;
     std::atomic<int64_t> m_last_mavlink_message=0;
     void update_alive();

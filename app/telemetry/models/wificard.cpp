@@ -96,11 +96,9 @@ static QString tx_power_unit_for_card(const int card_type){
 WiFiCard::WiFiCard(bool is_air,int card_idx,QObject *parent)
     : QObject{parent},m_is_air_card(is_air),m_card_idx(card_idx)
 {
-    if(!m_is_air_card){
-        m_alive_timer = std::make_unique<QTimer>(this);
-        QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &WiFiCard::update_alive);
-        m_alive_timer->start(1000);
-    }
+    m_alive_timer = std::make_unique<QTimer>(this);
+    QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &WiFiCard::update_alive);
+    m_alive_timer->start(1000);
 }
 
 
@@ -124,6 +122,15 @@ WiFiCard &WiFiCard::instance_gnd(int index)
 
 WiFiCard &WiFiCard::instance_air()
 {
+    return instance_air(0);
+}
+
+WiFiCard &WiFiCard::instance_air(int index)
+{
+    if (index == 1) { static WiFiCard card{true,1}; return card; }
+    if (index == 2) { static WiFiCard card{true,2}; return card; }
+    if (index == 3) { static WiFiCard card{true,3}; return card; }
+    assert(index == 0);
     static WiFiCard air{true,0};
     return air;
 }
