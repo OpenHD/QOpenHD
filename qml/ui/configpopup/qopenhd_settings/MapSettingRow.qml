@@ -14,7 +14,7 @@ Item {
   id:caption;x:0;y:root.stacked?0:(root.height-height)/2
   width:root.stacked?root.width:Math.max(0,slot.x-8);spacing:3
   Text {width:parent.width;text:root.label;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true;wrapMode:Text.WordWrap}
-  Text {width:parent.width;text:root.hint;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap;visible:text.length>0}
+
  }
  Item {
   id:slot;width:root.stacked?root.width:Math.min(root.controlWidth,root.width*0.52)

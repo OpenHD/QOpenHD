@@ -143,19 +143,23 @@ static int get_message_size(const mavlink_message_t& msg){
     return sizeof(msg);
 }
 
-void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uint64_t generation)
+void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uint64_t generation,
+                                             int64_t received_us)
 {
+    // Preserve endpoint delivery time across the GUI queue. In particular,
+    // TIMESYNC diagnostics must distinguish transport RTT from UI scheduling.
+    if (received_us == 0) received_us = QOpenHDMavlinkHelper::getTimeMicroseconds();
     if (generation != m_receive_generation.load()) return;
     // Publish immediately through the event loop, without an update timer or
     // rate limit. All QML-visible receive state belongs to this (GUI) thread.
     if (QThread::currentThread() != thread()) {
         const auto queued = std::chrono::steady_clock::now();
-        QMetaObject::invokeMethod(this, [this, msg, generation, queued] {
+        QMetaObject::invokeMethod(this, [this, msg, generation, queued, received_us] {
             if (generation != m_receive_generation.load()) return;
             m_diagnostic_max_delivery_ms = std::max<int64_t>(m_diagnostic_max_delivery_ms,
                 std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::steady_clock::now() - queued).count());
-            process_mavlink_message(msg, generation);
+            process_mavlink_message(msg, generation, received_us);
         }, Qt::QueuedConnection);
         return;
     }
@@ -242,7 +246,7 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
     //}
     // We use timesync to ping the OpenHD systems and the FC ourselves.
     if(msg.msgid==MAVLINK_MSG_ID_TIMESYNC){
-        process_message_timesync(msg);
+        process_message_timesync(msg, received_us);
         return;
     }
     const bool firmware_status = FCMavlinkSystem::instance().process_firmware_status(msg);
@@ -340,7 +344,7 @@ void MavlinkTelemetry::process_broadcast_message_fc(const mavlink_message_t &msg
     qCDebug(mavlinkRoutingLog)<<"Unhandled FC MAVLink message:"<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
 }
 
-void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
+void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg, int64_t received_us)
 {
     mavlink_timesync_t timesync;
     mavlink_msg_timesync_decode(&msg,&timesync);
@@ -350,7 +354,14 @@ void MavlinkTelemetry::process_message_timesync(const mavlink_message_t &msg)
     }
     if(timesync.ts1==m_last_timesync_out_us){
         qDebug()<<"Got timesync response with we:"<<m_last_timesync_out_us<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
-        const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-timesync.ts1;
+        const auto processed_us=QOpenHDMavlinkHelper::getTimeMicroseconds();
+        const auto delta=processed_us-timesync.ts1;
+        // Keep the Status value end-to-end, and log the breakdown for each
+        // actual reply rather than attributing GUI queue time to the radio.
+        qInfo() << "telemetry-ping-v1 sys=" << msg.sysid
+                << "endpoint_rtt_us=" << received_us - timesync.ts1
+                << "gui_delay_us=" << processed_us - received_us
+                << "displayed_rtt_us=" << delta;
         const auto delta_readable=QOpenHDMavlinkHelper::time_microseconds_readable(delta);
         if(msg.sysid==OHD_SYS_ID_AIR){
             AOHDSystem::instanceAir().set_last_ping_result_openhd(delta_readable.c_str());

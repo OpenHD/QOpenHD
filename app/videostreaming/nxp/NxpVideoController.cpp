@@ -7,6 +7,20 @@
 #include <QPlatformSurfaceEvent>
 #include <QThread>
 #include <wayland-client.h>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <private/qguiapplication_p.h>
+#include <qpa/qplatformintegration.h>
+#endif
+
+namespace {
+QPlatformNativeInterface* nativeInterface() {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    return QGuiApplicationPrivate::platformIntegration()->nativeInterface();
+#else
+    return QGuiApplication::platformNativeInterface();
+#endif
+}
+}
 
 NxpVideoController::NxpVideoController(QQuickWindow* window) : window_(window) {
     window->installEventFilter(this);
@@ -41,7 +55,7 @@ void NxpVideoController::refresh() {
             qWarning() << "Native video requires the Qt Wayland platform; no software decoder fallback";
             timer_.stop(); return;
         }
-        auto native = QGuiApplication::platformNativeInterface();
+        auto native = nativeInterface();
         auto display = static_cast<wl_display*>(native->nativeResourceForIntegration("wl_display"));
         auto surface = static_cast<wl_surface*>(native->nativeResourceForWindow("surface", window_));
         if (!display || !surface) return; // Window has not been exposed yet.
@@ -59,7 +73,7 @@ void NxpVideoController::refresh() {
         // even for a desynchronized child. QQuickWindow::update() may be elided
         // when the static HUD has no scene-graph damage, leaving video unmapped.
         // This timer runs on Qt's GUI thread, alongside its Wayland surface use.
-        auto native = QGuiApplication::platformNativeInterface();
+        auto native = nativeInterface();
         auto surface = static_cast<wl_surface*>(native->nativeResourceForWindow("surface", window_));
         if (!surface) return;
         wl_surface_commit(surface);
@@ -95,7 +109,9 @@ void NxpVideoController::refresh() {
         input_ = std::make_unique<nxp::UdpVideo>(stream.video_codec == QOpenHDVideoHelper::VideoCodecH265,
             stream.udp_rtp_input_ip_address, stream.udp_rtp_input_port,
             [this](std::shared_ptr<nxp::DecodedFrame> frame) { presenter_->submit(std::move(frame)); });
-#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#if defined(QOPENHD_ENABLE_RPI_VIDEO)
+        DecodingStatistcs::instance().set_decoding_type("Pi FFmpeg / independent Wayland DMA-BUF");
+#elif defined(QOPENHD_ENABLE_ROCKCHIP_VIDEO)
         DecodingStatistcs::instance().set_decoding_type("Rockchip MPP / independent Wayland DMA-BUF");
 #else
         DecodingStatistcs::instance().set_decoding_type("NXP Hantro / independent Wayland DMA-BUF");

@@ -40,34 +40,13 @@ ScrollView {
     readonly property bool craftAssigned: !!(selectedLicense && selectedCraft && selectedLicense.craftId === selectedCraft.id)
     readonly property bool transmissionEnabled: craftAssigned && !!(selectedCraft.mavlink || selectedCraft.video1 || selectedCraft.video2)
     readonly property bool canStartTransmission: craftAssigned && selectedLicense.status !== "expired" && !!(selectedLicense.mavlinkAllowed || selectedLicense.video1Allowed)
-    property bool encryptionAvailable: false
-    property bool encryptionEnabled: false
-    property string pendingEncryptionLicense: ""
     readonly property bool working: fleetBackend ? fleetBackend.busy : false
     function gainFocus() { (fleetBackend && fleetBackend.authenticated ? certificateBox : username).forceActiveFocus() }
-    function syncEncryption() {
-        encryptionAvailable = _airCameraSettingsModel.param_int_exists("HIGH_ENCRYPTION")
-        encryptionEnabled = encryptionAvailable && _airCameraSettingsModel.get_cached_int("HIGH_ENCRYPTION") === 1
-    }
     function dateText(value) {
         // The backend supplies an ISO 8601 date. Keeping that representation
         // avoids Qt 6.2's incompatible JavaScript-Date conversion in formatDate.
         return String(value)
     }
-    Component.onCompleted: syncEncryption()
-    Connections {
-        target: root.fleetBackend
-        function onStatusChanged() {
-            if (root.pendingEncryptionLicense && root.fleetBackend && !root.fleetBackend.busy) {
-                var requested = root.pendingEncryptionLicense
-                root.pendingEncryptionLicense = ""
-                if (root.fleetBackend.authenticated && root.selectedLicense && root.selectedLicense.id === requested
-                        && root.fleetBackend.certificateInstalled && root.fleetBackend.certificateLicenseId === requested)
-                    _airCameraSettingsModel.try_set_param_int_async("HIGH_ENCRYPTION", 1, true)
-            }
-        }
-    }
-    Timer { interval: 1500; running: root.visible && root.fleetBackend && root.fleetBackend.authenticated; repeat: true; onTriggered: root.syncEncryption() }
     Keys.onEscapePressed: root.backRequested()
 
     ColumnLayout {
@@ -85,15 +64,15 @@ ScrollView {
         ColumnLayout {
             visible: !root.fleetBackend || !root.fleetBackend.authenticated
             Layout.fillWidth: true; Layout.margins: 12; spacing: 10
-            Text { text: qsTr("Sign in to assign your craft to a certificate."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-            TextField {
+
+            TextField { verticalAlignment: TextInput.AlignVCenter; topPadding: 6; bottomPadding: 6;
                 id: username; objectName: "fleetUsername"; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight
                 placeholderText: qsTr("Username or email"); selectByMouse: true; enabled: !root.working; onAccepted: password.forceActiveFocus()
                 font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
                 leftPadding: 12; rightPadding: 12
                 background: Rectangle { radius: 8; color: settings_form.panelBackground; border.color: username.activeFocus ? settings_form.accentColor : settings_form.lineColor }
             }
-            TextField {
+            TextField { verticalAlignment: TextInput.AlignVCenter; topPadding: 6; bottomPadding: 6;
                 id: password; objectName: "fleetPassword"; Layout.fillWidth: true; Layout.preferredHeight: MenuTypography.controlHeight
                 placeholderText: qsTr("Password"); echoMode: TextInput.Password; enabled: !root.working; onAccepted: { if (signIn.enabled) signIn.clicked() }
                 font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.primaryText; placeholderTextColor: settings_form.secondaryText
@@ -181,37 +160,8 @@ ScrollView {
                         Text { text: qsTr("Video quality"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                         Text { text: "480p · 15 fps · 1 Mbit/s"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
                     }
-                    Rectangle { Layout.fillWidth: true; height: 1; color: settings_form.lineColor }
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Text { text: qsTr("Video encryption"); Layout.fillWidth: true; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
-                        Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                            id: encryption; objectName: "fleetEncryption"; implicitWidth: 48; implicitHeight: 30; padding: 0
-                            checked: root.encryptionEnabled
-                            enabled: root.encryptionAvailable && !root.working && (root.encryptionEnabled || (root.selectedLicense && root.selectedLicense.craftId && root.selectedLicense.status !== "expired" && root.selectedLicense.video1Allowed))
-                            opacity: enabled ? 1 : 0.5
-                            indicator: Rectangle {
-                                width: 44; height: 24; radius: 12; anchors.centerIn: parent
-                                color: encryption.checked ? settings_form.accentColor : settings_form.panelBackground
-                                border.color: encryption.activeFocus ? settings_form.accentColor : settings_form.lineColor
-                                border.width: encryption.activeFocus ? 2 : 1
-                                Rectangle { x: encryption.checked ? 23 : 3; y: 3; width: 18; height: 18; radius: 9; color: encryption.checked ? "white" : settings_form.secondaryText }
-                            }
-                            onClicked: {
-                                if (checked && root.fleetBackend && (!root.fleetBackend.certificateInstalled || root.fleetBackend.certificateLicenseId !== root.selectedLicense.id)) {
-                                    root.pendingEncryptionLicense = root.selectedLicense.id
-                                    root.fleetBackend.requestVideoCertificate(root.selectedLicense.id)
-                                } else {
-                                    _airCameraSettingsModel.try_set_param_int_async("HIGH_ENCRYPTION", checked ? 1 : 0, true)
-                                }
-                                checked = Qt.binding(function() { return root.encryptionEnabled })
-                            }
-                        }
-                    }
-                    Text {
-                        Layout.fillWidth: true; wrapMode: Text.WordWrap; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; color: settings_form.secondaryText
-                        text: !root.encryptionAvailable ? qsTr("Connect Air to change video encryption.") : qsTr("Encrypt the Air video link. Streaming to openhd.tech is always encrypted.")
-                    }
+
+
                 }
             }
         }

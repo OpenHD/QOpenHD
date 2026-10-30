@@ -103,6 +103,8 @@
         <file>ui/widgets/map/MapComponent.qml</file>
         <file>ui/widgets/map/PlaneMapMarker.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
+        <file>ui/configpopup/backup/BackupRestorePopup.qml</file>
+        <file>ui/configpopup/backup/SettingsFilePicker.qml</file>
         <file>ui/configpopup/AdvancedPage.qml</file>
         <file>ui/configpopup/AdvancedPageLoader.qml</file>
         <file>ui/configpopup/AdvancedCard.qml</file>
@@ -181,6 +183,7 @@
         <file>ui/configpopup/openhd_settings/WifiBroadcastLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/SimulatedLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/LinkUsageMeter.qml</file>
+        <file>ui/configpopup/openhd_settings/LinkEncryptionControl.qml</file>
         <file>ui/configpopup/openhd_settings/LinkAllocationPopup.qml</file>
         <file>ui/configpopup/openhd_settings/LinkAllocationSection.qml</file>
         <file>ui/configpopup/openhd_settings/LinkSegmentsBar.qml</file>
@@ -208,6 +211,8 @@
         <file>ui/configpopup/log/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/dev/AppDeveloperStatsPanel.qml</file>
         <file>ui/configpopup/dev/MavlinkDebugPanel.qml</file>
+        <file>ui/configpopup/dev/MavlinkMessagesView.qml</file>
+        <file>ui/configpopup/dev/HardwareDiagnosticsPanel.qml</file>
         <file>ui/configpopup/credits/Credits.qml</file>
         <file>ui/configpopup/credits/CreditArchive.qml</file>
         <file>ui/configpopup/credits/CreditArchiveAudio.qml</file>

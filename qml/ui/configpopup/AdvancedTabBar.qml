@@ -4,6 +4,16 @@ import QtQuick.Controls 2.12
 // Selected buttons provide their own fill; omit the style's extra underline.
 TabBar {
     id: control
+    readonly property bool compactTabs: {
+        var needed = 0, visibleCount = 0
+        for (var i = 0; i < count; ++i) {
+            var tab = itemAt(i)
+            if (!tab || tab.hasContent === false) continue
+            needed += tab.naturalWidth !== undefined ? tab.naturalWidth : tab.implicitWidth
+            visibleCount++
+        }
+        return width > 0 && needed + Math.max(0, visibleCount - 1) * spacing > width
+    }
     function available(index) {
         var tab = itemAt(index)
         return tab && tab.hasContent !== false

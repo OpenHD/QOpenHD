@@ -5,6 +5,12 @@ repo=$(cd "$(dirname "$0")/.." && pwd)
 work=${1:?Usage: nxp-build-compositor.sh WORKDIR}
 sdk=${NXP_SYSROOT:?Set NXP_SYSROOT to the matching NXP target sysroot}
 qt="$work/sysroot"
+target=${NATIVE_COMPOSITOR_TARGET:-nxp}
+case "$target" in
+    nxp) prefix_name=qopenhd-nxp ;;
+    rpi) prefix_name=qopenhd-rpi; qt="$sdk" ;;
+    *) echo "Unsupported compositor target: $target" >&2; exit 2 ;;
+esac
 version=9.0.0
 sha=5cf5d6ce192e0eb15c1fc861a436bf21b5bb3b91dbdabbdebe83e1f83aa098fe
 mkdir -p "$work/compositor"
@@ -28,6 +34,7 @@ export NXP_CC=${NXP_CC:-aarch64-linux-gnu-gcc}
 export NXP_AR=${NXP_AR:-aarch64-linux-gnu-ar}
 export NXP_STRIP=${NXP_STRIP:-aarch64-linux-gnu-strip}
 export NXP_SYSROOT="$sdk" NXP_QT_SYSROOT="$qt" NXP_COMPOSITOR_WORK="$work/compositor"
+export NATIVE_COMPOSITOR_TARGET="$target"
 mkdir -p "$work/compositor/wayland-headers"
 cp "$qt"/usr/include/wayland-*.h "$work/compositor/wayland-headers/"
 python3 - <<'PY'
@@ -38,6 +45,8 @@ flags = ['--sysroot='+sdk, '-I'+os.environ['NXP_COMPOSITOR_WORK']+'/wayland-head
 links = ['--sysroot='+sdk, '-L'+sdk+'/usr/lib', '-Wl,-rpath-link,'+sdk+'/usr/lib',
          '-Wl,-rpath-link,'+sdk+'/lib', '-Wl,-rpath-link,'+qt+'/usr/lib/aarch64-linux-gnu',
          '-Wl,-rpath-link,'+qt+'/lib/aarch64-linux-gnu']
+if os.environ['NATIVE_COMPOSITOR_TARGET'] == 'rpi':
+    links += ['-L'+sdk+'/usr/lib/aarch64-linux-gnu']
 text = '[binaries]\n'
 for key, env in [('c','NXP_CC'), ('ar','NXP_AR'), ('strip','NXP_STRIP')]:
     text += key+' = '+repr(shlex.split(os.environ[env]))+'\n'
@@ -47,11 +56,14 @@ text += 'pkg_config_libdir = '+repr([qt+'/usr/lib/aarch64-linux-gnu/pkgconfig', 
 text += '[built-in options]\nc_args = '+repr(flags)+'\nc_link_args = '+repr(links)+'\n'
 Path(os.environ['NXP_COMPOSITOR_WORK']+'/cross.ini').write_text(text)
 PY
+# Native generators must come from the build host. Target pkg-config paths
+# are supplied by the cross file; exporting them also redirects native tools.
+unset PKG_CONFIG_SYSROOT_DIR PKG_CONFIG_LIBDIR PKG_CONFIG_PATH
 build="$work/compositor/build-native"
 if [[ ! -f $build/build.ninja ]]; then
     meson setup "$build" "$work/compositor/weston-$version" \
         --cross-file "$work/compositor/cross.ini" --buildtype=release \
-        --prefix=/usr/local/share/qopenhd-nxp --bindir=. --libdir=lib \
+        --prefix="/usr/local/share/$prefix_name" --bindir=. --libdir=lib \
         -Dbackend-default=drm -Dbackend-drm=true -Dbackend-headless=true \
         -Drenderer-gl=true -Dshell-kiosk=true -Dshell-desktop=false \
         -Dshell-fullscreen=false -Dshell-ivi=false -Dbackend-rdp=false \
@@ -69,7 +81,7 @@ ninja -C "$build" -j"${NXP_JOBS:-4}" compositor/weston kiosk-shell/kiosk-shell.s
     libweston/renderer-gl/gl-renderer.so libweston/backend-drm/drm-backend.so \
     libweston/backend-headless/headless-backend.so
 DESTDIR="$work/compositor/stage" meson install --no-rebuild -C "$build"
-prefix="$work/compositor/stage/usr/local/share/qopenhd-nxp"
+prefix="$work/compositor/stage/usr/local/share/$prefix_name"
 mkdir -p "$prefix/share/licenses/weston"
 cp "$work/compositor/weston-$version/COPYING" "$prefix/share/licenses/weston/COPYING"
 printf '%s\n' "Weston $version" "Source: https://wayland.freedesktop.org/releases/weston-$version.tar.xz" \
@@ -77,4 +89,4 @@ printf '%s\n' "Weston $version" "Source: https://wayland.freedesktop.org/release
 cp "$scanout_patch" "$prefix/share/licenses/weston/"
 printf '%s\n' "Patch: nxp-weston-scanout-fence.patch" \
     "Patch SHA256: $(sha256sum "$scanout_patch" | cut -d' ' -f1)" >> "$prefix/share/licenses/weston/SOURCE"
-echo "NXP compositor built at $prefix"
+echo "$target compositor built at $prefix"

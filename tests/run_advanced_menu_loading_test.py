@@ -49,6 +49,15 @@ Item {
     Loader { id: menu; anchors.fill: parent; source: "ConfigPopup.qml" }
     TestCase {
         name: "AdvancedMenuLoading"; when: windowShown
+        function test_bottom_button_opens_backup() {
+            tryCompare(menu, "status", Loader.Ready)
+            var root=menu.item, title=root.menuPageTitle
+            var button=findChild(root,"settingsBackupButton")
+            verify(button!==null);mouseClick(button)
+            tryVerify(function(){return findChild(root,"settingsBackupPopup")!==null})
+            compare(findChild(root,"settingsBackupPopup").opened,true)
+            compare(root.menuPageTitle,title)
+        }
         function test_creator_only_preview_button() {
             tryCompare(menu, "status", Loader.Ready)
             var button = findChild(menu.item, "debugMenuPreviewButton")
@@ -220,6 +229,8 @@ Item {
         (folder / "OpenHD/Dummy.qml").write_text("import QtQuick 2.12\nQtObject {}\n", encoding="utf-8")
         (folder / "Basic.qml").write_text(stub.replace("settings_form.pageBackground", '"black"'), encoding="utf-8")
         (folder / "features").mkdir()
+        (folder / "backup").mkdir()
+        (folder / "backup/BackupRestorePopup.qml").write_text('import QtQuick 2.12\nItem {objectName:"settingsBackupPopup";property bool opened:false;function open(){opened=true}}\n')
         shutil.copy(menu_dir / "MenuTypography.js", folder)
         shutil.copy(menu_dir / "AdvancedActionButton.qml", folder)
         (folder / "ConfigPopup.qml").write_text(menu, encoding="utf-8")

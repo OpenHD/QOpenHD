@@ -128,7 +128,7 @@ FocusScope {
                                             ColumnLayout {
                                                 Layout.fillWidth:true;spacing:4
                                                 Text {Layout.fillWidth:true;text:card.entry.title;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true;wrapMode:Text.WordWrap}
-                                                Text {Layout.fillWidth:true;text:card.entry.description;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap;visible:text!==card.entry.title}
+
                                             }
                                             WidgetToggle {id:toggle;objectName:"widgetToggle_"+card.entry.key;Layout.preferredWidth:42;Layout.preferredHeight:32;checked:settings[card.entry.key];onToggled:root.changeWidget(card.entry,checked);Accessible.name:card.entry.title}
                                         }

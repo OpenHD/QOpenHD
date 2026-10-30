@@ -46,7 +46,7 @@ FocusScope {
      Rectangle {width:5;height:parent.height-2;x:1;y:1;radius:2;color:settings_form.accentColor}
      Column {x:28;y:22;width:parent.width<700?parent.width-50:parent.width-360;spacing:7
       Text {text:root.unitMode===0?qsTr("Metric Units"):root.unitMode===1?qsTr("Imperial Units"):qsTr("Hybrid Units");font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true;color:settings_form.accentColor}
-      Text {width:parent.width;text:root.unitMode===0?qsTr("Distance in meters and kilometers, speed in km/h, altitude in meters."):root.unitMode===1?qsTr("Distance in feet and miles, speed in mph, altitude in feet."):qsTr("Distance in meters and kilometers, speed in km/h, altitude in feet.");font.family:Typography.family;font.pixelSize:Typography.body;color:settings_form.secondaryText;wrapMode:Text.WordWrap}
+
      }
      Column {
       x:parent.width<700?28:parent.width-310;y:parent.width<700?112:22;width:Math.min(280,parent.width-55);spacing:12

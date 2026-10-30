@@ -284,11 +284,7 @@ FocusScope {
                     font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                     font.bold: true
                 }
-                Text {
-                    text: qsTr("USB drives appear automatically when you plug them into the Air unit.")
-                    color: settings_form.secondaryText
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                }
+
             }
 
             Repeater {
@@ -460,12 +456,7 @@ FocusScope {
                         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         font.bold: true
                     }
-                    Text {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Insert a USB drive, then press Refresh")
-                        color: settings_form.secondaryText
-                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    }
+
                 }
             }
 

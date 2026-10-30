@@ -20,6 +20,7 @@ Rectangle {
     // A single active link owns the complete content width. Additional active
     // link types share the row only when there is actually something to show.
     property int cardColumns: Math.max(1, Math.min(activeLinks.count, availableCardColumns))
+    readonly property bool showIndividualLinkUsage: activeLinks.count > 1
     property int collapsedCardWidth: Math.floor((cardsFlow.width - (cardColumns - 1) * cardsFlow.spacing) / cardColumns)
     property int expandedCardIndex: -1
     readonly property var reportedUsage: _ohdSystemAir.link_usage
@@ -28,7 +29,7 @@ Rectangle {
         for (var i = 0; i < reportedUsage.length; ++i) ids.push(reportedUsage[i].id)
         return ids.sort().join(",")
     }
-    readonly property var totalUsage: primaryUsage()
+    readonly property var totalUsage: combinedUsage()
     property bool fleetConfigured: (fleetBackend && fleetBackend.configured) ||
                                    _ohdSystemAir.fleetcontrol_lte_active ||
                                    _ohdSystemAir.fleetcontrol_lte_max_kbit > 0 ||
@@ -134,15 +135,30 @@ Rectangle {
             if (reportedUsage[i].id === id) return reportedUsage[i]
         return null
     }
-    function primaryUsage() {
-        // Do not combine unlike capacities: a quiet gigabit Ethernet link
-        // must not dilute the utilization of the constrained radio link.
+    function combinedUsage() {
         var kinds = ["wifi", "microhard", "artosyn", "fleetcontrol", "ethernet", "uart", "mlrs"]
+        var links = []
         for (var i = 0; i < kinds.length; ++i) {
             var link = usageFor(kinds[i])
-            if (link) return link
+            if (link) links.push(link)
         }
-        return null
+        if (!links.length) return null
+        if (links.length === 1) return links[0]
+        var total = 0, capacity = 0, capacityKnown = true, rates = {}
+        for (var j = 0; j < links.length; ++j) {
+            total += Math.max(0, Number(links[j].total_bps) || 0)
+            var available = Number(links[j].capacity_bps)
+            if (available > 0) capacity += available
+            else capacityKnown = false
+            var categories = links[j].categories || []
+            for (var k = 0; k < categories.length; ++k) {
+                var category = categories[k]
+                rates[category.id] = (rates[category.id] || 0) + Math.max(0, Number(category.bps) || 0)
+            }
+        }
+        var combined = []
+        Object.keys(rates).forEach(function(id) { combined.push({id: Number(id), bps: rates[id]}) })
+        return {id: 0, total_bps: total, capacity_bps: capacityKnown ? capacity : 0, categories: combined}
     }
     function ethernetActive() {
         if (simulatedSystem) return hasReportedUsage(2)
@@ -363,21 +379,7 @@ Rectangle {
                     }
                     Item { Layout.fillWidth: true }
                 }
-                Text {
-                    Layout.fillWidth: true
-                    text: !root.linkModeAvailable
-                          ? qsTr("Connect Air and Ground units with link mode support.")
-                          : root.bothMultiEnabled
-                            ? qsTr("Enterprise multi-link is active on Air and Ground.")
-                            : root.bothSingleEnabled
-                              ? (root.enterpriseEligible
-                                 ? qsTr("One transport per unit; WiFiBroadcast is preferred. UART telemetry remains available.")
-                                 : qsTr("One transport per unit; WiFiBroadcast is preferred. UART remains available. Multiple links require verified enterprise certificates on Air and Ground."))
-                              : qsTr("Air and Ground have different link modes. Select One link + UART to synchronize them.")
-                    color: settings_form.secondaryText
-                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                    wrapMode: Text.WordWrap
-                }
+
             }
         }
 
@@ -450,6 +452,7 @@ Rectangle {
                         }
                     }
                 }
+                LinkEncryptionControl { width: parent.width }
                 Rectangle {
                     objectName: "totalLinkUsageSection"
                     visible: root.wifiActive() || root.ethernetActive() || (root.developer && (_qopenhd.debugMenuPreview || settings.dev_show_link_usage))
@@ -462,7 +465,7 @@ Rectangle {
                         id: totalUsageMeter
                         anchors.fill: parent
                         anchors.margins: 12
-                        usage: root.wifiActive() ? root.usageFor("wifi") : root.developer ? root.totalUsage : root.usageFor("ethernet")
+                        usage: root.totalUsage
                         title: qsTr("Total Link Usage")
                         allocationControls: root.wifiActive()
                         onAllocationRequested: allocationPopup.open()

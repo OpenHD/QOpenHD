@@ -1,6 +1,6 @@
 #include "UdpVideo.hpp"
 #include "RtpAccessUnit.hpp"
-#ifndef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#if !defined(QOPENHD_ENABLE_ROCKCHIP_VIDEO) && !defined(QOPENHD_ENABLE_RPI_VIDEO)
 #include "VpuApi.hpp"
 #endif
 #include <arpa/inet.h>
@@ -21,7 +21,7 @@ UdpVideo::UdpVideo(bool hevc, const std::string& bindAddress, int port, Output o
     : hevc_(hevc), output_(std::move(output)) {
     // Resolve the vendor dependency tree before accepting packets, so loader
     // startup cannot turn the first keyframe into an input-queue overrun.
-#ifndef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#if !defined(QOPENHD_ENABLE_ROCKCHIP_VIDEO) && !defined(QOPENHD_ENABLE_RPI_VIDEO)
     (void)vpu();
 #endif
     socket_ = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
@@ -96,7 +96,9 @@ void UdpVideo::receive(bool hevc) {
     }
 }
 void UdpVideo::decode() {
-#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#if defined(QOPENHD_ENABLE_RPI_VIDEO)
+    using NativeDecoder = PiDecoder;
+#elif defined(QOPENHD_ENABLE_ROCKCHIP_VIDEO)
     using NativeDecoder = MppDecoder;
 #else
     using NativeDecoder = HantroDecoder;

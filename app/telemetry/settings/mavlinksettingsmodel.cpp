@@ -1,4 +1,5 @@
-﻿#include "mavlinksettingsmodel.h"
+#include "util/settingsbackup.h"
+#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "documentedparam.h"
 
@@ -373,6 +374,34 @@ void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QSt
         }
      };
      XParam::instance().try_set_param_async(command,imp_cb,nullptr,std::chrono::milliseconds(300),10);
+}
+
+QVariantMap MavlinkSettingsModel::backup_parameters() const
+{
+    QVariantMap result;
+    if (m_simulation || QOpenHD::instance().debugMenuPreview()) return result;
+    const auto add = [this,&result](const SettingData& item) {
+        if (!SettingsBackup::restorableParameter(item.unique_id) || get_ui_metadata(item.unique_id).value("readOnly").toBool()) return;
+        if (std::holds_alternative<int32_t>(item.value)) result.insert(item.unique_id,std::get<int32_t>(item.value));
+        else result.insert(item.unique_id,QString::fromStdString(std::get<std::string>(item.value)));
+    };
+    for (const auto& item:m_data) add(item);
+    for (const auto& item:m_hidden_data) add(item);
+    return result;
+}
+QString MavlinkSettingsModel::request_backup_restore(QString id,QVariant value)
+{
+    if (m_simulation || QOpenHD::instance().debugMenuPreview()) return QStringLiteral("Restore is disabled in simulation or preview.");
+    if (!system_is_alive() || !m_has_params_fetched || m_is_currently_busy) return QStringLiteral("Settings source is disconnected, incomplete or busy.");
+    if (!SettingsBackup::restorableParameter(id) || get_ui_metadata(id).value("readOnly").toBool() || (!param_int_exists(id) && !param_string_exists(id))) return QStringLiteral("Setting is unavailable or read-only.");
+    if (param_int_exists(id)) {
+        if (value.userType()==QMetaType::QString) return QStringLiteral("Incorrect parameter type.");
+        try_set_param_int_async(id,value.toInt(),false);
+    } else {
+        if (value.userType()!=QMetaType::QString) return QStringLiteral("Incorrect parameter type.");
+        try_set_param_string_async(id,value.toString(),false);
+    }
+    return {};
 }
 
 QString MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
@@ -848,6 +877,18 @@ void MavlinkSettingsModel::ui_thread_replace_param_set(QtParamSet qt_param_set)
 QVariantMap MavlinkSettingsModel::get_ui_metadata(QString param_id) const
 {
     QVariantMap result;
+    if (DocumentedParam::is_camera_setting(param_id)) {
+        result.insert("cameraOnly",true);
+        result.insert("cameraCategory",DocumentedParam::camera_setting_category(param_id));
+        int cameraType = -1;
+        for (const auto& entry : display_data())
+            if (entry.unique_id == "CAMERA_TYPE" && std::holds_alternative<int>(entry.value)) cameraType = std::get<int>(entry.value);
+        for (const auto& entry : m_hidden_data)
+            if (entry.unique_id == "CAMERA_TYPE" && std::holds_alternative<int>(entry.value)) cameraType = std::get<int>(entry.value);
+        const bool supported = (m_comp_id == 100 || m_comp_id == 101) &&
+            DocumentedParam::camera_setting_supported(param_id,cameraType,m_simulation ? -1 : AOHDSystem::instanceAir().ohd_platform_type());
+        result.insert("cameraSupported",supported);
+    }
     result.insert("fromDevice",DocumentedParam::has_device_metadata(metadata_sys_id(),metadata_comp_id()));
     bool exists=false;
     for(const auto& entry:display_data()) if(entry.unique_id==param_id) exists=true;
@@ -940,6 +981,7 @@ void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<i
     }
     set_update_count(m_update_count+1);
     qDebug()<<"Update count:"<<m_update_count;
+    emit backupParameterFinished(param_id,success);
 }
 
 void MavlinkSettingsModel::perform_dirty_actions(const SettingData &data)

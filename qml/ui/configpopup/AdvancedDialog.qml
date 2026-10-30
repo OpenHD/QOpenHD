@@ -31,7 +31,7 @@ Dialog {
             text: control.title; color: "#edf4fa"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.dialogTitle; font.bold: true; wrapMode: Text.WordWrap
         }
         ToolButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-            id: closeButton; anchors.right: parent.right; anchors.rightMargin: 12; y: 12; width: 36; height: 36
+            id: closeButton; anchors.right: parent.right; anchors.rightMargin: 12; y: 12; width: MenuTypography.controlHeight; height: MenuTypography.controlHeight; padding: 0
             Accessible.name: qsTr("Close dialog")
             onClicked: control.reject()
             background: Rectangle { radius: 8; color: parent.hovered || parent.activeFocus ? "#153c53" : "transparent" }

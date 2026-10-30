@@ -70,6 +70,11 @@ public:
     // return is kinda dirty, but since we use it from QML - returns an empty string "" on success, an error code otherwise
     Q_INVOKABLE QString try_update_parameter_int(const QString param_id,int value);
     Q_INVOKABLE QString try_update_parameter_string(const QString param_id,QString value);
+    Q_INVOKABLE QVariantMap backup_parameters() const;
+    Q_INVOKABLE QString request_backup_restore(QString id, QVariant value);
+signals:
+    void backupParameterFinished(QString id, bool success);
+public:
 
     enum Roles {
         // The unique string id of this param

@@ -25,7 +25,8 @@ Rectangle {
                 Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
-        LinkUsageMeter { Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("artosyn") : null }
+        LinkUsageMeter {
+            visible: root.host && root.host.showIndividualLinkUsage; Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("artosyn") : null }
         GridLayout { Layout.fillWidth: true; Layout.preferredHeight: 55; columns: 3; columnSpacing: 0
             Repeater { model: [
                 {label: "MCS", value: String(_ohdSystemGround.artosyn_rx_mcs)},
@@ -50,7 +51,7 @@ Rectangle {
             }
         }
         RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 25
-            Text { Layout.fillWidth: true; text: qsTr("ArtoSyn parameters exposed by the active system"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
+
             Rectangle { width: 7; height: 7; radius: 4; color: settings_form.goodColor }
         }
     }

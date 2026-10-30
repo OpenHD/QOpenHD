@@ -181,20 +181,8 @@ PopupBigGeneric {
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 2
-                    Text {
-                        Layout.fillWidth: true
-                        text: qsTr("Locate a running OpenHD air unit")
-                        color: settings_form.primaryText
-                        font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                        font.bold: true
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        text: qsTr("The ground station checks each selected channel until it finds a compatible signal.")
-                        color: settings_form.secondaryText
-                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                        wrapMode: Text.WordWrap
-                    }
+
+
                 }
             }
 
@@ -368,26 +356,12 @@ PopupBigGeneric {
                             font.bold: root.scanFinished
                             wrapMode: Text.WordWrap
                         }
-                        Text {
-                            Layout.fillWidth: true
-                            visible: root.scanFinished
-                            text: qsTr("The link switches automatically when an air unit is found.")
-                            color: settings_form.secondaryText
-                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                            wrapMode: Text.WordWrap
-                        }
+
                     }
                 }
             }
 
-            Text {
-                Layout.fillWidth: true
-                text: qsTr("OpenHD channels 1–7 are the quickest option. Wider scans can take considerably longer.")
-                color: settings_form.secondaryText
-                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
+
 
             Item { Layout.preferredHeight: 8 }
         }

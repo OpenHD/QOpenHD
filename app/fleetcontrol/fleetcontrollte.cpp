@@ -109,8 +109,11 @@ void FleetControlLte::request(const QByteArray& method, const QString& path,
   if (method == "GET") reply = m_network.get(networkRequest);
   else if (method == "POST") reply = m_network.post(networkRequest, payload);
   else reply = m_network.sendCustomRequest(networkRequest, method, payload);
-  connect(reply, &QNetworkReply::finished, this, [reply, handler = std::move(handler)]() {
+  connect(reply, &QNetworkReply::finished, this, [this, reply, handler = std::move(handler)]() {
     const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    m_online=status>0;
+    if(status==401)m_authenticated=false;
+    emit statusChanged();
     QJsonParseError parseError{};
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &parseError);
     const QJsonObject object = document.isObject() ? document.object() : QJsonObject{};
@@ -156,6 +159,7 @@ void FleetControlLte::clearSession() {
   m_account_name.clear();
   m_licenses.clear();
   m_crafts.clear();
+  m_settings_backups.clear();
   m_verified_license_id.clear();
   m_license_valid = false;
   m_license_verification.clear();
@@ -399,4 +403,29 @@ void FleetControlLte::refreshLocalStatus() {
   m_download_kbit = value.value(QStringLiteral("downloadKbit")).toInt();
   m_configured_max_kbit = value.value(QStringLiteral("configuredMaxKbit")).toInt();
   emit statusChanged();
+}
+
+void FleetControlLte::refreshSettingsBackups() {
+  if(!m_authenticated||m_busy)return;
+  setBusy(true);
+  request("GET","/api/settings-backups",{},[this](const QJsonObject& object,int,const QString& error){
+    m_settings_backups=object.value("backups").toArray().toVariantList();setBusy(false);
+    setStatusText(error.isEmpty()?QStringLiteral("Account backups loaded"):error);emit statusChanged();
+  });
+}
+void FleetControlLte::saveSettingsBackup(const QString& name,const QVariantMap& document) {
+  if(!m_authenticated||m_busy||document.isEmpty())return;
+  setBusy(true);setStatusText(QStringLiteral("Saving account backup..."));
+  request("POST","/api/settings-backups",{{"name",name},{"backup",QJsonObject::fromVariantMap(document)}},[this](const QJsonObject& object,int,const QString& error){
+    setBusy(false);setStatusText(error.isEmpty()&&object.value("ok").toBool()?QStringLiteral("Backup saved to your FleetControl account"):error.isEmpty()?QStringLiteral("Backup was not saved"):error);
+  });
+}
+void FleetControlLte::loadSettingsBackup(const QString& id) {
+  if(!m_authenticated||m_busy||id.isEmpty())return;
+  setBusy(true);setStatusText(QStringLiteral("Downloading account backup..."));
+  request("GET","/api/settings-backups/"+QString::fromUtf8(QUrl::toPercentEncoding(id)),{},[this](const QJsonObject& object,int,const QString& error){
+    setBusy(false);
+    if(!error.isEmpty()||!object.value("backup").isObject()){setStatusText(error.isEmpty()?QStringLiteral("Invalid backup response"):error);return;}
+    setStatusText(QStringLiteral("Backup downloaded; check hardware compatibility before restoring"));emit settingsBackupReady(object.value("backup").toObject().toVariantMap());
+  });
 }

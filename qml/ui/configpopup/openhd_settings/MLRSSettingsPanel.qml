@@ -197,7 +197,7 @@ ScrollView {
                 RowLayout {
                     Layout.fillWidth: true
                     Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Bind phrase") }
-                    TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: bindPhrase
                         Layout.fillWidth: true
                         maximumLength: 6
@@ -205,11 +205,7 @@ ScrollView {
                         Keys.onPressed: root.handleKeys(event, bindPhrase)
                     }
                 }
-                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    text: qsTr("The phrase is written to the connected Tx and, after Save, its linked Rx. Stock mLRS still requires entering bind mode on both devices using their button, CLI, Lua or display; its Tx MAVLink component has no bind command yet.")
-                }
+
             }
         }
 
@@ -235,12 +231,7 @@ ScrollView {
             }
         }
 
-        Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-            Layout.fillWidth: true
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-            text: qsTr("Keep Tx Mav Component enabled in mLRS. Apply changes first, verify the returned values, then Save. Unsupported choices are clamped by the radio firmware.")
-        }
+
         Item { Layout.preferredHeight: 16 }
     }
 }

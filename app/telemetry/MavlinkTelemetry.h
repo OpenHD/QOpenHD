@@ -73,7 +73,8 @@ public:
 
 private:
     // Called every time we get a mavlink message (from any system).
-    void process_mavlink_message(const mavlink_message_t& msg, uint64_t generation);
+    void process_mavlink_message(const mavlink_message_t& msg, uint64_t generation,
+                                 int64_t received_us = 0);
     void publish_connection_status(QString status);
     std::atomic<uint64_t> m_receive_generation{0};
     int64_t m_diagnostic_max_delivery_ms = 0;
@@ -82,7 +83,7 @@ private:
     void process_broadcast_message_openhd_gnd(const mavlink_message_t& msg);
     void process_broadcast_message_fc(const mavlink_message_t& msg);
     // timesync is handled extra independently
-    void process_message_timesync(const mavlink_message_t &msg);
+    void process_message_timesync(const mavlink_message_t &msg, int64_t received_us);
 private:
     std::unique_ptr<UDPConnection> m_udp_connection=nullptr;
     std::unique_ptr<TCPConnection> m_tcp_connection_wifi_hs=nullptr;

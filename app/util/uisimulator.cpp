@@ -90,17 +90,11 @@ void UiSimulator::seedParameters(MavlinkSettingsModel* model,int system,int comp
     const auto catalog=QJsonDocument::fromJson(file.readAll()).object()["settings"].toArray();
     QJsonArray metadata;QVariantMap values;
     const bool cam=component==100||component==101;
-    const QStringList cameraIds={"CAMERA_TYPE","STREAMING_E","AIR_RECORDING_E","BITRATE_MBITS","VIDEO_CODEC","KEYFRAME_I",
-      "RESOLUTION_FPS","ROTATION_DEG","ROTATION_FLIP","IP_CAM_ADDRESS","IP_CAM_PIPELINE","SENSOR_MODE",
-      "BRIGHTNESS","CONTRAST","SATURATION","SHARPNESS","EXPOSURE","AWB_MODE","RPI_LIBCAMERA_AWB",
-      "RPI_LIBCAMERA_EV","RPI_LIBCAMERA_DENOISE","RPI_LIBCAMERA_AF_MODE","RPI_LIBCAMERA_LENS_POSITION"};
     for(auto entry:catalog) {
         auto e=entry.toObject();const QString id=e["id"].toString();
-        const bool cameraSetting=cameraIds.contains(id)||id.startsWith("RPI_")||id.startsWith("LIBCAMERA_")||
-            id.startsWith("ROTATION_")||id.startsWith("V_OS_CAM")||id.startsWith("X20_")||id.startsWith("ROCKCHIP_");
+        const bool cameraSetting=DocumentedParam::is_camera_setting(id);
         if(cam!=cameraSetting) continue;
-        if(cam && camera<0) continue;
-        if(cam && camera==3 && !QStringList{"CAMERA_TYPE","STREAMING_E","AIR_RECORDING_E","BITRATE_MBITS","VIDEO_CODEC","KEYFRAME_I","RESOLUTION_FPS","IP_CAM_ADDRESS","IP_CAM_PIPELINE"}.contains(id)) continue;
+        if(cam && !DocumentedParam::camera_setting_supported(id,camera,platform)) continue;
         if(!cam && (id.startsWith("RPI_") || id.startsWith("MICROHARD_"))) continue;
         if(id.startsWith("AR_") && m_profile["link"].toInt()!=5 && m_profile["secondLink"].toInt()!=5)continue;
         if(platform<10||platform>13) {if(id.startsWith("RPI_")||id.startsWith("LIBCAMERA_"))continue;}

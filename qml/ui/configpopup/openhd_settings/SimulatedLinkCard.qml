@@ -62,7 +62,7 @@ Rectangle {
             }
         }
         LinkUsageMeter {
-            visible: settings_form.showAdvancedSettings
+            visible: root.host && root.host.showIndividualLinkUsage && settings_form.showAdvancedSettings
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? (root.width < 360 ? 100 : 78) : 0
             usage: root.host ? root.host.usageFor(root.linkKind) : null
@@ -92,6 +92,6 @@ Rectangle {
                 }
             }
         }
-        Text { Layout.fillWidth: true; visible: root.simulated; text: qsTr("Developer fixture - no physical link is created."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; horizontalAlignment: Text.AlignRight }
+
     }
 }

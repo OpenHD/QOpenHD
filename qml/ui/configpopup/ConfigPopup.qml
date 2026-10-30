@@ -41,6 +41,16 @@ Rectangle {
     readonly property bool showDeveloperSettings: simulatorActive ? simulatorAccessMode === 2 : diagnosticsUnlocked
     readonly property bool showAdvancedSettings: simulatorActive ? simulatorAccessMode >= 1 : _qopenhd.debugMenuPreviewLevel === 2 ||
         (!_qopenhd.debugMenuPreview && typeof settings !== "undefined" && settings.dev_show_advanced_button === true)
+    function openBackupRestore() {
+        backupDialog.active = true
+        if (backupDialog.item) backupDialog.item.open()
+    }
+    Loader {
+        id:backupDialog
+        active:false
+        source:"backup/BackupRestorePopup.qml"
+        onLoaded:item.open()
+    }
     function openSimulator() {
         if (!diagnosticsUnlocked || typeof _uiSimulator === "undefined") return
         _uiSimulator.developerUnlocked = true
@@ -91,8 +101,8 @@ Rectangle {
     onMenuPageTitleChanged: if (mainStackLayout.currentIndex !== 6) creditsStarClickCount = 0
     property int sidebarWidth: compactSidebar ? 72 : Math.max(160, Math.min(210, width * 0.17))
 
-    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), "", qsTr("CONNECT"), qsTr("CREDITS"), qsTr("MAVLINK DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS")][mainStackLayout.currentIndex]
-    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), "", qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("Inspect incoming MAVLink messages"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information")][mainStackLayout.currentIndex]
+    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), "", qsTr("CONNECT"), qsTr("CREDITS"), qsTr("DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS")][mainStackLayout.currentIndex]
+    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), "", qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("MAVLink and hardware diagnostics"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information")][mainStackLayout.currentIndex]
     readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf013", "\uf0ad"][mainStackLayout.currentIndex]
 
     Settings {
@@ -161,7 +171,7 @@ Rectangle {
         ListElement { title: ""; icon: "" } // Reserved page ID; RC moved to Extras.
         ListElement { title: qsTr("Connect"); icon: "\uf6ff" }
         ListElement { title: qsTr("Credits"); icon: "\uf005" }
-        ListElement { title: qsTr("MAV Debug"); icon: "\uf188" }
+        ListElement { title: qsTr("Debug"); icon: "\uf188" }
         ListElement { title: qsTr("Application"); icon: "\uf013" }
     }
 
@@ -326,6 +336,12 @@ Rectangle {
 
         Rectangle {
             id: versionBadge
+            objectName:"settingsBackupButton"
+            activeFocusOnTab:true
+            Accessible.role:Accessible.Button
+            Accessible.name:qsTr("Backup and restore settings")
+            Keys.onReturnPressed:settings_form.openBackupRestore()
+            Keys.onSpacePressed:settings_form.openBackupRestore()
             anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
             anchors.margins: settings_form.compactSidebar ? 10 : 18
             height: 42; radius: 8
@@ -333,8 +349,8 @@ Rectangle {
             border.color: lineColor
             Row {
                 anchors.centerIn: parent; spacing: 10
-                Rectangle { width: 10; height: 10; radius: 5; color: goodColor }
-                Text { visible: !settings_form.compactSidebar; anchors.verticalCenter: parent.verticalCenter; text: _qopenhd.version_string; color: secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
+                Text {text:"\uf0c7";color:accentColor;font.family:"Font Awesome 5 Free";font.pixelSize:MenuTypography.sidebarIcon}
+                Text { visible: !settings_form.compactSidebar; anchors.verticalCenter: parent.verticalCenter; text: qsTr("Backup & Restore"); color: secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             }
             MouseArea {
                 id: versionHit
@@ -349,7 +365,7 @@ Rectangle {
                 }
                 onClicked: {
                     if (!longPressTriggered)
-                        settings_form.user_quidance_open_connect_screen()
+                        settings_form.openBackupRestore()
                 }
             }
         }

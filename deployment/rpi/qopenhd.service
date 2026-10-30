@@ -1,0 +1,18 @@
+[Unit]
+Description=QOpenHD Qt 6 Raspberry Pi ground display
+Requires=qopenhd-rpi-compositor.service
+After=qopenhd-rpi-compositor.service
+
+[Service]
+Type=simple
+User=root
+Environment=HOME=/root
+Environment=QT_QPA_PLATFORM=wayland
+Environment=QSG_RHI_BACKEND=opengl
+ExecStart=/bin/sh /usr/local/share/qopenhd-rpi/run-qopenhd.sh
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

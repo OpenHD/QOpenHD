@@ -359,17 +359,7 @@ FocusScope {
                     }
                 }
             }
-            Text {
-                Layout.fillWidth: true
-                visible: text.length > 0
-                text: root.friendlyDescription(root.paramId, root.description)
-                color: settings_form.secondaryText
-                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                lineHeight: 1.15
-                wrapMode: Text.WordWrap
-                maximumLineCount: root.compact ? 3 : 2
-                elide: Text.ElideRight
-            }
+
             Text {
                 Layout.fillWidth: true
                 visible: root.categoryKey === "ADVANCED"

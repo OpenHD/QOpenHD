@@ -22,7 +22,8 @@ Rectangle {
                 Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
-        LinkUsageMeter { Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("microhard") : null }
+        LinkUsageMeter {
+            visible: root.host && root.host.showIndividualLinkUsage; Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("microhard") : null }
         GridLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 55; columns: 4; columnSpacing: 0
             Repeater { model: [
@@ -61,7 +62,7 @@ Rectangle {
         }
         Item { Layout.fillHeight: true }
         RowLayout { Layout.fillWidth: true; Layout.preferredHeight: 25
-            Text { Layout.fillWidth: true; text: qsTr("Telemetry status reported by OpenHD"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
+
             Rectangle { width: 7; height: 7; radius: 4; color: settings_form.goodColor }
         }
     }

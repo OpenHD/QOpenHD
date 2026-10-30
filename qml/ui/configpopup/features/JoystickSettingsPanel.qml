@@ -19,7 +19,8 @@ Flickable {
  readonly property bool available:{revision;return connected&&groundParams.param_string_exists("RC_CHAN_MAP")}
  readonly property bool modern:{revision;return available&&groundParams.param_int_exists("JOY_MAP_V2")&&groundParams.get_cached_int("JOY_MAP_V2")>=1}
  readonly property bool monitorSupported:{revision;return modern&&groundParams.param_int_exists("JOY_MONITOR")}
- readonly property bool transmitting:{revision;return available&&groundParams.param_int_exists("ENABLE_JOY_RC")&&groundParams.get_cached_int("ENABLE_JOY_RC")!==0}
+ readonly property bool transmitting:{revision;return connected&&groundParams.param_int_exists("ENABLE_JOY_RC")&&groundParams.get_cached_int("ENABLE_JOY_RC")!==0}
+ readonly property bool transmitAvailable:{revision;return connected&&groundParams.param_int_exists("ENABLE_JOY_RC")}
  readonly property bool armed:typeof _fcMavlinkSystem!=="undefined" && _fcMavlinkSystem.armed
  readonly property string savedMap:{revision;return available?groundParams.get_cached_string("RC_CHAN_MAP"):""}
  readonly property bool dirty:mapping.join(",")!==savedMap
@@ -31,7 +32,9 @@ Flickable {
  property int learning:-1
  property var inputBaseline:[]
  property int learnTicks:0
- property bool monitoring:false
+ readonly property bool monitoring:transmitting&&inputs&&inputs.is_alive
+ property bool monitorRequested:false
+ onMonitoringChanged:if(!monitoring){values=[];learning=-1}
  property string message:""
  property string loadedMap:""
  onSavedMapChanged: Qt.callLater(syncMap)
@@ -40,8 +43,10 @@ Flickable {
      loadedMap=savedMap
      if(!available){stopMonitor();mapping=[];loadedMap=""}
  }
- Component.onCompleted:{mapping=Mapping.parse(savedMap);loadedMap=savedMap}
- onVisibleChanged:if(!visible)stopMonitor()
+ Component.onCompleted:{mapping=Mapping.parse(savedMap);loadedMap=savedMap;syncMonitor()}
+ onVisibleChanged:syncMonitor()
+ onTransmittingChanged:Qt.callLater(syncMonitor)
+ onMonitorSupportedChanged:Qt.callLater(syncMonitor)
  Component.onDestruction:stopMonitor()
  function write(model,id,value,stringValue) {
      if(armed){message=qsTr("Disarm before changing RC settings.");return false}
@@ -51,15 +56,18 @@ Flickable {
  }
  function stopMonitor() {
      learning=-1
-     if(monitoring&&groundParams&&connected)groundParams.try_update_parameter_int("JOY_MONITOR",0)
-     monitoring=false
+     var release=monitorRequested&&groundParams&&connected
+     monitorRequested=false
+     values=[]
+     if(release)groundParams.try_update_parameter_int("JOY_MONITOR",0)
  }
- function monitor() {
-     if(monitoring){stopMonitor();return}
-     if(write(groundParams,"JOY_MONITOR",1,false))monitoring=true
+ function syncMonitor() {
+     if(!visible||!transmitting){stopMonitor();return}
+     // Compatibility with firmware where raw input reporting still needs this request.
+     if(monitorSupported&&!monitorRequested){monitorRequested=true;if(groundParams.try_update_parameter_int("JOY_MONITOR",1)!=="")monitorRequested=false}
  }
  function learn(output) {
-     if(!monitoring||!inputs||!inputs.is_alive){message=qsTr("Read inputs and connect a joystick to the Ground unit first.");return}
+     if(!monitoring||!inputs||!inputs.is_alive){message=qsTr("Enable joystick RC and connect a joystick first.");return}
      inputBaseline=inputs.channelValues();learning=output;learnTicks=100
      message=qsTr("Move one stick or switch for CH %1.").arg(output+1)
  }
@@ -97,12 +105,11 @@ Flickable {
              RowLayout {
                  width:parent.width
                  Text {Layout.fillWidth:true;text:qsTr("Send RC to flight controller");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;wrapMode:Text.WordWrap}
-                 WidgetToggle {objectName:"joystickTransmit";enabled:root.available&&!root.armed;checked:root.transmitting;onToggled:root.write(root.groundParams,"ENABLE_JOY_RC",checked?1:0,false)}
+                 WidgetToggle {objectName:"joystickTransmit";enabled:root.transmitAvailable&&!root.armed;checked:root.transmitting;onToggled:{root.write(root.groundParams,"ENABLE_JOY_RC",checked?1:0,false);checked=Qt.binding(function(){return root.transmitting})}}
              }
-             Text {width:parent.width;text:!root.available?qsTr("Connect a Ground unit with joystick support."):!root.modern?qsTr("Update OpenHD for input learning and unassigned channels."):qsTr("Choose an output channel, then assign an input or move its control. Save to apply.");wrapMode:Text.WordWrap;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
+
              Flow {
                  width:parent.width;spacing:8
-                 AdvancedActionButton {objectName:"joystickMonitor";text:root.monitoring?qsTr("Stop reading"):qsTr("Read inputs");enabled:root.monitorSupported&&!root.armed;onClicked:root.monitor()}
                  AdvancedActionButton {text:qsTr("Clear unused inputs");enabled:root.modern&&root.monitoring&&root.values.length===18&&!root.armed;onClicked:{var next=root.mapping.slice();for(var i=0;i<18;i++){var input=next[i]-1;if(input>=0&&(root.values[input]<800||root.values[input]>2200))next[i]=0}root.mapping=next}}
                  AdvancedActionButton {objectName:"joystickSave";text:qsTr("Save assignments");enabled:root.available&&root.dirty&&root.mapping.length===18&&!root.armed;onClicked:root.save()}
                  AdvancedActionButton {text:qsTr("Revert");enabled:root.dirty;onClicked:{root.mapping=Mapping.parse(root.savedMap);root.loadedMap=root.savedMap;root.learning=-1;root.message=""}}
@@ -171,7 +178,7 @@ Flickable {
                  enabled:root.luaAvailable&&root.modern&&!root.dirty&&root.freeBlocks.length>0&&!root.armed
                  onClicked:root.write(root.airParams,"RC_SET_BASE",root.freeBlocks[0],false)
              }
-             Text {width:parent.width;wrapMode:Text.WordWrap;text:qsTr("Free means unassigned in this joystick map. Match D2, D1, D0 and CLK in the transmitter's Lua tool; check its mixes separately.");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
+
          }
      }
      MapSettingsCard {

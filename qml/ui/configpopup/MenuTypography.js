@@ -2,22 +2,22 @@
 
 // Logical pixels; the surrounding menu/window remains responsible for DPI scaling.
 var family = "Archivo"
-var pageTitle = 28
-var dialogTitle = 21
-var sectionTitle = 16
-var body = 13
+var pageTitle = 24
+var dialogTitle = 20
+var sectionTitle = 14
+var body = 12
 var helper = 11
 var metric = 22
 
 // Shared menu geometry. Width follows the label; height and padding never vary by page.
-var controlHeight = 38
-var controlMinWidth = 112
-var controlPadding = 14
+var controlHeight = 34
+var controlMinWidth = 92
+var controlPadding = 10
 var controlRadius = 8
 var rowHeight = 56
 var sectionHeaderHeight = 76
-var controlIcon = 14
-var rowIcon = 18
-var sectionIcon = 24
-var pageIcon = 36
+var controlIcon = 13
+var rowIcon = 16
+var sectionIcon = 22
+var pageIcon = 32
 var sidebarIcon = 18

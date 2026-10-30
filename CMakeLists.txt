@@ -8,6 +8,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(X_QT_VERSION 6.4)
+option(QOPENHD_RPI_NATIVE "Qt 6 Raspberry Pi ground display with native Wayland video" OFF)
+set(QOPENHD_MAIN_QRC qml/qml.qrc)
+if(QOPENHD_RPI_NATIVE)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    execute_process(COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tools/prepare-qt6-qml.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/qml" "${CMAKE_CURRENT_BINARY_DIR}/qt6-qml" COMMAND_ERROR_IS_FATAL ANY)
+    set(QOPENHD_MAIN_QRC "${CMAKE_CURRENT_BINARY_DIR}/qt6-qml/qml-qt6.qrc")
+endif()
 
 
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Core)
@@ -32,6 +40,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/util/mousehelper.cpp
     app/util/uisimulator.cpp
     app/util/qopenhd.cpp
+    app/util/settingsbackup.cpp
     app/util/asyncping.cpp
     app/util/asynccommandrunner.cpp
     app/util/qrenderstats.cpp
@@ -96,13 +105,13 @@ qt_add_executable(QOpenHDApp
     ##
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
-    qml/qml.qrc
+    ${QOPENHD_MAIN_QRC}
     qml/qml_assets_credits.qrc
     qml/qml_assets_cursors.qrc
     qml/qml_assets_fonts.qrc
     qml/qml_assets_images.qrc
     ##
-    androidqt6/AndroidManifest.xml
+    $<$<BOOL:${ANDROID}>:androidqt6/AndroidManifest.xml>
 )
 
 # Translation files
@@ -168,6 +177,9 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 target_link_libraries(QOpenHDApp
     PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Network
 )
+if(QOPENHD_RPI_NATIVE)
+    include(app/videostreaming/rpi/rpi_video.cmake)
+endif()
 if(TARGET Qt6::TextToSpeech)
     target_link_libraries(QOpenHDApp PRIVATE Qt6::TextToSpeech)
     target_compile_definitions(QOpenHDApp PRIVATE ENABLE_SPEECH)
@@ -181,12 +193,14 @@ if(TARGET Qt6::Multimedia)
     target_compile_definitions(QOpenHDApp PRIVATE QOPENHD_ENABLE_QT_AUDIO)
 endif()
 
+if(NOT QOPENHD_RPI_NATIVE)
 add_executable(qopenhd-offline-map-test
     tests/offline_map_provider_test.cpp
     app/map/offlinemaptileprovider.cpp
 )
 target_include_directories(qopenhd-offline-map-test PRIVATE app)
 target_link_libraries(qopenhd-offline-map-test PRIVATE Qt6::Core Qt6::Network)
+endif()
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
              ${CMAKE_CURRENT_SOURCE_DIR}/androidqt6)

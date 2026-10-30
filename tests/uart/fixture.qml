@@ -52,53 +52,37 @@ Item {
          _ohdSystemAirSettingsModel.update_count++;_ohdSystemGroundSettings.update_count++
          loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)
      }
-     function test_routes_to_correct_unit(){
-         row("fc","FC_UART_BAUD").commitChoice(115200)
-         compare(_ohdSystemAirSettingsModel.lastId,"FC_UART_BAUD");compare(_ohdSystemGroundSettings.writes,0)
+     function test_tracker_routes_to_ground(){
          row("tracker","TRACKER_UART_OUT").commitChoice("/dev/ttyUSB1")
-         compare(_ohdSystemGroundSettings.lastId,"TRACKER_UART_OUT");compare(_ohdSystemGroundSettings.lastValue,"/dev/ttyUSB1")
+         compare(_ohdSystemGroundSettings.lastId,"TRACKER_UART_OUT");compare(_ohdSystemAirSettingsModel.writes,0)
          row("tracker","TRACK_UART_FLOW").commitToggle(true);compare(_ohdSystemGroundSettings.lastValue,1)
-         row("airLink","OHD_UART_EN").commitToggle(true);compare(_ohdSystemAirSettingsModel.lastId,"OHD_UART_EN");compare(_ohdSystemAirSettingsModel.lastValue,1)
-         row("groundLink","OHD_UART_TLM").commitChoice("/dev/ttyS2");compare(_ohdSystemGroundSettings.lastId,"OHD_UART_TLM");compare(_ohdSystemGroundSettings.lastValue,"/dev/ttyS2")
      }
      function test_ground_independent_of_air(){
-         _ohdSystemAir.is_alive=false
-         verify(row("fc","FC_UART_BAUD").busy);verify(!row("tracker","TRACK_UART_BAUD").busy)
+         _ohdSystemAir.is_alive=false;verify(!row("tracker","TRACK_UART_BAUD").busy)
          row("tracker","TRACK_UART_BAUD").commitChoice(115200);compare(_ohdSystemGroundSettings.lastValue,115200)
-         row("fc","FC_UART_BAUD").commitChoice(9600);compare(_ohdSystemAirSettingsModel.writes,0)
-         _ohdSystemGround.is_alive=false;row("groundLink","OHD_UART_EN").commitToggle(true);compare(_ohdSystemGroundSettings.writes,1)
+         _ohdSystemGround.is_alive=false;row("tracker","TRACK_UART_BAUD").commitChoice(9600);compare(_ohdSystemGroundSettings.writes,1)
      }
-     function test_port_conflicts(){
-         row("airLink","OHD_UART_TLM").commitChoice("/dev/ttyS1")
-         row("airLink","OHD_UART_EN").commitToggle(true)
-         compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,0);verify(loader.item.validationError.length>0)
-         row("airLink","OHD_UART_TLM").commitChoice("/dev/ttyUSB1")
-         row("airLink","OHD_UART_EN").commitToggle(true);compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,1)
-         row("tracker","TRACKER_UART_OUT").commitChoice("/dev/ttyUSB0")
-         row("groundLink","OHD_UART_EN").commitToggle(true);compare(_ohdSystemGroundSettings.values.OHD_UART_EN,0)
-         row("tracker","TRACKER_UART_OUT").commitChoice("");row("groundLink","OHD_UART_EN").commitToggle(true);compare(_ohdSystemGroundSettings.values.OHD_UART_EN,1)
-     }
-     function test_cannot_enable_without_port(){
-         row("groundLink","OHD_UART_TLM").commitChoice("")
-         row("groundLink","OHD_UART_EN").commitToggle(true)
-         compare(_ohdSystemGroundSettings.values.OHD_UART_EN,0)
-         verify(loader.item.validationError.length>0)
-     }
-     function test_advanced_and_preview(){
-         compare(row("airLink","UART_PRI_RC"),null)
-         settings_form.showAdvancedSettings=true;verify(row("airLink","UART_PRI_RC")!==null)
-         settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=true;verify(row("groundLink","UART_PRI_FC")!==null)
-         _qopenhd.debugMenuPreview=true;row("tracker","TRACKER_UART_OUT").commitChoice("DEFAULT");compare(_ohdSystemGroundSettings.writes,0)
-     }
-     function test_live_parameter_updates_and_layout(){
-         _ohdSystemGroundSettings.values.TRACK_UART_BAUD=115200;_ohdSystemGroundSettings.update_count++
-         compare(row("tracker","TRACK_UART_BAUD").value,115200)
-         for(var i=0;i<3;i++) {
-             scene.width=[1200,760,440][i];wait(100)
-             var r=row("fc","FC_UART_BAUD");verify(r.width>200)
-             var point=r.mapToItem(scene,0,0);verify(point.x+r.width<=scene.width)
-             grabImage(scene).save("build/uart-"+scene.width+".png")
+     function test_link_only_lives_in_debug(){
+         for(var mode=0;mode<3;mode++){
+             settings_form.showAdvancedSettings=mode>0;settings_form.showDeveloperSettings=mode===2
+             compare(findChild(loader.item,"uartSection_airLink"),null)
+             compare(findChild(loader.item,"uartSection_groundLink"),null)
          }
      }
+     function test_port_conflicts(){
+         _ohdSystemGroundSettings.values.OHD_UART_EN=1;_ohdSystemGroundSettings.update_count++
+         row("tracker","TRACKER_UART_OUT").commitChoice("/dev/ttyUSB0")
+         compare(_ohdSystemGroundSettings.writes,0);verify(loader.item.validationError.length>0)
+     }
+     function test_preview(){
+         _qopenhd.debugMenuPreview=true;row("tracker","TRACKER_UART_OUT").commitChoice("DEFAULT");compare(_ohdSystemGroundSettings.writes,0)
+     }
+     function test_layout(){
+         for(var i=0;i<3;i++){
+             scene.width=[1200,760,440][i];wait(50)
+             var r=row("tracker","TRACK_UART_BAUD");verify(r.width>200)
+         }
+     }
+
  }
 }

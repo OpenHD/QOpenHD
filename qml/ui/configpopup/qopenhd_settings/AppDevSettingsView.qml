@@ -38,7 +38,7 @@ ScrollView {
                 iconText:"\uf1b2"
                 onClicked:settings_form.openSimulator()
             }
-            Text { width:parent.width; text:qsTr("Shortcut: Ctrl+Shift+S after the developer unlock");color:settings_form.secondaryText;font.pixelSize: MenuTypography.helper;wrapMode:Text.WordWrap }
+
             //
             SettingBaseElement{
                 m_short_description: qsTr("Allow frequency change when armed")
@@ -149,52 +149,12 @@ ScrollView {
                     onCheckedChanged: settings.dev_simulate_uart_link = checked
                 }
             }
-            SettingBaseElement{
-                m_short_description: qsTr("Save Settings to file")
-                m_long_description: qsTr("Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux.")
-
-                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    id:save
-                    width: 128
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: qsTr("Save")
-                    onClicked: {
-                        var res=_qopenhd.backup_settings_locally();
-                        if (res) {
-                            _messageBoxInstance.set_text_and_show(qsTr("QOpenHD settings backed up to /boot/openhd/QOpenHD.conf"))
-                        }else{
-                            _messageBoxInstance.set_text_and_show(qsTr("Couldn't backup settings"))
-                        }
-                    }
-                    enabled: _qopenhd.is_linux()
-                }
-            }
-            SettingBaseElement{
-                m_short_description: qsTr("Load Settings from file")
-                m_long_description: qsTr("Load a previosly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux.")
-
-                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    id:load
-                    width: 128
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: qsTr("Load")
-                    onClicked: {
-                        var res=_qopenhd.overwrite_settings_from_backup_file()
-                        if (res) {
-                            _restartqopenhdmessagebox.show_with_text("Settings file Loaded !");
-                        }else{
-                            _messageBoxInstance.set_text_and_show(qsTr("Couldn't load settings - make sure \"/boot/openhd/QOpenHD.conf\" (a previous pbackup) exists on your SD card"))
-                        }
-                    }
-                    enabled: _qopenhd.is_linux()
+            SettingBaseElement {
+                m_short_description: qsTr("Backup & Restore")
+                m_long_description: qsTr("Export or import settings using a file on your chosen storage device.")
+                AdvancedActionButton {
+                    anchors.right:parent.right;anchors.verticalCenter:parent.verticalCenter
+                    text:qsTr("Open");onClicked:settings_form.openBackupRestore()
                 }
             }
             SettingBaseElement{

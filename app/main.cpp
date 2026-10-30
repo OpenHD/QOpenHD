@@ -1,3 +1,5 @@
+#include <QSysInfo>
+#include "util/settingsbackup.h"
 #include "util/uisimulator.h"
 #include "qqmlcontext.h"
 #include "qscreen.h"
@@ -377,6 +379,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationName("OpenHD");
     QCoreApplication::setOrganizationDomain("openhd");
     QCoreApplication::setApplicationName("QOpenHD");
+    const auto restoreError=SettingsBackup::applyPendingLocalSettings();
+    if(!restoreError.isEmpty())qCritical()<<restoreError;
     {// Original screen resoluton before setting anything
         //QApplication a(argc, argv);
         const auto screen=QGuiApplication::primaryScreen();
@@ -562,6 +566,46 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_ohdSystemAirSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGroundSettings", &MavlinkSettingsModel::instanceGround());
+    SettingsBackup settingsBackup({
+        {"ground",QObject::tr("Ground"),&MavlinkSettingsModel::instanceGround()},
+        {"air",QObject::tr("Air"),&MavlinkSettingsModel::instanceAir()},
+        {"camera1",QObject::tr("Camera 1"),&MavlinkSettingsModel::instanceAirCamera()},
+        {"camera2",QObject::tr("Camera 2"),&MavlinkSettingsModel::instanceAirCamera2()}});
+    settingsBackup.setGuard([](bool restoring) -> QString {
+        if(UiSimulator::isActive() || QOpenHD::instance().debugMenuPreview())return QObject::tr("Stop simulation or preview before using Backup & Restore.");
+        if(restoring && FCMavlinkSystem::instance().armed())return QObject::tr("Disarm before restoring settings.");
+        return {};
+    });
+    settingsBackup.setIdentityProvider([](QString id)->QVariantMap {
+        if(id=="qopenhd") {
+            QString family="desktop";
+            if(QOpenHD::instance().is_platform_rpi())family="raspberry-pi";
+            else if(QOpenHD::instance().is_platform_rock())family="rockchip";
+            else if(QOpenHD::instance().is_platform_nxp())family="nxp";
+            QVariantMap local{{"os",QSysInfo::kernelType()},{"architecture",QSysInfo::currentCpuArchitecture()},{"family",family}};
+            QFile deviceTree(QStringLiteral("/proc/device-tree/model"));
+            if(deviceTree.open(QIODevice::ReadOnly))local.insert("board",QString::fromUtf8(deviceTree.readAll()).remove(QChar(0)).trimmed());
+            if(family!="desktop"&&!local.contains("board"))return {};
+            return local;
+        }
+        auto& system=id=="ground"?AOHDSystem::instanceGround():AOHDSystem::instanceAir();
+        if(!system.is_alive()||system.ohd_platform_type()<=0)return {};
+        QVariantMap identity{{"platformId",system.ohd_platform_type()},{"name",system.ohd_platform_type_as_string()}};
+        if(id.startsWith("camera"))identity.insert("cameraType",CameraStreamModel::instance(id=="camera2"?1:0).camera_type());
+        else {
+            auto& model=id=="ground"?MavlinkSettingsModel::instanceGround():MavlinkSettingsModel::instanceAir();
+            QVariantList radios;
+            for(int i=0;i<4;i++){
+                const auto key="CARD_TYPE_"+QString::number(i),legacy="WIFI_CARD"+QString::number(i);
+                if(model.param_int_exists(key))radios.append(model.get_cached_int(key));
+                else if(model.param_int_exists(legacy))radios.append(model.get_cached_int(legacy));
+            }
+            if(!radios.isEmpty())identity.insert("radioTypes",radios);
+        }
+        return identity;
+    });
+    engine.rootContext()->setContextProperty("_settingsBackup", &settingsBackup);
+
     engine.rootContext()->setContextProperty("_wbLinkSettingsHelper", &WBLinkSettingsHelper::instance());
     engine.rootContext()->setContextProperty("_frequencyHelper", &FrequencyHelper::instance());
     engine.rootContext()->setContextProperty("_pollutionHelper", &PollutionHelper::instance());

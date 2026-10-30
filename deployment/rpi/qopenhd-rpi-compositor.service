@@ -1,0 +1,24 @@
+[Unit]
+Description=OpenHD Raspberry Pi independent video and HUD compositor
+Requires=systemd-logind.service
+After=systemd-user-sessions.service systemd-logind.service dbus.service
+Conflicts=display-manager.service weston.service getty@tty7.service
+Before=qopenhd.service
+
+[Service]
+Type=simple
+User=root
+PAMName=login
+Environment=XDG_SESSION_TYPE=wayland
+Environment=XDG_RUNTIME_DIR=/run/qopenhd-rpi
+RuntimeDirectory=qopenhd-rpi
+RuntimeDirectoryMode=0700
+TTYPath=/dev/tty7
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+StandardInput=tty-fail
+ExecStart=/bin/sh /usr/local/share/qopenhd-rpi/run-compositor.sh
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=10

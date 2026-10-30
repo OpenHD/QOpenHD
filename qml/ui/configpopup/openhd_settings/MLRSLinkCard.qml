@@ -21,7 +21,8 @@ Rectangle {
                 Text { id: activeText; anchors.centerIn: parent; text: qsTr("ACTIVE"); color: settings_form.goodColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
             }
         }
-        LinkUsageMeter { Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("mlrs") : null }
+        LinkUsageMeter {
+            visible: root.host && root.host.showIndividualLinkUsage; Layout.fillWidth: true; Layout.preferredHeight: root.width < 360 ? 100 : 78; usage: root.host ? root.host.usageFor("mlrs") : null }
         MLRSSettingsPanel {
             id: panel; Layout.fillWidth: true; Layout.fillHeight: true
             onBackRequested: if (root.host) root.host.collapseCard(root.cardIndex)

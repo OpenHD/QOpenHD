@@ -237,7 +237,7 @@ Rectangle {
             Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: !!root.remoteId.aircraftParameter; text: qsTr("Aircraft ID") }
             RowLayout {
                 visible: !!root.remoteId.aircraftParameter; Layout.fillWidth: true
-                TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: aircraftIdInput; objectName: "craftRemoteAircraftId"
                     Layout.fillWidth: true; maximumLength: 20; selectByMouse: true
                     enabled: root.online && !root.fc.armed && !root.fcAction.remote_id_busy
@@ -252,7 +252,7 @@ Rectangle {
             Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; visible: !!root.remoteId.operatorParameter; text: qsTr("Operator ID") }
             RowLayout {
                 visible: !!root.remoteId.operatorParameter; Layout.fillWidth: true
-                TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: operatorIdInput; objectName: "craftRemoteOperatorId"
                     Layout.fillWidth: true; maximumLength: 20; selectByMouse: true
                     enabled: root.online && !root.fc.armed && !root.fcAction.remote_id_busy

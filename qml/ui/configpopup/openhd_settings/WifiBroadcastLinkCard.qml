@@ -37,13 +37,6 @@ Rectangle {
                                       : _ohdSystemAir.curr_channel_width_mhz))
     property int currentMcs: simulated ? 4 : _ohdSystemAir.curr_mcs_index
     property int settingsRevision: _ohdSystemGroundSettings.update_count + _ohdSystemAirSettingsModel.update_count
-    property bool adaptiveAvailable: settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_ADAPT_CH")
-    property bool fhssAvailable: settingsRevision >= 0 &&
-                                 (_ohdSystemGroundSettings.param_int_exists("WB_FHSS") ||
-                                  _ohdSystemAirSettingsModel.param_int_exists("WB_FHSS"))
-    property bool dwellAvailable: settingsRevision >= 0 &&
-                                 (_ohdSystemGroundSettings.param_int_exists("WB_FHSS_SLOT") ||
-                                  _ohdSystemAirSettingsModel.param_int_exists("WB_FHSS_SLOT"))
     property bool pitModeAvailable: settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("WB_PIT_MODE")
     property bool airPowerAvailable: settingsRevision >= 0 && _ohdSystemAirSettingsModel.param_int_exists("TX_PWR_LVL")
     property bool groundPowerAvailable: settingsRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("TX_PWR_LVL")
@@ -96,7 +89,7 @@ Rectangle {
     function controls() {
         var result = linkSwitchAvailable ? [linkSwitch, scan, analyze, frequencyFilter, frequency, bandwidth, mcs]
                                          : [scan, analyze, frequencyFilter, frequency, bandwidth, mcs]
-        var settings = [pitMode, airPower, groundPower, espAnalyseAir, espAnalyseGround, adaptive, fhss, dwell]
+        var settings = [pitMode, airPower, groundPower, espAnalyseAir, espAnalyseGround]
         for (var i = 0; i < settings.length; ++i)
             if (settings[i].visible && settings[i].focusControl && settings[i].focusControl.enabled)
                 result.push(settings[i].focusControl)
@@ -205,7 +198,7 @@ Rectangle {
                             anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
                             anchors.margins: 12; spacing: 10
                             Text { text: qsTr("Find a channel"); color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
-                            Text { Layout.fillWidth: true; text: qsTr("Scan to find your Air unit, or analyze interference before choosing a frequency."); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap }
+
                             RowLayout {
                                 Layout.fillWidth: true; spacing: 8
                                 AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
@@ -216,7 +209,7 @@ Rectangle {
                                       Column {
                                         width: parent.width; anchors.verticalCenter: parent.verticalCenter; spacing: 5
                                         Text { width: parent.width; text: scan.text; color: "white"; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter }
-                                        Text { width: parent.width; text: qsTr("Find Air unit"); color: "white"; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter }
+
                                       }
                                     }
                                     background: Rectangle { radius: 8; color: scan.down ? Qt.darker(settings_form.accentColor, 1.2) : (scan.hovered ? Qt.lighter(settings_form.accentColor, 1.1) : settings_form.accentColor); opacity: scan.enabled ? 1 : 0.45; border.color: scan.activeFocus ? settings_form.primaryText : settings_form.accentColor; border.width: scan.activeFocus ? 2 : 1 }
@@ -231,7 +224,7 @@ Rectangle {
                                       Column {
                                         width: parent.width; anchors.verticalCenter: parent.verticalCenter; spacing: 5
                                         Text { width: parent.width; text: analyze.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter }
-                                        Text { width: parent.width; text: qsTr("Check interference"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter }
+
                                       }
                                     }
                                     background: Rectangle { radius: 8; color: analyze.down || analyze.hovered ? settings_form.panelBackgroundRaised : settings_form.panelBackground; border.color: analyze.activeFocus || analyze.hovered ? settings_form.accentColor : settings_form.lineColor; border.width: analyze.activeFocus ? 2 : 1; opacity: analyze.enabled ? 1 : 0.6 }
@@ -356,29 +349,9 @@ Rectangle {
             }
         }
 
-        Rectangle {
-            visible: _qopenhd.debugMenuPreview || (root.adaptiveAvailable || (settings_form.showAdvancedSettings && (root.fhssAvailable || root.dwellAvailable)))
-            Layout.fillWidth: true; Layout.preferredHeight: visible ? 66 : 0
-            radius: 7; color: settings_form.panelBackground; border.color: settings_form.lineColor
-            RowLayout { anchors.fill: parent; anchors.margins: 7; spacing: 10
-                DynamicLinkSetting { id: adaptive; Layout.fillWidth: true; visible: _qopenhd.debugMenuPreview || (root.adaptiveAvailable); settingsModel: _ohdSystemAirSettingsModel; paramId: "WB_ADAPT_CH"; label: qsTr("Adaptive Link"); preferRadioToggle: true; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                ColumnLayout {
-                    visible: settings_form.showAdvancedSettings && (_qopenhd.debugMenuPreview || root.fhssAvailable || root.dwellAvailable)
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: root.dwellAvailable ? 210 : 120
-                    spacing: 1
-                    Text { text: qsTr("FHSS"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
-                    RowLayout {
-                        Layout.fillWidth: true; spacing: 10
-                        DynamicLinkSetting { id: fhss; Layout.preferredWidth: 190; visible: _qopenhd.debugMenuPreview || (root.fhssAvailable); settingsModel: _ohdSystemGroundSettings; paramId: "WB_FHSS"; label: qsTr("Enable"); preferRadioToggle: true; commitHandler: function(value) { host.setFhss(value !== 0) }; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                        DynamicLinkSetting { id: dwell; Layout.fillWidth: true; visible: _qopenhd.debugMenuPreview || (root.dwellAvailable); settingsModel: _ohdSystemGroundSettings.param_int_exists("WB_FHSS_SLOT") ? _ohdSystemGroundSettings : _ohdSystemAirSettingsModel; paramId: "WB_FHSS_SLOT"; label: qsTr("Dwell"); commitHandler: function(value) { host.setBoth("WB_FHSS_SLOT", value) }; onMoveRequested: root.moveFocus(step); onBackRequested: root.leaveCard() }
-                    }
-                }
-            }
-        }
 
         LinkUsageMeter {
-            visible: settings_form.showAdvancedSettings
+            visible: root.host && root.host.showIndividualLinkUsage && settings_form.showAdvancedSettings
             Layout.fillWidth: true
             Layout.preferredHeight: implicitHeight
             usage: root.host ? root.host.usageFor("wifi") : null

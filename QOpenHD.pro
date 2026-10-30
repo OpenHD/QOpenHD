@@ -203,6 +203,7 @@ SOURCES += \
     app/util/mousehelper.cpp \
     app/util/uisimulator.cpp \
     app/util/qopenhd.cpp \
+    app/util/settingsbackup.cpp \
     app/util/asyncping.cpp \
     app/util/asynccommandrunner.cpp \
     app/util/WorkaroundMessageBox.cpp \
@@ -228,6 +229,7 @@ HEADERS += \
     app/util/mousehelper.h \
     app/util/uisimulator.h \
     app/util/qopenhd.h \
+    app/util/settingsbackup.h \
     app/util/qtcreatorlaunch.h \
     app/util/asyncping.h \
     app/util/asynccommandrunner.h \

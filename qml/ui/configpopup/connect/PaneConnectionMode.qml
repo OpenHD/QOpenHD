@@ -244,15 +244,7 @@ Rectangle {
                             contentItem: Text { text: tcpMode.text; color: tcpMode.highlighted ? "white" : settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         }
                     }
-                    Text {
-                        Layout.fillWidth: true
-                        text: settings.qopenhd_mavlink_connection_mode === 0
-                              ? qsTr("Automatically detects USB tethering, Ethernet and hotspot connections.")
-                              : (settings.qopenhd_mavlink_connection_mode === 1
-                                 ? qsTr("Receives forwarded MAVLink telemetry on UDP port 5600.")
-                                 : qsTr("Connects directly to a selected OpenHD TCP address on port 5760."))
-                        color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; wrapMode: Text.WordWrap
-                    }
+
                 }
             }
 

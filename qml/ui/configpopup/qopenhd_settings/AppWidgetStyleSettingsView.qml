@@ -63,7 +63,7 @@ FocusScope {
             ColumnLayout {
                 Layout.fillWidth:true;spacing:2
                 Text {text:qsTr("OSD Style");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true}
-                Text {Layout.fillWidth:true;text:qsTr("Colours, fonts and the appearance of your flight screen.");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
+
             }
         }
         Flickable {

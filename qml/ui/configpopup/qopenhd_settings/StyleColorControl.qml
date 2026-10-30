@@ -29,7 +29,7 @@ Rectangle {
             ColumnLayout {
                 Layout.fillWidth:true;spacing:2
                 Text {Layout.fillWidth:true;text:root.label;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true;wrapMode:Text.WordWrap}
-                Text {Layout.fillWidth:true;text:root.hint;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
+
             }
         }
         Row {
@@ -68,8 +68,8 @@ Rectangle {
         title:qsTr("%1 colour").arg(root.label)
         contentItem:ColumnLayout {
             spacing:12
-            Text {Layout.fillWidth:true;text:qsTr("Hex colour: #RRGGBB or #AARRGGBB");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
-            TextField {id:hexInput;Layout.fillWidth:true;selectByMouse:true;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body}
+
+            TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6;id:hexInput;Layout.fillWidth:true;selectByMouse:true;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body}
         }
         footer:Item {
             implicitHeight:64

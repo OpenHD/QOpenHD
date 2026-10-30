@@ -15,11 +15,11 @@ Rectangle {
   GradientStop {position:1;color:settings_form.darkMode?"#071e2d":settings_form.panelBackground}
  }
  RowLayout {
-  id:header;x:14;y:12;width:parent.width-28;height:root.subtitle.length?48:28;spacing:10
+  id:header;x:14;y:12;width:parent.width-28;height:Math.max(28,implicitHeight);spacing:10
   Text {text:root.icon;color:settings_form.accentColor;font.family:"Font Awesome 5 Free";font.pixelSize:Typography.sectionIcon;visible:text.length>0}
   ColumnLayout {Layout.fillWidth:true;spacing:2
    Text {Layout.fillWidth:true;text:root.title;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true;wrapMode:Text.WordWrap}
-   Text {Layout.fillWidth:true;text:root.subtitle;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap;visible:text.length>0}
+
   }
   Text {text:root.headerNote;visible:text.length>0;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
  }

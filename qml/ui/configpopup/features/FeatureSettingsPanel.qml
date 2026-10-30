@@ -8,7 +8,7 @@ import ".."
 import "../openhd_settings"
 
 AdvancedPage {
-    showPageHeader: true
+    showPageHeader: false
     id: root
     pageIcon: "\uf1eb"
     pageTitle: qsTr("Extras")
@@ -130,10 +130,7 @@ AdvancedPage {
                         ColumnLayout {
                             id: audioAirColumn; anchors.fill: parent; spacing: 10
                             Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("AUDIO INPUT & OUTPUT"); color: settings_form.primaryText; font.bold: true }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Choose the air-unit microphone and this device's audio output. Audio is disabled by default.")
-                            }
+
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Stream audio from air unit"); color: settings_form.primaryText; Layout.fillWidth: true }
@@ -164,23 +161,6 @@ AdvancedPage {
                                         if (root.audioModeValue !== 1) root.setAirInt("AUDIO_ENABLE", values[index])
                                     }
                                 }
-                            }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                visible: !root.audioAvailable || !root.exampleAudioAvailable
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: !root.audioAvailable ? qsTr("Connect an air unit to configure audio streaming.")
-                                      : qsTr("Update OpenHD to select example audio explicitly.")
-                            }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                objectName: "usbAudioDiagnostic"
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap
-                                color: root.usbAudioCount > 0 ? "#35d36b" : settings_form.secondaryText
-                                text: root.usbAudioStatus
-                            }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                visible: text.length > 0
-                                text: root.captureAudioStatus + " " + qsTr("Detection is reported at air-unit startup.")
                             }
                             RowLayout {
                                 Layout.fillWidth: true
@@ -227,10 +207,7 @@ AdvancedPage {
                                 }
                                 Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; id: gainValue; text: Math.round(gainSlider.value) + "%"; color: settings_form.primaryText; Layout.preferredWidth: 64 }
                             }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Boost quiet microphones up to 1000% (+20 dB). Start at 200–400% and reduce the gain if sound becomes noisy or distorted.")
-                            }
+
                             Loader {
                                 Layout.fillWidth: true
                                 active: QOPENHD_AUDIO_PLAYBACK_AVAILABLE
@@ -301,11 +278,7 @@ AdvancedPage {
                                     onActivated: settings.adsb_source = index
                                 }
                             }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                visible: _qopenhd.debugMenuPreview || (settings.adsb_source === 0)
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Internet traffic requires no SDR. Uses craft GPS, ground-device location, or an automatic approximate internet position when GPS is unavailable.")
-                            }
+
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Display radius"); color: settings_form.primaryText; Layout.fillWidth: true }
@@ -354,10 +327,7 @@ AdvancedPage {
                                     text: _rcchannelsmodelfc.is_alive ? qsTr("RC channel data received") : qsTr("No RC channel data from the flight controller")
                                 }
                             }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Data lines must be near 1000 or 2000 µs. The clock must alternate while a command is sent. Mid-position values are invalid.")
-                            }
+
                             Repeater {
                                 model: _rcchannelsmodelfc
                                 delegate: RowLayout {
@@ -398,10 +368,7 @@ AdvancedPage {
                         ColumnLayout {
                             id: diagnosticsColumn; anchors.fill: parent; spacing: 8
                             Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("DIAGNOSTIC LOGS"); color: settings_form.primaryText; font.bold: true }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Start or stop split OpenHD logs immediately. Files are written to the video partition under logs/openhd.")
-                            }
+
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("OpenHD logs on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
@@ -420,10 +387,7 @@ AdvancedPage {
                                     onToggled: root.setGroundInt("LOG_OPENHD", checked ? 1 : 0)
                                 }
                             }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Raw MAVLink telemetry recording is optional and separate from the OpenHD diagnostic logs.")
-                            }
+
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Raw telemetry recording on Air"); color: settings_form.primaryText; Layout.fillWidth: true }
@@ -465,7 +429,7 @@ AdvancedPage {
                         ColumnLayout {
                             id: dataColumn; anchors.fill: parent; spacing: 11
                             Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("UNIVERSAL UDP DATA LINK"); color: settings_form.primaryText; font.bold: true }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText; text: qsTr("Bridges localhost UDP through encrypted wifibroadcast. FEC overhead is deducted from the configured RF budget.") }
+
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Enabled on air and ground"); color: settings_form.primaryText; Layout.fillWidth: true }

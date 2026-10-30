@@ -18,6 +18,8 @@ class FleetControlLte : public QObject {
   Q_PROPERTY(int downloadKbit READ downloadKbit NOTIFY statusChanged)
   Q_PROPERTY(int configuredMaxKbit READ configuredMaxKbit NOTIFY statusChanged)
   Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
+  Q_PROPERTY(bool online READ online NOTIFY statusChanged)
+  Q_PROPERTY(QVariantList settingsBackups READ settingsBackups NOTIFY statusChanged)
   Q_PROPERTY(bool authenticated READ authenticated NOTIFY statusChanged)
   Q_PROPERTY(bool busy READ busy NOTIFY statusChanged)
   Q_PROPERTY(QString endpoint READ endpoint NOTIFY statusChanged)
@@ -38,6 +40,9 @@ class FleetControlLte : public QObject {
   Q_INVOKABLE void login(const QString& username, const QString& password);
   Q_INVOKABLE void logout();
   Q_INVOKABLE void refreshAccount();
+  Q_INVOKABLE void refreshSettingsBackups();
+  Q_INVOKABLE void saveSettingsBackup(const QString& name,const QVariantMap& document);
+  Q_INVOKABLE void loadSettingsBackup(const QString& id);
   Q_INVOKABLE void createCraft(const QString& name);
   Q_INVOKABLE void bindLicense(const QString& licenseId,
                                const QString& craftId);
@@ -47,6 +52,8 @@ class FleetControlLte : public QObject {
                                bool video1, bool video2);
   Q_INVOKABLE void setTransmission(const QString& craftId, bool enabled);
 
+  bool online() const { return m_online; }
+  QVariantList settingsBackups() const { return m_settings_backups; }
   bool configured() const { return m_configured; }
   bool active() const { return m_active; }
   int uploadKbit() const { return m_upload_kbit; }
@@ -69,6 +76,7 @@ class FleetControlLte : public QObject {
 
  signals:
   void statusChanged();
+  void settingsBackupReady(QVariantMap document);
 
  private:
   using ReplyHandler =
@@ -86,12 +94,14 @@ class FleetControlLte : public QObject {
   bool installCertificate(const QByteArray& certificate, QString& path,
                           QString& error);
 
+  bool m_online = false;
+  QVariantList m_settings_backups;
   bool m_configured = false;
   bool m_active = false;
   int m_upload_kbit = 0;
   int m_download_kbit = 0;
   int m_configured_max_kbit = 0;
-  QString m_status_text = QStringLiteral("Sign in to FleetControl");
+  QString m_status_text = QStringLiteral("Not Connected!");
   bool m_authenticated = false;
   bool m_busy = false;
   const QString m_endpoint = QStringLiteral("https://openhd.tech");

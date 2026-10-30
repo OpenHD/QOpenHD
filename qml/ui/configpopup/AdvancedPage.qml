@@ -63,11 +63,7 @@ FocusScope {
                 font.pixelSize: MenuTypography.pageTitle; font.family: MenuTypography.family
                 font.bold: true
             }
-            Text {
-                text: root.pageSubtitle
-                color: settings_form.secondaryText
-                font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-            }
+
         }
     }
 

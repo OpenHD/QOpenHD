@@ -1,5 +1,7 @@
 #pragma once
-#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+#if defined(QOPENHD_ENABLE_RPI_VIDEO)
+#include "../rpi/PiDecoder.hpp"
+#elif defined(QOPENHD_ENABLE_ROCKCHIP_VIDEO)
 #include "../rockchip/MppDecoder.hpp"
 #else
 #include "HantroDecoder.hpp"

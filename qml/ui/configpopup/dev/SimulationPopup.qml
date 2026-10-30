@@ -22,11 +22,7 @@ AdvancedDialog {
     onOpened: if(simulator) draft=Object.assign({},simulator.profile)
     contentItem: ColumnLayout {
         spacing: 12
-        Text {
-            Layout.fillWidth: true
-            text: qsTr("Offline UI simulation. Telemetry and device settings stay separate from live devices. No video is transmitted or decoded.")
-            color: "#aebdcb"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; wrapMode: Text.WordWrap
-        }
+
         ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true

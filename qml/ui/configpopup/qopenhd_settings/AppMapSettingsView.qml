@@ -156,13 +156,13 @@ FocusScope {
       Column {
        width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
        Text {text:qsTr("Map Provider");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
-       Text {text:qsTr("Select map data source");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
+
        CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;objectName:"mapProvider";optionIcon:"\uf279";width:parent.width;height:Typography.controlHeight;model:root.mapTarget?root.mapTarget.pluginModel:[];textRole:"description";currentIndex:settings.selected_map_provider;onActivated:settings.selected_map_provider=currentIndex}
       }
       Column {
        width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
        Text {text:qsTr("Map Style");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
-       Text {text:qsTr("Visual style for the map");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
+
        CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;
         id:mapStyle;objectName:"mapStyle";width:parent.width;height:Typography.controlHeight;textRole:"description"
         model:root.mapTarget&&root.mapTarget.activeProviderName==="mapboxgl"?root.mapTarget.supportedMapTypes:[{description:settings.selected_map_provider===2?qsTr("Offline"):settings.selected_map_provider===1?qsTr("Streets"):qsTr("Standard (default)")}]
@@ -173,12 +173,12 @@ FocusScope {
       Column {
        width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
        Text {text:qsTr("Mapbox API key");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
-       Text {text:qsTr("Required for Mapbox maps");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
+
        TextField {objectName:"mapApiKey";width:parent.width;height:Typography.controlHeight;leftPadding:12;rightPadding:12;topPadding:0;bottomPadding:0;verticalAlignment:TextInput.AlignVCenter;text:settings.map_api_key;placeholderText:"pk.xxxxx";echoMode:TextInput.Password;selectByMouse:true;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;onEditingFinished:settings.map_api_key=text.trim();background:Rectangle {radius:7;color:settings_form.pageBackground;border.color:settings_form.lineColor}}
       }
      }
      Flow {Layout.fillWidth:true;Layout.preferredHeight:childrenRect.height;spacing:10
-      Text {width:Math.max(160,parent.width-160);text:qsTr("Mapbox requires a public access token from account.mapbox.com. OpenStreetMap and OpenHD Offline need no key.");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
+
       MapActionButton {objectName:"reloadMap";text:qsTr("Reload map");iconText:"\uf2f1";enabled:!!root.mapTarget;onClicked:{root.mapTarget.configure();root.refreshPreview()}}
      }
     }
@@ -205,7 +205,7 @@ FocusScope {
       Text {text:"\uf0ad";font.family:"Font Awesome 5 Free";font.pixelSize:Typography.sectionIcon;color:settings_form.secondaryText}
       ColumnLayout {Layout.fillWidth:true;spacing:2
        Text {text:qsTr("Developer / Demo");font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true;color:settings_form.primaryText}
-       Text {Layout.fillWidth:true;text:qsTr("Tools for map development");font.family:Typography.family;font.pixelSize:Typography.helper;color:settings_form.secondaryText;wrapMode:Text.WordWrap}
+
       }
       MapActionButton {objectName:"toggleMapDemo";text:root.mapTarget&&root.mapTarget.demoFlight?qsTr("Stop demo"):qsTr("Debug: circling plane");iconText:"\uf2f1";enabled:!!root.mapTarget;onClicked:{root.mapTarget.demoFlight=!root.mapTarget.demoFlight;if(root.mapTarget.demoFlight){settings.show_map=true;root.mapTarget.followDrone=true}root.refreshPreview()}}
      }
@@ -262,7 +262,7 @@ FocusScope {
         Text {text:"\uf279";font.family:"Font Awesome 5 Free";font.pixelSize:Typography.sectionIcon;color:settings_form.accentColor}
         ColumnLayout {Layout.fillWidth:true;spacing:2
          Text {text:qsTr("Create Offline Map");font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true;color:settings_form.primaryText}
-         Text {text:qsTr("Choose a map region for offline use");font.family:Typography.family;font.pixelSize:Typography.helper;color:settings_form.secondaryText}
+
         }
        }
        RowLayout {width:parent.width;spacing:8
@@ -293,7 +293,7 @@ FocusScope {
          MapActionButton {objectName:"createOfflineMap";text:qsTr("Create map");iconText:"\uf019";primary:true;enabled:root.selecting&&root.estimatedTiles>0&&!root.busy;onClicked:root.createMap()}
         }
        }
-       Text {width:parent.width;text:root.selectionMode==="circle"?qsTr("Circle: 50 km radius. File size depends on map detail."):qsTr("Draw a rectangle in the preview. File size depends on map detail.");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
+
        Text {width:parent.width;text:root.builder?root.builder.status:qsTr("Offline map builder unavailable");visible:text.length>0;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
        ProgressBar {width:parent.width;visible:root.busy;value:root.builder?root.builder.progress:0;indeterminate:root.builder&&(root.builder.searching||root.builder.progress===0)}
        MapActionButton {text:qsTr("Cancel");visible:root.busy;onClicked:root.builder.cancel()}

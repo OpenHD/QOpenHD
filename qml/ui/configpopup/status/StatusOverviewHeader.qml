@@ -39,8 +39,8 @@ Item {
                 onClicked: settings_form.creditsStarClicked()
             }
         }
-        Text { x: 66; y: 5; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
-        Text { x: 66; y: 47; text: settings_form.menuPageSubtitle; color: settings_form.secondaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body }
+        Text { x: 66; y: 12; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
+
         Rectangle {
             x: header.compactTelemetry ? 0 : parent.width - 960; y: header.compactTelemetry ? 80 : 0; width: 424; height: 56; radius: 28
             color: "transparent"; border.color: "transparent"

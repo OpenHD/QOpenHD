@@ -13,6 +13,16 @@ Item {
  Menu.AdvancedTabButton {id:tab;text:"General";x:400;y:10}
  Pages.GeneralSettingsCard {id:generalCard;x:10;y:80;width:420;height:implicitHeight;title:"General heading";hint:"General description"}
  Pages.MapSettingsCard {id:mapCard;x:440;y:80;width:420;height:implicitHeight;title:"Map heading";subtitle:"Map description"}
+ Menu.AdvancedTabBar {
+  id:extrasTabs;x:10;y:350;width:800;spacing:6
+  Menu.AdvancedTabButton {text:"AUDIO";iconText:"A"}
+  Menu.AdvancedTabButton {text:"ADS-B";iconText:"B"}
+  Menu.AdvancedTabButton {text:"RC / LOGS";iconText:"R"}
+  Menu.AdvancedTabButton {text:"DATA LINK";iconText:"D"}
+  Menu.AdvancedTabButton {text:"UART";iconText:"U"}
+  Menu.AdvancedTabButton {text:"JOYSTICK";iconText:"J"}
+  Menu.AdvancedTabButton {text:"FLEETCONTROL";iconText:"F"}
+ }
  TestCase {
   name:"SharedMenuStyle";when:windowShown
   function textItem(item,text){if(item.text===text)return item;var children=item.children||[];for(var i=0;i<children.length;i++){var match=textItem(children[i],text);if(match)return match}return null}
@@ -28,9 +38,20 @@ Item {
   function test_matching_text_roles(){
    compare(textItem(generalCard,"General heading").font.pixelSize,Typography.sectionTitle)
    compare(textItem(mapCard,"Map heading").font.pixelSize,Typography.sectionTitle)
-   compare(textItem(generalCard,"General description").font.pixelSize,Typography.helper)
-   compare(textItem(mapCard,"Map description").font.pixelSize,Typography.helper)
+   compare(textItem(generalCard,"General description"),null)
+   compare(textItem(mapCard,"Map description"),null)
    compare(textItem(action,"Action").font.pixelSize,Typography.body)
+  }
+  function test_tabs_fit_at_full_and_reduced_width(){
+   extrasTabs.width=1000;wait(20);compare(extrasTabs.compactTabs,false)
+   extrasTabs.width=360;wait(20);compare(extrasTabs.compactTabs,true)
+   var total=0
+   for(var i=0;i<extrasTabs.count;i++){
+    verify(extrasTabs.itemAt(i).iconOnly)
+    total+=extrasTabs.itemAt(i).width
+   }
+   verify(total+(extrasTabs.count-1)*extrasTabs.spacing<=extrasTabs.width)
+   extrasTabs.width=1000;wait(20);compare(extrasTabs.compactTabs,false)
   }
  }
 }

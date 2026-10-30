@@ -47,6 +47,12 @@ int main(int argc,char** argv) {
         check(air->is_alive()&&ground->is_alive(),"Both systems must appear online");
         check(ground->ohd_platform_type()==21&&air->ohd_platform_type()==11,"Default ROCK5A/Pi topology");
         check(primary->get_cached_int("CAMERA_TYPE")==32&&secondary->get_cached_int("CAMERA_TYPE")==3,"Default IMX708/IP topology");
+        for (const auto* id : {"ISO","EXP_MODE","DENOISE_INDEX_LC","AWB_MODE_LC","GX_EXPOSURE","ISP_GAIN","HIGH_ENCRYPTION"}) {
+            check(!params->param_int_exists(id),"Camera controls must never be seeded on Air/System");
+        }
+        check(primary->param_int_exists("AWB_MODE_LC")&&primary->param_int_exists("EXPOSURE_LC"),"Libcamera image controls belong to the selected camera");
+        check(!primary->param_int_exists("GX_EXPOSURE")&&!primary->param_int_exists("ISP_GAIN"),"IMX708 must not expose unrelated ISPs");
+        check(!secondary->param_int_exists("AWB_MODE_LC")&&!secondary->param_int_exists("BRIGHTNESS"),"IP camera has no local ISP controls");
         check(params->get_ui_metadata("WB_MCS_INDEX").value("control")=="dropdown","Simulator must install valid isolated metadata");
         check(params->get_ui_metadata("MULTI_LINK_CAP").value("readOnly").toBool(),"Capabilities must remain read only");
         const auto beforeLive=MavlinkSettingsModel::instanceAir().get_cached_int("WB_MCS_INDEX");
@@ -78,6 +84,12 @@ int main(int argc,char** argv) {
         auto streams=air->link_usage().first().toMap()["allocation"].toMap()["streams"].toList();
         check(streams[0].toMap()["percent"].toInt()==60&&streams[1].toMap()["percent"].toInt()==40,"Complementary camera shares");
         check(air->link_usage().size()==2,"Both links must be displayed");
+        check(sim.start({{"air",11},{"camera1",64},{"camera2",3}}),"GX camera scenario starts");
+        check(primary->param_int_exists("GX_EXPOSURE")&&primary->param_int_exists("GX_SHARPNESS"),"GX controls belong to the GX camera component");
+        check(primary->get_ui_metadata("GX_EXPOSURE").value("cameraCategory")=="IMAGE","GX controls are grouped under Image");
+        check(!primary->param_int_exists("EXPOSURE_LC")&&!secondary->param_int_exists("GX_EXPOSURE"),"Camera capabilities are isolated per stream");
+        check(sim.start({{"camera1",32}}),"Switch back to IMX708");
+        check(!primary->param_int_exists("GX_EXPOSURE")&&primary->param_int_exists("EXPOSURE_LC"),"Switching cameras replaces the supported settings");
         check(sim.start({{"state",0}}),"Disconnected scenario starts");check(!air->is_alive(),"Disconnected fixture must appear offline");
         check(sim.start({{"state",2}}),"Restarting scenario starts");check(camera2->camera_status()==2,"Restarting fixture state");
         check(sim.start({{"ground",21},{"air",11},{"camera1",32},{"camera2",3},{"state",1},{"link",1},{"secondLink",2},{"groundRadios",2}}),"Restore example profile");

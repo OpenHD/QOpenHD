@@ -25,6 +25,28 @@ QJsonObject fallback() {
 }
 }
 
+bool DocumentedParam::is_camera_setting(const QString& id) {
+    return fallback().value(id).toObject().value("cameraOnly").toBool();
+}
+
+QString DocumentedParam::camera_setting_category(const QString& id) {
+    return fallback().value(id).toObject().value("cameraCategory").toString();
+}
+
+bool DocumentedParam::camera_setting_supported(const QString& id,int cameraType,int platformType) {
+    if (cameraType < 0 || cameraType == 255) return false;
+    const auto entry = fallback().value(id).toObject();
+    const auto types = entry.value("supportedCameraTypes").toArray();
+    if (!types.isEmpty() && !types.contains(cameraType)) return false;
+    if (entry.value("excludedPlatforms").toArray().contains(platformType)) return false;
+    // External and dummy sources have no local image sensor or ISP controls.
+    if (cameraType == 0 || cameraType == 2 || cameraType == 3 || cameraType == 4) {
+        const auto category = entry.value("cameraCategory").toString();
+        if (category == "IMAGE" || category == "EXPOSURE") return false;
+    }
+    return true;
+}
+
 bool DocumentedParam::install_metadata(int sys,int comp,const QByteArray& bytes) {
     if (bytes.size()>1024*1024) return false;
     const auto doc=QJsonDocument::fromJson(bytes).object();

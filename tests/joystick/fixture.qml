@@ -74,11 +74,21 @@ Item {
          compare(Mapping.movedInput([1000,1000],[1500,1000]),0)
      }
      function test_live_learning_and_persistence(){
-         var p=loader.item;p.monitor();compare(_ohdSystemGroundSettings.monitorValue,1);compare(_ohdSystemGroundSettings.enabledValue,0)
+         var p=loader.item;_ohdSystemGroundSettings.enabledValue=1;_ohdSystemGroundSettings.update_count++;wait(30);compare(_ohdSystemGroundSettings.monitorValue,1);compare(_ohdSystemGroundSettings.enabledValue,1)
          p.learn(3);var v=_joystickInputModel.values.slice();v[2]=1800;_joystickInputModel.values=v
          tryCompare(p,"learning",-1);compare(p.mapping[3],3);compare(p.mapping[2],0);verify(p.dirty)
          p.save();compare(_ohdSystemGroundSettings.lastId,"RC_CHAN_MAP");compare(Mapping.parse(_ohdSystemGroundSettings.saved)[3],3);verify(!p.dirty)
-         p.visible=false;compare(_ohdSystemGroundSettings.monitorValue,0);compare(_ohdSystemGroundSettings.enabledValue,0)
+         p.visible=false;compare(_ohdSystemGroundSettings.monitorValue,0);compare(_ohdSystemGroundSettings.enabledValue,1)
+     }
+     function test_automatic_reading(){
+         var p=loader.item;compare(findChild(p,"joystickMonitor"),null);verify(!p.monitoring)
+         _ohdSystemGroundSettings.enabledValue=1;_ohdSystemGroundSettings.update_count++
+         verify(p.monitoring);tryCompare(_ohdSystemGroundSettings,"monitorValue",1)
+         tryCompare(p,"values",_joystickInputModel.values)
+         _joystickInputModel.is_alive=false;verify(!p.monitoring)
+         _joystickInputModel.is_alive=true;verify(p.monitoring)
+         _ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.update_count++
+         verify(!p.monitoring);tryCompare(p,"values",[]);tryCompare(_ohdSystemGroundSettings,"monitorValue",0)
      }
      function test_selector_uses_output_not_choice_index(){
          var p=loader.item;var combo=findChild(p,"joystickSource4");combo.currentIndex=3;combo.activated(3)
@@ -86,8 +96,20 @@ Item {
      }
      function test_errors_and_access(){
          var p=loader.item;p.assign(3,3);_ohdSystemGroundSettings.error="Rejected";p.save();verify(p.dirty);compare(p.message,"Rejected")
-         _fcMavlinkSystem.armed=true;verify(!findChild(p,"joystickSave").enabled);_ohdSystemGroundSettings.lastId="";p.monitor();compare(_ohdSystemGroundSettings.lastId,"")
+         _fcMavlinkSystem.armed=true;verify(!findChild(p,"joystickSave").enabled);_ohdSystemGroundSettings.lastId="";p.save();compare(_ohdSystemGroundSettings.lastId,"")
          _fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=false;_ohdSystemGroundSettings.update_count++;verify(!p.available)
+     }
+     function test_transmit_uses_enable_joy_rc_and_tracks_rejections(){
+         var p=loader.item,toggle=findChild(p,"joystickTransmit")
+         _ohdSystemGroundSettings.enabledValue=1;_ohdSystemGroundSettings.update_count++
+         verify(p.transmitting);verify(toggle.checked)
+         toggle.checked=false;toggle.toggled()
+         compare(_ohdSystemGroundSettings.enabledValue,0)
+         _ohdSystemGroundSettings.error="Rejected"
+         toggle.checked=true;toggle.toggled()
+         compare(_ohdSystemGroundSettings.enabledValue,0);compare(toggle.checked,false)
+         _ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.enabledValue=1;_ohdSystemGroundSettings.update_count++
+         compare(toggle.checked,true)
      }
      function test_legacy_and_lua_helper(){
          var p=loader.item;_ohdSystemGroundSettings.modern=false;_ohdSystemGroundSettings.update_count++;verify(!p.modern);p.assign(3,3);compare(p.mapping[2],3)

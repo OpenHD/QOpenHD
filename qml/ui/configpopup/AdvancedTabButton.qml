@@ -15,8 +15,11 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
             Qt.callLater(TabBar.tabBar.ensureAvailableTab)
     }
     property string iconText: ""
+    readonly property bool iconOnly: iconText.length > 0 && TabBar.tabBar && TabBar.tabBar.compactTabs === true
+    readonly property real naturalWidth: Math.max(MenuTypography.controlMinWidth, label.implicitWidth + (iconText.length > 0 ? 26 : 0) + MenuTypography.controlPadding * 2)
+    Accessible.name: text
     implicitHeight: MenuTypography.controlHeight
-    implicitWidth: Math.max(MenuTypography.controlMinWidth, tabContent.implicitWidth + MenuTypography.controlPadding * 2)
+    implicitWidth: iconOnly ? MenuTypography.controlHeight : naturalWidth
     hoverEnabled: true
     activeFocusOnTab: true
     padding: 0
@@ -26,7 +29,7 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
         Row {
             id: tabContent
             anchors.centerIn: parent
-            spacing: control.iconText.length > 0 ? 8 : 0
+            spacing: control.iconText.length > 0 && !control.iconOnly ? 8 : 0
 
             Text {
                 visible: control.iconText.length > 0
@@ -42,6 +45,7 @@ TabButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.b
 
             Text {
                 id: label
+                visible: !control.iconOnly
                 height: Math.max(18, implicitHeight)
                 text: control.text
                 color: control.checked ? "white" : settings_form.primaryText

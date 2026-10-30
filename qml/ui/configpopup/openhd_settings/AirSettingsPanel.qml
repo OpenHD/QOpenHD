@@ -10,7 +10,9 @@ import "AirSettingsLayout.js" as AirLayout
 FocusScope {
     id: root
     signal backRequested()
-    property var settingsModel: _ohdSystemAirSettingsModel
+    property bool groundMode: false
+    property var settingsModel: groundMode ? _ohdSystemGroundSettings : _ohdSystemAirSettingsModel
+    property var systemModel: groundMode ? _ohdSystemGround : _ohdSystemAir
     property string activeCategory: "fc"
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
     Material.accent: settings_form.accentColor
@@ -19,18 +21,27 @@ FocusScope {
     readonly property bool preview: _qopenhd.debugMenuPreview
     readonly property bool advanced: settings_form.showAdvancedSettings
     readonly property bool developer: settings_form.showDeveloperSettings === true
-    readonly property var categories: AirLayout.categories.filter(function(c) { return (c.id !== "expert" || root.advanced) && (c.id !== "developer" || root.developer) && root.categoryCount(c.id) > 0 })
+    readonly property var categories: AirLayout.categories.filter(function(c) { return (c.id !== "expert" || root.advanced) && (c.id !== "ethernet" || root.advanced || root.developer) && (c.id !== "developer" || root.developer) && root.categoryCount(c.id) > 0 })
     readonly property string parameterKey: {
         var changed = revision
         var previewChanged = preview
         var includeAdvanced = advanced
         var includeDeveloper = developer
-        return AirLayout.availableParameterIds(settingsModel, includeAdvanced, includeDeveloper, previewChanged).join("|")
+        return (groundMode ? AirLayout.availableGroundParameterIds(settingsModel, includeAdvanced, includeDeveloper, previewChanged) : AirLayout.availableParameterIds(settingsModel, includeAdvanced, includeDeveloper, previewChanged)).join("|")
     }
     readonly property var parameterIds: parameterKey.length ? parameterKey.split("|") : []
     readonly property var category: {
         for (var i=0;i<AirLayout.categories.length;i++) if(AirLayout.categories[i].id===activeCategory) return AirLayout.categories[i]
         return AirLayout.categories[0]
+    }
+    readonly property int wifiMode: {
+        revision
+        return settingsModel.param_int_exists("WIFI_MODE") ? settingsModel.get_cached_int("WIFI_MODE") : 1
+    }
+    function wifiParameterVisible(id) {
+        if (id.indexOf("WIFI_CL_") === 0) return wifiMode === 2
+        if (id.indexOf("WIFI_HS_") === 0 || id === "WIFI_HOTSPOT_E") return wifiMode === 1
+        return true
     }
     function idsForSection(id) {
         if (!parameterIds) return []
@@ -38,17 +49,32 @@ FocusScope {
         for(var i=0;i<AirLayout.sections.length;i++) if(AirLayout.sections[i].id === id) preferred = AirLayout.sections[i].ids
         for(var j=0;j<preferred.length;j++) if(parameterIds.indexOf(preferred[j])>=0) result.push(preferred[j])
         for(var k=0;k<parameterIds.length;k++) if(AirLayout.sectionFor(parameterIds[k]) === id && result.indexOf(parameterIds[k])<0) result.push(parameterIds[k])
-        return result
+        return id === "wifi" ? result.filter(root.wifiParameterVisible) : result
     }
     function sectionsForCategory(id) {
-        return AirLayout.sections.filter(function(section) { return section.categories.indexOf(id)>=0 && root.idsForSection(section.id).length>0 })
+        var sections = AirLayout.sections.filter(function(section) { return section.categories.indexOf(id)>=0 && root.idsForSection(section.id).length>0 })
+        if (id === "expert") {
+            var order = ["rcRadio", "radio", "artosyn"]
+            sections.sort(function(a,b) { return order.indexOf(a.id) - order.indexOf(b.id) })
+        }
+        return sections
     }
     function categoryCount(id) {
         var sections = sectionsForCategory(id), result = 0
         for(var i=0;i<sections.length;i++) result += idsForSection(sections[i].id).length
         return result
     }
-    function refresh() { if(!preview && _ohdSystemAir.is_alive && !settingsModel.ui_is_busy) settingsModel.ensure_parameters_available() }
+    readonly property var rfCodingIds: ["WB_E_STBC", "WB_E_LDPC", "WB_E_SHORT_GUARD"]
+    function refresh() { if(!preview && root.systemModel.is_alive && !settingsModel.ui_is_busy) settingsModel.ensure_parameters_available() }
+    function validateUart(id, value) {
+        if (["FC_UART_CONN","OHD_UART_TLM","OHD_UART_EN"].indexOf(id) < 0) return ""
+        function port(key) { return key === id ? String(value).trim() : settingsModel.param_string_exists(key) ? settingsModel.get_cached_string(key) : "" }
+        var enabled = id === "OHD_UART_EN" ? Number(value) !== 0 : settingsModel.param_int_exists("OHD_UART_EN") && settingsModel.get_cached_int("OHD_UART_EN") !== 0
+        if (enabled && !port("OHD_UART_TLM")) return qsTr("Choose a UART port before enabling the Air-Ground link.")
+        var fc = port("FC_UART_CONN"), link = port("OHD_UART_TLM")
+        if (enabled && fc && fc !== "DEFAULT" && fc === link) return qsTr("Flight-controller MAVLink and the Air-Ground link need separate UART ports.")
+        return ""
+    }
     function ensureActiveCategory() {
         for (var i = 0; i < categories.length; ++i)
             if (categories[i].id === activeCategory) return
@@ -69,8 +95,8 @@ FocusScope {
     Component.onCompleted: refresh()
     onAdvancedChanged: ensureActiveCategory()
     onDeveloperChanged: ensureActiveCategory()
-    Connections { target: _ohdSystemAir; function onIs_aliveChanged() { if(root.visible) root.refresh() } }
-    Timer { interval: 1200; repeat: true; running: root.visible && !root.preview && _ohdSystemAir.is_alive && !root.settingsModel.has_params_fetched; onTriggered: root.refresh() }
+    Connections { target: root.systemModel; function onIs_aliveChanged() { if(root.visible) root.refresh() } }
+    Timer { interval: 1200; repeat: true; running: root.visible && !root.preview && root.systemModel.is_alive && !root.settingsModel.has_params_fetched; onTriggered: root.refresh() }
     Keys.onEscapePressed: backRequested()
 
     ColumnLayout {
@@ -139,11 +165,11 @@ FocusScope {
                     Layout.fillWidth: true; Layout.fillHeight: true
                     contentWidth: width; contentHeight: sectionGrid.implicitHeight
                     clip: true; boundsBehavior: Flickable.StopAtBounds
-                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
                     GridLayout {
                         id: sectionGrid
                         width: scroller.width
-                        columns: scroller.width >= 640 ? 2 : 1
+                        columns: root.activeCategory === "peripherals" || root.activeCategory === "system" ? 1 : (scroller.width >= 640 ? 2 : 1)
                         readonly property bool stackControllerCards: root.activeCategory === "fc" && columns === 2 && root.sectionsForCategory("fc").length === 3
                         columnSpacing: 10; rowSpacing: 10
                         Repeater {
@@ -151,9 +177,15 @@ FocusScope {
                             delegate: AdvancedCard {
                                 id: sectionCard
                                 readonly property var section: modelData
+                                readonly property bool collapsible: section.id === "artosyn"
+                                property bool expanded: false
+                                property bool codingExpanded: false
+                                readonly property bool showContents: !collapsible || expanded
+                                readonly property var codingIds: section.id === "radio" ? root.idsForSection(section.id).filter(function(id){return root.rfCodingIds.indexOf(id)>=0}) : []
                                 objectName: "airSection_" + section.id
-                                Layout.column: sectionGrid.stackControllerCards ? (index === 0 ? 0 : 1) : index % sectionGrid.columns
-                                Layout.row: sectionGrid.stackControllerCards ? Math.max(0, index - 1) : Math.floor(index / sectionGrid.columns)
+                                Layout.columnSpan: sectionCard.collapsible ? sectionGrid.columns : 1
+                                Layout.column: sectionCard.collapsible ? 0 : sectionGrid.stackControllerCards ? (index === 0 ? 0 : 1) : index % sectionGrid.columns
+                                Layout.row: sectionCard.collapsible ? Math.ceil((root.sectionsForCategory(root.activeCategory).length - 1) / sectionGrid.columns) : sectionGrid.stackControllerCards ? Math.max(0, index - 1) : Math.floor(index / sectionGrid.columns)
                                 Layout.rowSpan: sectionGrid.stackControllerCards && index === 0 ? 2 : 1
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignTop
@@ -166,18 +198,70 @@ FocusScope {
                                     anchors.left: parent.left; anchors.right: parent.right
                                     spacing: 6
                                     RowLayout {
-                                        width: parent.width; height: implicitHeight; spacing: 10
+                                        id: sectionHeader
+                                        width: parent.width; height: Math.max(Typography.controlHeight, implicitHeight); spacing: 10
                                         Text { text: sectionCard.section.icon; color: settings_form.accentColor; font.family: "Font Awesome 5 Free"; font.pixelSize: Typography.sectionIcon }
                                         ColumnLayout {
                                             Layout.fillWidth: true; spacing: 3
                                             Text { Layout.fillWidth: true; text: sectionCard.section.title; color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.body; font.bold: true; wrapMode: Text.Wrap }
-                                            Text { Layout.fillWidth: true; visible: text.length > 0; text: sectionCard.section.description; color: settings_form.secondaryText; font.family: Typography.family; font.pixelSize: Typography.helper; wrapMode: Text.Wrap }
+
+                                        }
+                                        AdvancedActionButton {
+                                            objectName: "airSectionToggle_" + sectionCard.section.id
+                                            visible: sectionCard.collapsible
+                                            implicitWidth: Typography.controlHeight
+                                            iconText: sectionCard.expanded ? "\uf078" : "\uf054"
+                                            Accessible.name: sectionCard.section.title
+                                            onClicked: sectionCard.expanded = !sectionCard.expanded
                                         }
                                     }
-                                    Rectangle { width: parent.width; height: 1; color: settings_form.lineColor }
+                                    Rectangle { visible: sectionCard.showContents; width: parent.width; height: visible ? 1 : 0; color: settings_form.lineColor }
+                                    RowLayout {
+                                        objectName: "wifiModeSwitch"
+                                        visible: sectionCard.showContents && sectionCard.section.id === "wifi" && root.settingsModel.param_int_exists("WIFI_MODE")
+                                        width: parent.width; height: visible ? Typography.rowHeight : 0
+                                        Text { Layout.fillWidth: true; Layout.minimumWidth: 0; text: qsTr("Wi-Fi mode"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.body; font.bold: true; elide: Text.ElideRight }
+                                        Repeater {
+                                            model: [{label:qsTr("Off"),value:0},{label:qsTr("Hotspot"),value:1},{label:qsTr("Client"),value:2}]
+                                            AdvancedActionButton {
+                                                objectName: "wifiMode" + modelData.value
+                                                text: modelData.label; primary: root.wifiMode === modelData.value
+                                                implicitWidth: Math.max(62,text.length*8+20)
+                                                enabled: !root.preview && root.systemModel.is_alive && !root.settingsModel.ui_is_busy
+                                                onClicked: root.settingsModel.try_set_param_int_async("WIFI_MODE",modelData.value,true)
+                                            }
+                                        }
+                                    }
                                     Repeater {
-                                        model: root.idsForSection(sectionCard.section.id)
-                                        delegate: AirSettingRow { width: parent.width; paramId: modelData; settingsModel: root.settingsModel; onBackRequested: root.gainFocus() }
+                                        model: sectionCard.showContents ? root.idsForSection(sectionCard.section.id).filter(function(id){return (sectionCard.section.id !== "wifi" || id !== "WIFI_MODE") && sectionCard.codingIds.indexOf(id)<0}) : []
+                                        delegate: AirSettingRow {
+                                            width: parent.width; paramId: modelData; settingsModel: root.settingsModel
+                                            connectionAlive: root.systemModel.is_alive
+                                            stacked: sectionCard.section.id === "rcRadio"
+                                            validateChange: root.validateUart
+                                            onValidationFailed: function(reason) { _messageBoxInstance.set_text_and_show(reason) }
+                                            onBackRequested: root.gainFocus()
+                                        }
+                                    }
+                                    Column {
+                                        width: parent.width
+                                        visible: sectionCard.codingIds.length > 0
+                                        height: visible ? implicitHeight : 0
+                                        AdvancedActionButton {
+                                            objectName: "airRfCodingToggle_" + sectionCard.section.id
+                                            width: parent.width
+                                            text: qsTr("Advanced RF coding")
+                                            iconText: sectionCard.codingExpanded ? "\uf078" : "\uf054"
+                                            onClicked: sectionCard.codingExpanded = !sectionCard.codingExpanded
+                                        }
+                                        Repeater {
+                                            model: sectionCard.codingExpanded ? sectionCard.codingIds : []
+                                            AirSettingRow {
+                                                width: parent.width; paramId: modelData; settingsModel: root.settingsModel
+                                                connectionAlive: root.systemModel.is_alive
+                                                onBackRequested: root.gainFocus()
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -186,7 +270,7 @@ FocusScope {
                             Layout.fillWidth: true
                             Layout.columnSpan: sectionGrid.columns
                             visible: root.sectionsForCategory(root.activeCategory).length === 0
-                            text: root.preview ? qsTr("No matching settings in this preview.") : !_ohdSystemAir.is_alive ? qsTr("Connect the Air unit to view its settings.") : root.settingsModel.has_params_fetched ? qsTr("No settings reported for this category.") : qsTr("Loading Air settings...")
+                            text: root.preview ? qsTr("No matching settings in this preview.") : !root.systemModel.is_alive ? (root.groundMode ? qsTr("Ground disconnected") : qsTr("Air disconnected")) : root.settingsModel.has_params_fetched ? qsTr("No settings reported for this category.") : qsTr("Loading settings...")
                             color: settings_form.secondaryText; font.family: Typography.family; font.pixelSize: Typography.body; wrapMode: Text.Wrap
                             padding: 16
                         }

@@ -17,6 +17,9 @@ bool install_metadata(int sys,int comp,const QByteArray& bytes);
 void invalidate_metadata(int sys,int comp);
 bool has_device_metadata(int sys,int comp);
 QJsonObject metadata(const std::string& id,int sys,int comp);
+bool is_camera_setting(const QString& id);
+bool camera_setting_supported(const QString& id,int cameraType,int platformType);
+QString camera_setting_category(const QString& id);
 
 struct XParam{
     // each param has a unique name / ID.

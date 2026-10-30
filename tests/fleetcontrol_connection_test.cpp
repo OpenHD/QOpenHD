@@ -119,7 +119,7 @@ QtObject {
       while (timer.elapsed() < 200) app.processEvents();
       auto* usernameItem = item->findChild<QQuickItem*>("fleetUsername");
       auto* encryptionItem = item->findChild<QQuickItem*>("fleetEncryption");
-      if (usernameItem->isVisible() == signedIn || encryptionItem->isVisible() != signedIn || encryptionItem->isEnabled()) return 9;
+      if (usernameItem->isVisible() == signedIn || encryptionItem != nullptr) return 9;
       if (!imageDir.isEmpty()) window.grabWindow().save(imageDir + (dark ? "/dark-" : "/light-") + (signedIn ? "settings.png" : "login.png"));
       item->setSize(QSizeF(420, 400)); window.resize(420, 400);
       app.processEvents();
@@ -141,28 +141,7 @@ QtObject {
         QMetaObject::invokeMethod(mockAccount, "finishTransmission", Q_ARG(QVariant, true));
         if (transmission->isEnabled() || transmission->property("text").toString() != "Start transmission") return 36;
         QMetaObject::invokeMethod(mockAccount, "expireLicense", Q_ARG(QVariant, false));
-        cameraModel->setProperty("available", true);
-        QMetaObject::invokeMethod(item, "syncEncryption");
-        if (!encryptionItem->isEnabled()) return 11;
-        // A certificate for a different craft cannot satisfy this request.
-        mockAccount->setProperty("certificateInstalled", true);
-        mockAccount->setProperty("certificateLicenseId", "lic-another-craft");
-        encryptionItem->setProperty("checked", true);
-        QMetaObject::invokeMethod(encryptionItem, "clicked");
-        if (!mockAccount->property("busy").toBool() || cameraModel->property("encryption").toInt() != 0) return 15; // Wait for certificate before enabling.
-        mockAccount->setProperty("certificateInstalled", true);
-        mockAccount->setProperty("certificateLicenseId", "lic-bench");
-        mockAccount->setProperty("busy", false);
-        QMetaObject::invokeMethod(mockAccount, "statusChanged");
-        if (!encryptionItem->isEnabled()) return 12;
-        encryptionItem->setProperty("checked", true);
-        QMetaObject::invokeMethod(encryptionItem, "clicked");
-        if (cameraModel->property("encryption").toInt() != 1) return 13;
-        QMetaObject::invokeMethod(item, "syncEncryption");
-        mockAccount->setProperty("certificateInstalled", false);
-        if (!encryptionItem->isEnabled()) return 14; // Always permit turning encryption off.
-        cameraModel->setProperty("available", false);
-        cameraModel->setProperty("encryption", 0);
+
       }
       delete item;
     }

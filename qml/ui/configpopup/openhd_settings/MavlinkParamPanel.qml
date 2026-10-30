@@ -34,6 +34,18 @@ Rectangle {
     property string m_name: "undefined"
     property bool m_requires_alive_air: false
     property bool m_show_link_status: false
+    readonly property bool isGroundPage: m_instanceMavlinkSettingsModel === _ohdSystemGroundSettings
+    readonly property bool ethernetAvailable: {
+        var revision = m_instanceMavlinkSettingsModel.update_count
+        return isGroundPage && (settings_form.showAdvancedSettings || settings_form.showDeveloperSettings) &&
+            m_instanceMavlinkSettingsModel.param_ids().some(AirLayout.isEthernetParameter)
+    }
+    onEthernetAvailableChanged: if (!ethernetAvailable) groundTabs.currentIndex = 0
+    function hiddenDedicatedSetting(id) {
+        if (AirLayout.hiddenSetting(id) || AirLayout.dedicatedPage(id) === "Link" || AirLayout.dedicatedPage(id) === "Link allocation") return true
+        if (id === "ENABLE_JOY_RC" || id === "RC_CHAN_MAP" || id === "JOY_MONITOR" || id === "JOY_MAP_V2" || id === "SYS_PLATFORM" || id === "BOARD_TYPE") return true
+        return isGroundPage && (AirLayout.isEthernetParameter(id) ? !ethernetAvailable || groundTabs.currentIndex !== 1 : groundTabs.currentIndex === 1)
+    }
     property bool m_ip_camera_settings_available: m_instanceMavlinkSettingsModel.has_params_fetched &&
                                                    m_instanceMavlinkSettingsModel.param_string_exists("IP_CAM_PIPELINE")
 
@@ -183,8 +195,9 @@ Rectangle {
                    ? (settings_form.darkMode ? "#174d82" : "#dcecff")
                    : (index % 2 === 0 ? settings_form.panelBackgroundRaised : "transparent")
             property bool isIpCameraQuickSetting: model.unique_id === "IP_CAM_ADDRESS" || model.unique_id === "IP_CAM_PIPELINE"
+            readonly property var uiMetadata: { var revision = m_instanceMavlinkSettingsModel.update_count; return m_instanceMavlinkSettingsModel.get_ui_metadata(model.unique_id) }
             property bool isRawActiveLinks: root.m_show_link_status && (model.unique_id === "ACTIVE_LINKS" || model.unique_id === "VARIABLE_BITRATE" || model.unique_id === "V_PRIMARY_PERC")
-            property bool groupCollapsed: groupIsCollapsed(model.group) || AirLayout.isUartParameter(model.unique_id) || (AirLayout.isDeveloperParameter(model.unique_id) && !settings_form.showDeveloperSettings) || (AirLayout.isLinkRecoveryParameter(model.unique_id) && !settings_form.showAdvancedSettings)
+            property bool groupCollapsed: (groundTabs.currentIndex !== 1 && groupIsCollapsed(model.group)) || root.hiddenDedicatedSetting(model.unique_id) || ((m_instanceMavlinkSettingsModel === _ohdSystemAirSettingsModel || m_instanceMavlinkSettingsModel === _ohdSystemGroundSettings) && uiMetadata.cameraOnly === true) || model.unique_id === "FC_FW_EVID" || AirLayout.isHardwareDiagnostic(model.unique_id) || AirLayout.isUartParameter(model.unique_id) || (AirLayout.isDeveloperParameter(model.unique_id) && !settings_form.showDeveloperSettings) || (AirLayout.isLinkRecoveryParameter(model.unique_id) && !settings_form.showAdvancedSettings)
             function activate() {
                 inlineEditor.gainFocus()
             }
@@ -206,20 +219,13 @@ Rectangle {
                     spacing: 2
                     Text {
                         Layout.fillWidth: true
-                        text: model.unique_id
+                        text: AirLayout.labels[model.unique_id] || model.unique_id
                         font.bold: true
                         font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
                         color: settings_form.primaryText
                         elide: Text.ElideRight
                     }
-                    Text {
-                        Layout.fillWidth: true
-                        visible: model.shortDescription !== "TODO" && model.shortDescription.length > 0
-                        text: model.shortDescription
-                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                        color: settings_form.secondaryText
-                        elide: Text.ElideRight
-                    }
+
                 }
                 InlineMavlinkParamControl {
                     id: inlineEditor
@@ -258,10 +264,17 @@ Rectangle {
         //opacity: 0.5
         color: "transparent"
 
+        AdvancedTabBar {
+            id: groundTabs; objectName: "groundSettingsTabs"
+            visible: root.ethernetAvailable
+            width: parent.width; height: visible ? MenuTypography.controlHeight : 0; spacing: 6
+            AdvancedTabButton { text: qsTr("System"); iconText: "\uf013" }
+            AdvancedTabButton { text: qsTr("Ethernet"); iconText: "\uf796" }
+        }
         Item {
             id: linkStatusPanel
             visible: root.m_show_link_status
-            anchors.top: parent.top
+            anchors.top: groundTabs.bottom
             anchors.left: parent.left
             anchors.margins: 8
             width: parent.width - 16
@@ -341,7 +354,7 @@ Rectangle {
             width: parent.width
             y: linkStatusPanel.visible
                ? linkStatusPanel.y + linkStatusPanel.height + 12
-               : 0
+               : groundTabs.visible ? groundTabs.height + 10 : 0
             height: parent.height - y
             clip: true
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -369,7 +382,8 @@ Rectangle {
                 section.criteria: ViewSection.FullString
                 section.delegate: Rectangle {
                     width: listView.width
-                    height: rowHeight * 2 / 3
+                    height: root.ethernetAvailable && groundTabs.currentIndex === 1 ? 0 : rowHeight * 2 / 3
+                    visible: height > 0
                     color: settings_form.panelBackgroundRaised
                     radius: 8
                     border.color: settings_form.lineColor
@@ -437,7 +451,7 @@ Rectangle {
                         RowLayout {
                             Layout.fillWidth: true
                             Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Camera IP"); color: settings_form.primaryText }
-                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: ipCameraAddressField
                                 Layout.fillWidth: true
                                 placeholderText: "192.168.1.12"
@@ -448,7 +462,7 @@ Rectangle {
                         RowLayout {
                             Layout.fillWidth: true
                             Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("RTSP port"); color: settings_form.primaryText }
-                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: ipCameraPortField
                                 Layout.preferredWidth: 100
                                 text: ipCameraPortFromPipeline(storedPipeline)
@@ -456,7 +470,7 @@ Rectangle {
                                 maximumLength: 5
                             }
                             Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Stream path"); color: settings_form.primaryText }
-                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: ipCameraPathField
                                 Layout.fillWidth: true
                                 text: ipCameraPathFromPipeline(storedPipeline)
@@ -497,17 +511,12 @@ Rectangle {
                                 onClicked: Qt.openUrlExternally("http://" + ipCameraAddressField.text)
                             }
                         }
-                        Text { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                            Layout.fillWidth: true
-                            text: qsTr("VIDEO_CODEC, RESOLUTION_FPS and BITRATE_MBITS below also configure a supported camera plugin.")
-                            wrapMode: Text.WordWrap
-                            color: settings_form.darkMode ? "#ffbf69" : "#9a4d00"
-                        }
+
                         CheckBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: expertPipelineCheck
                             text: qsTr("Expert: edit GStreamer pipeline")
                         }
-                        TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                        TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                             id: expertPipelineField
                             Layout.fillWidth: true
                             visible: expertPipelineCheck.checked

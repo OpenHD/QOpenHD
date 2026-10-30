@@ -96,7 +96,7 @@ ComboBox {
         readonly property string label: control.optionLabel(control.textRole.length > 0
             ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole]) : modelData)
         width: ListView.view ? ListView.view.width : control.popupWidth - 16
-        height: details.description ? MenuTypography.rowHeight : MenuTypography.controlHeight
+        height: MenuTypography.controlHeight
         hoverEnabled: true
         highlighted: hovered || (control.popup.visible && popupList.currentIndex === index)
         contentItem: Item {
@@ -110,7 +110,6 @@ ComboBox {
                 x: 38; width: Math.max(0, parent.width - 66)
                 anchors.verticalCenter: parent.verticalCenter; spacing: 2
                 Text { width: parent.width; text: option.label; color: control.textColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; elide: Text.ElideRight }
-                Text { width: parent.width; visible: text.length > 0; text: option.details.description || ""; color: control.mutedColor; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap; maximumLineCount: 2; elide: Text.ElideRight }
             }
             Text {
                 anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter

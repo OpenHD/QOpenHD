@@ -10,6 +10,10 @@
 #include <QSGGeometryNode>
 #include <QSGMaterial>
 #include <QSGMaterialShader>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QSGSimpleTextureNode>
+#include <QSGTexture>
+#endif
 #include <QSettings>
 #include <QFile>
 #include <QDataStream>
@@ -37,6 +41,7 @@ struct ImageApi {
 ImageApi& imageApi() { static ImageApi api; return api; }
 
 struct VideoMaterial;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 class VideoShader : public QSGMaterialShader {
 public:
     const char* const* attributeNames() const override {
@@ -63,6 +68,7 @@ public:
 private:
     int matrix_ = -1, opacity_ = -1;
 };
+#endif
 
 struct VideoMaterial : QSGMaterial {
     struct Texture {
@@ -95,7 +101,11 @@ struct VideoMaterial : QSGMaterial {
     std::deque<std::unique_ptr<Texture>> retired;
     VideoMaterial() { setFlag(Blending); }
     QSGMaterialType* type() const override { static QSGMaterialType type; return &type; }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QSGMaterialShader* createShader() const override { return new VideoShader; }
+#else
+    QSGMaterialShader* createShader(QSGRendererInterface::RenderMode) const override { return nullptr; }
+#endif
     void afterRendering() {
         if (!current) return;
         auto& api = imageApi();
@@ -158,6 +168,7 @@ struct VideoMaterial : QSGMaterial {
         return true;
     }
 };
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void VideoShader::updateState(const RenderState& state, QSGMaterial* next, QSGMaterial*) {
     auto material = static_cast<VideoMaterial*>(next);
     program()->setUniformValue(matrix_, state.combinedMatrix());
@@ -178,6 +189,25 @@ struct VideoNode : QSGGeometryNode {
     }
     ~VideoNode() override { QObject::disconnect(connection); }
 };
+#else
+struct VideoNode : QSGSimpleTextureNode {
+    VideoMaterial material;
+    QMetaObject::Connection connection;
+    explicit VideoNode(QQuickWindow* window) {
+        setFiltering(QSGTexture::Linear);
+        connection = QObject::connect(window, &QQuickWindow::afterRendering, window,
+            [this] { material.afterRendering(); }, Qt::DirectConnection);
+    }
+    ~VideoNode() override { QObject::disconnect(connection); delete texture(); }
+    void updateTexture(QQuickWindow* window) {
+        auto* previous = texture();
+        const auto& current = *material.current;
+        setTexture(QNativeInterface::QSGOpenGLTexture::fromNativeExternalOES(
+            current.texture, window, QSize(int(current.frame->paddedWidth), int(current.frame->paddedHeight))));
+        delete previous;
+    }
+};
+#endif
 }
 
 NxpVideoItem::NxpVideoItem(QQuickItem* parent) : QQuickItem(parent) {
@@ -219,7 +249,9 @@ void NxpVideoItem::startBootAnimation() {
             QDataStream stream(&file);
             quint32 count = 0; stream >> count;
             if (!count || count > 10000) throw std::runtime_error("invalid boot sample count");
-            #ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+            #if defined(QOPENHD_ENABLE_RPI_VIDEO)
+            auto decoder = std::make_shared<PiDecoder>(false, true);
+            #elif defined(QOPENHD_ENABLE_ROCKCHIP_VIDEO)
             auto decoder = std::make_shared<MppDecoder>(false, true);
 #else
             auto decoder = std::make_shared<HantroDecoder>(false, true);
@@ -304,7 +336,12 @@ QSGNode* NxpVideoItem::updatePaintNode(QSGNode* old, UpdatePaintNodeData*) {
             qWarning() << "Native secondary NV12 EGL import failed";
             delete node; return nullptr;
         }
-        if (updated) ++rendered_;
+        if (updated) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            node->updateTexture(window());
+#endif
+            ++rendered_;
+        }
         else ++replaced_;
     }
     if (!node->material.current) return node;
@@ -315,7 +352,12 @@ QSGNode* NxpVideoItem::updatePaintNode(QSGNode* old, UpdatePaintNodeData*) {
                       info.width * scale, info.height * scale);
     const QRectF source(double(info.cropLeft)/m.paddedWidth, double(info.cropTop)/m.paddedHeight,
                         double(info.width)/m.paddedWidth, double(info.height)/m.paddedHeight);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QSGGeometry::updateTexturedRectGeometry(&node->geometry, rect, source);
+#else
+    node->setRect(rect);
+    node->setSourceRect(QRectF(info.cropLeft, info.cropTop, info.width, info.height));
+#endif
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     return node;
 }

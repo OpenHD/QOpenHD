@@ -8,6 +8,7 @@ import "AirSettingsLayout.js" as AirLayout
 Item {
     id: row
     objectName: "airSetting_" + paramId
+    property bool stacked: false
     property var settingsModel
     property var validateChange: null
     signal validationFailed(string reason)
@@ -22,7 +23,7 @@ Item {
     readonly property bool infoOnly: ["FC_FW_INFO", "FC_FW_EVID", "SIYI_ACTIVE", "TOPOTEK_ACTIVE", "CAM_CTRL_ACTIVE"].indexOf(paramId) >= 0
     readonly property bool locked: _qopenhd.debugMenuPreview || metadata.readOnly === true || infoOnly
     readonly property bool busy: settingsModel.ui_is_busy || !connectionAlive || _qopenhd.debugMenuPreview
-    readonly property bool toggle: integer && (metadata.control === "toggle" || ["FC_UART_FLWCTL", "OHD_UART_EN", "OHD_UART_FLW", "TRACK_UART_FLOW", "LOG_OPENHD", "LOG_MAVLINK", "ADSB_ENABLE", "SBUS_EN", "CONFIG_BOOT_AIR"].indexOf(paramId) >= 0)
+    readonly property bool toggle: integer && (metadata.control === "toggle" || ["ETH_LINK_EN", "FC_UART_FLWCTL", "OHD_UART_EN", "OHD_UART_FLW", "TRACK_UART_FLOW", "LOG_OPENHD", "LOG_MAVLINK", "ADSB_ENABLE", "SBUS_EN", "CONFIG_BOOT_AIR"].indexOf(paramId) >= 0)
     readonly property bool port: ["FC_UART_CONN", "OHD_UART_TLM", "SBUS_DEV", "TRACKER_UART_OUT"].indexOf(paramId) >= 0
     readonly property bool portFallback: port && !settingsModel.string_param_has_enum(paramId)
     readonly property bool cells: paramId === "FC_BATT_N_CELLS"
@@ -54,7 +55,7 @@ Item {
         if (paramId === "MULTI_LINK_CAP") return Number(value) ? qsTr("Supported") : qsTr("Not supported")
         return String(value)
     }
-    implicitHeight: Math.max(60, wording.implicitHeight + 18, editor.height + 18)
+    implicitHeight: stacked ? wording.implicitHeight + editor.height + 26 : Math.max(60, wording.implicitHeight + 18, editor.height + 18)
     signal backRequested()
     function changeAllowed(value) {
         if (!validateChange) return true
@@ -82,17 +83,21 @@ Item {
     Column {
         id: wording
         anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        width: Math.max(0, row.width - editor.width - 12)
+        anchors.verticalCenter: row.stacked ? undefined : parent.verticalCenter
+        anchors.top: row.stacked ? parent.top : undefined
+        anchors.topMargin: row.stacked ? 8 : 0
+        width: row.stacked ? row.width : Math.max(0, row.width - editor.width - 12)
         spacing: 3
         Text { width: parent.width; text: row.label; color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.body; font.bold: true; wrapMode: Text.Wrap }
-        Text { width: parent.width; visible: text.length > 0; text: row.description; color: settings_form.secondaryText; font.family: Typography.family; font.pixelSize: Typography.helper; wrapMode: Text.Wrap }
+
     }
     Loader {
         id: editor
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        width: Math.min(215, row.width * 0.43)
+        anchors.verticalCenter: row.stacked ? undefined : parent.verticalCenter
+        anchors.top: row.stacked ? wording.bottom : undefined
+        anchors.topMargin: row.stacked ? 8 : 0
+        width: row.stacked ? row.width : Math.min(215, row.width * 0.43)
         height: row.infoOnly && item ? Math.max(36, item.implicitHeight) : 36
         sourceComponent: row.infoOnly ? informationControl : row.toggle ? toggleControl : row.cells || row.portFallback ? choiceControl : row.password ? passwordControl : inlineControl
     }
@@ -152,7 +157,7 @@ Item {
     }
     Component {
         id: passwordControl
-        TextField {
+        TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6;
             text: String(row.value)
             echoMode: TextInput.Password
             readOnly: row.locked || row.busy
@@ -173,7 +178,7 @@ Item {
         width: Math.min(380, parent ? parent.width - 32 : 380)
         title: qsTr("Serial port")
         standardButtons: Dialog.Ok | Dialog.Cancel
-        contentItem: TextField { id: customPortEditor; placeholderText: qsTr("Device path, e.g. /dev/ttyUSB0"); selectByMouse: true }
+        contentItem: TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; id: customPortEditor; placeholderText: qsTr("Device path, e.g. /dev/ttyUSB0"); selectByMouse: true }
         onAccepted: if(!row.locked && !row.busy && customPortEditor.text.trim()) row.commitChoice(customPortEditor.text.trim())
     }
 }

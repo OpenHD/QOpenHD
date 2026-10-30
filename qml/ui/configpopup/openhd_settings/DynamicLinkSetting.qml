@@ -102,14 +102,7 @@ Item {
                     font.bold: true
                     elide: Text.ElideRight
                 }
-                Text {
-                    Layout.fillWidth: true
-                    visible: root.controlType !== "slider"
-                    text: root.description
-                    wrapMode: Text.WordWrap
-                    color: settings_form.secondaryText
-                    font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                }
+
             }
             Loader {
                 id: editorLoader

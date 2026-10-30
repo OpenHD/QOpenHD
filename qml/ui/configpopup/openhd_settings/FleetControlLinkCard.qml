@@ -57,11 +57,7 @@ Rectangle {
             ColumnLayout {
                 Layout.fillWidth: true; spacing: 0
                 Text { text: qsTr("FleetControl LTE"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
-                Text {
-                    Layout.fillWidth: true
-                    text: qsTr("Encrypted streaming to openhd.tech")
-                    color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; elide: Text.ElideRight
-                }
+
             }
             Rectangle {
                 width: stateText.implicitWidth + 14; height: 21; radius: 7
@@ -76,6 +72,7 @@ Rectangle {
         }
 
         LinkUsageMeter {
+            visible: root.host && root.host.showIndividualLinkUsage
             Layout.fillWidth: true
             Layout.preferredHeight: root.width < 360 ? 100 : 78
             usage: root.host ? root.host.usageFor("fleetcontrol") : null
@@ -133,23 +130,15 @@ Rectangle {
                 anchors.left: parent.left; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
                 anchors.margins: 10; spacing: 4
                 Text { text: qsTr("MANAGED BY FLEETCONTROL"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
-                Text {
-                    Layout.fillWidth: true
-                    text: qsTr("Sign in under OpenHD → FleetControl and assign your craft to a certificate.")
-                    color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap
-                }
+
             }
         }
 
-        Text {
-            Layout.fillWidth: true
-            text: qsTr("FleetControl video: 480p · 15 fps · 1 Mbit/s. Air is preferred; Ground uploads when Air is unavailable.")
-            color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; wrapMode: Text.WordWrap
-        }
+
         Item { Layout.fillHeight: true }
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: 25
-            Text { Layout.fillWidth: true; text: qsTr("FleetControl encrypted network"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
+
             Rectangle { width: 7; height: 7; radius: 4; color: root.linkActive ? settings_form.goodColor : "#f0a43c" }
         }
     }

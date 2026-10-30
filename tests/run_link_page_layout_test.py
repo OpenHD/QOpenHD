@@ -93,6 +93,18 @@ Item {
             compare(findChild(page,"totalLinkUsageSection").visible,true)
             compare(page.visibleReportedUsage.length,1)
             compare(page.visibleReportedUsage[0].id,1)
+            compare(page.showIndividualLinkUsage,false)
+            _ohdSystemAir.link_usage=[
+                {id:1,total_bps:1000000,capacity_bps:40000000,categories:[{id:1,bps:900000},{id:4,bps:100000}]},
+                {id:2,total_bps:2000000,capacity_bps:100000000,categories:[{id:1,bps:1900000},{id:4,bps:100000}]}]
+            wait(60)
+            compare(page.showIndividualLinkUsage,true)
+            compare(page.totalUsage.total_bps,3000000)
+            compare(page.totalUsage.capacity_bps,140000000)
+            compare(page.totalUsage.categories[0].bps,2800000)
+            _ohdSystemAir.link_usage=[{id:1,total_bps:1000000,capacity_bps:40000000,categories:[]}]
+            wait(60)
+            compare(page.showIndividualLinkUsage,false)
             settings_form.showDeveloperSettings=true
         }
         function test_scroll_geometry_data() {
@@ -114,10 +126,11 @@ Item {
             verify(usage.y >= cards.y+cards.height, "Usage must follow, never cover, transport controls")
             verify(scroll.contentHeight >= usage.y+usage.height, "Usage must be reachable by scrolling")
             verify(usage.height < 260, "Offline and live summaries must remain compact")
-            scroll.contentY=scroll.contentHeight-scroll.height
-            wait(220)
-            var bottom=usage.mapToItem(scroll,0,usage.height).y
-            verify(bottom <= scroll.height+1 && bottom > 0, "Allocation controls must be visible at scroll end")
+            tryVerify(function() {
+                scroll.contentY=scroll.contentHeight-scroll.height
+                var bottom=usage.mapToItem(scroll,0,usage.height).y
+                return bottom <= scroll.height+1 && bottom > 0
+            },1000,"Allocation controls must be visible at scroll end")
         }
     }
 }
@@ -131,7 +144,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="qopenhd-link-layout-") as temp:
         folder = Path(temp)
         source = ROOT / "qml/ui/configpopup/openhd_settings"
-        for name in ("LinkQuickPanel", "LinkUsageMeter", "LinkSegmentsBar", "LinkAllocationPopup", "LinkAllocationSection"):
+        for name in ("LinkQuickPanel", "LinkUsageMeter", "LinkSegmentsBar", "LinkAllocationPopup", "LinkAllocationSection", "LinkEncryptionControl"):
             content = (source / (name + ".qml")).read_text(encoding="utf-8")
             (folder / (name + ".qml")).write_text(content.replace('../MenuTypography.js', 'MenuTypography.js'), encoding="utf-8")
         shutil.copy(source.parent / "MenuTypography.js", folder)

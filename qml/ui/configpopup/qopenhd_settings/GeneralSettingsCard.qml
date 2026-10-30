@@ -11,7 +11,7 @@ Rectangle {
  property alias headerControls:controls.data
  default property alias contents:body.data
  implicitHeight:headerHeight+(body.children.length?body.implicitHeight+20:0)
- readonly property real headerHeight:stacked?132:Typography.sectionHeaderHeight
+ readonly property real headerHeight:stacked?110:Typography.sectionHeaderHeight
  radius:12;border.color:settings_form.lineColor
  gradient:Gradient {
   GradientStop {position:0;color:settings_form.panelBackgroundRaised}
@@ -22,7 +22,7 @@ Rectangle {
   x:82;y:root.stacked?20:(root.headerHeight-height)/2
   width:root.stacked?root.width-106:Math.max(0,controls.x-x-20);spacing:6
   Text {width:parent.width;text:root.title;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true;wrapMode:Text.WordWrap}
-  Text {width:parent.width;text:root.hint;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
+
  }
  Item {id:controls;width:root.stacked?root.width-40:Math.min(root.controlWidth,root.width*0.43);height:Typography.controlHeight;x:root.width-width-20;y:root.stacked?root.headerHeight-height-14:(root.headerHeight-height)/2}
  Column {id:body;x:20;y:root.headerHeight;width:root.width-40;spacing:12}

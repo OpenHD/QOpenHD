@@ -221,13 +221,7 @@ FocusScope {
                         }
                     }
 
-                    Text {
-                        Layout.fillWidth: true
-                        text: qsTr("Connect an Ethernet camera using a preset, or enter its RTSP details manually.")
-                        color: settings_form.secondaryText
-                        font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                        wrapMode: Text.WordWrap
-                    }
+
 
                     GridLayout {
                         Layout.fillWidth: true
@@ -263,8 +257,9 @@ FocusScope {
                             Layout.fillWidth: true
                             spacing: 4
                             Text { text: qsTr("Camera IPv4 address"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
-                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: addressField
+                                objectName: "rtsp_addressField"
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: MenuTypography.controlHeight
                                 placeholderText: "192.168.1.12"
@@ -287,8 +282,9 @@ FocusScope {
                             Layout.fillWidth: true
                             spacing: 4
                             Text { text: qsTr("RTSP port"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
-                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: portField
+                                objectName: "rtsp_portField"
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: MenuTypography.controlHeight
                                 placeholderText: "554"
@@ -311,8 +307,9 @@ FocusScope {
                             Layout.fillWidth: true
                             spacing: 4
                             Text { text: qsTr("Stream path"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; font.bold: true }
-                            TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                            TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                                 id: pathField
+                                objectName: "rtsp_pathField"
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: MenuTypography.controlHeight
                                 placeholderText: "/stream=0"
@@ -385,8 +382,9 @@ FocusScope {
                                               pipelineField.text = root.generatedPipeline()
                     }
 
-                    TextField { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+                    TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                         id: pipelineField
+                                objectName: "rtsp_pipelineField"
                         Layout.fillWidth: true
                         Layout.preferredHeight: MenuTypography.controlHeight
                         visible: settings_form.showAdvancedSettings && (_qopenhd.debugMenuPreview || expertPipeline.checked)
@@ -427,13 +425,7 @@ FocusScope {
                         Layout.fillWidth: true
                         spacing: 3
                         Text { text: qsTr("Video-link reservation"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
-                        Text {
-                            Layout.fillWidth: true
-                            text: qsTr("Reserve enough link capacity for the bitrate configured in the camera's WebUI.")
-                            color: settings_form.secondaryText
-                            font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                            wrapMode: Text.WordWrap
-                        }
+
                     }
 
                     SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;

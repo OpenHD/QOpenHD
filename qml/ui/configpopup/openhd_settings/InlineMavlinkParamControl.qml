@@ -72,8 +72,32 @@ FocusScope {
         id: editorLoader
         anchors.fill: parent
         sourceComponent: root.readOnly ? readOnlyEditor
-                                      : (root.hasEnum ? enumEditor
+                                      : (root.isInteger && root.paramId === "ETH_LINK_EN" ? ethernetToggleEditor : root.hasEnum ? enumEditor
                                                       : (root.isInteger ? integerEditor : stringEditor))
+    }
+
+    Component {
+        id: ethernetToggleEditor
+        Switch {
+            id: ethernetToggle
+            objectName: "ethernetLinkToggle"
+            checked: Number(root.paramValue) !== 0
+            enabled: !root.busy
+            onToggled: root.commitInt(checked ? 1 : 0)
+            Accessible.name: qsTr("Ethernet link")
+            indicator: Rectangle {
+                implicitWidth: 38; implicitHeight: 22
+                x: ethernetToggle.width - width; y: (ethernetToggle.height - height) / 2
+                radius: 11
+                color: ethernetToggle.checked ? settings_form.accentColor : settings_form.lineColor
+                opacity: ethernetToggle.enabled ? 1 : 0.5
+                Rectangle {
+                    width: 18; height: 18; radius: 9; y: 2
+                    x: ethernetToggle.checked ? parent.width - width - 2 : 2
+                    color: "white"
+                }
+            }
+        }
     }
 
     Component {
@@ -132,7 +156,7 @@ FocusScope {
 
     Component {
         id: stringEditor
-        TextField {
+        TextField { verticalAlignment: TextInput.AlignVCenter; leftPadding: 12; rightPadding: 12; topPadding: 6; bottomPadding: 6;
             id: field
             text: String(root.paramValue)
             enabled: !root.busy

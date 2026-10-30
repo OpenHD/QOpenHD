@@ -5,7 +5,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
 
 import QtQuick.Controls.Material 2.12
- 
+
 
 import Qt.labs.settings 1.0
 
@@ -306,14 +306,7 @@ Rectangle{
             horizontalAlignment: Qt.AlignHCenter
             Layout.alignment: Qt.AlignCenter
         }
-        Text{ font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-            width: 300
-            height:customHeight
-            Layout.alignment: Qt.AlignCenter
-            color: settings_form.secondaryText
-            text: qsTr("Description not availble")
-            visible: !m_has_param_description
-        }
+
 
         // Value edit part begin
 

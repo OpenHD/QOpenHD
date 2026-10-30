@@ -33,6 +33,9 @@ with tempfile.TemporaryDirectory(prefix="qopenhd-empty-tabs-") as temp:
     availability = source[source.index("    readonly property var availablePages:"):source.index("    function tabTitle(")]
     first = source[source.index("    function firstAvailableTab("):source.index("    function focusTab(")]
     (folder / "ParentTabs.qml").write_text('import QtQuick 2.12\nimport "AirSettingsLayout.js" as AirLayout\nimport "CameraSettingsLayout.js" as CameraLayout\nItem { id: root; property int currentPage: 0; QtObject { id: pageModel; property int count: 6 }\n' + availability + first + '\n}\n', encoding="utf-8")
+    ground = (MENU / "openhd_settings/MavlinkParamPanel.qml").read_text(encoding="utf-8")
+    modes = ground[ground.index("    readonly property bool isGroundPage:"):ground.index("    property bool m_ip_camera_settings_available:")]
+    (folder / "GroundModes.qml").write_text('import QtQuick 2.12\nimport "AirSettingsLayout.js" as AirLayout\nItem {id:root;property var m_instanceMavlinkSettingsModel:_ohdSystemGroundSettings; property alias currentTab:groundTabs.currentIndex; QtObject {id:groundTabs;property int currentIndex:0}\n'+modes+'\n}\n',encoding="utf-8")
     extras = (MENU / "features/FeatureSettingsPanel.qml").read_text(encoding="utf-8")
     expression = extras.split("                hasContent: {", 1)[1].split("\n                }", 1)[0]
     (folder / "ExtrasAvailability.qml").write_text('import QtQuick 2.12\nItem { id: root; property int airRevision: _ohdSystemAirSettingsModel.update_count; property int groundRevision: _ohdSystemGroundSettings.update_count; readonly property bool dataLinkAvailable: {' + expression + '}\n}\n', encoding="utf-8")
@@ -60,6 +63,8 @@ Item {
     QtObject {
         id: params
         property var ids: []
+        property int cameraType: 0
+        function get_cached_int(id) { return cameraType }
         property int update_count: 0
         function param_ids() { return ids }
         function get_ui_metadata(id) { return {hidden:id === "KEYFRAME_I"} }
@@ -77,6 +82,7 @@ Item {
     Logs.LogMessagesStatusView { id: logPage; width: 700; height: 500; y: 60 }
     ParentTabs { id: parentTabs }
     ExtrasAvailability { id: extras }
+    GroundModes {id:groundModes}
     CameraCategories0 { id: single; settingsModel: params }
     CameraCategories1 { id: dual; settingsModel: params }
     AdvancedTabBar {
@@ -134,6 +140,20 @@ Item {
                 compare(panel.categoryAvailable(panel.categoryIndex("IMAGE")), false)
                 params.ids = ["BRIGHTNESS"]; params.update_count++
                 compare(panel.activeCategory, "IMAGE")
+                params.ids = ["BRIGHTNESS", "CONTRAST", "AWB_MODE", "AWB_MODE_LC", "WHITE_BALANCE"]; params.update_count++
+                compare(panel.categoryCount("IMAGE"),5)
+                compare(panel.categoryIndex("COLOR"),-1)
+                params.ids = ["AWB_MODE"]; params.update_count++
+                compare(panel.activeCategory,"IMAGE")
+                compare(panel.categoryAvailable(panel.categoryIndex("IMAGE")),true)
+                params.ids = ["CAMERA_TYPE","GX_AWB","GX_EXPOSURE","GX_SATURATION"]; params.cameraType=64; params.update_count++
+                compare(panel.categoryCount("IMAGE"),3)
+                params.cameraType=10;params.update_count++
+                compare(panel.categoryCount("IMAGE"),0)
+                settings_form.showAdvancedSettings=true
+                compare(panel.categoryCount("IMAGE"),0)
+                params.cameraType=64;params.update_count++
+                compare(panel.categoryCount("IMAGE"),3)
                 _qopenhd.debugMenuPreview = false
             }
         }
@@ -159,11 +179,28 @@ Item {
             params.ids = ["AUDIO_ENABLE"]; params.update_count++
             compare(extras.dataLinkAvailable, false)
         }
+        function test_ground_ethernet_tabs_and_joystick_ownership(){
+            params.ids=["ETHERNET","ETH_PASSIVE_F","SYS_DISP_MODE","ENABLE_JOY_RC"];params.update_count++
+            settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=false
+            compare(groundModes.ethernetAvailable,false)
+            verify(groundModes.hiddenDedicatedSetting("ETHERNET"))
+            verify(groundModes.hiddenDedicatedSetting("ENABLE_JOY_RC"))
+            settings_form.showAdvancedSettings=true;compare(groundModes.ethernetAvailable,true)
+            verify(groundModes.hiddenDedicatedSetting("ETHERNET"))
+            compare(groundModes.hiddenDedicatedSetting("SYS_DISP_MODE"),false)
+            groundModes.currentTab=1
+            compare(groundModes.hiddenDedicatedSetting("ETHERNET"),false)
+            verify(groundModes.hiddenDedicatedSetting("SYS_DISP_MODE"))
+            settings_form.showAdvancedSettings=false;compare(groundModes.currentTab,0)
+            verify(groundModes.hiddenDedicatedSetting("ETHERNET"))
+        }
         function test_parent_parameter_tabs() {
             compare(parentTabs.tabIsAvailable(1), false)
             compare(parentTabs.tabIsAvailable(3), false)
             compare(parentTabs.tabIsAvailable(4), false)
             params.ids = ["FC_UART_CONN"]; params.update_count++
+            compare(parentTabs.tabIsAvailable(3), true)
+            params.ids = ["FC_BATT_N_CELLS"]; params.update_count++
             compare(parentTabs.tabIsAvailable(3), true)
             parentTabs.currentPage = 3
             params.ids = []; params.update_count++

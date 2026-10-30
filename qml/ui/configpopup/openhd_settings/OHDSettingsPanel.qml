@@ -42,7 +42,9 @@ Rectangle {
         // Link, Storage and Extras include local actions/status. Camera, Air
         // and Ground need actual parameters, including preview fixture data.
         return [true, cameraIds.length > 0, true, airIds.length > 0,
-                _ohdSystemGroundSettings.param_ids().length > 0, true]
+                AirLayout.availableGroundParameterIds(_ohdSystemGroundSettings,
+                    settings_form.showAdvancedSettings, settings_form.showDeveloperSettings === true,
+                    _qopenhd.debugMenuPreview).length > 0, true]
     }
     function tabIsAvailable(index) {
         return index >= 0 && index < availablePages.length && availablePages[index]
@@ -204,12 +206,10 @@ Rectangle {
                     }
                 }
                 AdvancedPageLoader { selected: root.currentPage === 4; sourceComponent:
-                    MavlinkParamPanel {
+                    AirSettingsPanel {
                         id: groundPanel
-                        m_name: "GROUND"
-                        m_instanceMavlinkSettingsModel: _ohdSystemGroundSettings
-                        m_instanceCheckIsAvlie: _ohdSystemGround
-                        m_requires_alive_air: false
+                        groundMode: true
+                        activeCategory: "system"
                         onBackRequested: root.focusTab(4)
                     }
                 }

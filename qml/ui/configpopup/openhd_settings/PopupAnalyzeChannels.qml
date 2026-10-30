@@ -237,13 +237,13 @@ PopupBigGeneric {
                 wrapMode: Text.WordWrap
                 id: sweepStatus
                 objectName: "surveySweepStatus"
+                visible: text.length > 0
                 text: root.analyzing && durationCombo.currentIndex === 2 &&
                       _wbLinkSettingsHelper.analyzed_channel_count >= root.displayedChannelCount && root.displayedChannelCount > 0
                       ? qsTr("Second sweep: comparing measurements")
                       : root.analyzing && _wbLinkSettingsHelper.current_analyze_frequency > 0
                         ? qsTr("Last measured: %1 MHz").arg(_wbLinkSettingsHelper.current_analyze_frequency)
-                        : [qsTr("Quick: one short sweep"), qsTr("Medium: one longer sweep"),
-                           qsTr("Detailed: two medium sweeps; readings averaged")][durationCombo.currentIndex]
+                        : ""
                 color: settings_form.secondaryText
                 font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
                 horizontalAlignment: Text.AlignHCenter
@@ -354,25 +354,7 @@ PopupBigGeneric {
                 }
             }
 
-            Text {
-                width: parent.width
-                id: explanation
-                objectName: "surveyExplanation"
-                text: (pollutionChart.measuredChannels === 0
-                       ? (root.analyzing ? qsTr("Waiting for measurements. ")
-                          : root.analyzeProgress === 0 ? qsTr("Start an analysis to measure channels. ")
-                          : qsTr("This analysis supplied no values for this view. The radio/backend may not support this measurement. Select another metric. "))
-                       : qsTr("%1 of %2 channels measured. ").arg(pollutionChart.measuredChannels).arg(root.displayedChannelCount))
-                      + [qsTr("Energy above the receiver's noise floor; includes OpenHD traffic."),
-                         qsTr("Channel busy measures occupied airtime; it is not a packet count."),
-                         qsTr("Foreign Wi-Fi packets received during each channel observation."),
-                         qsTr("Relative Wi-Fi packets: the busiest measured channel is 100%. This is not airtime usage.")][metricCombo.currentIndex]
-                      + qsTr(" Not scanned means no result; Unavailable means no valid reading. Stop Air transmission for an interference-only scan. Check both 20 MHz halves for 40 MHz. Swipe to inspect all channels.")
-                color: settings_form.secondaryText
-                font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
+            Text { id: explanation; visible: false; width: 0; height: 0 }
         }
     }
 }

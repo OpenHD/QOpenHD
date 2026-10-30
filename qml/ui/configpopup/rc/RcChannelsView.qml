@@ -25,7 +25,7 @@ FocusScope {
                     Layout.fillWidth: true
                     spacing: 2
                     Text { text: root.title; color: settings_form.primaryText; font.pixelSize: MenuTypography.sectionTitle; font.family: MenuTypography.family; font.bold: true }
-                    Text { text: root.description; color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family; elide: Text.ElideRight; Layout.fillWidth: true }
+
                 }
                 Text { text: qsTr("PWM 1000–2000"); color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             }

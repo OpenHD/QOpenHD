@@ -56,20 +56,18 @@ FocusScope {
         ListElement { categoryKey: "CAMERA"; title: qsTr("CAMERA"); icon: "\uf030" }
         ListElement { categoryKey: "VIDEO"; title: qsTr("STREAM"); icon: "\uf03d" }
         ListElement { categoryKey: "IMAGE"; title: qsTr("IMAGE"); icon: "\uf03e" }
-        ListElement { categoryKey: "COLOR"; title: qsTr("COLOR"); icon: "\uf53f" }
         ListElement { categoryKey: "EXPOSURE"; title: qsTr("EXPOSURE"); icon: "\uf042" }
         ListElement { categoryKey: "CONNECTION"; title: qsTr("IP CAMERA"); icon: "\uf1eb" }
         ListElement { categoryKey: "ADVANCED"; title: qsTr("ADVANCED"); icon: "\uf013" }
     }
 
     // ── Category helper functions ──
-    function categoryFor(id) { return CameraLayout.categoryFor(id) }
+    function categoryFor(id) { return CameraLayout.categoryFor(id, settingsModel) }
 
     function categoryDescription(category) {
         if (category === "VIDEO") return qsTr("Streaming, recording, format and encoder settings")
         if (category === "CAMERA") return qsTr("Connected camera hardware and image orientation")
         if (category === "IMAGE") return qsTr("Brightness, contrast, color intensity and detail")
-        if (category === "COLOR") return qsTr("White-balance behavior for the current lighting")
         if (category === "EXPOSURE") return qsTr("Exposure, metering, shutter and ISO controls")
         if (category === "CONNECTION") return qsTr("RTSP source and video-link reservation for an Ethernet camera")
         return qsTr("Expert encoder and camera options")
