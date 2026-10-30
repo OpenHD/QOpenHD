@@ -157,24 +157,7 @@ ScrollView {
                     text:qsTr("Open");onClicked:settings_form.openBackupRestore()
                 }
             }
-            SettingBaseElement{
-                m_short_description: qsTr("Reset all QOpenHD Settings")
 
-                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    id:reset
-                    width: 128
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: qsTr("Reset")
-                    onClicked: {
-                        simplePopupHack.visible=true;
-                    }
-                    //enabled: _qopenhd.is_linux()
-                }
-            }
             SettingBaseElement{
                 m_short_description: qsTr("Disable STBC warning")
                 Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
@@ -188,69 +171,7 @@ ScrollView {
                 }
             }
         }
-        Card {
-            id: simplePopupHack
-            width: Math.min(430, appDevSettingsView.width - 28)
-            height: 220
-            anchors.centerIn: parent
-            z: 5.0
-            cardName: qsTr("WARNING")
-            cardNameColor: "red"
-            visible: false
-            cardBody: Column {
-                height: 200
-                width: parent.width
-                StyledText {
-                    id: simplePopupHackText
-                    text: qsTr("Do you really want to erase all your QOpenHD settings?")
-                    width: parent.width-24
-                    height: parent.height
-                    leftPadding: 12
-                    rightPadding: 12
-                    font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    color: settings_form.primaryText
-                    wrapMode: Text.WordWrap
-                }
-            }
-            hasFooter: true
-            cardFooter: Item {
-                anchors.fill: parent
-                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    width: 160
-                    height: 40
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 6
-                    destructive: true
-                    iconText: "\uf071"
-                    text:  qsTr("Continue")
-                    onPressed: {
-                        simplePopupHack.visible=false
-                        var res=_qopenhd.reset_settings()
-                        if (res) {
-                             _restartqopenhdmessagebox.show_with_text("Settings reset to default,");
-                        }
-                        else{
-                            _messageBoxInstance.set_text_and_show(qsTr("Couldn't reset the settings"))
-                        }
-                    }
-                }
-                AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                    width: 130
-                    height: 40
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 6
-                    iconText: "\uf00d"
-                    text:  qsTr("Cancel")
-                    onPressed: {
-                        simplePopupHack.visible=false
-                    }
-                }
-            }
-        }
+
 
 
     }

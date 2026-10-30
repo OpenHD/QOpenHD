@@ -269,7 +269,23 @@ void SettingsBackup::onParameterFinished(QString id,bool success) {
  ++m_jobIndex;m_progress=m_total?m_jobIndex*100/m_total:100;emit changed();QTimer::singleShot(0,this,[this]{next();});
 }
 QString SettingsBackup::pendingPath(){return QDir(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation)).filePath("pending-settings-restore.ini");}
+bool SettingsBackup::stageLocalSettingsReset() {
+ const QString path=pendingPath()+".reset";
+ QString error;
+ return QDir().mkpath(QFileInfo(path).absolutePath()) && writeAtomic(path,QByteArray("reset\n"),error);
+}
 QString SettingsBackup::applyPendingLocalSettings() {
+ const QString reset=pendingPath()+".reset";
+ if(QFile::exists(reset)) {
+  QSettings settings;
+  if(!settings.isWritable())return QObject::tr("Local settings are not writable.");
+  settings.clear();settings.sync();
+  if(settings.status()!=QSettings::NoError)return QObject::tr("Cannot reset local settings.");
+  if(QFile::exists(pendingPath())&&!QFile::remove(pendingPath()))return QObject::tr("Cannot discard pending settings restore.");
+  if(!QFile::remove(reset))return QObject::tr("Cannot finish local settings reset.");
+  return {};
+ }
+
  const QString path=pendingPath();QFile file(path);if(!file.exists())return {};
  if(!file.open(QIODevice::ReadOnly)||file.size()>MaxBackupBytes)return QObject::tr("Cannot open pending settings restore.");
  QString error;const auto values=iniValues(QString::fromUtf8(file.readAll()),error);file.close();if(!error.isEmpty())return error;

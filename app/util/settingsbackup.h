@@ -38,6 +38,7 @@ public:
  Q_INVOKABLE bool restoreBackup(const QString& path,const QStringList& selected);
  static bool restorableParameter(const QString& id);
  static QString applyPendingLocalSettings();
+ static bool stageLocalSettingsReset();
 signals:
  void changed();
  void storageLocationsChanged();

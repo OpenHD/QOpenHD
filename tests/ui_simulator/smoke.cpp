@@ -10,6 +10,7 @@
 #include "telemetry/settings/wblinksettingshelper.h"
 #include <QTextStream>
 #include "util/uisimulator.h"
+#include "util/qopenhd.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/models/camerastreammodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
@@ -94,6 +95,9 @@ int main(int argc,char** argv) {
         check(sim.start({{"state",2}}),"Restarting scenario starts");check(camera2->camera_status()==2,"Restarting fixture state");
         check(sim.start({{"ground",21},{"air",11},{"camera1",32},{"camera2",3},{"state",1},{"link",1},{"secondLink",2},{"groundRadios",2}}),"Restore example profile");
         auto* action=qobject_cast<OHDAction*>(sim.simulatedObject("_ohdAction"));
+        check(action->request_settings_reset(false)=="simulation","Air reset must not escape simulation");
+        check(action->request_settings_reset(true)=="simulation","Ground reset must not escape simulation");
+        check(!QOpenHD::instance().reset_settings(),"Local reset must not alter host settings in simulation");
         check(action->airStorageDevices().size()==2,"Simulated disk and recording partition");
         check(action->refresh_air_storage()&&action->airStorageDevices().size()==2,"Storage refresh stays local");
         auto* helper=qobject_cast<WBLinkSettingsHelper*>(sim.simulatedObject("_wbLinkSettingsHelper"));

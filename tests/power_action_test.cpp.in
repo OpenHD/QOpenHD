@@ -72,6 +72,7 @@ signals:
     void powerActionFinished(bool ground,bool reboot,QString result);
 private:
     bool m_power_action_busy=false;
+    bool m_settings_reset_busy=false;
 };
 @POWER_ACTION_METHODS@
 

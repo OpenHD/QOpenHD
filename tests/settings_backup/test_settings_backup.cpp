@@ -39,6 +39,20 @@ private slots:
   QStandardPaths::setTestModeEnabled(true);QSettings::setDefaultFormat(QSettings::IniFormat);QSettings::setPath(QSettings::IniFormat,QSettings::UserScope,m_dir.path());
  }
  void init(){QSettings settings;settings.clear();settings.setValue("shape_color",QColor("#38a5ff"));settings.setValue("show_map",true);settings.setValue("camera_name",QString::fromUtf8("Cam \xc3\xa4"));settings.setValue("global_scale",1.2);settings.sync();}
+ void test_reset_applies_before_qml_and_overrides_pending_restore(){
+  SettingsBackup backup;
+  const auto path=m_dir.filePath("before-reset.ohdsettings");
+  QVERIFY(backup.exportBackup(path));
+  QVERIFY(backup.restoreBackup(path,{"qopenhd"}));
+  QTRY_VERIFY(!backup.busy());
+  QVERIFY(SettingsBackup::stageLocalSettingsReset());
+  {QSettings current;current.setValue("old_qml_value_written_on_exit",42);current.sync();}
+  QVERIFY(SettingsBackup::applyPendingLocalSettings().isEmpty());
+  QSettings reset;QVERIFY(reset.allKeys().isEmpty());
+  reset.setValue("new_default",true);reset.sync();
+  QVERIFY(SettingsBackup::applyPendingLocalSettings().isEmpty());
+  QVERIFY(QSettings().value("new_default").toBool());
+ }
  void test_storage_and_arbitrary_paths(){
   SettingsBackup backup;QString folder=m_dir.filePath("USB/Video/backups");QVERIFY(QDir().mkpath(folder));
   QVERIFY(!backup.locations().isEmpty());QVERIFY(backup.browse(folder).value("writable").toBool());

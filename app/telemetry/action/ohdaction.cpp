@@ -8,6 +8,10 @@
 #include "../tutil/qopenhdmavlinkhelper.hpp"
 #include "impl/cmdsender.h"
 #include <QMetaObject>
+#include "../models/aohdsystem.h"
+#include "../models/fcmavlinksystem.h"
+#include "util/qopenhd.h"
+#include "util/uisimulator.h"
 #include <algorithm>
 #include <cstring>
 #include <limits>
@@ -38,7 +42,7 @@ bool OHDAction::send_command_reboot_gnd(bool reboot)
 
 QString OHDAction::request_power_action(bool ground, bool reboot)
 {
-    if (m_power_action_busy) return "busy";
+    if (m_power_action_busy || m_settings_reset_busy) return "busy";
     const auto system = ground ? OHD_SYS_ID_GROUND : OHD_SYS_ID_AIR;
     const auto command=cmd::helper::create_cmd_reboot(system,MAV_COMP_ID_ONBOARD_COMPUTER,reboot,true);
     m_power_action_busy=true;
@@ -60,6 +64,33 @@ QString OHDAction::request_power_action(bool ground, bool reboot)
         emit powerActionBusyChanged();
         return "queue_full";
     }
+    return "queued";
+}
+
+QString OHDAction::request_settings_reset(bool ground)
+{
+    if (UiSimulator::isActive() || QOpenHD::instance().debugMenuPreview()) return "simulation";
+    if (m_settings_reset_busy || m_power_action_busy) return "busy";
+    if (FCMavlinkSystem::instance().armed()) return "armed";
+    if (!(ground ? AOHDSystem::instanceGround() : AOHDSystem::instanceAir()).is_alive()) return "disconnected";
+    mavlink_command_long_t command{};
+    command.target_system=ground ? OHD_SYS_ID_GROUND : OHD_SYS_ID_AIR;
+    command.target_component=MAV_COMP_ID_ONBOARD_COMPUTER;
+    command.command=MAV_CMD_PREFLIGHT_STORAGE;
+    command.param1=2; // Reset configuration defaults on the targeted OpenHD unit.
+    m_settings_reset_busy=true;emit settingsResetBusyChanged();
+    const bool queued=CmdSender::instance().send_command_long_async(command,
+        [this,ground](CmdSender::RunCommandResult reply) {
+            const QString result=!reply.opt_ack.has_value() ? "unconfirmed"
+                : reply.opt_ack->result==MAV_RESULT_ACCEPTED ? "accepted"
+                : reply.opt_ack->result==MAV_RESULT_UNSUPPORTED ? "unsupported"
+                : reply.opt_ack->result==MAV_RESULT_FAILED ? "failed" : "denied";
+            QMetaObject::invokeMethod(this,[this,ground,result] {
+                m_settings_reset_busy=false;emit settingsResetBusyChanged();
+                emit settingsResetFinished(ground,result);
+            },Qt::QueuedConnection);
+        },std::chrono::milliseconds(1000),3);
+    if (!queued) {m_settings_reset_busy=false;emit settingsResetBusyChanged();return "queue_full";}
     return "queued";
 }
 

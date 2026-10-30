@@ -18,6 +18,7 @@ class OHDAction : public QObject
     Q_PROPERTY(bool formatAirSdCardBusy READ formatAirSdCardBusy NOTIFY formatAirSdCardStatusChanged)
     Q_PROPERTY(QString formatAirSdCardStatus READ formatAirSdCardStatus NOTIFY formatAirSdCardStatusChanged)
     Q_PROPERTY(QVariantList airStorageDevices READ airStorageDevices NOTIFY airStorageDevicesChanged)
+    Q_PROPERTY(bool settingsResetBusy READ settingsResetBusy NOTIFY settingsResetBusyChanged)
     Q_PROPERTY(bool powerActionBusy READ powerActionBusy NOTIFY powerActionBusyChanged)
 public:
     explicit OHDAction(QObject *parent = nullptr);
@@ -36,6 +37,8 @@ public:
     // by powerActionFinished: accepted, unconfirmed, or denied. Silence during
     // a power transition does not prove that the command failed.
     Q_INVOKABLE QString request_power_action(bool ground, bool reboot);
+    Q_INVOKABLE QString request_settings_reset(bool ground);
+    bool settingsResetBusy() const { return m_settings_reset_busy; }
     bool powerActionBusy() const { return m_power_action_busy; }
     // Starts formatting storage 1 (the air unit's RECORDINGS SD card).
     // Completion is reported by formatAirSdCardStatusChanged.
@@ -89,12 +92,15 @@ public:
     bool send_command_analyze_channels_async(int freq_bands, int scan_profile, std::function<void(QString)> completion);
     bool send_command_start_scan_channels_blocking(int freq_bands,int channel_widths,bool passive = false);
 signals:
+    void settingsResetBusyChanged();
+    void settingsResetFinished(bool ground, QString result);
     void powerActionBusyChanged();
     void powerActionFinished(bool ground, bool reboot, QString result);
     void formatAirSdCardStatusChanged();
     void airStorageDevicesChanged();
 private:
     bool m_power_action_busy=false;
+    bool m_settings_reset_busy=false;
     bool send_camera_command(uint16_t command, int cameraIndex=0,
                            float param1=0.0F,
                            float param2=0.0F, float param3=0.0F,

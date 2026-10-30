@@ -1,4 +1,5 @@
 #include "uisimulator.h"
+#include "settingsbackup.h"
 #include "qopenhd.h"
 #include "qtcreatorlaunch.h"
 #include "qpixmap.h"
@@ -315,21 +316,10 @@ bool QOpenHD::overwrite_settings_from_backup_file()
 
 bool QOpenHD::reset_settings()
 {
-/*#ifdef __linux__
-    QSettings settings;
-    std::string file_name = settings.fileName().toStdString();
-    int result = remove(file_name.c_str());
-    if (result == 0) {
-        qDebug() << "File" << QString::fromStdString(file_name) << "deleted successfully";
-        return true;
-    }
-    qDebug() << "Error: Failed to delete file" << QString::fromStdString(file_name);
-    return false;
-#endif
-    return false;*/
-    QSettings settings;
-    settings.clear();
-    return true;
+    if (UiSimulator::isActive() || debugMenuPreview()) return false;
+    // Apply before QML Settings loads on the next start. Clearing the live file
+    // here would let current QML objects write their old values back on exit.
+    return SettingsBackup::stageLocalSettingsReset();
 }
 
 
