@@ -92,8 +92,8 @@ var reviewDecisions = {
  "FC_FW_INFO": "KEEP",
  "FC_FW_EVID": "KEEP"
 }
-var developerParameters = ["DEV_HIGH_RETR", "WB_MAX_D_BZ", "WB_DEV_LOGS"]
-function isDeveloperParameter(id) { return reviewDecisions[id] === "DEVELOPER" || (!reviewDecisions[id] && developerParameters.indexOf(id)>=0) }
+var developerParameters = ["DEV_HIGH_RETR", "WB_MAX_D_BZ", "WB_DEV_LOGS", "WFB_LINK_EN", "WIFI_CARD0", "WIFI_CARD1", "WIFI_CARD2", "WIFI_CARD3"]
+function isDeveloperParameter(id) { return id.indexOf("AR1_") === 0 || /^WIFI_CARD[0-9]+$/.test(id) || reviewDecisions[id] === "DEVELOPER" || (!reviewDecisions[id] && developerParameters.indexOf(id)>=0) }
 function visibleInMode(id, advanced, developer) {
  if(reviewDecisions[id] === "REMOVE") return false
  if(isDeveloperParameter(id)) return developer
@@ -101,7 +101,11 @@ function visibleInMode(id, advanced, developer) {
 }
 
 // These Air-provided parameters are presented by their dedicated Extras pages.
-function belongsToExtras(id) { return id === "ADSB_ENABLE" || id.indexOf("AUDIO_") === 0 || id.indexOf("AUD_") === 0 }
+function isUartParameter(id) {
+ return ["FC_UART_CONN","FC_UART_BAUD","FC_UART_FLWCTL","TRACKER_UART_OUT","TRACK_UART_BAUD","TRACK_UART_FLOW",
+         "OHD_UART_EN","OHD_UART_TLM","OHD_UART_BAUD","OHD_UART_FLW","UART_PRI_RC","UART_PRI_OHD","UART_PRI_FC"].indexOf(id)>=0
+}
+function belongsToExtras(id) { return isUartParameter(id) || id === "ADSB_ENABLE" || id.indexOf("AUDIO_") === 0 || id.indexOf("AUD_") === 0 }
 
 // UI ownership is separate from the Air component that supplies the parameters.
 // Dedicated controls stay deduplicated, except explicit local link recovery in Advanced settings.

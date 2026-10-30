@@ -13,9 +13,10 @@ Rectangle {
 
     property bool osdMenu: false
     property int currentPage: osdMenu ? 0 : 2
-    readonly property var availablePageIds: osdMenu ? [0,1,5] : (settings_form.showDeveloperSettings ? [2,3,4,6] : [2,3,4])
+    readonly property var availablePageIds: osdMenu ? [0,1,5] : (settings_form.showDeveloperSettings ? [2,4,6] : [2,4])
     readonly property int availableTabCount: availablePageIds.length
     onAvailablePageIdsChanged: if (availablePageIds.indexOf(currentPage)<0) currentPage=availablePageIds[0]
+    onCurrentPageChanged: if (!osdMenu && currentPage === 3) currentPage=2
     // Shared sizing contract used by the existing application-setting rows.
     property int rowHeight: MenuTypography.rowHeight
     property int elementHeight: MenuTypography.controlHeight
@@ -148,7 +149,8 @@ Rectangle {
                 AdvancedPageLoader { selected: root.currentPage === 0; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppWidgetSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 1; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppWidgetStyleSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 2; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppGeneralSettingsView { anchors.fill: parent } } }
-                AdvancedPageLoader { selected: root.currentPage === 3; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVehicleSettingsView { anchors.fill: parent } } }
+                AdvancedPageLoader { selected: false; // Vehicle is intentionally unavailable; preserve the reserved page ID.
+                     sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVehicleSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 4; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppVideoSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 5; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppMapSettingsView { anchors.fill: parent } } }
                 AdvancedPageLoader { selected: root.currentPage === 6 && settings_form.showDeveloperSettings; sourceComponent: AppSettingsPageFrame { onBackRequested: root.leaveContent(); AppDevSettingsView { anchors.fill: parent } } }

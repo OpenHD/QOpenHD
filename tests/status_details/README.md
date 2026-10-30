@@ -9,7 +9,7 @@ $env:QT_QUICK_CONTROLS_STYLE = 'Basic'
 ```
 
 Also runs with Qt 6. Exercises five window sizes, shared health/battery row placement,
-volume/playback controls, deferred Ground Details creation, hotspot parameter values,
+volume/mute controls and automatic playback, deferred Ground Details creation, hotspot parameter values,
 battery chemistry thresholds, capacity, cell count, preview write blocking and closing.
 No hardware commands are sent. Telemetry gaps remain `Not reported`; channel selection
 is read-only because current firmware does not offer a hotspot-channel parameter.

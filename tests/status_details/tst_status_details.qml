@@ -271,9 +271,9 @@ Item {
    var slider=findChild(menu,"statusVolumeSlider")
    slider.forceActiveFocus();keyClick(Qt.Key_Left)
    compare(scene._audioControl.playbackVolume,69)
-   var playback=findChild(menu,"statusPlaybackSwitch")
-   mouseClick(playback);compare(scene._audioControl.playing,false)
-   mouseClick(playback);compare(scene._audioControl.playing,true)
+   verify(findChild(menu,"statusPlaybackSwitch")===null)
+   verify(findChild(menu,"statusStreamingSwitch")===null)
+   compare(scene._audioControl.playing,true)
    popup.close()
    var sizes=[[1440,900],[1920,1080],[1024,600],[850,480],[540,900]]
    for (var n=0;n<sizes.length;n++) {

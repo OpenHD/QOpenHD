@@ -1,7 +1,6 @@
 #include "audio_playback.h"
 #include "qdebug.h"
 
-#include <qsettings.h>
 
 
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
@@ -16,12 +15,7 @@
 
 void platform_start_audio_streaming_if_enabled()
 {
-    QSettings settings;
-    const bool dev_enable_live_audio_playback=settings.value("dev_enable_live_audio_playback", false).toBool();
-    if(!dev_enable_live_audio_playback){
-        qDebug()<<"Live audio playback is disabled";
-        return;
-    }
+    // Always listen for incoming audio; the Air unit controls whether audio is streamed.
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #ifdef QOPENHD_ENABLE_QT_AUDIO
     if (QOpenHD::instance().is_android()) {

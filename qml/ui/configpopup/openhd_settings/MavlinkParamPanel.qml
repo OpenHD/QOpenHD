@@ -184,7 +184,7 @@ Rectangle {
                    : (index % 2 === 0 ? settings_form.panelBackgroundRaised : "transparent")
             property bool isIpCameraQuickSetting: model.unique_id === "IP_CAM_ADDRESS" || model.unique_id === "IP_CAM_PIPELINE"
             property bool isRawActiveLinks: root.m_show_link_status && (model.unique_id === "ACTIVE_LINKS" || model.unique_id === "VARIABLE_BITRATE" || model.unique_id === "V_PRIMARY_PERC")
-            property bool groupCollapsed: groupIsCollapsed(model.group) || (AirLayout.isLinkRecoveryParameter(model.unique_id) && !settings_form.showAdvancedSettings)
+            property bool groupCollapsed: groupIsCollapsed(model.group) || AirLayout.isUartParameter(model.unique_id) || (AirLayout.isDeveloperParameter(model.unique_id) && !settings_form.showDeveloperSettings) || (AirLayout.isLinkRecoveryParameter(model.unique_id) && !settings_form.showAdvancedSettings)
             function activate() {
                 inlineEditor.gainFocus()
             }

@@ -23,13 +23,15 @@ Item {
  TestCase {
   name:"OsdApplicationSplit";when:windowShown
   function test_partition(){
-   compare(osd.availablePageIds.join(','),'0,1,5');compare(application.availablePageIds.join(','),'2,3,4')
+   compare(osd.availablePageIds.join(','),'0,1,5');compare(application.availablePageIds.join(','),'2,4')
    compare(findChild(osd,'settingsTab5').text,'MAP');compare(findChild(osd,'settingsTab2'),null)
    compare(findChild(application,'settingsTab2').text,'GENERAL');compare(findChild(application,'settingsTab0'),null)
    osd.currentPage=1;osd.moveTab(1,1);compare(osd.currentPage,5)
-   application.currentPage=2;application.moveTab(2,1);compare(application.currentPage,3)
-   settings_form.showDeveloperSettings=true;compare(application.availablePageIds.join(','),'2,3,4,6')
+   application.currentPage=2;application.moveTab(2,1);compare(application.currentPage,4)
+   settings_form.showDeveloperSettings=true;compare(application.availablePageIds.join(','),'2,4,6')
    application.currentPage=6;settings_form.showDeveloperSettings=false;compare(application.currentPage,2)
+   compare(findChild(application,'settingsTab3'),null)
+   application.currentPage=3;compare(application.currentPage,2)
    compare(osd.currentPage,5)
   }
  }

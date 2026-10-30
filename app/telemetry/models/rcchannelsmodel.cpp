@@ -25,6 +25,19 @@ RCChannelsModel &RCChannelsModel::instanceFC()
     return fc;
 }
 
+RCChannelsModel &RCChannelsModel::instanceJoystick()
+{
+    static RCChannelsModel joystick{};
+    return joystick;
+}
+
+QVariantList RCChannelsModel::channelValues() const
+{
+    QVariantList values;
+    for (const auto value : m_data) values.append(value);
+    return values;
+}
+
 int RCChannelsModel::rowCount(const QModelIndex &parent) const
 {
     return m_data.size();

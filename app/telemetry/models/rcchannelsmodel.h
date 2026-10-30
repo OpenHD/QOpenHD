@@ -24,6 +24,8 @@ class RCChannelsModel : public  QAbstractListModel
     explicit RCChannelsModel(QObject * parent = 0);
     static RCChannelsModel& instanceGround();
     static RCChannelsModel& instanceFC();
+    static RCChannelsModel& instanceJoystick();
+    Q_INVOKABLE QVariantList channelValues() const;
     // Considered alive if we got an update in the last X seconds
     L_RO_PROP(bool,is_alive,set_is_alive,false)
     // This is extra for the "controls" widget

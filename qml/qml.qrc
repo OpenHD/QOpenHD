@@ -113,6 +113,9 @@
         <file>ui/configpopup/MenuTypography.js</file>
         <file>ui/configpopup/AdvancedDialogButton.qml</file>
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
+        <file>ui/configpopup/features/UartSettingsPanel.qml</file>
+        <file>ui/configpopup/features/JoystickSettingsPanel.qml</file>
+        <file>ui/configpopup/features/JoystickMapping.js</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>
@@ -144,6 +147,9 @@
         <file>ui/configpopup/qopenhd_settings/WidgetPreview.qml</file>
         <file>ui/configpopup/qopenhd_settings/WidgetToggle.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVideoSettingsView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/VideoSettingsGroup.qml</file>
+        <file>ui/configpopup/qopenhd_settings/VideoSettingsRow.qml</file>
+        <file>ui/configpopup/qopenhd_settings/VideoNumberControl.qml</file>
         <file>ui/configpopup/openhd_settings/FleetControlLinkCard.qml</file>
         <file>ui/configpopup/openhd_settings/FleetControlSettingsPanel.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppVehicleSettingsView.qml</file>

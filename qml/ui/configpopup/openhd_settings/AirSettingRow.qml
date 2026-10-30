@@ -9,6 +9,11 @@ Item {
     id: row
     objectName: "airSetting_" + paramId
     property var settingsModel
+    property var validateChange: null
+    signal validationFailed(string reason)
+    property bool connectionAlive: _ohdSystemAir.is_alive
+    property string labelOverride: ""
+    property string descriptionOverride: ""
     property string paramId
     readonly property int revision: settingsModel.update_count
     readonly property var metadata: { var changed = revision; return settingsModel.get_ui_metadata(paramId) }
@@ -16,9 +21,9 @@ Item {
     readonly property var value: { var changed = revision; return integer ? settingsModel.get_cached_int(paramId) : settingsModel.get_cached_string(paramId) }
     readonly property bool infoOnly: ["FC_FW_INFO", "FC_FW_EVID", "SIYI_ACTIVE", "TOPOTEK_ACTIVE", "CAM_CTRL_ACTIVE"].indexOf(paramId) >= 0
     readonly property bool locked: _qopenhd.debugMenuPreview || metadata.readOnly === true || infoOnly
-    readonly property bool busy: settingsModel.ui_is_busy || !_ohdSystemAir.is_alive || _qopenhd.debugMenuPreview
-    readonly property bool toggle: integer && (metadata.control === "toggle" || ["FC_UART_FLWCTL", "OHD_UART_EN", "OHD_UART_FLW", "LOG_OPENHD", "LOG_MAVLINK", "ADSB_ENABLE", "SBUS_EN", "CONFIG_BOOT_AIR"].indexOf(paramId) >= 0)
-    readonly property bool port: ["FC_UART_CONN", "OHD_UART_TLM", "SBUS_DEV"].indexOf(paramId) >= 0
+    readonly property bool busy: settingsModel.ui_is_busy || !connectionAlive || _qopenhd.debugMenuPreview
+    readonly property bool toggle: integer && (metadata.control === "toggle" || ["FC_UART_FLWCTL", "OHD_UART_EN", "OHD_UART_FLW", "TRACK_UART_FLOW", "LOG_OPENHD", "LOG_MAVLINK", "ADSB_ENABLE", "SBUS_EN", "CONFIG_BOOT_AIR"].indexOf(paramId) >= 0)
+    readonly property bool port: ["FC_UART_CONN", "OHD_UART_TLM", "SBUS_DEV", "TRACKER_UART_OUT"].indexOf(paramId) >= 0
     readonly property bool portFallback: port && !settingsModel.string_param_has_enum(paramId)
     readonly property bool cells: paramId === "FC_BATT_N_CELLS"
     readonly property var choices: {
@@ -34,8 +39,8 @@ Item {
         return ports
     }
     readonly property bool password: paramId === "WIFI_HS_PW" || paramId === "WIFI_CL_PW"
-    readonly property string label: AirLayout.labels[paramId] || metadata.label || paramId
-    readonly property string description: AirLayout.descriptions[paramId] || metadata.description || ""
+    readonly property string label: labelOverride || AirLayout.labels[paramId] || metadata.label || paramId
+    readonly property string description: descriptionOverride || AirLayout.descriptions[paramId] || metadata.description || ""
     readonly property string displayValue: {
         if ((paramId === "FC_FW_INFO" || paramId === "FC_FW_EVID") && !String(value).length) return qsTr("Not reported")
         if (paramId === "FC_FW_INFO" && String(value).charAt(0) === "{") {
@@ -51,8 +56,15 @@ Item {
     }
     implicitHeight: Math.max(60, wording.implicitHeight + 18, editor.height + 18)
     signal backRequested()
+    function changeAllowed(value) {
+        if (!validateChange) return true
+        var error = validateChange(paramId, value)
+        if (!error) return true
+        validationFailed(error)
+        return false
+    }
     function commitToggle(enabled) {
-        if (locked || busy) return
+        if (locked || busy || !changeAllowed(enabled ? 1 : 0)) return
         var warning = settingsModel.get_warning_before_safe(paramId)
         if (warning) _messageBoxInstance.set_text_and_show(warning)
         settingsModel.try_set_param_int_async(paramId, enabled ? 1 : 0, true)
@@ -60,6 +72,7 @@ Item {
     function commitChoice(selected) {
         if (locked || busy) return
         if (selected === null) { customPortEditor.text = String(value); customPortDialog.open(); return }
+        if (!changeAllowed(selected)) return
         var warning = settingsModel.get_warning_before_safe(paramId)
         if (warning) _messageBoxInstance.set_text_and_show(warning)
         if (integer) settingsModel.try_set_param_int_async(paramId, Number(selected), true)

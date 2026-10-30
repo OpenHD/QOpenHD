@@ -533,6 +533,11 @@ IP CAMERA CONNECTION CONTROLS
 
 ADDITIONAL READ-ONLY INFORMATION
 --------------------------------
+AR1_S_* - Artosyn local 1-to-1 radio diagnostics (read-only).
+     Decision: DEVELOPER
+     Only exposed by firmware when Artosyn diagnostic parameters are enabled
+     and an open Artosyn device successfully answers its status and 1-to-1 queries.
+
 ACTIVE_LINKS - Active transport links; displayed as link status.
 CARD_TYPE_<index> - Radio card type, generated for each detected card.
 

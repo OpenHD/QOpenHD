@@ -259,6 +259,14 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             }
             consumed=true;
         }break;
+        case MAVLINK_MSG_ID_RC_CHANNELS:{
+            if (!m_is_air) {
+                mavlink_rc_channels_t raw{};
+                mavlink_msg_rc_channels_decode(&msg, &raw);
+                RCChannelsModel::instanceJoystick().update_all_channels(Telemetryutil::mavlink_msg_rc_channels_to_array(raw));
+            }
+            consumed=true;
+        }break;
         case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:{
              mavlink_rc_channels_override_t parsedMsg;
              mavlink_msg_rc_channels_override_decode(&msg,&parsedMsg);

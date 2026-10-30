@@ -109,6 +109,7 @@ Item {
             compare(root.diagnosticsUnlocked, false)
             compare(root.showDeveloperSettings, false)
             compare(root.navigationPageIds.indexOf(3), -1)
+            compare(root.navigationPageIds.indexOf(4), -1)
             compare(root.navigationPageIds.indexOf(7), -1)
             var navigation = findChild(root, "advancedNavigation")
             navigation.positionViewAtIndex(root.navigationPageIds.indexOf(6), ListView.Contain)
@@ -123,6 +124,7 @@ Item {
             tryCompare(root, "diagnosticsUnlocked", true)
             compare(root.showDeveloperSettings, true)
             verify(root.navigationPageIds.indexOf(3) >= 0)
+            compare(root.navigationPageIds.indexOf(4), -1)
             verify(root.navigationPageIds.indexOf(7) >= 0)
             compare(root.menuPageTitle, "CREDITS")
             wait(50)
@@ -153,6 +155,7 @@ Item {
             compare(root.showAdvancedSettings, false)
             compare(root.showDeveloperSettings, false)
             compare(root.navigationPageIds.indexOf(3), -1)
+            compare(root.navigationPageIds.indexOf(4), -1)
             _uiSimulator.profile = {accessMode:1}
             compare(root.showAdvancedSettings, true)
             compare(root.showDeveloperSettings, false)
@@ -160,6 +163,7 @@ Item {
             compare(root.showAdvancedSettings, true)
             compare(root.showDeveloperSettings, true)
             verify(root.navigationPageIds.indexOf(3) >= 0)
+            compare(root.navigationPageIds.indexOf(4), -1)
             _uiSimulator.active = false
             compare(root.showDeveloperSettings, true)
             compare(root.diagnosticsUnlocked, true)

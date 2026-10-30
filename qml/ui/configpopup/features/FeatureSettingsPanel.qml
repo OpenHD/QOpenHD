@@ -108,6 +108,8 @@ AdvancedPage {
                            _ohdSystemGroundSettings.param_int_exists("WB_UDP_ENABLE")
                 }
             }
+            AdvancedTabButton { text: qsTr("UART"); iconText: "\uf120" }
+            AdvancedTabButton { text: qsTr("JOYSTICK"); iconText: "\uf11b" }
             AdvancedTabButton { text: qsTr("FLEETCONTROL"); iconText: "\uf0c0" }
         }
 
@@ -340,50 +342,6 @@ AdvancedPage {
                 ColumnLayout {
                     width: parent.width; spacing: 12
                     AdvancedCard {
-                        Layout.fillWidth: true; implicitHeight: rcLuaSetupColumn.implicitHeight + 32
-                        ColumnLayout {
-                            id: rcLuaSetupColumn; anchors.fill: parent; spacing: 11
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("EDGETX / OPENTX LUA SETTINGS"); color: settings_form.primaryText; font.bold: true }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("Lets the OpenHD Lua tool change frequency, bandwidth, MCS and TX power, or disable FHSS. Assign the OHDSET mixer outputs to four consecutive receiver channels in this order: D2, D1, D0, CLK.")
-                            }
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Enable Lua settings protocol"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                    enabled: root.rcLuaAvailable && root.rcLuaBaseChannel > 0
-                                    checked: { root.airRevision; return enabled && _ohdSystemAirSettingsModel.get_cached_int("RC_OHD_CTRL") !== 0 }
-                                    onToggled: root.setAirInt("RC_OHD_CTRL", checked ? 1 : 0)
-                                }
-                            }
-                            RowLayout {
-                                Layout.fillWidth: true
-                                Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("First RC channel"); color: settings_form.primaryText; Layout.fillWidth: true }
-                                SpinBox { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                    id: rcLuaBase
-                                    from: 0; to: 15; editable: true
-                                    value: root.rcLuaBaseChannel
-                                    textFromValue: function(value) { return value === 0 ? qsTr("Disabled") : qsTr("CH %1").arg(value) }
-                                    onValueModified: root.setAirInt("RC_SET_BASE", value)
-                                }
-                            }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.primaryText
-                                text: root.rcLuaBaseChannel > 0
-                                      ? qsTr("Mapping: CH %1 = D2, CH %2 = D1, CH %3 = D0, CH %4 = CLK")
-                                            .arg(root.rcLuaBaseChannel).arg(root.rcLuaBaseChannel + 1)
-                                            .arg(root.rcLuaBaseChannel + 2).arg(root.rcLuaBaseChannel + 3)
-                                      : qsTr("Select a first channel. Four consecutive channels are required.")
-                            }
-                            Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                Layout.fillWidth: true; wrapMode: Text.WordWrap; color: settings_form.secondaryText
-                                text: qsTr("The four channels must otherwise be unused. Configure RC_OHD_CTRL only after checking that all four live values reach the Air unit.")
-                            }
-                        }
-                    }
-
-                    AdvancedCard {
                         Layout.fillWidth: true; implicitHeight: rcLuaDebugColumn.implicitHeight + 32
                         ColumnLayout {
                             id: rcLuaDebugColumn; anchors.fill: parent; spacing: 8
@@ -561,6 +519,8 @@ AdvancedPage {
                 }
             }
 
+            UartSettingsPanel {}
+            JoystickSettingsPanel {}
             FleetControlSettingsPanel {
                 onBackRequested: root.backRequested()
             }
@@ -573,11 +533,6 @@ AdvancedPage {
             id: playbackColumn
             width: parent ? parent.width : implicitWidth
             spacing: 10
-                RowLayout {
-                    Layout.fillWidth: true
-                    Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Play received audio"); color: settings_form.primaryText; Layout.fillWidth: true }
-                    Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; checked: _audioControl.playing; onToggled: { settings.dev_enable_live_audio_playback = checked; _audioControl.setPlaybackEnabled(checked) } }
-                }
                 RowLayout {
                     Layout.fillWidth: true
                     Label { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; text: qsTr("Output"); color: settings_form.primaryText; Layout.fillWidth: true }

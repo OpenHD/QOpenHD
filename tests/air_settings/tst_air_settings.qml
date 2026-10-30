@@ -40,13 +40,50 @@ Item {
  Rectangle {anchors.fill:parent;color:"#091827"}
  Air.AirSettingsPanel {id:panel;anchors.fill:parent;anchors.margins:16}
  TestCase {
+  function test_radio_internal_settings_developer_only(){
+   var ids=["WFB_LINK_EN","WIFI_CARD0","WIFI_CARD1","WIFI_CARD2","WIFI_CARD3","WIFI_CARD12"]
+   for(var i=0;i<ids.length;i++){
+    verify(!AirLayout.visibleInMode(ids[i],false,false))
+    verify(!AirLayout.visibleInMode(ids[i],true,false))
+    verify(AirLayout.visibleInMode(ids[i],true,true))
+   }
+  }
+  function test_all_ar1_developer_only(){
+   var ids=["AR1_S_SNR","AR1_S_MCS","AR1_CONFIG","AR1_CHANNEL"]
+   for(var i=0;i<ids.length;i++){
+    verify(!AirLayout.visibleInMode(ids[i],false,false))
+    verify(!AirLayout.visibleInMode(ids[i],true,false))
+    verify(AirLayout.visibleInMode(ids[i],true,true))
+   }
+  }
+
  name:"AirSettings";when:windowShown
+ function test_artosyn_self_diagnostics_require_developer_mode(){
+ var original=_ohdSystemAirSettingsModel.values
+ var advanced=settings_form.showAdvancedSettings
+ var developer=settings_form.showDeveloperSettings
+ var suffixes=["SNR","LDPT","LDPN","GNA","GNB","MCS","CHN","PWR","LNI","LNF","1TX","TFK","LSN","LGA","LGB","HSN","HGA","HGB"]
+ var diagnostics={}
+ for(var i=0;i<suffixes.length;i++) diagnostics["AR1_S_"+suffixes[i]]=1
+ _ohdSystemAirSettingsModel.values=diagnostics;_ohdSystemAirSettingsModel.update_count++
+ settings_form.showAdvancedSettings=true;settings_form.showDeveloperSettings=false
+ compare(panel.parameterIds.length,0);compare(panel.categories.length,0)
+ settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=true
+ compare(panel.parameterIds.length,suffixes.length)
+ compare(panel.categories.length,1);compare(panel.categories[0].id,"developer")
+ compare(panel.idsForSection("developerControls").length,suffixes.length)
+ // Developer mode must not manufacture diagnostics when firmware supplies none.
+ _ohdSystemAirSettingsModel.values={};_ohdSystemAirSettingsModel.update_count++
+ compare(panel.parameterIds.length,0);compare(panel.categories.length,0)
+ _ohdSystemAirSettingsModel.values=original;_ohdSystemAirSettingsModel.update_count++
+ settings_form.showAdvancedSettings=advanced;settings_form.showDeveloperSettings=developer
+ }
  function test_categories_and_live_controls(){
  compare(panel.activeCategory,"fc")
- compare(panel.idsForSection("fcSerial").join(","),"FC_UART_CONN,FC_UART_BAUD,FC_UART_FLWCTL")
+ compare(panel.idsForSection("fcSerial").length,0)
  verify(findChild(panel,"airSection_battery")!==null)
  verify(findChild(panel,"airSection_fcInfo")!==null)
- verify(findChild(panel,"airSetting_FC_UART_CONN")!==null)
+ compare(findChild(panel,"airSetting_FC_UART_CONN"),null)
  mouseClick(findChild(panel,"airCategory_uart"));compare(panel.activeCategory,"uart")
  var sbus=findChild(panel,"airSetting_SBUS_EN")
  verify(sbus!==null);compare(sbus.value,0)
@@ -68,11 +105,11 @@ Item {
  var developer=settings_form.showDeveloperSettings
  settings_form.showAdvancedSettings=true
  settings_form.showDeveloperSettings=false
- _ohdSystemAirSettingsModel.values={FC_UART_CONN:1,SBUS_EN:0}
+ _ohdSystemAirSettingsModel.values={FC_BATT_N_CELLS:3,SBUS_EN:0}
  _ohdSystemAirSettingsModel.update_count++
  compare(panel.categories.map(function(c){return c.id}).join(","),"fc,uart")
  panel.activeCategory="uart"
- _ohdSystemAirSettingsModel.values={FC_UART_CONN:1}
+ _ohdSystemAirSettingsModel.values={FC_BATT_N_CELLS:3}
  _ohdSystemAirSettingsModel.update_count++
  compare(panel.activeCategory,"fc")
  compare(findChild(panel,"airCategory_uart"),null)

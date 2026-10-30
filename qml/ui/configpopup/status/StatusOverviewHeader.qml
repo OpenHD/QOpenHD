@@ -115,18 +115,6 @@ Item {
             id: volumeContent
             spacing: 12
             Text { text: qsTr("Audio"); color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true }
-            Switch { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                objectName: "statusPlaybackSwitch"
-                width: parent.width
-                text: qsTr("Playback")
-                enabled: header.audio !== null
-                checked: header.audio ? header.audio.playing : false
-                onToggled: {
-                    if (typeof settings !== "undefined") settings.dev_enable_live_audio_playback = checked
-                    header.audio.setPlaybackEnabled(checked)
-                }
-                contentItem: Text { text: parent.text; color: settings_form.primaryText; verticalAlignment: Text.AlignVCenter; leftPadding: parent.indicator.width + parent.spacing; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
-            }
             Text { text: qsTr("Volume: %1 %").arg(header.audio ? header.audio.playbackVolume : 0); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
             Slider {
                 id: volumeSlider
