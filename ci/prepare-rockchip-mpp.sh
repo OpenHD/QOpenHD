@@ -12,10 +12,15 @@ if [[ ! -d "$source" ]]; then
     mkdir -p "$source"
     curl --fail --location --retry 4 "https://codeload.github.com/rockchip-linux/mpp/tar.gz/$commit" | tar -xz --strip-components=1 -C "$source"
 fi
+# MPP strips every -g... substring from CMAKE_*_FLAGS in Release builds,
+# including the -gnu suffix in Debian's multiarch paths. Release-specific
+# flags bypass that upstream rewrite; base flags also cover CMake's probes.
 cmake -S "$source" -B "$build" -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
     -DCMAKE_SYSROOT="$sysroot" -DCMAKE_C_COMPILER="$cc" -DCMAKE_CXX_COMPILER="$cxx" \
     -DCMAKE_C_FLAGS="-B$sysroot/usr/lib/$triplet -isystem $sysroot/usr/include/$triplet" \
     -DCMAKE_CXX_FLAGS="-B$sysroot/usr/lib/$triplet -isystem $sysroot/usr/include/$triplet" \
+    -DCMAKE_C_FLAGS_RELEASE="-O3 -DNDEBUG -B$sysroot/usr/lib/$triplet -isystem $sysroot/usr/include/$triplet" \
+    -DCMAKE_CXX_FLAGS_RELEASE="-O3 -DNDEBUG -B$sysroot/usr/lib/$triplet -isystem $sysroot/usr/include/$triplet" \
     -DCMAKE_EXE_LINKER_FLAGS="-L$sysroot/usr/lib/$triplet -Wl,-rpath-link,$sysroot/usr/lib/$triplet" \
     -DCMAKE_SHARED_LINKER_FLAGS="-L$sysroot/usr/lib/$triplet -Wl,-rpath-link,$sysroot/usr/lib/$triplet" \
     -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TEST=OFF -DBUILD_SHARED_LIBS=ON

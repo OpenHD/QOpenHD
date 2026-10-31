@@ -28,7 +28,9 @@ jobs:
         run: python3 tests/nxp_boot_video_test.py
 
   maps:
-    runs-on: ubuntu-22.04
+    # Qt 5.15.3 in Jammy hangs in scene-graph traversal during map pan tests.
+    # Noble ships the newer Qt 5.15 patch release used by these real-map checks.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - name: Install Qt map test runtime
