@@ -52,7 +52,7 @@ jobs:
 
       - name: Install Qt for Android (Qt 6)
         id: install-qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
           host: linux
