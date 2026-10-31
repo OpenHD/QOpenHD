@@ -14,8 +14,8 @@ if [[ ! -d "$source" ]]; then
 fi
 cmake -S "$source" -B "$build" -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
     -DCMAKE_SYSROOT="$sysroot" -DCMAKE_C_COMPILER="$cc" -DCMAKE_CXX_COMPILER="$cxx" \
-    -DCMAKE_C_FLAGS="-B$sysroot/usr/lib/$triplet" \
-    -DCMAKE_CXX_FLAGS="-B$sysroot/usr/lib/$triplet" \
+    -DCMAKE_C_FLAGS="-B$sysroot/usr/lib/$triplet -isystem $sysroot/usr/include/$triplet" \
+    -DCMAKE_CXX_FLAGS="-B$sysroot/usr/lib/$triplet -isystem $sysroot/usr/include/$triplet" \
     -DCMAKE_EXE_LINKER_FLAGS="-L$sysroot/usr/lib/$triplet -Wl,-rpath-link,$sysroot/usr/lib/$triplet" \
     -DCMAKE_SHARED_LINKER_FLAGS="-L$sysroot/usr/lib/$triplet -Wl,-rpath-link,$sysroot/usr/lib/$triplet" \
     -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DBUILD_TEST=OFF -DBUILD_SHARED_LIBS=ON
