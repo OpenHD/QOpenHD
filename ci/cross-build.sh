@@ -187,10 +187,10 @@ CROSS_COMPILE = $gcc/bin/$compiler-
 include(../common/linux_device_pre.conf)
 QMAKE_LIBS_EGL += -lEGL
 QMAKE_LIBS_OPENGL_ES2 += -lGLESv2 -lEGL
-QMAKE_CFLAGS += --sysroot=\$\$[QT_SYSROOT]
-QMAKE_CXXFLAGS += --sysroot=\$\$[QT_SYSROOT]
+QMAKE_CFLAGS += --sysroot=\$\$[QT_SYSROOT] -isystem \$\$[QT_SYSROOT]/usr/include/$triplet
+QMAKE_CXXFLAGS += --sysroot=\$\$[QT_SYSROOT] -isystem \$\$[QT_SYSROOT]/usr/include/$triplet
 QMAKE_LFLAGS += --sysroot=\$\$[QT_SYSROOT] -B\$\$[QT_SYSROOT]/usr/lib/$triplet
-QMAKE_LFLAGS += -L\$\$[QT_SYSROOT]/usr/lib/$triplet -L\$\$[QT_SYSROOT]/lib/$triplet
+QMAKE_LFLAGS += -L\$\$[QT_SYSROOT]/usr/lib/$triplet -L\$\$[QT_SYSROOT]/lib/$triplet -Wl,-rpath-link,\$\$[QT_SYSROOT]/usr/lib/$triplet -Wl,-rpath-link,\$\$[QT_SYSROOT]/lib/$triplet
 DISTRO_OPTS += deb-multi-arch
 EOF
 if [[ "$arch" == armhf ]]; then
@@ -247,17 +247,17 @@ fi
 (
   cd "$source_dir"
   if [[ "$target" == rock-* ]]; then
-    "$gcc/bin/$compiler-g++" --sysroot="$sysroot" -O2 -std=c++17 -pthread \
+    "$gcc/bin/$compiler-g++" --sysroot="$sysroot" -B"$sysroot/usr/lib/$triplet" -O2 -std=c++17 -pthread \
       -I"$sysroot/usr/include" -I"$sysroot/usr/include/$triplet" \
       tools/nxp-boot-splash.cpp -L"$sysroot/usr/lib/$triplet" \
       -Wl,-rpath-link,"$sysroot/usr/lib/$triplet" -lpng16 -o "$build/openhd-boot-splash"
-    "$gcc/bin/$compiler-gcc" --sysroot="$sysroot" -O2 -shared -fPIC \
+    "$gcc/bin/$compiler-gcc" --sysroot="$sysroot" -isystem "$sysroot/usr/include/$triplet" -B"$sysroot/usr/lib/$triplet" -O2 -shared -fPIC \
       deployment/rockchip/egl-platform-compat.c -L"$sysroot/usr/lib/$triplet" -lEGL -o "$build/egl-platform-compat.so"
     kiosk=""
     if [[ "$release" == bullseye ]]; then
       kiosk="$build/kiosk-shell-black.so"
-      CC="$gcc/bin/$compiler-gcc" CFLAGS="--sysroot=$sysroot" \
-        LDFLAGS="--sysroot=$sysroot -L$sysroot/usr/lib/$triplet -Wl,-rpath-link,$sysroot/usr/lib/$triplet" \
+      CC="$gcc/bin/$compiler-gcc" CFLAGS="--sysroot=$sysroot -isystem $sysroot/usr/include/$triplet" \
+        LDFLAGS="--sysroot=$sysroot -B$sysroot/usr/lib/$triplet -L$sysroot/usr/lib/$triplet -Wl,-rpath-link,$sysroot/usr/lib/$triplet" \
         bash ci/prepare-rockchip-kiosk.sh "$work/kiosk-$target" "$kiosk"
     fi
     PREBUILT_QOPENHD="$binary" PREBUILT_BOOT_SPLASH="$build/openhd-boot-splash" \
