@@ -97,13 +97,20 @@ static QVariantList enumerateStorageLocations() {
  add(QObject::tr("Documents"),QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
  return result;
 }
+// QThread::create is absent from some Qt Android builds (QT_CONFIG(cxx11_future)).
+// Keep storage discovery asynchronous without relying on that optional API.
+class StorageLocationsThread final : public QThread {
+public:
+ QVariantList result;
+protected:
+ void run() override { result=enumerateStorageLocations(); }
+};
 QVariantList SettingsBackup::locations() const {return m_locations;}
 void SettingsBackup::refreshLocations() {
  if(m_storageScanRunning)return;
  m_storageScanRunning=true;emit storageLocationsChanged();
- auto result=std::make_shared<QVariantList>();
- auto worker=QThread::create([result]{*result=enumerateStorageLocations();});
- connect(worker,&QThread::finished,this,[this,result]{m_locations=*result;m_storageScanRunning=false;emit storageLocationsChanged();});
+ auto worker=new StorageLocationsThread;
+ connect(worker,&QThread::finished,this,[this,worker]{m_locations=worker->result;m_storageScanRunning=false;emit storageLocationsChanged();});
  connect(worker,&QThread::finished,worker,&QObject::deleteLater);
  worker->start();
 }

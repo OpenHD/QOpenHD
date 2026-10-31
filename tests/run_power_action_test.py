@@ -39,16 +39,22 @@ def main():
         'enum PowerAction', 'function open_dialoque(',
         'function finish_power_action(', 'Connections {')]
     properties = re.findall(r'^    property (?:bool|int) .*$', qml, re.M)
-    for name in ('groundReboot', 'groundShutdown'):
-        start = qml.rfind('Button {', 0, qml.index('id: ' + name))
-        button = block(qml[start:], 'Button {')
-        sections.append(button.replace('id: ' + name, 'id: ' + name + '; objectName: "' + name + '"'))
+    sections.append(block(qml, 'readonly property string actionLabel:'))
+    for name in ('powerActionCancel', 'powerActionConfirm'):
+        start = qml.rfind('AdvancedDialogButton {', 0, qml.index('objectName: "' + name + '"'))
+        button = block(qml[start:], 'AdvancedDialogButton {').replace('AdvancedDialogButton {', 'Button {', 1)
+        # Styling is checked by power_dialog; retain production click/enabled logic.
+        button = button.replace('                destructive: true', '')
+        sections.append(button)
     fixture = '''import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import QtQuick.Layouts 1.12
 Item {
     id: powerDialog; width: 400; height: 240
     Component.onCompleted: visible = false
+    function open() { visible = true }
+    function reject() { visible = false }
 PROPERTIES
 SECTIONS
 }
@@ -59,12 +65,15 @@ SECTIONS
     with tempfile.TemporaryDirectory(prefix='qopenhd-power-', ignore_cleanup_errors=True) as temporary:
         folder = Path(temporary)
         (folder / 'PowerActionDialoque.qml').write_text(fixture, encoding='utf-8')
+        sender = (ROOT / 'app/telemetry/action/impl/cmdsender.cpp').read_text(encoding='utf-8')
+        sender = sender.replace('#include "util/uisimulator.h"', '').replace('../../tutil/qopenhdmavlinkhelper.hpp', 'telemetry/tutil/qopenhdmavlinkhelper.hpp').replace('../../MavlinkTelemetry.h', 'telemetry/MavlinkTelemetry.h')
+        (folder / 'cmdsender_for_test.cpp').write_text(sender, encoding='utf-8')
         template = (ROOT / 'tests/power_action_test.cpp.in').read_text(encoding='utf-8')
         (folder / 'power_action_test.cpp').write_text(template.replace('@POWER_ACTION_METHODS@', methods), encoding='utf-8')
         (folder / 'power_action_test.pro').write_text(
             'QT = core gui qml quick\nCONFIG += console c++17\nCONFIG -= app_bundle\n'
             'TARGET = power_action_test\nSOURCES += power_action_test.cpp\n'
-            f'INCLUDEPATH += "{ROOT.as_posix()}/app" "{ROOT.as_posix()}/app/telemetry"\n',
+            f'INCLUDEPATH += "{ROOT.as_posix()}/app" "{ROOT.as_posix()}/app/telemetry" "{ROOT.as_posix()}/app/telemetry/action/impl"\n',
             encoding='utf-8')
         for command in ([str(args.qt_bin / 'qmake'), 'power_action_test.pro'], [args.make, '-j4']):
             result = subprocess.run(command, cwd=folder, env=env, text=True,

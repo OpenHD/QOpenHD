@@ -56,7 +56,13 @@ public:
         return true;
     }
 };
-#include "telemetry/action/impl/cmdsender.cpp"
+class UiSimulator : public QObject {
+public:
+ static bool isActive(){return false;}
+ static UiSimulator& instance(){static UiSimulator value;return value;}
+ void recordAction(QString){}
+};
+#include "cmdsender_for_test.cpp"
 
 // Keep only the QObject API needed by the production power methods/QML.
 class OHDAction : public QObject {
@@ -107,15 +113,15 @@ int main(int argc,char** argv) {
     std::unique_ptr<QObject> dialog(component.create());
     if (!dialog) qWarning()<<component.errors();
     require(bool(dialog),"production power dialog handlers load");
-    auto* submit=dialog->findChild<QObject*>("groundShutdown");
-    auto* cancel=dialog->findChild<QObject*>("groundReboot");
+    auto* submit=dialog->findChild<QObject*>("powerActionConfirm");
+    auto* cancel=dialog->findChild<QObject*>("powerActionCancel");
     require(submit && cancel,"production buttons present");
     auto open=[&](int system,bool reboot) {
         require(QMetaObject::invokeMethod(dialog.get(),"open_dialoque",
             Q_ARG(QVariant,QVariant(system)),Q_ARG(QVariant,QVariant(reboot))),"open power dialog");
         ui.toast.clear();
     };
-    auto press=[&] { require(QMetaObject::invokeMethod(submit,"pressed"),"press power button"); };
+    auto press=[&] { require(QMetaObject::invokeMethod(submit,"clicked"),"press power button"); };
 
     // A GUI-thread ACK must be processed before the retry timeout.
     open(1,true);
