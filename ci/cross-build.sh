@@ -223,6 +223,16 @@ unset PKG_CONFIG_PATH
 native_args=()
 if [[ "$target" == rock-* ]]; then
   bash "$source_dir/ci/prepare-rockchip-mpp.sh" "$sysroot" "$work" "$gcc/bin/$compiler-gcc" "$gcc/bin/$compiler-g++"
+  if [[ "$release" == bullseye ]]; then
+    # Jammy's scanner emits Wayland 1.20 APIs absent from Bullseye's 1.18.
+    # This is a native amd64 build tool, never a target executable.
+    scanner_deb="$work/libwayland-bin_1.18.0-2~exp1.1_amd64.deb"
+    download "https://deb.debian.org/debian/pool/main/w/wayland/$(basename "$scanner_deb")" "$scanner_deb"
+    echo "774e97053d524549044b332469d13eec70c989b4bc00a592019512c17a92978e  $scanner_deb" | sha256sum -c -
+    scanner_root="$work/wayland-scanner-1.18"
+    dpkg-deb -x "$scanner_deb" "$scanner_root"
+    native_args+=("WAYLAND_SCANNER=$scanner_root/usr/bin/wayland-scanner")
+  fi
   native_args+=(CONFIG+=rockchip_native CONFIG-=ltcg
     "ROCKCHIP_MPP_INCLUDE=$sysroot/usr/include/rockchip"
     "WAYLAND_PROTOCOLS_DIR=$sysroot/usr/share/wayland-protocols")
@@ -250,7 +260,8 @@ fi
     "$gcc/bin/$compiler-g++" --sysroot="$sysroot" -B"$sysroot/usr/lib/$triplet" -O2 -std=c++17 -pthread \
       -I"$sysroot/usr/include" -I"$sysroot/usr/include/$triplet" \
       tools/nxp-boot-splash.cpp -L"$sysroot/usr/lib/$triplet" \
-      -Wl,-rpath-link,"$sysroot/usr/lib/$triplet" -lpng16 -o "$build/openhd-boot-splash"
+      -L"$sysroot/lib/$triplet" -Wl,-rpath-link,"$sysroot/usr/lib/$triplet" \
+      -Wl,-rpath-link,"$sysroot/lib/$triplet" -lpng16 -lz -o "$build/openhd-boot-splash"
     "$gcc/bin/$compiler-gcc" --sysroot="$sysroot" -isystem "$sysroot/usr/include/$triplet" -B"$sysroot/usr/lib/$triplet" -O2 -shared -fPIC \
       deployment/rockchip/egl-platform-compat.c -L"$sysroot/usr/lib/$triplet" -lEGL -o "$build/egl-platform-compat.so"
     kiosk=""
