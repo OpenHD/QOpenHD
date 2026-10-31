@@ -9,6 +9,7 @@ BaseWidget {
     height: 138
     visible: settings.show_video_pipeline_debug_widget && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "video_pipeline_debug_widget"
     bw_verbose_name: qsTr("VIDEO PIPELINE DEBUG")
     defaultAlignment: 1
@@ -846,7 +847,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Rectangle {

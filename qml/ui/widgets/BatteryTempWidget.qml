@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_battery_temp && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "battery_temp_widget"
     bw_verbose_name: qsTr("BATTERY SENSOR TEMP")
 
@@ -169,8 +170,8 @@ BaseWidget {
 
         Text {
             id: temp_glyph
-            color: _fcMavlinkSystem.battery_temperature <= settings.battery_temp_caution ? (_fcMavlinkSystem.battery_temperature <= settings.battery_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            opacity: bw_current_opacity
+            color: previewTelemetry("_fcMavlinkSystem", "battery_temperature", _fcMavlinkSystem.battery_temperature) <= settings.battery_temp_caution ? (previewTelemetry("_fcMavlinkSystem", "battery_temperature", _fcMavlinkSystem.battery_temperature) <= settings.battery_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf5df"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -187,10 +188,10 @@ BaseWidget {
         Text {
             id: battery_temp
             color: {
-                if (_fcMavlinkSystem.battery_temperature <= settings.battery_temp_warn) {
+                if (previewTelemetry("_fcMavlinkSystem", "battery_temperature", _fcMavlinkSystem.battery_temperature) <= settings.battery_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_fcMavlinkSystem.battery_temperature < settings.battery_temp_caution) {
+                } else if (previewTelemetry("_fcMavlinkSystem", "battery_temperature", _fcMavlinkSystem.battery_temperature) < settings.battery_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.battery_temp_declutter == true
@@ -202,8 +203,8 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: bw_current_opacity
-            text: _fcMavlinkSystem.battery_temperature == 99 ? qsTr("N/A") : _fcMavlinkSystem.battery_temperature + "°"
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+            text: previewTelemetry("_fcMavlinkSystem", "battery_temperature", _fcMavlinkSystem.battery_temperature) == 99 ? qsTr("N/A") : previewTelemetry("_fcMavlinkSystem", "battery_temperature", _fcMavlinkSystem.battery_temperature) + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

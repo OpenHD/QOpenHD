@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_air_battery && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "air_battery_widget"
     bw_verbose_name: qsTr("AIR BATTERY (FC)")
 
@@ -27,9 +28,9 @@ BaseWidget {
 
     function get_text_for_specific_battery(id){
 
-        var voltage_v= id===0 ? _fcMavlinkSystem.battery_id0_voltage_volt : _fcMavlinkSystem.battery_id1_voltage_volt;
-        var current_ampere= id===0 ? _fcMavlinkSystem.battery_id0_current_ampere : _fcMavlinkSystem.battery_id1_current_ampere;
-        var consumed_mah = id===0 ? _fcMavlinkSystem.battery_id0_consumed_mah : _fcMavlinkSystem.battery_id1_consumed_mah;
+        var voltage_v= id===0 ? previewTelemetry("_fcMavlinkSystem", "battery_id0_voltage_volt", _fcMavlinkSystem.battery_id0_voltage_volt) : previewTelemetry("_fcMavlinkSystem", "battery_id1_voltage_volt", _fcMavlinkSystem.battery_id1_voltage_volt);
+        var current_ampere= id===0 ? previewTelemetry("_fcMavlinkSystem", "battery_id0_current_ampere", _fcMavlinkSystem.battery_id0_current_ampere) : previewTelemetry("_fcMavlinkSystem", "battery_id1_current_ampere", _fcMavlinkSystem.battery_id1_current_ampere);
+        var consumed_mah = id===0 ? previewTelemetry("_fcMavlinkSystem", "battery_id0_consumed_mah", _fcMavlinkSystem.battery_id0_consumed_mah) : previewTelemetry("_fcMavlinkSystem", "battery_id1_consumed_mah", _fcMavlinkSystem.battery_id1_consumed_mah);
 
         var ret="";
         //Number().toLocaleString(Qt.locale(),'f', 1) + "V"
@@ -41,8 +42,8 @@ BaseWidget {
     }
 
     function get_more_text_for_specific_battery(id){
-        var type=id===0 ? _fcMavlinkSystem.battery_id0_type : _fcMavlinkSystem.battery_id1_type;
-        var remaining=id===0 ? _fcMavlinkSystem.battery_id0_remaining_time_s : _fcMavlinkSystem.battery_id1_remaining_time_s;
+        var type=id===0 ? previewTelemetry("_fcMavlinkSystem", "battery_id0_type", _fcMavlinkSystem.battery_id0_type) : previewTelemetry("_fcMavlinkSystem", "battery_id1_type", _fcMavlinkSystem.battery_id1_type);
+        var remaining=id===0 ? previewTelemetry("_fcMavlinkSystem", "battery_id0_remaining_time_s", _fcMavlinkSystem.battery_id0_remaining_time_s) : previewTelemetry("_fcMavlinkSystem", "battery_id1_remaining_time_s", _fcMavlinkSystem.battery_id1_remaining_time_s);
         var remaining_s=" Remaining: ";
         if(remaining<=0){
             remaining_s+="N/A s";
@@ -242,7 +243,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Text {
@@ -254,7 +255,7 @@ BaseWidget {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 2
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -268,11 +269,11 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text:  qsTr("%L1%").arg( _fcMavlinkSystem.battery_percent)
+            text:  qsTr("%L1%").arg( previewTelemetry("_fcMavlinkSystem", "battery_percent", _fcMavlinkSystem.battery_percent))
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -284,13 +285,13 @@ BaseWidget {
         Text {
             id: battery_amp_text
             visible: settings.air_battery_show_voltage_current
-            text: Number(_fcMavlinkSystem.battery_current_ampere).toLocaleString(
+            text: Number(previewTelemetry("_fcMavlinkSystem", "battery_current_ampere", _fcMavlinkSystem.battery_current_ampere)).toLocaleString(
                       Qt.locale(), 'f', 1) + "A"
             color: settings.color_text
             anchors.bottom: battery_percent.top
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -303,18 +304,18 @@ BaseWidget {
             id: battery_volt_text
             visible: settings.air_battery_show_voltage_current
             text: settings.air_battery_show_single_cell ? Number(
-                                                              _fcMavlinkSystem.battery_voltage_single_cell).toLocaleString(
+                                                              previewTelemetry("_fcMavlinkSystem", "battery_voltage_single_cell", _fcMavlinkSystem.battery_voltage_single_cell)).toLocaleString(
                                                               Qt.locale(),
                                                               'f', 1) + "V" :
                                                           Number(
-                                                              _fcMavlinkSystem.battery_voltage_volt).toLocaleString(
+                                                              previewTelemetry("_fcMavlinkSystem", "battery_voltage_volt", _fcMavlinkSystem.battery_voltage_volt)).toLocaleString(
                                                               Qt.locale(),
                                                               'f', 1) + "V"
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -330,17 +331,17 @@ BaseWidget {
             height: 48
             color: {
                 //TODO reintroduce the settings, but PLEASE FUCKING KEEP THE MV PATTERM
-                var percent =  _fcMavlinkSystem.battery_percent
+                var percent =  previewTelemetry("_fcMavlinkSystem", "battery_percent", _fcMavlinkSystem.battery_percent)
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
-            opacity: bw_current_opacity
-            text: _fcMavlinkSystem.battery_percent_gauge
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+            text: previewTelemetry("_fcMavlinkSystem", "battery_percent_gauge", _fcMavlinkSystem.battery_percent_gauge)
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
             anchors.verticalCenter: parent.verticalCenter
-            clip: true
+            clip: !widgetGalleryPreview
             elide: Text.ElideMiddle
             font.family: "Material Design Icons"
             verticalAlignment: Text.AlignVCenter

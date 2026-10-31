@@ -16,6 +16,7 @@ BaseWidget {
 
     visible: settings.show_home_distance && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "home_distance_widget"
     bw_verbose_name: qsTr("HOME DISTANCE")
 
@@ -50,7 +51,7 @@ BaseWidget {
 
     // garbles the first decimals if wanted
     function get_home_latitude(){
-        var number=_fcMavlinkSystem.home_latitude
+        var number=previewTelemetry("_fcMavlinkSystem", "home_latitude", _fcMavlinkSystem.home_latitude)
         //if(settings.gps_garble_lat_lon_first_decimals){
         //    return hide_before_decimals(number)
         //}
@@ -60,7 +61,7 @@ BaseWidget {
         return Number(number).toLocaleString(Qt.locale(), 'f', 6)
     }
     function get_home_longitude(){
-        var number=_fcMavlinkSystem.home_longitude
+        var number=previewTelemetry("_fcMavlinkSystem", "home_longitude", _fcMavlinkSystem.home_longitude)
         //if(settings.gps_garble_lat_lon_first_decimals){
         //    return hide_before_decimals(number)
         //}
@@ -174,7 +175,7 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Text {
             id: home_icon
@@ -200,7 +201,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
             text: {
-                var distance = _fcMavlinkSystem.home_distance
+                var distance = previewTelemetry("_fcMavlinkSystem", "home_distance", _fcMavlinkSystem.home_distance)
                 var unit = "m"
                 var use_imperial = settings.value("enable_imperial", false)
                 // QML settings can return strings for booleans on some platforms so we check

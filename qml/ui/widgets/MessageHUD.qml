@@ -16,6 +16,7 @@ BaseWidget {
 
     visible: settings.show_message_hud && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "message_hud_widget"
 
     defaultAlignment: 3
@@ -39,6 +40,13 @@ BaseWidget {
         anchors.fill: parent
         anchors.bottom: parent.bottom
 
+        // A gallery-only row uses the same renderer without adding a live log.
+        MessageHUDRow {
+            width: parent.width; height: 25
+            anchors.centerIn: parent
+            visible: widgetGalleryPreview && messageListView.count === 0
+            property var model: ({level:6,message:qsTr("Status messages")})
+        }
         ListView {
             id: messageListView
             anchors.fill: parent
@@ -47,7 +55,7 @@ BaseWidget {
             // https://wiki.qt.io/How_to_make_QML_ListView_align_bottom-to-top
             rotation: 180
 
-            clip: true
+            clip: !widgetGalleryPreview
             delegate: MessageHUDRow {
                 width: messageListView.width
                 // bottom fix

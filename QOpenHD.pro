@@ -229,6 +229,7 @@ HEADERS += \
     app/util/mousehelper.h \
     app/util/uisimulator.h \
     app/util/qopenhd.h \
+    app/util/widgetpreviewimage.h \
     app/util/settingsbackup.h \
     app/util/qtcreatorlaunch.h \
     app/util/asyncping.h \

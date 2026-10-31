@@ -30,7 +30,7 @@ BaseWidget {
     m_show_grid_when_dragging: true
 
     function get_speed_number(){
-        var speed_m_per_second=settings.speed_ladder_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
+        var speed_m_per_second=settings.speed_ladder_use_groundspeed ? previewTelemetry("_fcMavlinkSystem", "ground_speed_meter_per_second", _fcMavlinkSystem.ground_speed_meter_per_second) : previewTelemetry("_fcMavlinkSystem", "air_speed_meter_per_second", _fcMavlinkSystem.air_speed_meter_per_second);
         if(settings.enable_imperial){
             return speed_m_per_second*2.23694;
         }
@@ -223,7 +223,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         //-----------------------ladder start---------------
         Item {

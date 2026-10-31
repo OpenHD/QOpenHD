@@ -70,7 +70,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         //-----------------------ladder start---------------
         Item {
@@ -79,7 +79,7 @@ BaseWidget {
             anchors.left: parent.left
             anchors.rightMargin: 0 //tweak ladder left or right
 
-            visible: settings.show_aoa
+            visible: settings.show_aoa || widgetGalleryPreview
 
             transform: Scale {
                 origin.x: 25
@@ -101,7 +101,7 @@ BaseWidget {
 
                 aoaRange: settings.aoa_max
                 Behavior on aoa {NumberAnimation { duration: settings.smoothing }}
-                aoa: _fcMavlinkSystem.aoa
+                aoa: previewTelemetry("_fcMavlinkSystem", "aoa", _fcMavlinkSystem.aoa)
                 fontFamily: settings.font_text
             }
         }
@@ -120,7 +120,7 @@ BaseWidget {
                 xScale: bw_current_scale
                 yScale: bw_current_scale
             }
-            text: Number(_fcMavlinkSystem.aoa).toLocaleString(
+            text: Number(previewTelemetry("_fcMavlinkSystem", "aoa", _fcMavlinkSystem.aoa)).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

@@ -21,6 +21,7 @@ BaseWidget {
 
     visible: settings.show_throttle && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "throttle_widget"
     bw_verbose_name: qsTr("THROTTLE")
 
@@ -89,7 +90,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Item {
             anchors.fill: parent
@@ -107,7 +108,7 @@ BaseWidget {
                 width: 24
                 height: 18
                 color: settings.color_text
-                text: _fcMavlinkSystem.throttle
+                text: previewTelemetry("_fcMavlinkSystem", "throttle", _fcMavlinkSystem.throttle)
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 18

@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_flight_time && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "flight_time_widget"
     bw_verbose_name: qsTr("FLIGHT TIME")
 
@@ -47,8 +48,8 @@ BaseWidget {
             width: 64
             height: 24
             color: settings.color_text
-            opacity: bw_current_opacity
-            text: _fcMavlinkSystem.flight_time
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+            text: previewTelemetry("_fcMavlinkSystem", "flight_time", _fcMavlinkSystem.flight_time)
             elide: Text.ElideRight
             anchors.right: parent.right
             anchors.rightMargin: 8
@@ -67,7 +68,7 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf017"
             font.family: "Font Awesome 5 Free"
             anchors.right: flight_time_text.left

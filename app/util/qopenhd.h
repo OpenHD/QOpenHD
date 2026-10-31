@@ -68,6 +68,7 @@ public:
     Q_INVOKABLE bool overwrite_settings_from_backup_file();
     // Deletes the local QOpenHD.conf file, such that QOpenHD re-creates all settings after a restart
     Q_INVOKABLE bool reset_settings();
+    Q_INVOKABLE QString widget_preview_image(QObject* grabResult) const;
     // only works on linux, dirty helper to get local IP address
     Q_INVOKABLE QString show_local_ip();
     Q_INVOKABLE QString write_local_log();

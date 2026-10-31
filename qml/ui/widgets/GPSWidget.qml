@@ -16,6 +16,7 @@ BaseWidget {
 
     visible: settings.show_gps && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "gps_widget"
     bw_verbose_name: qsTr("GPS WIDGET")
 
@@ -50,7 +51,7 @@ BaseWidget {
 
     // garbles the first decimals if wanted
     function get_latitude(){
-        var number=_fcMavlinkSystem.lat
+        var number=previewTelemetry("_fcMavlinkSystem", "lat", _fcMavlinkSystem.lat)
         //if(settings.gps_garble_lat_lon_first_decimals){
         //    return hide_before_decimals(number)
         //}
@@ -60,7 +61,7 @@ BaseWidget {
         return Number(number).toLocaleString(Qt.locale(), 'f', 6)
     }
     function get_longitude(){
-        var number=_fcMavlinkSystem.lon
+        var number=previewTelemetry("_fcMavlinkSystem", "lon", _fcMavlinkSystem.lon)
         //if(settings.gps_garble_lat_lon_first_decimals){
         //    return hide_before_decimals(number)
         //}
@@ -71,10 +72,10 @@ BaseWidget {
     }
 
     function gps_stats_visible() {
-        if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
+        if (previewTelemetry("_fcMavlinkSystem", "gps_hdop", _fcMavlinkSystem.gps_hdop) >= settings.gps_warn) {
             return true;
         }
-        if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
+        if (previewTelemetry("_fcMavlinkSystem", "gps_hdop", _fcMavlinkSystem.gps_hdop) > settings.gps_caution) {
             return true;
         }
         if (settings.gps_declutter == true && _fcMavlinkSystem.armed == true) {
@@ -84,10 +85,10 @@ BaseWidget {
     }
 
     function gps_stats_color() {
-        if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
+        if (previewTelemetry("_fcMavlinkSystem", "gps_hdop", _fcMavlinkSystem.gps_hdop) >= settings.gps_warn) {
             return settings.color_warn;
         }
-        if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
+        if (previewTelemetry("_fcMavlinkSystem", "gps_hdop", _fcMavlinkSystem.gps_hdop) > settings.gps_caution) {
             return settings.color_caution;
         }
         return settings.color_text;
@@ -321,7 +322,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: qsTr(""+_fcMavlinkSystem.satellites_visible)
+                    text: qsTr(""+previewTelemetry("_fcMavlinkSystem", "satellites_visible", _fcMavlinkSystem.satellites_visible))
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -343,7 +344,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: qsTr(""+_fcMavlinkSystem.gps_status_fix_type_str)
+                    text: qsTr(""+previewTelemetry("_fcMavlinkSystem", "gps_status_fix_type_str", _fcMavlinkSystem.gps_status_fix_type_str))
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -365,7 +366,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.gps_hdop).toLocaleString(Qt.locale(), 'f', 1)
+                    text: Number(previewTelemetry("_fcMavlinkSystem", "gps_hdop", _fcMavlinkSystem.gps_hdop)).toLocaleString(Qt.locale(), 'f', 1)
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -387,7 +388,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.gps_vdop).toLocaleString(Qt.locale(), 'f', 1)
+                    text: Number(previewTelemetry("_fcMavlinkSystem", "gps_vdop", _fcMavlinkSystem.gps_vdop)).toLocaleString(Qt.locale(), 'f', 1)
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -421,7 +422,7 @@ BaseWidget {
                     id: lat_onscreen
                     text: get_latitude()
                     color: settings.color_text
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     font.bold: true
                     font.family: settings.font_text
                     height: parent.height
@@ -442,7 +443,7 @@ BaseWidget {
                     id: lon_onscreen
                     text: get_longitude()
                     color: settings.color_text
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     font.bold: true
                     font.family: settings.font_text
                     height: parent.height
@@ -464,7 +465,7 @@ BaseWidget {
                     width: 24
                     height: 24
                     color: settings.color_shape
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     text: "\uf0ac"
                     font.family: "Font Awesome 5 Free"
                     horizontalAlignment: Text.AlignRight
@@ -478,10 +479,10 @@ BaseWidget {
                     width: 24
                     height: 24
                     color: gps_stats_color()
-                    opacity: bw_current_opacity
-                    text: _fcMavlinkSystem.satellites_visible
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+                    text: previewTelemetry("_fcMavlinkSystem", "satellites_visible", _fcMavlinkSystem.satellites_visible)
                     elide: Text.ElideNone
-                    clip: true
+                    clip: !widgetGalleryPreview
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: 16
@@ -494,8 +495,8 @@ BaseWidget {
                     width: 48
                     height: 24
                     color: gps_stats_color()
-                    opacity: bw_current_opacity
-                    text: qsTr("%L1").arg(_fcMavlinkSystem.gps_hdop)
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+                    text: qsTr("%L1").arg(previewTelemetry("_fcMavlinkSystem", "gps_hdop", _fcMavlinkSystem.gps_hdop))
                     verticalAlignment: Text.AlignTop
                     font.pixelSize: 10
                     font.family: settings.font_text

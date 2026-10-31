@@ -32,7 +32,7 @@ BaseWidget {
     m_show_grid_when_dragging: true
 
     function get_altitude_value(){
-        var altitude_m_or_foot = settings.altitude_ladder_use_msl ? _fcMavlinkSystem.altitude_msl_m : _fcMavlinkSystem.altitude_rel_m;
+        var altitude_m_or_foot = settings.altitude_ladder_use_msl ? previewTelemetry("_fcMavlinkSystem", "altitude_msl_m", _fcMavlinkSystem.altitude_msl_m) : previewTelemetry("_fcMavlinkSystem", "altitude_rel_m", _fcMavlinkSystem.altitude_rel_m);
         if((settings.enable_imperial || settings.enable_hybrid)){
             altitude_m_or_foot *= 3.28;
         }
@@ -164,7 +164,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         //-----------------------ladder start---------------
         Item {

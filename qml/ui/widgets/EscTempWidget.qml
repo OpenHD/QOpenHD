@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_esc_temp && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "esc_temp_widget"
     bw_verbose_name: qsTr("ESC TEMPERATURE")
 
@@ -142,11 +143,11 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Text {
             id: temp_glyph
-            color: _fcMavlinkSystem.esc_temp >= settings.esc_temp_caution ? (_fcMavlinkSystem.esc_temp >= settings.esc_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            color: previewTelemetry("_fcMavlinkSystem", "esc_temp", _fcMavlinkSystem.esc_temp) >= settings.esc_temp_caution ? (previewTelemetry("_fcMavlinkSystem", "esc_temp", _fcMavlinkSystem.esc_temp) >= settings.esc_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
             text: "\uf613"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -163,10 +164,10 @@ BaseWidget {
         Text {
             id: esc_temp
             color: {
-                if (_fcMavlinkSystem.esc_temp >= settings.esc_temp_warn) {
+                if (previewTelemetry("_fcMavlinkSystem", "esc_temp", _fcMavlinkSystem.esc_temp) >= settings.esc_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_fcMavlinkSystem.esc_temp > settings.esc_temp_caution) {
+                } else if (previewTelemetry("_fcMavlinkSystem", "esc_temp", _fcMavlinkSystem.esc_temp) > settings.esc_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.esc_temp_declutter == true
@@ -178,7 +179,7 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            text: _fcMavlinkSystem.esc_temp == 0 ? qsTr("N/A") : _fcMavlinkSystem.esc_temp + "°"
+            text: previewTelemetry("_fcMavlinkSystem", "esc_temp", _fcMavlinkSystem.esc_temp) == 0 ? qsTr("N/A") : previewTelemetry("_fcMavlinkSystem", "esc_temp", _fcMavlinkSystem.esc_temp) + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

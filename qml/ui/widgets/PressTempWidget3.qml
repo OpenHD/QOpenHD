@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_press_temp3 && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "press_temp_widget3"
     bw_verbose_name: qsTr("PREASSURE3 SENSOR TEMP")
 
@@ -141,11 +142,11 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Text {
             id: temp_glyph
-            color: _fcMavlinkSystem.preasure_sensor3_temperature_degree >= settings.press_temp_caution3 ? (_fcMavlinkSystem.preasure_sensor3_temperature_degree >= settings.press_temp_warn3 ? settings.color_warn : settings.color_caution) : settings.color_shape
+            color: previewTelemetry("_fcMavlinkSystem", "preasure_sensor3_temperature_degree", _fcMavlinkSystem.preasure_sensor3_temperature_degree) >= settings.press_temp_caution3 ? (previewTelemetry("_fcMavlinkSystem", "preasure_sensor3_temperature_degree", _fcMavlinkSystem.preasure_sensor3_temperature_degree) >= settings.press_temp_warn3 ? settings.color_warn : settings.color_caution) : settings.color_shape
             text: "\uf1eb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -162,10 +163,10 @@ BaseWidget {
         Text {
             id: press_temp3
             color: {
-                if (_fcMavlinkSystem.preasure_sensor3_temperature_degree >= settings.press_temp_warn3) {
+                if (previewTelemetry("_fcMavlinkSystem", "preasure_sensor3_temperature_degree", _fcMavlinkSystem.preasure_sensor3_temperature_degree) >= settings.press_temp_warn3) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_fcMavlinkSystem.preasure_sensor3_temperature_degree > settings.press_temp_caution3) {
+                } else if (previewTelemetry("_fcMavlinkSystem", "preasure_sensor3_temperature_degree", _fcMavlinkSystem.preasure_sensor3_temperature_degree) > settings.press_temp_caution3) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.press_temp_declutter3 == true
@@ -177,7 +178,7 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            text: _fcMavlinkSystem.preasure_sensor3_temperature_degree == 0 ? qsTr("N/A") : _fcMavlinkSystem.preasure_sensor3_temperature_degree + "°"
+            text: previewTelemetry("_fcMavlinkSystem", "preasure_sensor3_temperature_degree", _fcMavlinkSystem.preasure_sensor3_temperature_degree) == 0 ? qsTr("N/A") : previewTelemetry("_fcMavlinkSystem", "preasure_sensor3_temperature_degree", _fcMavlinkSystem.preasure_sensor3_temperature_degree) + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

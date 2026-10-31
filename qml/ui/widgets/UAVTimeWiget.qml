@@ -21,13 +21,14 @@ BaseWidget {
 
     visible: settings.show_time_widget && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "timer_widget"
     bw_verbose_name: qsTr("GPS TIME")
 
     hasWidgetDetail: true
 
     /*function get_time(){
-        var unixTime=_fcMavlinkSystem.sys_time_unix_usec
+        var unixTime=previewTelemetry("_fcMavlinkSystem", "sys_time_unix_usec", _fcMavlinkSystem.sys_time_unix_usec)
         if(unixTime<1){
             return "Date N/A";
         }
@@ -38,7 +39,7 @@ BaseWidget {
         return timestamp.toString(QSystemLocaleShortDate);
     }*/
 
-    property string m_time: _fcMavlinkSystem.sys_time_unix_as_str //get_time()
+    property string m_time: previewTelemetry("_fcMavlinkSystem", "sys_time_unix_as_str", _fcMavlinkSystem.sys_time_unix_as_str) //get_time()
 
     widgetDetailComponent: ScrollView {
 
@@ -64,7 +65,7 @@ BaseWidget {
 
         Text {
             color: settings.color_text
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             font.pixelSize: 14
             font.family: settings.font_text
             width: 40
@@ -83,7 +84,7 @@ BaseWidget {
             width: 40
             height: parent.height
             color: settings.color_shape
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf3fd"
             anchors.left: parent.left
             anchors.leftMargin: 0

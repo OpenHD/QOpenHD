@@ -23,7 +23,8 @@
 
         visible: settings.show_wind && settings.show_widgets
 
-        widgetIdentifier: "wind_widget"
+        widgetPreviewContent: widgetInner
+    widgetIdentifier: "wind_widget"
         bw_verbose_name: qsTr("WIND")
 
         defaultAlignment: 3
@@ -256,7 +257,7 @@
             anchors.fill: parent
             antialiasing: true
 
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
             Item {
                 anchors.fill: parent
@@ -318,7 +319,7 @@
                         origin.x: 3
                         origin.y: 20
                         Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                        angle: (settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction) - _fcMavlinkSystem.hdg - 180
+                        angle: (settings.wind_plane_copter ? previewTelemetry("_fcMavlinkSystem", "wind_direction", _fcMavlinkSystem.wind_direction) : previewTelemetry("_fcMavlinkSystem", "mav_wind_direction", _fcMavlinkSystem.mav_wind_direction)) - previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg) - 180
                     }
                 }
                 Rectangle {
@@ -383,7 +384,7 @@
                     transform: Rotation {
                         origin.x: 25
                         origin.y: 25
-                        angle: (settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction - 10) - _fcMavlinkSystem.hdg - 190
+                        angle: (settings.wind_plane_copter ? previewTelemetry("_fcMavlinkSystem", "wind_direction", _fcMavlinkSystem.wind_direction) : previewTelemetry("_fcMavlinkSystem", "mav_wind_direction", _fcMavlinkSystem.mav_wind_direction) - 10) - previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg) - 190
                     }
                 }
                 Shape {
@@ -426,9 +427,9 @@
                             // @disable-check M223
 
                             //   var wind=getWindDirection();
-                            //  var wind_direction=wind.direction - _fcMavlinkSystem.hdg + 185;
+                            //  var wind_direction=wind.direction - previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg) + 185;
                             //   return wind_direction;
-                            (settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction) - _fcMavlinkSystem.hdg - 170
+                            (settings.wind_plane_copter ? previewTelemetry("_fcMavlinkSystem", "wind_direction", _fcMavlinkSystem.wind_direction) : previewTelemetry("_fcMavlinkSystem", "mav_wind_direction", _fcMavlinkSystem.mav_wind_direction)) - previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg) - 170
                         }
                     }
                 }
@@ -465,7 +466,7 @@
                     anchors.centerIn: parent
                     font.pixelSize: 12
                     text: {
-                        var raw = settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed : _fcMavlinkSystem.mav_wind_speed;
+                        var raw = settings.wind_plane_copter ? previewTelemetry("_fcMavlinkSystem", "wind_speed", _fcMavlinkSystem.wind_speed) : previewTelemetry("_fcMavlinkSystem", "mav_wind_speed", _fcMavlinkSystem.mav_wind_speed);
                         var factor = 1.0;
                         var unitLabel = "m/s";
 

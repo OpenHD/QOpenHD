@@ -144,7 +144,7 @@ BaseWidget {
             Item {
                 id: rollTicks
                 anchors.fill: parent
-                opacity: bw_current_opacity
+                opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
                 Shape {
                     width: 200
@@ -403,7 +403,7 @@ BaseWidget {
                     origin.x: 100
                     origin.y: 150
                     Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                    angle: settings.bank_angle_indicator_widget_sky_pointer ? 0 : (settings.bank_angle_indicator_widget_roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1)
+                    angle: settings.bank_angle_indicator_widget_sky_pointer ? 0 : (settings.bank_angle_indicator_widget_roll_invert ? previewTelemetry("_fcMavlinkSystem", "roll", _fcMavlinkSystem.roll) : previewTelemetry("_fcMavlinkSystem", "roll", _fcMavlinkSystem.roll) * -1)
                 }
             }
 
@@ -411,7 +411,7 @@ BaseWidget {
                 id: pointer
                 anchors.fill: parent
                 antialiasing: true
-                opacity: bw_current_opacity
+                opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
                 ShapePath {
                     capStyle: ShapePath.RoundCap
@@ -440,7 +440,7 @@ BaseWidget {
                     origin.x: 100
                     origin.y: 150
                     Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                    angle: settings.bank_angle_indicator_widget_sky_pointer ? (settings.bank_angle_indicator_widget_roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1) : 0
+                    angle: settings.bank_angle_indicator_widget_sky_pointer ? (settings.bank_angle_indicator_widget_roll_invert ? previewTelemetry("_fcMavlinkSystem", "roll", _fcMavlinkSystem.roll) : previewTelemetry("_fcMavlinkSystem", "roll", _fcMavlinkSystem.roll) * -1) : 0
                 }
             }
         }

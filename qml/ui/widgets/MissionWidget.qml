@@ -18,6 +18,7 @@ BaseWidget {
 
     visible: settings.show_mission && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "mission_widget"
     bw_verbose_name: qsTr("MISSIONS")
 
@@ -146,7 +147,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Item {

@@ -221,8 +221,7 @@ Item {
                 width: parent.width
                 height: parent.height
                 color: "transparent"
-                border.width: 1
-                border.color: "#44627a"
+                border.width: 0
                 radius: width * 0.22
                 RowLayout {
                     width: parent.width

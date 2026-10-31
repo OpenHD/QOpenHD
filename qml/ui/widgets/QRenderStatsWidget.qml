@@ -17,6 +17,7 @@ BaseWidget {
 
     visible: settings.qrenderstats_show && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "q_render_stats_widget"
 
     defaultAlignment: 1
@@ -372,7 +373,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Text {

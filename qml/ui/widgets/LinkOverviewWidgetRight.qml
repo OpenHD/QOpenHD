@@ -12,6 +12,7 @@ BaseWidget {
 
     visible: settings.show_link_overview_widget && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "link_overview_widget_right"
     bw_verbose_name: qsTr("LINK OVERVIEW RIGHT")
 
@@ -33,11 +34,11 @@ BaseWidget {
     property string linkMonoFont: settings.osd_top_bar_font || "ShareTechMono"
 
     property var m_camera_stream_model: _cameraStreamModelPrimary
-    property bool m_camera_is_currently_recording: _cameraStreamModelPrimary.air_recording_active
-    property int rc_rssi_percentage: _fcMavlinkSystem.rc_rssi_percentage
+    property bool m_camera_is_currently_recording: previewTelemetry("_cameraStreamModelPrimary", "air_recording_active", _cameraStreamModelPrimary.air_recording_active)
+    property int rc_rssi_percentage: previewTelemetry("_fcMavlinkSystem", "rc_rssi_percentage", _fcMavlinkSystem.rc_rssi_percentage)
     property bool airTemperatureWarningActive: (_ohdSystemAir.is_alive
-                                                && _ohdSystemAir.curr_soc_temp_degree > 80)
-                                               || _ohdSystemAir.radio_temperature_state >= 2
+                                                && previewTelemetry("_ohdSystemAir", "curr_soc_temp_degree", _ohdSystemAir.curr_soc_temp_degree) > 80)
+                                               || previewTelemetry("_ohdSystemAir", "radio_temperature_state", _ohdSystemAir.radio_temperature_state) >= 2
 
     property int rcBlockCount: 8
     property real rcBlockWidth: 12
@@ -113,7 +114,7 @@ BaseWidget {
     }
 
     function get_frequency_text() {
-        var freq = _ohdSystemAir.is_alive ? _ohdSystemAir.curr_channel_mhz : _ohdSystemGround.curr_channel_mhz;
+        var freq = _ohdSystemAir.is_alive ? previewTelemetry("_ohdSystemAir", "curr_channel_mhz", _ohdSystemAir.curr_channel_mhz) : previewTelemetry("_ohdSystemGround", "curr_channel_mhz", _ohdSystemGround.curr_channel_mhz);
         if (freq <= 0) {
             return "N/A";
         }
@@ -149,9 +150,9 @@ BaseWidget {
 
     function get_bitrate_text() {
         // Actual Ground arrivals across the full link, not one encoder or TX target.
-        if (!_ohdSystemGround.is_alive || _ohdSystemGround.received_link_bitrate_bps < 0)
+        if (!_ohdSystemGround.is_alive || previewTelemetry("_ohdSystemGround", "received_link_bitrate_bps", _ohdSystemGround.received_link_bitrate_bps) < 0)
             return "--Mbit"
-        var mbits = _ohdSystemGround.received_link_bitrate_bps / 1000000.0
+        var mbits = previewTelemetry("_ohdSystemGround", "received_link_bitrate_bps", _ohdSystemGround.received_link_bitrate_bps) / 1000000.0
         return Number(mbits).toLocaleString(Qt.locale(), 'f', mbits < 10 ? 1 : 0) + "Mbit"
     }
 
@@ -164,7 +165,7 @@ BaseWidget {
             _hudLogMessagesModel.signalAddLogMessage(6, qsTr("Air unit not alive, cannot set recording for CAM1"));
             return;
         }
-        if (mode !== 0 && _ohdSystemAir.curr_space_left_mb < 300) {
+        if (mode !== 0 && previewTelemetry("_ohdSystemAir", "curr_space_left_mb", _ohdSystemAir.curr_space_left_mb) < 300) {
             _hudLogMessagesModel.signalAddLogMessage(
                         6,
                         qsTr("Air recording unavailable: select storage with at least 300 MB free in Manage Air Storage"));
@@ -204,16 +205,16 @@ BaseWidget {
     }
 
     function uplink_ok() {
-        if (_ohdSystemGround.tx_operating_mode == 1) {
+        if (previewTelemetry("_ohdSystemGround", "tx_operating_mode", _ohdSystemGround.tx_operating_mode) == 1) {
             return false;
         }
-        if (_ohdSystemGround.tx_operating_mode == 2) {
+        if (previewTelemetry("_ohdSystemGround", "tx_operating_mode", _ohdSystemGround.tx_operating_mode) == 2) {
             return false;
         }
         if (!_ohdSystemAir.is_alive) {
             return false;
         }
-        return _ohdSystemAir.curr_rx_last_packet_status_good;
+        return previewTelemetry("_ohdSystemAir", "curr_rx_last_packet_status_good", _ohdSystemAir.curr_rx_last_packet_status_good);
     }
 
     function uplink_color() {
@@ -234,7 +235,7 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("Air CPU temp: %1").arg(format_temp(_ohdSystemAir.curr_soc_temp_degree))
+                    text: qsTr("Air CPU temp: %1").arg(format_temp(previewTelemetry("_ohdSystemAir", "curr_soc_temp_degree", _ohdSystemAir.curr_soc_temp_degree)))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -248,7 +249,7 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("GND CPU temp: %1").arg(format_temp(_ohdSystemGround.curr_soc_temp_degree))
+                    text: qsTr("GND CPU temp: %1").arg(format_temp(previewTelemetry("_ohdSystemGround", "curr_soc_temp_degree", _ohdSystemGround.curr_soc_temp_degree)))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -262,7 +263,7 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("Air CPU: %1").arg(format_cpu(_ohdSystemAir.curr_cpuload_perc, _ohdSystemAir.is_alive))
+                    text: qsTr("Air CPU: %1").arg(format_cpu(previewTelemetry("_ohdSystemAir", "curr_cpuload_perc", _ohdSystemAir.curr_cpuload_perc), _ohdSystemAir.is_alive))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -276,7 +277,7 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("GND CPU: %1").arg(format_cpu(_ohdSystemGround.curr_cpuload_perc, _ohdSystemGround.is_alive))
+                    text: qsTr("GND CPU: %1").arg(format_cpu(previewTelemetry("_ohdSystemGround", "curr_cpuload_perc", _ohdSystemGround.curr_cpuload_perc), _ohdSystemGround.is_alive))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -290,7 +291,7 @@ BaseWidget {
                 width: parent.width
                 height: 28
                 Text {
-                    text: qsTr("Rec space: %1").arg(format_space_mb(_ohdSystemAir.curr_space_left_mb, _ohdSystemAir.is_alive))
+                    text: qsTr("Rec space: %1").arg(format_space_mb(previewTelemetry("_ohdSystemAir", "curr_space_left_mb", _ohdSystemAir.curr_space_left_mb), _ohdSystemAir.is_alive))
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -320,9 +321,9 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
-        clip: true
+        clip: !widgetGalleryPreview
 
         Shape {
             id: cutRect

@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_uplink_rssi && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "uplink_rssi_widget"
     bw_verbose_name: qsTr("UPLINK/AIR RSSI")
 
@@ -29,15 +30,15 @@ BaseWidget {
 
 
     function get_text_loss(){
-        if(_ohdSystemGround.tx_operating_mode==1){
+        if(previewTelemetry("_ohdSystemGround", "tx_operating_mode", _ohdSystemGround.tx_operating_mode)==1){
             return "TX UNSUPPORTED";
         }
-        if(_ohdSystemGround.tx_operating_mode==2){
+        if(previewTelemetry("_ohdSystemGround", "tx_operating_mode", _ohdSystemGround.tx_operating_mode)==2){
             return "UPLINK DISABLED";
         }
         if(_ohdSystemAir.is_alive){
-            if(_ohdSystemAir.curr_rx_last_packet_status_good){
-                return ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
+            if(previewTelemetry("_ohdSystemAir", "curr_rx_last_packet_status_good", _ohdSystemAir.curr_rx_last_packet_status_good)){
+                return ("Loss: " + previewTelemetry("_ohdSystemAir", "curr_rx_packet_loss_perc", _ohdSystemAir.curr_rx_packet_loss_perc)+"%")
             }
             return "NO UPLINK";
         }
@@ -45,14 +46,14 @@ BaseWidget {
     }
 
     function get_text_dbm(){
-        var dbm=_ohdSystemAir.current_rx_rssi;
+        var dbm=previewTelemetry("_ohdSystemAir", "current_rx_rssi", _ohdSystemAir.current_rx_rssi);
         if(dbm<=-127){
             return "N/A";
         }
         return ""+dbm;
     }
     function get_dbm_text_color(){
-        var warning_level=_ohdSystemAir.dbm_too_low_warning;
+        var warning_level=previewTelemetry("_ohdSystemAir", "dbm_too_low_warning", _ohdSystemAir.dbm_too_low_warning);
         if(settings.downlink_dbm_warning && warning_level==2){
             return "red";
         }
@@ -82,7 +83,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: qsTr("TX error/dropped: %1 %2").arg(_ohdSystemGround.count_tx_inj_error_hint).arg(_ohdSystemGround.count_tx_dropped_packets)
+                text: qsTr("TX error/dropped: %1 %2").arg(previewTelemetry("_ohdSystemGround", "count_tx_inj_error_hint", _ohdSystemGround.count_tx_inj_error_hint)).arg(previewTelemetry("_ohdSystemGround", "count_tx_dropped_packets", _ohdSystemGround.count_tx_dropped_packets))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -91,7 +92,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("GND TX: %1").arg(_ohdSystemGround.tx_packets_per_second_and_bits_per_second)
+                text: qsTr("GND TX: %1").arg(previewTelemetry("_ohdSystemGround", "tx_packets_per_second_and_bits_per_second", _ohdSystemGround.tx_packets_per_second_and_bits_per_second))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -100,7 +101,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("GND RX: %1").arg(_ohdSystemGround.rx_packets_per_second_and_bits_per_second)
+                text: qsTr("GND RX: %1").arg(previewTelemetry("_ohdSystemGround", "rx_packets_per_second_and_bits_per_second", _ohdSystemGround.rx_packets_per_second_and_bits_per_second))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -109,7 +110,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("GND RX tele: %1").arg(_ohdSystemAir.rx_tele_packets_per_second_and_bits_per_second)
+                text: qsTr("GND RX tele: %1").arg(previewTelemetry("_ohdSystemAir", "rx_tele_packets_per_second_and_bits_per_second", _ohdSystemAir.rx_tele_packets_per_second_and_bits_per_second))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -118,7 +119,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("TX PWR Gnd: %1 %2").arg(_wifi_card_gnd0.tx_power).arg(_wifi_card_gnd0.tx_power_unit)
+                text: qsTr("TX PWR Gnd: %1 %2").arg(previewTelemetry("_wifi_card_gnd0", "tx_power", _wifi_card_gnd0.tx_power)).arg(previewTelemetry("_wifi_card_gnd0", "tx_power_unit", _wifi_card_gnd0.tx_power_unit))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -132,7 +133,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Text {

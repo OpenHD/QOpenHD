@@ -69,7 +69,6 @@ SideBarBasePanel{
 
     function takeover_control(){
         if (arducam_camera && ispControls.count) ispControls.itemAt(0).takeover_control();
-        else if (_qopenhd.is_windows()) colourPreview.takeover_control();
         else if (gx_camera && gxControls.count) gxControls.itemAt(0).takeover_control();
         else brightness.takeover_control();
     }
@@ -130,13 +129,6 @@ SideBarBasePanel{
                     if (!cameraPanel.focusIsp(index + 1, 1)) brightness.takeover_control();
                 }
             }
-        }
-        ColorPreviewControls {
-            id: colourPreview
-            width: parent.width - 20
-            x: 10
-            visible: _qopenhd.is_windows()
-            onControlFocused: cameraPanel.ensure_body_item_visible(item)
         }
         MavlinkChoiceElement2{
             id: brightness

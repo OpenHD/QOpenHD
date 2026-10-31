@@ -178,7 +178,7 @@ BaseWidget {
             width: 24
             height: 48
             color: _fcMavlinkSystem.armed ? "red" : settings.color_shape
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf072"
             anchors.right: flight_mode_text.left
             anchors.rightMargin: 6
@@ -194,8 +194,8 @@ BaseWidget {
             id: flight_mode_text
             height: 48
             color: settings.color_text
-            opacity: bw_current_opacity
-            text: _fcMavlinkSystem.flight_mode
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+            text: previewTelemetry("_fcMavlinkSystem", "flight_mode", _fcMavlinkSystem.flight_mode)
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
@@ -210,7 +210,7 @@ BaseWidget {
             height: 48
             width: parent.width
             color: settings.color_text
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: qsTr("DISARMED")
             anchors.bottom: parent.top
             anchors.left: parent.left

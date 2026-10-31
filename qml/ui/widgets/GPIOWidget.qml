@@ -17,6 +17,7 @@ BaseWidget {
 
     visible: settings.show_gpio && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "gpio_widget"
 
     defaultAlignment: 0
@@ -179,7 +180,7 @@ BaseWidget {
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
             anchors.fill: parent
-            clip: true
+            clip: !widgetGalleryPreview
             elide: Text.ElideMiddle
             font.family: "Material Design Icons"
             verticalAlignment: Text.AlignVCenter

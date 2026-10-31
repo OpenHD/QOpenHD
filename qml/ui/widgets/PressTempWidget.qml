@@ -13,14 +13,15 @@ BaseWidget {
 
     visible: settings.show_press_temp && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "press_temp_widget"
     bw_verbose_name: qsTr("PRESSURE SENSOR TEMP")
 
     readonly property int selectedTemperature: settings.press_temp_source === 1
-        ? _fcMavlinkSystem.preasure_sensor2_temperature_degree
+        ? previewTelemetry("_fcMavlinkSystem", "preasure_sensor2_temperature_degree", _fcMavlinkSystem.preasure_sensor2_temperature_degree)
         : settings.press_temp_source === 2
-          ? _fcMavlinkSystem.preasure_sensor3_temperature_degree
-          : _fcMavlinkSystem.preasure_sensor_temperature_degree
+          ? previewTelemetry("_fcMavlinkSystem", "preasure_sensor3_temperature_degree", _fcMavlinkSystem.preasure_sensor3_temperature_degree)
+          : previewTelemetry("_fcMavlinkSystem", "preasure_sensor_temperature_degree", _fcMavlinkSystem.preasure_sensor_temperature_degree)
 
     defaultAlignment: 1
     defaultXOffset: 140
@@ -172,7 +173,7 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Text {
             id: temp_glyph

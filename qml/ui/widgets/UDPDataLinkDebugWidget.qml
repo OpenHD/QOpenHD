@@ -66,7 +66,7 @@ BaseWidget {
             DarkComboBox {
                 visible: root.enabled; Layout.fillWidth: true
                 model: _wbLinkSettingsHelper.supports_10mhz ? [10, 20, 40] : [20, 40]
-                currentIndex: Math.max(0, model.indexOf(_ohdSystemAir.curr_channel_width_mhz))
+                currentIndex: Math.max(0, model.indexOf(previewTelemetry("_ohdSystemAir", "curr_channel_width_mhz", _ohdSystemAir.curr_channel_width_mhz)))
                 onActivated: root.setBandwidth(model[index])
             }
             Label { visible: root.enabled; text: qsTr("FEC overhead (%)"); color: "white" }

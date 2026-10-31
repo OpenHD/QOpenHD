@@ -12,15 +12,16 @@ BaseWidget {
     width: 96
     height: 55
 
-    visible: settings.show_ground_battery && settings.show_widgets && _ohdSystemGround.ina219_current_milliamps !== -1
+    visible: settings.show_ground_battery && settings.show_widgets && previewTelemetry("_ohdSystemGround", "ina219_current_milliamps", _ohdSystemGround.ina219_current_milliamps) !== -1
 
     // Follow telemetry directly; do not poll or persist a live value in settings.
-    readonly property bool percentageReported: _ohdSystemGround.ina219_current_milliamps === 1337
-                                               || _ohdSystemGround.ina219_current_milliamps === 1338
+    readonly property bool percentageReported: previewTelemetry("_ohdSystemGround", "ina219_current_milliamps", _ohdSystemGround.ina219_current_milliamps) === 1337
+                                               || previewTelemetry("_ohdSystemGround", "ina219_current_milliamps", _ohdSystemGround.ina219_current_milliamps) === 1338
     readonly property int batteryPercentage: percentageReported
-                                             ? _ohdSystemGround.ina219_voltage_millivolt
-                                             : calculateBatteryPercentage(_ohdSystemGround.ina219_voltage_millivolt)
+                                             ? previewTelemetry("_ohdSystemGround", "ina219_voltage_millivolt", _ohdSystemGround.ina219_voltage_millivolt)
+                                             : calculateBatteryPercentage(previewTelemetry("_ohdSystemGround", "ina219_voltage_millivolt", _ohdSystemGround.ina219_voltage_millivolt))
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "ground_battery_widget"
     bw_verbose_name: qsTr("GROUND BATTERY")
 
@@ -218,7 +219,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Text {
@@ -230,7 +231,7 @@ BaseWidget {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: -2
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -248,7 +249,7 @@ BaseWidget {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -263,12 +264,12 @@ BaseWidget {
             id: battery_amp_text
             visible: !groundPowerWidget.percentageReported
             y: 0
-            text: _ohdSystemGround.ina219_current_milliamps + "mA"
+            text: previewTelemetry("_ohdSystemGround", "ina219_current_milliamps", _ohdSystemGround.ina219_current_milliamps) + "mA"
             color: settings.color_text
             anchors.bottom: battery_percent.top
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -283,16 +284,16 @@ BaseWidget {
             visible: !groundPowerWidget.percentageReported
             text: {
                 if (settings.ground_battery_show_single_cell) {
-                    return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells / 1000).toFixed(2) + "mVpC";
+                    return (previewTelemetry("_ohdSystemGround", "ina219_voltage_millivolt", _ohdSystemGround.ina219_voltage_millivolt) / settings.ground_battery_cells / 1000).toFixed(2) + "mVpC";
                 } else {
-                    return (_ohdSystemGround.ina219_voltage_millivolt / 1000).toFixed(2) + "V";
+                    return (previewTelemetry("_ohdSystemGround", "ina219_voltage_millivolt", _ohdSystemGround.ina219_voltage_millivolt) / 1000).toFixed(2) + "V";
                 }
             }
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
-            clip: true
+            clip: !widgetGalleryPreview
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
@@ -314,13 +315,13 @@ BaseWidget {
                 // 20% warning, 15% critical
                 return percent < 50 ? (percent < 20 ? "#ff0000" : "#fbfd15") : settings.color_shape;
             }
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: {
                 var percent = groundPowerWidget.batteryPercentage;
 
                 // Define symbols based on battery level
                 var symbol;
-                if (_ohdSystemGround.ina219_current_milliamps===1337) {
+                if (previewTelemetry("_ohdSystemGround", "ina219_current_milliamps", _ohdSystemGround.ina219_current_milliamps)===1337) {
                     symbol = "\uF084"; // Charging
                 }
                 else if (percent < 10) {
@@ -351,7 +352,7 @@ BaseWidget {
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
             anchors.verticalCenter: parent.verticalCenter
-            clip: true
+            clip: !widgetGalleryPreview
             elide: Text.ElideMiddle
             font.family: "Material Design Icons"
             verticalAlignment: Text.AlignVCenter

@@ -19,19 +19,20 @@ BaseWidget {
 
     visible: settings.show_distance_sensor_widget && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "distance_sensor_widget"
     bw_verbose_name: qsTr("DISTANCE SENSOR")
 
     hasWidgetDetail: true
 
     // Number(
-    //settings.enable_imperial ? (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed * 0.621371 : _fcMavlinkSystem.airspeed * 0.621371) : (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed)).toLocaleString(
+    //settings.enable_imperial ? (settings.speed_second_use_groundspeed ? previewTelemetry("_fcMavlinkSystem", "speed", _fcMavlinkSystem.speed) * 0.621371 : previewTelemetry("_fcMavlinkSystem", "airspeed", _fcMavlinkSystem.airspeed) * 0.621371) : (settings.speed_second_use_groundspeed ? previewTelemetry("_fcMavlinkSystem", "speed", _fcMavlinkSystem.speed) : previewTelemetry("_fcMavlinkSystem", "airspeed", _fcMavlinkSystem.airspeed))).toLocaleString(
     //Qt.locale(), 'f', 0)
 
     function calc_distance(){
-        var distance_cm=_fcMavlinkSystem.distance_sensor_distance_cm
+        var distance_cm=previewTelemetry("_fcMavlinkSystem", "distance_sensor_distance_cm", _fcMavlinkSystem.distance_sensor_distance_cm)
         if(distance_cm===-1)return "N/A"
-        return ""+_fcMavlinkSystem.distance_sensor_distance_cm*0.01+"m"
+        return ""+previewTelemetry("_fcMavlinkSystem", "distance_sensor_distance_cm", _fcMavlinkSystem.distance_sensor_distance_cm)*0.01+"m"
     }
 
     property string m_distance_m : calc_distance()
@@ -61,7 +62,7 @@ BaseWidget {
         Text {
             id: second_alt_text
             color: settings.color_text
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             font.pixelSize: 14
             font.family: settings.font_text
             width: 40
@@ -80,7 +81,7 @@ BaseWidget {
             width: 40
             height: parent.height
             color: settings.color_shape
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf3fd"
             anchors.left: parent.left
             anchors.leftMargin: 0

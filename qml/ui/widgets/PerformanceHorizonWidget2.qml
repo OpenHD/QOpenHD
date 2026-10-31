@@ -14,6 +14,7 @@ BaseWidget {
 
     visible: settings.show_performance_horizon && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "horizon_performance2"
     bw_verbose_name: qsTr("ARTIFICIAL HORIZON 2")
 
@@ -53,7 +54,7 @@ BaseWidget {
         anchors.fill: parent
         // There is no point in making this one opaque
         opacity: 1.0
-        //opacity: bw_current_opacity
+        //opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         // actual horizon
@@ -92,12 +93,12 @@ BaseWidget {
                 Rotation {
                     origin.x: horizon_item.width/2;
                     origin.y: horizon_item.height/2;
-                    angle: _fcMavlinkSystem.roll*-1
+                    angle: previewTelemetry("_fcMavlinkSystem", "roll", _fcMavlinkSystem.roll)*-1
                     //angle: 0
                 },
                 // Then translate (pitch)
                 Translate{
-                    y: _fcMavlinkSystem.pitch*4
+                    y: previewTelemetry("_fcMavlinkSystem", "pitch", _fcMavlinkSystem.pitch)*4
                 }
             ]
         }

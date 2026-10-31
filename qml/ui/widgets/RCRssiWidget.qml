@@ -15,6 +15,7 @@ BaseWidget {
 
     visible: settings.show_rc_rssi && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "rc_rssi_widget"
     bw_verbose_name: qsTr("RC RSSI")
 
@@ -28,7 +29,7 @@ BaseWidget {
 
     // -1 denotes N/A
     // Otherwise,value in percent
-    property int rc_rssi_percentage: _fcMavlinkSystem.rc_rssi_percentage
+    property int rc_rssi_percentage: previewTelemetry("_fcMavlinkSystem", "rc_rssi_percentage", _fcMavlinkSystem.rc_rssi_percentage)
 
     function is_valid_rssi(){
         if (rc_rssi_percentage <= -1) {
@@ -161,7 +162,7 @@ BaseWidget {
             Text {
                 id: percent_symbol
                 color: settings.color_text
-                opacity: bw_current_opacity
+                opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                 text: is_valid_rssi() ? qsTr("%") : qsTr("")
                 anchors.right: rcRSSI_21to40.left
                 anchors.rightMargin: 0
@@ -179,7 +180,7 @@ BaseWidget {
             Text {
                 id: rc_rssi
                 color: settings.color_text
-                opacity: bw_current_opacity
+                opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                 text: is_valid_rssi() ? rc_rssi_percentage : qsTr("N/A")
                 anchors.right: percent_symbol.left
                 anchors.rightMargin: 2

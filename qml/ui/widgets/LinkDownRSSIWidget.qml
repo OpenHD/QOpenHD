@@ -18,6 +18,7 @@ BaseWidget {
 
     visible: settings.show_downlink_rssi && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "downlink_rssi_widget"
     bw_verbose_name: qsTr("DOWNLINK/GND RSSI")
 
@@ -33,7 +34,7 @@ BaseWidget {
 
     widgetActionHeight: 164+50+30
 
-    property int m_packet_loss_perc : _ohdSystemGround.curr_rx_packet_loss_perc
+    property int m_packet_loss_perc : previewTelemetry("_ohdSystemGround", "curr_rx_packet_loss_perc", _ohdSystemGround.curr_rx_packet_loss_perc)
     function get_packet_loss_perc_warning_level(){
         if (m_packet_loss_perc>= settings.downlink_packet_loss_perc_warn) {
             return 2;
@@ -86,14 +87,14 @@ BaseWidget {
     }
 
     function get_text_dbm(){
-        var dbm=_ohdSystemGround.current_rx_rssi;
+        var dbm=previewTelemetry("_ohdSystemGround", "current_rx_rssi", _ohdSystemGround.current_rx_rssi);
         if(dbm<=-127){
             return "N/A";
         }
         return ""+dbm;
     }
     function get_dbm_text_color(){
-        var warning_level=_ohdSystemGround.dbm_too_low_warning;
+        var warning_level=previewTelemetry("_ohdSystemGround", "dbm_too_low_warning", _ohdSystemGround.dbm_too_low_warning);
         if(settings.downlink_dbm_warning && warning_level==2){
             return "red";
         }
@@ -104,7 +105,7 @@ BaseWidget {
     }
 
     function get_tx_error_text(){
-        return "TX hint/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
+        return "TX hint/dropped: "+previewTelemetry("_ohdSystemAir", "count_tx_inj_error_hint", _ohdSystemAir.count_tx_inj_error_hint)+" "+previewTelemetry("_ohdSystemAir", "count_tx_dropped_packets", _ohdSystemAir.count_tx_dropped_packets)
     }
 
     //----------------------------- DETAIL BELOW ----------------------------------
@@ -302,7 +303,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("Blocks lost: %1").arg(_cameraStreamModelPrimary.count_blocks_lost)
+                text: qsTr("Blocks lost: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "count_blocks_lost", _cameraStreamModelPrimary.count_blocks_lost))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -311,7 +312,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("Blocks recovered: %1").arg(_cameraStreamModelPrimary.count_blocks_recovered)
+                text: qsTr("Blocks recovered: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "count_blocks_recovered", _cameraStreamModelPrimary.count_blocks_recovered))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -320,7 +321,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("Fragments recovered: %1").arg(_cameraStreamModelPrimary.count_fragments_recovered)
+                text: qsTr("Fragments recovered: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "count_fragments_recovered", _cameraStreamModelPrimary.count_fragments_recovered))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -329,7 +330,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("AIR TX: %1").arg(_ohdSystemAir.tx_packets_per_second_and_bits_per_second)
+                text: qsTr("AIR TX: %1").arg(previewTelemetry("_ohdSystemAir", "tx_packets_per_second_and_bits_per_second", _ohdSystemAir.tx_packets_per_second_and_bits_per_second))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -338,7 +339,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("AIR TX tele: %1").arg(_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second)
+                text: qsTr("AIR TX tele: %1").arg(previewTelemetry("_ohdSystemAir", "tx_tele_packets_per_second_and_bits_per_second", _ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -347,7 +348,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("AIR TX video0: %1").arg(_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second)
+                text: qsTr("AIR TX video0: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "air_tx_packets_per_second_and_bits_per_second", _cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -356,7 +357,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("AIR RX: %1").arg(_ohdSystemAir.rx_packets_per_second_and_bits_per_second)
+                text: qsTr("AIR RX: %1").arg(previewTelemetry("_ohdSystemAir", "rx_packets_per_second_and_bits_per_second", _ohdSystemAir.rx_packets_per_second_and_bits_per_second))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -365,7 +366,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: qsTr("TX PWR Air: %1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit)
+                text: qsTr("TX PWR Air: %1 %2").arg(previewTelemetry("_wifi_card_air", "tx_power", _wifi_card_air.tx_power)).arg(previewTelemetry("_wifi_card_air", "tx_power_unit", _wifi_card_air.tx_power_unit))
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -379,7 +380,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Text {
@@ -444,7 +445,7 @@ BaseWidget {
         // TX errors
         Text{
             id: txerrors_icon
-            visible: _ohdSystemAir.is_alive && _ohdSystemAir.tx_is_currently_dropping_packets
+            visible: _ohdSystemAir.is_alive && previewTelemetry("_ohdSystemAir", "tx_is_currently_dropping_packets", _ohdSystemAir.tx_is_currently_dropping_packets)
             width: 32
             height: 32
             color: "yellow"
@@ -482,7 +483,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_pollution_show
-                text: settings.downlink_pollution_show ? qsTr("Pollution: %1 pps").arg(_ohdSystemGround.wb_link_curr_foreign_pps) : ""
+                text: settings.downlink_pollution_show ? qsTr("Pollution: %1 pps").arg(previewTelemetry("_ohdSystemGround", "wb_link_curr_foreign_pps", _ohdSystemGround.wb_link_curr_foreign_pps)) : ""
                 color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -495,7 +496,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_signal_quality_show
-                text: settings.downlink_signal_quality_show ? qsTr("Quality: %1%").arg(_ohdSystemGround.current_rx_signal_quality) : ""
+                text: settings.downlink_signal_quality_show ? qsTr("Quality: %1%").arg(previewTelemetry("_ohdSystemGround", "current_rx_signal_quality", _ohdSystemGround.current_rx_signal_quality)) : ""
                 color:  settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -508,7 +509,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_show_received_injected_packets ? true : false
-                text: qsTr("TX: %1").arg(Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                text: qsTr("TX: %1").arg(Number(previewTelemetry("_ohdSystemGround", "wifi_tx_packets_count", _ohdSystemGround.wifi_tx_packets_count)).toLocaleString(Qt.locale(), 'f', 0))
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -521,7 +522,7 @@ BaseWidget {
             }
             Text {
                 visible: settings.downlink_show_received_injected_packets ? true : false
-                text: qsTr("RX: %1").arg(Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                text: qsTr("RX: %1").arg(Number(previewTelemetry("_ohdSystemGround", "wifi_rx_packets_count", _ohdSystemGround.wifi_rx_packets_count)).toLocaleString(Qt.locale(), 'f', 0))
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -534,7 +535,7 @@ BaseWidget {
             }
             // dBm and packets for card index 0
             Text {
-                visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd0.alive
+                visible: settings.downlink_show_dbm_and_packets_per_card  && previewTelemetry("_wifi_card_gnd0", "alive", _wifi_card_gnd0.alive)
                 text: text_for_card(0)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
@@ -548,7 +549,7 @@ BaseWidget {
             }
             // dBm and packets for card index 1
             Text {
-                visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd1.alive
+                visible: settings.downlink_show_dbm_and_packets_per_card  && previewTelemetry("_wifi_card_gnd1", "alive", _wifi_card_gnd1.alive)
                 text: text_for_card(1)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
@@ -562,7 +563,7 @@ BaseWidget {
             }
             // dBm and packets for card index 2
             Text {
-                visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd2.alive
+                visible: settings.downlink_show_dbm_and_packets_per_card && previewTelemetry("_wifi_card_gnd2", "alive", _wifi_card_gnd2.alive)
                 text: text_for_card(2)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
@@ -576,7 +577,7 @@ BaseWidget {
             }
             // dBm and packets for card index 3
             Text {
-                visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd3.alive
+                visible: settings.downlink_show_dbm_and_packets_per_card && previewTelemetry("_wifi_card_gnd3", "alive", _wifi_card_gnd3.alive)
                 text: text_for_card(3)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter

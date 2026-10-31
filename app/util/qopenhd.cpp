@@ -1,5 +1,8 @@
 #include "uisimulator.h"
 #include "settingsbackup.h"
+#include "widgetpreviewimage.h"
+#include <QQuickItemGrabResult>
+#include <QBuffer>
 #include "qopenhd.h"
 #include "qtcreatorlaunch.h"
 #include "qpixmap.h"
@@ -312,6 +315,17 @@ bool QOpenHD::overwrite_settings_from_backup_file()
     return true;
 #endif
     return false;
+}
+
+QString QOpenHD::widget_preview_image(QObject* grabResult) const
+{
+    const auto* result=qobject_cast<QQuickItemGrabResult*>(grabResult);
+    if(!result)return {};
+    const auto image=cropWidgetPreviewImage(result->image());
+    if(image.isNull())return {};
+    QByteArray bytes;QBuffer buffer(&bytes);buffer.open(QIODevice::WriteOnly);
+    if(!image.save(&buffer,"PNG"))return {};
+    return QStringLiteral("data:image/png;base64,")+QString::fromLatin1(bytes.toBase64());
 }
 
 bool QOpenHD::reset_settings()

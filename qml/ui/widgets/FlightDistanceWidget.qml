@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_flight_distance && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "flight_distance_widget"
     bw_verbose_name: qsTr("TOTAL FLIGHT DISTANCE")
 
@@ -25,7 +26,7 @@ BaseWidget {
     hasWidgetDetail: true
 
     function get_text_flight_distance(){
-        var distance = _fcMavlinkSystem.flight_distance_m / 1000.0
+        var distance = previewTelemetry("_fcMavlinkSystem", "flight_distance_m", _fcMavlinkSystem.flight_distance_m) / 1000.0
         var unit = "km"
         var use_imperial = settings.value("enable_imperial", false)
         // QML settings can return strings for booleans on some platforms so we check
@@ -53,7 +54,7 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Text {
             id: home_icon
@@ -61,7 +62,7 @@ BaseWidget {
 
             width: 24
             height: 24
-            clip: true
+            clip: !widgetGalleryPreview
             color: settings.color_shape
             text: "\uf018"
             anchors.right: flight_distance_text.left
@@ -78,7 +79,7 @@ BaseWidget {
             id: flight_distance_text
             width: 68
             height: 24
-            clip: true
+            clip: !widgetGalleryPreview
 
             color: settings.color_text
             text: get_text_flight_distance()

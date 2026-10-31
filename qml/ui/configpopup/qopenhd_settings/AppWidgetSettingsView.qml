@@ -35,7 +35,7 @@ FocusScope {
     function gainFocus() { master.forceActiveFocus() }
     function updatePreviewSession() {
         if (typeof hudOverlayGrid.widgetGalleryPreviewActive !== "undefined")
-            hudOverlayGrid.widgetGalleryPreviewActive = visible && developer
+            hudOverlayGrid.widgetGalleryPreviewActive = visible
     }
     onVisibleChanged: updatePreviewSession()
     Component.onDestruction: if (typeof hudOverlayGrid.widgetGalleryPreviewActive !== "undefined") hudOverlayGrid.widgetGalleryPreviewActive = false
@@ -124,7 +124,7 @@ FocusScope {
                                         radius:8;color:settings_form.panelBackgroundRaised;border.color:toggle.activeFocus?settings_form.accentColor:settings_form.lineColor;border.width:toggle.activeFocus?2:1
                                         RowLayout {
                                             anchors.fill:parent;anchors.margins:9;spacing:9
-                                            WidgetPreview {Layout.preferredWidth:76;Layout.preferredHeight:76;widgetKey:card.entry.key}
+                                            WidgetPreview {Layout.preferredWidth:76;Layout.preferredHeight:76;widgetKey:card.entry.key;revision:root.revision}
                                             ColumnLayout {
                                                 Layout.fillWidth:true;spacing:4
                                                 Text {Layout.fillWidth:true;text:card.entry.title;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true;wrapMode:Text.WordWrap}

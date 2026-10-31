@@ -12,6 +12,7 @@ BaseWidget {
 
     visible: settings.show_link_overview_widget && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "link_overview_widget"
     bw_verbose_name: qsTr("LINK OVERVIEW")
 
@@ -29,19 +30,19 @@ BaseWidget {
     bw_background_color_identifier: "link_overview_widget_bg_color"
     bw_opacity_identifier: "link_overview_widget_opacity"
 
-    property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
-    property int m_channel_width_mhz: _ohdSystemAir.curr_channel_width_mhz
+    property int m_curr_mcs_index: previewTelemetry("_ohdSystemAir", "curr_mcs_index", _ohdSystemAir.curr_mcs_index)
+    property int m_channel_width_mhz: previewTelemetry("_ohdSystemAir", "curr_channel_width_mhz", _ohdSystemAir.curr_channel_width_mhz)
     property int m_best_snr_db: get_best_snr_db()
     property int m_snr_value: get_quality_percent_value()
     property int snr_min_db: settings.link_snr_min_db
     property int snr_max_db: settings.link_snr_max_db
-    property int m_tx_temperature_state: _ohdSystemAir.radio_temperature_state
-    property string m_tx_temperature_text: _ohdSystemAir.is_alive ? _ohdSystemAir.radio_temperature_display_text : "N/A"
-    property int m_rx_temperature_state: _ohdSystemGround.radio_temperature_state
-    property string m_rx_temperature_text: _ohdSystemGround.is_alive ? _ohdSystemGround.radio_temperature_display_text : "N/A"
-    property int m_packet_loss_perc: _ohdSystemGround.curr_rx_packet_loss_perc
+    property int m_tx_temperature_state: previewTelemetry("_ohdSystemAir", "radio_temperature_state", _ohdSystemAir.radio_temperature_state)
+    property string m_tx_temperature_text: _ohdSystemAir.is_alive ? previewTelemetry("_ohdSystemAir", "radio_temperature_display_text", _ohdSystemAir.radio_temperature_display_text) : "N/A"
+    property int m_rx_temperature_state: previewTelemetry("_ohdSystemGround", "radio_temperature_state", _ohdSystemGround.radio_temperature_state)
+    property string m_rx_temperature_text: _ohdSystemGround.is_alive ? previewTelemetry("_ohdSystemGround", "radio_temperature_display_text", _ohdSystemGround.radio_temperature_display_text) : "N/A"
+    property int m_packet_loss_perc: previewTelemetry("_ohdSystemGround", "curr_rx_packet_loss_perc", _ohdSystemGround.curr_rx_packet_loss_perc)
     property bool use_calculated_quality: settings.downlink_calc_quality_enabled
-    property bool use_artosyn_quality: _ohdSystemGround.artosyn_link_detected
+    property bool use_artosyn_quality: previewTelemetry("_ohdSystemGround", "artosyn_link_detected", _ohdSystemGround.artosyn_link_detected)
     property real m_quality_raw: calculate_quality_raw()
     property real m_quality_smoothed: -1
     property string linkFont: settings.osd_top_bar_font || "Quicksand"
@@ -137,7 +138,7 @@ BaseWidget {
     }
 
     function get_dbm_text() {
-        var dbm = _ohdSystemGround.current_rx_rssi;
+        var dbm = previewTelemetry("_ohdSystemGround", "current_rx_rssi", _ohdSystemGround.current_rx_rssi);
         if (dbm <= -127) {
             return "N/A";
         }
@@ -224,12 +225,12 @@ BaseWidget {
         // conservative link-margin percentage. The generic Wi-Fi weighting
         // would otherwise overstate the remaining margin when loss is zero.
         if (use_artosyn_quality) {
-            var artosynQuality = _ohdSystemGround.current_rx_signal_quality;
+            var artosynQuality = previewTelemetry("_ohdSystemGround", "current_rx_signal_quality", _ohdSystemGround.current_rx_signal_quality);
             return artosynQuality >= 0 ? clamp(artosynQuality, 0, 100) : -1;
         }
         var lossScore = loss_to_score(m_packet_loss_perc);
         var snrScore = snr_to_score(m_best_snr_db);
-        var rssiScore = rssi_to_score(_ohdSystemGround.current_rx_rssi);
+        var rssiScore = rssi_to_score(previewTelemetry("_ohdSystemGround", "current_rx_rssi", _ohdSystemGround.current_rx_rssi));
         var anyValid = false;
         if (lossScore < 0) {
             lossScore = 0;
@@ -276,13 +277,13 @@ BaseWidget {
             if (m_quality_smoothed >= 0) {
                 return "" + Math.round(m_quality_smoothed) + "%";
             }
-            var fallback = _ohdSystemGround.current_rx_signal_quality;
+            var fallback = previewTelemetry("_ohdSystemGround", "current_rx_signal_quality", _ohdSystemGround.current_rx_signal_quality);
             if (fallback >= 0) {
                 return clamp(fallback, 0, 100) + "%";
             }
             return "N/A";
         }
-        var raw = _ohdSystemGround.current_rx_signal_quality;
+        var raw = previewTelemetry("_ohdSystemGround", "current_rx_signal_quality", _ohdSystemGround.current_rx_signal_quality);
         if (raw >= 0) {
             return clamp(raw, 0, 100) + "%";
         }
@@ -298,7 +299,7 @@ BaseWidget {
             if (m_quality_smoothed >= 0) {
                 return clamp(Math.round(m_quality_smoothed), 0, 100);
             }
-            var fallback = _ohdSystemGround.current_rx_signal_quality;
+            var fallback = previewTelemetry("_ohdSystemGround", "current_rx_signal_quality", _ohdSystemGround.current_rx_signal_quality);
             if (fallback >= 0) {
                 return clamp(fallback, 0, 100);
             }
@@ -307,7 +308,7 @@ BaseWidget {
             }
             return 0;
         }
-        var raw = _ohdSystemGround.current_rx_signal_quality;
+        var raw = previewTelemetry("_ohdSystemGround", "current_rx_signal_quality", _ohdSystemGround.current_rx_signal_quality);
         if (raw >= 0) {
             return clamp(raw, 0, 100);
         }
@@ -403,7 +404,7 @@ BaseWidget {
     }
 
     function get_text_dbm() {
-        var dbm = _ohdSystemGround.current_rx_rssi;
+        var dbm = previewTelemetry("_ohdSystemGround", "current_rx_rssi", _ohdSystemGround.current_rx_rssi);
         if (dbm <= -127) {
             return "N/A";
         }
@@ -433,8 +434,8 @@ BaseWidget {
 
     function get_tx_error_text() {
         return qsTr("TX hint/dropped: %1 %2")
-            .arg(_ohdSystemAir.count_tx_inj_error_hint)
-            .arg(_ohdSystemAir.count_tx_dropped_packets);
+            .arg(previewTelemetry("_ohdSystemAir", "count_tx_inj_error_hint", _ohdSystemAir.count_tx_inj_error_hint))
+            .arg(previewTelemetry("_ohdSystemAir", "count_tx_dropped_packets", _ohdSystemAir.count_tx_dropped_packets));
     }
 
     widgetActionComponent: Loader {
@@ -571,10 +572,10 @@ BaseWidget {
                 Item {
                     width: parent.width
                     height: 28
-                    visible: _wifi_card_air.devourer_quality_valid
+                    visible: previewTelemetry("_wifi_card_air", "devourer_quality_valid", _wifi_card_air.devourer_quality_valid)
                     Text {
                         text: qsTr("AIR health: %1 | RX paths: %2")
-                            .arg(_wifi_card_air.devourer_link_health)
+                            .arg(previewTelemetry("_wifi_card_air", "devourer_link_health", _wifi_card_air.devourer_link_health))
                             .arg(devourer_paths_text(_wifi_card_air))
                         color: "white"
                         height: parent.height
@@ -588,12 +589,12 @@ BaseWidget {
                 Item {
                     width: parent.width
                     height: 28
-                    visible: _wifi_card_air.devourer_quality_valid
+                    visible: previewTelemetry("_wifi_card_air", "devourer_quality_valid", _wifi_card_air.devourer_quality_valid)
                     Text {
                         text: qsTr("AIR SNR A1/A2: %1 / %2 | EVM: %3")
-                            .arg(snr_text(_wifi_card_air.rx_snr_antenna1))
-                            .arg(snr_text(_wifi_card_air.rx_snr_antenna2))
-                            .arg(metric_db_text(_wifi_card_air.rx_evm_db))
+                            .arg(snr_text(previewTelemetry("_wifi_card_air", "rx_snr_antenna1", _wifi_card_air.rx_snr_antenna1)))
+                            .arg(snr_text(previewTelemetry("_wifi_card_air", "rx_snr_antenna2", _wifi_card_air.rx_snr_antenna2)))
+                            .arg(metric_db_text(previewTelemetry("_wifi_card_air", "rx_evm_db", _wifi_card_air.rx_evm_db)))
                         color: "white"
                         height: parent.height
                         font.bold: true
@@ -636,7 +637,7 @@ BaseWidget {
                     width: parent.width
                     height: 28
                     Text {
-                        text: qsTr("Pollution: %1 pps").arg(_ohdSystemGround.wb_link_curr_foreign_pps)
+                        text: qsTr("Pollution: %1 pps").arg(previewTelemetry("_ohdSystemGround", "wb_link_curr_foreign_pps", _ohdSystemGround.wb_link_curr_foreign_pps))
                         color: "white"
                         height: parent.height
                         font.bold: true
@@ -664,7 +665,7 @@ BaseWidget {
                     width: parent.width
                     height: 28
                     Text {
-                        text: qsTr("TX: %1").arg(Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                        text: qsTr("TX: %1").arg(Number(previewTelemetry("_ohdSystemGround", "wifi_tx_packets_count", _ohdSystemGround.wifi_tx_packets_count)).toLocaleString(Qt.locale(), 'f', 0))
                         color: "white"
                         height: parent.height
                         font.bold: true
@@ -678,7 +679,7 @@ BaseWidget {
                     width: parent.width
                     height: 28
                     Text {
-                        text: qsTr("RX: %1").arg(Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0))
+                        text: qsTr("RX: %1").arg(Number(previewTelemetry("_ohdSystemGround", "wifi_rx_packets_count", _ohdSystemGround.wifi_rx_packets_count)).toLocaleString(Qt.locale(), 'f', 0))
                         color: "white"
                         height: parent.height
                         font.bold: true
@@ -691,7 +692,7 @@ BaseWidget {
                 Item {
                     width: parent.width
                     height: 28
-                    visible: _wifi_card_gnd0.alive
+                    visible: previewTelemetry("_wifi_card_gnd0", "alive", _wifi_card_gnd0.alive)
                     Text {
                         text: text_for_card(0)
                         color: "white"
@@ -706,7 +707,7 @@ BaseWidget {
                 Item {
                     width: parent.width
                     height: 28
-                    visible: _wifi_card_gnd1.alive
+                    visible: previewTelemetry("_wifi_card_gnd1", "alive", _wifi_card_gnd1.alive)
                     Text {
                         text: text_for_card(1)
                         color: "white"
@@ -721,7 +722,7 @@ BaseWidget {
                 Item {
                     width: parent.width
                     height: 28
-                    visible: _wifi_card_gnd2.alive
+                    visible: previewTelemetry("_wifi_card_gnd2", "alive", _wifi_card_gnd2.alive)
                     Text {
                         text: text_for_card(2)
                         color: "white"
@@ -736,7 +737,7 @@ BaseWidget {
                 Item {
                     width: parent.width
                     height: 28
-                    visible: _wifi_card_gnd3.alive
+                    visible: previewTelemetry("_wifi_card_gnd3", "alive", _wifi_card_gnd3.alive)
                     Text {
                         text: text_for_card(3)
                         color: "white"
@@ -786,7 +787,7 @@ BaseWidget {
                             Layout.fillWidth: true
                             spacing: 4
                             Text {
-                                text: qsTr("Blocks lost: %1").arg(_cameraStreamModelPrimary.count_blocks_lost)
+                                text: qsTr("Blocks lost: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "count_blocks_lost", _cameraStreamModelPrimary.count_blocks_lost))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -795,7 +796,7 @@ BaseWidget {
                                 wrapMode: Text.NoWrap
                             }
                             Text {
-                                text: qsTr("Fragments recovered: %1").arg(_cameraStreamModelPrimary.count_fragments_recovered)
+                                text: qsTr("Fragments recovered: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "count_fragments_recovered", _cameraStreamModelPrimary.count_fragments_recovered))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -804,7 +805,7 @@ BaseWidget {
                                 wrapMode: Text.NoWrap
                             }
                             Text {
-                                text: qsTr("AIR TX tele: %1").arg(_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second)
+                                text: qsTr("AIR TX tele: %1").arg(previewTelemetry("_ohdSystemAir", "tx_tele_packets_per_second_and_bits_per_second", _ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -813,7 +814,7 @@ BaseWidget {
                                 wrapMode: Text.NoWrap
                             }
                             Text {
-                                text: qsTr("AIR RX: %1").arg(_ohdSystemAir.rx_packets_per_second_and_bits_per_second)
+                                text: qsTr("AIR RX: %1").arg(previewTelemetry("_ohdSystemAir", "rx_packets_per_second_and_bits_per_second", _ohdSystemAir.rx_packets_per_second_and_bits_per_second))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -827,7 +828,7 @@ BaseWidget {
                             Layout.fillWidth: true
                             spacing: 4
                             Text {
-                                text: qsTr("Blocks recovered: %1").arg(_cameraStreamModelPrimary.count_blocks_recovered)
+                                text: qsTr("Blocks recovered: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "count_blocks_recovered", _cameraStreamModelPrimary.count_blocks_recovered))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -836,7 +837,7 @@ BaseWidget {
                                 wrapMode: Text.NoWrap
                             }
                             Text {
-                                text: qsTr("AIR TX: %1").arg(_ohdSystemAir.tx_packets_per_second_and_bits_per_second)
+                                text: qsTr("AIR TX: %1").arg(previewTelemetry("_ohdSystemAir", "tx_packets_per_second_and_bits_per_second", _ohdSystemAir.tx_packets_per_second_and_bits_per_second))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -845,7 +846,7 @@ BaseWidget {
                                 wrapMode: Text.NoWrap
                             }
                             Text {
-                                text: qsTr("AIR TX video0: %1").arg(_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second)
+                                text: qsTr("AIR TX video0: %1").arg(previewTelemetry("_cameraStreamModelPrimary", "air_tx_packets_per_second_and_bits_per_second", _cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -854,7 +855,7 @@ BaseWidget {
                                 wrapMode: Text.NoWrap
                             }
                             Text {
-                                text: qsTr("TX PWR Air: %1 %2").arg(_wifi_card_air.tx_power).arg(_wifi_card_air.tx_power_unit)
+                                text: qsTr("TX PWR Air: %1 %2").arg(previewTelemetry("_wifi_card_air", "tx_power", _wifi_card_air.tx_power)).arg(previewTelemetry("_wifi_card_air", "tx_power_unit", _wifi_card_air.tx_power_unit))
                                 color: "white"
                                 font.bold: true
                                 font.family: linkFont
@@ -1091,9 +1092,9 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
-        clip: true
+        clip: !widgetGalleryPreview
 
         Shape {
             id: cutRect

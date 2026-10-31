@@ -257,15 +257,15 @@ BaseWidget {
 
         anchors.centerIn: parent
 
-        visible: settings.show_flight_path_vector
-        opacity: bw_current_opacity
+        visible: settings.show_flight_path_vector || widgetGalleryPreview
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Item {
             id: flightPathVector
 
             anchors.centerIn: parent
 
-            visible: settings.show_flight_path_vector
+            visible: settings.show_flight_path_vector || widgetGalleryPreview
 
             //transform: Scale { origin.x: 0; origin.y: 0; xScale: bw_current_scale ; yScale: bw_current_scale}
             FlightPathVector {
@@ -289,14 +289,14 @@ BaseWidget {
                 fpvPipper:
 */
                 Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
-                pitch: settings.fpv_dynamic ? _fcMavlinkSystem.pitch : 0.0
+                pitch: settings.fpv_dynamic ? previewTelemetry("_fcMavlinkSystem", "pitch", _fcMavlinkSystem.pitch) : 0.0
                 Behavior on roll {NumberAnimation { duration: settings.smoothing }}
-                roll: settings.fpv_dynamic ? _fcMavlinkSystem.roll : 0.0
+                roll: settings.fpv_dynamic ? previewTelemetry("_fcMavlinkSystem", "roll", _fcMavlinkSystem.roll) : 0.0
 
                 Behavior on lateral {NumberAnimation { duration: settings.smoothing }}
-                lateral: settings.fpv_dynamic ? _fcMavlinkSystem.vehicle_vx_angle : 0.0
+                lateral: settings.fpv_dynamic ? previewTelemetry("_fcMavlinkSystem", "vehicle_vx_angle", _fcMavlinkSystem.vehicle_vx_angle) : 0.0
                 Behavior on vertical {NumberAnimation { duration: settings.smoothing }}
-                vertical: settings.fpv_dynamic ? _fcMavlinkSystem.vehicle_vz_angle : 0.0
+                vertical: settings.fpv_dynamic ? previewTelemetry("_fcMavlinkSystem", "vehicle_vz_angle", _fcMavlinkSystem.vehicle_vz_angle) : 0.0
 
                 // referencing the horizon so that fpv moves accurately
                 horizonSpacing: settings.horizon_ladder_spacing

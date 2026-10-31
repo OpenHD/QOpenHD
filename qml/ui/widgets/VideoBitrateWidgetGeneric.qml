@@ -17,6 +17,7 @@ BaseWidget {
 
     property bool m_is_for_primary_camera: true
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: m_is_for_primary_camera ? "bitrate_widget" : "bitrate_widget2"
     bw_verbose_name: m_is_for_primary_camera ? qsTr("VIDEO BITRATE CAM1") : qsTr("VIDEO BITRATE CAM2")
 
@@ -35,7 +36,7 @@ BaseWidget {
     property bool m_show_button_quick_switch: false
 
     // param - so therefore might not be always synchronized
-    property string m_curr_video_format:  m_is_for_primary_camera ? _cameraStreamModelPrimary.curr_set_video_format : _cameraStreamModelSecondary.curr_set_video_format
+    property string m_curr_video_format:  m_is_for_primary_camera ? previewTelemetry("_cameraStreamModelPrimary", "curr_set_video_format", _cameraStreamModelPrimary.curr_set_video_format) : previewTelemetry("_cameraStreamModelSecondary", "curr_set_video_format", _cameraStreamModelSecondary.curr_set_video_format)
 
 
     function bitrate_color(curr_set_and_measured_bitrate_mismatch){
@@ -55,23 +56,23 @@ BaseWidget {
         }
     }
     function get_drop_str_tx_rx(){
-        //return _cameraStreamModelPrimary.total_n_tx_dropped_frames+":"+_cameraStreamModelPrimary.count_blocks_lost;
-        //return m_camera_stream_model.curr_delta_tx_dropped_frames+":"+m_camera_stream_model.total_n_tx_dropped_frames
-        return m_camera_stream_model.total_n_tx_dropped_frames+":"+m_camera_stream_model.count_blocks_lost;
+        //return previewTelemetry("_cameraStreamModelPrimary", "total_n_tx_dropped_frames", _cameraStreamModelPrimary.total_n_tx_dropped_frames)+":"+previewTelemetry("_cameraStreamModelPrimary", "count_blocks_lost", _cameraStreamModelPrimary.count_blocks_lost);
+        //return previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "curr_delta_tx_dropped_frames", m_camera_stream_model.curr_delta_tx_dropped_frames)+":"+previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "total_n_tx_dropped_frames", m_camera_stream_model.total_n_tx_dropped_frames)
+        return previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "total_n_tx_dropped_frames", m_camera_stream_model.total_n_tx_dropped_frames)+":"+previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "count_blocks_lost", m_camera_stream_model.count_blocks_lost);
     }
 
     function get_display_bitrate(){
-        var ground_rx_bitrate = m_camera_stream_model.curr_received_bitrate_with_fec;
+        var ground_rx_bitrate = previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "curr_received_bitrate_with_fec", m_camera_stream_model.curr_received_bitrate_with_fec);
         if (ground_rx_bitrate !== "" && ground_rx_bitrate !== "N/A") {
             return ground_rx_bitrate;
         }
         // Air-side debug mode has no ground RX stats, use current injected bitrate (+FEC) instead.
-        return m_camera_stream_model.curr_video_injected_bitrate;
+        return previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "curr_video_injected_bitrate", m_camera_stream_model.curr_video_injected_bitrate);
     }
 
     // Complicated
     // Set to true if the camera is currently doing recordng (the UI element(s) turn red in this case)
-    property bool m_camera_is_currently_recording: m_is_for_primary_camera ? _cameraStreamModelPrimary.air_recording_active :  _cameraStreamModelSecondary.air_recording_active
+    property bool m_camera_is_currently_recording: m_is_for_primary_camera ? previewTelemetry("_cameraStreamModelPrimary", "air_recording_active", _cameraStreamModelPrimary.air_recording_active) :  previewTelemetry("_cameraStreamModelSecondary", "air_recording_active", _cameraStreamModelSecondary.air_recording_active)
 
     // THIS IS A MAVLINK PARAM, SYNCHRONIZATION THEREFORE IS HARD AND HERE NOT WORTH IT
     property int m_camera_recording_mode: -1
@@ -89,7 +90,7 @@ BaseWidget {
             _hudLogMessagesModel.signalAddLogMessage(6,qsTr("Air unit not alive, cannot set recording for %1").arg(camString))
             return;
         }
-        if(mode!==0 && _ohdSystemAir.curr_space_left_mb < 300){
+        if(mode!==0 && previewTelemetry("_ohdSystemAir", "curr_space_left_mb", _ohdSystemAir.curr_space_left_mb) < 300){
             _hudLogMessagesModel.signalAddLogMessage(
                         6,
                         qsTr("Recording %1 unavailable: select storage with at least 300 MB free in Manage Air Storage").arg(camString))
@@ -187,21 +188,21 @@ BaseWidget {
                 m_left_text: qsTr("Status:")
                 m_right_text:  {
                     if(!_ohdSystemAir.is_alive)return qsTr("no air");
-                    return _cameraStreamModelPrimary.camera_status_to_string(m_camera_stream_model.camera_status);
+                    return _cameraStreamModelPrimary.camera_status_to_string(previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "camera_status", m_camera_stream_model.camera_status));
                 }
             }
             SimpleLeftRightText{
                 m_left_text: qsTr("Type:")
                 m_right_text: {
                     if(!_ohdSystemAir.is_alive)return qsTr("N/A");
-                    return _cameraStreamModelPrimary.camera_type_to_string(m_camera_stream_model.camera_type);
+                    return _cameraStreamModelPrimary.camera_type_to_string(previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "camera_type", m_camera_stream_model.camera_type));
                 }
             }
             SimpleLeftRightText{
                 m_left_text: qsTr("Codec:")
                 m_right_text: {
                     if(!_ohdSystemAir.is_alive)return qsTr("N/A");
-                    return _cameraStreamModelPrimary.camera_codec_to_string(m_camera_stream_model.encoding_codec);
+                    return _cameraStreamModelPrimary.camera_codec_to_string(previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "encoding_codec", m_camera_stream_model.encoding_codec));
                 }
             }
             SimpleLeftRightText{
@@ -236,17 +237,17 @@ BaseWidget {
             }
             SimpleLeftRightText{
                 m_left_text: qsTr("Bitrate SET:")
-                m_right_text: m_camera_stream_model.curr_recomended_video_bitrate_string
+                m_right_text: previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "curr_recomended_video_bitrate_string", m_camera_stream_model.curr_recomended_video_bitrate_string)
             }
 
             SimpleLeftRightText{
                 m_left_text: qsTr("MEASURED:")
-                m_right_text: m_camera_stream_model.curr_video_measured_encoder_bitrate
+                m_right_text: previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "curr_video_measured_encoder_bitrate", m_camera_stream_model.curr_video_measured_encoder_bitrate)
             }
 
             SimpleLeftRightText{
                 m_left_text: qsTr("Injected(+FEC):")
-                m_right_text: m_camera_stream_model.curr_video_injected_bitrate
+                m_right_text: previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "curr_video_injected_bitrate", m_camera_stream_model.curr_video_injected_bitrate)
             }
 
 
@@ -271,18 +272,18 @@ BaseWidget {
                 m_left_text:  qsTr("FREE SPACE:")
                 m_right_text: {
                     if(!_ohdSystemAir.is_alive)return qsTr("N/A");
-                    return qsTr("%1 MB").arg(_ohdSystemAir.curr_space_left_mb)
+                    return qsTr("%1 MB").arg(previewTelemetry("_ohdSystemAir", "curr_space_left_mb", _ohdSystemAir.curr_space_left_mb))
                 }
                 m_right_text_color: {
                     if(!_ohdSystemAir.is_alive)return "white"
-                    return (_ohdSystemAir.curr_space_left_mb < 500) ? "red" : "green"
+                    return (previewTelemetry("_ohdSystemAir", "curr_space_left_mb", _ohdSystemAir.curr_space_left_mb) < 500) ? "red" : "green"
                 }
             }
             SimpleLeftRightText{
                 m_left_text: qsTr("AIR RECORD:");
                 m_right_text: {
                     if(!_ohdSystemAir.is_alive)return qsTr("N/A");
-                    return _cameraStreamModelPrimary.camera_recording_mode_to_string(m_camera_stream_model.air_recording_active);
+                    return _cameraStreamModelPrimary.camera_recording_mode_to_string(previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "air_recording_active", m_camera_stream_model.air_recording_active));
                 }
             }
             // For camera 1
@@ -335,7 +336,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Text {
@@ -359,7 +360,7 @@ BaseWidget {
             y: 0
             width: 84
             height: 32
-            color: bitrate_color(m_camera_stream_model.curr_set_and_measured_bitrate_mismatch)
+            color: bitrate_color(previewTelemetry(m_is_for_primary_camera ? "_cameraStreamModelPrimary" : "_cameraStreamModelSecondary", "curr_set_and_measured_bitrate_mismatch", m_camera_stream_model.curr_set_and_measured_bitrate_mismatch))
             text: get_display_bitrate()
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right

@@ -19,13 +19,14 @@ BaseWidget {
 
     visible: settings.show_speed_second && !sidebar.m_is_active && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "speed_second_widget"
     bw_verbose_name: qsTr("SECOND SPEED")
 
     hasWidgetDetail: true
 
     function get_speed_number(){
-        var speed_m_per_second=settings.speed_second_use_groundspeed ? _fcMavlinkSystem.ground_speed_meter_per_second : _fcMavlinkSystem.air_speed_meter_per_second;
+        var speed_m_per_second=settings.speed_second_use_groundspeed ? previewTelemetry("_fcMavlinkSystem", "ground_speed_meter_per_second", _fcMavlinkSystem.ground_speed_meter_per_second) : previewTelemetry("_fcMavlinkSystem", "air_speed_meter_per_second", _fcMavlinkSystem.air_speed_meter_per_second);
         if(settings.enable_imperial){
             return speed_m_per_second*2.23694;
         }
@@ -140,7 +141,7 @@ BaseWidget {
             width: 20
             height: parent.height
             color: settings.color_shape
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf3fd"
             anchors.left: parent.left
             anchors.leftMargin: 0
@@ -155,7 +156,7 @@ BaseWidget {
         Text {
             id: second_alt_text
             color: settings.color_text
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             font.pixelSize: 14
             font.family: settings.font_text
             width: 40

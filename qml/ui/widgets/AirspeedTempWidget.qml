@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_airspeed_temp && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "airspeed_temp_widget"
     bw_verbose_name: qsTr("AIRSPEED SENSOR TEMP")
 
@@ -169,10 +170,10 @@ BaseWidget {
 
         Text {
             id: temp_glyph
-            color: _fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_caution ? (_fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            opacity: bw_current_opacity
+            color: previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) <= settings.airspeed_temp_caution ? (previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) <= settings.airspeed_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             //suggest change to wind icon f72e
-            text: _fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_caution ? (_fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
+            text: previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) <= settings.airspeed_temp_caution ? (previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) <= settings.airspeed_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             font.family: "Font Awesome 5 Free"
@@ -188,10 +189,10 @@ BaseWidget {
         Text {
             id: airspeed_temp
             color: {
-                if (_fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_warn) {
+                if (previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) <= settings.airspeed_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_fcMavlinkSystem.airspeed_sensor_temperature_degree < settings.airspeed_temp_caution) {
+                } else if (previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) < settings.airspeed_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.airspeed_temp_declutter == true
@@ -203,8 +204,8 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: bw_current_opacity
-            text: _fcMavlinkSystem.airspeed_sensor_temperature_degree == 99 ? qsTr("N/A") : _fcMavlinkSystem.airspeed_sensor_temperature_degree + "°"
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+            text: previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) == 99 ? qsTr("N/A") : previewTelemetry("_fcMavlinkSystem", "airspeed_sensor_temperature_degree", _fcMavlinkSystem.airspeed_sensor_temperature_degree) + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

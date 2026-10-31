@@ -15,6 +15,7 @@ BaseWidget {
 
     visible: settings.show_arrow && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "arrow_widget"
     bw_verbose_name: qsTr("HOME ARROW")
 
@@ -69,7 +70,7 @@ BaseWidget {
                 id: arrow
                 anchors.fill: parent
                 antialiasing: true
-                opacity: bw_current_opacity
+                opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
                 ShapePath {
                     capStyle: ShapePath.RoundCap
@@ -94,7 +95,7 @@ BaseWidget {
                 transform: Rotation {
                     origin.x: 32;
                     origin.y: 12;
-                    angle: settings.arrow_invert ? _fcMavlinkSystem.home_course : _fcMavlinkSystem.home_course-180
+                    angle: settings.arrow_invert ? previewTelemetry("_fcMavlinkSystem", "home_course", _fcMavlinkSystem.home_course) : previewTelemetry("_fcMavlinkSystem", "home_course", _fcMavlinkSystem.home_course)-180
                 }
             }
         }

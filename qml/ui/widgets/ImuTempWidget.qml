@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_imu_temp && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "imu_temp_widget"
     bw_verbose_name: qsTr("IMU TEMPERATURE")
 
@@ -141,11 +142,11 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Text {
             id: temp_glyph
-            color: _fcMavlinkSystem.imu_temp_degree >= settings.imu_temp_caution ? (_fcMavlinkSystem.imu_temp_degree >= settings.imu_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            color: previewTelemetry("_fcMavlinkSystem", "imu_temp_degree", _fcMavlinkSystem.imu_temp_degree) >= settings.imu_temp_caution ? (previewTelemetry("_fcMavlinkSystem", "imu_temp_degree", _fcMavlinkSystem.imu_temp_degree) >= settings.imu_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
             text: "\uf5d2"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -162,10 +163,10 @@ BaseWidget {
         Text {
             id: imu_temp
             color: {
-                if (_fcMavlinkSystem.imu_temp_degree >= settings.imu_temp_warn) {
+                if (previewTelemetry("_fcMavlinkSystem", "imu_temp_degree", _fcMavlinkSystem.imu_temp_degree) >= settings.imu_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_fcMavlinkSystem.imu_temp_degree > settings.imu_temp_caution) {
+                } else if (previewTelemetry("_fcMavlinkSystem", "imu_temp_degree", _fcMavlinkSystem.imu_temp_degree) > settings.imu_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.imu_temp_declutter == true
@@ -177,7 +178,7 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            text: _fcMavlinkSystem.imu_temp_degree == 0 ? qsTr("N/A") : _fcMavlinkSystem.imu_temp_degree + "°"
+            text: previewTelemetry("_fcMavlinkSystem", "imu_temp_degree", _fcMavlinkSystem.imu_temp_degree) == 0 ? qsTr("N/A") : previewTelemetry("_fcMavlinkSystem", "imu_temp_degree", _fcMavlinkSystem.imu_temp_degree) + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

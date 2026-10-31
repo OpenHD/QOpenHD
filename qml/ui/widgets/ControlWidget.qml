@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_control && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "control_widget"
     bw_verbose_name: qsTr("CONTROL INPUTS")
 
@@ -215,7 +216,7 @@ BaseWidget {
         height: parent.height
         width: parent.width
         anchors.verticalCenter: parent.verticalCenter
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         antialiasing: true

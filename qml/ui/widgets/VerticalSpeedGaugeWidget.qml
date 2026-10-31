@@ -18,14 +18,15 @@ BaseWidget {
 
     visible: settings.show_vertical_speed_gauge_widget && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "vertical_speed_gauge_widget"
     bw_verbose_name: qsTr("VERTICAL SPEED (CLIMB)")
 
     function get_vertical_speed_m_s_or_ft_s(){
         if(settings.enable_imperial){
-            return _fcMavlinkSystem.vertical_speed_indicator_mps*3.28084; // ft /s
+            return previewTelemetry("_fcMavlinkSystem", "vertical_speed_indicator_mps", _fcMavlinkSystem.vertical_speed_indicator_mps)*3.28084; // ft /s
         }
-        return _fcMavlinkSystem.vertical_speed_indicator_mps; // m/s
+        return previewTelemetry("_fcMavlinkSystem", "vertical_speed_indicator_mps", _fcMavlinkSystem.vertical_speed_indicator_mps); // m/s
     }
 
 
@@ -76,7 +77,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Item {
             anchors.fill: parent

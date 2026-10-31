@@ -15,6 +15,7 @@ BaseWidget {
         && settings.show_link_overview_widget_bottom
         && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "link_overview_widget_bottom"
     bw_verbose_name: qsTr("LINK OVERVIEW BOTTOM")
 
@@ -381,7 +382,7 @@ BaseWidget {
     }
 
     function format_air_voltage() {
-        var v = _fcMavlinkSystem.battery_voltage_volt;
+        var v = previewTelemetry("_fcMavlinkSystem", "battery_voltage_volt", _fcMavlinkSystem.battery_voltage_volt);
         if (!_fcMavlinkSystem.is_alive || v <= 0) {
             return "N/A";
         }
@@ -389,7 +390,7 @@ BaseWidget {
     }
 
     function format_air_current() {
-        var a = _fcMavlinkSystem.battery_current_ampere;
+        var a = previewTelemetry("_fcMavlinkSystem", "battery_current_ampere", _fcMavlinkSystem.battery_current_ampere);
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
@@ -400,7 +401,7 @@ BaseWidget {
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
-        var percent = _fcMavlinkSystem.battery_percent;
+        var percent = previewTelemetry("_fcMavlinkSystem", "battery_percent", _fcMavlinkSystem.battery_percent);
         if (percent < 0 || percent > 100) {
             return "N/A";
         }
@@ -408,7 +409,7 @@ BaseWidget {
     }
 
     function battery_percent_icon() {
-        var percent = _fcMavlinkSystem.battery_percent;
+        var percent = previewTelemetry("_fcMavlinkSystem", "battery_percent", _fcMavlinkSystem.battery_percent);
         if (!_fcMavlinkSystem.is_alive || percent < 0 || percent > 100) {
             return "\uf240";
         }
@@ -423,8 +424,8 @@ BaseWidget {
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
-        var raw = settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed : _fcMavlinkSystem.mav_wind_speed;
-        var direction = settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction;
+        var raw = settings.wind_plane_copter ? previewTelemetry("_fcMavlinkSystem", "wind_speed", _fcMavlinkSystem.wind_speed) : previewTelemetry("_fcMavlinkSystem", "mav_wind_speed", _fcMavlinkSystem.mav_wind_speed);
+        var direction = settings.wind_plane_copter ? previewTelemetry("_fcMavlinkSystem", "wind_direction", _fcMavlinkSystem.wind_direction) : previewTelemetry("_fcMavlinkSystem", "mav_wind_direction", _fcMavlinkSystem.mav_wind_direction);
         if (raw < 0) {
             return "N/A";
         }
@@ -443,7 +444,7 @@ BaseWidget {
     }
 
     function format_air_mah() {
-        var mah = _fcMavlinkSystem.battery_consumed_mah;
+        var mah = previewTelemetry("_fcMavlinkSystem", "battery_consumed_mah", _fcMavlinkSystem.battery_consumed_mah);
         if (!_fcMavlinkSystem.is_alive || mah <= 0) {
             return "N/A";
         }
@@ -451,7 +452,7 @@ BaseWidget {
     }
 
     function format_nav_sats() {
-        var sats = _fcMavlinkSystem.satellites_visible;
+        var sats = previewTelemetry("_fcMavlinkSystem", "satellites_visible", _fcMavlinkSystem.satellites_visible);
         if (!_fcMavlinkSystem.is_alive || sats <= 0) {
             return "N/A";
         }
@@ -459,7 +460,7 @@ BaseWidget {
     }
 
     function format_nav_alt() {
-        var alt = _fcMavlinkSystem.altitude_rel_m;
+        var alt = previewTelemetry("_fcMavlinkSystem", "altitude_rel_m", _fcMavlinkSystem.altitude_rel_m);
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
@@ -467,7 +468,7 @@ BaseWidget {
     }
 
     function format_nav_time() {
-        var t = _fcMavlinkSystem.flight_time;
+        var t = previewTelemetry("_fcMavlinkSystem", "flight_time", _fcMavlinkSystem.flight_time);
         if (!_fcMavlinkSystem.is_alive || t === "") {
             return "N/A";
         }
@@ -475,7 +476,7 @@ BaseWidget {
     }
 
     function format_flight_mode() {
-        var mode = _fcMavlinkSystem.flight_mode;
+        var mode = previewTelemetry("_fcMavlinkSystem", "flight_mode", _fcMavlinkSystem.flight_mode);
         if (!_fcMavlinkSystem.is_alive || mode === "") {
             return "N/A";
         }
@@ -506,7 +507,7 @@ BaseWidget {
     }
 
     function format_flight_time_short() {
-        var t = _fcMavlinkSystem.flight_time;
+        var t = previewTelemetry("_fcMavlinkSystem", "flight_time", _fcMavlinkSystem.flight_time);
         if (!_fcMavlinkSystem.is_alive || t === "") {
             return "00:00";
         }
@@ -533,7 +534,7 @@ BaseWidget {
         if (!_fcMavlinkSystem.is_alive) {
             return "N/A";
         }
-        var distance = _fcMavlinkSystem.home_distance;
+        var distance = previewTelemetry("_fcMavlinkSystem", "home_distance", _fcMavlinkSystem.home_distance);
         var unit = "m";
         var use_imperial = settings.value("enable_imperial", false);
         if (use_imperial === true || use_imperial === 1 || use_imperial === "true") {
@@ -544,11 +545,11 @@ BaseWidget {
     }
 
     function format_air_speed() {
-        return format_speed(_fcMavlinkSystem.air_speed_meter_per_second);
+        return format_speed(previewTelemetry("_fcMavlinkSystem", "air_speed_meter_per_second", _fcMavlinkSystem.air_speed_meter_per_second));
     }
 
     function format_gps_speed() {
-        return format_speed(_fcMavlinkSystem.ground_speed_meter_per_second);
+        return format_speed(previewTelemetry("_fcMavlinkSystem", "ground_speed_meter_per_second", _fcMavlinkSystem.ground_speed_meter_per_second));
     }
 
     function format_speed(speed_mps) {
@@ -575,7 +576,7 @@ BaseWidget {
     }
 
     function format_gnd_voltage() {
-        var mv = _ohdSystemGround.ina219_voltage_millivolt;
+        var mv = previewTelemetry("_ohdSystemGround", "ina219_voltage_millivolt", _ohdSystemGround.ina219_voltage_millivolt);
         if (mv <= 0) {
             return "N/A";
         }
@@ -583,7 +584,7 @@ BaseWidget {
     }
 
     function format_gnd_current() {
-        var ma = _ohdSystemGround.ina219_current_milliamps;
+        var ma = previewTelemetry("_ohdSystemGround", "ina219_current_milliamps", _ohdSystemGround.ina219_current_milliamps);
         if (ma <= 0) {
             return "N/A";
         }
@@ -595,7 +596,7 @@ BaseWidget {
     }
 
     function format_gnd_rssi() {
-        var rssi = _ohdSystemGround.current_rx_signal_quality;
+        var rssi = previewTelemetry("_ohdSystemGround", "current_rx_signal_quality", _ohdSystemGround.current_rx_signal_quality);
         if (rssi < 0) {
             return "N/A";
         }
@@ -769,7 +770,7 @@ BaseWidget {
         anchors.alignWhenCentered: false
         anchors.bottom: parent.bottom
         transformOrigin: Item.Bottom
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
         clip: false
 

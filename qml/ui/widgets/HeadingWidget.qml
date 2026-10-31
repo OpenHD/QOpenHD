@@ -88,7 +88,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        //opacity: bw_current_opacity
+        //opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Item {
             id: headingLadder
@@ -116,9 +116,9 @@ BaseWidget {
                 showHorizonHome: settings.show_heading_ladder //you dont want a floating home icon
                 //turned off data smoothing because of compass wrapping issue
                 //Behavior on heading {NumberAnimation { duration: settings.smoothing }}
-                heading: _fcMavlinkSystem.hdg
+                heading: previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg)
                 //Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
-                homeHeading: _fcMavlinkSystem.home_heading
+                homeHeading: previewTelemetry("_fcMavlinkSystem", "home_heading", _fcMavlinkSystem.home_heading)
                 color: settings.color_shape
                 glow: settings.color_glow
                 fontFamily: settings.font_text
@@ -142,7 +142,7 @@ BaseWidget {
                 xScale: m_extra_size
                 yScale: m_extra_size
             }
-            text: Number(_fcMavlinkSystem.hdg).toLocaleString(Qt.locale(), 'f', 0)
+            text: Number(previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg)).toLocaleString(Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline

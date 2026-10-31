@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_flight_mah_km && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "flight_mah_km_widget"
     bw_verbose_name: qsTr("EFFICIENCY IN MAH/KM")
 
@@ -24,7 +25,7 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    property int curr_mah_per_km: _fcMavlinkSystem.battery_consumed_mah_per_km
+    property int curr_mah_per_km: previewTelemetry("_fcMavlinkSystem", "battery_consumed_mah_per_km", _fcMavlinkSystem.battery_consumed_mah_per_km)
 
     function get_text_mah(){
         if(curr_mah_per_km<0){
@@ -52,7 +53,7 @@ BaseWidget {
 
         anchors.fill: parent
         scale: bw_current_scale
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Text {
             id: home_icon
@@ -60,7 +61,7 @@ BaseWidget {
 
             width: 24
             height: 24
-            clip: true
+            clip: !widgetGalleryPreview
             color: settings.color_shape
             text: "\uf0e7"
             anchors.right: flight_mah_km_text.left

@@ -16,14 +16,15 @@ BaseWidget {
     width: 50
     height: 50
 
-    property int temperatureState: _ohdSystemGround.radio_temperature_state
-    property string temperatureText: _ohdSystemGround.radio_temperature_state_text
+    property int temperatureState: previewTelemetry("_ohdSystemGround", "radio_temperature_state", _ohdSystemGround.radio_temperature_state)
+    property string temperatureText: previewTelemetry("_ohdSystemGround", "radio_temperature_state_text", _ohdSystemGround.radio_temperature_state_text)
     property color temperatureColor: temperatureState >= 3 ? settings.color_warn
                                                            : temperatureState === 2 ? settings.color_caution
                                                                                     : temperatureState === 0 ? "#62b5ff"
                                                                                                              : settings.color_text
     visible: temperatureState >= 0 && settings.show_widgets && settings.show_txc_temp_gnd
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "RX Temperature"
     bw_verbose_name: qsTr("RX TEMPERATURE")
 
@@ -54,7 +55,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         ColumnLayout{

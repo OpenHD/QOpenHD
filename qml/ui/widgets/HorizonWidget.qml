@@ -347,7 +347,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
         Item {
             id: horizonLadder
@@ -391,14 +391,14 @@ BaseWidget {
                 //line_stroke_strength_perc: settings.horizon_line_stroke_strength_perc
 
                 Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
-                pitch: _fcMavlinkSystem.pitch
+                pitch: previewTelemetry("_fcMavlinkSystem", "pitch", _fcMavlinkSystem.pitch)
                 Behavior on roll {NumberAnimation { duration: settings.smoothing }}
-                roll: _fcMavlinkSystem.roll
+                roll: previewTelemetry("_fcMavlinkSystem", "roll", _fcMavlinkSystem.roll)
                 //turned off data smoothing because of compass wrapping issue
                 //Behavior on heading {NumberAnimation { duration: settings.smoothing }}
-                heading: _fcMavlinkSystem.hdg
+                heading: previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg)
                 //Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
-                homeHeading: _fcMavlinkSystem.home_heading
+                homeHeading: previewTelemetry("_fcMavlinkSystem", "home_heading", _fcMavlinkSystem.home_heading)
 
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder

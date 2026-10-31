@@ -8,6 +8,7 @@ BaseWidget {
     height: 148
     visible: settings.show_artosyn_debug_widget && settings.show_widgets && is_artosyn_detected()
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "artosyn_debug_widget"
     bw_verbose_name: qsTr("ARTOSYN DEBUG")
     defaultAlignment: 1
@@ -57,20 +58,20 @@ BaseWidget {
     }
 
     function ground_artosyn_detected() {
-        return _ohdSystemGround.artosyn_link_detected
-                || _ohdSystemGround.primary_link_type === 4
-                || _ohdSystemGround.artosyn_debug_stats_available
+        return previewTelemetry("_ohdSystemGround", "artosyn_link_detected", _ohdSystemGround.artosyn_link_detected)
+                || previewTelemetry("_ohdSystemGround", "primary_link_type", _ohdSystemGround.primary_link_type) === 4
+                || previewTelemetry("_ohdSystemGround", "artosyn_debug_stats_available", _ohdSystemGround.artosyn_debug_stats_available)
                 || ground_primary_link_is_artosyn()
-                || _wifi_card_gnd0.card_type_as_string === "ARTOSYN";
+                || previewTelemetry("_wifi_card_gnd0", "card_type_as_string", _wifi_card_gnd0.card_type_as_string) === "ARTOSYN";
     }
 
     function air_artosyn_detected() {
-        return _ohdSystemAir.artosyn_link_detected
-                || _ohdSystemAir.primary_link_type === 4
-                || _ohdSystemAir.artosyn_debug_stats_available
+        return previewTelemetry("_ohdSystemAir", "artosyn_link_detected", _ohdSystemAir.artosyn_link_detected)
+                || previewTelemetry("_ohdSystemAir", "primary_link_type", _ohdSystemAir.primary_link_type) === 4
+                || previewTelemetry("_ohdSystemAir", "artosyn_debug_stats_available", _ohdSystemAir.artosyn_debug_stats_available)
                 || air_primary_link_is_artosyn()
                 || ground_artosyn_detected()
-                || _wifi_card_air.card_type_as_string === "ARTOSYN";
+                || previewTelemetry("_wifi_card_air", "card_type_as_string", _wifi_card_air.card_type_as_string) === "ARTOSYN";
     }
 
     function is_artosyn_detected() {
@@ -86,8 +87,8 @@ BaseWidget {
     }
 
     function link_connected() {
-        return _ohdSystemAir.curr_rx_last_packet_status_good
-                || _ohdSystemGround.curr_rx_last_packet_status_good;
+        return previewTelemetry("_ohdSystemAir", "curr_rx_last_packet_status_good", _ohdSystemAir.curr_rx_last_packet_status_good)
+                || previewTelemetry("_ohdSystemGround", "curr_rx_last_packet_status_good", _ohdSystemGround.curr_rx_last_packet_status_good);
     }
 
     function kbits_to_mbits(valueKbits) {
@@ -278,7 +279,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        opacity: widgetGalleryPreview ? 1 : bw_current_opacity
         scale: bw_current_scale
 
         Rectangle {

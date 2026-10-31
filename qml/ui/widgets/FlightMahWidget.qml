@@ -13,6 +13,7 @@ BaseWidget {
 
     visible: settings.show_flight_mah && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "flight_mah_widget"
     bw_verbose_name: qsTr("MAH (FC CONSUMED)")
 
@@ -47,9 +48,9 @@ BaseWidget {
 
             width: 24
             height: 24
-            clip: true
+            clip: !widgetGalleryPreview
             color: settings.color_shape
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf0e7"
             anchors.right: flight_mah_text.left
             anchors.rightMargin: 6
@@ -67,8 +68,8 @@ BaseWidget {
             height: 24
             clip: false
             color: settings.color_text
-            opacity: bw_current_opacity
-            text:  _fcMavlinkSystem.battery_consumed_mah+ "mAh"
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
+            text:  previewTelemetry("_fcMavlinkSystem", "battery_consumed_mah", _fcMavlinkSystem.battery_consumed_mah)+ "mAh"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter

@@ -19,6 +19,7 @@ BaseWidget {
 
     visible: settings.wb_link_rate_control_widget_show && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "wb_link_rate_control_widget"
     bw_verbose_name: qsTr("WB LIVE RATE CONTROL")
 
@@ -36,14 +37,14 @@ BaseWidget {
     widgetActionWidth: m_widget_action_w
     widgetActionHeight: m_widget_action_h
 
-    property int m_curr_channel_width: _ohdSystemAir.curr_channel_width_mhz
-    property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
-    property int m_curr_bitrate_kbits: _ohdSystemAir.curr_bitrate_kbits
+    property int m_curr_channel_width: previewTelemetry("_ohdSystemAir", "curr_channel_width_mhz", _ohdSystemAir.curr_channel_width_mhz)
+    property int m_curr_mcs_index: previewTelemetry("_ohdSystemAir", "curr_mcs_index", _ohdSystemAir.curr_mcs_index)
+    property int m_curr_bitrate_kbits: previewTelemetry("_ohdSystemAir", "curr_bitrate_kbits", _ohdSystemAir.curr_bitrate_kbits)
 
-    //property int m_curr_fine_adjustments: _ohdSystemAir.curr_n_rate_adjustments
+    //property int m_curr_fine_adjustments: previewTelemetry("_ohdSystemAir", "curr_n_rate_adjustments", _ohdSystemAir.curr_n_rate_adjustments)
 
-    property int m_curr_fec_perc: _cameraStreamModelPrimary.curr_fec_percentage
-    property int m_curr_keyframe_i: _cameraStreamModelPrimary.curr_keyframe_interval
+    property int m_curr_fec_perc: previewTelemetry("_cameraStreamModelPrimary", "curr_fec_percentage", _cameraStreamModelPrimary.curr_fec_percentage)
+    property int m_curr_keyframe_i: previewTelemetry("_cameraStreamModelPrimary", "curr_keyframe_interval", _cameraStreamModelPrimary.curr_keyframe_interval)
 
     //property bool m_is_armed: true
     property bool m_is_armed: _fcMavlinkSystem.armed
@@ -75,19 +76,19 @@ BaseWidget {
             return "";
         }
         var ret="";
-        var curr_channel_mhz = _ohdSystemGround.curr_channel_mhz;
+        var curr_channel_mhz = previewTelemetry("_ohdSystemGround", "curr_channel_mhz", _ohdSystemGround.curr_channel_mhz);
         if(curr_channel_mhz>10){
             ret+=curr_channel_mhz;
         }else{
             ret+=qsTr("Chan N/A");
         }
-        if(_ohdSystemGround.curr_channel_width_mhz==40){
+        if(previewTelemetry("_ohdSystemGround", "curr_channel_width_mhz", _ohdSystemGround.curr_channel_width_mhz)==40){
             ret+= " " + qsTr("40 MHz");
-        }else if(_ohdSystemGround.curr_channel_width_mhz==20){
+        }else if(previewTelemetry("_ohdSystemGround", "curr_channel_width_mhz", _ohdSystemGround.curr_channel_width_mhz)==20){
             ret+= " " + qsTr("20 MHz");
-        }else if(_ohdSystemGround.curr_channel_width_mhz==10){
+        }else if(previewTelemetry("_ohdSystemGround", "curr_channel_width_mhz", _ohdSystemGround.curr_channel_width_mhz)==10){
             ret+= " " + qsTr("10 MHz");
-        }else if(_ohdSystemGround.curr_channel_width_mhz==5){
+        }else if(previewTelemetry("_ohdSystemGround", "curr_channel_width_mhz", _ohdSystemGround.curr_channel_width_mhz)==5){
             ret+= " " + qsTr("5 MHz");
         }else{
             ret += " " + qsTr("N/A");
@@ -491,7 +492,7 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: {
-                    if(_ohdSystemAir.is_alive && _ohdSystemAir.curr_n_rate_adjustments>0){
+                    if(_ohdSystemAir.is_alive && previewTelemetry("_ohdSystemAir", "curr_n_rate_adjustments", _ohdSystemAir.curr_n_rate_adjustments)>0){
                         return "THROTTLED";
                     }
                     return "";

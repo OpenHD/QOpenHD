@@ -19,13 +19,14 @@ BaseWidget {
 
     visible: settings.show_altitude_second && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "altitude_second_widget"
     bw_verbose_name: qsTr("SECOND ALTITUDE")
 
     hasWidgetDetail: true
 
     function get_text_altitude(){
-        var altitude_m=settings.altitude_second_msl_rel ? _fcMavlinkSystem.altitude_msl_m : _fcMavlinkSystem.altitude_rel_m;
+        var altitude_m=settings.altitude_second_msl_rel ? previewTelemetry("_fcMavlinkSystem", "altitude_msl_m", _fcMavlinkSystem.altitude_msl_m) : previewTelemetry("_fcMavlinkSystem", "altitude_rel_m", _fcMavlinkSystem.altitude_rel_m);
         if (settings.enable_imperial || settings.enable_hybrid) altitude_m *= 3.28084;
         return Number(altitude_m).toLocaleString(Qt.locale(), 'f', 0)
     }
@@ -72,7 +73,7 @@ BaseWidget {
         Text {
             id: second_alt_text
             color: settings.color_text
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             font.pixelSize: 14
             font.family: settings.font_text
             anchors.left: widgetGlyph.right
@@ -90,7 +91,7 @@ BaseWidget {
             width: 16
             height: parent.height
             color: settings.color_shape
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: "\uf338"
             anchors.left: parent.left
             anchors.leftMargin: 0

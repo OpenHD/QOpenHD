@@ -18,11 +18,74 @@ BaseWidgetForm {
 
     // Used to uniquely identify persistent settings for this widget. Should only contain lowercase letters and "_" (aka no blank space, extra characters and more)
     property string widgetIdentifier
+    readonly property bool widgetGalleryPreview: typeof hudOverlayGrid !== "undefined" && hudOverlayGrid.widgetGalleryPreviewActive === true
+    // Example telemetry is confined to the hidden gallery drawing. The live
+    // model and saved OSD preferences are never changed.
+    function previewTelemetry(model, key, realValue) {
+        if (!widgetGalleryPreview) return realValue
+        var sample = model === "_fcMavlinkSystem" ? {
+            is_alive:true,armed:false,flight_mode:"MANUAL",roll:0,pitch:0,hdg:85,
+            home_heading:45,home_course:45,home_distance:1200,home_latitude:51.26,home_longitude:7.15,
+            lat:51.27,lon:7.16,altitude_rel_m:120,altitude_msl_m:350,
+            ground_speed_meter_per_second:15,air_speed_meter_per_second:16,speed:54,airspeed:58,
+            vertical_speed_indicator_mps:1.5,aoa:5,vehicle_vx_angle:0,vehicle_vz_angle:0,
+            throttle:58,rc_rssi_percentage:85,satellites_visible:14,gps_fix_type:3,gps_status_fix_type_str:"3D Fix",gps_hdop:0.8,gps_vdop:1.1,
+            battery_voltage_volt:15.4,battery_voltage_single_cell:3.85,battery_percent:72,battery_percent_gauge:72,battery_current_ampere:4.2,
+            battery_consumed_mah:850,battery_consumed_mah_per_km:125,battery_temperature:28,
+            battery_id0_voltage_volt:15.4,battery_id0_current_ampere:4.2,battery_id0_consumed_mah:850,battery_id0_remaining_time_s:540,
+            battery_id1_voltage_volt:15.4,battery_id1_current_ampere:0.4,battery_id1_consumed_mah:250,battery_id1_remaining_time_s:900,
+            flight_time:"00:06:21",flight_distance_m:2400,sys_time_unix_as_str:"14:26:00",sys_time_unix_usec:1700000000000000,
+            imu_temp_degree:42,esc_temp:38,preasure_sensor_temperature_degree:25,preasure_sensor2_temperature_degree:26,preasure_sensor3_temperature_degree:27,airspeed_sensor_temperature_degree:24,
+            distance_sensor_distance_cm:250,vibration_x:4,vibration_y:3,vibration_z:5,wind_speed:3,mav_wind_speed:3,wind_direction:45,mav_wind_direction:45
+        } : model === "_cameraStreamModelPrimary" || model === "_cameraStreamModelSecondary" ? {
+            camera_status:1,camera_type:32,encoding_codec:"H.264",curr_set_and_measured_bitrate_mismatch:0,curr_delta_tx_dropped_frames:0,curr_received_bitrate_with_fec:"11.5 Mbit/s",air_recording_active:false,curr_set_video_format:"1920x1080@60",curr_video_measured_encoder_bitrate:"9.1 Mbit/s",curr_video_injected_bitrate:"11.5 Mbit/s",curr_recomended_video_bitrate_string:"9.1 Mbit/s",
+            curr_fec_percentage:20,curr_keyframe_interval:5,curr_missing_packets_per_second:0,curr_retransmission_packets_per_second:2,curr_retransmission_requests_per_second:1,
+            count_blocks_lost:0,count_blocks_recovered:12,count_fragments_recovered:24,total_n_tx_dropped_frames:0,
+            curr_fec_block_length_min_max_avg:"8 / 12 / 10",curr_fec_decode_time_avg_min_max:"0.2 / 0.1 / 0.4 ms",curr_fec_encode_time_avg_min_max:"0.2 / 0.1 / 0.4 ms",curr_time_until_tx_min_max_avg:"1 / 3 / 2 ms",air_tx_packets_per_second_and_bits_per_second:"1200 pps / 11.5 Mbit/s"
+        } : model.indexOf("_wifi_card_")===0 ? {
+            alive:true,card_type_as_string:"RTL8812AU",devourer_quality_valid:true,devourer_link_health:95,rx_evm_db:-28,rx_snr_antenna1:32,rx_snr_antenna2:31,tx_power:100,tx_power_unit:"%"
+        } : {
+            is_alive:true,curr_cpuload_perc:24,curr_soc_temp_degree:46,ram_usage_perc:32,curr_cpu_freq_mhz:1500,curr_core_freq_mhz:500,curr_h264_freq_mhz:500,curr_isp_freq_mhz:500,curr_v3d_freq_mhz:500,
+            current_rx_rssi:-48,current_rx_signal_quality:95,curr_rx_packet_loss_perc:1,curr_channel_mhz:5745,curr_channel_width_mhz:20,curr_mcs_index:2,curr_bitrate_kbits:11500,received_link_bitrate_bps:11500000,
+            curr_rx_last_packet_status_good:true,radio_temperature_display_text:"42 C",radio_temperature_state:0,radio_temperature_state_text:"Normal",rpi_undervolt_error:false,dbm_too_low_warning:false,
+            ina219_voltage_millivolt:15400,ina219_current_milliamps:450,curr_space_left_mb:8192,count_tx_dropped_packets:0,count_tx_inj_error_hint:0,curr_n_rate_adjustments:0,tx_is_currently_dropping_packets:false,wb_link_curr_foreign_pps:0,
+            rx_packets_per_second_and_bits_per_second:"1200 pps / 11.5 Mbit/s",tx_packets_per_second_and_bits_per_second:"1200 pps / 11.5 Mbit/s",rx_tele_packets_per_second_and_bits_per_second:"25 pps / 18 kbit/s",tx_tele_packets_per_second_and_bits_per_second:"25 pps / 18 kbit/s"
+        }
+        return sample[key] !== undefined ? sample[key] : realValue
+    }
+    property int widgetPreviewRevision: 0
+    function refreshWidgetPreviewBounds() { widgetPreviewRevision++ }
     // Visual extent used by the widget gallery; subclasses may draw beyond their root.
-    property rect widgetPreviewRect: Qt.rect(Math.min(0,width*(1-bw_current_scale)/2), Math.min(0,height*(1-bw_current_scale)/2), width*Math.max(1,bw_current_scale), height*Math.max(1,bw_current_scale))
+    property Item widgetPreviewContent: null
+    property rect widgetPreviewRect: widgetPreviewContent ? previewBoundsForTree(widgetPreviewContent) : Qt.rect(Math.min(0,width*(1-bw_current_scale)/2)-4, Math.min(0,height*(1-bw_current_scale)/2)-4, width*Math.max(1,bw_current_scale)+8, height*Math.max(1,bw_current_scale)+8)
+    function previewBoundsForTree(content) {
+        var revision=widgetPreviewRevision
+        var left=Infinity,top=Infinity,right=-Infinity,bottom=-Infinity
+        function visit(item,depth) {
+            if(!item || depth>12)return
+            var w=item.width||0,h=item.height||0
+            if(item.text!==undefined && item.clip!==true) {
+                w=Math.max(w,item.implicitWidth||0)
+                h=Math.max(h,item.implicitHeight||0)
+            }
+            if(w>0 && h>0) {
+                var points=[item.mapToItem(widgetBase,0,0),item.mapToItem(widgetBase,w,0),item.mapToItem(widgetBase,0,h),item.mapToItem(widgetBase,w,h)]
+                for(var n=0;n<points.length;n++) {
+                    left=Math.min(left,points[n].x);top=Math.min(top,points[n].y)
+                    right=Math.max(right,points[n].x);bottom=Math.max(bottom,points[n].y)
+                }
+            }
+            if(item.clip)return
+            var children=item.children||[]
+            for(var i=0;i<children.length;i++)visit(children[i],depth+1)
+        }
+        visit(content,0)
+        return right>left && bottom>top ? Qt.rect(left-4,top-4,right-left+8,bottom-top+8) : Qt.rect(0,0,width,height)
+    }
     // Include transformed drawings outside the widget's placement rectangle.
     // This is capture metadata only; it never resizes or moves the live widget.
     function previewBoundsFor(item, area, includePlacement) {
+        var revision=widgetPreviewRevision
         var r = area || Qt.rect(0,0,item.width,item.height)
         var points = [item.mapToItem(widgetBase,r.x,r.y), item.mapToItem(widgetBase,r.x+r.width,r.y),
                       item.mapToItem(widgetBase,r.x,r.y+r.height), item.mapToItem(widgetBase,r.x+r.width,r.y+r.height)]

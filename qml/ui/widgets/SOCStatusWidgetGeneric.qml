@@ -12,34 +12,35 @@ BaseWidget {
 
     visible: settings.show_air_status && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "air_status_widget"
     bw_verbose_name: qsTr("CPU LOAD AIR")
 
     property bool m_is_air: false
 
     // Functionality between air and air widget is really similar - this helps reducing code bloat a bit
-    property int m_cpuload_perc:  m_is_air ? _ohdSystemAir.curr_cpuload_perc : _ohdSystemGround.curr_cpuload_perc;
+    property int m_cpuload_perc:  m_is_air ? previewTelemetry("_ohdSystemAir", "curr_cpuload_perc", _ohdSystemAir.curr_cpuload_perc) : previewTelemetry("_ohdSystemGround", "curr_cpuload_perc", _ohdSystemGround.curr_cpuload_perc);
     property int m_cpuload_perc_warn: m_is_air ? settings.air_status_cpu_warn : settings.ground_status_cpu_warn;
     property int m_cpuload_perc_caution: m_is_air ? settings.air_status_cpu_caution :  settings.ground_status_cpu_caution
 
-    property int m_soc_temperature_deg: m_is_air ? _ohdSystemAir.curr_soc_temp_degree : _ohdSystemGround.curr_soc_temp_degree
+    property int m_soc_temperature_deg: m_is_air ? previewTelemetry("_ohdSystemAir", "curr_soc_temp_degree", _ohdSystemAir.curr_soc_temp_degree) : previewTelemetry("_ohdSystemGround", "curr_soc_temp_degree", _ohdSystemGround.curr_soc_temp_degree)
     property int m_soc_temperature_deg_warn: m_is_air ? settings.air_status_temp_warn : settings.ground_status_temp_warn
     property int m_soc_temperature_deg_caution: m_is_air ? settings.air_status_temp_caution : settings.ground_status_temp_caution
 
     // These do not need warning level(s) and are hidden in the action popup
-    property int m_curr_cpu_freq_mhz: m_is_air ?_ohdSystemAir.curr_cpu_freq_mhz : _ohdSystemGround.curr_cpu_freq_mhz
-    property int m_curr_isp_freq_mhz: m_is_air ?_ohdSystemAir.curr_isp_freq_mhz : _ohdSystemGround.curr_isp_freq_mhz
-    property int m_curr_h264_freq_mhz : m_is_air ?_ohdSystemAir.curr_h264_freq_mhz : _ohdSystemGround.curr_h264_freq_mhz
-    property int m_curr_core_freq_mhz : m_is_air ?_ohdSystemAir.curr_core_freq_mhz : _ohdSystemGround.curr_core_freq_mhz
-    property int m_curr_v3d_freq_mhz : m_is_air ?_ohdSystemAir.curr_v3d_freq_mhz : _ohdSystemGround.curr_v3d_freq_mhz
-    property int m_ram_usage_perc  : m_is_air ?_ohdSystemAir.ram_usage_perc : _ohdSystemGround.ram_usage_perc
-    property bool m_rpi_undervolt_error: m_is_air ?_ohdSystemAir.rpi_undervolt_error : _ohdSystemGround.rpi_undervolt_error
+    property int m_curr_cpu_freq_mhz: m_is_air ?previewTelemetry("_ohdSystemAir", "curr_cpu_freq_mhz", _ohdSystemAir.curr_cpu_freq_mhz) : previewTelemetry("_ohdSystemGround", "curr_cpu_freq_mhz", _ohdSystemGround.curr_cpu_freq_mhz)
+    property int m_curr_isp_freq_mhz: m_is_air ?previewTelemetry("_ohdSystemAir", "curr_isp_freq_mhz", _ohdSystemAir.curr_isp_freq_mhz) : previewTelemetry("_ohdSystemGround", "curr_isp_freq_mhz", _ohdSystemGround.curr_isp_freq_mhz)
+    property int m_curr_h264_freq_mhz : m_is_air ?previewTelemetry("_ohdSystemAir", "curr_h264_freq_mhz", _ohdSystemAir.curr_h264_freq_mhz) : previewTelemetry("_ohdSystemGround", "curr_h264_freq_mhz", _ohdSystemGround.curr_h264_freq_mhz)
+    property int m_curr_core_freq_mhz : m_is_air ?previewTelemetry("_ohdSystemAir", "curr_core_freq_mhz", _ohdSystemAir.curr_core_freq_mhz) : previewTelemetry("_ohdSystemGround", "curr_core_freq_mhz", _ohdSystemGround.curr_core_freq_mhz)
+    property int m_curr_v3d_freq_mhz : m_is_air ?previewTelemetry("_ohdSystemAir", "curr_v3d_freq_mhz", _ohdSystemAir.curr_v3d_freq_mhz) : previewTelemetry("_ohdSystemGround", "curr_v3d_freq_mhz", _ohdSystemGround.curr_v3d_freq_mhz)
+    property int m_ram_usage_perc  : m_is_air ?previewTelemetry("_ohdSystemAir", "ram_usage_perc", _ohdSystemAir.ram_usage_perc) : previewTelemetry("_ohdSystemGround", "ram_usage_perc", _ohdSystemGround.ram_usage_perc)
+    property bool m_rpi_undervolt_error: m_is_air ?previewTelemetry("_ohdSystemAir", "rpi_undervolt_error", _ohdSystemAir.rpi_undervolt_error) : previewTelemetry("_ohdSystemGround", "rpi_undervolt_error", _ohdSystemGround.rpi_undervolt_error)
 
     // 0 - no warning
     // 1 - caution
     // 2 - warning
     function get_cpuload_warning_level(){
-        if(m_is_air && _ohdSystemAir.ohd_platform_type==30){
+        if(m_is_air && previewTelemetry("_ohdSystemAir", "ohd_platform_type", _ohdSystemAir.ohd_platform_type)==30){
             // X20
             if(m_cpuload_perc>=95){
                 return 2;
@@ -58,7 +59,7 @@ BaseWidget {
         return 0;
     }
     function get_temperature_warning_level(){
-        if(m_is_air && _ohdSystemAir.ohd_platform_type==30){
+        if(m_is_air && previewTelemetry("_ohdSystemAir", "ohd_platform_type", _ohdSystemAir.ohd_platform_type)==30){
             // X20, it's not the SOC temperature
             if (m_soc_temperature_deg>= 79-1) {
                 return 2;
@@ -423,7 +424,7 @@ BaseWidget {
                 var level=get_highest_warning_level();
                 return warning_level_to_color(level)
             }
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: m_is_air ? "\uf2db" : "\uF2DA"
             anchors.right: cpuload_air.left
             anchors.rightMargin: 2
@@ -440,7 +441,7 @@ BaseWidget {
             id: undervolt_error
             width: 24
             height: 24
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             //text: "X"
             text: String.fromCodePoint(0xf0e7)+"!"
             anchors.right: chip_icon.left
@@ -470,7 +471,7 @@ BaseWidget {
                 var level=get_cpuload_warning_level();
                 return warning_level_to_color(level)
             }
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: Number(m_cpuload_perc).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
             anchors.verticalCenter: parent.verticalCenter
@@ -494,7 +495,7 @@ BaseWidget {
                 var level=get_temperature_warning_level()
                 return warning_level_to_color(level)
             }
-            opacity: bw_current_opacity
+            opacity: widgetGalleryPreview ? 1 : bw_current_opacity
             text: Number(m_soc_temperature_deg).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter

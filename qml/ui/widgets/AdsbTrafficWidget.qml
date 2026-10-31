@@ -36,13 +36,13 @@ BaseWidget {
     readonly property color lineColor: "#334657"
     readonly property color textColor: settings.color_text
     readonly property string textFontFamily: settings.font_text
-    readonly property bool gpsReady: _fcMavlinkSystem.gps_fix_type >= 2
-                                     && !(_fcMavlinkSystem.lat === 0.0
-                                          && _fcMavlinkSystem.lon === 0.0)
+    readonly property bool gpsReady: previewTelemetry("_fcMavlinkSystem", "gps_fix_type", _fcMavlinkSystem.gps_fix_type) >= 2
+                                     && !(previewTelemetry("_fcMavlinkSystem", "lat", _fcMavlinkSystem.lat) === 0.0
+                                          && previewTelemetry("_fcMavlinkSystem", "lon", _fcMavlinkSystem.lon) === 0.0)
     readonly property bool positionReady: applicationWindow.referencePositionValid
     readonly property real referenceLatitude: applicationWindow.referenceLatitude
     readonly property real referenceLongitude: applicationWindow.referenceLongitude
-    readonly property real ownAltitude: _fcMavlinkSystem.altitude_msl_m
+    readonly property real ownAltitude: previewTelemetry("_fcMavlinkSystem", "altitude_msl_m", _fcMavlinkSystem.altitude_msl_m)
 
     property var displayedAircraft: []
     property var selectedAircraft: null
@@ -151,7 +151,7 @@ BaseWidget {
                                vehicle.lat, vehicle.lon)
         if (!validNumber(absolute)) return NaN
         // Without an FC heading, the rough fallback radar is north-up.
-        var heading = gpsReady ? _fcMavlinkSystem.hdg : 0
+        var heading = gpsReady ? previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg) : 0
         return (absolute - heading + 360) % 360
     }
 
@@ -506,7 +506,7 @@ BaseWidget {
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.top: parent.top
-                                text: qsTr("HDG") + " " + Math.round(_fcMavlinkSystem.hdg) + " deg"
+                                text: qsTr("HDG") + " " + Math.round(previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg)) + " deg"
                                 color: root.mutedColor
                                 font.bold: true
                                 font.pixelSize: 10
@@ -545,7 +545,7 @@ BaseWidget {
                                         font.family: "Font Awesome 5 Free"
                                         font.pixelSize: 10
                                         rotation: root.validNumber(modelData.heading)
-                                                  ? modelData.heading - _fcMavlinkSystem.hdg : 0
+                                                  ? modelData.heading - previewTelemetry("_fcMavlinkSystem", "hdg", _fcMavlinkSystem.hdg) : 0
                                     }
                                     MouseArea {
                                         anchors.fill: parent

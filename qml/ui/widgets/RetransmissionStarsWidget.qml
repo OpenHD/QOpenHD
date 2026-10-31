@@ -30,9 +30,9 @@ BaseWidget {
     property var m_param_ids: ["WB_ENABLE_RETRA", "WB_RTX_VIDEO"]
     property bool m_retransmission_enabled: false
     property int m_update_count: _ohdSystemAirSettingsModel.update_count
-    property int m_missing_per_second: _cameraStreamModelPrimary.curr_missing_packets_per_second
-    property int m_requests_per_second: _cameraStreamModelPrimary.curr_retransmission_requests_per_second
-    property int m_fixed_per_second: _cameraStreamModelPrimary.curr_retransmission_packets_per_second
+    property int m_missing_per_second: previewTelemetry("_cameraStreamModelPrimary", "curr_missing_packets_per_second", _cameraStreamModelPrimary.curr_missing_packets_per_second)
+    property int m_requests_per_second: previewTelemetry("_cameraStreamModelPrimary", "curr_retransmission_requests_per_second", _cameraStreamModelPrimary.curr_retransmission_requests_per_second)
+    property int m_fixed_per_second: previewTelemetry("_cameraStreamModelPrimary", "curr_retransmission_packets_per_second", _cameraStreamModelPrimary.curr_retransmission_packets_per_second)
 
     function update_state(){
         if(!_ohdSystemAirSettingsModel.has_params_fetched){

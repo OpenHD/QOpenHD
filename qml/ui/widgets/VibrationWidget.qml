@@ -20,6 +20,7 @@ BaseWidget {
 
     visible: settings.show_vibration && settings.show_widgets
 
+    widgetPreviewContent: widgetInner
     widgetIdentifier: "vibration_widget"
     bw_verbose_name: qsTr("VIBRATION")
 
@@ -60,7 +61,7 @@ BaseWidget {
                 Shape {
                     id: x_outline
                     anchors.fill: parent
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
                     ShapePath {
                         strokeColor: settings.color_glow
@@ -68,12 +69,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (_fcMavlinkSystem.vibration_x
-                                       > 0 ? _fcMavlinkSystem.vibration_x * -1 : _fcMavlinkSystem.vibration_x) * .4)
+                        startY: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x)
+                                       > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x)) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (_fcMavlinkSystem.vibration_x
-                                      > 0 ? _fcMavlinkSystem.vibration_x * -1 : _fcMavlinkSystem.vibration_x) * .4)
+                            y: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x)
+                                      > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x)) * .4)
                         }
                         PathLine {
                             x: 10
@@ -85,8 +86,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (_fcMavlinkSystem.vibration_x
-                                      > 0 ? _fcMavlinkSystem.vibration_x * -1 : _fcMavlinkSystem.vibration_x) * .4)
+                            y: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x)
+                                      > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_x", _fcMavlinkSystem.vibration_x)) * .4)
                         }
                     }
 
@@ -119,7 +120,7 @@ BaseWidget {
                     id: x_text
 
                     color: settings.color_text
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -145,7 +146,7 @@ BaseWidget {
                 Shape {
                     id: y_outline
                     anchors.fill: parent
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
                     ShapePath {
                         strokeColor: settings.color_glow
@@ -153,12 +154,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (_fcMavlinkSystem.vibration_y
-                                       > 0 ? _fcMavlinkSystem.vibration_y * -1 : _fcMavlinkSystem.vibration_y) * .4)
+                        startY: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y)
+                                       > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y)) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (_fcMavlinkSystem.vibration_y
-                                      > 0 ? _fcMavlinkSystem.vibration_y * -1 : _fcMavlinkSystem.vibration_y) * .4)
+                            y: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y)
+                                      > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y)) * .4)
                         }
                         PathLine {
                             x: 10
@@ -170,8 +171,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (_fcMavlinkSystem.vibration_y
-                                      > 0 ? _fcMavlinkSystem.vibration_y * -1 : _fcMavlinkSystem.vibration_y) * .4)
+                            y: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y)
+                                      > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_y", _fcMavlinkSystem.vibration_y)) * .4)
                         }
                     }
                     ShapePath {
@@ -203,7 +204,7 @@ BaseWidget {
                     id: y_text
 
                     color: settings.color_text
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -229,7 +230,7 @@ BaseWidget {
                 Shape {
                     id: z_outline
                     anchors.fill: parent
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
 
                     ShapePath {
                         strokeColor: settings.color_glow
@@ -237,12 +238,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (_fcMavlinkSystem.vibration_z
-                                       > 0 ? _fcMavlinkSystem.vibration_z * -1 : _fcMavlinkSystem.vibration_z) * .4)
+                        startY: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z)
+                                       > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z)) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (_fcMavlinkSystem.vibration_z
-                                      > 0 ? _fcMavlinkSystem.vibration_z * -1 : _fcMavlinkSystem.vibration_z) * .4)
+                            y: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z)
+                                      > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z)) * .4)
                         }
                         PathLine {
                             x: 10
@@ -254,8 +255,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (_fcMavlinkSystem.vibration_z
-                                      > 0 ? _fcMavlinkSystem.vibration_z * -1 : _fcMavlinkSystem.vibration_z) * .4)
+                            y: (40 + (previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z)
+                                      > 0 ? previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z) * -1 : previewTelemetry("_fcMavlinkSystem", "vibration_z", _fcMavlinkSystem.vibration_z)) * .4)
                         }
                     }
                     ShapePath {
@@ -287,7 +288,7 @@ BaseWidget {
                     id: z_text
 
                     color: settings.color_text
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -314,7 +315,7 @@ BaseWidget {
                     id: sixty_text
 
                     color: settings.color_text
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -334,7 +335,7 @@ BaseWidget {
                     id: thirty_text
 
                     color: settings.color_text
-                    opacity: bw_current_opacity
+                    opacity: widgetGalleryPreview ? 1 : bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
