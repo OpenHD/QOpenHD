@@ -33,7 +33,9 @@ Settings {
         // Reconfirm camera presence for this session rather than showing a saved empty widget.
         dev_qopenhd_n_cameras = 1
     }
-    readonly property bool secondary_camera_available: dev_qopenhd_n_cameras > 1 && _ohdSystemAir.is_alive && _cameraStreamModelSecondary.camera_status === 1
+    // Camera availability starts the decoder; it must not depend on the Air
+    // pipeline already reporting "streaming" (older backends can report unknown).
+    readonly property bool secondary_camera_available: dev_qopenhd_n_cameras > 1 && _ohdSystemAir.is_alive
 
     // Inside QOpenHD, swap primary and secondary camera - on platforms that only are capable of showing one video stream,
     // this can be used to switch between 2 different video feeds
