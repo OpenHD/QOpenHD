@@ -14,7 +14,7 @@ Rectangle {
     readonly property bool ethernet: linkKind === "ethernet"
     readonly property int linkSwitchRevision: _ohdSystemGroundSettings.update_count
     readonly property bool linkSwitchAvailable: ethernet && linkSwitchRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("ETH_LINK_EN")
-    readonly property bool linkRoutingEnabled: !linkSwitchAvailable || _ohdSystemGroundSettings.get_cached_int("ETH_LINK_EN") !== 0
+    readonly property bool linkRoutingEnabled: linkSwitchRevision >= 0 && (ethernet && host && typeof host.linkRouted === "function" ? host.linkRouted("ethernet") : !linkSwitchAvailable || _ohdSystemGroundSettings.get_cached_int("ETH_LINK_EN") !== 0)
     readonly property string title: ethernet ? qsTr("Ethernet Link") : qsTr("UART Link")
     readonly property string icon: ethernet ? "\uf796" : "\uf120"
     readonly property var usage: host ? host.usageFor(linkKind) : null

@@ -36,6 +36,8 @@ Rectangle {
                                    hasReportedUsage(6)
     property int linkRevision: _ohdSystemGround.primary_link_type + _ohdSystemAir.primary_link_type +
                                _ohdSystemGroundSettings.update_count +
+                               _ohdSystemAirSettingsModel.update_count +
+                               (_ohdSystemGround.is_alive ? 2048 : 0) + (_ohdSystemAir.is_alive ? 4096 : 0) +
                                _ohdSystemGround.microhard_enabled + _ohdSystemAir.microhard_enabled +
                                (_ohdSystemGround.artosyn_link_detected ? 10 : 0) +
                                (_ohdSystemAir.artosyn_link_detected ? 20 : 0) +
@@ -90,16 +92,37 @@ Rectangle {
         }
     }
 
+    function primaryLinkActive(id) {
+        return (_ohdSystemGround.is_alive && _ohdSystemGround.primary_link_type === id) ||
+               (_ohdSystemAir.is_alive && _ohdSystemAir.primary_link_type === id)
+    }
+    function primaryLinkKnown() {
+        return (_ohdSystemGround.is_alive && _ohdSystemGround.primary_link_type > 0) ||
+               (_ohdSystemAir.is_alive && _ohdSystemAir.primary_link_type > 0)
+    }
+    function linkRouted(kind) {
+        var id = kind === "wifi" ? 1 : 2
+        var param = kind === "wifi" ? "WFB_LINK_EN" : "ETH_LINK_EN"
+        if (bothMultiEnabled && _ohdSystemGroundSettings.param_int_exists(param))
+            return _ohdSystemGroundSettings.get_cached_int(param) === 1
+        if (primaryLinkActive(id)) return true
+        if (!bothMultiEnabled && primaryLinkKnown()) return false
+        if (_ohdSystemGroundSettings.param_int_exists(param))
+            return _ohdSystemGroundSettings.get_cached_int(param) === 1
+        return hasReportedUsage(id)
+    }
     function wifiActive() {
         if (simulatedSystem) return hasReportedUsage(1)
-        if (_ohdSystemGroundSettings.param_int_exists("WFB_LINK_EN")) return true
         if (settings.dev_simulate_wifibroadcast_link) return true
+        if (primaryLinkActive(1)) return true
         if (hasReportedUsage(1)) return true
+        // Parameters and card models can still describe the previous backend
+        // session after its transport changes. Live link telemetry wins.
+        if (!bothMultiEnabled && primaryLinkKnown()) return false
+        if (_ohdSystemGroundSettings.param_int_exists("WFB_LINK_EN")) return true
         var card = (_wifi_card_gnd0.alive && _wifi_card_gnd0.card_type_as_string !== "ARTOSYN") ||
                    (_wifi_card_air.alive && _wifi_card_air.card_type_as_string !== "ARTOSYN")
-        return card || ((_ohdSystemGround.is_alive || _ohdSystemAir.is_alive) &&
-                        !_ohdSystemGround.artosyn_link_detected && !_ohdSystemAir.artosyn_link_detected &&
-                        _ohdSystemGround.microhard_enabled <= 0 && _ohdSystemAir.microhard_enabled <= 0)
+        return card
     }
     function hasReportedUsage(id) {
         for (var i = 0; i < reportedUsage.length; ++i)
@@ -163,11 +186,11 @@ Rectangle {
     function ethernetActive() {
         if (simulatedSystem) return hasReportedUsage(2)
         if (settings.dev_simulate_ethernet_link) return true
+        if (primaryLinkActive(2) || hasReportedUsage(2)) return true
         if (_ohdSystemGroundSettings.param_int_exists("ETH_LINK_EN"))
             return _ohdSystemGroundSettings.get_cached_int("ETH_LINK_EN") === 1
         // Older units report enabled transports through usage/primary-link telemetry.
-        return hasReportedUsage(2) || _ohdSystemGround.primary_link_type === 2 ||
-               _ohdSystemAir.primary_link_type === 2
+        return false
     }
     function uartActive() { if (simulatedSystem) return hasReportedUsage(3); return settings.dev_simulate_uart_link || hasReportedUsage(3) }
     function artosynActive() {

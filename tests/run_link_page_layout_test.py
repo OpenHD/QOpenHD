@@ -55,8 +55,11 @@ Item {
         property int update_count: 0
         property bool has_params_fetched: false
         property bool ui_is_busy: false
-        function param_int_exists(id) { return id === "WFB_LINK_EN" }
-        function get_cached_int(id) { return 0 }
+        property bool staleEthernet: false
+        property bool multi: false
+        property int ethernetValue: 0
+        function param_int_exists(id) { return id === "WFB_LINK_EN" || (staleEthernet && id === "ETH_LINK_EN") || (multi && id === "MULTI_LINK_EN") }
+        function get_cached_int(id) { return id === "WFB_LINK_EN" || id === "MULTI_LINK_EN" ? 1 : ethernetValue }
     }
     property var _ohdSystemGroundSettings: _ohdSystemAirSettingsModel
     QtObject { id: _wbLinkSettingsHelper; property int ui_rebuild_models: 0; property int curr_channel_mhz: 5805 }
@@ -82,6 +85,42 @@ Item {
             for(var j=0;j<kinds.length;j++) compare(page.linkVisible(kinds[j]),true,kinds[j])
             _qopenhd.debugMenuPreview=false
             settings.dev_show_link_routing=false
+        }
+        function test_live_ethernet_overrides_cached_wifi() {
+            settings_form.showDeveloperSettings=false
+            _ohdSystemAirSettingsModel.staleEthernet=true
+            _ohdSystemAirSettingsModel.update_count++
+            _ohdSystemAir.is_alive=true
+            _ohdSystemAir.primary_link_type=2
+            _ohdSystemAir.link_usage=[{id:2,total_bps:13000000,capacity_bps:1000000000,categories:[]}]
+            wait(60)
+            compare(page.wifiActive(),false)
+            compare(page.ethernetActive(),true)
+            compare(page.linkRouted("wifi"),false)
+            compare(page.linkRouted("ethernet"),true)
+            var cards=findChild(page,"linkTransportCards")
+            compare(cards.children[0].loadedCard.objectName,"testSimulatedLinkCard")
+            compare(page.showIndividualLinkUsage,false)
+            _ohdSystemAir.link_usage=[]
+            compare(page.ethernetActive(),true)
+            _ohdSystemAir.primary_link_type=1
+            compare(page.wifiActive(),true)
+            compare(page.ethernetActive(),false)
+            _ohdSystemAirSettingsModel.multi=true
+            _ohdSystemAirSettingsModel.ethernetValue=1
+            _ohdSystemAirSettingsModel.update_count++
+            compare(page.bothMultiEnabled,true)
+            compare(page.linkRouted("ethernet"),true)
+            compare(page.ethernetActive(),true)
+            _ohdSystemAirSettingsModel.ethernetValue=0
+            _ohdSystemAir.primary_link_type=2
+            compare(page.linkRouted("ethernet"),false)
+            _ohdSystemAirSettingsModel.multi=false
+            _ohdSystemAirSettingsModel.staleEthernet=false
+            _ohdSystemAirSettingsModel.update_count++
+            _ohdSystemAir.is_alive=false
+            _ohdSystemAir.primary_link_type=0
+            settings_form.showDeveloperSettings=true
         }
         function test_normal_wifibroadcast_usage() {
             settings_form.showDeveloperSettings=false

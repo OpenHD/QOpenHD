@@ -46,7 +46,7 @@ Rectangle {
     property bool groundSystemAlive: _ohdSystemGround.is_alive
     readonly property int linkSwitchRevision: _ohdSystemGroundSettings.update_count
     readonly property bool linkSwitchAvailable: linkSwitchRevision >= 0 && _ohdSystemGroundSettings.param_int_exists("WFB_LINK_EN")
-    readonly property bool linkRoutingEnabled: !linkSwitchAvailable || _ohdSystemGroundSettings.get_cached_int("WFB_LINK_EN") !== 0
+    readonly property bool linkRoutingEnabled: linkSwitchRevision >= 0 && (host ? host.linkRouted("wifi") : linkSwitchAvailable && _ohdSystemGroundSettings.get_cached_int("WFB_LINK_EN") === 1)
 
     function ensureLinkParametersFetched() {
         if (_ohdSystemAirSettingsModel.system_is_alive()
