@@ -5,6 +5,7 @@ items so this checks decoder creation without requiring hardware or OpenHD types
 """
 import argparse
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -36,9 +37,23 @@ Item {
     fixture = (ROOT / "tests/camera_autodetection/tst_camera_autodetection.qml").read_text(encoding="utf-8")
     fixture = fixture.replace('"../../qml/ui/elements"', '"' + (ROOT / 'qml/ui/elements').as_uri() + '"')
     fixture = fixture.replace("TEST_SETTINGS_FILE", (folder / "settings.ini").as_posix())
-    (folder / "tst_camera_autodetection.qml").write_text(fixture, encoding="utf-8")
     env = dict(os.environ, QT_QUICK_BACKEND="software", QT_FORCE_STDERR_LOGGING="1")
     env["PATH"] = str(args.qt_bin.resolve()) + os.pathsep + env.get("PATH", "")
-    result = subprocess.run([str(args.qt_bin / "qmltestrunner.exe"), "-input", str(folder)],
-                            cwd=ROOT, env=env, timeout=60)
-    raise SystemExit(result.returncode)
+    # Exercise the wiring delivered by both startup UIs. The old harness
+    # instantiated the timer itself, so it could pass while PiFlightContent
+    # never created camera detection on the actual device.
+    for entrypoint in ("main.qml", "PiFlightContent.qml"):
+        entry = (ROOT / "qml" / entrypoint).read_text(encoding="utf-8")
+        detection = re.search(r"\bCameraAutoDetection\s*\{[^}]*\}", entry)
+        if detection is None:
+            raise SystemExit(f"{entrypoint}: camera detection is missing from the startup UI")
+        production = "Elements." + detection.group(0).replace("{", "{ id: detection;", 1)
+        current = fixture.replace(
+            "Elements.CameraAutoDetection { id: detection; settingsObject: settings }", production)
+        current = current.replace('name: "CameraAutodetection"',
+                                  'name: "CameraAutodetection_' + Path(entrypoint).stem + '"')
+        (folder / "tst_camera_autodetection.qml").write_text(current, encoding="utf-8")
+        result = subprocess.run([str(args.qt_bin / "qmltestrunner.exe"), "-input", str(folder)],
+                                cwd=ROOT, env=env, timeout=60)
+        if result.returncode:
+            raise SystemExit(result.returncode)

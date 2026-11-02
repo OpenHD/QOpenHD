@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import "SystemHealth.js" as SystemHealth
 
 Column {
     id: body
@@ -36,11 +37,9 @@ Column {
     readonly property int temperatureCaution: x20 ? 74 : (m_is_ground ? settings.ground_status_temp_caution : settings.air_status_temp_caution)
     readonly property int cpuWarn: x20 ? 95 : (m_is_ground ? settings.ground_status_cpu_warn : settings.air_status_cpu_warn)
     readonly property int cpuCaution: x20 ? 85 : (m_is_ground ? settings.ground_status_cpu_caution : settings.air_status_cpu_caution)
-    readonly property bool healthWarning: (hasTemperature && temperature >= temperatureWarn)
-                                         || (hasCpuLoad && cpuLoad >= cpuWarn)
-                                         || (m_is_alive && m_model.rpi_undervolt_error)
-    readonly property bool healthCaution: (hasTemperature && temperature >= temperatureCaution)
-                                         || (hasCpuLoad && cpuLoad >= cpuCaution)
+    readonly property var health: SystemHealth.evaluate(m_model, m_is_ground, settings)
+    readonly property bool healthWarning: health.severity === 2
+    readonly property bool healthCaution: health.severity === 1
 
     function get_gnd_active_cards(){
         var ret=0;
@@ -84,7 +83,7 @@ Column {
         return settings_primary_link_is_artosyn(_ohdSystemAirSettingsModel, m_air_settings_update_count);
     }
 
-    readonly property bool healthKnown: hasTemperature || hasCpuLoad || (m_is_alive && m_model.rpi_undervolt_error)
+    readonly property bool healthKnown: health.known
     readonly property string healthText: !healthKnown ? qsTr("Not reported") : (healthWarning ? qsTr("Warning") : (healthCaution ? qsTr("Caution") : qsTr("Healthy")))
     readonly property color healthColor: !healthKnown ? "#94a9b9" : (healthWarning ? settings_form.errorColor : (healthCaution ? settings.color_caution : "#3bda69"))
     function linkText() {

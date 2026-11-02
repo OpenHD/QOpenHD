@@ -11,6 +11,9 @@
 #include <QSGMaterial>
 #include <QSGMaterialShader>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QOpenGLBuffer>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLVertexArrayObject>
 #include <QSGSimpleTextureNode>
 #include <QSGTexture>
 #endif
@@ -77,6 +80,9 @@ struct VideoMaterial : QSGMaterial {
         EGLDisplay display = EGL_NO_DISPLAY;
         EGLSyncKHR fence = EGL_NO_SYNC_KHR;
         std::shared_ptr<DecodedFrame> frame;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        std::unique_ptr<QOpenGLFramebufferObject> rgba;
+#endif
         ~Texture() {
             auto& api = imageApi();
             if (fence != EGL_NO_SYNC_KHR) {
@@ -99,6 +105,66 @@ struct VideoMaterial : QSGMaterial {
     };
     std::unique_ptr<Texture> current;
     std::deque<std::unique_ptr<Texture>> retired;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QOpenGLShaderProgram conversion;
+    QOpenGLBuffer vertices{QOpenGLBuffer::VertexBuffer};
+    QOpenGLVertexArrayObject vertexArray;
+    bool convertToRgba(Texture& texture) {
+        // Import NV12 with samplerExternalOES, then give Qt's RHI image
+        // material an ordinary RGBA texture. Keep both textures and the
+        // decoder lease alive until the final scene-graph draw completes.
+        if (!conversion.isLinked()) {
+            const char* vertex =
+                "attribute highp vec2 position; attribute highp vec2 texcoord;"
+                "varying highp vec2 uv;"
+                "void main(){uv=texcoord;gl_Position=vec4(position,0.0,1.0);}";
+            const char* fragment =
+                "#extension GL_OES_EGL_image_external : require\n"
+                "precision mediump float; uniform samplerExternalOES video;"
+                "varying highp vec2 uv;"
+                "void main(){gl_FragColor=vec4(texture2D(video,uv).rgb,1.0);}";
+            if (!conversion.addShaderFromSourceCode(QOpenGLShader::Vertex, vertex) ||
+                !conversion.addShaderFromSourceCode(QOpenGLShader::Fragment, fragment)) {
+                qWarning() << "Native video RGBA shader:" << conversion.log();
+                return false;
+            }
+            conversion.bindAttributeLocation("position", 0);
+            conversion.bindAttributeLocation("texcoord", 1);
+            if (!conversion.link() || !vertices.create()) return false;
+            vertexArray.create(); // Optional on older GLES 2 board drivers.
+            const GLfloat quad[] = {-1,-1,0,0, 1,-1,1,0, -1,1,0,1, 1,1,1,1};
+            vertices.bind();
+            vertices.allocate(quad, sizeof(quad));
+            vertices.release();
+        }
+        const auto& frame = *texture.frame;
+        texture.rgba = std::make_unique<QOpenGLFramebufferObject>(
+            QSize(int(frame.paddedWidth), int(frame.paddedHeight)));
+        if (!texture.rgba->isValid()) return false;
+        auto f = QOpenGLContext::currentContext()->functions();
+        GLint framebuffer = 0, viewport[4];
+        f->glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer);
+        f->glGetIntegerv(GL_VIEWPORT, viewport);
+        texture.rgba->bind();
+        f->glViewport(0, 0, int(frame.paddedWidth), int(frame.paddedHeight));
+        f->glDisable(GL_BLEND); f->glDisable(GL_DEPTH_TEST); f->glDisable(GL_SCISSOR_TEST);
+        conversion.bind(); conversion.setUniformValue("video", 0);
+        f->glActiveTexture(GL_TEXTURE0); f->glBindTexture(ExternalTexture, texture.texture);
+        if (vertexArray.isCreated()) vertexArray.bind();
+        vertices.bind();
+        conversion.enableAttributeArray(0); conversion.enableAttributeArray(1);
+        conversion.setAttributeBuffer(0, GL_FLOAT, 0, 2, 4*sizeof(GLfloat));
+        conversion.setAttributeBuffer(1, GL_FLOAT, 2*sizeof(GLfloat), 2, 4*sizeof(GLfloat));
+        f->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        if (vertexArray.isCreated()) vertexArray.release();
+        else {conversion.disableAttributeArray(0);conversion.disableAttributeArray(1);}
+        vertices.release();
+        conversion.release();
+        f->glBindFramebuffer(GL_FRAMEBUFFER, GLuint(framebuffer));
+        f->glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+        return f->glGetError() == GL_NO_ERROR;
+    }
+#endif
     VideoMaterial() { setFlag(Blending); }
     QSGMaterialType* type() const override { static QSGMaterialType type; return &type; }
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -159,6 +225,9 @@ struct VideoMaterial : QSGMaterial {
         f->glTexParameteri(ExternalTexture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         api.target(ExternalTexture, candidate->image);
         if (f->glGetError() != GL_NO_ERROR) return false;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        if (!convertToRgba(*candidate)) return false;
+#endif
         if (current) {
             if (current->fence != EGL_NO_SYNC_KHR) retired.push_back(std::move(current));
             else current.reset(); // Safe synchronous fallback when fences are unavailable.
@@ -202,8 +271,8 @@ struct VideoNode : QSGSimpleTextureNode {
     void updateTexture(QQuickWindow* window) {
         auto* previous = texture();
         const auto& current = *material.current;
-        setTexture(QNativeInterface::QSGOpenGLTexture::fromNativeExternalOES(
-            current.texture, window, QSize(int(current.frame->paddedWidth), int(current.frame->paddedHeight))));
+        setTexture(QNativeInterface::QSGOpenGLTexture::fromNative(
+            current.rgba->texture(), window, QSize(int(current.frame->paddedWidth), int(current.frame->paddedHeight))));
         delete previous;
     }
 };
@@ -332,7 +401,14 @@ QSGNode* NxpVideoItem::updatePaintNode(QSGNode* old, UpdatePaintNodeData*) {
     if (!node) node = new VideoNode(window());
     if (next) {
         bool updated = false;
-        if (!node->material.import(std::move(next), updated)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        window()->beginExternalCommands();
+#endif
+        const bool imported = node->material.import(std::move(next), updated);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        window()->endExternalCommands();
+#endif
+        if (!imported) {
             qWarning() << "Native secondary NV12 EGL import failed";
             delete node; return nullptr;
         }

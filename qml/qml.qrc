@@ -204,6 +204,7 @@
         <file>ui/configpopup/status/DeferredStatusDialog.qml</file>
         <file>ui/configpopup/status/UnitDetailsDialog.qml</file>
         <file>ui/configpopup/status/GroundStationDetails.qml</file>
+        <file>ui/configpopup/status/SystemHealth.js</file>
         <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
         <file>ui/configpopup/status/CraftDetailsPanel.qml</file>
         <file>ui/configpopup/status/FcDetailsSection.qml</file>

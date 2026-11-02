@@ -2,6 +2,7 @@ import "../MenuTypography.js" as MenuTypography
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQml 2.15
 
 Column {
     id: section
@@ -20,7 +21,10 @@ Column {
     readonly property int primaryPercent: { revision; return hasPercent ? parameterModel.get_cached_int("V_PRIMARY_PERC") : streams.length > 0 ? Number(streams[0].percent) : 0 }
     readonly property bool sharesAvailable: hasPercent || dynamicCount() === 1 || (streams.length === 2 && Number(streams[0].percent) + Number(streams[1].percent) === 100)
     property int draftPercent: primaryPercent
-    onPrimaryPercentChanged: draftPercent = primaryPercent
+    property bool editingShare: false
+    onPrimaryPercentChanged: if (!editingShare) draftPercent = primaryPercent
+    readonly property bool canSplit: linkId === 1 && hasPercent && dynamicCount() === 2
+    readonly property bool splitEnabled: canSplit && canWrite && dynamicEnabled
     readonly property bool dynamicEnabled: {
         revision
         return parameterModel && parameterModel.param_int_exists("VARIABLE_BITRATE")
@@ -56,7 +60,9 @@ Column {
     function cameraActive(id) {
         if (categoryBps(id + 1) > 0) return true
         for (var i=0; i<streams.length; i++) if (streams[i].id === id) return !!streams[i].active
-        return false
+        var camera = id === 0 ? (typeof _cameraStreamModelPrimary !== "undefined" ? _cameraStreamModelPrimary : null)
+                              : (typeof _cameraStreamModelSecondary !== "undefined" ? _cameraStreamModelSecondary : null)
+        return !!camera && (camera.camera_status === 1 || camera.camera_status === 2)
     }
     readonly property var trafficRows: [
         {name: qsTr("Video 1"), icon: "\uf03d", color: "#198eff", tint: "#073e5a", bps: categoryBps(1), active: cameraActive(0), empty: qsTr("Not available")},
@@ -68,7 +74,7 @@ Column {
         {name: qsTr("RC control"), icon: "\uf11b", color: "#ed72c6", tint: "#402440", bps: categoryBps(6), active: true, empty: qsTr("Not used")},
         {name: qsTr("Custom datalink"), icon: "\uf121", color: "#f4bb47", tint: "#40351d", bps: categoryBps(7), active: true, empty: qsTr("Not used")}
     ]
-    function dynamicCount() { var count=0; for(var i=0;i<streams.length;i++) if(streams[i].active && streams[i].controllable) count++; return count }
+    function dynamicCount() { var count=0; for(var i=0;i<2;i++) if(cameraActive(i) && controllableCamera(i)) count++; return count }
     function dynamicStreams() {
         var result=[]
         for(var i=0;i<streams.length;i++) if(streams[i].active && streams[i].controllable) result.push(streams[i])
@@ -96,11 +102,11 @@ Column {
         return !metadata.readOnly && metadata.control !== "readonly" && metadata.control !== "unsupported"
     }
     function commitShare() {
-        if (canWrite && dynamicEnabled && budgetsAvailable && hasPercent && sharesAvailable && dynamicCount()>1)
-            parameterModel.try_set_param_int_async("V_PRIMARY_PERC", draftPercent, true)
+        if (splitEnabled && draftPercent !== primaryPercent)
+            parameterModel.try_set_param_int_async("V_PRIMARY_PERC", draftPercent, false)
     }
     function setCameraShare(id, value, commit) {
-        if (!canWrite || !dynamicEnabled || !budgetsAvailable || !hasPercent || !sharesAvailable || dynamicCount()<2 || !controllableCamera(id)) return
+        if (!splitEnabled || !controllableCamera(id)) return
         var percent = Math.max(10, Math.min(90, Math.round(value)))
         draftPercent = id === 0 ? percent : 100-percent
         if (commit) commitShare()
@@ -147,10 +153,10 @@ Column {
                             objectName: "allocationTrafficRow" + index
                             property var entry: section.trafficRows[index]
                             visible: index < 5 || entry.bps > 0 || (index === 6 && section.customDataEnabled)
-                            readonly property bool shareControl: index < 2 && section.controllableCamera(index) && section.dynamicEnabled && section.budgetsAvailable && section.dynamicCount() > 1 && section.hasPercent && section.sharesAvailable
                             readonly property bool singleShare: index < 2 && section.controllableCamera(index) && section.dynamicEnabled && section.budgetsAvailable && section.dynamicCount() === 1
                             readonly property bool manualControl: index < 2 && section.manualBitrateAvailable(index)
-                            width: tableContent.width; height: shareControl ? 89 : manualControl ? 113 : singleShare ? 76 : 53
+                            readonly property bool splitControl: index === 1 && section.canSplit && section.dynamicEnabled
+                            width: tableContent.width; height: splitControl ? 101 : manualControl ? 113 : singleShare ? 76 : 53
                             color: index % 2 ? "#062535" : "transparent"
                             Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: "#103347" }
                             RowLayout {
@@ -182,24 +188,35 @@ Column {
                                 Text { objectName: "allocationTrafficTotal" + index; Layout.preferredWidth: section.totalWidth; text: section.rateBps(trafficRow.entry.bps); color: trafficRow.entry.bps > 0 ? "#edf4fa" : "#adc8da"; font.family: MenuTypography.family; font.pixelSize: section.compact ? MenuTypography.helper : MenuTypography.body; font.bold: trafficRow.entry.bps > 0; horizontalAlignment: Text.AlignRight }
                             }
                             RowLayout {
-                                x: section.compact ? 12 : section.labelWidth + 24; y: 51
-                                width: parent.width - x - 12; height: 30; spacing: 12
-                                visible: trafficRow.shareControl
+                                x: 12; y: 53; width: parent.width-24; height: 40; spacing: 10
+                                visible: trafficRow.splitControl
+                                Text { objectName: index === 1 ? "cameraPoolShare1" : ""; text: section.draftPercent + "%"; color: "#198eff"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.helper; font.bold: true }
                                 Slider {
-                                    id: cameraShare
-                                    objectName: "allocationSlider" + index
-                                    Layout.fillWidth: true; implicitHeight: 28
-                                    Accessible.name: qsTr("%1 dynamic share").arg(trafficRow.entry.name)
-                                    from: section.dynamicCount() === 1 ? 0 : 10; to: section.dynamicCount() === 1 ? 100 : 90; stepSize: 1
-                                    enabled: trafficRow.shareControl && section.canWrite
-                                    value: section.dynamicCount() === 1 ? 100 : index === 0 ? section.draftPercent : 100-section.draftPercent
-                                    onMoved: section.setCameraShare(index, value, false)
-                                    onPressedChanged: if (!pressed && enabled) section.commitShare()
+                                    id: poolSplit
+                                    objectName: index === 1 ? "cameraPoolSplitSlider" : ""
+                                    Layout.fillWidth: true; implicitHeight: 40
+                                    from: 0; to: 100; stepSize: 1
+                                    enabled: trafficRow.splitControl && section.splitEnabled
+                                    Accessible.name: qsTr("Camera 1 share of adjustable camera bandwidth")
+                                    onMoved: section.setCameraShare(0, value, false)
+                                    onPressedChanged: {
+                                        section.editingShare = pressed
+                                        if (!pressed && enabled) section.commitShare()
+                                    }
                                     Keys.onReleased: function(event) { if (enabled && (event.key === Qt.Key_Left || event.key === Qt.Key_Right)) section.commitShare() }
-                                    background: Rectangle { x: cameraShare.leftPadding; y: cameraShare.topPadding + (cameraShare.availableHeight-height)/2; width: cameraShare.availableWidth; height: 6; radius: 3; color: "#143b50"; Rectangle { width: cameraShare.visualPosition*parent.width; height: parent.height; radius: 3; color: trafficRow.entry.color } }
-                                    handle: Rectangle { x: cameraShare.leftPadding + cameraShare.visualPosition * (cameraShare.availableWidth-width); y: cameraShare.topPadding + (cameraShare.availableHeight-height)/2; width: 17; height: 17; radius: 9; color: cameraShare.enabled ? "#edf4fa" : "#6f879d" }
+                                    background: Rectangle {
+                                        x: poolSplit.leftPadding; y: poolSplit.topPadding+(poolSplit.availableHeight-height)/2
+                                        width: poolSplit.availableWidth; height: 20; radius: 6; color: "#23c3eb"; clip: true
+                                        Rectangle { width: parent.width*section.draftPercent/100; height: parent.height; color: "#198eff" }
+                                    }
+                                    handle: Rectangle {
+                                        x: poolSplit.leftPadding+poolSplit.availableWidth*section.draftPercent/100-width/2
+                                        y: poolSplit.topPadding+(poolSplit.availableHeight-height)/2
+                                        width: 20; height: 32; radius: 6; color: poolSplit.enabled ? "#edf4fa" : "#6f879d"
+                                    }
                                 }
-                                Text { Layout.preferredWidth: section.totalWidth; text: qsTr("Share: %1%").arg(index === 0 ? section.draftPercent : 100-section.draftPercent); color: "#adc8da"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.helper; horizontalAlignment: Text.AlignRight }
+                                Binding { target: poolSplit; property: "value"; value: section.draftPercent; when: !poolSplit.pressed; restoreMode: Binding.RestoreNone }
+                                Text { objectName: index === 1 ? "cameraPoolShare2" : ""; text: (100-section.draftPercent) + "%"; color: "#23c3eb"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.helper; font.bold: true }
                             }
                             Text {
                                 visible: trafficRow.singleShare

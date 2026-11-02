@@ -171,6 +171,7 @@ Item {
     AppSettings {
         id: settings
     }
+    CameraAutoDetection { settingsObject: settings }
     readonly property bool bootSplashEnabled: true
 
     Loader {

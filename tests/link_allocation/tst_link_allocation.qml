@@ -7,10 +7,11 @@ Item {
     property bool captureImages: false
     FontLoader { source: "../../qml/resources/Font Awesome 5 Free-Solid-900.otf" }
     FontLoader { source: "../../qml/osdfonts/Archivo-Regular.ttf" }
-    Component.onCompleted: Qt.application.font = Qt.font({family:"Archivo",pixelSize:13})
     QtObject { id: settings_form; property color panelBackgroundRaised:"#15283b";property color panelBackground:"#102235";property color lineColor:"#26394c";property color accentColor:"#278cff";property color primaryText:"#f2f6fb";property color secondaryText:"#aebdcb";property color errorColor:"#ff4e5d" }
     QtObject { id: _qopenhd; property bool debugMenuPreview:false }
     QtObject { id: _ohdSystemAir; property bool is_alive:true }
+    QtObject { id: _cameraStreamModelPrimary; property bool supports_variable_bitrate:true; property int camera_status:1 }
+    QtObject { id: _cameraStreamModelSecondary; property bool supports_variable_bitrate:true; property int camera_status:1 }
     QtObject {
         id: _ohdSystemAirSettingsModel
         property int update_count:0;property bool ui_is_busy:false;property bool has_params_fetched:true
@@ -71,16 +72,15 @@ Item {
             verify(!visualChild(popup.contentItem,"allocationTrafficRow6").visible)
             compare(popup.categoryBps(5),-1)
             compare(visualChild(popup.contentItem,"allocationTrafficTotal3").text,"Not reported")
-            var slider=visualChild(popup.contentItem,"allocationSlider0")
+            var slider=visualChild(popup.contentItem,"cameraPoolSplitSlider")
             verify(slider!==null);verify(slider.enabled)
             slider.forceActiveFocus();keyClick(Qt.Key_Right)
             compare(_ohdSystemAirSettingsModel.percent,71)
             compare(popup.draftPercent,71)
-            var secondSlider=visualChild(popup.contentItem,"allocationSlider1")
-            verify(secondSlider.enabled);compare(secondSlider.value,29)
-            secondSlider.forceActiveFocus();keyClick(Qt.Key_Right)
+            compare(visualChild(popup.contentItem,"cameraPoolShare2").text,"29%")
+            slider.forceActiveFocus();keyClick(Qt.Key_Left)
             compare(_ohdSystemAirSettingsModel.percent,70)
-            compare(slider.value+secondSlider.value,100)
+            compare(visualChild(popup.contentItem,"cameraPoolShare1").text,"70%")
             if(scene.captureImages) grabImage(scene).save("build/status-layout-full/link-allocation-850x480.png")
             scene.width=420;scene.height=680;wait(100)
             verify(popup.width<scene.width);verify(popup.height<scene.height)
@@ -90,7 +90,7 @@ Item {
             popup.close()
             scene.fixture={id:1,categories:[],allocation:{enabled:true,available:true,streams:[{id:0,active:true,controllable:true,percent:100,budget_kbits:7000},{id:1,active:true,controllable:false,percent:0,budget_kbits:0}]}}
             popup.open();wait(100);compare(popup.dynamicCount(),1)
-            slider=visualChild(popup.contentItem,"allocationSlider0");verify(!slider.enabled);compare(slider.value,100)
+            slider=visualChild(popup.contentItem,"cameraPoolSplitSlider");verify(!slider.enabled);verify(!slider.visible)
             popup.close()
             scene.fixture={id:1,total_bps:25000000,capacity_bps:10000000,categories:[{id:1,bps:25000000}],allocation:{enabled:true,available:true,overcommitted:true,capacity_kbits:10000,priority_kbits:1000,safety_kbits:500,fixed_kbits:15000,pool_kbits:0,streams:[]}}
             compare(meter.fixedPercent,100);compare(meter.dynamicPercent,0)
@@ -139,6 +139,33 @@ Item {
             compare(popup.allocation,null);compare(popup.streams.length,0)
             verify(!popup.connected)
             compare(visualChild(popup.contentItem,"allocationTrafficTotal0").text,"Not reported")
+            popup.close()
+        }
+        function test_split_without_allocation_snapshot() {
+            _ohdSystemAirSettingsModel.percent=60
+            _ohdSystemAirSettingsModel.dynamicEnabled=1
+            _ohdSystemAirSettingsModel.update_count++
+            scene.fixture={id:1,total_bps:12000000,capacity_bps:16000000,categories:[{id:1,bps:8000000},{id:2,bps:4000000}]}
+            popup.open();wait(100)
+            var section=visualChild(popup.contentItem,"linkAllocationSection1")
+            var slider=visualChild(section,"cameraPoolSplitSlider")
+            verify(slider.visible);verify(slider.enabled)
+            section.setCameraShare(0,20,true)
+            compare(_ohdSystemAirSettingsModel.percent,20)
+            compare(visualChild(section,"cameraPoolShare2").text,"80%")
+            compare(visualChild(section,"cameraBandwidthPool"),null)
+            var writes=_ohdSystemAirSettingsModel.writes
+            scene.fixture=JSON.parse(JSON.stringify(scene.fixture));wait(20)
+            compare(section.draftPercent,20)
+            compare(_ohdSystemAirSettingsModel.writes,writes)
+            section.setCameraShare(0,100,true);compare(_ohdSystemAirSettingsModel.percent,90)
+            _qopenhd.debugMenuPreview=true
+            section.setCameraShare(0,50,true);compare(_ohdSystemAirSettingsModel.percent,90)
+            _qopenhd.debugMenuPreview=false
+            _cameraStreamModelSecondary.supports_variable_bitrate=false
+            compare(section.dynamicCount(),1);verify(!slider.enabled)
+            _cameraStreamModelSecondary.supports_variable_bitrate=true
+            _ohdSystemAirSettingsModel.percent=60;_ohdSystemAirSettingsModel.update_count++
             popup.close()
         }
     }

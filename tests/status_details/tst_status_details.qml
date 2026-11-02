@@ -7,7 +7,6 @@ Item {
  FontLoader { source: "../../qml/osdfonts/Archivo-Regular.ttf" }
  FontLoader { source: "../../qml/osdfonts/Archivo-Bold.ttf" }
 
- Component.onCompleted: Qt.application.font = Qt.font({family: "Segoe UI", pixelSize: 13})
  property bool captureImages: false
  id: scene; width: 1543; height: 565
  property var _cameraStreamModelPrimary: testCamera
@@ -71,8 +70,9 @@ Item {
   property int writtenValue: -1
   function try_set_param_int_async(id,value,confirm) { writtenParam=id; writtenValue=value }
   property var cardTypes: ({})
-  function param_int_exists(id) { return id.indexOf("CARD_TYPE_")===0 ? cardTypes[id] !== undefined : true }
-  function get_cached_int(id) { return cardTypes[id] !== undefined ? cardTypes[id] : encryption }
+  property int cardCount: -1
+  function param_int_exists(id) { return id === "WB_N_CARDS" ? cardCount >= 0 : id.indexOf("CARD_TYPE_")===0 ? cardTypes[id] !== undefined : true }
+  function get_cached_int(id) { return id === "WB_N_CARDS" ? cardCount : cardTypes[id] !== undefined ? cardTypes[id] : encryption }
   function system_is_alive() { return true }
   function param_string_exists(id) { return false }
  }
@@ -232,11 +232,14 @@ Item {
    var popup=findChild(menu,"groundStationDetailsPopup")
    tryCompare(popup,"visible",true)
    compare(popup.wifiChipsets.join(","),"Devourer RTL822C")
-   params.cardTypes=({CARD_TYPE_0:51,CARD_TYPE_1:52});params.update_count++
+   params.cardCount=2;params.cardTypes=({CARD_TYPE_0:51,CARD_TYPE_1:52});params.update_count++
    compare(popup.wifiChipsets.join(","),"RTL8812AU,Devourer RTL8822C")
    var chipsets=visualChild(popup.contentItem,"systemWifiChipsets")
    compare(chipsets.text,"RTL8812AU\nDevourer RTL8822C")
    verify(chipsets.contentHeight<=88)
+   params.cardCount=1;params.cardTypes=({CARD_TYPE_0:52,CARD_TYPE_1:51,CARD_TYPE_2:51,CARD_TYPE_3:51});params.update_count++
+   compare(popup.wifiChipsets.join(","),"Devourer RTL8822C")
+   params.cardCount=2;params.cardTypes=({CARD_TYPE_0:51,CARD_TYPE_1:52});params.update_count++
    popup.close()
    cards.unitDetailsRequested(1)
    tryVerify(function() { return findChild(menu,"airUnitDetailsPopup") !== null })
@@ -247,11 +250,32 @@ Item {
    compare(airPopup.wifiChipsets.length,0)
    compare(visualChild(airPopup.contentItem,"systemWifiChipsets").text,"Not reported")
    air.is_alive=true
-   params.cardTypes=({});params.update_count++
+   params.cardCount=-1;params.cardTypes=({});params.update_count++
    wifi.alive=false
    compare(airPopup.wifiChipsets.length,0)
    wifi.alive=true
    airPopup.close()
+  }
+  function test_health_reasons() {
+   tryVerify(function() { return menu.statusPanel !== null })
+   findChild(menu,"statusOverviewCards").unitDetailsRequested(0)
+   tryVerify(function() { return findChild(menu,"groundStationDetailsPopup") !== null })
+   var popup=findChild(menu,"groundStationDetailsPopup")
+   tryCompare(popup,"visible",true)
+   settings.ground_status_temp_warn=70;settings.ground_status_temp_caution=60
+   air.curr_soc_temp_degree=70
+   compare(popup.health.severity,2)
+   verify(visualChild(popup.contentItem,"systemHealthReasons").text.indexOf("70 °C")>=0)
+   verify(visualChild(popup.contentItem,"systemHealthReasons").text.indexOf("threshold: 70")>=0)
+   if(scene.captureImages) grabImage(scene).save("build/status-layout-full/ground-health-warning.png")
+   air.curr_cpuload_perc=97;air.rpi_undervolt_error=true
+   compare(popup.health.reasons.length,3)
+   verify(visualChild(popup.contentItem,"systemHealthReasons").text.indexOf("undervoltage")>=0)
+   air.is_alive=false;compare(popup.health.reasons.length,0)
+   air.is_alive=true;air.curr_soc_temp_degree=48;air.curr_cpuload_perc=38;air.rpi_undervolt_error=false
+   settings.ground_status_temp_warn=85;settings.ground_status_temp_caution=75
+   compare(popup.health.reasons.length,0)
+   popup.close()
   }
   function test_resize_and_alignment() {
    tryVerify(function() { return menu.statusPanel !== null })

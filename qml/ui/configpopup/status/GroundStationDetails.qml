@@ -4,13 +4,16 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import "../../elements"
 import ".."
+import "SystemHealth.js" as SystemHealth
 
 Popup {
     id: dialog
     objectName: systemType === 0 ? "groundStationDetailsPopup" : "airUnitDetailsPopup"
     property int systemType: 0
     readonly property bool isGround: systemType === 0
-    readonly property real designHeight: 800
+    readonly property real designHeight: 800 + healthOffset
+    readonly property var health: SystemHealth.evaluate(unit, isGround, settings)
+    readonly property real healthOffset: health.reasons.length ? healthMessages.implicitHeight + 36 : 0
     readonly property var batterySettings: typeof _uiSimulator !== "undefined" && _uiSimulator.active ? _uiSimulator.localSettings : settings
     readonly property string batteryPrefix: "ground_battery_"
     parent: Overlay.overlay
@@ -37,10 +40,13 @@ Popup {
         if (!live) return []
         var cards = isGround ? [_wifi_card_gnd0, _wifi_card_gnd1, _wifi_card_gnd2, _wifi_card_gnd3] : [_wifi_card_air]
         var names = []
+        var hasCount = params.param_int_exists("WB_N_CARDS")
+        var count = hasCount ? Math.max(0, Math.min(4, params.get_cached_int("WB_N_CARDS"))) : 4
         // Air card statistics currently expose only the first card. The local
         // CARD_TYPE_n parameters also identify additional broadcast adapters.
-        for (var i = 0; i < 4; ++i) {
+        for (var i = 0; i < count; ++i) {
             var name = "", id = "CARD_TYPE_" + i
+            if (!hasCount && (i >= cards.length || !cards[i].alive)) continue
             if (params.has_params_fetched && params.param_int_exists(id) && typeof _wifi_card_air.cardTypeName === "function")
                 name = _wifi_card_air.cardTypeName(params.get_cached_int(id))
             if ((!name.length || name === "UNKNOWN") && i < cards.length && cards[i].alive)
@@ -94,8 +100,18 @@ Popup {
                 contentItem: Text { text: parent.text; font: parent.font; color: "#edf4fa"; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
             Rectangle {
+                x: 22; y: 88; width: 1036; height: Math.max(0, dialog.healthOffset-12)
+                visible: dialog.healthOffset > 0
+                radius: 12; color: "#30232a"; border.color: dialog.health.severity === 2 ? "#ff4e5d" : "#e8b556"
+                Column {
+                    id: healthMessages; x: 14; y: 12; width: parent.width-28; spacing: 6
+                    Text { text: dialog.health.severity === 2 ? qsTr("System health — Warning") : qsTr("System health — Caution"); color: "#f2e6e7"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; font.bold: true }
+                    Text { objectName: "systemHealthReasons"; width: parent.width; text: dialog.health.reasons.join("\n"); wrapMode: Text.WordWrap; color: "#f2e6e7"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.helper }
+                }
+            }
+            Rectangle {
                 id: resourcePanel
-                x: 22; y: 96; width: 516; height: 340; radius: 14
+                x: 22; y: 96 + dialog.healthOffset; width: 516; height: 340; radius: 14
                 color: "#051f2f"; border.color: "#0d4059"
                 Text { x: 24; y: 21; text: "\uf2db"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#bbd9ec" }
                 Text { x: 74; y: 23; text: qsTr("System Resources"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
@@ -130,7 +146,7 @@ Popup {
             }
             Rectangle {
                 id: network
-                x: 556; y: 96; width: 502; height: 340; radius: 14
+                x: 556; y: 96 + dialog.healthOffset; width: 502; height: 340; radius: 14
                 color: "#051f2f"; border.color: "#0d4059"
                 Text { x: 24; y: 21; text: "\uf1eb"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#009fff" }
                 Text { x: 74; y: 23; text: qsTr("Network / Hotspot"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
@@ -187,7 +203,7 @@ Popup {
             Rectangle {
                 id: battery
                 visible: dialog.isGround
-                x: 22; y: 454; width: 1036; height: 236; radius: 14
+                x: 22; y: 454 + dialog.healthOffset; width: 1036; height: 236; radius: 14
                 color: "#051f2f"; border.color: "#0d4059"
                 Text { x: 24; y: 19; text: "\uf2c2"; font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.sectionIcon; color: "#d5e8f5" }
                 Text { x: 74; y: 21; text: qsTr("Battery Configuration"); font.family: MenuTypography.family; font.pixelSize: MenuTypography.sectionTitle; font.bold: true; color: "#edf4fa" }
@@ -279,7 +295,7 @@ Popup {
                 id: camerasPanel
                 objectName: "airCamerasPanel"
                 visible: !dialog.isGround
-                x: 22; y: 454; width: 1036; height: 236; radius: 14
+                x: 22; y: 454 + dialog.healthOffset; width: 1036; height: 236; radius: 14
                 color: "#041e2d"; border.color: "#12607e"
                 readonly property int reportedCount: !dialog.live ? 0
                     : ((typeof _cameraStreamModelPrimary !== "undefined" && _cameraStreamModelPrimary.camera_status >= 0) ? 1 : 0)
@@ -356,12 +372,12 @@ Popup {
                     }
                 }
             }
-            Rectangle { x: 22; y: 708; width: 1036; height: 1; color: "#115071" }
+            Rectangle { x: 22; y: 708 + dialog.healthOffset; width: 1036; height: 1; color: "#115071" }
             Repeater {
                 model: [{label: qsTr("Reboot"), reboot: true}, {label: qsTr("Shutdown"), reboot: false}]
                 AdvancedActionButton {
                     objectName: modelData.reboot ? "groundDetailsReboot" : "groundDetailsShutdown"
-                    x: 22 + index * 528; y: 724; width: 508; height: MenuTypography.controlHeight
+                    x: 22 + index * 528; y: 724 + dialog.healthOffset; width: 508; height: MenuTypography.controlHeight
                     text: modelData.label; iconText: "\uf011"; destructive: !modelData.reboot
                     enabled: dialog.live && !dialog.preview
                     onClicked: { dialog.close(); statusPanel.open_power_action_dialoque(dialog.systemType, modelData.reboot) }
