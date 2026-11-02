@@ -173,10 +173,11 @@ Item {
             _ohdSystemAirSettingsModel.update_count++
             for (var i=0;i<2;i++) {
                 var id=i===0 ? 2 : 6
-                scene.fixture={id:id,total_bps:12000000,capacity_bps:40000000,categories:[{id:1,bps:8000000},{id:2,bps:4000000}]}
+                scene.fixture={id:id,total_bps:12000000,capacity_bps:1000000000,categories:[{id:1,bps:8000000},{id:2,bps:4000000}],allocation:{enabled:true,available:true,capacity_kbits:40000,streams:[{id:0,active:true,controllable:true,percent:60},{id:1,active:true,controllable:true,percent:40}]}}
                 popup.open();wait(100)
                 var section=visualChild(popup.contentItem,"linkAllocationSection"+id)
                 var slider=visualChild(section,"cameraPoolSplitSlider")
+                compare(section.capacityBps,40000000)
                 verify(slider.visible);verify(slider.enabled)
                 section.setCameraShare(0,30+i*10,true)
                 compare(_ohdSystemAirSettingsModel.percent,30+i*10)
