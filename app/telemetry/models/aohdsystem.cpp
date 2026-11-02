@@ -908,7 +908,7 @@ void AOHDSystem::update_alive()
     if(m_received_link_bitrate_update_ms < 0 ||
        QOpenHDMavlinkHelper::getTimeMilliseconds()-m_received_link_bitrate_update_ms > 4000)
         set_received_link_bitrate_bps(-1);
-    if(m_is_air && !m_link_usage.isEmpty()) {
+    if(!m_link_usage.isEmpty()) {
         const auto now = QOpenHDMavlinkHelper::getTimeMilliseconds();
         bool changed = false;
         for(int i = m_link_usage.size() - 1; i >= 0; --i) {
@@ -951,16 +951,22 @@ void AOHDSystem::process_link_usage(const mavlink_data96_t& msg)
                       {"capacity_bps", static_cast<qulonglong>(link_usage_u32(msg.data, 12))},
                       {"categories", categories}};
     const int trailer = 16 + count * 5;
-    if (id == 2 && msg.len >= trailer + 36 &&
-            std::memcmp(msg.data + trailer, "ETH1", 4) == 0) {
+    const bool ethernetMetrics = id == 2 && msg.len >= trailer + 36 &&
+            std::memcmp(msg.data + trailer, "ETH1", 4) == 0;
+    const bool allocationMessage = msg.len >= trailer + 44 && std::memcmp(msg.data + trailer, "BWA1", 4) == 0;
+    if (ethernetMetrics) {
         const char* fields[] = {"tx_bps", "rx_bps", "tx_pps", "rx_pps",
                                 "rtt_us", "jitter_us", "probe_loss_permille", "send_errors"};
         for (int i = 0; i < 8; ++i) {
             const auto value = link_usage_u32(msg.data, trailer + 4 + i * 4);
             usage[fields[i]] = value == UINT32_MAX ? QVariant() : QVariant::fromValue<qulonglong>(value);
         }
+        if (msg.len >= trailer + 40) {
+            const auto duplex = link_usage_u32(msg.data, trailer + 36);
+            usage["port_duplex"] = duplex <= 1 ? QVariant::fromValue(duplex) : QVariant();
+        }
     }
-    if (id == 1 && msg.len >= trailer + 44 && std::memcmp(msg.data + trailer, "BWA1", 4) == 0) {
+    if (allocationMessage) {
         QVariantMap allocation;
         const char* names[] = {"capacity_kbits", "priority_kbits", "fixed_kbits", "safety_kbits", "pool_kbits", "fixed_measured_kbits"};
         for (int i = 0; i < 6; ++i) allocation[names[i]] = link_usage_u32(msg.data, trailer + 4 + i * 4);
@@ -980,6 +986,15 @@ void AOHDSystem::process_link_usage(const mavlink_data96_t& msg)
     bool replaced = false;
     for(int i = 0; i < m_link_usage.size(); ++i) {
         if(m_link_usage[i].toMap().value("id").toInt() == id) {
+            const auto previous = m_link_usage[i].toMap();
+            // Ethernet metrics and allocation use independent DATA96 trailers.
+            // Preserve the other half while the transport remains fresh.
+            if (id == 2 && (ethernetMetrics || allocationMessage)) {
+                for (const auto& key : {"allocation", "tx_bps", "rx_bps", "tx_pps", "rx_pps", "rtt_us", "jitter_us", "probe_loss_permille", "send_errors", "port_duplex"}) {
+                    const bool complementary = ethernetMetrics ? QByteArray(key) == "allocation" : QByteArray(key) != "allocation";
+                    if (complementary && !usage.contains(key) && previous.contains(key)) usage[key] = previous.value(key);
+                }
+            }
             m_link_usage[i] = usage;
             replaced = true;
             break;

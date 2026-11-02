@@ -168,5 +168,22 @@ Item {
             _ohdSystemAirSettingsModel.percent=60;_ohdSystemAirSettingsModel.update_count++
             popup.close()
         }
+        function test_split_on_other_video_transports() {
+            _ohdSystemAirSettingsModel.dynamicEnabled=1
+            _ohdSystemAirSettingsModel.update_count++
+            for (var i=0;i<2;i++) {
+                var id=i===0 ? 2 : 6
+                scene.fixture={id:id,total_bps:12000000,capacity_bps:40000000,categories:[{id:1,bps:8000000},{id:2,bps:4000000}]}
+                popup.open();wait(100)
+                var section=visualChild(popup.contentItem,"linkAllocationSection"+id)
+                var slider=visualChild(section,"cameraPoolSplitSlider")
+                verify(slider.visible);verify(slider.enabled)
+                section.setCameraShare(0,30+i*10,true)
+                compare(_ohdSystemAirSettingsModel.percent,30+i*10)
+                popup.close()
+            }
+            _ohdSystemAirSettingsModel.percent=60
+            _ohdSystemAirSettingsModel.update_count++
+        }
     }
 }

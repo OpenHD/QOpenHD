@@ -74,7 +74,8 @@ Item {
             wait(30)
             compare(page.linkVisible("ethernet"),true)
             compare(page.linkVisible("wifi"),true)
-            var kinds=["uart","microhard","artosyn","mlrs","fleetcontrol"]
+            compare(page.linkVisible("fleetcontrol"),true)
+            var kinds=["uart","microhard","artosyn","mlrs"]
             for(var i=0;i<kinds.length;i++) compare(page.linkVisible(kinds[i]),false,kinds[i])
             compare(findChild(page,"linkRoutingSection").visible,false)
             var cards=findChild(page,"linkTransportCards")
@@ -101,6 +102,15 @@ Item {
             var cards=findChild(page,"linkTransportCards")
             compare(cards.children[0].loadedCard.objectName,"testSimulatedLinkCard")
             compare(page.showIndividualLinkUsage,false)
+            var scroll=findChild(page,"linkPageScroll")
+            scroll.contentY=scroll.contentHeight-scroll.height
+            wait(200)
+            var track=findChild(page,"linkAllocationTrack")
+            mouseClick(track)
+            var popup=findChild(page,"linkAllocationPopup")
+            tryCompare(popup,"visible",true)
+            popup.close()
+            scroll.contentY=0
             _ohdSystemAir.link_usage=[]
             compare(page.ethernetActive(),true)
             _ohdSystemAir.primary_link_type=1

@@ -68,7 +68,9 @@ Rectangle {
             usage: root.host ? root.host.usageFor(root.linkKind) : null
             title: qsTr("Link Usage")
         }
+        EthernetDashboard { visible: root.ethernet; Layout.fillWidth: true; usage: root.usage }
         GridLayout {
+            visible: !root.ethernet
             Layout.fillWidth: true; Layout.preferredHeight: root.ethernet ? 174 : 58; columns: 3
             Repeater {
                 model: ethernet

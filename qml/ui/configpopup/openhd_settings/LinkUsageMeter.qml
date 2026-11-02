@@ -11,7 +11,8 @@ Item {
     signal allocationRequested()
     readonly property var allocationSettings: typeof _ohdSystemAirSettingsModel !== "undefined" ? _ohdSystemAirSettingsModel : null
     readonly property int allocationRevision: allocationSettings ? allocationSettings.update_count : 0
-    readonly property bool dynamicEnabled: { allocationRevision; return allocationSettings && allocationSettings.param_int_exists("VARIABLE_BITRATE") && allocationSettings.get_cached_int("VARIABLE_BITRATE") === 1 }
+    readonly property string dynamicParameter: { allocationRevision; return allocationSettings && allocationSettings.param_int_exists("V_AUTO_BITRATE") ? "V_AUTO_BITRATE" : "VARIABLE_BITRATE" }
+    readonly property bool dynamicEnabled: { allocationRevision; return allocationSettings && allocationSettings.param_int_exists(dynamicParameter) && allocationSettings.get_cached_int(dynamicParameter) === 1 }
     property string title: qsTr("Link Usage")
     readonly property real total: usage ? Number(usage.total_bps) : 0
     readonly property real capacity: usage ? Number(usage.capacity_bps) : 0
@@ -87,8 +88,8 @@ Item {
                 id: allocationSwitch
                 objectName: "dynamicLinkBitrateSwitch"
                 text: qsTr("Dynamic Link Bitrate")
-                enabled: root.allocationSettings && _ohdSystemAir.is_alive && !_qopenhd.debugMenuPreview && root.allocationSettings.has_params_fetched && !root.allocationSettings.ui_is_busy && root.allocationSettings.param_int_exists("VARIABLE_BITRATE")
-                onClicked: root.allocationSettings.try_set_param_int_async("VARIABLE_BITRATE", checked ? 1 : 0, true)
+                enabled: root.allocationSettings && _ohdSystemAir.is_alive && !_qopenhd.debugMenuPreview && root.allocationSettings.has_params_fetched && !root.allocationSettings.ui_is_busy && root.allocationSettings.param_int_exists(root.dynamicParameter)
+                onClicked: root.allocationSettings.try_set_param_int_async(root.dynamicParameter, checked ? 1 : 0, true)
                 font.pixelSize: MenuTypography.body
                 contentItem: Text { text: parent.text; font: parent.font; color: settings_form.primaryText; leftPadding: parent.indicator.width + parent.spacing; verticalAlignment: Text.AlignVCenter }
             }

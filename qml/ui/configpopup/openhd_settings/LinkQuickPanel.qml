@@ -12,8 +12,8 @@ Rectangle {
     signal backRequested()
     readonly property bool simulatedSystem: typeof _uiSimulator !== "undefined" && _uiSimulator.active
     readonly property bool developer: settings_form.showDeveloperSettings === true
-    function linkVisible(kind) { return kind === "ethernet" || kind === "wifi" || developer }
-    readonly property var visibleReportedUsage: reportedUsage.filter(function(link) { return link.id === 1 || link.id === 2 || root.developer })
+    function linkVisible(kind) { return kind === "ethernet" || kind === "wifi" || kind === "fleetcontrol" || developer }
+    readonly property var visibleReportedUsage: reportedUsage.filter(function(link) { return link.id === 1 || link.id === 2 || link.id === 6 || root.developer })
     readonly property var fleetBackend: (typeof _fleetControlLte !== "undefined") ? _fleetControlLte : null
     property alias frequencyModel: frequencyChoices
     property int availableCardColumns: width >= 1050 ? 3 : (width >= 700 ? 2 : 1)
@@ -23,7 +23,16 @@ Rectangle {
     readonly property bool showIndividualLinkUsage: activeLinks.count > 1
     property int collapsedCardWidth: Math.floor((cardsFlow.width - (cardColumns - 1) * cardsFlow.spacing) / cardColumns)
     property int expandedCardIndex: -1
-    readonly property var reportedUsage: _ohdSystemAir.link_usage
+    readonly property var reportedUsage: {
+        var links = _ohdSystemAir.link_usage.slice()
+        var local = _ohdSystemGround.link_usage || []
+        for (var i=0;i<local.length;i++) {
+            var present=false
+            for (var j=0;j<links.length;j++) if (links[j].id === local[i].id) { present=true; break }
+            if (!present) links.push(local[i])
+        }
+        return links
+    }
     readonly property string reportedLinkKinds: {
         var ids = []
         for (var i = 0; i < reportedUsage.length; ++i) ids.push(reportedUsage[i].id)
@@ -215,7 +224,7 @@ Rectangle {
         if (developer && (microhardActive())) activeLinks.append({kind: "microhard"})
         if (developer && (artosynActive())) activeLinks.append({kind: "artosyn"})
         if (developer && (_mlrsController.alive || hasReportedUsage(7))) activeLinks.append({kind: "mlrs"})
-        if (developer && (fleetConfigured)) activeLinks.append({kind: "fleetcontrol"})
+        if (fleetConfigured) activeLinks.append({kind: "fleetcontrol"})
     }
     Connections {
         target: _qopenhd
@@ -478,7 +487,7 @@ Rectangle {
                 LinkEncryptionControl { width: parent.width }
                 Rectangle {
                     objectName: "totalLinkUsageSection"
-                    visible: root.wifiActive() || root.ethernetActive() || (root.developer && (_qopenhd.debugMenuPreview || settings.dev_show_link_usage))
+                    visible: root.wifiActive() || root.ethernetActive() || root.visibleReportedUsage.length > 0 || (root.developer && (_qopenhd.debugMenuPreview || settings.dev_show_link_usage))
                     width: parent.width
                     height: visible ? totalUsageMeter.implicitHeight + 24 : 0
                     radius: 10
@@ -490,7 +499,7 @@ Rectangle {
                         anchors.margins: 12
                         usage: root.totalUsage
                         title: qsTr("Total Link Usage")
-                        allocationControls: root.wifiActive()
+                        allocationControls: true
                         onAllocationRequested: allocationPopup.open()
                     }
                 }

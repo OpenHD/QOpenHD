@@ -97,6 +97,7 @@ Column {
         if (m_model.primary_link_type === 1) return "WiFiBroadcast"
         if (m_model.primary_link_type === 2) return "Ethernet"
         if (m_model.primary_link_type === 3) return "Microhard"
+        if (m_model.primary_link_type === 5) return "FleetControl"
         if (m_is_ground ? get_gnd_active_cards() > 0 : _wifi_card_air.alive) return "WiFiBroadcast"
         return qsTr("Not reported")
     }

@@ -89,6 +89,28 @@ int main(int argc,char** argv) {
         CHECK(extended.value("allocation").toMap().value("pool_kbits").toInt()==8420);
         CHECK(extended.value("allocation").toMap().value("streams").toList()[1].toMap().value("budget_kbits").toInt()==2526);
         payload.len=94;receive();CHECK(!air.link_usage()[1].toMap().contains("allocation"));
+        // Ethernet metrics and camera allocation arrive as separate trailers.
+        payload.data[5]=2;payload.len=91;
+        std::memcpy(payload.data+51,"ETH1",4);
+        for(int i=0;i<8;++i)put(payload.data,55+i*4,fields[i]);
+        put(payload.data,87,1);receive();
+        CHECK(air.link_usage()[0].toMap().value("port_duplex").toInt()==1);
+        std::memcpy(payload.data+51,"BWA1",4);payload.len=95;
+        for(int i=0;i<7;++i)put(payload.data,55+i*4,allocationFields[i]);
+        payload.data[83]=3;payload.data[84]=70;put(payload.data,85,5894);
+        payload.data[89]=3;payload.data[90]=30;put(payload.data,91,2526);
+        receive();
+        CHECK(air.link_usage()[0].toMap().contains("allocation"));
+        CHECK(air.link_usage()[0].toMap().value("tx_bps").toULongLong()==12300000);
+        CHECK(air.link_usage()[0].toMap().value("port_duplex").toInt()==1);
+        std::memcpy(payload.data+51,"ETH1",4);payload.len=91;
+        for(int i=0;i<8;++i)put(payload.data,55+i*4,fields[i]);
+        put(payload.data,87,UINT32_MAX);receive();
+        CHECK(!air.link_usage()[0].toMap().value("port_duplex").isValid());
+        CHECK(air.link_usage()[0].toMap().contains("allocation"));
+        payload.len=51;receive();
+        CHECK(!air.link_usage()[0].toMap().contains("allocation"));
+        CHECK(!air.link_usage()[0].toMap().contains("tx_bps"));
         QEventLoop loop;QTimer::singleShot(4200,&loop,&QEventLoop::quit);loop.exec();
         CHECK(air.link_usage().empty());
         CHECK(ground.received_link_bitrate_bps()==-1);

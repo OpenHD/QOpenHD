@@ -128,7 +128,7 @@ void UiSimulator::seedParameters(MavlinkSettingsModel* model,int system,int comp
         put("WFB_LINK_EN",m_profile["link"].toInt()==1||m_profile["secondLink"].toInt()==1?1:0);
         put("ETH_LINK_EN",m_profile["link"].toInt()==2||m_profile["secondLink"].toInt()==2?1:0);
         put("MULTI_LINK_EN",m_profile["secondLink"].toInt()>0?1:0);put("MULTI_LINK_CAP",1,{},true);
-        put("VARIABLE_BITRATE",1);put("V_PRIMARY_PERC",70);put("V_IP_CAM_MBITS",3);put("AUDIO_ENABLE",1);put("AUDIO_GAIN",100);put("AUDIO_DEV_COUNT",2,{},true);put("AUDIO_USB_COUNT",1,{},true);
+        put("V_AUTO_BITRATE",1);put("VARIABLE_BITRATE",1);put("V_PRIMARY_PERC",70);put("V_IP_CAM_MBITS",3);put("AUDIO_ENABLE",1);put("AUDIO_GAIN",100);put("AUDIO_DEV_COUNT",2,{},true);put("AUDIO_USB_COUNT",1,{},true);
         put("AUD_USB_NAMES",QString("Simulated USB microphone"),{},true);
         put("AUDIO_DEVICE",QString("hw:1,0"),QJsonArray{choice("USB microphone",QString("hw:1,0")),choice("Onboard microphone",QString("hw:0,0"))});
         const int radios=qBound(1,m_profile[system==100?"groundRadios":"airRadios"].toInt(),4);
@@ -249,7 +249,7 @@ void UiSimulator::refresh() {
         cam->set_curr_set_video_format(format);cam->set_curr_set_video_format_and_codec(format+(cam->encoding_codec()==1?" H.265":" H.264"));
         const int fps=format.section('@',1).toInt();cam->set_curr_set_video_fps_int(fps);cam->set_curr_video_measured_encoder_fps_int(fps);
         int bitrate=params->param_int_exists("BITRATE_MBITS")?params->get_cached_int("BITRATE_MBITS")*1000000:0;
-        if(type!=3 && m_airParams->get_cached_int("VARIABLE_BITRATE")==1)
+        if(type!=3 && m_airParams->get_cached_int("V_AUTO_BITRATE")==1)
             bitrate=dynamicCameras==1?16600000:16600000*(i?100-m_airParams->get_cached_int("V_PRIMARY_PERC"):m_airParams->get_cached_int("V_PRIMARY_PERC"))/100;
         cam->set_curr_video_measured_encoder_bitrate_bps(on&&connected?bitrate:0);
         cam->set_curr_video_measured_encoder_bitrate(QString::number(cam->curr_video_measured_encoder_bitrate_bps()/1000000.0,'f',1)+" Mbit/s");
@@ -281,7 +281,7 @@ void UiSimulator::refresh() {
         for(int i=0;i<2;++i)streams.append(QVariantMap{{"id",i},{"active",m_cameras[i]->camera_status()==1},{"controllable",m_cameraParams[i]->param_int_exists("CAMERA_TYPE")&&m_cameraParams[i]->get_cached_int("CAMERA_TYPE")!=3},
             {"percent",i?100-m_airParams->get_cached_int("V_PRIMARY_PERC"):m_airParams->get_cached_int("V_PRIMARY_PERC")},
             {"budget_kbits",m_cameras[i]->curr_video_measured_encoder_bitrate_bps()/1000}});
-        QVariantMap allocation{{"available",true},{"enabled",m_airParams->get_cached_int("VARIABLE_BITRATE")==1},{"capacity_kbits",20000},{"priority_kbits",200},
+        QVariantMap allocation{{"available",true},{"enabled",m_airParams->get_cached_int("V_AUTO_BITRATE")==1},{"capacity_kbits",20000},{"priority_kbits",200},
             {"safety_kbits",200},{"fixed_kbits",3000},{"pool_kbits",16600},{"streams",streams}};
         usage.append(QVariantMap{{"id",id},{"total_bps",total},{"capacity_bps",id==2?1000000000:20000000},{"categories",categories},{"allocation",allocation},
             {"tx_bps",total},{"rx_bps",64000},{"rtt_us",2200},{"jitter_us",100},{"probe_loss_permille",0},{"send_errors",0}});

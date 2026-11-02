@@ -23,12 +23,14 @@ Column {
     property int draftPercent: primaryPercent
     property bool editingShare: false
     onPrimaryPercentChanged: if (!editingShare) draftPercent = primaryPercent
-    readonly property bool canSplit: linkId === 1 && hasPercent && dynamicCount() === 2
+    readonly property bool canSplit: linkId !== 3 && linkId !== 7 && hasPercent && dynamicCount() === 2
     readonly property bool splitEnabled: canSplit && canWrite && dynamicEnabled
     readonly property bool dynamicEnabled: {
         revision
+        if (parameterModel && parameterModel.param_int_exists("V_AUTO_BITRATE"))
+            return parameterModel.get_cached_int("V_AUTO_BITRATE") === 1
         return parameterModel && parameterModel.param_int_exists("VARIABLE_BITRATE")
-            ? parameterModel.get_cached_int("VARIABLE_BITRATE") === 1 : !!allocation && !!allocation.enabled
+            ? parameterModel.get_cached_int("VARIABLE_BITRATE") === 1 : linkId !== 1 || (!!allocation && !!allocation.enabled)
     }
     readonly property bool customDataEnabled: {
         revision

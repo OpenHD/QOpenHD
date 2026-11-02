@@ -2,6 +2,19 @@
   "version": 1,
   "settings": [
     {
+      "id": "V_AUTO_BITRATE",
+      "type": "int32",
+      "label": "Dynamic Link Bitrate",
+      "description": "Allocate camera bitrate from the active link budget after reserving fixed traffic. Ethernet and LTE use a 40 Mbit/s ceiling. Manual mode restores the saved camera bitrates.",
+      "group": "General",
+      "hidden": true,
+      "readOnly": false,
+      "requiresReboot": false,
+      "minimum": 0,
+      "maximum": 1,
+      "choices": [{"label": "Disable", "value": 0}, {"label": "Enable", "value": 1}]
+    },
+    {
       "id": "JOY_MAP_V2",
       "type": "int32",
       "label": "Joystick mapping capability",
