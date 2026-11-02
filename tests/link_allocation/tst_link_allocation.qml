@@ -177,7 +177,7 @@ Item {
                 popup.open();wait(100)
                 var section=visualChild(popup.contentItem,"linkAllocationSection"+id)
                 var slider=visualChild(section,"cameraPoolSplitSlider")
-                compare(section.capacityBps,40000000)
+                compare(section.capacityBps,1000000000)
                 verify(slider.visible);verify(slider.enabled)
                 section.setCameraShare(0,30+i*10,true)
                 compare(_ohdSystemAirSettingsModel.percent,30+i*10)

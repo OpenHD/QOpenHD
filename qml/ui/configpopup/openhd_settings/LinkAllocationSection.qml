@@ -39,10 +39,8 @@ Column {
     readonly property bool budgetsAvailable: allocation && allocation.available && allocation.enabled
     readonly property bool connected: !!usage && _ohdSystemAir.is_alive && (linkId !== 2 ||
         Number(usage.rx_bps) > 0 || (usage.rtt_us !== undefined && usage.rtt_us !== null && Number(usage.rtt_us) >= 0))
-    // IP links expose their negotiated speed separately in the link dashboard.
-    // Allocation uses the active transport budget, including its video ceiling.
-    readonly property real capacityBps: linkId !== 1 && budgetsAvailable && Number(allocation.capacity_kbits) > 0 ? Number(allocation.capacity_kbits) * 1000
-        : usage && Number(usage.capacity_bps) > 0 ? Number(usage.capacity_bps)
+    // Display the full reported link capacity; encoder limits are independent.
+    readonly property real capacityBps: usage && Number(usage.capacity_bps) > 0 ? Number(usage.capacity_bps)
         : budgetsAvailable && Number(allocation.capacity_kbits) > 0 ? Number(allocation.capacity_kbits) * 1000 : 0
     readonly property bool compact: width < 540
     readonly property real labelWidth: compact ? 116 : 222
