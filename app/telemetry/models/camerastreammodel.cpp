@@ -330,7 +330,10 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performa
 
 void CameraStreamModel::set_curr_recommended_bitrate_from_message(const int64_t curr_recommended_bitrate_kbits)
 {
-    if(m_curr_recomended_video_bitrate_kbits!= 0 && curr_recommended_bitrate_kbits!=0 && m_curr_recomended_video_bitrate_kbits != curr_recommended_bitrate_kbits){
+    // Tiny target differences can round to the same HUD text.
+    if(m_curr_recomended_video_bitrate_kbits!= 0 && curr_recommended_bitrate_kbits!=0 &&
+       Telemetryutil::bitrate_kbits_to_qstring(m_curr_recomended_video_bitrate_kbits) !=
+           Telemetryutil::bitrate_kbits_to_qstring(curr_recommended_bitrate_kbits)){
         QString message=m_camera_index==0 ? "Cam1 encoder:" : "Cam2 encoder:";
         message+=Telemetryutil::bitrate_kbits_to_qstring(curr_recommended_bitrate_kbits);
         HUDLogMessagesModel::instance().add_message_info(message);
