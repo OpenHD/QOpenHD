@@ -29,7 +29,11 @@ Name "${APPNAME}"
 OutFile "${OUTFILE}"
 Var StartMenuFolder
 
+!ifdef INNER
+RequestExecutionLevel user
+!else
 RequestExecutionLevel admin
+!endif
 
 InstallDir "$PROGRAMFILES32\${APPNAME}"
 
@@ -55,6 +59,7 @@ SetCompressor /SOLID /FINAL lzma
 !insertmacro MUI_LANGUAGE "English"
 
 
+!ifndef INNER
 Section
 
   ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString"
@@ -78,7 +83,11 @@ doinstall:
     Delete "$INSTDIR\vc_redist.x86.exe"
   no_redist:
 
+!ifdef SIGNED_UNINSTALLER
+  File /oname=${EXENAME}-Uninstall.exe "${SIGNED_UNINSTALLER}"
+!else
   WriteUninstaller $INSTDIR\${EXENAME}-Uninstall.exe
+!endif
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$\"$INSTDIR\${EXENAME}-Uninstall.exe$\""
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "InstallLocation" "$INSTDIR"
@@ -93,6 +102,8 @@ doinstall:
 done:
   SetRegView lastused
 SectionEnd 
+
+!endif
 
 Section "Uninstall"
   ${GetParameters} $R0
@@ -109,9 +120,32 @@ Section "Uninstall"
   DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\${EXENAME}.exe"
 SectionEnd
 
+!ifndef INNER
 Section "create Start Menu Shortcuts"
   SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\${APPNAME}.lnk" "$INSTDIR\${EXENAME}.exe" "" "$INSTDIR\${EXENAME}.exe" 0
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall ${APPNAME}.lnk" "$INSTDIR\${EXENAME}-Uninstall.exe"
 SectionEnd
+
+!endif
+
+!ifdef INNER
+Section
+SectionEnd
+
+Function .onInit
+  !ifndef UNINSTALLER_OUTPUT
+    !error "INNER requires UNINSTALLER_OUTPUT"
+  !endif
+  SetSilent silent
+  ClearErrors
+  WriteUninstaller "${UNINSTALLER_OUTPUT}"
+  IfErrors failed
+  SetErrorLevel 0
+  Quit
+failed:
+  SetErrorLevel 1
+  Quit
+FunctionEnd
+!endif
