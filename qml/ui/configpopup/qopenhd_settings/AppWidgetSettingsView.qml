@@ -12,10 +12,11 @@ FocusScope {
     objectName: "widgetGallery"
     readonly property bool wide: width >= 1000
     readonly property bool developer: settings_form.showDeveloperSettings === true
+    readonly property bool advanced: developer || settings_form.showAdvancedSettings === true
     property string category: "flight"
     property int revision: 0
     property int presetIndex: 0
-    readonly property var availableWidgets: Catalog.widgets.filter(function(w){return !w.developer || root.developer})
+    readonly property var availableWidgets: Catalog.widgets.filter(function(w){return (!w.developer || root.developer) && (!w.advanced || root.advanced)})
     readonly property var categories: Catalog.categories.filter(function(c){return c.id!=="developer" || root.developer})
     readonly property var sections: Catalog.categories.filter(function(c){return root.category===c.id && root.matches(c.id).length>0})
     onDeveloperChanged: { if (!developer && category === "developer") category = "flight"; updatePreviewSession() }
@@ -29,7 +30,7 @@ FocusScope {
         if(index===0)return
         var basic=["show_link_overview_widget","show_air_battery","show_horizon","show_flight_mode","show_home_distance","show_arrow","show_gps"]
         var flight=basic.concat(["altitude_ladder_show","speed_ladder_show","show_heading","show_vertical_speed_gauge_widget","show_flight_time","show_map"])
-        Catalog.widgets.forEach(function(w){settings[w.key]=!w.developer && (index===3 || (index===1?basic:flight).indexOf(w.key)>=0)})
+        Catalog.widgets.forEach(function(w){settings[w.key]=!w.developer && !w.advanced && (index===3 || (index===1?basic:flight).indexOf(w.key)>=0)})
         settings.show_widgets=true;revision++;presetIndex=index
     }
     function gainFocus() { master.forceActiveFocus() }

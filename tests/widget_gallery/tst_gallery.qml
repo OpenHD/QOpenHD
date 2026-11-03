@@ -7,7 +7,7 @@ Item {
     id:scene;width:1600;height:900
     FontLoader {source:"../../qml/osdfonts/Archivo-Regular.ttf"}
     FontLoader {source:"../../qml/resources/Font Awesome 5 Free-Solid-900.otf"}
-    QtObject {id:settings_form;property bool darkMode:true;property bool showDeveloperSettings:false;property color pageBackground:"#091827";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c";property color primaryText:"#f2f6fb";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property int closes:0;function close_all(){closes++}}
+    QtObject {id:settings_form;property bool darkMode:true;property bool showAdvancedSettings:false;property bool showDeveloperSettings:false;property color pageBackground:"#091827";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c";property color primaryText:"#f2f6fb";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property int closes:0;function close_all(){closes++}}
     QtObject {id:hudOverlayGrid;property bool widgetGalleryPreviewActive:false;readonly property var widgetPreviewTargets: ({show_horizon:actualSource})}
     Rectangle {id:actualSource;visible:false;width:120;height:60;color:"#fa2222";Text {anchors.centerIn:parent;text:"REAL SOURCE";color:"white"}}
     QtObject {id:settings;
@@ -79,6 +79,7 @@ Item {
             scene.Window.window.width=1600;scene.Window.window.height=900;scene.width=1600;scene.height=900
             gallery.category="flight"
             settings_form.showDeveloperSettings=false
+            settings_form.showAdvancedSettings=false
             Catalog.widgets.forEach(function(w){settings[w.key]=false});gallery.revision++
         }
         function test_inventory_and_developer_gate(){
@@ -92,7 +93,26 @@ Item {
             compare(gallery.matches("developer").length,0)
             settings_form.showDeveloperSettings=true
             compare(gallery.availableWidgets.length,57)
-            compare(gallery.matches("developer").length,3)
+            compare(gallery.matches("developer").length,2)
+        }
+        function test_video_debug_advanced_gate_and_toggle(){
+            function videoEntries(){return gallery.availableWidgets.filter(function(w){return w.key==="show_video_pipeline_debug_widget"})}
+            compare(videoEntries().length,0)
+            settings_form.showAdvancedSettings=true
+            compare(gallery.availableWidgets.length,55)
+            compare(gallery.matches("developer").length,0)
+            compare(videoEntries().length,1)
+            gallery.category="link"
+            wait(80)
+            var toggle=visual(gallery,"widgetToggle_show_video_pipeline_debug_widget")
+            verify(toggle!==null);compare(toggle.checked,false)
+            mouseClick(toggle);compare(settings.show_video_pipeline_debug_widget,true)
+            mouseClick(toggle);compare(settings.show_video_pipeline_debug_widget,false)
+            gallery.applyPreset(3);compare(settings.show_video_pipeline_debug_widget,false)
+            settings_form.showAdvancedSettings=false
+            compare(videoEntries().length,0)
+            settings_form.showDeveloperSettings=true
+            compare(videoEntries().length,1)
         }
         function test_category_and_write(){
             gallery.category="navigation"

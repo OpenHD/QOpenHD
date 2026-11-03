@@ -71,8 +71,9 @@ var widgets = [
     "key": "show_video_pipeline_debug_widget",
     "title": "Video Debug Widget",
     "description": "Video Debug Widget",
-    "category": "developer",
-    "developer": true
+    "category": "link",
+    "advanced": true,
+    "developer": false
   },
   {
     "key": "show_artosyn_debug_widget",
