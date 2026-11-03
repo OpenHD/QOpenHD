@@ -2,6 +2,12 @@ name: build_windows_installer
 
 on:
   workflow_dispatch:
+    inputs:
+      signing_mode:
+        description: SignPath mode (test builds are not publicly trusted)
+        type: choice
+        options: [none, test, release]
+        default: none
   pull_request:
     paths-ignore:
       - '**.md'
@@ -16,6 +22,10 @@ on:
       - '**.adoc'
       - '.gitignore'
       - 'LICENSE'
+
+permissions:
+  contents: read
+  actions: read
 
 env:
   QT_VERSION: 5.15.2
@@ -47,6 +57,8 @@ jobs:
 
   build:
     needs: openssl
+    env:
+      SIGNING_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.signing_mode || 'none' }}
     runs-on: windows-2022
 
     defaults:
@@ -58,6 +70,28 @@ jobs:
         uses: actions/checkout@v7
         with:
           submodules: recursive
+
+      - name: Validate signing configuration
+        if: env.SIGNING_MODE != 'none'
+        env:
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+          SIGNPATH_ORGANIZATION_ID: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          SIGNPATH_PROJECT_SLUG: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          SIGNPATH_TEST_CERTIFICATE_BASE64: ${{ vars.SIGNPATH_TEST_CERTIFICATE_BASE64 }}
+          SIGNPATH_TEST_SIGNING_POLICY_SLUG: ${{ vars.SIGNPATH_TEST_SIGNING_POLICY_SLUG }}
+          SIGNPATH_RELEASE_SIGNING_POLICY_SLUG: ${{ vars.SIGNPATH_RELEASE_SIGNING_POLICY_SLUG }}
+        run: |
+          if ($env:GITHUB_REPOSITORY -ne 'OpenHD/QOpenHD' -or $env:GITHUB_EVENT_NAME -ne 'workflow_dispatch') {
+            throw 'Signing requires a manual run in OpenHD/QOpenHD'
+          }
+          foreach ($name in @('SIGNPATH_API_TOKEN', 'SIGNPATH_ORGANIZATION_ID', 'SIGNPATH_PROJECT_SLUG')) {
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) { throw "Missing $name" }
+          }
+          $policy = if ($env:SIGNING_MODE -eq 'test') { $env:SIGNPATH_TEST_SIGNING_POLICY_SLUG } else { $env:SIGNPATH_RELEASE_SIGNING_POLICY_SLUG }
+          if ([string]::IsNullOrWhiteSpace($policy)) { throw 'Missing signing policy' }
+          if ($env:SIGNING_MODE -eq 'test') {
+            & tools/trust_signpath_test_certificate.ps1 -CertificateBase64 $env:SIGNPATH_TEST_CERTIFICATE_BASE64
+          }
 
       - name: Install Qt
         id: install-qt
@@ -186,6 +220,51 @@ jobs:
             Remove-Item -LiteralPath $probe
           }
 
+      - name: Prepare application and uninstaller for signing
+        if: env.SIGNING_MODE != 'none'
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP 'qopenhd-unsigned-application'
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          $generator = Join-Path $env:RUNNER_TEMP 'qopenhd-uninstaller-generator.exe'
+          & "${env:ProgramFiles(x86)}/NSIS/makensis.exe" /DINNER "/DOUTFILE=$generator" "/DUNINSTALLER_OUTPUT=$stage/QOpenHD-Uninstall.exe" tools/qopenhd_installer.nsi
+          if ($LASTEXITCODE -ne 0) { throw 'Uninstaller generator build failed' }
+          $process = Start-Process -FilePath $generator -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -ne 0 -or !(Test-Path "$stage/QOpenHD-Uninstall.exe")) { throw 'Uninstaller generation failed' }
+          Copy-Item build/release/QOpenHD.exe $stage
+
+      - name: Upload unsigned application
+        if: env.SIGNING_MODE != 'none'
+        id: unsigned-application
+        uses: actions/upload-artifact@v4
+        with:
+          name: QOpenHD-unsigned-application
+          path: ${{ runner.temp }}/qopenhd-unsigned-application/*
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Sign application with SignPath
+        if: env.SIGNING_MODE != 'none'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNING_MODE == 'test' && vars.SIGNPATH_TEST_SIGNING_POLICY_SLUG || vars.SIGNPATH_RELEASE_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: qopenhd-application
+          github-artifact-id: ${{ steps.unsigned-application.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 1800
+          output-artifact-directory: ${{ runner.temp }}/qopenhd-signed-application
+
+      - name: Verify signed application
+        if: env.SIGNING_MODE != 'none'
+        run: |
+          foreach ($file in @('QOpenHD.exe', 'QOpenHD-Uninstall.exe')) {
+            $source = Join-Path $env:RUNNER_TEMP "qopenhd-signed-application/$file"
+            & tools/verify_windows_signature.ps1 -Path $source -SigningMode $env:SIGNING_MODE -ExpectedSignerThumbprint $env:SIGNPATH_TEST_CERTIFICATE_THUMBPRINT
+            Copy-Item -LiteralPath $source -Destination build/release -Force
+          }
+
       - name: Build NSIS installer
         run: |
           $buildDir = Join-Path $env:GITHUB_WORKSPACE "build"
@@ -202,13 +281,51 @@ jobs:
             $makensis = "makensis"
           }
 
-          & $makensis `
+          $signArguments = @()
+          if ($env:SIGNING_MODE -ne 'none') {
+            $signArguments += "/DSIGNED_UNINSTALLER=$deployDir/QOpenHD-Uninstall.exe"
+          }
+          & $makensis @signArguments `
             "/DDESTDIR=$deployDir" `
             "/DOUTFILE=$installer" `
             $script
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+
+      - name: Upload unsigned installer
+        if: env.SIGNING_MODE != 'none'
+        id: unsigned-installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: QOpenHD-unsigned-installer
+          path: build/QOpenHD-Windows-Installer.exe
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Sign installer with SignPath
+        if: env.SIGNING_MODE != 'none'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNING_MODE == 'test' && vars.SIGNPATH_TEST_SIGNING_POLICY_SLUG || vars.SIGNPATH_RELEASE_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: qopenhd-installer
+          github-artifact-id: ${{ steps.unsigned-installer.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 1800
+          output-artifact-directory: ${{ runner.temp }}/qopenhd-signed-installer
+
+      - name: Verify signed installer
+        if: env.SIGNING_MODE != 'none'
+        run: |
+          foreach ($file in @('QOpenHD-Windows-Installer.exe')) {
+            $source = Join-Path $env:RUNNER_TEMP "qopenhd-signed-installer/$file"
+            & tools/verify_windows_signature.ps1 -Path $source -SigningMode $env:SIGNING_MODE -ExpectedSignerThumbprint $env:SIGNPATH_TEST_CERTIFICATE_THUMBPRINT
+            Copy-Item -LiteralPath $source -Destination build -Force
+          }
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v7
         with:
-          name: QOpenHD-Windows-Installer
+          name: QOpenHD-Windows-Installer${{ env.SIGNING_MODE == 'test' && '-Test-Signed' || (env.SIGNING_MODE == 'release' && '-Signed' || '-Unsigned') }}
           path: build/QOpenHD-Windows-Installer.exe
