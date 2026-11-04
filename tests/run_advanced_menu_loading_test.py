@@ -42,13 +42,33 @@ Item {
     test = '''import QtQuick 2.12
 import QtTest 1.2
 Item {
-    width: 850; height: 480
+    id: fixture; width: 850; height: 480
     QtObject { id: _qopenhd; property string version_string: "test"; property bool launchedFromQtCreator: false; property bool debugMenuPreview: false; property int debugMenuPreviewLevel: 0; onDebugMenuPreviewLevelChanged: debugMenuPreview = debugMenuPreviewLevel > 0 }
     QtObject { id: _uiSimulator; property bool active: false; property var profile: ({accessMode:0}) }
     QtObject { id: hudOverlayGrid; function regain_focus() {} }
     Loader { id: menu; anchors.fill: parent; source: "ConfigPopup.qml" }
     TestCase {
         name: "AdvancedMenuLoading"; when: windowShown
+        function test_settings_back_touch_target() {
+            tryCompare(menu, "status", Loader.Ready)
+            var root = menu.item
+            var button = findChild(root, "settingsBackButton")
+            verify(button !== null)
+            verify(button.width >= 48); verify(button.height >= 48)
+            root.openSettings()
+            mouseClick(button, button.width - 2, button.height - 2)
+            compare(root.visible, false)
+            root.openSettings()
+            fixture.width = 1280
+            root.compactSidebar = false
+            tryCompare(root, "compactSidebar", false)
+            verify(button.width >= 100); verify(button.height >= 48)
+            mouseClick(button, 2, 2)
+            compare(root.visible, false)
+            fixture.width = 850
+            root.compactSidebar = true
+            root.openSettings()
+        }
         function test_bottom_button_opens_backup() {
             tryCompare(menu, "status", Loader.Ready)
             var root=menu.item, title=root.menuPageTitle
@@ -218,7 +238,7 @@ Item {
 }
 '''
     env = os.environ.copy()
-    env.update(QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software",
+    env.update(QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software", QT_QUICK_CONTROLS_STYLE="Basic",
                QT_FORCE_STDERR_LOGGING="1", QML_DISABLE_DISK_CACHE="1",
                QML2_IMPORT_PATH=str(args.qt_bin.parent / "qml"),
                QT_QPA_PLATFORM_PLUGIN_PATH=str(args.qt_bin.parent / "plugins/platforms"))

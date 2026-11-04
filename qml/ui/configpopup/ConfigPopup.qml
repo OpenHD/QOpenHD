@@ -194,12 +194,16 @@ Rectangle {
             spacing: 3
             AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                 id: logoBackButton
-                width: 52
-                height: MenuTypography.controlHeight
+                objectName: "settingsBackButton"
+                width: brand.width
+                height: 56
                 x: Math.round((brand.width - width) / 2)
                 hoverEnabled: true
                 activeFocusOnTab: true
-                padding: 5
+                padding: 6
+                Accessible.name: qsTr("Back to video")
+                ToolTip.visible: hovered
+                ToolTip.text: qsTr("Back to video")
                 onClicked: settings_form.close_all()
                 background: Item { }
                 contentItem: Canvas {

@@ -42,7 +42,9 @@ FocusScope {
     readonly property string controlKind: uiMetadata && uiMetadata.control
                                                   ? String(uiMetadata.control) : "unsupported"
     readonly property bool useSlider: ["BITRATE_MBITS", "BRIGHTNESS", "CONTRAST",
-                                       "SATURATION", "SHARPNESS"].indexOf(paramId) >= 0
+                                       "SATURATION", "SHARPNESS", "EXPOSURE_LC"].indexOf(paramId) >= 0
+    readonly property bool centeredImageValue: ["BRIGHTNESS", "CONTRAST",
+                                               "SATURATION", "SHARPNESS"].indexOf(paramId) >= 0
     readonly property bool useToggle: controlKind === "toggle"
     readonly property bool requiresReboot: settingsModel && paramId.length > 0
                                            ? settingsModel.get_param_requires_manual_reboot(paramId) : false
@@ -143,6 +145,10 @@ FocusScope {
     }
 
     function sliderMinimum() {
+        // Older device metadata omits these bounds and exposes INT32_MIN/MAX.
+        // Keep the backend's 0..200 values; only the labels are centered on 100.
+        if (centeredImageValue) return 0
+        if (paramId === "EXPOSURE_LC") return -10
         if (settingsModel && settingsModel.int_param_has_min_max(paramId))
             return settingsModel.int_param_get_min_value(paramId)
         if (paramId === "BITRATE_MBITS") return 1
@@ -150,6 +156,8 @@ FocusScope {
     }
 
     function sliderMaximum() {
+        if (centeredImageValue) return 200
+        if (paramId === "EXPOSURE_LC") return 10
         if (settingsModel && settingsModel.int_param_has_min_max(paramId))
             return settingsModel.int_param_get_max_value(paramId)
         if (paramId === "BITRATE_MBITS") return 100
@@ -158,6 +166,12 @@ FocusScope {
 
     function valueSuffix(id) {
         return id === "BITRATE_MBITS" ? qsTr(" Mbit/s") : ""
+    }
+
+    function sliderValueText(value) {
+        var displayed = Math.round(value) - (centeredImageValue ? 100 : 0)
+        return (displayed > 0 && (centeredImageValue || paramId === "EXPOSURE_LC") ? "+" : "")
+                + String(displayed) + valueSuffix(paramId)
     }
 
     function warnIfNeeded() {
@@ -586,14 +600,15 @@ FocusScope {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 16
-                    Text { text: String(Math.round(valueSlider.from)) + root.valueSuffix(root.paramId); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
+                    Text { objectName: "cameraSliderMinimum"; text: root.sliderValueText(valueSlider.from); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                     Item { Layout.fillWidth: true }
-                    Text { text: String(Math.round(valueSlider.value)) + root.valueSuffix(root.paramId); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
+                    Text { objectName: "cameraSliderValue"; text: root.sliderValueText(valueSlider.value); color: settings_form.accentColor; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
                     Item { Layout.fillWidth: true }
-                    Text { text: String(Math.round(valueSlider.to)) + root.valueSuffix(root.paramId); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
+                    Text { objectName: "cameraSliderMaximum"; text: root.sliderValueText(valueSlider.to); color: settings_form.secondaryText; font.pixelSize: MenuTypography.helper; font.family: MenuTypography.family }
                 }
                 Slider {
                     id: valueSlider
+                    objectName: "cameraValueSlider"
                     property bool locallyEdited: false
                     property int observedRevision: root.modelUpdate
                     Layout.fillWidth: true

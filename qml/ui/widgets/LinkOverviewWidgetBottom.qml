@@ -514,10 +514,12 @@ BaseWidget {
         if (typeof t === "string") {
             if (t.indexOf(":") !== -1) {
                 var parts = t.split(":");
-                if (parts.length >= 2) {
-                    var mPart = parts.length === 2 ? parts[0] : parts[parts.length - 2];
-                    var sPart = parts[parts.length - 1];
-                    return pad2(mPart) + ":" + pad2(sPart);
+                if (parts.length === 2 || parts.length === 3) {
+                    var hours = parts.length === 3 ? Number(parts[0]) : 0;
+                    var minutes = Number(parts[parts.length - 2]);
+                    var seconds = Number(parts[parts.length - 1]);
+                    if (isFinite(hours) && isFinite(minutes) && isFinite(seconds))
+                        return seconds_to_mmss(hours * 3600 + minutes * 60 + seconds);
                 }
             }
             var asNum = parseInt(t);

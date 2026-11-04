@@ -1,0 +1,104 @@
+import QtQuick 2.12
+import QtTest 1.2
+
+Item {
+    id: fixture
+    width: 850; height: 480
+    QtObject {
+        id: settings_form
+        property bool darkMode: true
+        property bool showAdvancedSettings: false
+        property color primaryText: "white"
+        property color secondaryText: "#aebdcb"
+        property color accentColor: "#08a5df"
+        property color lineColor: "#33485d"
+        property color panelBackground: "#102235"
+        property color panelBackgroundRaised: "#15283b"
+    }
+    QtObject { id: _messageBoxInstance; function set_text_and_show(message) {} }
+    QtObject { id: _fcMavlinkSystem; property bool is_alive: true; property var flight_time: "00:00" }
+    QtObject {
+        id: backend
+        property int update_count: 0
+        property int writes: 0
+        property string writtenId: ""
+        property int writtenValue: -999
+        function get_ui_metadata(id) { return {control: "integer"} }
+        function param_string_exists(id) { return false }
+        function get_param_requires_manual_reboot(id) { return false }
+        function get_warning_before_safe(id) { return "" }
+        // Reproduce older metadata with missing bounds.
+        function int_param_has_min_max(id) { return true }
+        function int_param_get_min_value(id) { return -2147483648 }
+        function int_param_get_max_value(id) { return 2147483647 }
+        function try_set_param_int_async(id, value, log) {
+            writes++; writtenId = id; writtenValue = value
+        }
+    }
+    function previewTelemetry(system, key, fallback) { return fallback }
+FLIGHT_FUNCTIONS
+    Component { id: rowComponent; CameraSettingRow { width: 800; height: implicitHeight; settingsModel: backend } }
+    TestCase {
+        name: "CameraControlsAndFlightTime"
+        when: windowShown
+        function init() { backend.writes = 0; _fcMavlinkSystem.is_alive = true }
+        function test_signed_image_labels_data() {
+            return [{tag:"brightness",id:"BRIGHTNESS"}, {tag:"contrast",id:"CONTRAST"},
+                    {tag:"saturation",id:"SATURATION"}, {tag:"sharpness",id:"SHARPNESS"}]
+        }
+        function test_signed_image_labels(data) {
+            var row = createTemporaryObject(rowComponent, fixture, {paramId:data.id, paramValue:100})
+            verify(row !== null)
+            var slider = findChild(row, "cameraValueSlider")
+            verify(slider !== null)
+            compare(slider.from, 0); compare(slider.to, 200)
+            compare(findChild(row,"cameraSliderMinimum").text, "-100")
+            compare(findChild(row,"cameraSliderMaximum").text, "+100")
+            compare(findChild(row,"cameraSliderValue").text, "0")
+            row.paramValue = 0
+            compare(findChild(row,"cameraSliderValue").text, "-100")
+            row.paramValue = 200
+            compare(findChild(row,"cameraSliderValue").text, "+100")
+            row.paramValue = 100
+            slider.forceActiveFocus()
+            keyClick(Qt.Key_Right); keyClick(Qt.Key_Return)
+            compare(backend.writtenId, data.id)
+            compare(backend.writtenValue, 101) // The wire value must not become +1.
+            compare(findChild(row,"cameraSliderValue").text, "+1")
+        }
+        function test_exposure_unit_steps_both_directions() {
+            var row = createTemporaryObject(rowComponent, fixture, {paramId:"EXPOSURE_LC", paramValue:0})
+            var slider = findChild(row,"cameraValueSlider")
+            verify(slider !== null)
+            compare(slider.from, -10); compare(slider.to, 10); compare(slider.stepSize, 1)
+            slider.forceActiveFocus()
+            keyClick(Qt.Key_Right); keyClick(Qt.Key_Return)
+            compare(backend.writtenValue, 1)
+            row.paramValue = 1
+            keyClick(Qt.Key_Left); keyClick(Qt.Key_Left); keyClick(Qt.Key_Return)
+            compare(backend.writtenValue, -1)
+            compare(findChild(row,"cameraSliderValue").text, "-1")
+            mouseClick(slider, slider.width - slider.rightPadding - 1, slider.height / 2)
+            compare(backend.writtenValue, 10)
+            row.paramValue = 10
+            keyClick(Qt.Key_Right); keyClick(Qt.Key_Return)
+            compare(backend.writtenValue, 10)
+        }
+        function test_flight_time_data() {
+            return [{tag:"before-hour",value:"59:59",expected:"59:59"},
+                    {tag:"one-hour",value:"01:00:00",expected:"60:00"},
+                    {tag:"after-hour",value:"01:00:01",expected:"60:01"},
+                    {tag:"multiple-hours",value:"02:03:04",expected:"123:04"},
+                    {tag:"numeric",value:3601,expected:"60:01"},
+                    {tag:"numeric-string",value:"3601",expected:"60:01"}]
+        }
+        function test_flight_time(data) {
+            _fcMavlinkSystem.flight_time = data.value
+            compare(fixture.format_flight_time_short(), data.expected)
+        }
+        function test_offline_flight_time() {
+            _fcMavlinkSystem.is_alive = false
+            compare(fixture.format_flight_time_short(), "00:00")
+        }
+    }
+}
