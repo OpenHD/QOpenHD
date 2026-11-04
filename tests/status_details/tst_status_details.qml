@@ -224,6 +224,20 @@ Item {
    compare(airPopup.details.hotspot_clients,2)
    airPopup.close()
   }
+  function test_resource_units() {
+   tryVerify(function() { return menu.statusPanel !== null })
+   findChild(menu,"statusOverviewCards").unitDetailsRequested(0)
+   tryVerify(function() { return findChild(menu,"groundStationDetailsPopup") !== null })
+   var popup=findChild(menu,"groundStationDetailsPopup")
+   tryCompare(popup,"visible",true)
+   compare(popup.usageText(38 * 1048576, 40 * 1048576), "38.0 / 40.0 MiB (95 %)")
+   compare(popup.usageText(17 * 1048576, 66 * 1048576), "17.0 / 66.0 MiB (26 %)")
+   compare(popup.usageText(512 * 1048576, 1073741824), "0.5 / 1.0 GiB (50 %)")
+   compare(popup.usageText(NaN, 40 * 1048576), "Not reported")
+   compare(popup.freeStorageText(49.5), "49.5 MiB free")
+   compare(popup.freeStorageText(2048), "2.0 GiB free")
+   popup.close()
+  }
   function test_wifi_chipsets() {
    tryVerify(function() { return menu.statusPanel !== null })
    var cards=findChild(menu,"statusOverviewCards")

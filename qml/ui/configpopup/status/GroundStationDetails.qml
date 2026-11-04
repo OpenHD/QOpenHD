@@ -56,10 +56,17 @@ Popup {
         }
         return names
     }
+    function usageText(used, total) {
+        if (!isFinite(used) || !isFinite(total) || !(total > 0) || used < 0 || used > total) return unavailable
+        var divisor = total < 1073741824 ? 1048576 : 1073741824
+        var unitName = total < 1073741824 ? "MiB" : "GiB"
+        return qsTr("%1 / %2 %3 (%4 %)").arg((used/divisor).toFixed(1)).arg((total/divisor).toFixed(1)).arg(unitName).arg(Math.round(used*100/total))
+    }
     function storageText(prefix) {
-        var used=details[prefix+"_used_bytes"],total=details[prefix+"_total_bytes"]
-        if (!(total > 0) || used < 0 || used > total) return unavailable
-        return qsTr("%1 / %2 GiB (%3 %)").arg((used/1073741824).toFixed(1)).arg((total/1073741824).toFixed(1)).arg(Math.round(used*100/total))
+        return usageText(details[prefix+"_used_bytes"], details[prefix+"_total_bytes"])
+    }
+    function freeStorageText(mib) {
+        return mib < 1024 ? qsTr("%1 MiB free").arg(mib.toFixed(1)) : qsTr("%1 GiB free").arg((mib/1024).toFixed(1))
     }
     readonly property string unavailable: qsTr("Not reported")
     // OpenHD's legacy ONBOARD_COMPUTER_STATUS sends RAM usage as a percentage.
@@ -118,8 +125,8 @@ Popup {
                 Repeater {
                     model: [
                         {label: qsTr("CPU Usage"), icon: "\uf2db", value: dialog.live && (unit.onboard_uptime_ms >= 0 || unit.curr_soc_temp_degree > 0) ? unit.curr_cpuload_perc + " %" : dialog.unavailable},
-                        {label: qsTr("RAM Usage"), icon: "\uf538", value: dialog.ramPercent >= 0 && dialog.ramTotal > 0 ? (dialog.ramTotal * dialog.ramPercent / 100 / 1024).toFixed(1) + " GB / " + (dialog.ramTotal / 1024).toFixed(1) + " GB (" + dialog.ramPercent + " %)" : dialog.unavailable},
-                        {label: qsTr("Storage (System)"), icon: "\uf0a0", value: dialog.details.system_total_bytes > 0 ? dialog.storageText("system") : dialog.live && unit.curr_space_left_mb > 0 ? qsTr("%1 GiB free").arg((unit.curr_space_left_mb / 1024).toFixed(1)) : dialog.unavailable}
+                        {label: qsTr("RAM Usage"), icon: "\uf538", value: dialog.ramPercent >= 0 && dialog.ramTotal > 0 ? dialog.usageText(dialog.ramTotal * 1048576 * dialog.ramPercent / 100, dialog.ramTotal * 1048576) : dialog.unavailable},
+                        {label: qsTr("Storage (System)"), icon: "\uf0a0", value: dialog.details.system_total_bytes > 0 ? dialog.storageText("system") : dialog.live && unit.curr_space_left_mb > 0 ? dialog.freeStorageText(unit.curr_space_left_mb) : dialog.unavailable}
                     ]
                     Item {
                         x: 16; y: 62 + index * 58; width: resourcePanel.width - 32; height: 58
