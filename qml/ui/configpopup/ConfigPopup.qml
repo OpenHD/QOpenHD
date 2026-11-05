@@ -190,62 +190,13 @@ Rectangle {
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.margins: settings_form.compactSidebar ? 10 : 20
+            anchors.margins: settings_form.compactSidebar ? 4 : 12
             spacing: 3
-            AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
+            SettingsBackButton {
                 id: logoBackButton
-                objectName: "settingsBackButton"
                 width: brand.width
-                height: 56
-                x: Math.round((brand.width - width) / 2)
-                hoverEnabled: true
-                activeFocusOnTab: true
-                padding: 6
-                Accessible.name: qsTr("Back to video")
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Back to video")
+                darkMode: settings_form.darkMode
                 onClicked: settings_form.close_all()
-                background: Item { }
-                contentItem: Canvas {
-                    id: openHdMark
-                    property bool inverted: logoBackButton.hovered || logoBackButton.activeFocus || logoBackButton.down
-                    antialiasing: true
-                    renderTarget: Canvas.FramebufferObject
-                    onInvertedChanged: requestPaint()
-                    onPaint: {
-                        var ctx = getContext("2d")
-                        var side = Math.min(width, height)
-                        var scale = side / 42
-                        var center = side / 2
-                        var primaryMarkColor = settings_form.darkMode ? "#f3f7fb" : "#163d62"
-                        var accentMarkColor = "#08a5df"
-                        ctx.setTransform(1, 0, 0, 1, 0, 0)
-                        ctx.clearRect(0, 0, width, height)
-                        ctx.translate((width - side) / 2, (height - side) / 2)
-                        ctx.lineWidth = 3.2 * scale
-                        ctx.lineCap = "round"
-
-                        ctx.strokeStyle = inverted ? accentMarkColor : primaryMarkColor
-                        for (var upper = 0; upper < 3; ++upper) {
-                            ctx.beginPath()
-                            ctx.arc(center, center, (7 + upper * 5) * scale, Math.PI, Math.PI * 1.5, false)
-                            ctx.stroke()
-                        }
-
-                        ctx.strokeStyle = inverted ? primaryMarkColor : accentMarkColor
-                        for (var lower = 0; lower < 3; ++lower) {
-                            ctx.beginPath()
-                            ctx.arc(center, center, (7 + lower * 5) * scale, 0, Math.PI * 0.5, false)
-                            ctx.stroke()
-                        }
-                    }
-                    onWidthChanged: requestPaint()
-                    onHeightChanged: requestPaint()
-                    Connections {
-                        target: settings_form
-                        onDarkModeChanged: openHdMark.requestPaint()
-                    }
-                }
             }
         }
 

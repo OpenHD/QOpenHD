@@ -54,7 +54,8 @@ Item {
             var root = menu.item
             var button = findChild(root, "settingsBackButton")
             verify(button !== null)
-            verify(button.width >= 48); verify(button.height >= 48)
+            verify(button.width >= 64); verify(button.height >= 76)
+            compare(button.text, "Back")
             root.openSettings()
             mouseClick(button, button.width - 2, button.height - 2)
             compare(root.visible, false)
@@ -253,6 +254,7 @@ Item {
         (folder / "backup/BackupRestorePopup.qml").write_text('import QtQuick 2.12\nItem {objectName:"settingsBackupPopup";property bool opened:false;function open(){opened=true}}\n')
         shutil.copy(menu_dir / "MenuTypography.js", folder)
         shutil.copy(menu_dir / "AdvancedActionButton.qml", folder)
+        shutil.copy(menu_dir / "SettingsBackButton.qml", folder)
         (folder / "ConfigPopup.qml").write_text(menu, encoding="utf-8")
         shutil.copy(menu_dir / "AdvancedPageLoader.qml", folder)
         for name in pages:

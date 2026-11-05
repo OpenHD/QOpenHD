@@ -109,6 +109,7 @@
         <file>ui/configpopup/AdvancedPageLoader.qml</file>
         <file>ui/configpopup/AdvancedCard.qml</file>
         <file>ui/configpopup/AdvancedActionButton.qml</file>
+        <file>ui/configpopup/SettingsBackButton.qml</file>
         <file>ui/configpopup/AdvancedTabButton.qml</file>
         <file>ui/configpopup/openhd_settings/AirSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/AirSettingRow.qml</file>
