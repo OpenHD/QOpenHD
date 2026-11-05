@@ -114,7 +114,7 @@ FocusScope {
             "SENSOR_MODE": qsTr("Override the capture dimensions, or use Automatic for the selected video resolution."),
             "CAMERA_TYPE": qsTr("Select the camera connected to this air-unit slot."),
             "LIBCAMERA_IMPL": qsTr("Switch between the GStreamer libcamerasrc pipeline and the direct libcamera camera application. The stream restarts after a change."),
-            "ROCKCHIP_IMPL": qsTr("Switch between GStreamer with Rockchip MPP elements and OpenHD's direct MPP implementation. OpenHD restarts after a change."),
+            "ROCKCHIP_IMPL": qsTr("Native MPP is standard on X21 and provides independent high-quality recording. GStreamer is an emergency option that records the transmitted stream. OpenHD restarts after a change."),
             "AWB_MODE": qsTr("Adapt image colors to the lighting conditions."),
             "AWB_MODE_LC": qsTr("Adapt image colors to the lighting conditions."),
             "EXP_MODE": qsTr("Choose how the camera adapts exposure to the scene."),
