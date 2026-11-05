@@ -55,7 +55,7 @@ Item {
             var button = findChild(root, "settingsBackButton")
             verify(button !== null)
             verify(button.width >= 64); verify(button.height >= 76)
-            compare(button.text, "Back")
+            compare(button.text, "")
             root.openSettings()
             mouseClick(button, button.width - 2, button.height - 2)
             compare(root.visible, false)
@@ -255,6 +255,8 @@ Item {
         shutil.copy(menu_dir / "MenuTypography.js", folder)
         shutil.copy(menu_dir / "AdvancedActionButton.qml", folder)
         shutil.copy(menu_dir / "SettingsBackButton.qml", folder)
+        for name in ("settings-logo-dark.svg", "settings-logo-light.svg"):
+            shutil.copy(menu_dir / name, folder)
         (folder / "ConfigPopup.qml").write_text(menu, encoding="utf-8")
         shutil.copy(menu_dir / "AdvancedPageLoader.qml", folder)
         for name in pages:

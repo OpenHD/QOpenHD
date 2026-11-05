@@ -50,7 +50,10 @@ Item {
         function test_compact_touch_area() {
             var b=button()
             compare(b.width,64);compare(b.height,76)
-            compare(b.text,"Back")
+            compare(b.text,"")
+            var logo=findChild(b,"settingsBackLogo")
+            verify(logo !== null);tryCompare(logo,"status",Image.Ready)
+            verify(logo.width >= 52)
             verify(b.x>=0 && b.x+b.width<=rail.width)
             mouseClick(b,2,2);compare(closed,1)
             mouseClick(b,b.width-2,2);compare(closed,2)
@@ -83,7 +86,7 @@ Item {
 '''.replace('BRAND', brand).replace('OUTPUT', json.dumps(output.as_posix()))
 with tempfile.TemporaryDirectory(prefix='qopenhd-back-button-') as temp:
     folder = Path(temp)
-    for name in ('SettingsBackButton.qml', 'MenuTypography.js'):
+    for name in ('SettingsBackButton.qml', 'settings-logo-dark.svg', 'settings-logo-light.svg', 'MenuTypography.js'):
         shutil.copy2(menu / name, folder / name)
     for name in ('Archivo-Regular.ttf', 'Archivo-Bold.ttf'):
         shutil.copy2(ROOT / 'qml/osdfonts' / name, folder / name)
