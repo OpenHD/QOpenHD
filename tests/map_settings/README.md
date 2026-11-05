@@ -11,3 +11,9 @@ fixtures: screenshots prove layout, not live imagery or successful package gener
 
 `tests/run_map_provider_test.py --qt-bin <Qt bin>` additionally checks the production map
 lifecycle, provider switching/recovery and real Qt Location pan/follow interactions.
+
+`tests/run_map_compiled_layout_test.py --qt-bin <Qt bin> --make-bin <compiler bin>`
+loads the compiled Map page through the real lazy Application/OSD shell, initially
+at zero width. It checks ADS-B row/editor bounds at 420, 800, 1100 and 1600 pixels
+and decodes the packaged PNG logo. Use `--platform offscreen` for Qt 6 headless
+captures. These desktop checks do not replace Android ARM64 device validation.

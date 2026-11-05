@@ -30,7 +30,7 @@ Button {
             anchors.centerIn: parent
             width: Math.min(parent.width, parent.height)
             height: width
-            source: control.darkMode ? "settings-logo-dark.svg" : "settings-logo-light.svg"
+            source: control.darkMode ? "settings-logo-dark.png" : "settings-logo-light.png"
             fillMode: Image.PreserveAspectFit
             sourceSize.width: Math.ceil(width * Screen.devicePixelRatio)
             sourceSize.height: Math.ceil(height * Screen.devicePixelRatio)

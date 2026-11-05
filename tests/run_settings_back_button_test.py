@@ -86,7 +86,7 @@ Item {
 '''.replace('BRAND', brand).replace('OUTPUT', json.dumps(output.as_posix()))
 with tempfile.TemporaryDirectory(prefix='qopenhd-back-button-') as temp:
     folder = Path(temp)
-    for name in ('SettingsBackButton.qml', 'settings-logo-dark.svg', 'settings-logo-light.svg', 'MenuTypography.js'):
+    for name in ('SettingsBackButton.qml', 'settings-logo-dark.png', 'settings-logo-light.png', 'MenuTypography.js'):
         shutil.copy2(menu / name, folder / name)
     for name in ('Archivo-Regular.ttf', 'Archivo-Bold.ttf'):
         shutil.copy2(ROOT / 'qml/osdfonts' / name, folder / name)

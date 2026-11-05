@@ -93,39 +93,41 @@ FocusScope {
     MapSettingsCard {
      id:displayCard;width:parent.width;height:implicitHeight;title:qsTr("Map Display");subtitle:qsTr("Configure the map on your flight screen");icon:"\uf279"
      Grid {
-      Layout.fillWidth:true;columns:width>=560?2:1;spacing:12
+      // A lazy page can start at zero width. Size rows from the card rather
+      // than feeding the Grid implicit width back into its own children.
+      Layout.fillWidth:true;Layout.preferredWidth:displayCard.contentWidth;Layout.preferredHeight:implicitHeight;columns:displayCard.contentWidth>=560?2:1;spacing:12
       MapSettingRow {
-       id:showMapRow;width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       id:showMapRow;width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Show map");hint:qsTr("Display the map on the OSD");controlWidth:48
        WidgetToggle {id:showMapControl;objectName:"mapShow";anchors.fill:parent;checked:settings.show_map;onToggled:settings.show_map=checked}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Small map opacity");hint:qsTr("Opacity when minimised")
        MapValueSlider {anchors.fill:parent;from:0.1;to:1;stepSize:0.1;value:settings.map_opacity_minimized;displayText:Math.round(value*100)+"%";onMoved:settings.map_opacity_minimized=value}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Follow aircraft");hint:qsTr("Keep the aircraft centred");controlWidth:48
        WidgetToggle {objectName:"mapFollow";anchors.fill:parent;checked:root.mapTarget&&root.mapTarget.followDrone;enabled:!!root.mapTarget;onToggled:root.mapTarget.followDrone=checked}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Expanded map opacity");hint:qsTr("Opacity when expanded")
        MapValueSlider {anchors.fill:parent;from:0.1;to:1;stepSize:0.1;value:settings.map_opacity_maximized;displayText:Math.round(value*100)+"%";onMoved:settings.map_opacity_maximized=value}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Zoom level");hint:qsTr("Default map zoom")
        MapValueSlider {anchors.fill:parent;objectName:"mapZoom";from:1;to:30;stepSize:1;value:settings.map_zoom;displayText:Math.round(value).toString();onMoved:root.setZoom(value)}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Lock to drone direction");hint:qsTr("Rotate with the drone heading");controlWidth:48
        WidgetToggle {objectName:"mapDirection";anchors.fill:parent;checked:settings.map_orientation;onToggled:settings.map_orientation=checked}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Small map shape");hint:qsTr("Shape of the minimised map");controlWidth:shapeChoices.implicitWidth;minimumControlWidth:shapeChoices.implicitWidth
        RowLayout {id:shapeChoices;anchors.fill:parent;spacing:6
         MapActionButton {objectName:"mapShapeRound";Layout.fillWidth:true;text:qsTr("Round");primary:settings.map_round;onClicked:settings.map_round=true}
@@ -133,34 +135,34 @@ FocusScope {
        }
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Show drone track");hint:qsTr("Draw the aircraft's path");controlWidth:48
        WidgetToggle {objectName:"mapTrack";anchors.fill:parent;checked:settings.map_drone_track;onToggled:settings.map_drone_track=checked}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Small map size");hint:qsTr("Width of the minimised map")
        MapValueSlider {anchors.fill:parent;objectName:"mapSize";from:0.25;to:8;stepSize:0.05;value:settings.map_size;displayText:root.mapTarget?Math.round(root.mapTarget.compactWidth)+" px":"--";onMoved:settings.map_size=value}
       }
       MapSettingRow {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
+       width:(displayCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight
        label:qsTr("Show mission waypoints");hint:qsTr("Display the mission on the map");controlWidth:48
        WidgetToggle {objectName:"mapWaypoints";anchors.fill:parent;checked:settings.map_show_mission_waypoints;onToggled:settings.map_show_mission_waypoints=checked}
       }
      }
     }
     MapSettingsCard {
-     width:parent.width;height:implicitHeight;title:qsTr("Map Source & Style");subtitle:qsTr("Map provider, imagery and credentials");icon:"\uf03e"
+     id:sourceCard;width:parent.width;height:implicitHeight;title:qsTr("Map Source & Style");subtitle:qsTr("Map provider, imagery and credentials");icon:"\uf03e"
      Grid {
-      Layout.fillWidth:true;columns:width>=650?3:1;spacing:10
+      Layout.fillWidth:true;Layout.preferredWidth:sourceCard.contentWidth;Layout.preferredHeight:implicitHeight;columns:sourceCard.contentWidth>=650?3:1;spacing:10
       Column {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
+       width:(sourceCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
        Text {text:qsTr("Map Provider");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
 
        CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;objectName:"mapProvider";optionIcon:"\uf279";width:parent.width;height:Typography.controlHeight;model:root.mapTarget?root.mapTarget.pluginModel:[];textRole:"description";currentIndex:settings.selected_map_provider;onActivated:settings.selected_map_provider=currentIndex}
       }
       Column {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
+       width:(sourceCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
        Text {text:qsTr("Map Style");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
 
        CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;
@@ -171,30 +173,30 @@ FocusScope {
        }
       }
       Column {
-       width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
+       width:(sourceCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
        Text {text:qsTr("Mapbox API key");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
 
        TextField {objectName:"mapApiKey";width:parent.width;height:Typography.controlHeight;leftPadding:12;rightPadding:12;topPadding:0;bottomPadding:0;verticalAlignment:TextInput.AlignVCenter;text:settings.map_api_key;placeholderText:"pk.xxxxx";echoMode:TextInput.Password;selectByMouse:true;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;onEditingFinished:settings.map_api_key=text.trim();background:Rectangle {radius:7;color:settings_form.pageBackground;border.color:settings_form.lineColor}}
       }
      }
-     Flow {Layout.fillWidth:true;Layout.preferredHeight:childrenRect.height;spacing:10
+     Flow {Layout.fillWidth:true;Layout.preferredWidth:sourceCard.contentWidth;Layout.preferredHeight:implicitHeight;spacing:10
 
       MapActionButton {objectName:"reloadMap";text:qsTr("Reload map");iconText:"\uf2f1";enabled:!!root.mapTarget;onClicked:{root.mapTarget.configure();root.refreshPreview()}}
      }
     }
     MapSettingsCard {
-     width:parent.width;height:implicitHeight;title:qsTr("ADS-B");subtitle:qsTr("Nearby aircraft from ADS-B data");icon:"\uf072"
-     Grid {Layout.fillWidth:true;columns:width>=760?3:1;spacing:14
-      MapSettingRow {width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight;label:qsTr("Enable ADS-B");hint:qsTr("Show air traffic on map");controlWidth:48
+     id:adsbCard;objectName:"mapAdsbCard";width:parent.width;height:implicitHeight;title:qsTr("ADS-B");subtitle:qsTr("Nearby aircraft from ADS-B data");icon:"\uf072"
+     Grid {Layout.fillWidth:true;Layout.preferredWidth:adsbCard.contentWidth;Layout.preferredHeight:implicitHeight;columns:adsbCard.contentWidth>=760?3:1;spacing:14
+      MapSettingRow {objectName:"mapAdsbEnabledRow";width:(adsbCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight;label:qsTr("Enable ADS-B");hint:qsTr("Show air traffic on map");controlWidth:48
        WidgetToggle {objectName:"mapAdsbEnabled";anchors.fill:parent;checked:settings.adsb_enable;onToggled:settings.adsb_enable=checked}
       }
-      MapSettingRow {width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight;label:qsTr("ADS-B source");hint:qsTr("Data source for air traffic");controlWidth:180
+      MapSettingRow {objectName:"mapAdsbSourceRow";width:(adsbCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight;label:qsTr("ADS-B source");hint:qsTr("Data source for air traffic");controlWidth:180
        RowLayout {anchors.fill:parent;spacing:0;enabled:settings.adsb_enable
         MapActionButton {objectName:"mapAdsbInternet";Layout.fillWidth:true;implicitWidth:105;text:qsTr("Internet feed");primary:settings.adsb_source===0;onClicked:settings.adsb_source=0}
         MapActionButton {objectName:"mapAdsbSdr";Layout.fillWidth:true;implicitWidth:55;text:qsTr("SDR");primary:settings.adsb_source===1;onClicked:settings.adsb_source=1}
        }
       }
-      MapSettingRow {width:(parent.width-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight;label:qsTr("ADS-B radius");hint:qsTr("Aircraft within this range");controlWidth:160
+      MapSettingRow {objectName:"mapAdsbRadiusRow";width:(adsbCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;height:implicitHeight;label:qsTr("ADS-B radius");hint:qsTr("Aircraft within this range");controlWidth:160
        MapValueSlider {anchors.fill:parent;objectName:"mapAdsbRadius";from:5000;to:100000;stepSize:1000;value:settings.adsb_radius;displayText:Math.round(value/1000)+" km";enabled:settings.adsb_enable;onMoved:settings.adsb_radius=value}
       }
      }
@@ -246,11 +248,11 @@ FocusScope {
 
     }
     MapSettingsCard {
-     width:parent.width;height:implicitHeight;title:qsTr("Offline Maps");subtitle:qsTr("Maps for areas without an internet connection");icon:"\uf019"
+     id:offlineCard;width:parent.width;height:implicitHeight;title:qsTr("Offline Maps");subtitle:qsTr("Maps for areas without an internet connection");icon:"\uf019"
      headerNote:width>650?qsTr("%1 packages installed").arg(root.tiles?root.tiles.packageCount:0):""
      Text {text:qsTr("Installed maps");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.body}
-     Flow {Layout.fillWidth:true;Layout.preferredHeight:childrenRect.height;spacing:10
-      CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;id:offlinePackages;objectName:"offlinePackages";optionIcon:"\uf279";width:parent.width>600?Math.max(180,parent.width-355):parent.width;height:Typography.controlHeight;model:root.tiles?root.tiles.packages:[];textRole:"name";enabled:count>0}
+     Flow {Layout.fillWidth:true;Layout.preferredWidth:offlineCard.contentWidth;Layout.preferredHeight:implicitHeight;spacing:10
+      CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;id:offlinePackages;objectName:"offlinePackages";optionIcon:"\uf279";width:offlineCard.contentWidth>600?Math.max(180,offlineCard.contentWidth-355):offlineCard.contentWidth;height:Typography.controlHeight;model:root.tiles?root.tiles.packages:[];textRole:"name";enabled:count>0}
       MapActionButton {objectName:"jumpToOfflineMap";text:qsTr("Jump to map");iconText:"\uf35d";enabled:offlinePackages.currentIndex>=0&&!!root.mapTarget;onClicked:{root.mapTarget.jumpToOfflineMap(root.tiles.packages[offlinePackages.currentIndex]);root.refreshPreview()}}
       MapActionButton {objectName:"prepareOfflineMap";text:qsTr("Create offline map");iconText:"\uf019";primary:true;enabled:!!root.builder&&!root.busy;onClicked:root.beginSelection()}
      }

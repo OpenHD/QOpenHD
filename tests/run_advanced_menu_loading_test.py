@@ -255,7 +255,7 @@ Item {
         shutil.copy(menu_dir / "MenuTypography.js", folder)
         shutil.copy(menu_dir / "AdvancedActionButton.qml", folder)
         shutil.copy(menu_dir / "SettingsBackButton.qml", folder)
-        for name in ("settings-logo-dark.svg", "settings-logo-light.svg"):
+        for name in ("settings-logo-dark.png", "settings-logo-light.png"):
             shutil.copy(menu_dir / name, folder)
         (folder / "ConfigPopup.qml").write_text(menu, encoding="utf-8")
         shutil.copy(menu_dir / "AdvancedPageLoader.qml", folder)

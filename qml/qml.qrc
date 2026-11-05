@@ -110,8 +110,8 @@
         <file>ui/configpopup/AdvancedCard.qml</file>
         <file>ui/configpopup/AdvancedActionButton.qml</file>
         <file>ui/configpopup/SettingsBackButton.qml</file>
-        <file>ui/configpopup/settings-logo-dark.svg</file>
-        <file>ui/configpopup/settings-logo-light.svg</file>
+        <file>ui/configpopup/settings-logo-dark.png</file>
+        <file>ui/configpopup/settings-logo-light.png</file>
         <file>ui/configpopup/AdvancedTabButton.qml</file>
         <file>ui/configpopup/openhd_settings/AirSettingsPanel.qml</file>
         <file>ui/configpopup/openhd_settings/AirSettingRow.qml</file>
