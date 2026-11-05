@@ -1,0 +1,50 @@
+name: Parameter transaction regression
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - app/telemetry/action/impl/xparam.*
+      - app/telemetry/MavlinkTelemetry.cpp
+      - tests/xparam_fetch_test.*
+      - .github/workflows/parameter-transactions.yml
+  pull_request:
+    paths:
+      - app/telemetry/action/impl/xparam.*
+      - app/telemetry/MavlinkTelemetry.cpp
+      - tests/xparam_fetch_test.*
+      - .github/workflows/parameter-transactions.yml
+
+permissions:
+  contents: read
+
+jobs:
+  parameters:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        qt: [5, 6]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Qt
+        run: |
+          sudo apt-get update
+          if [ '${{ matrix.qt }}' = 5 ]; then
+            sudo apt-get install -y qtbase5-dev qtdeclarative5-dev
+          else
+            sudo apt-get install -y qt6-base-dev qt6-declarative-dev
+          fi
+      - name: Exercise parameter replies through the GUI event loop
+        timeout-minutes: 2
+        run: |
+          mkdir build-parameters
+          cd build-parameters
+          if [ '${{ matrix.qt }}' = 5 ]; then
+            qmake ../tests/xparam_fetch_test.pro
+          else
+            qmake6 ../tests/xparam_fetch_test.pro
+          fi
+          make -j2
+          ./xparam_fetch_test

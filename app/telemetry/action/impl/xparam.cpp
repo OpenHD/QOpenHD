@@ -5,6 +5,11 @@
 #include <cstring>
 #include <sstream>
 #include <future>
+#include <memory>
+#include <QCoreApplication>
+#include <QEventLoop>
+#include <QThread>
+#include <QTimer>
 
 #include <qdebug.h>
 #include "../../MavlinkTelemetry.h"
@@ -141,18 +146,43 @@ bool XParam::try_set_param_async(const mavlink_param_ext_set_t cmd, SET_PARAM_RE
     return true;
 }
 
+// Receive callbacks are delivered on the GUI thread. Legacy synchronous QML
+// actions must keep that queue running while waiting for their protocol reply.
+// Exclude user input to prevent another click starting a nested radio change.
+template<typename T>
+static T wait_for_parameter_reply(std::future<T>& reply)
+{
+    if (QCoreApplication::instance() &&
+        QThread::currentThread() == QCoreApplication::instance()->thread()) {
+        QEventLoop loop;
+        QTimer poll;
+        QObject::connect(&poll, &QTimer::timeout, &loop, [&] {
+            if (reply.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+                loop.quit();
+        });
+        poll.start(10);
+        if (reply.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready)
+            loop.exec(QEventLoop::ExcludeUserInputEvents);
+        // Application shutdown can end the loop before a reply. Completion
+        // callbacks own their promises, so a later timeout remains safe.
+        if (reply.wait_for(std::chrono::milliseconds(0)) != std::future_status::ready)
+            return T{};
+    }
+    return reply.get();
+}
+
 bool XParam::try_set_param_blocking(const mavlink_param_ext_set_t cmd,std::chrono::milliseconds retransmit_delay, int n_wanted_retransmission)
 {
-    std::promise<bool> prom;
-    auto fut = prom.get_future();
-    auto cb=[&prom](SetParamResult result){
-        prom.set_value(result.is_accepted());
+    auto prom = std::make_shared<std::promise<bool>>();
+    auto fut = prom->get_future();
+    auto cb=[prom](SetParamResult result){
+        prom->set_value(result.is_accepted());
     };
     if(!try_set_param_async(cmd,cb,nullptr,retransmit_delay,n_wanted_retransmission)){
         qDebug()<<"Cannot enqueue param ";
         return false;
     }
-    return fut.get();
+    return wait_for_parameter_reply(fut);
 }
 
 void XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd, GET_ALL_PARAM_RESULT_CB result_cb,PROGRESS_CB opt_progress_cb)
@@ -173,18 +203,18 @@ void XParam::try_get_param_all_async(const mavlink_param_ext_request_list_t cmd,
 
 std::optional<std::vector<mavlink_param_ext_value_t>> XParam::try_get_param_all_blocking(const int target_sysid, const int target_compid)
 {
-    std::promise<std::optional<std::vector<mavlink_param_ext_value_t>>> prom;
-    auto fut = prom.get_future();
-    auto cb=[&prom](GetAllParamResult result){
+    auto prom = std::make_shared<std::promise<std::optional<std::vector<mavlink_param_ext_value_t>>>>();
+    auto fut = prom->get_future();
+    auto cb=[prom](GetAllParamResult result){
         if(result.success){
-            prom.set_value(result.param_set);
+            prom->set_value(result.param_set);
         }else{
-            prom.set_value(std::nullopt);
+            prom->set_value(std::nullopt);
         }
     };
     const auto command=create_cmd_get_all(target_sysid,target_compid);
     try_get_param_all_async(command,cb);
-    return fut.get();
+    return wait_for_parameter_reply(fut);
 }
 
 // allowed: up to 16 bytes, either including or excluding the 0-terminator
@@ -512,7 +542,7 @@ void XParam::check_timeout_param_set()
     std::vector<std::pair<RunningParamCmdSet,SetParamResult>> timed_out_commands{};
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        for (auto it=m_running_commands.begin(); it!=m_running_commands.end(); ++it){
+        for (auto it=m_running_commands.begin(); it!=m_running_commands.end();){
             RunningParamCmdSet& running_cmd=*it;
             const auto elapsed=std::chrono::steady_clock::now()-running_cmd.last_transmission;
             if(elapsed>running_cmd.retransmit_delay){
@@ -525,8 +555,10 @@ void XParam::check_timeout_param_set()
                     SetParamResult result{std::nullopt,running_cmd.n_transmissions};
                     timed_out_commands.push_back(std::make_pair(running_cmd,result));
                     it=m_running_commands.erase(it);
+                    continue;
                 }
             }
+            ++it;
         }
     }
     for(auto& timed_out:timed_out_commands){

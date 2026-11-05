@@ -34,6 +34,11 @@ bool install_metadata(int, int, const QByteArray&) { return false; }
 }
 #include "../app/telemetry/action/impl/xparam.cpp"
 
+// This harness always exercises real protocol transactions, never demo writes.
+bool UiSimulator::isActive() { return false; }
+UiSimulator& UiSimulator::instance() { std::abort(); }
+bool UiSimulator::setParameter(int, int, const QString&, const QVariant&) { return false; }
+
 static void require(bool ok, const char* message) {
     if(!ok) { std::fprintf(stderr, "FAIL: %s\n", message); std::exit(1); }
 }
@@ -43,6 +48,48 @@ int main(int argc, char** argv) {
     XParam params;
     params.terminate(); // Drive timeouts deterministically below.
     auto& sent=MavlinkTelemetry::instance().sent;
+    const auto command=XParam::create_cmd_set_int(100,191,"WB_FREQUENCY",5865);
+    auto acknowledge=[&](uint8_t status) {
+        mavlink_param_ext_ack_t ack{};
+        std::memcpy(ack.param_id,command.param_id,sizeof ack.param_id);
+        ack.param_type=command.param_type;
+        ack.param_result=status;
+        mavlink_message_t message{};
+        mavlink_msg_param_ext_ack_encode(100,191,&message,&ack);
+        params.process_message(message);
+    };
+    // Reproduce a QML frequency button waiting on the GUI thread. Its ACK is
+    // queued here just like MavlinkTelemetry's endpoint-to-GUI delivery.
+    QTimer::singleShot(20,&app,[&] { acknowledge(PARAM_ACK_ACCEPTED); });
+    std::thread expire_if_gui_blocked([&] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        params.check_timeout_param_set();
+    });
+    const bool accepted=params.try_set_param_blocking(command,std::chrono::milliseconds(100),1);
+    expire_if_gui_blocked.join();
+    require(accepted,"GUI-queued ACK must complete synchronous frequency change");
+    require(sent.size()==1,"accepted frequency change must not retransmit");
+    QTimer::singleShot(20,&app,[&] { acknowledge(PARAM_ACK_VALUE_UNSUPPORTED); });
+    require(!params.try_set_param_blocking(command),"negative ACK must remain a failure");
+
+    QTimer::singleShot(20,&app,[&] {
+        mavlink_param_ext_value_t value{};
+        value.param_count=1;
+        params.handle_param_ext_value(value,101,191);
+    });
+    const auto snapshot=params.try_get_param_all_blocking(101,191);
+    require(snapshot && snapshot->size()==1,"GUI-queued snapshot must complete synchronous fetch");
+    int set_failures=0;
+    for(int frequency:{5745,5865}) {
+        params.try_set_param_async(XParam::create_cmd_set_int(100,191,"WB_FREQUENCY",frequency),
+            [&](auto result) { if(!result.is_accepted()) ++set_failures; });
+        auto& pending=params.m_running_commands.back();
+        pending.n_transmissions=pending.n_wanted_retransmissions;
+        pending.last_transmission-=std::chrono::seconds(5);
+    }
+    params.check_timeout_param_set();
+    require(set_failures==2 && params.m_running_commands.empty(),"expire adjacent set transactions safely");
+    sent.clear();
     bool complete=false;
     params.try_get_param_all_async(XParam::create_cmd_get_all(101,191),
         [&](XParam::GetAllParamResult result) { complete=result.success && result.param_set.size()==32; });
@@ -107,5 +154,5 @@ int main(int argc, char** argv) {
     }
     params.check_timeout_param_get_all();
     require(failures==2 && params.m_running_get_all.empty(),"expire adjacent stalled transfers safely");
-    std::puts("PASS: missing-index recovery, progressing streams, duplicate/count guards, bounded batches, timeouts");
+    std::puts("PASS: GUI-queued ACK and fetch, rejection, adjacent set timeouts, missing-index recovery, progressing streams, duplicate/count guards, bounded batches");
 }

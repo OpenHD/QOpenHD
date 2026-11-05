@@ -1,4 +1,4 @@
-QT = core
+QT = core qml
 CONFIG += console c++17
 CONFIG -= app_bundle
 TARGET = xparam_fetch_test
