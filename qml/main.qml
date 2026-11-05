@@ -85,6 +85,10 @@ ApplicationWindow {
         if (!locationFallbackEnabled || fcPositionValid
                 || osPositionValid || ipLocationRequestActive) return
         ipLocationRequestActive = true
+        if (Qt.platform.os === "android") {
+            AdsbVehicleManager.requestInternetPosition()
+            return
+        }
         var request = new XMLHttpRequest()
         ipLocationRequest = request
         request.onreadystatechange = function() {
@@ -119,6 +123,17 @@ ApplicationWindow {
         request.send()
     }
 
+    Connections {
+        target: AdsbVehicleManager
+        function onInternetPositionReceived(latitude, longitude) {
+            applicationWindow.ipLocationRequestActive = false
+            if (isFinite(latitude) && isFinite(longitude)) {
+                applicationWindow.ipLocationLatitude = latitude
+                applicationWindow.ipLocationLongitude = longitude
+            }
+        }
+    }
+
     Timer {
         interval: 15000
         running: applicationWindow.ipLocationRequestActive
@@ -137,7 +152,8 @@ ApplicationWindow {
     Timer {
         // Retry promptly while unavailable; refresh occasionally in case the
         // public IP/network changes while QOpenHD remains open.
-        interval: applicationWindow.ipPositionValid ? 1800000 : 300000
+        interval: applicationWindow.ipPositionValid ? 1800000
+                                                   : (Qt.platform.os === "android" ? 30000 : 300000)
         running: applicationWindow.locationFallbackEnabled && !applicationWindow.fcPositionValid
         repeat: true
         triggeredOnStart: true

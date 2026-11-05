@@ -81,6 +81,10 @@ class ADSBInternet: public ADSBapi {
 public:
     ADSBInternet() : ADSBapi(10000) {}
     ~ADSBInternet() override { quit(); wait(); }
+signals:
+    void internetPositionReceived(double latitude, double longitude);
+public slots:
+    void requestInternetPosition();
 
 private slots:
     void processReply(QNetworkReply *reply) override;
@@ -137,6 +141,7 @@ public:
     Q_INVOKABLE void newMapLat(double map_lat);
     Q_INVOKABLE void newMapLon(double map_lon);
     Q_INVOKABLE void setReferencePosition(double latitude, double longitude);
+    Q_INVOKABLE void requestInternetPosition();
 
     Q_INVOKABLE void setGroundIP(QString address) { if (_sdrLink) _sdrLink->setGroundIP(address); }
 
@@ -145,6 +150,7 @@ public:
 
 signals:
     void referencePositionChanged(double latitude, double longitude);
+    void internetPositionReceived(double latitude, double longitude);
     // sent to ADSBapi to make requests based into this
     void mapLatChanged(double map_lat);
     void mapLonChanged(double map_lon);

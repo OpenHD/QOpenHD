@@ -29,6 +29,7 @@ import QtTest 1.2
 Item {
     width: 800; height: 480
     property string testUrl
+    property bool testAndroid: false
     QtObject {
         id: settings
         property bool show_map: false
@@ -43,11 +44,16 @@ Item {
     }
     QtObject {
         id: adsbManager
+        property int requests: 0
+        signal internetPositionReceived(double latitude, double longitude)
+        function requestInternetPosition() { requests++ }
         function setReferencePosition(latitude, longitude) {}
     }
     TestCase {
         name: "AutomaticPositionFallback"; when: windowShown
         function init() {
+            testAndroid = false
+            adsbManager.requests = 0
             settings.show_map = false
             settings.adsb_enable = false
             _fcMavlinkSystem.is_alive = false
@@ -99,6 +105,32 @@ Item {
             wait(0)
         }
         function test_invalidResponse_data() { return test_fallback_data() }
+        function test_androidInternetRoute_data() { return test_fallback_data() }
+        function test_androidInternetRoute(data) {
+            testAndroid = true
+            var component = Qt.createComponent(data.source)
+            compare(component.status, Component.Ready, component.errorString())
+            var position = component.createObject(parent)
+            settings.adsb_enable = true
+            tryCompare(adsbManager, "requests", 1)
+            verify(position.ipLocationRequestActive)
+            compare(position.ipLocationRequest, null) // No default-route XHR.
+            position.requestIpLocation()
+            compare(adsbManager.requests, 1) // Do not queue duplicate lookups.
+            adsbManager.internetPositionReceived(Number.NaN, Number.NaN)
+            verify(!position.ipLocationRequestActive)
+            verify(!position.ipPositionValid)
+            position.requestIpLocation()
+            compare(adsbManager.requests, 2)
+            adsbManager.internetPositionReceived(50, 8)
+            verify(position.ipPositionValid)
+            compare(position.referenceLatitude, 50)
+            _fcMavlinkSystem.lat = 52; _fcMavlinkSystem.lon = 10
+            _fcMavlinkSystem.gps_fix_type = 3; _fcMavlinkSystem.is_alive = true
+            compare(position.referenceLatitude, 52)
+            position.destroy()
+            wait(0)
+        }
         function test_invalidResponse(data) {
             testUrl = "SERVER/invalid"
             var component = Qt.createComponent(data.source)
@@ -147,6 +179,8 @@ def main():
     }
 ''' + block[end:]
                 block = block.replace("AdsbVehicleManager.", "adsbManager.")
+                block = block.replace("target: AdsbVehicleManager", "target: adsbManager")
+                block = block.replace('Qt.platform.os === "android"', 'testAndroid')
                 block = block.replace('"https://ipwho.is/?fields=success,latitude,longitude"', "testUrl")
                 (folder / target).write_text(
                     "import QtQuick 2.12\nimport QtPositioning 5.15\n"

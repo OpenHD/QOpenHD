@@ -8,6 +8,7 @@
  ****************************************************************************/
 
 #include "adsbvehiclemanager.h"
+#include "androidinternet.h"
 //#include "localmessage.h"
 //#include "logger.h"
 //#include "openhd.h"
@@ -29,6 +30,33 @@
 #include <QDebug>
 #include <QMetaObject>
 #include <limits>
+#include <cstring>
+
+#ifdef Q_OS_ANDROID
+// Feed Android's network-bound HTTPS result through the same validated parser
+// used by Qt replies. The worker owns and disposes this reply normally.
+class AndroidInternetReply final : public QNetworkReply {
+public:
+    explicit AndroidInternetReply(QByteArray bytes) : m_bytes(std::move(bytes)) {
+        open(QIODevice::ReadOnly);
+        setFinished(true);
+        if (m_bytes.isEmpty()) setError(QNetworkReply::UnknownNetworkError, "Android internet request failed");
+    }
+    void abort() override {}
+    qint64 bytesAvailable() const override { return m_bytes.size() - m_offset; }
+protected:
+    qint64 readData(char* output, qint64 maximum) override {
+        const auto size = qMin(maximum, qint64(m_bytes.size()) - m_offset);
+        if (size <= 0) return -1;
+        std::memcpy(output, m_bytes.constData() + m_offset, size_t(size));
+        m_offset += size;
+        return size;
+    }
+private:
+    QByteArray m_bytes;
+    qint64 m_offset = 0;
+};
+#endif
 
 
 ADSBVehicleManager* ADSBVehicleManager::instance()
@@ -71,6 +99,8 @@ void ADSBVehicleManager::onStarted()
     _adsbVehicleCleanupTimer.start(4500);
 
     _internetLink = new ADSBInternet();
+    connect(_internetLink, &ADSBInternet::internetPositionReceived,
+            this, &ADSBVehicleManager::internetPositionReceived, Qt::QueuedConnection);
     connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
     connect(_internetLink, &ADSBInternet::sourceStatusChanged, this, &ADSBVehicleManager::setSourceStatus, Qt::QueuedConnection);
     connect(this, &ADSBVehicleManager::mapLatChanged, _internetLink, &ADSBInternet::mapLatChanged, Qt::QueuedConnection);
@@ -89,6 +119,12 @@ void ADSBVehicleManager::onStarted()
     // Start only after derived construction and all signal connections finish.
     _internetLink->start();
     _sdrLink->start();
+}
+
+void ADSBVehicleManager::requestInternetPosition()
+{
+    onStarted();
+    QMetaObject::invokeMethod(_internetLink, "requestInternetPosition", Qt::QueuedConnection);
 }
 
 void ADSBVehicleManager::setReferencePosition(double latitude, double longitude)
@@ -328,6 +364,21 @@ void ADSBapi::setReferencePosition(double latitude, double longitude) {
 }
 
 
+void ADSBInternet::requestInternetPosition() {
+#ifdef Q_OS_ANDROID
+    const auto response = QJsonDocument::fromJson(androidInternetJson(
+        "https://ipwho.is/?fields=success,latitude,longitude")).object();
+    const auto latitude = response.value("latitude");
+    const auto longitude = response.value("longitude");
+    if (response.value("success").toBool() && latitude.isDouble() && longitude.isDouble()
+            && qAbs(latitude.toDouble()) <= 90 && qAbs(longitude.toDouble()) <= 180) {
+        emit internetPositionReceived(latitude.toDouble(), longitude.toDouble());
+        return;
+    }
+#endif
+    emit internetPositionReceived(qQNaN(), qQNaN());
+}
+
 void ADSBInternet::requestData(void) {
     _adsb_enable = _settings.value("adsb_enable").toBool();
     max_distance = qBound(5000, _settings.value("adsb_radius", 50000).toInt(), 200000);
@@ -348,6 +399,10 @@ void ADSBInternet::requestData(void) {
         return;
     }
     adsb_url="https://api.adsb.lol/v2/point/"+ lat_string +"/"+ lon_string + "/" + distance_string;
+#ifdef Q_OS_ANDROID
+    processReply(new AndroidInternetReply(androidInternetJson(adsb_url)));
+    return;
+#endif
     QNetworkRequest request;
     QUrl api_request = adsb_url;
     request.setUrl(api_request);
