@@ -29,10 +29,11 @@ Item {
     }
     QtObject {id:hudOverlayGrid;readonly property Item osdStylePreviewItem:actualOsd}
     Item {
-        id:actualOsd;width:1280;height:720;visible:false;opacity:settings.osd_opacity
-        Text {x:20;y:20;text:"12.4 V";font.family:settings.font_text;font.pixelSize:30;color:settings.color_text;style:Text.Outline;styleColor:settings.color_glow}
+        id:actualOsd;property string telemetry:"12.4 V";width:1280;height:720;visible:false;opacity:settings.osd_opacity
+        Text {x:20;y:20;text:actualOsd.telemetry;font.family:settings.font_text;font.pixelSize:30;color:settings.color_text;style:Text.Outline;styleColor:settings.color_glow}
         Text {anchors.centerIn:parent;text:"+";font.pixelSize:70;color:settings.color_shape}
         Text {anchors.right:parent.right;anchors.rightMargin:20;y:20;text:"78";font.family:settings.font_text;font.pixelSize:30;color:settings.color_text;style:Text.Outline;styleColor:settings.color_glow}
+        Rectangle {x:actualOsd.width/4;y:actualOsd.height/4;width:80;height:80;color:settings.color_shape}
     }
     Rectangle {anchors.fill:parent;color:settings_form.pageBackground}
     Pages.AppWidgetStyleSettingsView {id:page;anchors.fill:parent}
@@ -43,6 +44,69 @@ Item {
         function init(){
             scene.Window.window.width=1600;scene.Window.window.height=900;scene.width=1600;scene.height=900
             page.visible=true;page.resetDefaults()
+        }
+        function waitForSnapshot(){
+            tryVerify(function(){return page.snapshotUrl.toString().length>0&&!page.capturePending},5000)
+            tryCompare(visual(page,"styleOsdSnapshot"),"status",Image.Ready)
+            compare(visual(page,"styleOsdTexture"),null)
+        }
+        function test_bounded_snapshot_and_release(){
+            waitForSnapshot()
+            verify(page.captureSize.width<=1024);verify(page.captureSize.height<=1024)
+            var snapshot=visual(page,"styleOsdSnapshot")
+            verify(snapshot.sourceSize.width<=1024);verify(snapshot.sourceSize.height<=576)
+            verify(snapshot.sourceSize.width>=1022);verify(snapshot.sourceSize.height>=574)
+            function markerPixel(){
+                var position=snapshot.mapToItem(scene,snapshot.width*0.27,snapshot.height*0.29)
+                var image=grabImage(scene)
+                return image.pixel(Math.floor(position.x*image.width/scene.width),Math.floor(position.y*image.height/scene.height))
+            }
+            verify(Qt.colorEqual(markerPixel(),"white"))
+            var previous=snapshot.source.toString()
+            page.usePreset(1);wait(150);waitForSnapshot()
+            verify(snapshot.source.toString()!==previous)
+            verify(Qt.colorEqual(markerPixel(),"#14ff00"))
+            // Telemetry may continue changing in the hidden production HUD.
+            // Its updates must not regenerate the displayed picture.
+            previous=snapshot.source.toString()
+            actualOsd.telemetry="99.9 V";wait(250)
+            compare(snapshot.source.toString(),previous)
+            compare(actualOsd.visible,false)
+            for(var i=0;i<3;i++){
+                page.visible=false
+                compare(page.capturePending,false);compare(page.snapshotUrl.toString(),"")
+                compare(visual(page,"styleOsdTexture"),null)
+                page.visible=true;waitForSnapshot()
+            }
+        }
+        function test_change_during_capture_and_close(){
+            waitForSnapshot()
+            var edited=false
+            function editDuringCapture(){
+                if(!page.capturePending||edited)return
+                edited=true
+                page.setStyle("color_text","#abcdef")
+                page.requestPreview()
+                compare(page.refreshAgain,true)
+            }
+            page.capturePendingChanged.connect(editDuringCapture)
+            page.requestPreview()
+            tryVerify(function(){return edited},2000)
+            page.capturePendingChanged.disconnect(editDuringCapture)
+            wait(350);waitForSnapshot()
+            compare(page.refreshAgain,false)
+            var closed=false
+            function closeDuringCapture(){
+                if(!page.capturePending||closed)return
+                closed=true
+                page.visible=false
+            }
+            page.capturePendingChanged.connect(closeDuringCapture)
+            page.requestPreview();tryVerify(function(){return closed},2000)
+            page.capturePendingChanged.disconnect(closeDuringCapture)
+            wait(200)
+            compare(page.snapshotUrl.toString(),"");compare(page.capturePending,false)
+            compare(visual(page,"styleOsdTexture"),null)
         }
         function test_presets_persist_without_save(){
             compare(visual(page,"styleApply"),null);compare(visual(page,"styleRevert"),null)
@@ -59,7 +123,7 @@ Item {
             compare(settings.font_text,"Archivo")
             var alpha=visual(page,"styleOsdOpacity");alpha.value=0.45;alpha.moved();compare(settings.osd_opacity,0.45)
             var glow=visual(page,"styleGlowOpacity");glow.value=0.6;glow.moved();verify(Math.abs(page.glowColor.a-0.6)<0.01)
-            var texture=visual(page,"styleOsdTexture");compare(texture.sourceItem,actualOsd);compare(texture.live,false);compare(texture.hideSource,false);compare(texture.opacity,0.45)
+            waitForSnapshot();compare(visual(page,"styleOsdSnapshot").opacity,0.45)
             compare(actualOsd.visible,false)
             page.visible=false;compare(settings.osd_opacity,0.45);page.visible=true
             page.resetDefaults();compare(settings.osd_opacity,1);compare(settings.font_text,"Sans Serif")
@@ -73,7 +137,8 @@ Item {
             compare(settings.osd_bottom_bar_font,"Archivo")
             page.setStyle("osd_bottom_bar_font","Quicksand");page.visible=false;page.visible=true
             compare(settings.osd_bottom_bar_font,"Quicksand")
-            var frame=visual(page,"liveOsdStylePreview"),texture=visual(page,"styleOsdTexture")
+            waitForSnapshot()
+            var frame=visual(page,"liveOsdStylePreview"),texture=visual(page,"styleOsdSnapshot")
             compare(texture.width,frame.width);compare(texture.height,frame.height)
             verify(Math.abs(texture.width/texture.height-actualOsd.width/actualOsd.height)<0.01)
             compare(visual(page,"stylePreviewBackground").scale,1.06)

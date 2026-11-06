@@ -1,6 +1,7 @@
 import "../MenuTypography.js" as MenuTypography
 import "../MenuTypography.js" as Typography
 import QtQuick 2.12
+import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
@@ -27,10 +28,52 @@ FocusScope {
         {title:qsTr("High contrast"),shape:"#ffff00",text:"#ffff00",glow:"#000000",warn:"#ff4035",caution:"#ff9800",font:"Sans Serif"}
     ]
     readonly property string previewStyleKey:keys.map(function(k){return String(settings[k])}).join("|")
-    function requestPreview(){if(visible)previewRefresh.restart()}
+    // Keep one completed image. A temporary, bounded capture is created only
+    // after an edit, then destroyed after readback so it cannot track telemetry.
+    property url snapshotUrl:""
+    property bool capturePending:false
+    property bool refreshAgain:false
+    property int captureGeneration:0
+    readonly property real captureScale:Math.min(1,1024/Math.max(1,source?source.width:1,source?source.height:1))
+    readonly property size captureSize:Qt.size(Math.max(1,Math.ceil((source?source.width:1)*captureScale)),Math.max(1,Math.ceil((source?source.height:1)*captureScale)))
+    // Qt scales offscreen targets for high-DPI screens as well.
+    readonly property size grabSize:Qt.size(Math.max(1,Math.floor(captureSize.width/Screen.devicePixelRatio)),Math.max(1,Math.floor(captureSize.height/Screen.devicePixelRatio)))
+    function requestPreview(){
+        if(!visible||!source)return
+        if(capturePending){refreshAgain=true;return}
+        previewRefresh.restart()
+    }
+    function cancelCapture(){
+        captureGeneration++
+        previewRefresh.stop()
+        capturePending=false
+        refreshAgain=false
+        snapshotUrl=""
+    }
+    function captureDrawing(item){
+        var generation=captureGeneration
+        var accepted=item.grabToImage(function(result){
+            if(generation!==root.captureGeneration)return
+            // Image loads this in-memory URL synchronously and retains its
+            // pixels after the temporary capture item/result is destroyed.
+            root.snapshotUrl=result.url
+            // Let the callback return before destroying its capture item.
+            Qt.callLater(function(){
+                if(generation!==root.captureGeneration)return
+                root.capturePending=false
+                if(root.refreshAgain){root.refreshAgain=false;root.requestPreview()}
+            })
+        },grabSize)
+        if(!accepted){capturePending=false;refreshAgain=false}
+    }
     onPreviewStyleKeyChanged:Qt.callLater(requestPreview)
-    onSourceChanged:Qt.callLater(requestPreview)
-    Timer {id:previewRefresh;objectName:"stylePreviewRefresh";interval:60;repeat:false;onTriggered:if(root.visible&&root.source)osdTexture.scheduleUpdate()}
+    onSourceChanged:{cancelCapture();Qt.callLater(requestPreview)}
+    onCaptureSizeChanged:Qt.callLater(requestPreview)
+    onGrabSizeChanged:Qt.callLater(requestPreview)
+    Timer {
+        id:previewRefresh;objectName:"stylePreviewRefresh";interval:100;repeat:false
+        onTriggered:if(root.visible&&root.source){root.capturePending=true}
+    }
     readonly property color glowColor:settings.color_glow
     readonly property int selectedPreset:{
         for(var i=0;i<presets.length;i++){
@@ -53,7 +96,7 @@ FocusScope {
     function resetDefaults(){usePreset(0);settings.osd_opacity=1.0;settings.smoothing=33}
     function gainFocus(){resetButton.forceActiveFocus()}
     Component.onCompleted:requestPreview()
-    onVisibleChanged:{if(visible)requestPreview();else previewRefresh.stop()}
+    onVisibleChanged:{if(visible)requestPreview();else cancelCapture()}
 
     ColumnLayout {
         anchors.fill:parent;anchors.margins:10;spacing:10
@@ -164,14 +207,28 @@ FocusScope {
                                 color:"#102332";radius:8;clip:true
                                 Image {objectName:"stylePreviewBackground";anchors.fill:parent;scale:1.06;source:"../../../resources/osd-style-alpine.png";fillMode:Image.PreserveAspectCrop;asynchronous:true}
                                 Rectangle {anchors.fill:parent;color:"#22071725"}
-                                ShaderEffectSource {
-                                    id:osdTexture;objectName:"styleOsdTexture"
+                                Loader {
+                                    id:osdPreviewLoader
                                     anchors.fill:parent
-                                    sourceItem:root.visible?root.source:null
-                                    sourceRect:root.source?Qt.rect(0,0,root.source.width,root.source.height):Qt.rect(0,0,1,1)
-                                    textureSize:Qt.size(Math.max(1,Math.ceil(width*2)),Math.max(1,Math.ceil(height*2)))
+                                    z:-1
+                                    active:root.visible&&root.capturePending
+                                    onLoaded:item.scheduleUpdate()
+                                    sourceComponent:ShaderEffectSource {
+                                        objectName:"styleOsdTexture"
+                                        sourceItem:root.source
+                                        sourceRect:root.source?Qt.rect(0,0,root.source.width,root.source.height):Qt.rect(0,0,1,1)
+                                        textureSize:root.grabSize
+                                        hideSource:false;live:false;smooth:true
+                                        onScheduledUpdateCompleted:root.captureDrawing(this)
+                                    }
+                                }
+                                Image {
+                                    objectName:"styleOsdSnapshot"
+                                    anchors.fill:parent
+                                    source:root.snapshotUrl
                                     opacity:settings.osd_opacity
-                                    hideSource:false;live:false;smooth:true
+                                    cache:false;smooth:true
+                                    fillMode:Image.PreserveAspectFit
                                 }
                                 Text {visible:!root.source;anchors.centerIn:parent;text:qsTr("OSD not available");color:"white";font.family:Typography.family;font.pixelSize:Typography.body}
                             }
