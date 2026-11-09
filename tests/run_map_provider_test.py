@@ -47,16 +47,20 @@ Item {
         Rectangle { x: parent.width * 0.5; width: 8; height: parent.height; color: "#dfe2c6"; rotation: 28 }
     }
     signal expandRequested()
+    signal halfSizeRequested()
     property int centrePresses: 0
     MouseArea {
         anchors.fill: parent
         onPressed: parent.centrePresses++
+        onPressAndHold: parent.halfSizeRequested()
     }
     property real bearing: 0
     property int error: 0
     property var plugin
     property bool demoFlight: false
+    property bool gpsPreview: false
     property bool compassMode: false
+    property real aircraftMarkerScale: 1.0
     property bool forceCustomMapType
     property var center: QtPositioning.coordinate(10, 20)
     property var gesture: QtObject { property bool enabled }
@@ -102,6 +106,10 @@ Item {
         property real map_zoom: 8
         property real map_size: 1
         property bool map_round: false
+        property bool map_minimal: false
+        function setValue(key, value) {}
+        function sync() {}
+        function value(key, fallback) { return fallback }
         property real map_opacity_minimized: 1
         property real map_opacity_maximized: 1
         property bool map_orientation: false
@@ -307,6 +315,32 @@ Item {
             verify(widget.x > previousX)
             compare(widget.savedMoves, savedMoves + 1)
             verify(!widget.dragging)
+            var normalWidth = widget.width, normalHeight = widget.height
+            // A centre hold halves the configured size without changing map settings.
+            mousePress(widget, widget.width / 2, widget.height / 2)
+            wait(850)
+            mouseRelease(widget, widget.width / 2, widget.height / 2)
+            verify(widget.mapHalfSize)
+            compare(widget.width, normalWidth / 2)
+            compare(widget.height, normalHeight / 2)
+            compare(settings.map_size, 2)
+            verify(widget.roundMap)
+            verify(widget.map.gesture.enabled)
+            verify(!findChild(widget, "compactMapZoom").visible)
+            widget.map.expandRequested()
+            verify(widget.mapExpanded)
+            verify(findChild(widget, "compactMapZoom").visible)
+            widget.map.expandRequested()
+            verify(widget.mapHalfSize)
+            compare(widget.width, normalWidth / 2)
+            verify(!findChild(widget, "compactMapZoom").visible)
+            mousePress(widget, widget.width / 2, widget.height / 2)
+            wait(850)
+            mouseRelease(widget, widget.width / 2, widget.height / 2)
+            verify(!widget.mapHalfSize)
+            compare(widget.width, normalWidth)
+            compare(widget.height, normalHeight)
+            verify(findChild(widget, "compactMapZoom").visible)
             widget.map.expandRequested()
             verify(widget.mapExpanded)
             verify(findChild(widget, "mapAttribution").visible)
@@ -383,12 +417,63 @@ Item {
         PluginParameter { name: "osm.mapping.custom.host"; value: "http://127.0.0.1:9/" }
     }
     property int expandRequests: 0
+    property int halfSizeRequests: 0
     RealMapComponent {
         id: map; anchors.fill: parent; plugin: offline
         onExpandRequested: expandRequests++
+        onHalfSizeRequested: halfSizeRequests++
     }
     TestCase {
         name: "MapInteraction"; when: windowShown
+        function test_gpsPreviewDoesNotChangeTelemetry(){
+            map.gpsPreview=true
+            tryVerify(function(){return Math.abs(map.center.latitude-50.110924)<0.000001})
+            compare(map.craftCoordinate.longitude,8.682127)
+            compare(_fcMavlinkSystem.lat,0);compare(_fcMavlinkSystem.lon,0)
+            compare(_fcMavlinkSystem.gps_fix_type,0);compare(_fcMavlinkSystem.armed,false)
+            map.gpsPreview=false
+            tryVerify(function(){return Math.abs(map.center.latitude-50)<0.01})
+        }
+        function test_armedGpsTrail() {
+            tryCompare(map,"mapReady",true)
+            var track=findChild(map,"armedFlightTrack")
+            verify(track!==null)
+            settings.map_drone_track=true
+            _fcMavlinkSystem.lat=50;_fcMavlinkSystem.lon=8
+            _fcMavlinkSystem.armed=true
+            wait(250);compare(track.pathLength(),0) // No fix yet.
+            _fcMavlinkSystem.gps_fix_type=3;applicationWindow.fcPositionValid=true
+            tryVerify(function(){return track.pathLength()===1})
+            _fcMavlinkSystem.lat=50.0001;_fcMavlinkSystem.lon=8.0001
+            tryVerify(function(){return track.pathLength()===2})
+            compare(track.coordinateAt(0).latitude,50);compare(track.coordinateAt(0).longitude,8)
+            wait(450);compare(track.pathLength(),2) // Stationary points are not duplicated.
+            _fcMavlinkSystem.gps_fix_type=0;applicationWindow.fcPositionValid=false
+            _fcMavlinkSystem.lat=50.0002;_fcMavlinkSystem.lon=8.0002
+            wait(250);compare(track.pathLength(),2)
+            _fcMavlinkSystem.armed=false
+            _fcMavlinkSystem.gps_fix_type=3;applicationWindow.fcPositionValid=true
+            _fcMavlinkSystem.lat=50.0003;_fcMavlinkSystem.lon=8.0003
+            wait(250);compare(track.pathLength(),2) // Keep the completed flight, exclude disarmed movement.
+            _fcMavlinkSystem.armed=true
+            tryVerify(function(){return track.pathLength()===1})
+            compare(track.coordinateAt(0).latitude,50.0003)
+            _fcMavlinkSystem.lat=50.0004;_fcMavlinkSystem.lon=8.0004
+            tryVerify(function(){return track.pathLength()===2})
+            // Repeatedly simplify a long flight without dropping either endpoint.
+            map.track_limit=8
+            for(var i=5;i<60;i++){
+                _fcMavlinkSystem.lat=50+i*0.0001;_fcMavlinkSystem.lon=8+i*0.0001
+                map.addDroneTrack()
+                verify(track.pathLength()<=8)
+            }
+            compare(track.coordinateAt(0).latitude,50.0003)
+            _fcMavlinkSystem.armed=false
+            map.track_limit=200
+            settings.map_drone_track=false
+            applicationWindow.fcPositionValid=false
+            _fcMavlinkSystem.lat=0;_fcMavlinkSystem.lon=0;_fcMavlinkSystem.gps_fix_type=0
+        }
         function test_panJumpAndFollow() {
             tryCompare(map, "mapReady", true)
             tryVerify(function() { return Math.abs(map.center.latitude - 50) < 0.01 })
@@ -407,6 +492,15 @@ Item {
             compare(map.bearing, 1)
             mouseDoubleClick(findChild(map, "mapDoubleClickArea"), 400, 200, Qt.LeftButton)
             compare(expandRequests, 1)
+            mousePress(map, 400, 200)
+            wait(950)
+            mouseRelease(map, 400, 200)
+            compare(halfSizeRequests, 1)
+            mousePress(map, 400, 200)
+            mouseMove(map, 450, 220, 50)
+            wait(950)
+            mouseRelease(map, 450, 220)
+            compare(halfSizeRequests, 1) // A pan must not trigger a resize.
             mouseDrag(map, 400, 200, 100, 30, Qt.LeftButton)
             tryCompare(parent, "followDrone", false)
             compare(map.bearing, 0)
@@ -456,6 +550,12 @@ Item {
             mouseClick(findChild(map, "gpsPlaneFollow"), 22, 22)
             verify(followDrone)
             verify(findChild(map, "droneMarker").visible)
+            var plane = findChild(map, "gpsPlaneFollow")
+            var beforeHold = halfSizeRequests
+            mousePress(plane, 22, 22)
+            wait(950)
+            mouseRelease(plane, 22, 22)
+            compare(halfSizeRequests, beforeHold + 1)
         }
     }
 }

@@ -7,6 +7,10 @@
 #include <QStandardPaths>
 #include <QtMath>
 #include <gst/gst.h>
+#include <gst/app/gstappsrc.h>
+#include <fstream>
+#include "rpiaudiooutputs.h"
+#include "util/qopenhd.h"
 #include <logging/logmessagesmodel.h>
 
 G_BEGIN_DECLS
@@ -114,6 +118,18 @@ void GstRtpAudioPlayer::refreshDevices()
         gst_device_monitor_stop(monitor);
     }
     gst_object_unref(monitor);
+    if (QOpenHD::instance().is_platform_rpi()) {
+        for (const auto type : {RpiAudioOutput::Hdmi, RpiAudioOutput::Headphones}) {
+            std::ifstream cards("/proc/asound/cards");
+            for (const auto& output : rpi_audio_outputs(cards, type)) {
+                const auto id = "alsasink|" + QString::fromStdString(output);
+                if (!ids.contains(id)) {
+                    ids.append(id);
+                    names.append(type == RpiAudioOutput::Headphones ? tr("3.5 mm audio jack") : tr("HDMI (%1)").arg(QString::fromStdString(output)));
+                }
+            }
+        }
+    }
     m_outputDeviceNames = names;
     m_outputDeviceIds = ids;
     if (!m_selectedOutputDevice.isEmpty() && !ids.contains(m_selectedOutputDevice)) {
@@ -190,6 +206,17 @@ QString GstRtpAudioPlayer::constructPipeline()
         "! volume name=playback_volume volume=%1 "
         "! level name=output_level interval=50000000 post-messages=true ! tee name=t "
         "t. ! queue ! %2").arg(m_playbackVolume / 100.0, 0, 'f', 2).arg(sinkDescription());
+    {
+        // One hardware output mixes local announcements with the incoming stream.
+        const QString output = QStringLiteral("t. ! queue ! %1").arg(sinkDescription());
+        pipeline.replace(output, QStringLiteral("t. ! queue ! audioresample ! audio/x-raw,rate=48000 ! audio_mix. "
+            "audiomixer name=audio_mix latency=100000000 ! audioconvert ! audioresample ! %1 "
+            "audiotestsrc is-live=true wave=silence ! audio/x-raw,rate=48000 ! queue ! audio_mix. "
+            "appsrc name=announcement is-live=true format=time max-bytes=2097152 min-latency=0 max-latency=1000000000 "
+            "caps=\"audio/x-raw,format=S16LE,rate=22050,channels=1,layout=interleaved\" "
+            "! queue max-size-time=0 max-size-bytes=2097152 max-size-buffers=2 "
+            "! audioconvert ! audioresample ! audio/x-raw,rate=48000 ! audio_mix. ").arg(sinkDescription()));
+    }
     if (m_recording) {
         m_recordingPath = createRecordingPath();
         emit recordingPathChanged();
@@ -216,6 +243,12 @@ void GstRtpAudioPlayer::start_playing()
         if (m_pipeline) gst_object_unref(m_pipeline);
         m_pipeline = nullptr;
         return;
+    }
+    auto* mixer = gst_bin_get_by_name(GST_BIN(m_pipeline), "audio_mix");
+    if (mixer) {
+        if (g_object_class_find_property(G_OBJECT_GET_CLASS(mixer), "ignore-inactive-pads"))
+            g_object_set(mixer, "ignore-inactive-pads", TRUE, nullptr);
+        gst_object_unref(mixer);
     }
     gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
     m_pipelineRecording = m_recording;
@@ -292,6 +325,38 @@ void GstRtpAudioPlayer::pollBus()
 
 void GstRtpAudioPlayer::onError(const QString &tag)
 {
+    m_last_error = tag;
     qWarning() << "Audio:" << tag;
     LogMessagesModel::instanceGround().add_message_debug("QOpenHD", tag);
 }
+
+int GstRtpAudioPlayer::play_pcm(const QByteArray& pcm, int sampleRate, int channels)
+{
+    if (sampleRate <= 0 || (channels != 1 && channels != 2) || pcm.isEmpty() || pcm.size() > 2097152 || pcm.size() % (2 * channels)) return 0;
+    start_playing();
+    if (!m_pipeline) return 0;
+    auto* source = gst_bin_get_by_name(GST_BIN(m_pipeline), "announcement");
+    auto* clock = gst_element_get_clock(m_pipeline);
+    if (!source || !clock) {
+        if (source) gst_object_unref(source);
+        if (clock) gst_object_unref(clock);
+        return 0;
+    }
+    auto* caps = gst_caps_new_simple("audio/x-raw", "format", G_TYPE_STRING, "S16LE",
+                                     "rate", G_TYPE_INT, sampleRate, "channels", G_TYPE_INT, channels,
+                                     "layout", G_TYPE_STRING, "interleaved", nullptr);
+    gst_app_src_set_caps(GST_APP_SRC(source), caps);
+    gst_caps_unref(caps);
+    auto* buffer = gst_buffer_new_allocate(nullptr, pcm.size(), nullptr);
+    gst_buffer_fill(buffer, 0, pcm.constData(), pcm.size());
+    GST_BUFFER_FLAG_SET(buffer, GST_BUFFER_FLAG_DISCONT);
+    GST_BUFFER_PTS(buffer) = gst_clock_get_time(clock) - gst_element_get_base_time(m_pipeline) + 100 * GST_MSECOND;
+    GST_BUFFER_DURATION(buffer) = gst_util_uint64_scale(pcm.size() / (2 * channels), GST_SECOND, sampleRate);
+    const int duration = static_cast<int>(GST_BUFFER_DURATION(buffer) / GST_MSECOND) + 300;
+    const auto result = gst_app_src_push_buffer(GST_APP_SRC(source), buffer);
+    gst_object_unref(clock);
+    gst_object_unref(source);
+    return result == GST_FLOW_OK ? duration : 0;
+}
+
+QString GstRtpAudioPlayer::poll_error() { QString result; result.swap(m_last_error); return result; }

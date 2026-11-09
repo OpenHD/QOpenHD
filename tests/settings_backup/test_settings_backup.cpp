@@ -54,12 +54,14 @@ private slots:
   QVERIFY(QSettings().value("new_default").toBool());
  }
  void test_storage_and_arbitrary_paths(){
+  QSettings().setValue("gps_callout_last_position","50.11,8.68");
   SettingsBackup backup;QString folder=m_dir.filePath("USB/Video/backups");QVERIFY(QDir().mkpath(folder));
   QVERIFY(!backup.locations().isEmpty());QVERIFY(backup.browse(folder).value("writable").toBool());
   const auto file=backup.joinPath(folder,"my settings.ohdsettings");QVERIFY(file.startsWith(folder));QVERIFY(backup.exportBackup(file));QVERIFY(QFileInfo::exists(file));
   QVERIFY(backup.joinPath(folder,"../escape").isEmpty());QVERIFY(backup.joinPath(folder,"C:escape").isEmpty());
   QVERIFY(!backup.browse(m_dir.filePath("missing")).value("error").toString().isEmpty());
   QFile read(file);QVERIFY(read.open(QIODevice::ReadOnly));const auto before=read.readAll();read.close();
+  QVERIFY(!before.contains("gps_callout_last_position"));
   QVERIFY(!backup.exportBackup(file));QVERIFY(read.open(QIODevice::ReadOnly));QCOMPARE(read.readAll(),before);read.close();
   QVERIFY(backup.exportBackup(file,true));
  }

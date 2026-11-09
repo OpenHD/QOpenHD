@@ -35,7 +35,10 @@ QString encodeLocal(QString& error) {
  QSettings source;source.sync();QTemporaryDir temp;
  if(source.status()!=QSettings::NoError||!temp.isValid()){error=QObject::tr("Cannot read local settings.");return {};}
  QSettings copy(temp.filePath("settings.ini"),QSettings::IniFormat);
- for(const auto& key:source.allKeys())copy.setValue(key,source.value(key));
+ for(const auto& key:source.allKeys()) {
+  if (key != QStringLiteral("gps_callout_last_position"))
+   copy.setValue(key,source.value(key));
+ }
  copy.sync();QFile file(copy.fileName());
  if(copy.status()!=QSettings::NoError||!file.open(QIODevice::ReadOnly)){error=QObject::tr("Cannot encode local settings.");return {};}
  return QString::fromUtf8(file.readAll());

@@ -40,6 +40,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/util/mousehelper.cpp
     app/util/uisimulator.cpp
     app/util/qopenhd.cpp
+    app/util/audioannouncements.cpp
     app/util/settingsbackup.cpp
     app/util/asyncping.cpp
     app/util/asynccommandrunner.cpp

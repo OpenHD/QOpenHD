@@ -72,6 +72,7 @@
 #endif
 #include "videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 #include "videostreaming/vscommon/audio_playback.h"
+#include "util/audioannouncements.h"
 #ifdef QOPENHD_ENABLE_QT_AUDIO
 #include "videostreaming/vscommon/qt_audio_player.h"
 #endif
@@ -707,6 +708,14 @@ int main(int argc, char *argv[]) {
      engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(false));
 #endif
     platform_start_audio_streaming_if_enabled();
+    auto& announcements = AudioAnnouncements::instance();
+    engine.rootContext()->setContextProperty("_audioAnnouncements", &announcements);
+    QObject::connect(&HUDLogMessagesModel::instance(), &HUDLogMessagesModel::signalAddLogMessage,
+                     &announcements, &AudioAnnouncements::message);
+    for (auto* log : {&LogMessagesModel::instanceGround(), &LogMessagesModel::instanceOHDAir(), &LogMessagesModel::instanceFC()})
+        QObject::connect(log, &LogMessagesModel::signalAddLogMessage, &announcements,
+                         [&announcements](QString, QString text, quint8 severity) { announcements.message(severity, text); });
+    announcements.start(QOpenHD::instance().is_windows() || QOpenHD::instance().is_android());
 // Platform - dependend video end  -----------------------------------------------------------------
 
     // This allows to use the defines as strings in qml
@@ -725,6 +734,7 @@ int main(int argc, char *argv[]) {
 #endif
      );
 
+    engine.rootContext()->setContextProperty("QOPENHD_GPS_PREVIEW", app.arguments().contains("--gps-preview"));
     UiSimulator::instance().install(engine.rootContext());
     //engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     //const QUrl url("qrc:/qt/qml/hello/qml/main.qml");
@@ -736,6 +746,42 @@ int main(int argc, char *argv[]) {
     } else {
         engine.load(url);
     }
+#ifdef Q_OS_WIN
+    // Qt's requestActivate alone can run before the native window is exposed.
+    // Present it after exposure, and activate the native window once at startup.
+    if (!engine.rootObjects().isEmpty()) {
+        if (auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().first())) {
+            if (window->visibility() != QWindow::FullScreen && window->visibility() != QWindow::Maximized)
+                window->showNormal();
+            else window->show();
+            auto* activation = new QTimer(window);
+            activation->setInterval(50);
+            QObject::connect(activation, &QTimer::timeout, window, [window, activation, attempts = 0]() mutable {
+                if (++attempts > 40) { activation->deleteLater(); return; }
+                if (!window->isExposed()) return;
+                activation->stop();
+                window->raise();
+                window->requestActivate();
+                const HWND hwnd = reinterpret_cast<HWND>(window->winId());
+                if (IsIconic(hwnd)) ShowWindow(hwnd, SW_RESTORE);
+                if (GetForegroundWindow() != hwnd && !SetForegroundWindow(hwnd)) {
+                    const DWORD foregroundThread = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+                    const DWORD currentThread = GetCurrentThreadId();
+                    const bool attached = foregroundThread && foregroundThread != currentThread
+                        && AttachThreadInput(currentThread, foregroundThread, TRUE);
+                    BringWindowToTop(hwnd);
+                    SetForegroundWindow(hwnd);
+                    SetActiveWindow(hwnd);
+                    SetFocus(hwnd);
+                    if (attached) AttachThreadInput(currentThread, foregroundThread, FALSE);
+                }
+                qInfo() << "Windows startup foreground:" << (GetForegroundWindow() == hwnd);
+                activation->deleteLater();
+            });
+            activation->start();
+        }
+    }
+#endif
     //engine.loadFromModule("QOpenHD", "qrc:/main.qml");
     //engine.loadFromModule("QOpenHDApp","qrc:/main.qml");
     //engine.load("qml/main.qml");
@@ -762,6 +808,7 @@ int main(int argc, char *argv[]) {
     // Terminating needs a bit of special care due to the singleton usage and threads
     qDebug()<<"Terminating";
     MavlinkTelemetry::instance().terminate();
+    announcements.shutdown();
     platform_audio_terminate();
     return retval;
 }

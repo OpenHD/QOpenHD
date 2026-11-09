@@ -9,6 +9,15 @@ AdvancedDialog {
  readonly property var backend:typeof _settingsBackup!=="undefined"?_settingsBackup:null
  readonly property var fleet:typeof _fleetControlLte!=="undefined"?_fleetControlLte:null
  readonly property bool cloudAvailable:fleet&&fleet.authenticated
+ readonly property bool resetAvailable: typeof _qopenhd !== "undefined"
+     && (!backend || !backend.busy)
+     && !resetQueued
+     && !_qopenhd.debugMenuPreview
+     && (typeof _uiSimulator === "undefined" || !_uiSimulator.active)
+     && (typeof _fcMavlinkSystem === "undefined" || !_fcMavlinkSystem.armed)
+     && (typeof _ohdAction === "undefined" || (!_ohdAction.settingsResetBusy && !_ohdAction.powerActionBusy))
+ property bool resetQueued:false
+ property string resetError:""
  property var importSections:[]
  property var selectedSections:[]
  property string selectedFile:""
@@ -16,7 +25,7 @@ AdvancedDialog {
  property bool exporting:false
  parent:Overlay.overlay
  width:Math.min(580,parent?parent.width-28:580)
- height:Math.min(reviewing?190+importSections.length*48:232+(cloudAvailable?120:0)+(backend&&backend.restartRequired?46:0),parent?parent.height-28:600)
+ height:Math.min(reviewing?190+importSections.length*48:232+(cloudAvailable?120:0)+((resetQueued||(backend&&backend.restartRequired))?72:0),parent?parent.height-28:600)
  x:parent?(parent.width-width)/2:0;y:parent?(parent.height-height)/2:0
  closePolicy:backend&&backend.busy?Popup.NoAutoClose:Popup.CloseOnEscape
  standardButtons:Dialog.NoButton
@@ -57,17 +66,27 @@ AdvancedDialog {
          RowLayout {
              visible:!dialog.reviewing;Layout.fillWidth:true;spacing:12
              Repeater {
-                 model:[{label:qsTr("Export"),icon:"\uf019",save:true},{label:qsTr("Import"),icon:"\uf093",save:false}]
+                 model:[{label:qsTr("Export"),icon:"\uf019",action:"export"},{label:qsTr("Import"),icon:"\uf093",action:"import"},{label:qsTr("Reset"),icon:"\uf2ea",action:"reset"}]
                  AbstractButton {
-                     objectName:modelData.save?"backupExport":"backupImport"
+                     readonly property bool resetsSettings: modelData.action === "reset"
+                     objectName:resetsSettings?"backupReset":(modelData.action==="export"?"backupExport":"backupImport")
                      Layout.fillWidth:true;Layout.minimumWidth:0;Layout.preferredWidth:1;implicitHeight:116
-                     enabled:dialog.backend!==null&&!dialog.backend.busy
-                     onClicked:{dialog.exporting=modelData.save;if(typeof settings!=="undefined"&&typeof settings.sync==="function")settings.sync();filePicker.openForSave(modelData.save)}
+                     enabled:resetsSettings?dialog.resetAvailable:dialog.backend!==null&&!dialog.backend.busy&&(modelData.action==="export"||!dialog.resetQueued)
+                     onClicked: {
+                         if (resetsSettings) {
+                             dialog.resetError = ""
+                             resetConfirm.open()
+                             return
+                         }
+                         dialog.exporting = modelData.action === "export"
+                         if (typeof settings !== "undefined" && typeof settings.sync === "function") settings.sync()
+                         filePicker.openForSave(dialog.exporting)
+                     }
                      background:Rectangle {radius:10;color:parent.hovered?settings_form.panelBackgroundRaised:settings_form.panelBackground;border.color:parent.activeFocus?settings_form.accentColor:settings_form.lineColor}
                      contentItem:Item {
                          Column {
                          anchors.centerIn:parent;width:parent.width;spacing:12
-                         Text {anchors.horizontalCenter:parent.horizontalCenter;text:modelData.icon;color:settings_form.accentColor;font.family:"Font Awesome 5 Free";font.pixelSize:Typography.sectionIcon}
+                         Text {anchors.horizontalCenter:parent.horizontalCenter;text:modelData.icon;color:modelData.action==="reset"?settings_form.errorColor:settings_form.accentColor;font.family:"Font Awesome 5 Free";font.pixelSize:Typography.sectionIcon}
                          Text {anchors.horizontalCenter:parent.horizontalCenter;text:modelData.label;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.sectionTitle}
                      }
                      }
@@ -80,7 +99,7 @@ AdvancedDialog {
              RowLayout {
                  Layout.fillWidth:true
                  AdvancedActionButton {objectName:"saveFleetControlBackup";text:qsTr("Save to FleetControl");enabled:dialog.cloudAvailable&&dialog.fleet.online&&!dialog.fleet.busy&&!dialog.backend.busy;onClicked:cloudSave.open()}
-                 AdvancedActionButton {objectName:"loadFleetControlBackups";text:qsTr("Account backups");enabled:dialog.cloudAvailable&&!dialog.fleet.busy;onClicked:{dialog.fleet.refreshSettingsBackups();cloudList.open()}}
+                 AdvancedActionButton {objectName:"loadFleetControlBackups";text:qsTr("Account backups");enabled:dialog.cloudAvailable&&!dialog.fleet.busy&&!dialog.resetQueued;onClicked:{dialog.fleet.refreshSettingsBackups();cloudList.open()}}
              }
              Text {Layout.fillWidth:true;text:dialog.fleet?dialog.fleet.statusText:"";color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
          }
@@ -106,7 +125,49 @@ AdvancedDialog {
          }
          ProgressBar {Layout.fillWidth:true;visible:dialog.backend&&dialog.backend.busy;from:0;to:100;value:dialog.backend?dialog.backend.progress:0}
          Text {Layout.fillWidth:true;visible:text.length>0;text:dialog.backend?dialog.backend.message:qsTr("Backup service unavailable.");wrapMode:Text.WordWrap;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
-         AdvancedActionButton {visible:dialog.backend&&dialog.backend.restartRequired;enabled:!dialog.backend.busy;text:qsTr("Close QOpenHD");onClicked:_qopenhd.quit_qopenhd()}
+         Text {
+             objectName:"backupResetStatus"
+             Layout.fillWidth:true
+             visible:text.length>0
+             text:dialog.resetQueued?qsTr("QOpenHD will restore its defaults on restart."):dialog.resetError
+             color:dialog.resetQueued?settings_form.primaryText:settings_form.errorColor
+             wrapMode:Text.WordWrap
+             font.family:Typography.family;font.pixelSize:Typography.helper
+         }
+         AdvancedActionButton {visible:dialog.resetQueued||(dialog.backend&&dialog.backend.restartRequired);enabled:!dialog.backend||!dialog.backend.busy;text:qsTr("Close QOpenHD");onClicked:_qopenhd.quit_qopenhd()}
+     }
+ }
+ AdvancedDialog {
+     id:resetConfirm
+     objectName:"backupResetConfirm"
+     parent:Overlay.overlay
+     anchors.centerIn:parent
+     width:Math.min(440,parent?parent.width-28:440)
+     title:qsTr("Reset QOpenHD settings?")
+     contentItem:Text {
+         text:qsTr("Restore QOpenHD application and OSD defaults on restart. Settings on the Air and Ground units are kept.")
+         color:settings_form.primaryText
+         font.family:Typography.family;font.pixelSize:Typography.body
+         wrapMode:Text.WordWrap
+     }
+     footer:DialogButtonBox {
+         padding:16;spacing:10
+         AdvancedActionButton {
+             objectName:"backupResetCancel"
+             text:qsTr("Cancel")
+             onClicked:resetConfirm.reject()
+         }
+         AdvancedActionButton {
+             objectName:"backupResetAccept"
+             text:qsTr("Reset")
+             destructive:true
+             enabled:dialog.resetAvailable
+             onClicked: {
+                 if (_qopenhd.reset_settings()) dialog.resetQueued = true
+                 else dialog.resetError = qsTr("Could not schedule QOpenHD settings reset.")
+                 resetConfirm.close()
+             }
+         }
      }
  }
  SettingsFilePicker {

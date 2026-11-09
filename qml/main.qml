@@ -184,7 +184,7 @@ ApplicationWindow {
 
     //minimumWidth: 850
     //minimumHeight: 480
-    title: qsTr("QOpenHD EVO")
+    title: qsTr("QOpenHD EVO") + ((typeof QOPENHD_GPS_PREVIEW !== "undefined" && QOPENHD_GPS_PREVIEW) ? qsTr(" — GPS preview") : "")
     // Transparent background is needed when the video is not rendered via (OpenGL) inside QT,
     // but rather done independently by using a pipeline that directly goes to the HW composer (e.g. mmal on pi).
     //color: "transparent" //Consti10 transparent background
@@ -217,6 +217,8 @@ ApplicationWindow {
     }
     // Create the first frame before compiling and incubating the flight UI.
     readonly property bool bootSplashEnabled: _qopenhd.is_platform_rpi()
+    readonly property bool startupAnimationEnabled: _qopenhd.is_windows() || _qopenhd.is_android()
+    property bool startupIntroFinished: false
     property bool firstFrameShown: false
     onFrameSwapped: {
         if (!firstFrameShown) {
@@ -230,8 +232,12 @@ ApplicationWindow {
         id: flightUi
         anchors.fill: parent
         focus: true
-        active: !applicationWindow.bootSplashEnabled || applicationWindow.firstFrameShown
-        asynchronous: applicationWindow.bootSplashEnabled
+        // The live video renderer installs window-level GL callbacks. Create it
+        // after the startup movie so it cannot paint over the intro surface.
+        active: applicationWindow.startupAnimationEnabled
+                ? applicationWindow.startupIntroFinished || (startupIntro.item !== null && startupIntro.item.animationDone)
+                : !applicationWindow.bootSplashEnabled || applicationWindow.firstFrameShown
+        asynchronous: applicationWindow.bootSplashEnabled || applicationWindow.startupAnimationEnabled
         source: "HudContent.qml"
         onLoaded: {
             console.warn("QOpenHD HUD: loaded")
@@ -239,6 +245,22 @@ ApplicationWindow {
         onStatusChanged: {
             if (status === Loader.Error)
                 console.error("Cannot load the QOpenHD flight UI")
+        }
+    }
+
+    Loader {
+        id: startupIntro
+        parent: Overlay.overlay
+        anchors.fill: parent
+        focus: active
+        z: 30000
+        active: applicationWindow.startupAnimationEnabled && !applicationWindow.startupIntroFinished
+        sourceComponent: StartupIntro {
+            audioController: _audioAnnouncements
+            running: applicationWindow.firstFrameShown
+            hudReady: flightUi.status === Loader.Ready || flightUi.status === Loader.Error
+            qtMajorVersion: _qopenhd.qtMajorVersion
+            onFinished: applicationWindow.startupIntroFinished = true
         }
     }
 

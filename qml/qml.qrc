@@ -13,6 +13,7 @@
         <file>QOpenHD_zh.qm</file>
 </qresource>
 <qresource prefix="/">
+        <file alias="audio/startup.pcm">resources/audio/albatross_startup.pcm</file>
         <file>main.qml</file>
         <file>RadioTemperatureWarning.qml</file>
         <file>RadioTemperatureAlarmSound.qml</file>
@@ -22,6 +23,9 @@
         <file>ui/sidebar/ColorPreviewControls.qml</file>
         <file>HudContent.qml</file>
         <file>BootSplash.qml</file>
+        <file>StartupIntro.qml</file>
+        <file>StartupMovieQt5.qml</file>
+        <file>StartupMovieQt6.qml</file>
         <file>BootVideo.qml</file>
         <file>BootVideoNxp.qml</file>
         <file>boot-video.mp4</file>
@@ -46,6 +50,7 @@
         <file>ui/widgets/AirBatteryWidget.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
         <file>ui/widgets/GPSWidget.qml</file>
+        <file>ui/widgets/GpsPositionPopup.qml</file>
         <file>ui/widgets/HomeDistanceWidget.qml</file>
         <file>ui/widgets/FlightTimeWidget.qml</file>
         <file>ui/HUDOverlayGrid.qml</file>
@@ -121,6 +126,8 @@
         <file>ui/configpopup/dev/SimulationPopup.qml</file>
         <file>ui/configpopup/MenuTypography.js</file>
         <file>ui/configpopup/AdvancedDialogButton.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AppAudioRulesView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/AudioRuleCard.qml</file>
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
         <file>ui/configpopup/features/UartSettingsPanel.qml</file>
         <file>ui/configpopup/features/JoystickSettingsPanel.qml</file>

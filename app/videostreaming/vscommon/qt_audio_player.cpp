@@ -37,7 +37,7 @@ void QtAudioPlayer::refreshDevices() {
 }
 
 void QtAudioPlayer::setPlaybackEnabled(bool enabled) { QSettings().setValue("dev_enable_live_audio_playback", enabled); enabled ? start_playing() : stop_playing(); }
-void QtAudioPlayer::setSelectedOutputDevice(const QString &id) { if (id == m_selectedDevice) return; m_selectedDevice = id; QSettings().setValue("audio_output_device", id); emit selectedOutputDeviceChanged(); if (playing()) { stop_playing(); start_playing(); } }
+void QtAudioPlayer::setSelectedOutputDevice(const QString &id) { if (id == m_selectedDevice) return; const bool wasPlaying = playing(); stop_playing(); m_selectedDevice = id; QSettings().setValue("audio_output_device", id); emit selectedOutputDeviceChanged(); if (wasPlaying) start_playing(); }
 void QtAudioPlayer::setPlaybackVolume(int volume) { volume = qBound(0, volume, 100); if (volume == m_volume) return; m_volume = volume; QSettings().setValue("audio_playback_volume", volume); emit playbackVolumeChanged(); }
 
 void QtAudioPlayer::start_playing() {
@@ -46,7 +46,13 @@ void QtAudioPlayer::start_playing() {
         qWarning() << "Audio: cannot bind UDP port 5610:" << m_socket.errorString();
         return;
     }
-    QAudioFormat format; format.setSampleRate(8000); format.setChannelCount(1);
+    if (!ensureOutput()) m_socket.close();
+    emit playingChanged();
+}
+
+bool QtAudioPlayer::ensureOutput() {
+    if (m_audioOutput && m_audioDevice) return true;
+    QAudioFormat format; format.setSampleRate(48000); format.setChannelCount(2);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     format.setSampleFormat(QAudioFormat::Int16);
     QAudioDevice device = QMediaDevices::defaultAudioOutput();
@@ -60,7 +66,7 @@ void QtAudioPlayer::start_playing() {
     if (!device.isFormatSupported(format)) {
         qWarning() << "Audio: output device has no supported signed 16-bit PCM format" << device.description();
         emit playingChanged();
-        return;
+        return false;
     }
     m_audioOutput = new QAudioSink(device, format, this);
 #else
@@ -87,27 +93,32 @@ void QtAudioPlayer::start_playing() {
         if (!found) {
             qWarning() << "Audio: output device has no supported signed 16-bit PCM format" << device.deviceName();
             emit playingChanged();
-            return;
+            return false;
         }
     }
     m_audioOutput = new QAudioOutput(device, format, this);
 #endif
     m_outputSampleRate = format.sampleRate();
     m_outputChannelCount = format.channelCount();
-    m_audioDevice = m_audioOutput->start();
-    if (!m_audioDevice) {
+    m_mixer = new NativeAudioMixer(m_outputChannelCount * 2, (m_outputSampleRate / 2) * m_outputChannelCount * 2, this);
+    m_audioOutput->setBufferSize(m_outputSampleRate * m_outputChannelCount * 2 * 120 / 1000);
+    m_audioOutput->start(m_mixer);
+    m_audioDevice = m_mixer;
+    if (m_audioOutput->error() != QAudio::NoError) {
         qWarning() << "Audio: failed to start output device at" << m_outputSampleRate << "Hz with" << m_outputChannelCount << "channel(s)";
         delete m_audioOutput;
         m_audioOutput = nullptr;
+        delete m_mixer; m_mixer = nullptr; m_audioDevice = nullptr;
         emit playingChanged();
-        return;
+        return false;
     }
     qDebug() << "Audio: playing at" << m_outputSampleRate << "Hz with" << m_outputChannelCount << "channel(s)";
-    emit playingChanged();
+    return true;
 }
 void QtAudioPlayer::stop_playing() {
     m_socket.close(); m_audioDevice = nullptr;
     if (m_audioOutput) { m_audioOutput->stop(); delete m_audioOutput; m_audioOutput = nullptr; }
+    delete m_mixer; m_mixer = nullptr;
     updateLevel(0, 0); emit playingChanged();
 }
 
@@ -133,16 +144,41 @@ void QtAudioPlayer::readPendingDatagrams() {
             peakIn = qMax(peakIn, qAbs(int(raw)));
             peakOut = qMax(peakOut, qAbs(int(decoded[i])));
         }
-        const int outputFrames = qMax(1, int((qint64(inputSamples) * m_outputSampleRate) / 8000));
-        QByteArray pcm(outputFrames * m_outputChannelCount * int(sizeof(qint16)), Qt::Uninitialized);
-        for (int frame = 0; frame < outputFrames; ++frame) {
-            const int source = qMin(inputSamples - 1, int((qint64(frame) * 8000) / m_outputSampleRate));
-            for (int channel = 0; channel < m_outputChannelCount; ++channel) {
-                const int byteOffset = (frame * m_outputChannelCount + channel) * int(sizeof(qint16));
-                qToLittleEndian<qint16>(decoded[source], reinterpret_cast<uchar*>(pcm.data() + byteOffset));
-            }
-        }
+        QByteArray mono(inputSamples * 2, Qt::Uninitialized);
+        for (int i = 0; i < inputSamples; ++i)
+            qToLittleEndian(decoded[i], reinterpret_cast<uchar*>(mono.data() + i * 2));
+        const auto pcm = convertPcm(mono, 8000);
         updateLevel(qMin(100, peakIn * 100 / 32767), qMin(100, peakOut * 100 / 32767));
-        if (m_audioDevice && m_audioDevice->write(pcm) < 0) qWarning() << "Audio: output write failed";
+        if (m_mixer) m_mixer->addStream(pcm);
     }
+}
+
+QByteArray QtAudioPlayer::convertPcm(const QByteArray& pcm, int sampleRate, int channels) const {
+    const int samples = pcm.size() / (2 * channels);
+    if (!samples || sampleRate <= 0) return {};
+    if (sampleRate == m_outputSampleRate && channels == m_outputChannelCount) return pcm;
+    const int frames = int(qint64(samples) * m_outputSampleRate / sampleRate);
+    QByteArray result(frames * m_outputChannelCount * 2, Qt::Uninitialized);
+    const auto sample = [&](int frame, int channel) {
+        const auto read = [&](int c) { return int(qFromLittleEndian<qint16>(reinterpret_cast<const uchar*>(pcm.constData() + (frame * channels + c) * 2))); };
+        return channels == 2 && m_outputChannelCount == 1 ? (read(0) + read(1)) / 2 : read(qMin(channel, channels - 1));
+    };
+    for (int frame = 0; frame < frames; ++frame) {
+        const double position = double(frame) * sampleRate / m_outputSampleRate;
+        const int first = qMin(samples - 1, int(position));
+        const int second = qMin(samples - 1, first + 1);
+        for (int channel = 0; channel < m_outputChannelCount; ++channel) {
+            const int a = sample(first, channel), b = sample(second, channel);
+            const qint16 value = qint16(a + (b - a) * (position - first));
+            qToLittleEndian(value, reinterpret_cast<uchar*>(result.data() + (frame * m_outputChannelCount + channel) * 2));
+        }
+    }
+    return result;
+}
+
+int QtAudioPlayer::playPcm(const QByteArray& pcm, int sampleRate, int channels) {
+    if (sampleRate < 8000 || sampleRate > 192000 || (channels != 1 && channels != 2) ||
+        pcm.isEmpty() || pcm.size() % (2 * channels) || pcm.size() > 2097152 || !ensureOutput()) return 0;
+    m_mixer->setNotification(convertPcm(pcm, sampleRate, channels));
+    return int(qint64(pcm.size() / (2 * channels)) * 1000 / sampleRate) + 300;
 }

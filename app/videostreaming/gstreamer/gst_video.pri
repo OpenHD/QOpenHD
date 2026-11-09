@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/gstrtpreceiver.cpp
 
 HEADERS += \
+    $$PWD/rpiaudiooutputs.h \
     $$PWD/gst_helper.hpp \
     $$PWD/gstqmlglsinkstream.h \
     $$PWD/gstrtpaudioplayer.h \

@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Shapes 1.12
+import QtQuick.Window 2.12
 
 import OpenHD 1.0
 import "../elements"
@@ -27,6 +28,8 @@ BaseWidget {
     widgetActionWidth: 320
 
     hasWidgetDetail: true
+    widgetDetailWidth: Math.min(420, Window.window ? Window.window.width - 24 : 420)
+    widgetDetailHeight: Math.min(560, Window.window ? Window.window.height - 24 : 560)
     hasWidgetAction: true
     disable_dragging: true
     spanParentWidth: true
@@ -37,6 +40,9 @@ BaseWidget {
 
     property string linkFont: settings.osd_bottom_bar_font || "Quicksand"
     property string linkMonoFont: settings.osd_bottom_bar_font || "ShareTechMono"
+    readonly property color barBackgroundColor: settings.osd_bottom_bar_background_color || bw_current_background_color
+    readonly property color barTextColor: settings.osd_bottom_bar_text_color || settings.color_text
+    readonly property color barShapeColor: settings.osd_bottom_bar_text_color || settings.color_shape
     property real notchWidth: 140
     property real notchDepth: 8
     property real notchSlope: 14
@@ -78,7 +84,7 @@ BaseWidget {
     property string slot4Selection: "air_current"
     property string slot5Selection: "air_speed"
     property string slot6Selection: "home_distance"
-    property string slot7Selection: "satellites"
+    property string slot7Selection: "none"
     property string slot8Selection: "none"
     property var slotLabels: [
         qsTr("Left 1"),
@@ -102,7 +108,6 @@ BaseWidget {
         { label: qsTr("Wind Speed & Direction"), value: "wind_speed" },
         { label: qsTr("Altitude"), value: "altitude" },
         { label: qsTr("Home Distance"), value: "home_distance" },
-        { label: qsTr("Satellites"), value: "satellites" },
         { label: qsTr("None"), value: "none" }
     ]
     property int slot_update_tick: 0
@@ -164,6 +169,11 @@ BaseWidget {
 
     Component.onCompleted: {
         sync_shared_style_from_settings();
+        var savedGps = String(settings.value("gps_callout_last_position", "")).split(",")
+        if (savedGps.length === 2 && savedGps[0].length && savedGps[1].length
+                && validGpsCoordinates(Number(savedGps[0]), Number(savedGps[1])))
+            lastGpsPosition = Qt.point(Number(savedGps[0]), Number(savedGps[1]))
+        Qt.callLater(rememberGpsPosition)
         hide_na = setting_to_bool(settings.value("link_overview_widget_bottom_hide_na", true), true);
         slot1Selection = settings.value("link_overview_widget_bottom_slot_1", slot1Selection);
         slot2Selection = settings.value("link_overview_widget_bottom_slot_2", slot2Selection);
@@ -230,6 +240,11 @@ BaseWidget {
         var used = {};
         for (var i = 1; i <= 8; i++) {
             var value = get_slot_selection(i);
+            // Satellites now have a permanent place at the right edge.
+            if (value === "satellites") {
+                set_slot_selection(i, "none");
+                continue;
+            }
             if (value === "none") {
                 continue;
             }
@@ -452,11 +467,75 @@ BaseWidget {
     }
 
     function format_nav_sats() {
+        if (gpsPreviewActive) return "12"
         var sats = previewTelemetry("_fcMavlinkSystem", "satellites_visible", _fcMavlinkSystem.satellites_visible);
-        if (!_fcMavlinkSystem.is_alive || sats <= 0) {
+        if (!_fcMavlinkSystem.is_alive || sats < 0) {
             return "N/A";
         }
         return "" + sats;
+    }
+
+    function validGpsCoordinates(lat, lon) {
+        return isFinite(lat) && isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180
+            && (lat !== 0 || lon !== 0)
+    }
+    readonly property bool gpsPositionAvailable: _fcMavlinkSystem.is_alive
+        && _fcMavlinkSystem.gps_fix_type >= 2
+        && validGpsCoordinates(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+    readonly property bool gpsSimulationActive: typeof _uiSimulator !== "undefined" && _uiSimulator.active
+    readonly property var liveGpsPosition: gpsPositionAvailable && !gpsSimulationActive
+        ? Qt.point(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon) : null
+    property var lastGpsPosition: null
+    onLiveGpsPositionChanged: Qt.callLater(rememberGpsPosition)
+
+    function rememberGpsPosition() {
+        if (liveGpsPosition === null) {
+            if (gpsSaveTimer.running) {
+                gpsSaveTimer.stop()
+                saveLastGpsPosition()
+            }
+            return
+        }
+        if (lastGpsPosition && lastGpsPosition.x === liveGpsPosition.x && lastGpsPosition.y === liveGpsPosition.y)
+            return
+        var firstFix = lastGpsPosition === null
+        lastGpsPosition = liveGpsPosition
+        if (firstFix) saveLastGpsPosition()
+        else gpsSaveTimer.start()
+    }
+
+    function saveLastGpsPosition() {
+        if (!lastGpsPosition) return
+        settings.setValue("gps_callout_last_position", lastGpsPosition.x + "," + lastGpsPosition.y)
+        settings.sync()
+    }
+
+    // Group latitude and longitude notifications and limit settings writes during flight.
+    Timer {
+        id: gpsSaveTimer
+        interval: 500
+        onTriggered: saveLastGpsPosition()
+    }
+
+    property bool gpsPreviewRequested: typeof QOPENHD_GPS_PREVIEW !== "undefined" && QOPENHD_GPS_PREVIEW
+    readonly property bool gpsPreviewActive: gpsPreviewRequested && !gpsPositionAvailable
+    readonly property bool showingSavedGpsPosition: !gpsPositionAvailable && !gpsPreviewActive && lastGpsPosition !== null
+    function gps_coordinate(latitude) {
+        if (!gpsPositionAvailable && !gpsPreviewActive && !lastGpsPosition) return qsTr("Unavailable")
+        var value = gpsPreviewActive ? (latitude ? 50.110924 : 8.682127)
+            : gpsPositionAvailable ? (latitude ? _fcMavlinkSystem.lat : _fcMavlinkSystem.lon)
+            : (latitude ? lastGpsPosition.x : lastGpsPosition.y)
+        if (settings.gps_hide_identity_using_offset)
+            value += latitude ? settings.hide_identity_latitude_offset : settings.hide_identity_longitude_offset
+        var direction = latitude ? (value < 0 ? "S" : "N") : (value < 0 ? "W" : "E")
+        var coordinate = Math.abs(value).toFixed(6) + "\u00b0 " + direction
+        return latitude && showingSavedGpsPosition ? qsTr("Last %1").arg(coordinate) : coordinate
+    }
+
+    function set_gps_callout_open(open) {
+        settings.gps_position_popup_open = open
+        settings.setValue("gps_position_popup_open", open)
+        settings.sync()
     }
 
     function format_nav_alt() {
@@ -682,9 +761,11 @@ BaseWidget {
     }
 
     widgetDetailComponent: Loader {
+        objectName: "bottomBarSettingsLoader"
         active: widgetDetail.visible
         asynchronous: true
         sourceComponent: ScrollView {
+            objectName: "bottomBarSettingsScroll"
             contentHeight: detailColumn.height
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             clip: true
@@ -723,6 +804,28 @@ BaseWidget {
                     }
                 }
 
+                RowLayout {
+                    width: parent.width
+                    Text {
+                        Layout.fillWidth: true
+                        text: qsTr("Scramble GPS coordinates")
+                        color: "white"
+                        font.bold: true
+                        font.pixelSize: detailPanelFontPixels
+                        wrapMode: Text.WordWrap
+                    }
+                    Switch {
+                        objectName: "bottomBarGpsScramble"
+                        Accessible.name: qsTr("Scramble GPS coordinates")
+                        checked: settings.gps_hide_identity_using_offset
+                        onToggled: {
+                            settings.gps_hide_identity_using_offset = checked
+                            settings.setValue("gps_hide_identity_using_offset", checked)
+                            settings.sync()
+                        }
+                    }
+                }
+
                 Repeater {
                     model: slotLabels.length
                     delegate: Item {
@@ -740,6 +843,7 @@ BaseWidget {
                         }
                         DarkComboBox {
                             id: slotCombo
+                            objectName: "bottomBarSlot" + slotIndex
                             model: slotOptions
                             textRole: "label"
                             currentIndex: slot_index_for_value(get_slot_selection(slotIndex))
@@ -749,7 +853,7 @@ BaseWidget {
                             anchors.topMargin: 4
                             width: 160
                             height: parent.height - 4
-                            onActivated: {
+                            onActivated: function(index) {
                                 if (index < 0 || index >= slotOptions.length) {
                                     return;
                                 }
@@ -781,7 +885,7 @@ BaseWidget {
             objectName: "bottomBarBackground"
             anchors.fill: parent
             opacity: 0.5
-            property color fillColor: settings.osd_bottom_bar_background_color || bw_current_background_color
+            property color fillColor: barBackgroundColor
             property real topY: notchDepth
             property real notchStartX: (width - notchWidth) / 2
             property real notchEndX: notchStartX + notchWidth
@@ -812,6 +916,20 @@ BaseWidget {
             anchors.bottom: parent.bottom
             anchors.top: parent.top
             anchors.topMargin: notchDepth
+        }
+
+        // The flight-mode area below is above this surface and keeps its own
+        // gestures. Holds on the remaining bar open its configuration.
+        MouseArea {
+            objectName: "bottomBarSettingsHold"
+            anchors.fill: parent
+            enabled: !widgetGalleryPreview
+            preventStealing: true
+            onPressAndHold: {
+                widgetAction.close()
+                widgetDetail.focus = true
+                widgetDetail.open()
+            }
         }
 
         Text {
@@ -934,12 +1052,13 @@ BaseWidget {
 
         Item {
             id: rightArea
+            objectName: "bottomBarRightSlots"
             anchors.left: contentArea.horizontalCenter
             anchors.leftMargin: notchSafeWidth / 2
-            anchors.right: contentArea.right
+            anchors.right: fixedSatellites.left
             anchors.bottom: contentArea.bottom
             anchors.top: contentArea.top
-            anchors.rightMargin: 20
+            anchors.rightMargin: 12
 
             RowLayout {
                 anchors.fill: parent
@@ -979,6 +1098,84 @@ BaseWidget {
                     }
                 }
             }
+        }
+
+        Item {
+            id: fixedSatellites
+            objectName: "bottomBarSatellites"
+            Accessible.role: Accessible.Button
+            Accessible.name: qsTr("Satellites: %1. GPS position").arg(format_nav_sats())
+            Accessible.onPressAction: set_gps_callout_open(!settings.gps_position_popup_open)
+            anchors.right: parent.right
+            anchors.rightMargin: 12
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: Math.max(48, satelliteValues.implicitWidth + 12)
+            Row {
+                id: satelliteValues
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: slotContentYOffset
+                spacing: 6
+                Rectangle {
+                    id: satelliteIcon
+                    objectName: "bottomBarSatelliteIcon"
+                    width: 30; height: 30; radius: 15
+                    color: settings.gps_position_popup_open ? Qt.rgba(barShapeColor.r, barShapeColor.g, barShapeColor.b, 0.12) : "transparent"
+                    border.width: settings.gps_position_popup_open ? 1 : 0
+                    border.color: barShapeColor
+                    Text {
+                        anchors.centerIn: parent
+                        text: "\uf7bf"
+                        color: settings.osd_bottom_bar_text_color || settings.color_shape
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 18
+                        style: Text.Outline
+                        styleColor: settings.color_glow
+                    }
+                }
+                Text {
+                    id: satelliteCount
+                    objectName: "bottomBarSatelliteCount"
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: format_nav_sats()
+                    color: barTextColor
+                    font.family: linkFont
+                    font.pixelSize: 16
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
+            }
+            MouseArea {
+                objectName: "bottomBarGpsTouch"
+                anchors.fill: parent
+                enabled: !widgetGalleryPreview
+                cursorShape: Qt.PointingHandCursor
+                onClicked: set_gps_callout_open(!settings.gps_position_popup_open)
+                onPressAndHold: {
+                    widgetDetail.focus = true
+                    widgetDetail.open()
+                }
+            }
+        }
+
+        GpsPositionPopup {
+            id: gpsPositionPopup
+            objectName: "bottomBarGpsPopup"
+            x: Math.max(8, parent.width - width - 12)
+            y: -height + 2
+            z: 10
+            expanded: settings.gps_position_popup_open
+            pointerX: fixedSatellites.x + satelliteValues.x + satelliteIcon.x + satelliteIcon.width / 2 - x
+            latitudeText: gps_coordinate(true)
+            longitudeText: gps_coordinate(false)
+            textFont: satelliteCount.font.family
+            textPixelSize: satelliteCount.font.pixelSize
+            panelColor: baseShape.fillColor
+            backgroundOpacity: baseShape.opacity
+            textColor: showingSavedGpsPosition || gpsPreviewActive || (gpsPositionAvailable && gpsSimulationActive)
+                ? settings.color_warn : satelliteCount.color
+            accentColor: barShapeColor
+            onExpansionRequested: function(expanded) { set_gps_callout_open(expanded) }
         }
     }
 

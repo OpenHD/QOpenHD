@@ -10,7 +10,7 @@ with tempfile.TemporaryDirectory(prefix='qopenhd-backup-ui-') as temp:
         text=path.read_text(encoding='utf-8').replace('../MenuTypography.js','MenuTypography.js').replace('../configpopup/MenuTypography.js','MenuTypography.js')
         for dep in ['import ".."','import "../qopenhd_settings"','import "../openhd_settings"','import "../../elements"']:text=text.replace(dep,'')
         (pages/path.name).write_text(text,encoding='utf-8')
-    text=(ROOT/'tests/backup_ui/fixture.qml').read_text(encoding='utf-8').replace('"../../qml/ui/configpopup/features"','"pages"').replace('../../qml/',(ROOT/'qml').as_uri()+'/')
+    text=(ROOT/'tests/backup_ui/fixture.qml').read_text(encoding='utf-8').replace('"../../qml/ui/configpopup/backup"','"pages"').replace('../../qml/',(ROOT/'qml').as_uri()+'/')
     (folder/'tst_backup.qml').write_text(text,encoding='utf-8')
     env=os.environ.copy();env['PATH']=str(args.qt_bin)+os.pathsep+env.get('PATH','')
     env.update(QT_SCALE_FACTOR='1',QT_QUICK_BACKEND='software',QT_QUICK_CONTROLS_STYLE='Material',QT_QPA_PLATFORM_PLUGIN_PATH=str(args.qt_bin.parent/'plugins/platforms'),QML2_IMPORT_PATH=str(args.qt_bin.parent/'qml'))

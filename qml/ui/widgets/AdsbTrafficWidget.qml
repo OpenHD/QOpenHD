@@ -6,14 +6,33 @@ import QtQuick.Window 2.12
 BaseWidget {
     id: root
 
-    width: 286 * bw_current_scale
-    height: 142 * bw_current_scale
+    readonly property bool minimalView: settings.adsb_widget_minimal
+    function toggleMinimalView() {
+        settings.adsb_widget_minimal = !minimalView
+        // Qt.labs.settings batches property writes; commit before an immediate restart.
+        settings.setValue("adsb_widget_minimal", settings.adsb_widget_minimal)
+        settings.sync()
+    }
+    width: 286 * bw_current_scale * (minimalView ? 0.5 : 1.0)
+    height: (minimalView ? 32 : 142) * bw_current_scale
     visible: settings.show_widgets && settings.adsb_enable && settings.adsb_show_nearest_widget
     widgetIdentifier: "adsb_nearest"
     bw_verbose_name: qsTr("ADS-B traffic")
     defaultAlignment: 2
     defaultXOffset: 18
     defaultYOffset: 120
+
+    // Leave BaseWidget's edge holds available for moving and customisation.
+    MouseArea {
+        objectName: "adsbSizeHold"
+        anchors.centerIn: parent
+        width: parent.width * 0.5
+        height: parent.height * 0.5
+        z: 3
+        enabled: !root.dragging
+        onPressAndHold: root.toggleMinimalView()
+        onClicked: root._onClicked(drag)
+    }
 
     // Use the same HUD customization and placement contract as the other
     // BaseWidget implementations.
@@ -223,10 +242,11 @@ BaseWidget {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 9 * root.bw_current_scale
-        spacing: 5 * root.bw_current_scale
+        anchors.margins: (root.minimalView ? 6 : 9) * root.bw_current_scale
+        spacing: (root.minimalView ? 3 : 5) * root.bw_current_scale
 
         RowLayout {
+            visible: !root.minimalView
             Layout.fillWidth: true
             spacing: 7 * root.bw_current_scale
 
@@ -267,7 +287,7 @@ BaseWidget {
             }
         }
 
-        Rectangle { Layout.fillWidth: true; height: 1; color: root.lineColor }
+        Rectangle { visible: !root.minimalView; Layout.fillWidth: true; height: 1; color: root.lineColor }
 
         Item {
             Layout.fillWidth: true
@@ -289,7 +309,7 @@ BaseWidget {
                         color: root.aircraftColor(nearestSummary.nearest)
                         font.family: root.textFontFamily
                         font.bold: true
-                        font.pixelSize: 17 * root.bw_current_scale
+                        font.pixelSize: (root.minimalView ? 12 : 17) * root.bw_current_scale
                         elide: Text.ElideRight
                     }
                     Text {
@@ -297,10 +317,11 @@ BaseWidget {
                         color: root.textColor
                         font.family: root.textFontFamily
                         font.bold: true
-                        font.pixelSize: 17 * root.bw_current_scale
+                        font.pixelSize: (root.minimalView ? 12 : 17) * root.bw_current_scale
                     }
                 }
                 RowLayout {
+                    visible: !root.minimalView
                     Layout.fillWidth: true
                     Text {
                         Layout.fillWidth: true
@@ -310,6 +331,7 @@ BaseWidget {
                         opacity: 0.78
                         font.family: root.textFontFamily
                         font.pixelSize: 11 * root.bw_current_scale
+                        elide: Text.ElideRight
                     }
                     Text {
                         text: root.threatLevel(nearestSummary.nearest) === 2 ? qsTr("WARNING")
@@ -322,7 +344,7 @@ BaseWidget {
                     }
                 }
                 Text {
-                    visible: root.displayedAircraft.length > 1
+                    visible: !root.minimalView && root.displayedAircraft.length > 1
                     text: "+" + (root.displayedAircraft.length - 1) + " " + qsTr("more aircraft")
                     color: root.textColor
                     opacity: 0.72
@@ -341,9 +363,10 @@ BaseWidget {
                     color: root.textColor
                     font.family: root.textFontFamily
                     font.bold: true
-                    font.pixelSize: 14 * root.bw_current_scale
+                    font.pixelSize: (root.minimalView ? 11 : 14) * root.bw_current_scale
                 }
                 Text {
+                    visible: !root.minimalView
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: AdsbVehicleManager.status === 2
                           ? qsTr("Traffic source ready") : (AdsbVehicleManager.status === 3

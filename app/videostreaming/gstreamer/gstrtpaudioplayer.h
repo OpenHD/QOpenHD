@@ -42,6 +42,8 @@ public:
     void setSelectedOutputDevice(const QString& deviceId);
     void setPlaybackVolume(int volume);
     void setRecording(bool recording);
+    int play_pcm(const QByteArray& pcm, int sampleRate = 22050, int channels = 1);
+    QString poll_error();
 
 signals:
     void outputDevicesChanged();
@@ -70,6 +72,7 @@ private:
     QStringList m_outputDeviceIds;
     QString m_selectedOutputDevice;
     QString m_recordingPath;
+    QString m_last_error;
     int m_playbackVolume = 100;
     int m_inputLevel = 0;
     int m_outputLevel = 0;

@@ -17,9 +17,19 @@ MapWidgetForm {
     disable_dragging: true // The edge moves the widget; the centre pans the map.
 
     property bool mapExpanded: false
+    readonly property bool mapHalfSize: settings.map_minimal
+    readonly property real compactSizeFactor: mapHalfSize ? 0.5 : 1.0
+    function toggleHalfSizeMap() {
+        settings.map_minimal = !mapHalfSize
+        settings.setValue("map_minimal", settings.map_minimal)
+        settings.sync()
+        // A hold also provides a way back from the expanded map.
+        configureSmallMap()
+    }
 
     property bool followDrone: true
     property bool demoFlight: false
+    property bool gpsPreviewRequested: typeof QOPENHD_GPS_PREVIEW !== "undefined" && QOPENHD_GPS_PREVIEW
 
     property variant map: null
     property var mapPlugin: null
@@ -37,6 +47,17 @@ MapWidgetForm {
     // Coalesce changes so the provider and token are restored before creating a map.
     property bool mapSettingsReady: false
     Component.onCompleted: {
+        // Migrate the previous factory location without moving custom layouts.
+        if (Number(settings.value("map_widget_align", defaultAlignment)) === 1
+                && Number(settings.value("map_widget_x_offset", defaultXOffset)) === 12
+                && Number(settings.value("map_widget_y_offset", defaultYOffset)) === 48
+                && !getHCenter() && !getVCenter()) {
+            settings.setValue("map_widget_align", defaultAlignment)
+            settings.setValue("map_widget_x_offset", defaultXOffset)
+            settings.setValue("map_widget_y_offset", defaultYOffset)
+            settings.sync()
+            loadAlignment()
+        }
         mapSettingsReady = true
         mapReconfigure.restart()
     }
@@ -159,6 +180,12 @@ MapWidgetForm {
                 "height": Qt.binding(function(){return mapWidget.settingsPreviewActive?mapWidget.settingsPreviewSize.height:parent.height}),
                 "plugin": mapPlugin, "forceCustomMapType": provider === "openhd_offline",
                 "compassMode": Qt.binding(function() { return mapWidget.roundMap }),
+                "gpsPreview": Qt.binding(function() {
+                    return mapWidget.gpsPreviewRequested && !applicationWindow.fcPositionValid
+                }),
+                "aircraftMarkerScale": Qt.binding(function() {
+                    return mapWidget.mapHalfSize && !mapWidget.mapExpanded && !mapWidget.settingsPreviewActive ? 0.5 : 1.0
+                }),
                 "demoFlight": Qt.binding(function() { return mapWidget.demoFlight })})
             if (!map) {
                 clearMap()
@@ -180,6 +207,7 @@ MapWidgetForm {
                 if (mapExpanded) configureSmallMap()
                 else configureLargeMap()
             })
+            map.halfSizeRequested.connect(toggleHalfSizeMap)
             map.gesture.enabled = true
             if (!followDrone && previousCenter && previousCenter.isValid)
                 map.center = previousCenter
@@ -252,6 +280,8 @@ MapWidgetForm {
         }
     }
 
+    onCompactSizeFactorChanged: if (!mapExpanded) resizeSmallMap()
+
     function configureLargeMap() {
         console.log("configureLargeMap()")
         if (mapExpanded == false) {
@@ -266,8 +296,9 @@ MapWidgetForm {
     onFooterHeightChanged: if (!mapExpanded) resizeSmallMap()
 
     function resizeSmallMap() {
-        mapWidget.width = compactWidth
-        mapWidget.height = compactHeight
+        // Settings restore after construction; keep following the final size bindings.
+        mapWidget.width = Qt.binding(function() { return mapWidget.compactWidth })
+        mapWidget.height = Qt.binding(function() { return mapWidget.compactHeight })
     }
     function configureSmallMap() {
         console.log("configureSmallMap()")

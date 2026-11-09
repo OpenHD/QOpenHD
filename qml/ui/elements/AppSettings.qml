@@ -234,7 +234,8 @@ Settings {
     property int ground_voltage_in_percent: 0
 
 
-    property bool show_gps: true
+    property bool show_gps: false
+    property bool gps_position_popup_open: false
     property bool gps_show_all: true
     property bool gps_hide_identity_using_offset: false
     property bool gps_declutter: false
@@ -387,11 +388,13 @@ Settings {
     property int adsb_source: 0
     property bool adsb_show_unknown_or_zero_alt: false //alot of traffic has no alt and is not useful
     property bool adsb_show_nearest_widget: true
+    property bool adsb_widget_minimal: true
     property bool adsb_show_osd_markers: false
 
     property int map_zoom: 18
     property double map_size: 1
     property bool map_round: true
+    property bool map_minimal: true
     property bool show_throttle: false
 
     property bool show_control: false
@@ -473,6 +476,10 @@ Settings {
     property bool dev_force_show_full_screen: false
 
     // experimental
+    property string audio_speech_language: "en"
+    property bool audio_welcome_sound: true
+    property bool audio_warning_sound: true
+    property int audio_notification_volume: 70
     property bool dev_enable_live_audio_playback: true
     // might / might not work
     property bool dev_set_swap_interval_zero: false

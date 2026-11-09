@@ -4,6 +4,7 @@
 #include <QQuickItemGrabResult>
 #include <QBuffer>
 #include "qopenhd.h"
+#include "audioannouncements.h"
 #include "qtcreatorlaunch.h"
 #include "qpixmap.h"
 #include <QCoreApplication>
@@ -215,18 +216,7 @@ void QOpenHD::configureSpeech(const QString& voice, double rate, double volume)
 
 void QOpenHD::textToSpeech_sayMessage(QString message)
 {
-#if defined(ENABLE_SPEECH)  
-    QSettings settings;
-    if (speechAvailable() && settings.value("enable_speech", true).toBool()) {
-
-        qDebug() << "QOpenHD::textToSpeech_sayMessage say:" << message;
-        m_speech->say(message);
-    }else{
-        qDebug()<<"TextToSpeech disabled, msg:"<<message;
-    }
-#else
-    qDebug()<<"TextToSpeech not available, msg:"<<message;
-#endif
+    AudioAnnouncements::instance().sayLegacy(message);
 }
 
 void QOpenHD::quit_qopenhd()

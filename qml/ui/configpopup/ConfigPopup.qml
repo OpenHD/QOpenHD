@@ -79,7 +79,15 @@ Rectangle {
     property bool diagnosticsUnlocked: false
     property int creditsStarClickCount: 0
     property bool updatingNavigation: false
-    readonly property var navigationPageIds: showDeveloperSettings ? [0, 1, 2, 8, 3, 5, 6, 7] : [0, 1, 2, 8, 5, 6]
+    readonly property var navigationPageIds: {
+        var pages = showDeveloperSettings ? [0, 1, 2, 8, 3, 5, 6, 7] : [0, 1, 2, 8, 5, 6]
+        if (showAdvancedSettings) pages.push(10)
+        return pages
+    }
+    onShowAdvancedSettingsChanged: {
+        if (!showAdvancedSettings && mainStackLayout.currentIndex === 10) mainStackLayout.currentIndex = 8
+        navigation.currentIndex = navigationPageIds.indexOf(mainStackLayout.currentIndex)
+    }
     onShowDeveloperSettingsChanged: {
         if (!showDeveloperSettings && (mainStackLayout.currentIndex === 3 || mainStackLayout.currentIndex === 7 || mainStackLayout.currentIndex === 9)) {
             mainStackLayout.currentIndex = 0
@@ -101,9 +109,9 @@ Rectangle {
     onMenuPageTitleChanged: if (mainStackLayout.currentIndex !== 6) creditsStarClickCount = 0
     property int sidebarWidth: compactSidebar ? 72 : Math.max(160, Math.min(210, width * 0.17))
 
-    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), "", qsTr("CONNECT"), qsTr("CREDITS"), qsTr("DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS")][mainStackLayout.currentIndex]
-    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), "", qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("MAVLink and hardware diagnostics"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information")][mainStackLayout.currentIndex]
-    readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf013", "\uf0ad"][mainStackLayout.currentIndex]
+    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), "", qsTr("CONNECT"), qsTr("CREDITS"), qsTr("DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS"), qsTr("AUDIO")][mainStackLayout.currentIndex]
+    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), "", qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("MAVLink and hardware diagnostics"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information"), qsTr("Sounds, speech and voice rules")][mainStackLayout.currentIndex]
+    readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf013", "\uf0ad", "\uf028"][mainStackLayout.currentIndex]
 
     Settings {
         id: advancedThemeSettings
@@ -173,6 +181,8 @@ Rectangle {
         ListElement { title: qsTr("Credits"); icon: "\uf005" }
         ListElement { title: qsTr("Debug"); icon: "\uf188" }
         ListElement { title: qsTr("Application"); icon: "\uf013" }
+        ListElement { title: qsTr("Developer tools"); icon: "\uf0ad" }
+        ListElement { title: qsTr("Audio"); icon: "\uf028" }
     }
 
     Rectangle {
@@ -477,6 +487,7 @@ Rectangle {
             AdvancedPageLoader { id: mavDebugPage; selected: mainStackLayout.currentIndex === 7; source: "dev/MavlinkDebugPanel.qml" }
             AdvancedPageLoader { id: applicationPage; selected: mainStackLayout.currentIndex === 8; source: "qopenhd_settings/AppSettingsPanel.qml" }
             AdvancedPageLoader { id: developerPage; selected: mainStackLayout.currentIndex === 9; source: "dev/AppDeveloperStatsPanel.qml" }
+            AdvancedPageLoader { id: voiceRulesPage; selected: mainStackLayout.currentIndex === 10 && settings_form.showAdvancedSettings; source: "qopenhd_settings/AppAudioRulesView.qml" }
         }
     }
 }

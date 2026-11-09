@@ -95,10 +95,12 @@ Item {
             compare(_qopenhd.debugMenuPreview, true)
             compare(_qopenhd.debugMenuPreviewLevel, 2)
             compare(menu.item.showAdvancedSettings, true)
+            verify(menu.item.navigationPageIds.indexOf(10) >= 0)
             compare(menu.item.showDeveloperSettings, false)
             mouseClick(button)
             compare(_qopenhd.debugMenuPreview, false)
             compare(_qopenhd.debugMenuPreviewLevel, 0)
+            compare(menu.item.navigationPageIds.indexOf(10), -1)
             compare(button.checked, false)
             _qopenhd.launchedFromQtCreator = false
             tryCompare(button, "visible", false)

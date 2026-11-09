@@ -32,7 +32,7 @@ SOURCES += \
 !contains(CONFIG, nxp_native):!contains(CONFIG, rockchip_native):qtHaveModule(multimedia) {
     QT += multimedia
     DEFINES += QOPENHD_ENABLE_QT_AUDIO
-    HEADERS += $$PWD/qt_audio_player.h
+    HEADERS += $$PWD/qt_audio_player.h $$PWD/nativeaudiomixer.h
     SOURCES += $$PWD/qt_audio_player.cpp
 }
 

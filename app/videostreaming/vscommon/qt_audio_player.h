@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QUdpSocket>
 #include <QAudioFormat>
+#include "nativeaudiomixer.h"
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QAudioSink>
 #else
@@ -37,6 +38,8 @@ public:
     Q_INVOKABLE void stop_playing();
     void setSelectedOutputDevice(const QString &id);
     void setPlaybackVolume(int volume);
+    // Mix local PCM notifications with the incoming stream on the same device.
+    int playPcm(const QByteArray& pcm, int sampleRate = 22050, int channels = 1);
 signals:
     void outputDevicesChanged();
     void selectedOutputDeviceChanged();
@@ -49,6 +52,9 @@ private slots:
 private:
     static qint16 decodeAlaw(quint8 value);
     void updateLevel(int input, int output);
+    bool ensureOutput();
+    QByteArray convertPcm(const QByteArray& pcm, int sampleRate, int channels = 1) const;
+    NativeAudioMixer* m_mixer = nullptr;
     QStringList m_deviceNames, m_deviceIds;
     QString m_selectedDevice;
     int m_volume = 100, m_inputLevel = 0, m_outputLevel = 0;

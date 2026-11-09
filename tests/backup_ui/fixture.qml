@@ -7,7 +7,8 @@ Item {
  FontLoader {source:"../../qml/osdfonts/Archivo-Regular.ttf"}
  FontLoader {source:"../../qml/resources/Font Awesome 5 Free-Solid-900.otf"}
  QtObject {id:settings_form;property bool darkMode:true;property color errorColor:"#ff4e5d";property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c"}
- QtObject {id:_qopenhd;function quit_qopenhd(){}}
+ QtObject {id:_qopenhd;property int resets:0;function reset_settings(){resets++;return true}function quit_qopenhd(){}}
+ QtObject {id:_fcMavlinkSystem;property bool armed:false}
  QtObject {id:settings;property int syncs:0;function sync(){syncs++}}
  QtObject {
      id:_fleetControlLte
@@ -103,6 +104,29 @@ Item {
              verify(dialog.width<=scene.width);verify(dialog.height<=scene.height)
              grabImage(scene).save("build/backup-popup-"+scene.width+".png")
          }
+     }
+     function test_reset_requires_confirmation(){
+         _qopenhd.resets=0
+         var card=control("backupReset")
+         _fcMavlinkSystem.armed=true
+         verify(!card.enabled)
+         _fcMavlinkSystem.armed=false
+         mouseClick(card)
+         var confirmation=findChild(dialog,"backupResetConfirm")
+         tryCompare(confirmation,"opened",true)
+         compare(_qopenhd.resets,0)
+         mouseClick(findChild(confirmation,"backupResetCancel"))
+         tryCompare(confirmation,"visible",false)
+         compare(_qopenhd.resets,0)
+         mouseClick(card)
+         tryCompare(confirmation,"opened",true)
+         mouseClick(findChild(confirmation,"backupResetAccept"))
+         tryCompare(confirmation,"visible",false)
+         compare(_qopenhd.resets,1)
+         verify(dialog.resetQueued)
+         verify(control("backupResetStatus").visible)
+         verify(!control("backupImport").enabled)
+         dialog.resetQueued=false
      }
  }
 }

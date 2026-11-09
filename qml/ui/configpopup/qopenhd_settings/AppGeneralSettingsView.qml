@@ -10,10 +10,7 @@ FocusScope {
  objectName:"generalSettingsPage"
  readonly property bool hybrid:settings.enable_hybrid
  readonly property int unitMode:hybrid?2:settings.enable_imperial?1:0
- readonly property bool speechAvailable:typeof _qopenhd!=="undefined"&&_qopenhd.speechAvailable===true
  readonly property var languages:[{text:qsTr("English (Default)"),locale:"en",flag:"../../../resources/flags/gb.svg"},{text:qsTr("Deutsch"),locale:"de",flag:"../../../resources/flags/de.svg"}]
- readonly property var voiceNames:typeof _qopenhd!=="undefined"&&_qopenhd.speechVoices?_qopenhd.speechVoices:[]
- readonly property var voiceOptions:[qsTr("System Default")].concat(voiceNames)
  readonly property bool resetBlocked:(typeof _settingsBackup!=="undefined" && _settingsBackup.busy) || (typeof _qopenhd!=="undefined" && _qopenhd.debugMenuPreview===true) || (typeof _uiSimulator!=="undefined" && _uiSimulator.active) || (typeof _fcMavlinkSystem!=="undefined" && _fcMavlinkSystem.armed)
  readonly property var resetBackend:typeof _ohdAction!=="undefined"?_ohdAction:null
  property string resetTarget:""
@@ -62,7 +59,6 @@ FocusScope {
  }
  function gainFocus(){language.forceActiveFocus()}
  function setUnits(mode){settings.enable_hybrid=mode===2;settings.enable_imperial=mode===1}
- function updateSpeech(){if(speechAvailable)_qopenhd.configureSpeech(settings.speech_voice,settings.speech_rate,settings.speech_volume)}
  Flickable {
   id:scroll;objectName:"generalPageScroll";anchors.fill:parent;anchors.margins:10
   contentWidth:width;contentHeight:cards.height;clip:true;boundsBehavior:Flickable.StopAtBounds
@@ -109,33 +105,14 @@ FocusScope {
     }
    }
    GeneralSettingsCard {
-    width:parent.width;height:implicitHeight;title:qsTr("Text to Speech");hint:qsTr("Read important events and alerts aloud.");icon:"\uf028";controlWidth:48
-    headerControls:WidgetToggle {objectName:"generalSpeechEnabled";anchors.fill:parent;checked:settings.enable_speech;enabled:root.speechAvailable;onToggled:settings.enable_speech=checked}
-    Rectangle {
-     width:parent.width;height:speechRows.height;radius:9;color:"transparent";border.color:settings_form.lineColor
-     Column {
-      id:speechRows;width:parent.width
-      Repeater {
-       model:3
-       delegate:Item {
-        width:parent.width;height:width<640?98:Typography.rowHeight
-        Text {x:18;y:parent.width<640?15:(parent.height-height)/2;text:index===0?qsTr("Voice"):index===1?qsTr("Speech Rate"):qsTr("Volume");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
-        Item {
-         width:parent.width<640?parent.width-36:Math.min(450,parent.width*0.48);height:Typography.controlHeight;x:parent.width-width-18;y:parent.width<640?50:(parent.height-height)/2
-         CompactLinkComboBox {
-          objectName:"generalSpeechVoice";anchors.fill:parent;visible:index===0;topInset:0;bottomInset:0;optionIcon:"\uf550";font.pixelSize:Typography.body
-          model:root.voiceOptions;currentIndex:Math.max(0,root.voiceNames.indexOf(settings.speech_voice)+1);enabled:root.speechAvailable&&settings.enable_speech
-          onActivated:{settings.speech_voice=currentIndex===0?"":root.voiceNames[currentIndex-1];root.updateSpeech()}
-         }
-         MapValueSlider {objectName:"generalSpeechRate";anchors.fill:parent;visible:index===1;from:0.5;to:2;stepSize:0.05;value:settings.speech_rate;displayText:Math.round(value*100)+"%";enabled:root.speechAvailable&&settings.enable_speech;onMoved:{settings.speech_rate=value;root.updateSpeech()}}
-         MapValueSlider {objectName:"generalSpeechVolume";anchors.fill:parent;visible:index===2;from:0;to:1;stepSize:0.01;value:settings.speech_volume;displayText:Math.round(value*100)+"%";enabled:root.speechAvailable&&settings.enable_speech;onMoved:{settings.speech_volume=value;root.updateSpeech()}}
-        }
-        Rectangle {visible:index>0;width:parent.width;y:0;height:1;color:settings_form.lineColor}
-       }
-      }
-     }
+    width:parent.width;height:implicitHeight;title:qsTr("Show advanced settings");icon:"\uf1de";controlWidth:48
+    hint:qsTr("Show additional OpenHD options and the Audio page in the left sidebar.")
+    headerControls:WidgetToggle {
+     objectName:"generalAdvancedSettings"
+     anchors.fill:parent
+     checked:settings.dev_show_advanced_button
+     onToggled:{settings.dev_show_whitelisted_params=checked;settings.dev_show_advanced_button=checked}
     }
-    Text {width:parent.width;visible:!root.speechAvailable;text:qsTr("No speech engine is available in this installation.");color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper;wrapMode:Text.WordWrap}
    }
    GeneralSettingsCard {
     width:parent.width;height:implicitHeight;title:qsTr("Reset all settings");icon:"\uf2ea";controlWidth:0

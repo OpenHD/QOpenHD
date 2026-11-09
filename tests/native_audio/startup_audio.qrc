@@ -1,0 +1,1 @@
+<RCC><qresource prefix="/audio"><file alias="startup.pcm">../../qml/resources/audio/albatross_startup.pcm</file></qresource></RCC>

@@ -10,6 +10,7 @@ Q_LOGGING_CATEGORY(fcUnhandledLog, "qopenhd.mavlink.unhandled.fc", QtWarningMsg)
 #include <QJsonObject>
 #include "tutil/openhd_defines.hpp"
 #include "util/qopenhd.h"
+#include "util/audioannouncements.h"
 
 #include "../tutil/geodesi_helper.h"
 
@@ -129,6 +130,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_battery_current_ampere((double)sys_status.current_battery/100.0);
         // TODO - should we use values from here or from the battery message ?
         const auto battery_remaining_perc=sys_status.battery_remaining;
+        AudioAnnouncements::instance().telemetry(3, battery_remaining_perc);
         if(battery_remaining_perc != -1){
             set_battery_percent(battery_remaining_perc);
             const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_remaining_perc);
@@ -260,6 +262,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_altitude_rel_m(global_position_int.relative_alt/1000.0);
         // qDebug() << "Altitude relative " << alt_rel;
         set_altitude_msl_m(global_position_int.alt/1000.0);
+        AudioAnnouncements::instance().telemetry(5, global_position_int.relative_alt/1000.0);
         set_vx(global_position_int.vx/100.0);
         set_vy(global_position_int.vy/100.0);
         set_vz(global_position_int.vz/100.0);
@@ -313,6 +316,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_throttle(vfr_hud.throttle);
         set_air_speed_meter_per_second(vfr_hud.airspeed);
         set_ground_speed_meter_per_second(vfr_hud.groundspeed);
+        AudioAnnouncements::instance().telemetry(6, vfr_hud.groundspeed * 3.6);
         // qDebug() << "Speed- ground " << speed;
         auto vsi = vfr_hud.climb;
         set_vertical_speed_indicator_mps(vsi);
@@ -346,6 +350,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_wind_decode(&msg, &mav_wind);
         set_mav_wind_direction(mav_wind.direction);
         set_mav_wind_speed(mav_wind.speed);
+        AudioAnnouncements::instance().telemetry(4, mav_wind.speed * 1.94384449);
         /*qDebug() << "Windmavdir: " << mav_wind.direction;
             qDebug() << "Windmavspd: " << mav_wind.speed;*/
         break;
@@ -357,6 +362,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_battery_temperature((int)battery_status.temperature/100);
         QSettings settings;
         const bool air_battery_use_batt_id_0_only=settings.value("air_battery_use_batt_id_0_only", false).toBool();
+        if (!air_battery_use_batt_id_0_only || battery_status.id == 0) AudioAnnouncements::instance().telemetry(3, battery_status.battery_remaining);
         if(!air_battery_use_batt_id_0_only){
            set_battery_percent(battery_status.battery_remaining);
            const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);

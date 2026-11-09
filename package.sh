@@ -110,6 +110,7 @@ if [[ "${PACKAGE_ARCH}" = "armhf" ]] || \
     echo "raspberry pi"
     fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
     -p qopenhd_VERSION_ARCH.deb \
+    -d espeak-ng -d gstreamer1.0-plugins-base -d gstreamer1.0-alsa \
     --after-install after-install.sh \
     ${PLATFORM_PACKAGES} || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then

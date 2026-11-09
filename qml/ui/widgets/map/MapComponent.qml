@@ -20,23 +20,26 @@ Map {
     gesture.flickDeceleration: 3000
 
     property bool compassMode: false
+    property real aircraftMarkerScale: 1.0
     property bool demoFlight: false
+    property bool gpsPreview: false
+    readonly property var previewCoordinate: QtPositioning.coordinate(50.110924, 8.682127)
     property var demoOrigin: QtPositioning.coordinate(50, 8)
     property real demoPhase: 0
     property double demoStarted: 0
     readonly property var demoCoordinate: demoOrigin.atDistanceAndAzimuth(250, demoPhase)
-    readonly property real craftHeading: demoFlight ? (demoPhase + 90) % 360 : _fcMavlinkSystem.hdg
+    readonly property real craftHeading: demoFlight ? (demoPhase + 90) % 360 : gpsPreview ? 0 : _fcMavlinkSystem.hdg
     readonly property var craftCoordinate: demoFlight ? demoCoordinate
-        : QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
-    readonly property bool headingUpActive: followDrone && (demoFlight || (compassMode
+        : gpsPreview ? previewCoordinate : QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
+    readonly property bool headingUpActive: followDrone && (demoFlight || gpsPreview || (compassMode
         ? _fcMavlinkSystem.is_alive && isFinite(craftHeading)
         : settings.map_orientation && hasValidDroneCoordinate))
     bearing: headingUpActive ? ((craftHeading % 360) + 360) % 360 : 0
 
     readonly property var defaultCoordinate: QtPositioning.coordinate(0.0, 0.0)
-    readonly property bool hasValidDroneCoordinate: demoFlight || applicationWindow.fcPositionValid
+    readonly property bool hasValidDroneCoordinate: demoFlight || gpsPreview || applicationWindow.fcPositionValid
     readonly property bool hasReferenceCoordinate: demoFlight || applicationWindow.referencePositionValid
-    readonly property var referenceCoordinate: demoFlight ? demoCoordinate
+    readonly property var referenceCoordinate: demoFlight ? demoCoordinate : gpsPreview ? previewCoordinate
         : hasReferenceCoordinate ? QtPositioning.coordinate(applicationWindow.referenceLatitude,
                                                            applicationWindow.referenceLongitude) : defaultCoordinate
     onDemoFlightChanged: {
@@ -75,8 +78,10 @@ Map {
         z: 3
         sourceItem: PlaneMapMarker {
             hitObjectName: "demoPlaneFollow"
+            symbolScale: map.aircraftMarkerScale
             heading: map.craftHeading - map.bearing
             onActivated: followDrone = true
+            onHeld: map.halfSizeRequested()
         }
     }
 
@@ -118,6 +123,23 @@ Map {
         function onLatChanged() { map.updateOfflinePosition() }
         function onLonChanged() { map.updateOfflinePosition() }
         function onGps_fix_typeChanged() { map.updateOfflinePosition() }
+        function onArmedChanged() {
+            if (_fcMavlinkSystem.armed) {
+                droneTrack.path = []
+                map.min_distance_between_points_m = 3
+            }
+        }
+    }
+
+    // Sample complete coordinate pairs rather than each latitude/longitude notification.
+    Timer {
+        interval: 200
+        repeat: true
+        triggeredOnStart: true
+        running: !map.demoFlight && settings.map_drone_track && _fcMavlinkSystem.armed
+                 && _fcMavlinkSystem.is_alive && _fcMavlinkSystem.gps_fix_type >= 2
+                 && applicationWindow.fcPositionValid
+        onTriggered: map.addDroneTrack()
     }
 
     Connections {
@@ -162,18 +184,26 @@ Map {
     function addDroneTrack() {
         //console.log("Add drone track")
         // only add track while armed
-        if(demoFlight || !_fcMavlinkSystem.armed || !hasValidDroneCoordinate){
+        if(demoFlight || !settings.map_drone_track || !_fcMavlinkSystem.armed
+                || !_fcMavlinkSystem.is_alive || _fcMavlinkSystem.gps_fix_type < 2
+                || !applicationWindow.fcPositionValid){
             return;
         }
         var new_coordinate=QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
-        if(droneTrack.pathLength()<=1){
-            // first ever 2 points
+        if (!new_coordinate.isValid || (new_coordinate.latitude === 0 && new_coordinate.longitude === 0)) return
+        if(droneTrack.pathLength()===0){
             droneTrack.addCoordinate(new_coordinate);
             return;
         }
         var coordinate_prev1=droneTrack.coordinateAt(droneTrack.pathLength()-1);
+        var movement = coordinate_prev1.distanceTo(new_coordinate)
+        if (movement < min_distance_between_points_m) return
+        if (droneTrack.pathLength() === 1) {
+            droneTrack.addCoordinate(new_coordinate)
+            return
+        }
         var coordinate_prev2=droneTrack.coordinateAt(droneTrack.pathLength()-2);
-        var distance = coordinate_prev1.distanceTo(coordinate_prev2);
+        var distance = coordinate_prev2.distanceTo(new_coordinate);
         //console.log("Distance is:"+distance+"m");
         if(distance<min_distance_between_points_m){
             // distance is insignificant - just replace the last coordinate
@@ -200,13 +230,14 @@ Map {
 
     MapPolyline {
         id: droneTrack
+        objectName: "armedFlightTrack"
         visible: !map.demoFlight && settings.map_drone_track
-        line.color: "red"
+        line.color: "#29b6f6"
         line.width: 3
     }
     // Visualizes the GPS hdop
     MapCircle {
-        visible: !map.demoFlight && hasValidDroneCoordinate
+        visible: !map.demoFlight && !map.gpsPreview && hasValidDroneCoordinate
         center: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
         radius: _fcMavlinkSystem.gps_hdop
         color: 'red'
@@ -281,6 +312,8 @@ Map {
 
                             id: image
                             source: "ADSBmarker.png"
+                            // Keep the geographic anchor at the aircraft's centre.
+                            scale: map.aircraftMarkerScale
 
                             Rectangle{// has to be here prior to rotation call
                                 id: speedtail
@@ -512,31 +545,32 @@ Map {
 
 
     signal expandRequested()
+    signal halfSizeRequested()
     MouseArea {
         objectName: "mapDoubleClickArea"
         anchors.fill: parent
         onDoubleClicked: map.expandRequested()
+        onPressAndHold: {
+            if (mouse.x >= width * 0.25 && mouse.x <= width * 0.75
+                    && mouse.y >= height * 0.25 && mouse.y <= height * 0.75)
+                map.halfSizeRequested()
+        }
     }
     // Aircraft position: click the plane to resume following.
     MapQuickItem {
         id: dronemarker
         objectName: "droneMarker"
         visible: !map.demoFlight && hasValidDroneCoordinate
-        coordinate: coordinateWithFallback(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
-
-        onCoordinateChanged: {
-            // skip what most likely are not valid coordinates
-            if(hasValidDroneCoordinate){
-                addDroneTrack();
-            }
-        }
+        coordinate: map.craftCoordinate
 
         anchorPoint: Qt.point(22, 22)
         z: 3
         sourceItem: PlaneMapMarker {
             hitObjectName: "gpsPlaneFollow"
+            symbolScale: map.aircraftMarkerScale
             heading: map.craftHeading - map.bearing
             onActivated: followDrone = true
+            onHeld: map.halfSizeRequested()
         }
     }
 

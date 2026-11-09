@@ -4,11 +4,14 @@ Item {
     id: root
     width: 44; height: 44
     property real heading: 0
+    property real symbolScale: 1.0
     property string hitObjectName: "planeFollowTarget"
     signal activated()
+    signal held()
     Canvas {
         width: 36; height: 36
         anchors.centerIn: parent
+        scale: root.symbolScale
         rotation: root.heading
             onPaint: {
                 var c = getContext("2d")
@@ -29,5 +32,6 @@ Item {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: root.activated()
+        onPressAndHold: root.held()
     }
 }

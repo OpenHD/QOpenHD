@@ -203,6 +203,7 @@ SOURCES += \
     app/util/mousehelper.cpp \
     app/util/uisimulator.cpp \
     app/util/qopenhd.cpp \
+    app/util/audioannouncements.cpp \
     app/util/settingsbackup.cpp \
     app/util/asyncping.cpp \
     app/util/asynccommandrunner.cpp \
@@ -229,6 +230,8 @@ HEADERS += \
     app/util/mousehelper.h \
     app/util/uisimulator.h \
     app/util/qopenhd.h \
+    app/util/audioannouncements.h \
+    app/util/audiorules.h \
     app/util/widgetpreviewimage.h \
     app/util/settingsbackup.h \
     app/util/qtcreatorlaunch.h \
@@ -352,8 +355,7 @@ WindowsBuild {
 
 AndroidBuild {
     message("AndroidBuild")
-    # Text to speech crashes on android for some weird reason
-    #CONFIG += EnableSpeech
+    qtHaveModule(texttospeech): CONFIG += EnableSpeech
     androidextras_hdr = $$[QT_INSTALL_HEADERS]/QtAndroidExtras
     exists($$androidextras_hdr) {
         QT += androidextras

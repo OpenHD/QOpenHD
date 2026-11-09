@@ -22,9 +22,9 @@ BaseWidget {
     property alias widgetInnerMap: widgetInnerMap
     property alias pluginModel: pluginModel
 
-    defaultAlignment: 1
-    defaultXOffset: 12
-    defaultYOffset: 48
+    defaultAlignment: 2
+    defaultXOffset: 128
+    defaultYOffset: 128
 
     widgetIdentifier: "map_widget"
 
@@ -51,7 +51,7 @@ BaseWidget {
 
 
     readonly property bool roundMap: settings.map_round && !mapExpanded
-    readonly property real compactWidth: Math.max(184, 200 * settings.map_size) * (settings.map_round ? 0.7 : 1.0)
+    readonly property real compactWidth: Math.max(184, 200 * settings.map_size) * (settings.map_round ? 0.7 : 1.0) * compactSizeFactor
     readonly property real footerHeight: activeProviderName === "mapbox_raster" || activeProviderName === "mapboxgl" ? 32 : 16
     readonly property real compactHeight: settings.map_round ? compactWidth : compactWidth * 0.675
 
@@ -161,7 +161,7 @@ BaseWidget {
 
     function isWidgetEdge(x, y) {
         if (mapExpanded) return false
-        var band = 18
+        var band = Math.min(18, Math.min(width, height) * 0.15)
         if (roundMap) {
             var dx = x - width / 2, dy = y - height / 2
             var distance = Math.sqrt(dx * dx + dy * dy)
@@ -203,6 +203,8 @@ BaseWidget {
     }
     Column {
         objectName: "compactMapZoom"
+        // Leave the centre reachable even on the smallest half-size compass.
+        visible: !mapHalfSize || mapExpanded
         anchors.right: parent.right
         anchors.rightMargin: roundMap ? Math.max(12, parent.width * 0.06) : 8
         anchors.verticalCenter: parent.verticalCenter
