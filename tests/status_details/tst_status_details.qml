@@ -291,6 +291,27 @@ Item {
    compare(popup.health.reasons.length,0)
    popup.close()
   }
+  function test_header_single_row() {
+   var header=findChild(menu,"statusOverviewHeader")
+   verify(header!==null)
+   var title=findChild(menu,"menuHeaderTitle")
+   var telemetry=findChild(menu,"statusHeaderTelemetry")
+   var indicators=findChild(menu,"statusHeaderIndicators")
+   var sound=findChild(menu,"statusSoundButton")
+   var sizes=[1920,1440,1024,850,798,797,540,360]
+   for(var i=0;i<sizes.length;i++) {
+    scene.width=sizes[i];wait(50)
+    compare(header.contentHeight,72*header.headerScale)
+    compare(telemetry.y,0);compare(indicators.y,0)
+    verify(title.width>=0)
+    verify(title.x+title.width+23 <= telemetry.x,"Title overlaps telemetry at " + sizes[i])
+    verify(telemetry.x+telemetry.width+15 <= indicators.x,"Telemetry overlaps indicators")
+    verify(indicators.x+indicators.width <= header.width/header.headerScale-299,"Indicators overlap actions")
+    compare(sound.visible,header.showAudio)
+    if(sizes[i]<=540) verify(!sound.visible,"Audio must yield space on narrow screens")
+   }
+   scene.width=1543;scene.height=565
+  }
   function test_resize_and_alignment() {
    tryVerify(function() { return menu.statusPanel !== null })
    var cards=findChild(menu,"statusOverviewCards")
@@ -317,7 +338,17 @@ Item {
    for (var n=0;n<sizes.length;n++) {
     scene.width=sizes[n][0];scene.height=sizes[n][1];wait(150)
     if(scene.width===850) compare(cards.columns,3)
-    verify(sound.visible)
+    var header=findChild(menu,"statusOverviewHeader")
+    var title=findChild(menu,"menuHeaderTitle")
+    var telemetry=findChild(menu,"statusHeaderTelemetry")
+    var indicators=findChild(menu,"statusHeaderIndicators")
+    compare(header.contentHeight,72*header.headerScale)
+    compare(telemetry.y,0);compare(indicators.y,0)
+    verify(title.x+title.width+23 <= telemetry.x,"Title overlaps telemetry")
+    verify(telemetry.x+telemetry.width+15 <= indicators.x,"Telemetry overlaps indicators")
+    verify(indicators.x+indicators.width <= header.width/header.headerScale-299,"Indicators overlap actions")
+    compare(sound.visible,header.showAudio)
+    if(scene.width===540) verify(!sound.visible,"Audio must yield space on narrow screens")
     var soundPosition=sound.mapToItem(scene,0,0)
     verify(soundPosition.x>=0 && soundPosition.x+sound.width*0.45<scene.width)
     verify(Math.abs(cards.y - Math.max(0, Math.round((cards.availableHeight-cards.implicitHeight)/2))) < 1,"Cards are not vertically centered")

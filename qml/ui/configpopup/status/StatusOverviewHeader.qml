@@ -6,9 +6,13 @@ import QtQuick.Controls 2.12
 Item {
     id: header
     objectName: "statusOverviewHeader"
-    readonly property real headerScale: Math.max(0.45, Math.min(1, width / 1350))
-    readonly property bool compactTelemetry: width < 700
-    readonly property real contentHeight: (compactTelemetry ? 136 : 72) * headerScale
+    // Always reserve a single row, including the three framework action buttons.
+    // At very small widths, scale the mandatory controls together to avoid overlap.
+    readonly property real minimumRowWidth: 66 + 96 + 24 + telemetryRow.implicitWidth + 16 + 158 + 300
+    readonly property real headerScale: Math.min(Math.max(0.45, Math.min(1, width / 1350)), width / minimumRowWidth)
+    readonly property real contentHeight: 72 * headerScale
+    readonly property bool showAudio: width / headerScale >= 66 + title.implicitWidth + 24 + telemetryRow.implicitWidth + 16 + 226 + 300
+    onShowAudioChanged: if (!showAudio) volumePopup.close()
     property int lastAudibleVolume: 100
     readonly property var camera: typeof _cameraStreamModelPrimary !== "undefined" ? _cameraStreamModelPrimary : null
     readonly property var ground: typeof _ohdSystemGround !== "undefined" ? _ohdSystemGround : null
@@ -39,12 +43,15 @@ Item {
                 onClicked: settings_form.creditsStarClicked()
             }
         }
-        Text { x: 66; y: 12; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
+        Text { id: title; x: 66; y: 12; width: Math.max(0, telemetry.x - x - 24); elide: Text.ElideRight; wrapMode: Text.NoWrap; objectName: "menuHeaderTitle"; text: settings_form.menuPageTitle; color: settings_form.primaryText; font.family: MenuTypography.family; font.pixelSize: MenuTypography.pageTitle; font.bold: true }
 
         Rectangle {
-            x: header.compactTelemetry ? 0 : parent.width - 960; y: header.compactTelemetry ? 80 : 0; width: 424; height: 56; radius: 28
+            id: telemetry
+            objectName: "statusHeaderTelemetry"
+            x: statusIndicators.x - width - 16; y: 0; width: telemetryRow.implicitWidth; height: 56; radius: 28
             color: "transparent"; border.color: "transparent"
             Row {
+                id: telemetryRow
                 anchors.centerIn: parent; spacing: 16
                 Repeater {
                     model: [
@@ -62,13 +69,16 @@ Item {
             }
         }
         Rectangle {
-            x: header.compactTelemetry ? 434 : parent.width - 526; y: header.compactTelemetry ? 80 : 0; width: 226; height: 56; radius: 28
+            id: statusIndicators
+            objectName: "statusHeaderIndicators"
+            x: parent.width - 300 - width; y: 0; width: header.showAudio ? 226 : 158; height: 56; radius: 28
             color: "transparent"; border.color: "transparent"
             Row {
                 anchors.centerIn: parent; spacing: 28
                 ToolButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
                     id: soundButton
                     objectName: "statusSoundButton"
+                    visible: header.showAudio
                     anchors.verticalCenter: parent.verticalCenter
                     width: 40; height: 40; padding: 0
                     enabled: header.audio !== null
