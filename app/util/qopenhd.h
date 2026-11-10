@@ -135,6 +135,7 @@ private:
      QFont m_font;
 #if defined(ENABLE_SPEECH)
     QTextToSpeech *m_speech = nullptr;
+    bool m_speechInitialized = false;
     QVoice m_defaultSpeechVoice;
 #endif
 public:

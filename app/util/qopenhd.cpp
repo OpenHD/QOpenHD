@@ -88,36 +88,27 @@ QOpenHD::QOpenHD(QObject *parent)
 
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
-    QStringList engines = QTextToSpeech::availableEngines();
-    qDebug() << "Available SPEECH engines:";
-    for (auto& engine : engines) {
-        qDebug() << "  " << engine;
-    }
-    // List the available locales.
-//    qDebug() << "Available locales:";
-    for (auto& locale : m_speech->availableLocales()) {
-//        qDebug() << "  " << locale;
-    }
-    // Set locale.
-    m_speech->setLocale(QLocale(QLocale::English, QLocale::LatinScript, QLocale::UnitedStates));
-    // List the available voices.
-//    qDebug() << "Available voices:";
-    for (auto& voice : m_speech->availableVoices()) {
-//        qDebug() << "  " << voice.name();
-    }
-    // Display properties.
-    qDebug() << "Locale:" << m_speech->locale();
-    qDebug() << "Pitch:" << m_speech->pitch();
-    qDebug() << "Rate:" << m_speech->rate();
-    qDebug() << "Voice:" << m_speech->voice().name();
-    qDebug() << "Volume:" << m_speech->volume();
-    qDebug() << "State:" << m_speech->state();
-    m_defaultSpeechVoice = m_speech->voice();
-    connect(m_speech, &QTextToSpeech::stateChanged, this, [this](QTextToSpeech::State) { emit speechVoicesChanged(); });
-    QSettings speechSettings;
-    configureSpeech(speechSettings.value("speech_voice", "").toString(),
-                    speechSettings.value("speech_rate", 1.0).toDouble(),
-                    speechSettings.value("speech_volume", 1.0).toDouble());
+    qDebug() << "Available SPEECH engines:" << QTextToSpeech::availableEngines();
+    // Android initializes TTS asynchronously. In Qt 5.15.2, locale() can
+    // dereference a null Java locale before onInit and abort the whole app.
+    // Do not query the current locale, or configure voices, during startup.
+    const auto initializeSpeech = [this]() {
+        if (m_speechInitialized || m_speech->state() != QTextToSpeech::Ready) return;
+        m_speechInitialized = true;
+        const QLocale english(QLocale::English, QLocale::LatinScript, QLocale::UnitedStates);
+        if (m_speech->availableLocales().contains(english)) m_speech->setLocale(english);
+        m_defaultSpeechVoice = m_speech->voice();
+        QSettings preferences;
+        configureSpeech(preferences.value("speech_voice", "").toString(),
+                        preferences.value("speech_rate", 1.0).toDouble(),
+                        preferences.value("speech_volume", 1.0).toDouble());
+    };
+    connect(m_speech, &QTextToSpeech::stateChanged, this,
+            [this, initializeSpeech](QTextToSpeech::State) {
+        initializeSpeech();
+        emit speechVoicesChanged();
+    });
+    initializeSpeech();
 #endif
 }
 
@@ -190,7 +181,7 @@ QStringList QOpenHD::speechVoices() const
 {
     QStringList result;
 #ifdef ENABLE_SPEECH
-    if (m_speech) for (const auto& voice : m_speech->availableVoices())
+    if (speechAvailable()) for (const auto& voice : m_speech->availableVoices())
         if (!result.contains(voice.name())) result.append(voice.name());
 #endif
     return result;
@@ -205,7 +196,7 @@ void QOpenHD::configureSpeech(const QString& voice, double rate, double volume)
     preferences.setValue("speech_rate", rate);
     preferences.setValue("speech_volume", volume);
 #ifdef ENABLE_SPEECH
-    if (!m_speech) return;
+    if (!m_speechInitialized || !speechAvailable()) return;
     m_speech->setRate(rate - 1.0); // 100% is Qt's normal rate (0).
     m_speech->setVolume(volume);
     m_speech->setVoice(m_defaultSpeechVoice);

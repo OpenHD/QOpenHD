@@ -162,7 +162,8 @@ bool AudioAnnouncements::speechAvailable() const
 {
     if (!m_engine.isEmpty()) return true;
 #ifdef ENABLE_SPEECH
-    return m_nativeSpeech && !m_nativeSpeech->availableLocales().isEmpty();
+    return m_nativeSpeech && static_cast<int>(m_nativeSpeech->state()) != 3 &&
+        !m_nativeSpeech->availableLocales().isEmpty();
 #else
     return false;
 #endif
@@ -362,6 +363,11 @@ void AudioAnnouncements::playNext()
         if (!m_current.pcm.isEmpty()) { playPcm(m_current.pcm, m_current.sampleRate, m_current.channels); return; }
 #ifdef ENABLE_SPEECH
         if (m_engine.isEmpty()) {
+            if (!m_nativeSpeech || m_nativeSpeech->state() != QTextToSpeech::Ready) {
+                setStatus(tr("The system speech engine is not ready"));
+                m_busy = false;
+                continue;
+            }
             const auto language = QLocale(speechLanguage()).language();
             bool found = false;
             for (const auto& locale : m_nativeSpeech->availableLocales()) {

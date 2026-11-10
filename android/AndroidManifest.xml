@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <manifest package="com.openhd.qopenhd" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="v24" android:versionCode="24" android:installLocation="auto">
+    <!-- Android 11+ hides TTS services unless they are explicitly queried. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE"/>
+        </intent>
+    </queries>
+
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="36"/>
 
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
