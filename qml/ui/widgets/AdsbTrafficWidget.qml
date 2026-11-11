@@ -41,10 +41,17 @@ BaseWidget {
     widgetDetailHeight: 170
 
     hasWidgetAction: true
-    widgetActionWidth: Math.min(900, Math.max(700,
-                                             (root.Window.window ? root.Window.window.width : 1280) - 80))
-    widgetActionHeight: Math.min(600, Math.max(480,
-                                              (root.Window.window ? root.Window.window.height : 720) - 80))
+    readonly property real actionViewportWidth: widgetAction.parent ? widgetAction.parent.width : 900
+    readonly property real actionViewportHeight: widgetAction.parent ? widgetAction.parent.height : 480
+    readonly property bool compactActionLayout: actionViewportWidth < 1.25 * actionViewportHeight
+    readonly property real actionLayoutWidth: compactActionLayout ? 460 : 900
+    readonly property real actionLayoutHeight: compactActionLayout ? 610 : 420
+    readonly property real actionScale: Math.max(0, Math.min(1,
+        (actionViewportWidth - 16) / actionLayoutWidth,
+        (actionViewportHeight - 16) / actionLayoutHeight))
+    widgetActionWidth: Math.ceil(actionLayoutWidth * actionScale)
+    widgetActionHeight: Math.ceil(actionLayoutHeight * actionScale)
+    widgetAction.padding: 0
 
     readonly property color safeColor: "#36d17c"
     readonly property color cautionColor: "#ffb020"
@@ -394,13 +401,23 @@ BaseWidget {
         }
     }
 
-    widgetActionComponent: Rectangle {
+    widgetActionComponent: Item {
+        clip: true
+
+        Rectangle {
+            objectName: "adsbActionSurface"
+            width: root.actionLayoutWidth
+            height: root.actionLayoutHeight
+            scale: root.actionScale
+            transformOrigin: Item.TopLeft
             color: root.panelColor
             border.color: root.lineColor
             border.width: 1
             radius: 9
 
             Rectangle {
+                objectName: "adsbActionClose"
+                z: 1
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.margins: 14
@@ -440,12 +457,16 @@ BaseWidget {
                         Layout.fillWidth: true
                         spacing: 0
                         Text {
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
                             text: qsTr("ADS-B AIR TRAFFIC")
                             color: "white"
                             font.bold: true
                             font.pixelSize: 18
                         }
                         Text {
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
                             text: root.gpsReady ? qsTr("Heading-up view centered on this aircraft")
                                   : (root.positionReady
                                      ? qsTr("North-up view using rough network position")
@@ -485,13 +506,17 @@ BaseWidget {
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: root.lineColor }
 
-                RowLayout {
+                GridLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 10
+                    columns: root.compactActionLayout ? 2 : 3
+                    columnSpacing: 10
+                    rowSpacing: 10
 
                     Rectangle {
-                        Layout.preferredWidth: Math.max(280, parent.width * 0.38)
+                        objectName: "adsbRadarPanel"
+                        Layout.preferredWidth: root.compactActionLayout ? 214 : 346
+                        Layout.fillWidth: true
                         Layout.fillHeight: true
                         radius: 7
                         color: root.panelRaisedColor
@@ -620,7 +645,9 @@ BaseWidget {
                     }
 
                     Rectangle {
-                        Layout.preferredWidth: Math.max(250, parent.width * 0.31)
+                        objectName: "adsbTrafficPanel"
+                        Layout.preferredWidth: root.compactActionLayout ? 208 : 252
+                        Layout.fillWidth: true
                         Layout.fillHeight: true
                         radius: 7
                         color: root.panelRaisedColor
@@ -683,6 +710,8 @@ BaseWidget {
                                             elide: Text.ElideRight
                                         }
                                         Text {
+                                            width: parent.width
+                                            elide: Text.ElideRight
                                             text: root.formatAltitudeDelta(modelData) + "  |  "
                                                   + root.formatSpeed(modelData.velocity)
                                             color: root.mutedColor
@@ -706,6 +735,9 @@ BaseWidget {
                                 Text {
                                     visible: trafficList.count === 0
                                     anchors.centerIn: parent
+                                    width: parent.width
+                                    horizontalAlignment: Text.AlignHCenter
+                                    wrapMode: Text.Wrap
                                     text: qsTr("No aircraft in range")
                                     color: root.mutedColor
                                     font.pixelSize: 12
@@ -715,17 +747,24 @@ BaseWidget {
                     }
 
                     Rectangle {
+                        objectName: "adsbDetailsPanel"
+                        Layout.columnSpan: root.compactActionLayout ? 2 : 1
+                        Layout.preferredWidth: 254
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        Layout.fillHeight: !root.compactActionLayout
+                        Layout.preferredHeight: detailContent.implicitHeight + 24
                         radius: 7
                         color: root.panelRaisedColor
                         border.color: root.lineColor
 
                         ColumnLayout {
+                            id: detailContent
                             anchors.fill: parent
                             anchors.margins: 12
                             spacing: 8
                             Text {
+                                Layout.fillWidth: true
+                                wrapMode: Text.Wrap
                                 text: qsTr("AIRCRAFT DETAILS")
                                 color: "white"
                                 font.bold: true
@@ -749,7 +788,7 @@ BaseWidget {
 
                             GridLayout {
                                 Layout.fillWidth: true
-                                columns: 2
+                                columns: root.compactActionLayout ? 4 : 2
                                 columnSpacing: 12
                                 rowSpacing: 10
 
@@ -772,7 +811,11 @@ BaseWidget {
                                           : (root.threatLevel(root.selectedAircraft) === 1 ? "#35ffb020" : "#2436d17c"))
                                        : "#202b35"
                                 Text {
-                                    anchors.centerIn: parent
+                                    anchors.fill: parent
+                                    anchors.margins: 4
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    wrapMode: Text.Wrap
                                     text: !root.selectedAircraft ? qsTr("NO TARGET SELECTED")
                                           : (root.threatLevel(root.selectedAircraft) === 2 ? qsTr("TRAFFIC WARNING")
                                              : (root.threatLevel(root.selectedAircraft) === 1
@@ -786,14 +829,17 @@ BaseWidget {
                     }
                 }
             }
+        }
     }
 
     component DetailValue: ColumnLayout {
         property string title
         property string value
         Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: 0
         spacing: 1
-        Text { text: parent.title; color: root.mutedColor; font.pixelSize: 9 }
-        Text { text: parent.value; color: "white"; font.bold: true; font.pixelSize: 13 }
+        Text { Layout.fillWidth: true; wrapMode: Text.Wrap; text: parent.title; color: root.mutedColor; font.pixelSize: 9 }
+        Text { Layout.fillWidth: true; wrapMode: Text.Wrap; text: parent.value; color: "white"; font.bold: true; font.pixelSize: 13 }
     }
 }

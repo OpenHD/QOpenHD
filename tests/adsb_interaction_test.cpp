@@ -189,6 +189,37 @@ ApplicationWindow {
         || qAbs(trafficWidget->width()-normalWidth)>1 || qAbs(trafficWidget->height()-normalHeight)>1) return 11;
     centrePress(10);
     if(!popup->property("visible").toBool()) return 12;
+    auto* window = trafficWidget->window();
+    auto* actionContent = popup->property("contentItem").value<QQuickItem*>();
+    if (!actionContent) return 30;
+    for (const auto& size : {QSize(1280, 720), QSize(776, 359), QSize(480, 270), QSize(360, 640)}) {
+        window->resize(size);
+        waitMs(60);
+        const QRectF screen(QPointF(), QSizeF(window->size()));
+        const auto bounds = [](QQuickItem* item) {
+            return item->mapRectToScene(QRectF(0, 0, item->width(), item->height()));
+        };
+        const QRectF popupBounds = bounds(actionContent);
+        if (!screen.contains(popupBounds) || !popupBounds.isValid()) return 31;
+        QList<QRectF> panels;
+        for (const auto* name : {"adsbRadarPanel", "adsbTrafficPanel", "adsbDetailsPanel", "adsbActionClose"}) {
+            auto* item = actionContent->findChild<QQuickItem*>(name);
+            if (!item) return 32;
+            const QRectF panel = bounds(item);
+            if (!panel.isValid() || !popupBounds.contains(panel)) {
+                qWarning() << "ADS-B panel outside popup" << size << name << panel << popupBounds;
+                return 33;
+            }
+            for (const auto& other : panels) {
+                if (panel.intersects(other)) return 34;
+            }
+            panels.append(panel);
+        }
+        auto* surface = actionContent->findChild<QQuickItem*>("adsbActionSurface");
+        if (!surface || (size.width() < 900 && surface->scale() >= 1)) return 35;
+    }
+    window->resize(1280, 720);
+    std::fprintf(stderr,"ADS-B LAYOUT: popup and panels fit desktop, short landscape and portrait PASS\n");
     QMetaObject::invokeMethod(popup,"close");
     waitMs(250);
     std::fprintf(stderr,"ADS-B MINIMAL: centre holds toggle single-row/normal size without dragging; short click opens details PASS\n");
