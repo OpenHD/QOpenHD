@@ -11,13 +11,14 @@ Item {
     property var controller
     readonly property bool compact: width < 900
     readonly property var actions: [
-        {rangeId:"RC_BW_RANGES", defaults:"1500:20,2100:40", values:[10,20,40], id:"BW_VIA_RC", name:qsTr("OpenHD channel width"), icon:"\uf03d", limits:[900,1300,1700,2100], labels:["10 MHz","20 MHz","40 MHz"]},
-        {rangeId:"RC_MCS_RANGES", defaults:"1300:0,1700:2,2100:3", values:[0,1,2,3,4], id:"MCS_VIA_RC", name:qsTr("MCS (dynamic)"), icon:"\uf012", limits:[900,1200,1400,1600,1800,2100], labels:["MCS 0","MCS 1","MCS 2","MCS 3","MCS 4"]},
-        {values:[0,1,2], id:"TXMODE_VIA_RC", name:qsTr("Transmit mode"), icon:"\uf519", limits:[900,1300,1700,2100], labels:[qsTr("Off"),qsTr("Pit"),qsTr("Normal")]},
-        {values:[0,1], id:"FHSS_VIA_RC", name:qsTr("Frequency hopping"), icon:"\uf362", limits:[900,1500,2100], labels:[qsTr("Off"),qsTr("On")]}
+        {rangeId:"RC_BW_RANGES", defaults:"1500:20,2100:40", legacy:"1300:10,1700:20,2100:40", values:[10,20,40], id:"BW_VIA_RC", name:qsTr("OpenHD channel width"), icon:"\uf03d", labels:["10 MHz","20 MHz","40 MHz"]},
+        {rangeId:"RC_MCS_RANGES", defaults:"1300:0,1700:2,2100:3", legacy:"1200:0,1400:1,1600:2,1800:3,2100:4", values:[0,1,2,3,4], id:"MCS_VIA_RC", name:qsTr("MCS (dynamic)"), icon:"\uf012", labels:["MCS 0","MCS 1","MCS 2","MCS 3","MCS 4"]},
+        {rangeId:"RC_TX_RANGES", defaults:"1300:0,1700:1,2100:2", values:[0,1,2], id:"TXMODE_VIA_RC", name:qsTr("Transmit mode"), icon:"\uf519", labels:[qsTr("Off"),qsTr("Pit"),qsTr("Normal")]},
+        {rangeId:"RC_FHSS_RANGES", defaults:"1500:0,2100:1", values:[0,1], id:"FHSS_VIA_RC", name:qsTr("Frequency hopping"), icon:"\uf362", labels:[qsTr("Off"),qsTr("On")]}
     ]
     property var fcValues: []
     readonly property var fc: typeof _rcchannelsmodelfc !== "undefined" ? _rcchannelsmodelfc : null
+    readonly property var airLink: typeof _ohdSystemAir !== "undefined" ? _ohdSystemAir : null
     height: overview.implicitHeight
     onVisibleChanged: if (!visible) editor.close()
 
@@ -36,7 +37,7 @@ Item {
     function rangeString(action) {
         controller.airRevision
         if (rangesSupported(action)) return controller.airParams.get_cached_string(action.rangeId)
-        return action.values.map(function(value, i) { return action.limits[i+1] + ":" + value }).join(",")
+        return action.legacy || action.defaults
     }
     function assignedActions(channel) {
         controller.airRevision
@@ -242,6 +243,18 @@ Item {
                                 Column {
                                     id: actionContent
                                     x: 14; y: 14; width: parent.width - 28; spacing: 12
+                                    Label {
+                                        objectName: "channelLiveRadio"
+                                        visible: actionSection.action.id === "BW_VIA_RC"
+                                        width: parent.width
+                                        wrapMode: Text.WordWrap
+                                        color: settings_form.secondaryText
+                                        font.pixelSize: Typography.helper
+                                        text: root.airLink && root.airLink.is_alive && root.airLink.curr_channel_mhz > 0
+                                            && root.airLink.curr_channel_width_mhz > 0
+                                            ? qsTr("Air link: %1 MHz · %2 MHz width").arg(root.airLink.curr_channel_mhz).arg(root.airLink.curr_channel_width_mhz)
+                                            : qsTr("Air link frequency and width unavailable")
+                                    }
                                     ChannelRangeEditor {
                                         width: parent.width
                                         actionIndex: actionSection.actionIndex
@@ -251,6 +264,14 @@ Item {
                                         live: root.pwm(editor.channel)
                                         onEdited: function(next) { editor.editRanges(actionIndex, next) }
                                         onResetRequested: editor.editRanges(actionIndex, Ranges.parse(actionSection.action.defaults))
+                                    }
+                                    Label {
+                                        visible: root.supported(actionSection.action) && !root.rangesSupported(actionSection.action)
+                                        width: parent.width
+                                        wrapMode: Text.WordWrap
+                                        color: settings_form.secondaryText
+                                        font.pixelSize: Typography.helper
+                                        text: qsTr("Update the Air firmware to edit these ranges.")
                                     }
                                 }
                             }

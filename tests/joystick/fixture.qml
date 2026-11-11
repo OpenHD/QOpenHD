@@ -11,6 +11,7 @@ Item {
  QtObject {id:settings_form;property bool darkMode:true;property bool showAdvancedSettings:true;property bool compactSidebar:true;property color pageBackground:"#091827";property int backCalls:0;function side_bar_regain_focus(){backCalls++} property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c"}
  ListModel {id:_rcchannelsmodelfc;property bool is_alive:true;function channelValues(){var a=[];for(var i=0;i<18;i++)a.push(i<count?get(i).curr_value:1500);return a} ListElement {curr_value:1200} ListElement {curr_value:1800} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500}}
  QtObject {id:_fcMavlinkSystem;property bool armed:false}
+ QtObject {id:_ohdSystemAir;property bool is_alive:true;property int curr_channel_mhz:5745;property int curr_channel_width_mhz:20}
  QtObject {
      id:_ohdSystemGroundSettings
      property int update_count:0
@@ -158,13 +159,67 @@ Item {
      }
      function test_channel_ranges_follow_fc_pwm(){
          var editor=openEditor(3), segment=findChild(editor.contentItem,"channelRange0_0")
+         var marker=findChild(editor.contentItem,"channelLiveMarker0")
+         var radio=findChild(editor.contentItem,"channelLiveRadio")
+         compare(radio.text,"Air link: 5745 MHz · 20 MHz width")
+         var previousX=marker.x
          verify(segment.activeRange)
          _rcchannelsmodelfc.setProperty(2,"curr_value",1800)
          tryCompare(segment,"activeRange",false)
          verify(findChild(editor.contentItem,"channelRange0_1").activeRange)
+         verify(marker.x>previousX)
+         compare(findChild(editor.contentItem,"channelLiveRange0").text,"1800 µs · 40 MHz")
+         _ohdSystemAir.curr_channel_width_mhz=40
+         compare(radio.text,"Air link: 5745 MHz · 40 MHz width")
+         _ohdSystemAir.curr_channel_width_mhz=20
          _rcchannelsmodelfc.is_alive=false
          tryCompare(findChild(editor.contentItem,"channelRange0_1"),"activeRange",false)
+         verify(!marker.visible)
          _rcchannelsmodelfc.is_alive=true
+     }
+     function test_drag_pwm_boundary_and_select_area(){
+         var editor=openEditor(3)
+         var track=findChild(editor.contentItem,"channelRangeTrack0")
+         var handle=findChild(editor.contentItem,"channelRangeHandle0_0")
+         var left=findChild(editor.contentItem,"channelRange0_0")
+         var right=findChild(editor.contentItem,"channelRange0_1")
+         var rangeEditor=findChild(editor.contentItem,"channelRangeEditor0")
+         var initialWidth=left.width
+         mouseDrag(track,Math.round(handle.x+handle.width/2),handle.height/2,-Math.round(track.width/6),0)
+         verify(Math.abs(editor.ranges[0][0].upper-1300)<=3)
+         verify(left.width<initialWidth)
+         fuzzyCompare(left.width+right.width,track.width,0.01)
+         verify(right.activeRange)
+         var startX=Math.round(handle.x+handle.width/2)
+         var endX=startX+Math.round(track.width/12)
+         var touch=touchEvent(track)
+         touch.press(0,track,startX,handle.height/2).commit()
+         touch.move(0,track,endX,handle.height/2).commit()
+         touch.release(0,track,endX,handle.height/2).commit()
+         verify(Math.abs(editor.ranges[0][0].upper-1400)<=5)
+         mouseClick(right)
+         compare(rangeEditor.selectedArea,1)
+         compare(_ohdSystemAirSettingsModel.writes.length,0)
+         var expected=Ranges.encode(editor.ranges[0])
+         editor.apply()
+         compare(_ohdSystemAirSettingsModel.profiles.RC_BW_RANGES,expected)
+         compare(_ohdSystemAirSettingsModel.writes.length,1)
+         compare(_ohdSystemAirSettingsModel.enabledValue,0)
+     }
+     function test_edit_hopping_on_off_ranges(){
+         var air=_ohdSystemAirSettingsModel
+         air.profiles=Object.assign({},air.profiles,{RC_FHSS_RANGES:"1500:0,2100:1"})
+         air.update_count++
+         var editor=openEditor(6)
+         chooseFunction(editor,3)
+         var rangeEditor=findChild(editor.contentItem,"channelRangeEditor3")
+         verify(rangeEditor.editable)
+         setAreaValue(editor,3,0,1)
+         setAreaValue(editor,3,1,0)
+         editor.apply()
+         compare(air.profiles.RC_FHSS_RANGES,"1500:1,2100:0")
+         compare(air.assignments.FHSS_VIA_RC,6)
+         compare(air.enabledValue,0)
      }
      function setAreaValue(editor, action, area, value) {
          findChild(editor.contentItem,"channelRangeEditor"+action).selectedArea=area

@@ -31,41 +31,162 @@ Column {
         for (var i=0; i<options.length; ++i) if (options[i].value === value) return i
         return -1
     }
-    Label { text: qsTr("Range behavior (µs)"); color: settings_form.secondaryText; font.pixelSize: Typography.helper }
-    Row {
-        width: parent.width; spacing: 0
-        Repeater {
-            model: root.ranges
-            Rectangle {
-                id: area
-                objectName: "channelRange" + root.actionIndex + "_" + index
-                readonly property int low: index === 0 ? 900 : root.ranges[index-1].upper+1
-                readonly property int high: modelData.upper
-                readonly property bool activeRange: root.live >= low && root.live <= high
-                width: parent.width / root.ranges.length; height: 76; radius: 7
-                color: activeRange ? (settings_form.darkMode ? "#006da6" : "#d2f0ff") : settings_form.panelBackground
-                border.width: activeRange || (root.editable && root.selectedArea === index) ? 2 : 1
-                border.color: activeRange ? "#16b9ef" : root.editable && root.selectedArea === index ? settings_form.accentColor : settings_form.lineColor
-                Behavior on color { ColorAnimation { duration: 140 } }
-                Column {
-                    anchors.centerIn: parent; width: parent.width - 6; spacing: 7
-                    Label { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: area.low + "–" + area.high; color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: root.width < 400 && root.ranges.length > 3 ? 9 : 12 }
-                    Label { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: root.label(modelData.value); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: root.width < 400 ? 11 : Typography.helper; font.bold: area.activeRange }
-                }
-                MouseArea { anchors.fill: parent; enabled: root.editable; cursorShape: Qt.PointingHandCursor; onClicked: root.selectedArea = index }
-                Rectangle { visible: index > 0; z: 2; x: -4; anchors.verticalCenter: parent.verticalCenter; width: 8; height: 8; radius: 4; color: settings_form.darkMode ? "#e9f8ff" : settings_form.accentColor }
-                Accessible.role: Accessible.Button
-                Accessible.name: root.label(modelData.value) + ", " + area.low + "–" + area.high + " µs"
-                Accessible.onPressAction: if (root.editable) root.selectedArea = index
-                activeFocusOnTab: root.editable
-                Keys.onSpacePressed: root.selectedArea = index
-                Keys.onReturnPressed: root.selectedArea = index
+    readonly property bool liveValid: live >= 800 && live <= 2200
+    readonly property int liveArea: live >= 900 && live <= 2100
+        ? ranges.findIndex(function(range) { return live <= range.upper }) : -1
+
+    RowLayout {
+        width: parent.width
+        Label {
+            Layout.fillWidth: true
+            text: qsTr("PWM ranges")
+            color: settings_form.secondaryText
+            font.pixelSize: Typography.helper
+        }
+        Label {
+            objectName: "channelLiveRange" + root.actionIndex
+            text: !root.liveValid ? qsTr("No RC signal")
+                : root.liveArea < 0 ? qsTr("%1 µs · Outside range").arg(root.live)
+                : qsTr("%1 µs · %2").arg(root.live).arg(root.label(root.ranges[root.liveArea].value))
+            color: root.liveValid ? settings_form.accentColor : settings_form.secondaryText
+            font.pixelSize: Typography.helper
+            font.bold: root.liveValid
+        }
+    }
+    Column {
+        width: parent.width
+        spacing: 4
+        Item {
+            id: track
+            objectName: "channelRangeTrack" + root.actionIndex
+            width: parent.width
+            height: 72
+
+            function xForPwm(pwm) {
+                return width * Math.max(0, Math.min(1, (pwm - 900) / 1200))
             }
+
+            function splitX(index) {
+                return index >= root.ranges.length - 1 ? width : xForPwm(root.ranges[index].upper + 0.5)
+            }
+
+            Repeater {
+                model: root.ranges.length
+                Rectangle {
+                    id: area
+                    objectName: "channelRange" + root.actionIndex + "_" + index
+                    readonly property var range: root.ranges[index] || { upper: 2100, value: -1 }
+                    readonly property int low: root.ranges[index-1] ? root.ranges[index-1].upper + 1 : 900
+                    readonly property int high: range.upper
+                    readonly property bool activeRange: root.liveArea === index
+                    readonly property bool selected: root.editable && root.selectedArea === index
+                    x: index === 0 ? 0 : track.splitX(index - 1)
+                    width: Math.max(0, track.splitX(index) - x)
+                    height: parent.height
+                    radius: Math.min(6, width / 2)
+                    clip: true
+                    color: activeRange ? (settings_form.darkMode ? "#006da6" : "#d2f0ff")
+                        : selected ? settings_form.panelBackgroundRaised : settings_form.panelBackground
+                    border.width: activeRange || selected ? 2 : 1
+                    border.color: activeRange ? "#16b9ef" : selected ? settings_form.accentColor : settings_form.lineColor
+                    Column {
+                        anchors.centerIn: parent
+                        width: Math.max(0, parent.width - 16)
+                        spacing: 4
+                        Label {
+                            width: parent.width
+                            horizontalAlignment: Text.AlignHCenter
+                            elide: Text.ElideRight
+                            text: root.label(area.range.value)
+                            color: settings_form.primaryText
+                            font.family: Typography.family
+                            font.pixelSize: Typography.helper
+                            font.bold: area.activeRange || area.selected
+                        }
+                        Label {
+                            width: parent.width
+                            visible: width >= implicitWidth
+                            horizontalAlignment: Text.AlignHCenter
+                            text: area.low + "–" + area.high
+                            color: settings_form.primaryText
+                            font.pixelSize: 11
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        enabled: root.editable
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.selectedArea = index
+                    }
+                    Accessible.role: Accessible.Button
+                    Accessible.name: root.label(area.range.value) + ", " + area.low + "–" + area.high + " µs"
+                    Accessible.onPressAction: if (root.editable) root.selectedArea = index
+                    activeFocusOnTab: root.editable
+                    Keys.onSpacePressed: root.selectedArea = index
+                    Keys.onReturnPressed: root.selectedArea = index
+                }
+            }
+            Rectangle {
+                objectName: "channelLiveMarker" + root.actionIndex
+                visible: root.liveValid
+                z: 1
+                width: 3
+                height: parent.height
+                x: Math.max(0, Math.min(parent.width - width, track.xForPwm(root.live) - width / 2))
+                radius: 1
+                color: settings_form.darkMode ? "#effaff" : "#134568"
+            }
+            Repeater {
+                model: Math.max(0, root.ranges.length - 1)
+                MouseArea {
+                    id: handle
+                    objectName: "channelRangeHandle" + root.actionIndex + "_" + index
+                    property real pressOffset: 0
+                    visible: root.editable
+                    enabled: root.editable
+                    x: track.splitX(index) - width / 2
+                    width: 24
+                    height: track.height
+                    z: pressed ? 3 : 2
+                    preventStealing: true
+                    hoverEnabled: true
+                    cursorShape: Qt.SizeHorCursor
+                    onPressed: function(mouse) {
+                        pressOffset = mapToItem(track, mouse.x, mouse.y).x - track.splitX(index)
+                        root.selectedArea = index
+                    }
+                    onPositionChanged: function(mouse) {
+                        if (!pressed || track.width <= 0) return
+                        var position = mapToItem(track, mouse.x, mouse.y).x - pressOffset
+                        var next = Ranges.setBoundary(root.ranges, index, 900 + 1200 * position / track.width - 0.5)
+                        if (next[index].upper !== root.ranges[index].upper) root.edited(next)
+                    }
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 8
+                        height: 30
+                        radius: 4
+                        color: handle.pressed || handle.containsMouse ? settings_form.accentColor
+                            : settings_form.darkMode ? "#d9ebf7" : "#52728a"
+                        border.color: settings_form.panelBackground
+                    }
+                }
+            }
+        }
+        RowLayout {
+            width: parent.width
+            Label { text: "900 µs"; color: settings_form.secondaryText; font.pixelSize: Typography.helper }
+            Item { Layout.fillWidth: true }
+            Label { text: "1500"; color: settings_form.secondaryText; font.pixelSize: Typography.helper }
+            Item { Layout.fillWidth: true }
+            Label { text: "2100 µs"; color: settings_form.secondaryText; font.pixelSize: Typography.helper }
         }
     }
     Column {
         visible: root.editable; width: parent.width; spacing: 10
-        Label { text: qsTr("Area %1").arg(root.selectedArea+1); color: settings_form.secondaryText; font.pixelSize: Typography.helper }
+        Label { text: qsTr("Area %1 · %2–%3 µs").arg(root.selectedArea + 1)
+            .arg(root.selectedArea === 0 ? 900 : root.ranges[root.selectedArea - 1].upper + 1)
+            .arg(root.ranges.length ? root.ranges[root.selectedArea].upper : 2100); color: settings_form.secondaryText; font.pixelSize: Typography.helper }
         RowLayout {
             width: parent.width; spacing: 10
             CompactLinkComboBox {
