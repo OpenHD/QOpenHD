@@ -58,7 +58,7 @@ Item {
  Loader {id:loader;anchors.fill:parent;sourceComponent:page}
  TestCase {
      name:"JoystickSettings";when:windowShown
-     function init(){loader.active=false;_fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=true;_ohdSystemGroundSettings.modern=true;_ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.saved="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";_ohdSystemGroundSettings.update_count++;_rcchannelsmodelfc.is_alive=true;_rcchannelsmodelfc.setProperty(2,"curr_value",1500);_ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.radioSupported=true;_ohdSystemAirSettingsModel.rangesSupported=true;_ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"};_ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.rejectId="";_ohdSystemAirSettingsModel.assignments={BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0};_ohdSystemAirSettingsModel.writes=[];_ohdSystemAirSettingsModel.base=0;_ohdSystemAirSettingsModel.update_count++;loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)}
+     function init(){_ohdSystemGroundSettings.lastId="";loader.active=false;_fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=true;_ohdSystemGroundSettings.modern=true;_ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.saved="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";_ohdSystemGroundSettings.update_count++;_rcchannelsmodelfc.is_alive=true;_rcchannelsmodelfc.setProperty(2,"curr_value",1500);_ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.radioSupported=true;_ohdSystemAirSettingsModel.rangesSupported=true;_ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"};_ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.rejectId="";_ohdSystemAirSettingsModel.assignments={BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0};_ohdSystemAirSettingsModel.writes=[];_ohdSystemAirSettingsModel.base=0;_ohdSystemAirSettingsModel.update_count++;loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)}
      function test_standalone_page_focus_and_back(){
          var page = standalonePage.createObject(scene)
          verify(page !== null)
@@ -114,50 +114,40 @@ Item {
          _ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.update_count++
          verify(!p.monitoring);tryCompare(p,"values",[]);tryCompare(_ohdSystemGroundSettings,"monitorValue",0)
      }
-     function test_selector_uses_output_not_choice_index(){
-         var p=loader.item;var row=findChild(p,"joystickChannel4");row.clicked()
-         var editor=findChild(p,"channelEditor"), combo=findChild(p,"channelInput")
-         tryCompare(editor,"opened",true);combo.currentIndex=3;combo.activated(3)
-         compare(p.mapping[3],4)
-         editor.apply()
-         compare(p.mapping[3],3);compare(p.mapping[2],0);tryCompare(editor,"opened",false)
-     }
      function openEditor(channel){
          findChild(loader.item,"joystickChannel"+channel).clicked()
          var editor=findChild(loader.item,"channelEditor")
          tryCompare(editor,"opened",true)
          return editor
      }
-     function addFunction(editor, index) {
+     function chooseFunction(editor, index) {
          var picker=findChild(editor.contentItem,"channelFunctionPicker")
-         for(var i=1;i<picker.model.length;i++) {
+         for(var i=0;i<picker.model.length;i++) {
              if(picker.model[i].actionIndex!==index)continue
              picker.currentIndex=i;picker.activated(i)
-             compare(editor.selected[index],true)
-             compare(picker.currentIndex,0)
+             compare(editor.selectedAction,index)
              return
          }
          fail("Function missing from picker: "+index)
      }
      function test_channel_functions_apply_and_cancel(){
          var editor=openEditor(6)
-         var action=findChild(editor.contentItem,"channelAction0")
-         addFunction(editor,0)
+         chooseFunction(editor,0)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,3)
          editor.close();tryCompare(editor,"opened",false)
          editor=openEditor(6)
          compare(editor.selected[0],false)
-         addFunction(editor,0);editor.apply()
+         chooseFunction(editor,0);editor.apply()
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,6)
          compare(_ohdSystemAirSettingsModel.writes.length,1)
          tryCompare(editor,"opened",false)
-         editor=openEditor(6);action.clicked();editor.apply()
+         editor=openEditor(6);chooseFunction(editor,-1);editor.apply()
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,8)
      }
      function test_channel_functions_rejected_stale_and_armed(){
-         var editor=openEditor(6), action=findChild(editor.contentItem,"channelAction0")
-         addFunction(editor,0)
+         var editor=openEditor(6)
+         chooseFunction(editor,0)
          _fcMavlinkSystem.armed=true;editor.apply()
          compare(_ohdSystemAirSettingsModel.writes.length,0);verify(editor.opened)
          _fcMavlinkSystem.armed=false;_ohdSystemAirSettingsModel.error="Rejected";editor.apply()
@@ -165,26 +155,6 @@ Item {
          _ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.try_update_parameter_int("BW_VIA_RC",9)
          editor.apply();verify(editor.error.indexOf("changed")>=0)
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,9)
-     }
-     function test_channel_input_rejection_does_not_change_draft(){
-         var p=loader.item, editor=openEditor(4)
-         editor.input=3
-         _ohdSystemGroundSettings.error="Rejected"
-         editor.apply()
-         compare(editor.error,"Rejected");verify(editor.opened)
-         compare(p.mapping[3],4);compare(p.mapping[2],3)
-         _ohdSystemGroundSettings.error="";editor.apply()
-         compare(p.mapping[3],3);compare(p.mapping[2],0)
-     }
-     function test_channel_detect_input_is_draft_until_apply(){
-         _ohdSystemGroundSettings.enabledValue=1;_ohdSystemGroundSettings.update_count++
-         var editor=openEditor(4), before=loader.item.mapping.join(",")
-         findChild(editor.contentItem,"channelDetectInput").clicked()
-         var values=_joystickInputModel.values.slice();values[0]=values[0]===1500?1900:1500;_joystickInputModel.values=values
-         tryCompare(editor,"learningTicks",0)
-         compare(editor.input,1);compare(loader.item.mapping.join(","),before)
-         editor.close();tryCompare(editor,"opened",false)
-         editor=openEditor(4);compare(editor.input,4)
      }
      function test_channel_ranges_follow_fc_pwm(){
          var editor=openEditor(3), segment=findChild(editor.contentItem,"channelRange0_0")
@@ -248,7 +218,7 @@ Item {
          verify(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES.indexOf("2100:")===0)
      }
      function test_custom_ranges_rejected_stale_and_disconnected(){
-         var editor=openEditor(6);addFunction(editor,0)
+         var editor=openEditor(6);chooseFunction(editor,0)
          editor.editRanges(0,Ranges.parse("1300:10,1700:20,2100:40"))
          _ohdSystemAirSettingsModel.error="Rejected";editor.apply()
          compare(editor.error,"Rejected");compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,3)
@@ -262,7 +232,7 @@ Item {
          editor.apply();verify(editor.error.indexOf("changed")>=0)
      }
      function test_custom_ranges_partial_save_can_retry(){
-         var editor=openEditor(6);addFunction(editor,0)
+         var editor=openEditor(6);chooseFunction(editor,0)
          editor.editRanges(0,Ranges.parse("1300:10,1700:20,2100:40"))
          _ohdSystemAirSettingsModel.rejectId="BW_VIA_RC";editor.apply()
          verify(editor.opened);verify(editor.savedChanges);compare(editor.error,"Rejected")
@@ -314,8 +284,8 @@ Item {
          compare(_ohdSystemAirSettingsModel.writes.length,0)
      }
      function test_channel_functions_disconnect(){
-         var editor=openEditor(6), action=findChild(editor.contentItem,"channelAction0")
-         addFunction(editor,0)
+         var editor=openEditor(6)
+         chooseFunction(editor,0)
          _ohdSystemAirSettingsModel.connected=false;_ohdSystemAirSettingsModel.update_count++
          editor.apply();verify(editor.opened);compare(_ohdSystemAirSettingsModel.writes.length,0)
          verify(!findChild(editor.contentItem,"channelFunctionPicker").enabled)
@@ -328,9 +298,9 @@ Item {
          verify(editor.width<=scene.width);grabImage(scene).save("build/joystick-popup-440.png")
          var apply=findChild(editor.contentItem,"channelApply")
          var scroll=findChild(editor.contentItem,"channelEditorScroll")
-         verify(scroll.height>400)
-         verify(apply.mapToItem(scene,0,0).y>600)
-         addFunction(editor,1)
+         verify(scroll.height>0)
+         verify(apply.mapToItem(scene,0,0).y>editor.y+editor.height-100)
+         chooseFunction(editor,1)
          scene.height=480;wait(100)
          verify(editor.height<=scene.height)
          verify(scroll.contentHeight>scroll.height)
@@ -373,18 +343,43 @@ Item {
          _rcchannelsmodelfc.setProperty(1,"curr_value",1900)
          tryCompare(findChild(loader.item,"joystickChannel2"),"value",1900)
      }
-     function test_multiple_dropdown_functions(){
+     function test_single_dropdown_replaces_function(){
          var editor=openEditor(6)
-         addFunction(editor,0);addFunction(editor,1)
-         editor.apply()
-         compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,6)
-         compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,6)
-         editor=openEditor(6)
-         findChild(editor.contentItem,"channelAction0").clicked()
+         chooseFunction(editor,0);chooseFunction(editor,1)
          verify(!editor.selected[0]);verify(editor.selected[1])
          editor.apply()
-         compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
+         compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,3)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,6)
+         editor=openEditor(6)
+         chooseFunction(editor,0);editor.apply()
+         compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,6)
+         compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,0)
+         var writes=_ohdSystemAirSettingsModel.writes
+         compare(writes[writes.length-2].id,"MCS_VIA_RC")
+         compare(writes[writes.length-2].value,0)
+         editor=openEditor(6);chooseFunction(editor,-1);editor.apply()
+         compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
+     }
+     function test_channel_popup_only_reads_fc_channel(){
+         var before=loader.item.mapping.join(","), editor=openEditor(4)
+         compare(findChild(editor.contentItem,"channelInput"),null)
+         compare(findChild(editor.contentItem,"channelDetectInput"),null)
+         chooseFunction(editor,2);editor.apply()
+         compare(_ohdSystemAirSettingsModel.assignments.TXMODE_VIA_RC,4)
+         compare(loader.item.mapping.join(","),before)
+         compare(_ohdSystemGroundSettings.lastId,"")
+     }
+     function test_replacing_function_partial_save_can_retry(){
+         var editor=openEditor(3)
+         chooseFunction(editor,1)
+         _ohdSystemAirSettingsModel.rejectId="MCS_VIA_RC";editor.apply()
+         verify(editor.opened);verify(editor.savedChanges);compare(editor.error,"Rejected")
+         compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
+         compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,8)
+         _ohdSystemAirSettingsModel.rejectId="";editor.apply()
+         tryCompare(editor,"opened",false)
+         compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
+         compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,3)
      }
      function test_layout(){
          for(var i=0;i<3;i++){

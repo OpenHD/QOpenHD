@@ -110,7 +110,7 @@ Rectangle {
     property int sidebarWidth: compactSidebar ? 72 : Math.max(160, Math.min(210, width * 0.17))
 
     readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), qsTr("RC MAPPING"), qsTr("CONNECT"), qsTr("CREDITS"), qsTr("DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS"), qsTr("AUDIO")][mainStackLayout.currentIndex]
-    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), qsTr("Joystick channel assignments and RC control"), qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("MAVLink and hardware diagnostics"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information"), qsTr("Sounds, speech and voice rules")][mainStackLayout.currentIndex]
+    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), qsTr("RC channel functions"), qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("MAVLink and hardware diagnostics"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information"), qsTr("Sounds, speech and voice rules")][mainStackLayout.currentIndex]
     readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf013", "\uf0ad", "\uf028"][mainStackLayout.currentIndex]
 
     Settings {

@@ -65,7 +65,7 @@ Column {
     }
     Column {
         visible: root.editable; width: parent.width; spacing: 10
-        Label { text: qsTr("Area %1 · select an area above to edit").arg(root.selectedArea+1); color: settings_form.secondaryText; font.pixelSize: Typography.helper }
+        Label { text: qsTr("Area %1").arg(root.selectedArea+1); color: settings_form.secondaryText; font.pixelSize: Typography.helper }
         RowLayout {
             width: parent.width; spacing: 10
             CompactLinkComboBox {

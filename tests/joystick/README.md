@@ -26,18 +26,20 @@ MAVLink release values for channels 1-8 and 9-18. Neither the UI fixture nor the
 backend mapping test substitutes for a connected joystick/ELRS test.
 
 The main-menu overview uses FC-reported PWM for OpenHD function ranges. Channel
-popups stage joystick input and Air radio-function changes until Apply. Coverage
+popups stage one Air radio function per channel until Apply. Coverage
 includes Cancel, rejected writes, stale configuration, disconnection, armed-state
-protection, draft input detection, and live range highlighting. Channel width,
-MCS and channel width support custom areas on Air firmware exposing
+protection and live range highlighting. MCS and channel width support custom areas on Air firmware exposing
 `RC_MCS_RANGES` and `RC_BW_RANGES`. Transmit mode and FHSS retain fixed thresholds.
 This UI does not configure flight-controller mixes. Air parameter writes are
 sequential; a partial failure leaves the popup open and reports saved changes.
 
 The channel overview replaces the separate FC live-view card; joystick controls
-sit below the overview. The popup adds multiple functions through a dropdown,
+sit below the overview. The popup selects one function through a dropdown,
 shows connected range segments with live highlighting, and keeps Apply/Cancel
 visible while its body scrolls. Layout coverage includes a 440 x 480 viewport.
+It reads the existing FC channel directly and never changes joystick mapping or
+detects an input. Choosing Unassigned clears the channel's OpenHD function;
+replacing a function clears the old assignment before setting the new one.
 
 Select an area, choose its output value, and edit its inclusive upper PWM bound.
 `+ Area` splits the selected area; Remove merges it with a neighbor. One to five
