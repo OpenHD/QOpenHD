@@ -52,6 +52,7 @@ AdvancedPage {
         ListElement { contributorName: "norbert" }
         ListElement { contributorName: "macdaddyfpv" }
         ListElement { contributorName: "ivan" }
+        ListElement { contributorName: "riktor" }
     }
 
     function reveal(item) {
