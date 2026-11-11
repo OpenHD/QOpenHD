@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
+import "../configpopup/status/SystemHealth.js" as SystemHealth
 
 BaseWidget {
     id: airStatusWidget
@@ -20,12 +21,14 @@ BaseWidget {
 
     // Functionality between air and air widget is really similar - this helps reducing code bloat a bit
     property int m_cpuload_perc:  m_is_air ? previewTelemetry("_ohdSystemAir", "curr_cpuload_perc", _ohdSystemAir.curr_cpuload_perc) : previewTelemetry("_ohdSystemGround", "curr_cpuload_perc", _ohdSystemGround.curr_cpuload_perc);
-    property int m_cpuload_perc_warn: m_is_air ? settings.air_status_cpu_warn : settings.ground_status_cpu_warn;
-    property int m_cpuload_perc_caution: m_is_air ? settings.air_status_cpu_caution :  settings.ground_status_cpu_caution
+    readonly property var thresholdUnit: ({ohd_platform_type: m_is_air ? previewTelemetry("_ohdSystemAir", "ohd_platform_type", _ohdSystemAir.ohd_platform_type) : _ohdSystemGround.ohd_platform_type})
+    readonly property string thresholdPrefix: SystemHealth.thresholdPrefix(thresholdUnit, !m_is_air)
+    property int m_cpuload_perc_warn: SystemHealth.threshold(thresholdUnit, !m_is_air, settings, "cpu", "warn");
+    property int m_cpuload_perc_caution: SystemHealth.threshold(thresholdUnit, !m_is_air, settings, "cpu", "caution")
 
     property int m_soc_temperature_deg: m_is_air ? previewTelemetry("_ohdSystemAir", "curr_soc_temp_degree", _ohdSystemAir.curr_soc_temp_degree) : previewTelemetry("_ohdSystemGround", "curr_soc_temp_degree", _ohdSystemGround.curr_soc_temp_degree)
-    property int m_soc_temperature_deg_warn: m_is_air ? settings.air_status_temp_warn : settings.ground_status_temp_warn
-    property int m_soc_temperature_deg_caution: m_is_air ? settings.air_status_temp_caution : settings.ground_status_temp_caution
+    property int m_soc_temperature_deg_warn: SystemHealth.threshold(thresholdUnit, !m_is_air, settings, "temp", "warn")
+    property int m_soc_temperature_deg_caution: SystemHealth.threshold(thresholdUnit, !m_is_air, settings, "temp", "caution")
 
     // These do not need warning level(s) and are hidden in the action popup
     property int m_curr_cpu_freq_mhz: m_is_air ?previewTelemetry("_ohdSystemAir", "curr_cpu_freq_mhz", _ohdSystemAir.curr_cpu_freq_mhz) : previewTelemetry("_ohdSystemGround", "curr_cpu_freq_mhz", _ohdSystemGround.curr_cpu_freq_mhz)
@@ -40,35 +43,17 @@ BaseWidget {
     // 1 - caution
     // 2 - warning
     function get_cpuload_warning_level(){
-        if(m_is_air && previewTelemetry("_ohdSystemAir", "ohd_platform_type", _ohdSystemAir.ohd_platform_type)==30){
-            // X20
-            if(m_cpuload_perc>=95){
-                return 2;
-            }
-            if(m_cpuload_perc>=85){
-                return 1;
-            }
-            return 0;
-        }
+        if (SystemHealth.muted(!m_is_air, settings, "cpu")) return 0;
         if (m_cpuload_perc>= m_cpuload_perc_warn) {
             return 2;
         }
-        if (m_cpuload_perc > m_cpuload_perc_caution) {
+        if (m_cpuload_perc >= m_cpuload_perc_caution) {
             return 1;
         }
         return 0;
     }
     function get_temperature_warning_level(){
-        if(m_is_air && previewTelemetry("_ohdSystemAir", "ohd_platform_type", _ohdSystemAir.ohd_platform_type)==30){
-            // X20, it's not the SOC temperature
-            if (m_soc_temperature_deg>= 79-1) {
-                return 2;
-            }
-            if (m_soc_temperature_deg>= 75-1) {
-                return 1;
-            }
-            return 0;
-        }
+        if (SystemHealth.muted(!m_is_air, settings, "temp")) return 0;
         if (m_soc_temperature_deg>= m_soc_temperature_deg_warn) {
             return 2;
         }
@@ -165,7 +150,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: m_is_air ? settings.air_status_cpu_caution : settings.ground_status_cpu_caution
+                    text: m_cpuload_perc_caution
                     color: settings.color_caution
                     height: parent.height
                     font.bold: true
@@ -176,7 +161,7 @@ BaseWidget {
                 Slider {
                     id: air_status_cpu_caution_Slider
                     orientation: Qt.Horizontal
-                    value: m_is_air ? settings.air_status_cpu_caution : settings.ground_status_cpu_caution
+                    value: m_cpuload_perc_caution
                     from: 20
                     to: 100
                     stepSize: 1
@@ -185,16 +170,7 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        if(m_is_air){
-                            settings.air_status_cpu_caution = Math.round(
-                                        air_status_cpu_caution_Slider.value * 10) / 10.0
-                        }else{
-                            settings.ground_status_cpu_caution = Math.round(
-                                        air_status_cpu_caution_Slider.value * 10) / 10.0
-                        }
-
-                    }
+                    onMoved: settings[thresholdPrefix + "cpu_caution"] = Math.round(value)
                 }
             }
             Item {
@@ -210,7 +186,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: m_is_air ? settings.air_status_cpu_warn : settings.ground_status_cpu_warn
+                    text: m_cpuload_perc_warn
                     color: settings.color_warn
                     height: parent.height
                     font.bold: true
@@ -221,7 +197,7 @@ BaseWidget {
                 Slider {
                     id: air_status_cpu_warn_Slider
                     orientation: Qt.Horizontal
-                    value: m_is_air ? settings.air_status_cpu_warn : settings.ground_status_cpu_warn
+                    value: m_cpuload_perc_warn
                     from: 20
                     to: 100
                     stepSize: 1
@@ -230,15 +206,7 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        if(m_is_air){
-                            settings.air_status_cpu_warn = Math.round(
-                                        air_status_cpu_warn_Slider.value * 10) / 10.0
-                        }else{
-                            settings.ground_status_cpu_warn = Math.round(
-                                        air_status_cpu_warn_Slider.value * 10) / 10.0
-                        }
-                    }
+                    onMoved: settings[thresholdPrefix + "cpu_warn"] = Math.round(value)
                 }
             }
             Item {
@@ -254,7 +222,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: m_is_air ? settings.air_status_temp_caution : settings.ground_status_temp_caution
+                    text: SystemHealth.threshold(thresholdUnit, !m_is_air, settings, "temp", "caution")
                     color: settings.color_caution
                     height: parent.height
                     font.bold: true
@@ -265,7 +233,7 @@ BaseWidget {
                 Slider {
                     id: air_status_temp_caution_Slider
                     orientation: Qt.Horizontal
-                    value: settings.air_status_temp_caution
+                    value: m_soc_temperature_deg_caution
                     from: 20
                     to: 100
                     stepSize: 1
@@ -274,15 +242,7 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        if(m_is_air){
-                            settings.air_status_temp_caution = Math.round(
-                                        air_status_temp_caution_Slider.value * 10) / 10.0
-                        }else{
-                            settings.ground_status_temp_caution = Math.round(
-                                        air_status_temp_caution_Slider.value * 10) / 10.0
-                        }
-                    }
+                    onMoved: settings[thresholdPrefix + "temp_caution"] = Math.round(value)
                 }
             }
             Item {
@@ -298,7 +258,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: m_is_air ? settings.air_status_temp_warn : settings.ground_status_temp_warn
+                    text: SystemHealth.threshold(thresholdUnit, !m_is_air, settings, "temp", "warn")
                     color: settings.color_warn
                     height: parent.height
                     font.bold: true
@@ -309,7 +269,7 @@ BaseWidget {
                 Slider {
                     id: air_status_temp_warn_Slider
                     orientation: Qt.Horizontal
-                    value: m_is_air ? settings.air_status_temp_warn : settings.ground_status_temp_warn
+                    value: SystemHealth.threshold(thresholdUnit, !m_is_air, settings, "temp", "warn")
                     from: 20
                     to: 100
                     stepSize: 1
@@ -318,17 +278,7 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        if(m_is_air){
-                            settings.air_status_temp_warn = Math.round(
-                                        air_status_temp_warn_Slider.value * 10) / 10.0
-                        }else{
-                            settings.ground_status_temp_warn = Math.round(
-                                        air_status_temp_warn_Slider.value * 10) / 10.0
-                        }
-
-
-                    }
+                    onMoved: settings[thresholdPrefix + "temp_warn"] = Math.round(value)
                 }
             }
 
@@ -458,7 +408,7 @@ BaseWidget {
             styleColor: "red"
             color: "yellow"
             //visible: true
-            visible: m_rpi_undervolt_error && settings.air_status_show_undervolt_icon
+            visible: m_rpi_undervolt_error && !SystemHealth.muted(!m_is_air, settings, "undervolt") && (m_is_air ? settings.air_status_show_undervolt_icon : settings.ground_status_show_undervolt_icon)
         }
 
         Text {

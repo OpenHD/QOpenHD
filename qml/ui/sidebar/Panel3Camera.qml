@@ -14,6 +14,18 @@ import "../elements"
 SideBarBasePanel{
     id: cameraPanel
     override_title: "Camera"
+    property var imageReset: null
+    headerAction: Component {
+        CameraImageReset {
+            iconOnly: true
+            visible: available
+            settingsModel: _airCameraSettingsModel
+            Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
+            Keys.onUpPressed: sidebar.regain_control_on_sidebar_stack()
+            Keys.onDownPressed: cameraPanel.takeover_control()
+            Component.onCompleted: cameraPanel.imageReset = this
+        }
+    }
     property int cameraParamUpdates: _airCameraSettingsModel.update_count
     property bool arducam_camera: _cameraStreamModelPrimary.camera_type === 152 ||
         (cameraParamUpdates >= 0 && _airCameraSettingsModel.param_int_exists("ISP_EXPOSURE_US"))
@@ -27,6 +39,13 @@ SideBarBasePanel{
     property int arducamAeProfile: cameraParamUpdates >= 0 &&
         _airCameraSettingsModel.param_int_exists("ISP_AE_PROFILE") ?
         _airCameraSettingsModel.get_cached_int("ISP_AE_PROFILE") : 0
+    function focusReset() {
+        if (imageReset && imageReset.visible && imageReset.enabled) {
+            imageReset.forceActiveFocus();
+        } else {
+            sidebar.regain_control_on_sidebar_stack();
+        }
+    }
     function focusIsp(index, direction) {
         for (var i = index; i >= 0 && i < ispControls.count; i += direction) {
             var control = ispControls.itemAt(i);
@@ -123,7 +142,7 @@ SideBarBasePanel{
                 m_param_id: modelData[1]
                 m_settings_model: _airCameraSettingsModel
                 onGoto_previous: {
-                    if (!cameraPanel.focusIsp(index - 1, -1)) sidebar.regain_control_on_sidebar_stack();
+                    if (!cameraPanel.focusIsp(index - 1, -1)) cameraPanel.focusReset();
                 }
                 onGoto_next: {
                     if (!cameraPanel.focusIsp(index + 1, 1)) brightness.takeover_control();
@@ -138,7 +157,7 @@ SideBarBasePanel{
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
                 if (cameraPanel.arducam_camera && ispControls.count) ispControls.itemAt(ispControls.count-1).takeover_control();
-                else sidebar.regain_control_on_sidebar_stack();
+                else cameraPanel.focusReset();
             }
             onGoto_next: {
                 saturation.takeover_control();
@@ -216,7 +235,7 @@ SideBarBasePanel{
                 m_settings_model: _airCameraSettingsModel
                 onGoto_previous: {
                     if (index > 0) gxControls.itemAt(index - 1).takeover_control();
-                    else sidebar.regain_control_on_sidebar_stack();
+                    else cameraPanel.focusReset();
                 }
                 onGoto_next: {
                     if (index + 1 < gxControls.count) gxControls.itemAt(index + 1).takeover_control();

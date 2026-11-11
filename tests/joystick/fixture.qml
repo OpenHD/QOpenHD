@@ -8,7 +8,7 @@ Item {
  id:scene;width:1200;height:800
  FontLoader {source:"../../qml/osdfonts/Archivo-Regular.ttf"}
  FontLoader {source:"../../qml/resources/Font Awesome 5 Free-Solid-900.otf"}
- QtObject {id:settings_form;property bool darkMode:true;property bool compactSidebar:true;property color pageBackground:"#091827";property int backCalls:0;function side_bar_regain_focus(){backCalls++} property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c"}
+ QtObject {id:settings_form;property bool darkMode:true;property bool showAdvancedSettings:true;property bool compactSidebar:true;property color pageBackground:"#091827";property int backCalls:0;function side_bar_regain_focus(){backCalls++} property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c"}
  ListModel {id:_rcchannelsmodelfc;property bool is_alive:true;function channelValues(){var a=[];for(var i=0;i<18;i++)a.push(i<count?get(i).curr_value:1500);return a} ListElement {curr_value:1200} ListElement {curr_value:1800} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500}}
  QtObject {id:_fcMavlinkSystem;property bool armed:false}
  QtObject {
@@ -58,7 +58,7 @@ Item {
  Loader {id:loader;anchors.fill:parent;sourceComponent:page}
  TestCase {
      name:"JoystickSettings";when:windowShown
-     function init(){_ohdSystemGroundSettings.lastId="";loader.active=false;_fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=true;_ohdSystemGroundSettings.modern=true;_ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.saved="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";_ohdSystemGroundSettings.update_count++;_rcchannelsmodelfc.is_alive=true;_rcchannelsmodelfc.setProperty(2,"curr_value",1500);_ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.radioSupported=true;_ohdSystemAirSettingsModel.rangesSupported=true;_ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"};_ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.rejectId="";_ohdSystemAirSettingsModel.assignments={BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0};_ohdSystemAirSettingsModel.writes=[];_ohdSystemAirSettingsModel.base=0;_ohdSystemAirSettingsModel.update_count++;loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)}
+     function init(){settings_form.showAdvancedSettings=true;_ohdSystemGroundSettings.lastId="";loader.active=false;_fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=true;_ohdSystemGroundSettings.modern=true;_ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.saved="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";_ohdSystemGroundSettings.update_count++;_rcchannelsmodelfc.is_alive=true;_rcchannelsmodelfc.setProperty(2,"curr_value",1500);_ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.radioSupported=true;_ohdSystemAirSettingsModel.rangesSupported=true;_ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"};_ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.rejectId="";_ohdSystemAirSettingsModel.assignments={BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0};_ohdSystemAirSettingsModel.writes=[];_ohdSystemAirSettingsModel.base=0;_ohdSystemAirSettingsModel.update_count++;loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)}
      function test_standalone_page_focus_and_back(){
          var page = standalonePage.createObject(scene)
          verify(page !== null)
@@ -342,6 +342,18 @@ Item {
          verify(findChild(loader.item,"joystickControls").y>overview.y+overview.height)
          _rcchannelsmodelfc.setProperty(1,"curr_value",1900)
          tryCompare(findChild(loader.item,"joystickChannel2"),"value",1900)
+     }
+     function test_normal_settings_show_only_channel_cards(){
+         settings_form.showAdvancedSettings=false;wait(30)
+         var p=loader.item, overview=findChild(p,"joystickChannelOverview")
+         verify(!findChild(p,"joystickControls").visible)
+         verify(!findChild(p,"joystickLuaControls").visible)
+         compare(findChild(p,"joystickChannel1").y,0)
+         compare(p.contentHeight,overview.height)
+         grabImage(scene).save("build/rc-channel-cards.png")
+         settings_form.showAdvancedSettings=true;wait(30)
+         verify(findChild(p,"joystickControls").visible)
+         verify(findChild(p,"joystickLuaControls").visible)
      }
      function test_single_dropdown_replaces_function(){
          var editor=openEditor(6)

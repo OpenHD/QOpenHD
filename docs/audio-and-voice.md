@@ -3,11 +3,17 @@
 Open Application (gear) > General and enable Show advanced settings. The speaker
 icon in the left sidebar opens Audio. No developer unlock is needed for this.
 
-Audio contains Sounds & Speech and Voice Rules tabs. Welcome sound, warning
+Audio contains Sounds & Speech, OpenHD and MAVLink tabs. OpenHD and MAVLink
+are visible only while Show advanced settings is enabled. Welcome sound, warning
 sounds, voice enable, language, speed, volume and tests are on Sounds & Speech.
 OpenHD > Extras > Audio retains the incoming stream input/output controls.
 
-Voice Rules is a compact list of presets. Enable a preset directly or press Edit
+Warning announcements and telemetry presets are off by default. Each warning
+tab has an All off switch in its header; MAVLink's switch also covers telemetry
+rules. Turning All off back off enables all warnings and rules in that tab.
+Saved individual choices are preserved across app restarts.
+
+MAVLink includes a compact list of presets. Enable a preset directly or press Edit
 to change the trigger and phrase. Each editor opens separately; Save applies the
 changes and Cancel discards them. Messages can be filtered by text. Telemetry
 sources are battery percent, wind in knots, relative altitude in meters and ground

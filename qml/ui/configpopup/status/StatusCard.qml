@@ -21,7 +21,7 @@ Item {
     property int systemType: 0
     property Component bodyComponent
     signal detailsRequested()
-    function actionButtons() { return [detailsButton] }
+    function actionButtons() { return [detailsButton].concat(bodyLoader.item && bodyLoader.item.warningActions ? bodyLoader.item.warningActions().filter(function(row) { return row.actionable }) : []) }
     function handleNavigation(event) {
         if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
             statusPanel.moveFocus(1); event.accepted = true

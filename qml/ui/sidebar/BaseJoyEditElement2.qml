@@ -66,8 +66,8 @@ Item{
         height:parent.height
         border.color: "white"
         border.width: base_joy_edit_element.activeFocus ? 3 : 0;
-        color: "#333c4c"
-        opacity: base_joy_edit_element.activeFocus ? 1.0 : 0.3;
+        color: "transparent"
+        opacity: 1.0;
     }
 
 

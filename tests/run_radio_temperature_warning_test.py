@@ -14,25 +14,15 @@ qt_major = 6 if "6." in str(args.qt_bin) else 5
 with tempfile.TemporaryDirectory(prefix="qopenhd-radio-temperature-") as temp:
     folder = Path(temp)
     shutil.copy(ROOT / "qml/RadioTemperatureWarning.qml", folder)
-    # Only the hardware audio sink is replaced. Alarm timing, mute, aggregation
-    # and every pixel of the warning are the production component.
-    for name in ("RadioTemperatureAlarmSound.qml", "RadioTemperatureAlarmSoundQt6.qml"):
-        (folder / name).write_text(
-            'import QtQuick 2.12\nItem { property bool failed: false; '
-            'function playAlarm() {} }\n', encoding="utf-8")
+    # The banner is visual-only; all alert audio is tested through AudioAnnouncements.
+    assert "SoundEffect" not in (ROOT / "qml/RadioTemperatureWarning.qml").read_text()
+    assert "RadioTemperatureAlarmSound" not in (ROOT / "qml/RadioTemperatureWarning.qml").read_text()
     fixture = (ROOT / "tests/radio_temperature_warning/tst_warning.qml").read_text(encoding="utf-8")
     output = ROOT / "build" / "radio-temperature-warning"
     output.mkdir(parents=True, exist_ok=True)
     fixture = fixture.replace("SCREENSHOT_PATH", (output / "warning.png").as_posix())
     fixture = fixture.replace("QT_MAJOR_VERSION", str(qt_major))
     (folder / "tst_warning.qml").write_text(fixture, encoding="utf-8")
-    audio = folder / "audio"
-    (audio / "resources").mkdir(parents=True)
-    sound_component = "RadioTemperatureAlarmSoundQt6.qml" if qt_major >= 6 else "RadioTemperatureAlarmSound.qml"
-    shutil.copy(ROOT / "qml" / sound_component, audio)
-    shutil.copy(ROOT / "qml/resources/radio-temperature-alarm.wav", audio / "resources")
-    audio_fixture = (ROOT / "tests/radio_temperature_warning/tst_audio.qml").read_text(encoding="utf-8")
-    (audio / "tst_audio.qml").write_text(audio_fixture.replace("AUDIO_COMPONENT", sound_component), encoding="utf-8")
     env = os.environ.copy()
     env["PATH"] = str(args.qt_bin) + os.pathsep + env.get("PATH", "")
     env.update(QT_QUICK_BACKEND="software", QT_SCALE_FACTOR="1",

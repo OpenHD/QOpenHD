@@ -42,6 +42,7 @@ public:
     void setSelectedOutputDevice(const QString& deviceId);
     void setPlaybackVolume(int volume);
     void setRecording(bool recording);
+    void cancel_notification();
     int play_pcm(const QByteArray& pcm, int sampleRate = 22050, int channels = 1);
     QString poll_error();
 

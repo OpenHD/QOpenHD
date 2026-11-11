@@ -314,6 +314,43 @@ Settings {
     property double air_status_temp_caution: 60
     property double air_status_temp_warn: 70
 
+    // Local status warnings; telemetry and hardware protection remain unchanged.
+    property bool ground_status_temp_muted: false
+    property bool ground_status_cpu_muted: false
+    property bool ground_status_undervolt_muted: false
+    property bool air_status_temp_muted: false
+    property bool air_status_cpu_muted: false
+    property bool air_status_undervolt_muted: false
+    property bool fc_status_health_muted: false
+    property bool ground_status_radio_muted: false
+    property bool air_status_radio_muted: false
+    property int audio_warning_tts_temp_mode: 0
+    property int audio_warning_tts_cpu_mode: 0
+    property int audio_warning_tts_undervolt_mode: 0
+    property int audio_warning_tts_radio_mode: 0
+    property int audio_warning_tts_fc_mode: 0
+    property int audio_warning_tts_message_mode: 0
+    property int audio_warning_tts_interval: 30
+    property bool audio_warning_tts_temp_enabled: false
+    property bool audio_warning_tts_cpu_enabled: false
+    property bool audio_warning_tts_undervolt_enabled: false
+    property bool audio_warning_tts_radio_enabled: false
+    property bool audio_warning_tts_fc_enabled: false
+    property bool audio_warning_tts_message_enabled: false
+    property bool audio_warning_tts_openhd_message_enabled: false
+    property string audio_warning_tts_temp_phrase: "{message}"
+    property string audio_warning_tts_cpu_phrase: "{message}"
+    property string audio_warning_tts_undervolt_phrase: "{message}"
+    property string audio_warning_tts_radio_phrase: "{message}"
+    property string audio_warning_tts_fc_phrase: "{message}"
+    property int audio_warning_tts_openhd_message_mode: 0
+    property string audio_warning_tts_openhd_message_phrase: "{message}"
+    property string audio_warning_tts_message_phrase: "{message}"
+    property double x20_status_temp_caution: 74
+    property double x20_status_temp_warn: 78
+    property double x20_status_cpu_caution: 85
+    property double x20_status_cpu_warn: 95
+
     property bool show_message_hud: true
 
     property bool show_horizon: false

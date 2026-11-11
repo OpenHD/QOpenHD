@@ -18,7 +18,8 @@ AdvancedPage {
             id: tabs
             Layout.fillWidth: true
             AdvancedTabButton { id: soundsTab; objectName: "soundsTab"; text: qsTr("SOUNDS & SPEECH"); iconText: "\uf028" }
-            AdvancedTabButton { objectName: "rulesTab"; text: qsTr("VOICE RULES"); iconText: "\uf086" }
+            AdvancedTabButton { objectName: "warningsTab"; text: "OPENHD"; iconText: "\uf071"; hasContent: settings.dev_show_advanced_button }
+            AdvancedTabButton { objectName: "rulesTab"; text: "MAVLINK"; iconText: "\uf086"; hasContent: settings.dev_show_advanced_button }
         }
         StackLayout {
             Layout.fillWidth: true
@@ -38,7 +39,7 @@ AdvancedPage {
                             id: soundRows
                             anchors { left: parent.left; right: parent.right; top: parent.top }
                             spacing: 10
-                            Label { text: qsTr("Local sounds"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.sectionTitle; font.bold: true }
+                            Label { text: qsTr("Notifications"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.sectionTitle; font.bold: true }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Label { text: qsTr("Play a welcome sound at startup"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.body; Layout.fillWidth: true; wrapMode: Text.WordWrap }
@@ -46,7 +47,7 @@ AdvancedPage {
                             }
                             RowLayout {
                                 Layout.fillWidth: true
-                                Label { text: qsTr("Play a sound for warnings and errors"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.body; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                                Label { text: qsTr("Warning alerts"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.body; Layout.fillWidth: true; wrapMode: Text.WordWrap }
                                 Switch { checked: settings.audio_warning_sound; onToggled: settings.audio_warning_sound = checked }
                             }
                         }
@@ -107,15 +108,37 @@ AdvancedPage {
                 }
             }
             ScrollView {
+                id: warningsScroll
+                clip: true
+                contentWidth: availableWidth
+                ColumnLayout {
+                    width: warningsScroll.availableWidth
+                    spacing: 12
+                    WarningAudioSettings {
+                        Layout.fillWidth: true
+                        sectionTitle: qsTr("OpenHD warnings")
+                        warningTypes: [{key:"temp",title:qsTr("Temperature (\u00b0C)")}, {key:"cpu",title:qsTr("CPU usage (%)")},
+                            {key:"undervolt",title:qsTr("Supply voltage")}, {key:"radio",title:qsTr("Radio temperature")},
+                            {key:"openhd_message",title:qsTr("OpenHD messages")}]
+                    }
+                }
+            }
+            ScrollView {
                 id: ruleScroll
                 clip: true
                 contentWidth: availableWidth
                 ColumnLayout {
                     width: ruleScroll.availableWidth
                     spacing: 10
+                    WarningAudioSettings {
+                        Layout.fillWidth: true
+                        sectionTitle: qsTr("MAVLink warnings")
+                        includeTelemetryRules: true
+                        warningTypes: [{key:"fc",title:qsTr("Flight controller health")}, {key:"message",title:qsTr("Flight controller messages")}]
+                    }
                     RowLayout {
                         Layout.fillWidth: true
-                        Label { text: qsTr("Spoken alerts"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.sectionTitle; font.bold: true; Layout.fillWidth: true }
+                        Label { text: qsTr("Telemetry rules"); color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.sectionTitle; font.bold: true; Layout.fillWidth: true }
                         AdvancedActionButton {
                             text: qsTr("Add rule"); iconText: "\uf067"; primary: true
                             enabled: _audioAnnouncements.rules.length < 16

@@ -215,7 +215,7 @@ QString GstRtpAudioPlayer::constructPipeline()
             "appsrc name=announcement is-live=true format=time max-bytes=2097152 min-latency=0 max-latency=1000000000 "
             "caps=\"audio/x-raw,format=S16LE,rate=22050,channels=1,layout=interleaved\" "
             "! queue max-size-time=0 max-size-bytes=2097152 max-size-buffers=2 "
-            "! audioconvert ! audioresample ! audio/x-raw,rate=48000 ! audio_mix. ").arg(sinkDescription()));
+            "! audioconvert ! audioresample ! audio/x-raw,rate=48000 ! volume name=announcement_volume ! audio_mix. ").arg(sinkDescription()));
     }
     if (m_recording) {
         m_recordingPath = createRecordingPath();
@@ -335,6 +335,9 @@ int GstRtpAudioPlayer::play_pcm(const QByteArray& pcm, int sampleRate, int chann
     if (sampleRate <= 0 || (channels != 1 && channels != 2) || pcm.isEmpty() || pcm.size() > 2097152 || pcm.size() % (2 * channels)) return 0;
     start_playing();
     if (!m_pipeline) return 0;
+    if (auto* volume = gst_bin_get_by_name(GST_BIN(m_pipeline), "announcement_volume")) {
+        g_object_set(volume, "mute", FALSE, nullptr); gst_object_unref(volume);
+    }
     auto* source = gst_bin_get_by_name(GST_BIN(m_pipeline), "announcement");
     auto* clock = gst_element_get_clock(m_pipeline);
     if (!source || !clock) {
@@ -360,3 +363,11 @@ int GstRtpAudioPlayer::play_pcm(const QByteArray& pcm, int sampleRate, int chann
 }
 
 QString GstRtpAudioPlayer::poll_error() { QString result; result.swap(m_last_error); return result; }
+
+void GstRtpAudioPlayer::cancel_notification()
+{
+    if (!m_pipeline) return;
+    if (auto* volume = gst_bin_get_by_name(GST_BIN(m_pipeline), "announcement_volume")) {
+        g_object_set(volume, "mute", TRUE, nullptr); gst_object_unref(volume);
+    }
+}

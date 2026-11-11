@@ -103,6 +103,7 @@ Flickable {
      }
      MapSettingsCard {
          objectName: "joystickControls"
+         visible: settings_form.showAdvancedSettings
          width:parent.width;height:implicitHeight;title:qsTr("Joystick");icon:"\uf11b"
          subtitle:qsTr("Connect the joystick to the OpenHD Ground unit.")
          Column {
@@ -124,6 +125,8 @@ Flickable {
          }
      }
      MapSettingsCard {
+         objectName: "joystickLuaControls"
+         visible: settings_form.showAdvancedSettings
          width:parent.width;height:implicitHeight;title:qsTr("OpenHD Lua channels");icon:"\uf121"
          subtitle:qsTr("Four consecutive channels for the transmitter's OpenHD Lua tool.")
          Column {

@@ -17,7 +17,8 @@ Item {
     height: secondaryUiHeight
 
     property string override_title: "OVERRIDE ME"
-    property real headerHeight: secondaryUiHeight / 8
+    property real headerHeight: 390 / 8
+    property alias headerAction: headerActionLoader.sourceComponent
 
     // The main background
     Rectangle{
@@ -32,6 +33,8 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.top: header.bottom
+        padding: 0
+        contentWidth: width
         clip: true
         focus: false
         activeFocusOnTab: false
@@ -42,7 +45,7 @@ Item {
             }
         }
         ScrollBar.vertical: ScrollBar {
-            policy: ScrollBar.AsNeeded
+            policy: ScrollBar.AlwaysOff
         }
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
@@ -65,12 +68,23 @@ Item {
         opacity: 0.95
         z: 1
         Text {
-            anchors.centerIn: parent
+            anchors.left: parent.left
+            anchors.right: headerActionLoader.left
+            anchors.verticalCenter: parent.verticalCenter
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
             text: qsTr(override_title)
             font.pixelSize: 18
             font.family: "AvantGarde-Medium"
             color: "#ffffff"
             smooth: true
+        }
+        Loader {
+            id: headerActionLoader
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: item ? headerHeight : 0
+            height: headerHeight
         }
     }
 

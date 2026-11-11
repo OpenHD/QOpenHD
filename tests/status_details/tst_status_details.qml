@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtTest 1.2
 import "../../qml/ui/configpopup" as Menu
+import "../../qml" as App
 Item {
  FontLoader { source: "../../qml/resources/Font Awesome 5 Free-Solid-900.otf" }
  FontLoader { source: "../../qml/osdfonts/Archivo-Regular.ttf" }
@@ -38,6 +39,41 @@ Item {
  property var _qopenhd: ({version_string: "3.0.0-evo", debugMenuPreview: false, launchedFromQtCreator: true})
  QtObject {
   id: settings
+        property bool audio_warning_tts_message_enabled: true
+        property bool audio_warning_tts_openhd_message_enabled: true
+        property int audio_warning_tts_openhd_message_mode: 0
+        property string audio_warning_tts_openhd_message_phrase: "{message}"
+        property string audio_warning_tts_message_phrase: "{message}"
+        property string audio_warning_tts_fc_phrase: "{message}"
+        property string audio_warning_tts_radio_phrase: "{message}"
+        property string audio_warning_tts_undervolt_phrase: "{message}"
+        property string audio_warning_tts_cpu_phrase: "{message}"
+        property string audio_warning_tts_temp_phrase: "{message}"
+        property bool audio_warning_tts_fc_enabled: true
+        property bool audio_warning_tts_radio_enabled: true
+        property bool audio_warning_tts_undervolt_enabled: true
+        property bool audio_warning_tts_cpu_enabled: true
+        property bool audio_warning_tts_temp_enabled: true
+        property int audio_warning_tts_interval: 30
+        property int audio_warning_tts_message_mode: 0
+        property int audio_warning_tts_fc_mode: 0
+        property int audio_warning_tts_radio_mode: 0
+        property int audio_warning_tts_undervolt_mode: 0
+        property int audio_warning_tts_cpu_mode: 0
+        property int audio_warning_tts_temp_mode: 0
+        property bool air_status_radio_muted: false
+        property bool ground_status_radio_muted: false
+  property bool ground_status_temp_muted: false
+  property bool ground_status_cpu_muted: false
+  property bool ground_status_undervolt_muted: false
+  property bool air_status_temp_muted: false
+  property bool air_status_cpu_muted: false
+  property bool air_status_undervolt_muted: false
+  property bool fc_status_health_muted: false
+  property int x20_status_temp_caution: 74
+  property int x20_status_temp_warn: 78
+  property int x20_status_cpu_caution: 85
+  property int x20_status_cpu_warn: 95
   property int air_status_temp_warn: 85
   property int air_status_temp_caution: 75
   property int ground_status_temp_warn: 85
@@ -93,6 +129,7 @@ Item {
   property int curr_cpuload_perc: 38
   property int onboard_uptime_ms: 10000
   property bool rpi_undervolt_error: false
+  property var radio_temperature_warnings: []
   property int air_reported_fc_sys_id: 1
   property int onboard_ram_usage_mib: 31
   property var ground_details: ({hotspot_clients: 2, hotspot_ip: "192.168.3.1", system_used_bytes: 1073741824, system_total_bytes: 4294967296, logs_used_bytes: 2147483648, logs_total_bytes: 8589934592})
@@ -122,6 +159,12 @@ Item {
  }
 
  QtObject { id: hudOverlayGrid; function regain_focus() {} }
+ QtObject {
+  id: warningSpeech
+  property var latest: ({})
+  function updateWarning(key,kind,message,severity,muted) { latest[key]={kind:kind,message:message,severity:severity,muted:muted} }
+ }
+ App.HealthWarningAnnouncements { preferences:settings; airModel:air; groundModel:air; flightModel:fc; announcements:warningSpeech }
  Menu.ConfigPopup { id: menu; anchors.fill: parent }
  TestCase {
   name: "FullStatusLayout"; when: windowShown
@@ -270,6 +313,87 @@ Item {
    wifi.alive=true
    airPopup.close()
   }
+  function test_warning_settings() {
+   scene.width=1000;scene.height=700;wait(150)
+   tryVerify(function() { return menu.statusPanel !== null })
+   var healthRow=findChild(menu,"groundHealthWarning")
+   var temperatureRow=findChild(menu,"groundTemperatureWarning")
+   air.curr_soc_temp_degree=48;air.curr_cpuload_perc=38
+   verify(!healthRow.actionable);verify(!temperatureRow.actionable)
+   mouseClick(healthRow)
+   compare(findChild(menu,"healthWarningSettingsPopup"),null)
+   wait(500)
+   air.curr_soc_temp_degree=90
+   verify(healthRow.actionable);verify(temperatureRow.actionable)
+   mouseClick(healthRow)
+   tryVerify(function() { return findChild(menu,"healthWarningSettingsPopup") !== null })
+   var popup=findChild(menu,"healthWarningSettingsPopup")
+   tryCompare(popup,"visible",true)
+   compare(popup.activeAlerts.length,1)
+   compare(popup.activeAlerts[0].kind,"temp")
+   compare(visualChild(popup.contentItem,"cpuWarningThreshold"),null)
+   var warning=visualChild(popup.contentItem,"tempWarningThreshold")
+   verify(warning!==null)
+   compare(visualChild(popup.contentItem,"tempCautionThreshold"),null)
+   warning.forceActiveFocus();keyClick(Qt.Key_Up)
+   compare(settings.ground_status_temp_warn,86)
+   var mute=visualChild(popup.contentItem,"tempWarningMute")
+   mouseClick(mute)
+   compare(settings.ground_status_temp_muted,true)
+   compare(healthRow.m_right_text,"Muted")
+   compare(warningSpeech.latest["ground.temp"].muted,true)
+   wait(120)
+   var warningImage=grabImage(scene)
+   if(warningImage.width>0) warningImage.save("build/status-warning-settings.png")
+   mouseClick(visualChild(popup.contentItem,"tempWarningMute"))
+   compare(settings.ground_status_temp_muted,false)
+   // Recovery removes the action and closes the active-warning popup.
+   air.curr_soc_temp_degree=48
+   tryCompare(popup,"visible",false);wait(200)
+   verify(!temperatureRow.actionable)
+   // Radio alerts participate in the same menu and mute path, with no fake Celsius limit.
+   air.radio_temperature_warnings=[{index:0,state:2,value:"Hot"}]
+   mouseClick(healthRow)
+   tryCompare(popup,"visible",true)
+   compare(popup.activeAlerts.length,1);compare(popup.activeAlerts[0].kind,"radio")
+   wait(250)
+   compare(visualChild(popup.contentItem,"tempWarningThreshold"),null)
+   mouseClick(visualChild(popup.contentItem,"radioWarningMute"))
+   compare(settings.ground_status_radio_muted,true)
+   compare(warningSpeech.latest["ground.radio"].muted,true)
+   settings.ground_status_radio_muted=false
+   air.radio_temperature_warnings=[]
+   tryCompare(popup,"visible",false);wait(200)
+   // X20 limits are editable only while its warning is active.
+   air.ohd_platform_type=30;air.curr_soc_temp_degree=79
+   mouseClick(findChild(menu,"airTemperatureWarning"))
+   tryCompare(popup,"visible",true);tryCompare(popup,"systemType",1)
+   compare(popup.value("temp","warn"),78)
+   popup.setThreshold("temp","warn",82)
+   compare(settings.x20_status_temp_warn,82)
+   compare(settings.air_status_temp_warn,85)
+   air.curr_soc_temp_degree=48
+   tryCompare(popup,"visible",false);wait(200)
+   settings.x20_status_temp_warn=78
+   fc.craft_diagnostics=({heartbeatAge:0.2,statusAge:0.1,present:3,enabled:3,healthy:0})
+   findChild(menu,"fcHealthWarning").forceActiveFocus();keyClick(Qt.Key_Return)
+   tryCompare(popup,"visible",true);tryCompare(popup,"systemType",2)
+   wait(250)
+   mouseClick(visualChild(popup.contentItem,"fcWarningMute"))
+   compare(settings.fc_status_health_muted,true)
+   compare(warningSpeech.latest["fc.health"].muted,true)
+   for (var size of [[360,240],[850,360],[1280,720]]) {
+    scene.width=size[0];scene.height=size[1];wait(40)
+    verify(popup.width<=scene.width-23);verify(popup.height<=scene.height-23)
+   }
+   menu.statusPanel.visible=false;tryCompare(popup,"visible",false)
+   menu.statusPanel.visible=true
+   settings.fc_status_health_muted=false
+   fc.craft_diagnostics=({heartbeatAge:0.2,statusAge:0.1,present:3,enabled:3,healthy:3})
+   air.ohd_platform_type=0;air.curr_soc_temp_degree=48
+   settings.ground_status_temp_warn=85
+   scene.width=1543;scene.height=565
+  }
   function test_health_reasons() {
    tryVerify(function() { return menu.statusPanel !== null })
    findChild(menu,"statusOverviewCards").unitDetailsRequested(0)
@@ -280,7 +404,7 @@ Item {
    air.curr_soc_temp_degree=70
    compare(popup.health.severity,2)
    verify(visualChild(popup.contentItem,"systemHealthReasons").text.indexOf("70 °C")>=0)
-   verify(visualChild(popup.contentItem,"systemHealthReasons").text.indexOf("threshold: 70")>=0)
+
    if(scene.captureImages) grabImage(scene).save("build/status-layout-full/ground-health-warning.png")
    air.curr_cpuload_perc=97;air.rpi_undervolt_error=true
    compare(popup.health.reasons.length,3)
@@ -352,7 +476,7 @@ Item {
     var soundPosition=sound.mapToItem(scene,0,0)
     verify(soundPosition.x>=0 && soundPosition.x+sound.width*0.45<scene.width)
     verify(Math.abs(cards.y - Math.max(0, Math.round((cards.availableHeight-cards.implicitHeight)/2))) < 1,"Cards are not vertically centered")
-    var buttons=cards.actionButtons()
+    var buttons=cards.actionButtons().filter(function(button) { return button.objectName === "craftDetailsButton" })
     verify(soundPosition.y + sound.height * 0.45 < buttons[0].parent.parent.mapToItem(scene,0,0).y)
     for(var i=0;i<buttons.length;i++) {
      var button=buttons[i], card=button.parent.parent

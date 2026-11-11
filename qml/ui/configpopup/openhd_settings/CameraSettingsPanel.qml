@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 
 import ".."
+import "../../elements"
 import "CameraSettingsLayout.js" as CameraLayout
 
 FocusScope {
@@ -435,6 +436,11 @@ FocusScope {
                             spacing: 3
 
 
+                            CameraImageReset {
+                                width: parent.width
+                                visible: root.activeCategory === "IMAGE" && available
+                                settingsModel: root.settingsModel
+                            }
                             Repeater {
                                 id: settingRepeater
                                 model: root.settingsModel

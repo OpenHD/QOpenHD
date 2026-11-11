@@ -17,7 +17,7 @@ import "../elements"
 //
 Item {
     id: sidebar_stack_button
-    height: secondaryUiHeight / 9 //number of items
+    height: 390 / 9 // Scale the full sidebar together, including category icons.
     width: height
 
     property string override_text: "OVERRIDE ME"
@@ -48,7 +48,7 @@ Item {
     Text {
         anchors.fill: parent
         text: override_text
-        font.pixelSize: secondaryUiHeight / 18
+        font.pixelSize: height / 2
         opacity: 1.0
         font.family: "Font Awesome 5 Free"
         color: (mouseArea.containsMouse || m_stack_index==override_index) ? "#ffffff" : "#e0edf8"

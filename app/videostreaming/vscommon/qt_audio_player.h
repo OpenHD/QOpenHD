@@ -39,6 +39,7 @@ public:
     void setSelectedOutputDevice(const QString &id);
     void setPlaybackVolume(int volume);
     // Mix local PCM notifications with the incoming stream on the same device.
+    void cancelNotification() { if (m_mixer) m_mixer->setNotification({}); }
     int playPcm(const QByteArray& pcm, int sampleRate = 22050, int channels = 1);
 signals:
     void outputDevicesChanged();

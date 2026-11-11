@@ -40,8 +40,7 @@ Rectangle {
     property int lastAlarmSeverity: -1
     property bool pendingAlarm: false
     readonly property int repeatMs: severity >= 3 ? overheatRepeatMs : hotRepeatMs
-    readonly property bool audioUnavailable: audio.status === Loader.Error
-                                            || (audio.item !== null && audio.item.failed)
+    readonly property bool audioUnavailable: false
     signal alarmRequested()
 
     visible: active
@@ -66,15 +65,9 @@ Rectangle {
                 && severity <= lastAlarmSeverity) return
         lastAlarmMs = clockMs
         lastAlarmSeverity = severity
-        pendingAlarm = true
+        pendingAlarm = false
         alarmRequested()
-        playPendingAlarm()
-    }
-    function playPendingAlarm() {
-        if (pendingAlarm && active && soundEnabled && !silenced && audio.item) {
-            pendingAlarm = false
-            audio.item.playAlarm()
-        }
+
     }
     onSeverityChanged: {
         if (severity > mutedSeverity && silenced) muteUntilMs = 0
@@ -98,14 +91,6 @@ Rectangle {
         repeat: true
         onTriggered: root.soundAlarm()
     }
-    Loader {
-        id: audio
-        active: root.active && root.soundEnabled && !root.silenced
-        source: root.qtMajorVersion >= 6 ? "RadioTemperatureAlarmSoundQt6.qml"
-                                        : "RadioTemperatureAlarmSound.qml"
-        onLoaded: root.playPendingAlarm()
-    }
-
     GridLayout {
         id: content
         anchors.fill: parent
@@ -162,7 +147,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 visible: !root.soundEnabled || root.audioUnavailable
-                text: root.soundEnabled ? qsTr("Warning sound unavailable") : qsTr("Warning sound disabled")
+                text: root.soundEnabled ? qsTr("Voice warning unavailable") : qsTr("Voice warning disabled")
                 color: "white"
                 font.pixelSize: 12
                 wrapMode: Text.WordWrap

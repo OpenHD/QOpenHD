@@ -711,10 +711,13 @@ int main(int argc, char *argv[]) {
     auto& announcements = AudioAnnouncements::instance();
     engine.rootContext()->setContextProperty("_audioAnnouncements", &announcements);
     QObject::connect(&HUDLogMessagesModel::instance(), &HUDLogMessagesModel::signalAddLogMessage,
-                     &announcements, &AudioAnnouncements::message);
+                     &announcements, &AudioAnnouncements::openhdMessage);
     for (auto* log : {&LogMessagesModel::instanceGround(), &LogMessagesModel::instanceOHDAir(), &LogMessagesModel::instanceFC()})
         QObject::connect(log, &LogMessagesModel::signalAddLogMessage, &announcements,
-                         [&announcements](QString, QString text, quint8 severity) { announcements.message(severity, text); });
+                         [&announcements, log](QString, QString text, quint8 severity) {
+                             if (log == &LogMessagesModel::instanceFC()) announcements.message(severity, text);
+                             else announcements.openhdMessage(severity, text);
+                         });
     announcements.start(QOpenHD::instance().is_windows() || QOpenHD::instance().is_android());
 // Platform - dependend video end  -----------------------------------------------------------------
 

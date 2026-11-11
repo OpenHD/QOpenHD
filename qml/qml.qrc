@@ -16,11 +16,10 @@
         <file alias="audio/startup.pcm">resources/audio/albatross_startup.pcm</file>
         <file>main.qml</file>
         <file>RadioTemperatureWarning.qml</file>
-        <file>RadioTemperatureAlarmSound.qml</file>
-        <file>RadioTemperatureAlarmSoundQt6.qml</file>
-        <file>resources/radio-temperature-alarm.wav</file>
+        <file>HealthWarningAnnouncements.qml</file>
         <file>video/ColorPreviewMath.js</file>
         <file>ui/sidebar/ColorPreviewControls.qml</file>
+        <file>ui/elements/CameraImageReset.qml</file>
         <file>HudContent.qml</file>
         <file>BootSplash.qml</file>
         <file>StartupIntro.qml</file>
@@ -127,6 +126,7 @@
         <file>ui/configpopup/MenuTypography.js</file>
         <file>ui/configpopup/AdvancedDialogButton.qml</file>
         <file>ui/configpopup/qopenhd_settings/AppAudioRulesView.qml</file>
+        <file>ui/configpopup/qopenhd_settings/WarningAudioSettings.qml</file>
         <file>ui/configpopup/qopenhd_settings/AudioRuleCard.qml</file>
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
         <file>ui/configpopup/features/UartSettingsPanel.qml</file>
@@ -221,6 +221,7 @@
         <file>ui/configpopup/status/UnitDetailsDialog.qml</file>
         <file>ui/configpopup/status/GroundStationDetails.qml</file>
         <file>ui/configpopup/status/SystemHealth.js</file>
+        <file>ui/configpopup/status/HealthWarningSettings.qml</file>
         <file>ui/configpopup/status/StatusCardBodyFC.qml</file>
         <file>ui/configpopup/status/CraftDetailsPanel.qml</file>
         <file>ui/configpopup/status/FcDetailsSection.qml</file>

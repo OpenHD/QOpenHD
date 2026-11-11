@@ -13,12 +13,18 @@ Rectangle {
     // A modal popup lives in the window overlay, outside this page's visual
     // hierarchy. Close it when navigating away so it cannot block the menu.
     onVisibleChanged: if (!visible) {
+        warningSettings.close()
         groundDetails.close()
         unitDetails.close()
         craftDetails.close()
         powerDialog.close()
         dialoqueNotAlive.close()
     }
+
+    function openWarningSettings(systemType, kind) {
+        warningSettings.open("openSettings", [systemType, kind || ""])
+    }
+    DeferredStatusDialog { id: warningSettings; source: "HealthWarningSettings.qml" }
 
     function voltage_as_string(voltage_mv) { return voltage_mv === 0 ? "N/A" : voltage_mv + " mV" }
     function current_as_string(current_ma) { return current_ma === 0 ? "N/A" : current_ma + " mA" }

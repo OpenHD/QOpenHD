@@ -32,7 +32,9 @@ public:
     QVariantList rules() const { return m_rules; }
     void telemetry(int source, double value);
     void message(int severity, QString text);
+    void openhdMessage(int severity, QString text);
     void sayLegacy(const QString& text);
+    Q_INVOKABLE void updateWarning(QString key, QString kind, QString message, int severity, bool muted);
     Q_INVOKABLE void addRule(int source);
     Q_INVOKABLE void saveRule(int index, QVariantMap rule);
     Q_INVOKABLE void removeRule(int index);
@@ -40,12 +42,18 @@ public:
     Q_INVOKABLE void testVoice();
     Q_INVOKABLE void playStartupSound();
 signals:
+    void warningAnnouncementRequested(QString key, QString phrase);
     void rulesChanged();
     void statusChanged();
     void availabilityChanged();
 private:
     struct Sample { double value; qint64 updated; };
-    struct Job { QString phrase; QByteArray pcm; qint64 queued; int source = -1; int ruleIndex = -1; int sampleRate = 22050; int channels = 1; };
+    struct Job { QString phrase; QByteArray pcm; qint64 queued; int source = -1; int ruleIndex = -1; int sampleRate = 22050; int channels = 1; QString warningKey = {}; int warningMode = 0; };
+    struct Warning { QString kind, message; int severity = 0, lastMode = -1; bool muted = false; qint64 updated = 0, lastSpoken = -1000000000; };
+    QHash<QString, Warning> m_warnings;
+    void queueWarnings();
+    void cancelWarningPlayback();
+    void handleMessage(int severity, QString text, bool openhd);
     bool currentTelemetryValid(bool updatePhrase);
     void enqueue(Job job, bool priority = false);
     void playNext();
@@ -69,7 +77,7 @@ private:
     Job m_current;
     QString m_engine;
     QString m_status;
-    qint64 m_lastChime = -100000;
+    QHash<QString, qint64> m_lastMessageAlert;
     bool m_started = false;
     bool m_busy = false;
     bool m_waitingForStartup = false;

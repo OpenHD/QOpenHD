@@ -32,14 +32,12 @@ Column {
     readonly property bool hasTemperature: m_is_alive && temperature > 0
     readonly property bool hasCpuLoad: m_is_alive && cpuLoad >= 0 && cpuLoad <= 100
                                        && (m_model.onboard_uptime_ms >= 0 || hasTemperature)
-    readonly property bool x20: !m_is_ground && m_model.ohd_platform_type === 30
-    readonly property int temperatureWarn: x20 ? 78 : (m_is_ground ? settings.ground_status_temp_warn : settings.air_status_temp_warn)
-    readonly property int temperatureCaution: x20 ? 74 : (m_is_ground ? settings.ground_status_temp_caution : settings.air_status_temp_caution)
-    readonly property int cpuWarn: x20 ? 95 : (m_is_ground ? settings.ground_status_cpu_warn : settings.air_status_cpu_warn)
-    readonly property int cpuCaution: x20 ? 85 : (m_is_ground ? settings.ground_status_cpu_caution : settings.air_status_cpu_caution)
     readonly property var health: SystemHealth.evaluate(m_model, m_is_ground, settings)
     readonly property bool healthWarning: health.severity === 2
     readonly property bool healthCaution: health.severity === 1
+
+    function warningActions() { return [healthRow, temperatureRow] }
+    function openWarnings(kind) { statusPanel.openWarningSettings(m_is_ground ? 0 : 1, kind || "") }
 
     function get_gnd_active_cards(){
         var ret=0;
@@ -84,8 +82,8 @@ Column {
     }
 
     readonly property bool healthKnown: health.known
-    readonly property string healthText: !healthKnown ? qsTr("Not reported") : (healthWarning ? qsTr("Warning") : (healthCaution ? qsTr("Caution") : qsTr("Healthy")))
-    readonly property color healthColor: !healthKnown ? "#94a9b9" : (healthWarning ? settings_form.errorColor : (healthCaution ? settings.color_caution : "#3bda69"))
+    readonly property string healthText: !healthKnown ? qsTr("Not reported") : (healthWarning ? qsTr("Warning") : (healthCaution ? qsTr("Caution") : (health.mutedCount > 0 ? qsTr("Muted") : qsTr("Healthy"))))
+    readonly property color healthColor: !healthKnown || (health.severity === 0 && health.mutedCount > 0) ? "#94a9b9" : (healthWarning ? settings_form.errorColor : (healthCaution ? settings.color_caution : "#3bda69"))
     function linkText() {
         if (!m_is_alive) return qsTr("Not reported")
         var names = [], usage = m_model.link_usage
@@ -104,7 +102,9 @@ Column {
     StatusCardRow { m_left_text: qsTr("Platform"); m_icon: "\uf0e8"; m_right_text: m_model.ohd_platform_type_as_string }
     StatusCardRow { m_left_text: qsTr("Version"); m_icon: "\uf013"; m_right_text: m_version }
     StatusCardRow { m_left_text: qsTr("Link"); m_icon: "\uf0c1"; m_value_icon: m_right_text.indexOf("WiFiBroadcast") >= 0 ? "\uf1eb" : ""; m_right_text: body.linkText() }
-    StatusCardRow { m_left_text: qsTr("System health"); m_icon: "\uf2db"; m_right_text: body.healthText; m_status_dot: body.healthKnown; m_right_text_color: body.healthColor }
+    StatusCardRow { id: healthRow; objectName: body.m_is_ground ? "groundHealthWarning" : "airHealthWarning"
+        actionable: body.health.alerts.length > 0; onActivated: body.openWarnings("")
+        m_left_text: qsTr("System health"); m_icon: "\uf2db"; m_right_text: body.healthText; m_status_dot: body.healthKnown; m_right_text_color: body.healthColor }
     StatusCardRow {
         m_left_text: qsTr("Battery"); m_icon: "\uf2c2"
         m_right_text: body.batteryVoltage > 0
@@ -113,5 +113,8 @@ Column {
                          : qsTr("%1 V").arg(body.batteryVoltage.toFixed(1)))
                       : qsTr("Not reported")
     }
-    StatusCardRow { m_left_text: qsTr("Temperature"); m_icon: "\uf2c9"; m_right_text: body.hasTemperature ? qsTr("%1 \u00b0C").arg(body.temperature) : qsTr("Not reported") }
+    StatusCardRow { id: temperatureRow; objectName: body.m_is_ground ? "groundTemperatureWarning" : "airTemperatureWarning"
+        actionable: body.health.alerts.some(function(alert) { return alert.kind === "temp" }); onActivated: body.openWarnings("temp")
+        m_right_text_color: body.hasTemperature && !SystemHealth.muted(body.m_is_ground, settings, "temp") && body.temperature >= SystemHealth.threshold(body.m_model, body.m_is_ground, settings, "temp", "warn") ? settings_form.errorColor : "#dce6ef"
+        m_left_text: qsTr("Temperature"); m_icon: "\uf2c9"; m_right_text: body.hasTemperature ? qsTr("%1 \u00b0C").arg(body.temperature) : qsTr("Not reported") }
 }

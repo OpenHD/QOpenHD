@@ -6,7 +6,7 @@ import "../openhd_settings"
 import "../MenuTypography.js" as Typography
 import "RcRanges.js" as Ranges
 
-Rectangle {
+Item {
     id: root
     property var controller
     readonly property bool compact: width < 900
@@ -18,10 +18,7 @@ Rectangle {
     ]
     property var fcValues: []
     readonly property var fc: typeof _rcchannelsmodelfc !== "undefined" ? _rcchannelsmodelfc : null
-    height: overview.implicitHeight + 28
-    radius: 10
-    color: settings_form.panelBackground
-    border.color: settings_form.lineColor
+    height: overview.implicitHeight
     onVisibleChanged: if (!visible) editor.close()
 
     function supported(action) {
@@ -71,20 +68,7 @@ Rectangle {
 
     Column {
         id: overview
-        x: 14; y: 14; width: parent.width - 28; spacing: 0
-        Label {
-            width: parent.width; bottomPadding: 16
-            text: qsTr("Channels Overview")
-            color: settings_form.primaryText; font.family: Typography.family; font.pixelSize: Typography.sectionTitle; font.bold: true
-        }
-        RowLayout {
-            width: parent.width; height: implicitHeight + 10; spacing: 12
-            Label { text: qsTr("CH"); Layout.preferredWidth: 62; color: settings_form.secondaryText }
-            Label { text: qsTr("Function"); Layout.fillWidth: true; Layout.minimumWidth: 0; color: settings_form.secondaryText }
-            Label { visible: !root.compact; text: qsTr("Live PWM"); Layout.preferredWidth: 200; Layout.minimumWidth: 200; Layout.maximumWidth: 200; color: settings_form.secondaryText }
-            Label { visible: !root.compact; text: qsTr("Range (µs)"); Layout.preferredWidth: 110; color: settings_form.secondaryText }
-            Label { visible: !root.compact; text: qsTr("Status"); Layout.preferredWidth: 72; color: settings_form.secondaryText }
-        }
+        width: parent.width; spacing: 6
         Repeater {
             model: 18
             ItemDelegate {
@@ -99,7 +83,7 @@ Rectangle {
                 onClicked: root.openChannel(channel)
                 background: Rectangle {
                     radius: 8
-                    color: row.hovered || row.activeFocus ? settings_form.panelBackgroundRaised : "transparent"
+                    color: row.hovered || row.activeFocus ? settings_form.panelBackgroundRaised : settings_form.panelBackground
                     border.color: row.activeFocus || (editor.opened && editor.channel === row.channel) ? settings_form.accentColor : settings_form.lineColor
                 }
                 contentItem: ColumnLayout {

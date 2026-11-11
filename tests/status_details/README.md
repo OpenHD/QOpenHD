@@ -20,3 +20,9 @@ Wi-Fi chipset coverage can also be run alone with
 multiple CARD_TYPE_n parameters (including a second Air adapter), and clears
 reported chipset names when the unit disconnects. The type labels reuse the
 native WiFiCard decoder rather than maintaining a separate QML enum table.
+
+`FullStatusLayout::test_warning_settings` exercises the real deferred warning popup:
+clicking only active health/temperature warnings, editing the triggering threshold,
+per-warning mute and unmute, radio alerts, Air/Ground isolation, editable X20 limits,
+keyboard activation, FC mute, and closing on recovery or when leaving Status. The production
+settings use Qt settings persistence; fixture preferences stay isolated from user settings.

@@ -127,6 +127,91 @@ private slots:
         QTRY_VERIFY_WITH_TIMEOUT(controller.status().startsWith("No Spanish voice is installed"),20000);
         controller.shutdown();
     }
+    void warningsAreOffByDefault() {
+        QSettings settings;
+        settings.setValue("enable_speech", true);
+        settings.setValue("audio_warning_sound", true);
+        AudioAnnouncements controller;
+        controller.start(true);
+        QSignalSpy requested(&controller, &AudioAnnouncements::warningAnnouncementRequested);
+        for (const auto& kind : {"temp", "cpu", "undervolt", "radio", "fc"}) {
+            settings.remove(QString("audio_warning_tts_%1_enabled").arg(kind));
+            controller.updateWarning(QString("default.%1").arg(kind), kind, "Test warning", 2, false);
+        }
+        settings.remove("audio_warning_tts_message_enabled");
+        settings.remove("audio_warning_tts_openhd_message_enabled");
+        controller.message(4, "Flight controller warning");
+        controller.openhdMessage(4, "OpenHD warning");
+        QCOMPARE(requested.count(), 0);
+    }
+    void configurableWarningsRespectMuteAndCooldown() {
+        QSettings settings;
+        settings.setValue("enable_speech", true);
+        settings.setValue("audio_warning_sound", true);
+        settings.setValue("audio_warning_tts_temp_enabled", true);
+        settings.setValue("audio_warning_tts_temp_mode", 0);
+        settings.setValue("audio_warning_tts_temp_phrase", "Custom: {message}");
+        AudioAnnouncements controller;
+        controller.start(true); // Keep output gated; this test must not speak.
+        QSignalSpy requested(&controller, &AudioAnnouncements::warningAnnouncementRequested);
+        controller.updateWarning("ground.temp", "temp", "Ground temperature 80", 2, true);
+        QCOMPARE(requested.count(), 0);
+        controller.updateWarning("ground.temp", "temp", "Ground temperature 80", 2, false);
+        QCOMPARE(requested.count(), 1);
+        QCOMPARE(requested.at(0).at(1).toString(), QString("Custom: Ground temperature 80"));
+        controller.updateWarning("ground.temp", "temp", "Ground temperature 81", 2, false);
+        QCOMPARE(requested.count(), 1);
+        controller.updateWarning("ground.temp", "temp", "", 0, false);
+        controller.updateWarning("ground.temp", "temp", "Ground temperature 80", 2, false);
+        QCOMPARE(requested.count(), 1); // Recovery jitter must not spam speech.
+        controller.shutdown();
+    }
+    void warningToneChoicesWorkWithoutSpeech() {
+        QSettings settings;
+        settings.setValue("enable_speech", false);
+        settings.setValue("audio_warning_sound", true);
+        settings.setValue("audio_warning_tts_radio_enabled", true);
+        for (int mode = 1; mode <= 3; ++mode) {
+            settings.setValue("audio_warning_tts_radio_mode", mode);
+            AudioAnnouncements controller;
+            controller.start(true);
+            QSignalSpy requested(&controller, &AudioAnnouncements::warningAnnouncementRequested);
+            controller.updateWarning("air.radio", "radio", "Air radio hot", 2, false);
+            QCOMPARE(requested.count(), 1);
+            QCOMPARE(requested.at(0).at(1).toString(), QString("tone:%1").arg(mode));
+            controller.updateWarning("air.radio", "radio", "Air radio hot", 2, true);
+            controller.updateWarning("air.cpu", "cpu", "Air CPU high", 2, true);
+            QCOMPARE(requested.count(), 1);
+            controller.shutdown();
+        }
+        settings.setValue("enable_speech", true);
+        settings.setValue("audio_warning_tts_radio_mode", 0);
+    }
+    void warningMessageOriginsStaySeparate() {
+        QSettings settings;
+        settings.setValue("enable_speech", false);
+        settings.setValue("audio_warning_sound", true);
+        settings.setValue("audio_warning_tts_openhd_message_enabled", true);
+        settings.setValue("audio_warning_tts_message_enabled", true);
+        settings.setValue("audio_warning_tts_openhd_message_mode", 2);
+        settings.setValue("audio_warning_tts_message_mode", 3);
+        AudioAnnouncements controller;
+        controller.start(true);
+        QSignalSpy requested(&controller, &AudioAnnouncements::warningAnnouncementRequested);
+        controller.openhdMessage(4, "Temperature warning");
+        controller.message(4, "Temperature warning");
+        QCOMPARE(requested.count(), 2);
+        QCOMPARE(requested.at(0).at(0).toString(), QString("openhd.message"));
+        QCOMPARE(requested.at(0).at(1).toString(), QString("tone:2"));
+        QCOMPARE(requested.at(1).at(0).toString(), QString("fc.message"));
+        QCOMPARE(requested.at(1).at(1).toString(), QString("tone:3"));
+        settings.setValue("fc_status_health_muted", true);
+        controller.message(4, "Another flight controller warning");
+        QCOMPARE(requested.count(), 2);
+        settings.setValue("fc_status_health_muted", false);
+        controller.shutdown();
+        settings.setValue("enable_speech", true);
+    }
     void cleanupTestCase() { QtAudioPlayer::instance().stop_playing(); }
 };
 QTEST_GUILESS_MAIN(NativeAudioTest)

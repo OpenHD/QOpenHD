@@ -4,7 +4,7 @@ import QtQuick.Controls 2.12
 Rectangle{
     id: choiceSelector
     width: 200
-    height: secondaryUiHeight - (secondaryUiHeight/8)
+    height: secondaryUiHeight - 390 / 8
     //color: "green"
     color: "transparent"
     visible: false

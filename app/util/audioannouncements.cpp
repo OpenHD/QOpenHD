@@ -30,19 +30,17 @@ QVariantMap defaultRule(int source)
             {"phrase", QString::fromLatin1(phrases[source])}};
 }
 
-QByteArray warningChime(bool error = false)
+QByteArray warningTone(int mode)
 {
     QByteArray pcm;
-    const int count = 2;
-    for (int note = 0; note < count; ++note) {
-        const double hz = error ? 440.0 : 660.0;
+    const int notes = qBound(1, mode, 3);
+    for (int note = 0; note < notes; ++note) {
         const int samples = 2205;
+        const double frequency = mode == 3 ? 880.0 : 660.0;
         for (int i = 0; i < samples; ++i) {
             const double envelope = qMin(1.0, qMin(i / 220.0, (samples - i) / 440.0));
-            const qint16 sample = static_cast<qint16>(9000 * envelope * std::sin(6.28318530718 * hz * i / 22050));
-            char bytes[2];
-            qToLittleEndian(sample, reinterpret_cast<uchar*>(bytes));
-            pcm.append(bytes, 2);
+            const qint16 sample = static_cast<qint16>(7000 * envelope * std::sin(6.28318530718 * frequency * i / 22050));
+            char bytes[2]; qToLittleEndian(sample, reinterpret_cast<uchar*>(bytes)); pcm.append(bytes, 2);
         }
         pcm.append(2204, '\0');
     }
@@ -286,33 +284,122 @@ void AudioAnnouncements::telemetry(int source, double value)
     }, Qt::QueuedConnection);
 }
 
-void AudioAnnouncements::message(int severity, QString text)
+void AudioAnnouncements::message(int severity, QString text) { handleMessage(severity, text, false); }
+void AudioAnnouncements::openhdMessage(int severity, QString text) { handleMessage(severity, text, true); }
+void AudioAnnouncements::handleMessage(int severity, QString text, bool openhd)
 {
     if (!m_started || !supported() || severity < 0 || severity > 6) return;
     text = text.trimmed();
     if (text.startsWith('[') && text.endsWith(']')) text = text.mid(1, text.size() - 2);
     if (text.isEmpty()) return;
     const auto now = m_clock.elapsed();
-    const QString key = QString::number(severity) + ":" + text;
+    const QString key = (openhd ? "openhd:" : "fc:") + QString::number(severity) + ":" + text;
     if (m_messages.contains(key) && now - m_messages.value(key) < 10000) return;
     if (m_messages.size() >= 128) m_messages.clear();
     m_messages[key] = now;
     QSettings settings;
-    if (severity <= 4 && settings.value("audio_warning_sound", true).toBool() && now - m_lastChime >= 5000) {
-        m_lastChime = now;
-        enqueue({{}, warningChime(severity <= 3), now}, true);
-    }
-    if (!settings.value("enable_speech", true).toBool()) return;
-    for (int i = 0; i < m_rules.size(); ++i) {
+    const bool speech = settings.value("enable_speech", true).toBool();
+    if (severity <= 4 && !settings.value("audio_warning_sound", true).toBool()) return;
+    const QString preference = openhd ? "audio_warning_tts_openhd_message" : "audio_warning_tts_message";
+    if (severity <= 4 && (!settings.value(preference + "_enabled", false).toBool() ||
+            (!openhd && settings.value("fc_status_health_muted", false).toBool()))) return;
+    const int warningMode = qBound(0, settings.value(preference + "_mode", 0).toInt(), 3);
+    bool matched = false;
+    for (int i = 0; !openhd && (severity > 4 || warningMode == 0) && i < m_rules.size(); ++i) {
         const auto rule = m_rules[i].toMap();
         auto& state = m_states[i];
-        if (!audio_message_rule_due(rule, state, severity, text, now)) continue;
-        enqueue({audio_rule_phrase(rule, 0, {}, text, speechLanguage()), {}, now}, severity <= 3);
+        // A matching rule owns the message even while its cooldown is active.
+        const int source = severity <= 3 ? 1 : severity == 4 ? 0 : 2;
+        if (rule.value("enabled").toBool() && rule.value("source").toInt() == source &&
+                text.contains(rule.value("filter").toString(), Qt::CaseInsensitive)) matched = true;
+        if (!speech || !audio_message_rule_due(rule, state, severity, text, now)) continue;
+        Job job{audio_rule_phrase(rule, 0, {}, text, speechLanguage()), {}, now};
+        if (severity <= 4) job.warningKey = "fc.message";
+        enqueue(job, severity <= 3);
+    }
+    if (!matched && severity <= 4 && settings.value("audio_warning_sound", true).toBool() && now - m_lastMessageAlert.value(preference, -1000000000) >= qBound(5, settings.value("audio_warning_tts_interval", 30).toInt(), 3600) * 1000LL) {
+        m_lastMessageAlert[preference] = now;
+        auto phrase = settings.value(preference + "_phrase", "{message}").toString().left(256);
+        phrase.replace("{message}", text.left(200));
+        const int mode = warningMode;
+        if (mode != 0 || speech) {
+            emit warningAnnouncementRequested(openhd ? "openhd.message" : "fc.message", mode == 0 ? phrase : QStringLiteral("tone:%1").arg(mode));
+            Job job{mode == 0 ? phrase : QString(), mode == 0 ? QByteArray() : warningTone(mode), now};
+            job.warningKey = openhd ? "openhd.message" : "fc.message";
+            job.warningMode = mode;
+            enqueue(job, true);
+        }
+    }
+}
+
+void AudioAnnouncements::updateWarning(QString key, QString kind, QString message, int severity, bool muted)
+{
+    static const QStringList kinds{"temp", "cpu", "undervolt", "radio", "fc"};
+    if (!kinds.contains(kind) || key.size() > 40 || (!m_warnings.contains(key) && m_warnings.size() >= 16)) return;
+    auto& warning = m_warnings[key];
+    if (warning.severity > 0 && severity > warning.severity) warning.lastSpoken = -1000000000;
+    warning.kind = kind;
+    warning.message = message.left(256);
+    warning.severity = severity;
+    warning.muted = muted;
+    warning.updated = m_clock.elapsed();
+    if (severity == 0 || muted) {
+        if (m_busy && m_current.warningKey == key) cancelWarningPlayback();
+        for (int i = m_queue.size() - 1; i >= 0; --i)
+            if (m_queue[i].warningKey == key) m_queue.removeAt(i);
+    }
+    queueWarnings();
+}
+
+void AudioAnnouncements::cancelWarningPlayback()
+{
+#ifdef ENABLE_SPEECH
+    if (m_nativeSpeaking) { m_nativeSpeaking = false; m_nativeSpeech->stop(); }
+#endif
+    const bool synthesizing = m_synth.state() != QProcess::NotRunning;
+    m_synth.kill();
+    m_synthesisTimeout.stop();
+    m_playback.stop();
+#ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+    if (useGstreamer()) GstRtpAudioPlayer::instance().cancel_notification();
+#endif
+#ifdef QOPENHD_ENABLE_QT_AUDIO
+    if (!useGstreamer()) QtAudioPlayer::instance().cancelNotification();
+#endif
+    if (!synthesizing) { m_busy = false; QTimer::singleShot(0, this, &AudioAnnouncements::playNext); }
+}
+
+void AudioAnnouncements::queueWarnings()
+{
+    QSettings settings;
+    if (!m_started || !supported() || !settings.value("audio_warning_sound", true).toBool()) return;
+    const auto now = m_clock.elapsed();
+    const auto interval = qBound(5, settings.value("audio_warning_tts_interval", 30).toInt(), 3600) * 1000LL;
+    for (auto it = m_warnings.begin(); it != m_warnings.end(); ++it) {
+        auto& warning = it.value();
+        const int mode = qBound(0, settings.value("audio_warning_tts_" + warning.kind + "_mode", 0).toInt(), 3);
+        if (mode != warning.lastMode) { warning.lastMode = mode; warning.lastSpoken = -1000000000; }
+        if (mode == 0 && !settings.value("enable_speech", true).toBool()) continue;
+        if (!warning.severity || warning.muted || now - warning.updated > 3000 || now - warning.lastSpoken < interval ||
+                !settings.value("audio_warning_tts_" + warning.kind + "_enabled", false).toBool()) continue;
+        bool queued = m_busy && m_current.warningKey == it.key();
+        for (const auto& job : m_queue) if (job.warningKey == it.key()) queued = true;
+        if (queued) continue;
+        auto phrase = settings.value("audio_warning_tts_" + warning.kind + "_phrase", "{message}").toString().left(256);
+        phrase.replace("{message}", warning.message);
+        warning.lastSpoken = now;
+        emit warningAnnouncementRequested(it.key(), mode == 0 ? phrase : QStringLiteral("tone:%1").arg(mode));
+        Job job{mode == 0 ? phrase : QString(), mode == 0 ? QByteArray() : warningTone(mode), now};
+        job.warningMode = mode;
+        job.warningKey = it.key();
+        enqueue(job);
     }
 }
 
 void AudioAnnouncements::tick()
 {
+    if (m_busy && !m_current.warningKey.isEmpty() && !currentTelemetryValid(false)) cancelWarningPlayback();
+    queueWarnings();
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     const auto error = useGstreamer() ? GstRtpAudioPlayer::instance().poll_error() : QString();
     if (!error.isEmpty()) { setStatus(error); m_queue.clear(); }
@@ -422,6 +509,29 @@ void AudioAnnouncements::playNext()
 
 bool AudioAnnouncements::currentTelemetryValid(bool updatePhrase)
 {
+    if (m_current.warningKey == "fc.message" || m_current.warningKey == "openhd.message") {
+        QSettings settings;
+        const bool openhd = m_current.warningKey == "openhd.message";
+        const auto preference = openhd ? "audio_warning_tts_openhd_message" : "audio_warning_tts_message";
+        const int mode = qBound(0, settings.value(QString(preference) + "_mode", 0).toInt(), 3);
+        return settings.value("audio_warning_sound", true).toBool() && settings.value(QString(preference) + "_enabled", false).toBool() &&
+            (openhd || !settings.value("fc_status_health_muted", false).toBool()) &&
+            mode == m_current.warningMode && (mode != 0 || settings.value("enable_speech", true).toBool());
+    }
+    if (!m_current.warningKey.isEmpty()) {
+        const auto found = m_warnings.constFind(m_current.warningKey);
+        QSettings settings;
+        if (found == m_warnings.constEnd() || !found->severity || found->muted || m_clock.elapsed() - found->updated > 3000 ||
+                !settings.value("audio_warning_sound", true).toBool() ||
+                !settings.value("audio_warning_tts_" + found->kind + "_enabled", false).toBool()) return false;
+        const int mode = qBound(0, settings.value("audio_warning_tts_" + found->kind + "_mode", 0).toInt(), 3);
+        if (mode != m_current.warningMode || (mode == 0 && !settings.value("enable_speech", true).toBool())) return false;
+        if (updatePhrase && mode == 0) {
+            m_current.phrase = settings.value("audio_warning_tts_" + found->kind + "_phrase", "{message}").toString().left(256);
+            m_current.phrase.replace("{message}", found->message);
+        }
+        return true;
+    }
     if (m_current.source < 3) return true;
     const auto sample = m_samples.constFind(m_current.source);
     if (sample == m_samples.constEnd() || m_clock.elapsed() - sample->updated > 5000 ||

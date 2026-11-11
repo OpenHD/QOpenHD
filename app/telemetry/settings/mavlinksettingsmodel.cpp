@@ -307,7 +307,7 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
 
 void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int value,bool log_result)
 {
-    if (m_simulation) { setSimulationValue(param_id, value); return; }
+    if (m_simulation) { emit backupParameterFinished(param_id, setSimulationValue(param_id, value)); return; }
     if (QOpenHD::instance().debugMenuPreview()) return;
     if(m_is_currently_busy){
         qDebug()<<"BUSY";

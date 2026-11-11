@@ -204,7 +204,9 @@ ApplicationWindow {
         id: settings
     }
     CameraAutoDetection { settingsObject: settings }
+    HealthWarningAnnouncements { radioSilenced: radioTemperatureWarningBanner.silenced }
     RadioTemperatureWarning {
+        id: radioTemperatureWarningBanner
         parent: Overlay.overlay
         anchors.top: parent.top
         anchors.topMargin: 12
@@ -213,7 +215,7 @@ ApplicationWindow {
         z: 20000
         airWarnings: _ohdSystemAir.is_alive ? _ohdSystemAir.radio_temperature_warnings : []
         groundWarnings: _ohdSystemGround.is_alive ? _ohdSystemGround.radio_temperature_warnings : []
-        soundEnabled: settings.wifi_temperature_alarm_sound
+        soundEnabled: settings.audio_warning_sound && settings.audio_warning_tts_radio_enabled && (settings.audio_warning_tts_radio_mode !== 0 || settings.enable_speech)
     }
     // Create the first frame before compiling and incubating the flight UI.
     readonly property bool bootSplashEnabled: _qopenhd.is_platform_rpi()

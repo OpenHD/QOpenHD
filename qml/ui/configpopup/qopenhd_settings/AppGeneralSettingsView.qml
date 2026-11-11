@@ -129,11 +129,7 @@ FocusScope {
      Text {objectName:"generalResetStatus";width:parent.width;visible:root.resetStatus.length>0;text:root.resetStatus;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.body;wrapMode:Text.WordWrap}
     }
    }
-   GeneralSettingsCard {
-    width:parent.width;height:implicitHeight;title:qsTr("Wi-Fi temperature alarm");icon:"\uf071";controlWidth:48
-    hint:qsTr("Play a repeating warning tone when an Air or Ground radio is hot or overheating. Independent of speech and video audio. The visual warning is always enabled.")
-    headerControls:WidgetToggle {objectName:"wifiTemperatureAlarmSound";anchors.fill:parent;checked:settings.wifi_temperature_alarm_sound;onToggled:settings.wifi_temperature_alarm_sound=checked}
-   }
+
   }
  }
 }

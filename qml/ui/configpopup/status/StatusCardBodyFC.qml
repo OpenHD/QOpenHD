@@ -9,6 +9,7 @@ Column {
     readonly property bool heartbeatFresh: m_is_alive && diagnostics.heartbeatAge >= 0 && diagnostics.heartbeatAge < 5
     readonly property bool healthKnown: heartbeatFresh && diagnostics.statusAge >= 0 && diagnostics.statusAge < 5 && diagnostics.present > 0
     readonly property bool healthWarning: healthKnown && ((diagnostics.enabled & diagnostics.present & ~diagnostics.healthy) !== 0)
+    function warningActions() { return [healthRow] }
     function firmwareText() {
         var identity = _fcMavlinkSystem.firmware_identity
         var version = Number(identity.ver || 0)
@@ -21,10 +22,13 @@ Column {
     StatusCardRow { m_left_text: qsTr("Type"); m_icon: "\uf0b1"; m_right_text: _fcMavlinkSystem.mav_type_str }
     StatusCardRow { m_left_text: qsTr("Flight mode"); m_icon: "\uf1d8"; m_right_text: body.heartbeatFresh && _fcMavlinkSystem.flight_mode !== "------" ? _fcMavlinkSystem.flight_mode : qsTr("Unknown") }
     StatusCardRow {
+        id: healthRow; objectName: "fcHealthWarning"
+        actionable: body.healthWarning
+        onActivated: statusPanel.openWarningSettings(2)
         m_left_text: qsTr("System health"); m_icon: "\uf2db"
-        m_right_text: !body.healthKnown ? qsTr("Not reported") : (body.healthWarning ? qsTr("Warning") : qsTr("Healthy"))
+        m_right_text: !body.healthKnown ? qsTr("Not reported") : (body.healthWarning ? (settings.fc_status_health_muted ? qsTr("Muted") : qsTr("Warning")) : qsTr("Healthy"))
         m_status_dot: body.healthKnown
-        m_right_text_color: !body.healthKnown ? "#94a9b9" : (body.healthWarning ? settings_form.errorColor : "#3bda69")
+        m_right_text_color: !body.healthKnown || (body.healthWarning && settings.fc_status_health_muted) ? "#94a9b9" : (body.healthWarning && !settings.fc_status_health_muted ? settings_form.errorColor : "#3bda69")
     }
     StatusCardRow {
         m_left_text: qsTr("Battery"); m_icon: "\uf2c2"

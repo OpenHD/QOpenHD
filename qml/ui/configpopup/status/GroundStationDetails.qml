@@ -109,10 +109,10 @@ Popup {
             Rectangle {
                 x: 22; y: 88; width: 1036; height: Math.max(0, dialog.healthOffset-12)
                 visible: dialog.healthOffset > 0
-                radius: 12; color: "#30232a"; border.color: dialog.health.severity === 2 ? "#ff4e5d" : "#e8b556"
+                radius: 12; color: dialog.health.severity > 0 ? "#30232a" : "#102c3d"; border.color: dialog.health.severity === 2 ? "#ff4e5d" : dialog.health.severity === 1 ? "#e8b556" : "#94a9b9"
                 Column {
                     id: healthMessages; x: 14; y: 12; width: parent.width-28; spacing: 6
-                    Text { text: dialog.health.severity === 2 ? qsTr("System health — Warning") : qsTr("System health — Caution"); color: "#f2e6e7"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; font.bold: true }
+                    Text { text: dialog.health.severity === 2 ? qsTr("System health: Warning") : dialog.health.severity === 1 ? qsTr("System health: Caution") : qsTr("System health: Muted"); color: "#f2e6e7"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.body; font.bold: true }
                     Text { objectName: "systemHealthReasons"; width: parent.width; text: dialog.health.reasons.join("\n"); wrapMode: Text.WordWrap; color: "#f2e6e7"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.helper }
                 }
             }

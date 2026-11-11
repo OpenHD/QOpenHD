@@ -22,6 +22,13 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
 
 
+    // Qt applies the app/DPI scale before these logical viewport dimensions.
+    // Keep the panel and its choices inside short and narrow phone windows.
+    readonly property real viewportWidth: parent ? parent.width : 800
+    readonly property real viewportHeight: parent ? parent.height : 480
+    readonly property real sidebarScale: Math.max(0.01, Math.min(1, (viewportWidth - 12) / (320 + 390 / 9 + 200), (viewportHeight - 16) / 390))
+    scale: sidebarScale
+    transformOrigin: Item.Left
     property int secondaryUiWidth: 320
     property int secondaryUiHeight: 390
     property string secondaryUiColor: "#0a141e"
@@ -181,7 +188,7 @@ Item {
         if(!flickable){
             return;
         }
-        const item_pos = item.mapToItem(flickable, 0, 0);
+        const item_pos = item.mapToItem(flickable.contentItem, 0, 0);
         const item_top = item_pos.y;
         const item_bottom = item_top + item.height;
         const view_top = flickable.contentY;
@@ -343,8 +350,11 @@ Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         id: stack_manager
+        objectName: "sidebarRail"
         visible: false
-        width: stack_manager_content.implicitWidth
+        width: 390 / 9
+        padding: 0
+        contentWidth: width
         height: secondaryUiHeight
         clip: true
         focus: false
@@ -363,8 +373,7 @@ Item {
         }
         ScrollBar.vertical: ScrollBar {
             id: stack_manager_bar
-            policy: ScrollBar.AsNeeded
-            width: 6
+            policy: ScrollBar.AlwaysOff
         }
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
@@ -431,6 +440,7 @@ Item {
 
     Item{
         id: panels_item
+        objectName: "sidebarPanels"
         width: secondaryUiWidth
         height: secondaryUiHeight
         anchors.left: stack_manager.right
@@ -477,7 +487,7 @@ Item {
         id: choiceSelector
         anchors.left: panels_item.right
         anchors.top: panels_item.top
-        anchors.topMargin: secondaryUiHeight/8
+        anchors.topMargin: 390 / 8
     }
 
 }
