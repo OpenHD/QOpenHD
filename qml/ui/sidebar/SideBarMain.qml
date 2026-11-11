@@ -10,6 +10,7 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 import "../elements"
+import "../widgets"
 
 
 Item {
@@ -26,18 +27,96 @@ Item {
     // Keep the panel and its choices inside short and narrow phone windows.
     readonly property real viewportWidth: parent ? parent.width : 800
     readonly property real viewportHeight: parent ? parent.height : 480
-    readonly property real sidebarScale: 0.5 * Math.max(0.01, Math.min(1, (viewportWidth - 12) / (556 + 68 + 200), (viewportHeight - 28) / 464))
-    scale: m_extra_is_visible ? sidebarScale : sidebarScale * 2
+    readonly property real popupLayoutWidth: stack_manager.width + secondaryUiWidth + choiceSelector.width
+    readonly property real fitHeightScale: (viewportHeight - 28) / secondaryUiHeight
+    readonly property real automaticScale: 0.5 * Math.max(0.01, Math.min(1,
+        (viewportWidth - 12) / popupLayoutWidth, fitHeightScale))
+    readonly property real sidebarScale: Math.max(0.005, Math.min(automaticScale * bw_current_scale,
+        (viewportWidth - 12) / (stack_manager.anchors.leftMargin + popupLayoutWidth), fitHeightScale))
+    scale: m_extra_is_visible ? sidebarScale : automaticScale * 2
     transformOrigin: Item.Left
     property int secondaryUiWidth: 556
-    property int secondaryUiHeight: 464
-    property color secondaryUiColor: "#121e2a"
-    property real secondaryUiOpacity: 0.94
+    readonly property real secondaryUiHeight: stack_manager_content.implicitHeight + 20
+    readonly property color secondaryUiColor: bw_current_background_color
+    readonly property real secondaryUiOpacity: bw_current_opacity
+
+    readonly property string bw_verbose_name: qsTr("Sidebar")
+    readonly property int detailPanelFontPixels: 13
+    readonly property color defaultBackgroundColor: "#121e2a"
+    readonly property real defaultBackgroundOpacity: 0.94
+    readonly property color defaultTextColor: "#edf6ff"
+    readonly property color defaultHighlightColor: "#71d4ff"
+    readonly property color defaultControlColor: "#285879"
+    readonly property real defaultPopupScale: 1.2
+    property real bw_current_scale: settings.value("sidebar_popup_scale", defaultPopupScale)
+    property real bw_current_opacity: settings.value("sidebar_popup_opacity", defaultBackgroundOpacity)
+    property color bw_current_background_color: settings.value("sidebar_popup_bg_color", defaultBackgroundColor.toString())
+    property color popupTextColor: settings.value("sidebar_popup_text_color", defaultTextColor.toString())
+    property color popupHighlightColor: settings.value("sidebar_popup_highlight_color", defaultHighlightColor.toString())
+    property color popupControlColor: settings.value("sidebar_popup_control_color", defaultControlColor.toString())
+    readonly property bool customTextColor: !Qt.colorEqual(popupTextColor, defaultTextColor)
+    readonly property bool customHighlightColor: !Qt.colorEqual(popupHighlightColor, defaultHighlightColor)
+    readonly property bool customControlColor: !Qt.colorEqual(popupControlColor, defaultControlColor)
+
+    function bw_set_current_scale(value) {
+        bw_current_scale = value
+        settings.setValue("sidebar_popup_scale", value)
+        settings.sync()
+    }
+
+    function bw_set_current_opacity(value) {
+        bw_current_opacity = value
+        settings.setValue("sidebar_popup_opacity", value)
+        settings.sync()
+    }
+
+    function saveColor(key, color, defaultColor) {
+        const value = color.toString()
+        if (value !== settings.value(key, defaultColor.toString())) {
+            settings.setValue(key, value)
+            settings.sync()
+        }
+    }
+
+    onBw_current_background_colorChanged: saveColor("sidebar_popup_bg_color", bw_current_background_color, defaultBackgroundColor)
+    onPopupTextColorChanged: saveColor("sidebar_popup_text_color", popupTextColor, defaultTextColor)
+    onPopupHighlightColorChanged: saveColor("sidebar_popup_highlight_color", popupHighlightColor, defaultHighlightColor)
+    onPopupControlColorChanged: saveColor("sidebar_popup_control_color", popupControlColor, defaultControlColor)
+
+    function textColor(defaultColor) {
+        return customTextColor ? popupTextColor : defaultColor
+    }
+
+    function highlightColor(defaultColor) {
+        return customHighlightColor ? popupHighlightColor : defaultColor
+    }
+
+    function controlColor(defaultColor, brightness) {
+        return customControlColor ? Qt.lighter(popupControlColor, brightness) : defaultColor
+    }
+
+    function highlightFill(defaultColor, baseColor, brightness) {
+        return customHighlightColor
+            ? Qt.tint(controlColor(baseColor, brightness), Qt.rgba(popupHighlightColor.r, popupHighlightColor.g, popupHighlightColor.b, 0.28))
+            : controlColor(defaultColor, brightness)
+    }
+
+    function openCustomization() {
+        customizePopup.open()
+    }
+
+    function containsPopupPoint(item, point) {
+        if (!m_extra_is_visible)
+            return false
+        return popupBackground.contains(popupBackground.mapFromItem(item, point.x, point.y))
+            || (choiceSelector.visible && choiceSelector.contains(choiceSelector.mapFromItem(item, point.x, point.y)))
+    }
 
     // Set to true if the sidebar is active (and some HUD elements shall be disabled)
     property bool m_is_active : false
 
     property bool m_extra_is_visible: false
+    onM_extra_is_visibleChanged: if (!m_extra_is_visible) customizePopup.close()
     property int m_stack_index: -1;
     property bool m_ui_button_long_press_handled: false
     property real m_sidebar_icon_scale: settings.value("sidebar_show_icon_scale", 1.0)
@@ -341,6 +420,7 @@ Item {
     }
 
     Rectangle {
+        id: popupBackground
         anchors.left: stack_manager.left
         anchors.top: stack_manager.top
         width: stack_manager.width + secondaryUiWidth
@@ -348,7 +428,11 @@ Item {
         visible: m_extra_is_visible
         radius: 16
         gradient: Gradient {
-            GradientStop { position: 0; color: "#1c2d3d" }
+            GradientStop {
+                position: 0
+                color: Qt.colorEqual(secondaryUiColor, defaultBackgroundColor)
+                    ? "#1c2d3d" : secondaryUiColor
+            }
             GradientStop { position: 1; color: secondaryUiColor }
         }
         opacity: secondaryUiOpacity
@@ -360,6 +444,94 @@ Item {
             y: 12
             height: parent.height - 24
             color: "#40566a"
+        }
+    }
+
+    Popup {
+        id: customizePopup
+        objectName: "sidebarCustomizePopup"
+        parent: Overlay.overlay
+        padding: 0
+        modal: true
+        dim: false
+        focus: true
+        closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+
+        readonly property real layoutWidth: sidebarColorPicker.visible ? sidebarColorPicker.width : 300
+        readonly property real layoutHeight: sidebarColorPicker.visible ? sidebarColorPicker.height : customizationLayout.implicitHeight + 24
+        readonly property real fitScale: parent ? Math.max(0.01, Math.min(1,
+            (parent.width - 16) / layoutWidth, (parent.height - 16) / layoutHeight)) : 1
+        width: layoutWidth * fitScale
+        height: layoutHeight * fitScale
+
+        onAboutToHide: {
+            if (sidebarColorPicker.visible) {
+                sidebarColorPicker.cancelled()
+                sidebarColorPicker.visible = false
+            }
+        }
+
+        background: Rectangle { color: "black"; opacity: 0.8 }
+
+        contentItem: Item {
+            Item {
+                width: customizePopup.layoutWidth
+                height: customizePopup.layoutHeight
+                scale: customizePopup.fitScale
+                transformOrigin: Item.TopLeft
+
+                ColumnLayout {
+                    id: customizationLayout
+                    x: 12
+                    y: 12
+                    width: parent.width - 24
+                    visible: !sidebarColorPicker.visible
+
+                    BaseWidgetDefaultUiControlElements {
+                        Layout.fillWidth: true
+                        show_background_color: true
+                        background_color_target: sidebar
+                        background_color_picker: sidebarColorPicker
+                        additional_colors: [
+                            { label: qsTr("Text Color"), propertyName: "popupTextColor", objectName: "sidebarTextColorSwatch" },
+                            { label: qsTr("Highlight Color"), propertyName: "popupHighlightColor", objectName: "sidebarHighlightColorSwatch" },
+                            { label: qsTr("Control Color"), propertyName: "popupControlColor", objectName: "sidebarControlColorSwatch" }
+                        ]
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Button {
+                            objectName: "sidebarCustomizeReset"
+                            text: qsTr("Reset")
+                            onClicked: {
+                                bw_set_current_scale(defaultPopupScale)
+                                bw_set_current_opacity(defaultBackgroundOpacity)
+                                bw_current_background_color = defaultBackgroundColor
+                                popupTextColor = defaultTextColor
+                                popupHighlightColor = defaultHighlightColor
+                                popupControlColor = defaultControlColor
+                            }
+                        }
+                        Item { Layout.fillWidth: true }
+                        Button {
+                            text: qsTr("Done")
+                            onClicked: customizePopup.close()
+                        }
+                    }
+                }
+
+                ColorPicker {
+                    id: sidebarColorPicker
+                    objectName: "sidebarColorPicker"
+                    width: 380
+                    height: 264
+                    currentColorType: ColorPicker.ColorType.CustomColor
+                    showAlpha: false
+                }
+            }
         }
     }
 
@@ -459,6 +631,25 @@ Item {
         height: secondaryUiHeight
         anchors.left: stack_manager.right
         anchors.top: stack_manager.top
+
+        Binding {
+            target: panels_item.Material
+            property: "foreground"
+            value: sidebar.popupTextColor
+            when: sidebar.customTextColor
+        }
+        Binding {
+            target: panels_item.Material
+            property: "accent"
+            value: sidebar.popupHighlightColor
+            when: sidebar.customHighlightColor
+        }
+        Binding {
+            target: panels_item.Material
+            property: "background"
+            value: sidebar.popupControlColor
+            when: sidebar.customControlColor
+        }
 
         Panel8FindAirUnit{
             id: panel1

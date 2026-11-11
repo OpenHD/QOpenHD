@@ -115,14 +115,16 @@ SideBarBasePanel {
         }
 
         Rectangle {
+            objectName: "scanPassiveCard"
             Layout.fillWidth: true
             Layout.leftMargin: 24
             Layout.rightMargin: 24
             Layout.topMargin: 14
             Layout.preferredHeight: modeRow.implicitHeight + 20
             radius: 12
-            color: modeSwitch.activeFocus ? "#25455f" : "#203448"
-            border.color: modeSwitch.activeFocus ? "#71d4ff" : "#365169"
+            color: modeSwitch.activeFocus ? sidebar.highlightFill("#25455f", "#203448", 0.9)
+                : sidebar.controlColor("#203448", 0.72)
+            border.color: modeSwitch.activeFocus ? sidebar.highlightColor("#71d4ff") : "#365169"
 
             RowLayout {
                 id: modeRow
@@ -139,14 +141,14 @@ SideBarBasePanel {
                         text: qsTr("Passive scan")
                         font.pixelSize: 20
                         font.weight: Font.DemiBold
-                        color: "#edf6ff"
+                        color: sidebar.textColor("#edf6ff")
                         elide: Text.ElideRight
                     }
                     Label {
                         Layout.fillWidth: true
                         text: page.passive ? qsTr("Nexmon · Filters by Air bandwidth")
                                            : qsTr("Primary radio")
-                        color: "#acbfd1"
+                        color: sidebar.textColor("#acbfd1")
                         font.pixelSize: 17
                         elide: Text.ElideRight
                     }
@@ -173,14 +175,14 @@ SideBarBasePanel {
                         width: 52
                         height: 28
                         radius: 14
-                        color: modeSwitch.checked ? "#278bc3" : "#52677a"
+                        color: modeSwitch.checked ? sidebar.highlightColor(sidebar.controlColor("#278bc3", 1.3)) : sidebar.controlColor("#52677a", 0.85)
                         Rectangle {
                             x: modeSwitch.checked ? parent.width - width - 3 : 3
                             anchors.verticalCenter: parent.verticalCenter
                             width: 22
                             height: 22
                             radius: 11
-                            color: "#edf6ff"
+                            color: sidebar.textColor("#edf6ff")
                         }
                     }
                 }
@@ -209,16 +211,17 @@ SideBarBasePanel {
 
             background: Rectangle {
                 radius: 12
-                color: !startButton.enabled ? "#26394b"
-                    : startButton.down ? "#225677"
-                    : startButton.hovered || startButton.activeFocus ? "#2f6d93" : "#285879"
-                border.color: startButton.activeFocus ? "#89dbff" : "#395c77"
+                color: !startButton.enabled ? sidebar.controlColor("#26394b", 0.65)
+                    : startButton.down ? sidebar.highlightFill("#225677", "#285879", 0.85)
+                    : startButton.hovered || startButton.activeFocus ? sidebar.highlightFill("#2f6d93", "#285879", 1.16)
+                    : sidebar.controlColor("#285879", 1)
+                border.color: startButton.activeFocus ? sidebar.highlightColor("#89dbff") : "#395c77"
                 border.width: startButton.activeFocus ? 2 : 1
             }
             contentItem: Label {
                 text: startButton.text
                 font: startButton.font
-                color: startButton.enabled ? "#f2f9ff" : "#adc1d2"
+                color: sidebar.textColor(startButton.enabled ? "#f2f9ff" : "#adc1d2")
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -242,14 +245,14 @@ SideBarBasePanel {
                         : page.scanning ? qsTr("Searching for Air")
                         : !page.radioIdle ? qsTr("Ground radio busy") : qsTr("Ready to scan")
                     font.pixelSize: 18
-                    color: page.groundOnline && page.scanError.length ? "#ffcb76" : "#acbfd1"
+                    color: page.groundOnline && page.scanError.length ? "#ffcb76" : sidebar.textColor("#acbfd1")
                     wrapMode: Text.WordWrap
                 }
                 Label {
                     visible: page.showProgress
                     text: qsTr("%1%").arg(page.scanProgress)
                     font.pixelSize: 18
-                    color: "#d6f3ff"
+                    color: sidebar.textColor("#d6f3ff")
                 }
             }
 
@@ -258,12 +261,12 @@ SideBarBasePanel {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 6
                 radius: 3
-                color: "#29445b"
+                color: sidebar.controlColor("#29445b", 0.8)
                 Rectangle {
                     width: parent.width * page.scanProgress / 100
                     height: parent.height
                     radius: parent.radius
-                    color: "#67cbfb"
+                    color: sidebar.highlightColor("#67cbfb")
                 }
             }
         }

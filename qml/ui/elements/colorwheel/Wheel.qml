@@ -6,6 +6,7 @@
  */
  
 import QtQuick 2.0
+import "ColorUtils.js" as ColorUtils
 
 Item {
     id: root
@@ -36,43 +37,40 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         color: "transparent"
-        ShaderEffect {
-            id: shader
+        Canvas {
+            objectName: "colorWheelSurface"
             anchors.fill: parent
-            vertexShader: "
-                uniform highp mat4 qt_Matrix;
-                attribute highp vec4 qt_Vertex;
-                attribute highp vec2 qt_MultiTexCoord0;
-                varying highp vec2 coord;
-                void main() {
-                    coord = qt_MultiTexCoord0 - vec2(0.5, 0.5);
-                    gl_Position = qt_Matrix * qt_Vertex;
-            }"
-            fragmentShader: "
-                varying highp vec2 coord;
-                mediump vec3 hsv2rgb(in mediump vec3 c) {
-                    mediump vec4 k = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-                    mediump vec3 p = abs(fract(c.xxx + k.xyz) * 6.0 - k.www);
-                    return c.z * mix(k.xxx, clamp(p - k.xxx, 0.0, 1.0), c.y);
+            onAvailableChanged: if (available) requestPaint()
+            onVisibleChanged: if (visible) requestPaint()
+            onWidthChanged: requestPaint()
+            onPaint: {
+                const context = getContext("2d")
+                const size = Math.round(width)
+                if (size < 1)
+                    return
+                const radius = size / 2
+                const pixels = context.createImageData(size, size)
+                const data = pixels.data
+                for (let y = 0; y < size; ++y) {
+                    for (let x = 0; x < size; ++x) {
+                        const dx = x + 0.5 - radius
+                        const dy = radius - y - 0.5
+                        const distance = Math.sqrt(dx * dx + dy * dy)
+                        if (distance >= radius + 0.5)
+                            continue
+                        const hue = Math.atan2(dy, dx) / (2 * Math.PI) + 0.5
+                        const saturation = Math.min(1, distance / radius)
+                        const rgb = ColorUtils.hsva2rgba(Qt.vector4d(hue, saturation, 1, 1))
+                        const offset = 4 * (y * size + x)
+                        data[offset] = 255 * rgb.x
+                        data[offset + 1] = 255 * rgb.y
+                        data[offset + 2] = 255 * rgb.z
+                        data[offset + 3] = 255 * Math.min(1, radius + 0.5 - distance)
+                    }
                 }
-                void main() {
-                    const mediump float PI = 3.14159265358979323846264;
-                    mediump float s = sqrt(coord.x * coord.x + coord.y * coord.y);
-                    if( s > 0.5 ){
-                        gl_FragColor = vec4(0, 0, 0, 0);
-                        return;
-                    }
-                    mediump float h = - atan( coord.y / coord.x );
-                    s *= 2.0;
-                    if( coord.x >= 0.0 ){
-                        h += PI;
-                    }
-                    h = h / (2.0 * PI);
-                    mediump vec3 hsl = vec3(h, s, 1.0);
-                    mediump vec3 rgb = hsv2rgb(hsl);
-                    gl_FragColor.rgb = rgb;
-                    gl_FragColor.a = 1.0;
-            }"
+                context.clearRect(0, 0, size, size)
+                context.putImageData(pixels, 0, 0, 0, 0, size, size)
+            }
         }
 
         Item {

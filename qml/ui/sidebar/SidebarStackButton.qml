@@ -43,8 +43,9 @@ Item {
         width: 54
         height: 46
         radius: 12
-        color: selected ? "#234f70" : (mouseArea.containsMouse ? "#223647" : "transparent")
-        border.color: "#71d4ff"
+        color: selected ? sidebar.highlightFill("#234f70", "#223647", 0.95)
+            : (mouseArea.containsMouse ? sidebar.highlightFill("#223647", secondaryUiColor, 0.78) : "transparent")
+        border.color: sidebar.highlightColor("#71d4ff")
         border.width: activeFocus ? 2 : 0
     }
 
@@ -54,7 +55,7 @@ Item {
         width: 4
         height: 22
         radius: 2
-        color: "#58ccff"
+        color: sidebar.highlightColor("#58ccff")
         visible: selected
     }
 
@@ -63,7 +64,7 @@ Item {
         text: override_text
         font.pixelSize: 24
         font.family: "Font Awesome 5 Free"
-        color: selected ? "#d6f3ff" : "#bbcbd8"
+        color: sidebar.textColor(selected ? "#d6f3ff" : "#bbcbd8")
     }
     MouseArea {
         id: mouseArea

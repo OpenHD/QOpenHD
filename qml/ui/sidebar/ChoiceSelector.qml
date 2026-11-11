@@ -166,13 +166,15 @@ Rectangle{
             id: choice
             // Background
             Rectangle{
+                objectName: "sidebarChoiceHighlight"
                 anchors.fill: parent
                 radius: 6
-                color: index === m_current_user_selected_index ? "#25455f" : "transparent"
-                border.color: "#578bab"
+                color: index === m_current_user_selected_index ? sidebar.highlightFill("#25455f", secondaryUiColor, 0.85) : "transparent"
+                border.color: sidebar.highlightColor("#578bab")
                 border.width: index === m_current_user_selected_index ? 1 : 0
             }
             Text {
+                objectName: "sidebarChoiceText"
                 text: qsTr(verbose)
                 anchors.fill: parent
                 verticalAlignment: Qt.AlignVCenter
@@ -182,13 +184,13 @@ Rectangle{
                 wrapMode: Text.WordWrap
                 maximumLineCount: 2
                 elide: Text.ElideRight
-                color: "white"
+                color: sidebar.textColor("white")
                 font.pixelSize: 18
             }
             Rectangle {
                 x: 10; anchors.verticalCenter: parent.verticalCenter; width: 20; height: 20; radius: 10
-                color: index === m_initial_index ? "#00a7f5" : "transparent"
-                border.color: index === m_initial_index ? "#00a7f5" : "#8e9da6"; border.width: 2
+                color: index === m_initial_index ? sidebar.highlightColor("#00a7f5") : "transparent"
+                border.color: index === m_initial_index ? sidebar.highlightColor("#00a7f5") : "#8e9da6"; border.width: 2
                 Rectangle { anchors.centerIn: parent; width: 8; height: 8; radius: 4; color: "white"; visible: index === m_initial_index }
             }
             MouseArea{

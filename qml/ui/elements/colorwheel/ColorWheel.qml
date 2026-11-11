@@ -24,6 +24,13 @@ Item {
     }
 
     property string color
+    property bool showAlpha: true
+
+    function setSelectedColor(selectedColor) {
+        const alpha = showAlpha ? selectedColor.a : 1
+        colorHSVA = ColorUtils.rgba2hsva(Qt.vector4d(selectedColor.r, selectedColor.g, selectedColor.b, alpha))
+        color = ColorUtils.hexaFromRGBA(selectedColor.r, selectedColor.g, selectedColor.b, alpha)
+    }
 
     Wheel {
         id: wheel
@@ -88,6 +95,7 @@ Item {
     // Alpha picker slider
     Item {
         id: alphaBar
+        visible: root.showAlpha
         anchors.left: brightnessBar.right
         anchors.leftMargin: 48
         anchors.top: parent.top
@@ -198,6 +206,7 @@ Item {
 
         NumberBox {
             id: rgbAlpha
+            visible: root.showAlpha
             anchors.bottom: parent.bottom
             anchors.left: blue.right
             width: 80

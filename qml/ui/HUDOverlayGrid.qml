@@ -621,11 +621,13 @@ Item {
         z: 5.0
     }
     TapHandler {
+        id: osdCustomizeTap
         acceptedButtons: Qt.AllButtons
         onTapped: {
         }
         onLongPressed: {
-            osdCustomizer.visible = true
+            if (!sidebar.containsPopupPoint(hudOverlayGrid, osdCustomizeTap.point.position))
+                osdCustomizer.visible = true
         }
         grabPermissions: PointerHandler.CanTakeOverFromAnything
     }

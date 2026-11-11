@@ -2,6 +2,7 @@
 import argparse
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 
@@ -14,13 +15,28 @@ with tempfile.TemporaryDirectory(prefix="qopenhd-sidebar-") as temp:
     for name in ("SideBarMain", "SideBarBasePanel", "SidebarStackButton", "ChoiceSelector",
                  "Panel8FindAirUnit", "BaseJoyEditElement2"):
         source = (ROOT / "qml/ui/sidebar" / (name + ".qml")).read_text(encoding="utf-8")
-        source = source.replace("import OpenHD 1.0", "").replace('import "../elements"', "")
+        source = (source.replace("import OpenHD 1.0", "")
+                  .replace('import "../elements"', "").replace('import "../widgets"', ""))
         (folder / (name + ".qml")).write_text(source, encoding="utf-8")
+    for path in ("elements/Card.qml", "elements/ColorPicker.qml", "widgets/BaseWidgetDefaultUiControlElements.qml"):
+        source = (ROOT / "qml/ui" / path).read_text(encoding="utf-8").replace('import "../elements"', "")
+        (folder / Path(path).name).write_text(source, encoding="utf-8")
+    shutil.copytree(ROOT / "qml/ui/elements/colorwheel", folder / "colorwheel")
     # Geometry uses the production shell; telemetry-heavy panel bodies are omitted.
-    for name in ("Panel1Link", "Panel2Video", "Panel3Camera",
-                 "Panel4Recording", "Panel6Misc"):
+    for name in ("Panel2Video", "Panel4Recording", "Panel6Misc"):
         (folder / (name + ".qml")).write_text(
             'import QtQuick 2.12\nSideBarBasePanel { function takeover_control() {} }', encoding="utf-8")
+    (folder / "Panel1Link.qml").write_text('''import QtQuick 2.12
+import QtQuick.Controls 2.12
+SideBarBasePanel {
+    objectName: "fixtureLinkPanel"
+    function takeover_control() {}
+    Item {
+        width: parent.width
+        height: Math.max(40, hudOverlayGrid.fixtureContentHeight)
+        Slider { objectName: "fixtureSidebarSlider"; width: 240; height: 40; value: 0.5 }
+    }
+}''', encoding="utf-8")
     (folder / "SystemHealth.js").write_bytes(
         (ROOT / "qml/ui/configpopup/status/SystemHealth.js").read_bytes())
     (folder / "Panel7Status.qml").write_text(
@@ -41,11 +57,13 @@ Item {
     function takeover_control() { forceActiveFocus() }
     width: 320; height: 40
 }''', encoding="utf-8")
-    (folder / "tst_sidebar.qml").write_text(r'''import QtQuick 2.12
+    fixture_source = r'''import QtQuick 2.12
 import QtQuick.Controls 2.12
+import Qt.labs.settings 1.0
 import QtTest 1.2
 Item {
     id: hudOverlayGrid
+    property int fixtureContentHeight: 0
     property bool openedSystemStatus: false
     function open_config_popup(showSystemStatus) { openedSystemStatus = showSystemStatus }
     QtObject {
@@ -65,14 +83,15 @@ Item {
     }
     QtObject { id: _fcMavlinkSystem; property bool is_alive: true }
     width: 800; height: 480
-    QtObject {
+    Settings {
         id: settings
+        fileName: "SETTINGS_PATH"
         property bool show_sidebar: true
         property bool scan_passive_nexmon: false
         property int scan_channel_width_mhz: 20
-        function value(key, fallback) { return fallback }
-        function setValue(key, value) {}
-        function sync() {}
+        property color color_shape: "white"
+        property color color_glow: "black"
+        property color color_text: "white"
     }
     QtObject {
         id: _wbLinkSettingsHelper
@@ -148,6 +167,153 @@ Item {
             verify((556 + 68 + 200) * sidebar.sidebarScale <= data.w)
             verify(sidebar.secondaryUiHeight * sidebar.sidebarScale <= data.h - 15)
             sidebar.close()
+        }
+        function test_customization() {
+            hudOverlayGrid.width = 800; hudOverlayGrid.height = 480
+            sidebar.open_category(0)
+            var popup = findChild(sidebar, "sidebarCustomizePopup")
+            var start = findChild(sidebar, "scanStart")
+            mousePress(start)
+            wait(900)
+            verify(!popup.visible)
+            mouseRelease(start)
+
+            var header = findChild(sidebar, "sidebarEmptyHeader")
+            mouseClick(header, 12, 20)
+            verify(!popup.visible)
+            mousePress(header, 12, 20)
+            tryCompare(popup, "opened", true)
+            mouseRelease(header, 12, 20)
+            compare(sidebar.bw_current_scale, 1.2)
+            fuzzyCompare(sidebar.sidebarScale, sidebar.automaticScale * 1.2, 0.0001)
+            compare(sidebar.secondaryUiOpacity, 0.94)
+            compare(sidebar.secondaryUiColor, "#121e2a")
+            var passiveCard = findChild(sidebar, "scanPassiveCard")
+            compare(passiveCard.color, "#203448")
+            compare(start.background.color, "#285879")
+
+            var sizeSlider = findChild(popup.contentItem, "widgetSizeSlider")
+            var opacitySlider = findChild(popup.contentItem, "widgetTransparencySlider")
+            mouseClick(sizeSlider, sizeSlider.width * 0.75, sizeSlider.height / 2)
+            mouseClick(opacitySlider, opacitySlider.width / 2, opacitySlider.height / 2)
+            verify(sidebar.bw_current_scale > 1)
+            verify(sidebar.secondaryUiOpacity < 0.94)
+            compare(settings.value("sidebar_popup_scale"), sidebar.bw_current_scale)
+            compare(settings.value("sidebar_popup_opacity"), sidebar.secondaryUiOpacity)
+
+            var swatch = findChild(popup.contentItem, "widgetBackgroundColorSwatch")
+            var picker = findChild(popup.contentItem, "sidebarColorPicker")
+            mouseClick(swatch)
+            verify(picker.visible)
+            compare(picker.color, "#ff121e2a")
+            var wheel = findChild(picker, "colorWheelSurface")
+            tryVerify(function() {
+                var context = wheel.getContext("2d")
+                return context && context.getImageData(18, 75, 1, 1).data[0] > 230
+            })
+            mouseClick(wheel, 18, 75)
+            verify(!Qt.colorEqual(sidebar.secondaryUiColor, "#121e2a"))
+            keyClick(Qt.Key_Escape)
+            tryCompare(popup, "visible", false)
+            compare(sidebar.secondaryUiColor, "#121e2a")
+
+            sidebar.openCustomization()
+            tryCompare(popup, "opened", true)
+            mouseClick(findChild(popup.contentItem, "sidebarTextColorSwatch"))
+            compare(picker.color, "#ffedf6ff")
+            picker.color = "#ffffcc66"
+            mouseClick(findChild(picker, "colorPickerSelect"))
+            compare(start.contentItem.color, "#ffcc66")
+            mouseClick(findChild(popup.contentItem, "sidebarHighlightColorSwatch"))
+            compare(picker.color, "#ff71d4ff")
+            picker.color = "#ff74cc8a"
+            mouseClick(findChild(picker, "colorPickerSelect"))
+            mouseClick(findChild(popup.contentItem, "sidebarControlColorSwatch"))
+            compare(picker.color, "#ff285879")
+            picker.color = "#ff8f4532"
+            mouseClick(findChild(picker, "colorPickerSelect"))
+            mouseMove(hudOverlayGrid, hudOverlayGrid.width - 5, 5)
+            compare(passiveCard.color, Qt.lighter("#8f4532", 0.72))
+            compare(start.background.color, "#8f4532")
+            popup.close()
+            tryCompare(popup, "visible", false)
+            start.forceActiveFocus()
+            compare(start.background.border.color, "#74cc8a")
+            compare(settings.value("sidebar_popup_text_color"), "#ffcc66")
+            compare(settings.value("sidebar_popup_highlight_color"), "#74cc8a")
+            compare(settings.value("sidebar_popup_control_color"), "#8f4532")
+            mouseClick(findChild(sidebar, "scanBand"))
+            tryVerify(function() { return findChild(sidebar, "sidebarChoiceText") !== null })
+            compare(findChild(sidebar, "sidebarChoiceText").color, "#ffcc66")
+            compare(findChild(sidebar, "sidebarChoiceHighlight").border.color, "#74cc8a")
+            keyClick(Qt.Key_Left)
+
+            sidebar.open_category(1)
+            var page = findChild(sidebar, "fixtureLinkPanel")
+            var panelSlider = findChild(page, "fixtureSidebarSlider")
+            mousePress(panelSlider, panelSlider.width / 2, panelSlider.height / 2)
+            wait(900)
+            verify(!popup.visible)
+            mouseMove(panelSlider, panelSlider.width * 0.8, panelSlider.height / 2)
+            mouseRelease(panelSlider, panelSlider.width * 0.8, panelSlider.height / 2)
+            verify(panelSlider.value > 0.5)
+            var blank = findChild(page, "sidebarEmptyBody")
+            var touch = touchEvent(blank)
+            touch.press(0, blank, blank.width / 2, blank.height / 2).commit()
+            tryCompare(popup, "opened", true)
+            touch.release(0, blank, blank.width / 2, blank.height / 2).commit()
+            mouseClick(findChild(popup.contentItem, "sidebarCustomizeReset"))
+            compare(sidebar.bw_current_scale, 1.2)
+            compare(sidebar.secondaryUiOpacity, 0.94)
+            compare(sidebar.secondaryUiColor, "#121e2a")
+            compare(sidebar.popupTextColor, "#edf6ff")
+            compare(sidebar.popupHighlightColor, "#71d4ff")
+            compare(sidebar.popupControlColor, "#285879")
+            popup.close()
+            tryCompare(popup, "visible", false)
+            sidebar.close()
+        }
+        function test_customized_geometry() {
+            sidebar.open_category(1)
+            sidebar.bw_set_current_scale(3)
+            for (var size of test_geometry_data()) {
+                hudOverlayGrid.width = size.w; hudOverlayGrid.height = size.h
+                var panels = findChild(sidebar, "sidebarPanels")
+                var bottom = panels.mapToItem(hudOverlayGrid, panels.width, panels.height)
+                verify(sidebar.sidebarScale > sidebar.automaticScale)
+                verify(bottom.x + 200 * sidebar.sidebarScale <= size.w - 11)
+                verify(bottom.y <= size.h - 13)
+                compare(sidebar.scale, sidebar.sidebarScale)
+            }
+            var blank = findChild(findChild(sidebar, "fixtureLinkPanel"), "sidebarEmptyBody")
+            verify(blank.height > 0)
+            hudOverlayGrid.fixtureContentHeight = 640
+            tryCompare(blank, "height", 0)
+            var scroll = findChild(findChild(sidebar, "fixtureLinkPanel"), "sidebarBodyScroll")
+            tryCompare(scroll, "contentHeight", 640)
+            verify(scroll.contentHeight > scroll.height)
+            hudOverlayGrid.fixtureContentHeight = 0
+            sidebar.bw_set_current_scale(0.5)
+            compare(sidebar.sidebarScale, 0.5 * sidebar.automaticScale)
+            sidebar.close()
+            compare(sidebar.scale, 2 * sidebar.automaticScale)
+            sidebar.bw_set_current_scale(1.2)
+        }
+        function test_appearance_on_startup() {
+            compare(sidebar.bw_current_scale, EXPECT_RESTORED ? 1.7 : 1.2)
+            compare(sidebar.secondaryUiOpacity, EXPECT_RESTORED ? 0.6 : 0.94)
+            compare(sidebar.secondaryUiColor, EXPECT_RESTORED ? "#285080" : "#121e2a")
+            compare(sidebar.popupTextColor, EXPECT_RESTORED ? "#ffcc66" : "#edf6ff")
+            compare(sidebar.popupHighlightColor, EXPECT_RESTORED ? "#74cc8a" : "#71d4ff")
+            compare(sidebar.popupControlColor, EXPECT_RESTORED ? "#8f4532" : "#285879")
+        }
+        function test_zz_save_customization() {
+            sidebar.bw_set_current_scale(1.7)
+            sidebar.bw_set_current_opacity(0.6)
+            sidebar.bw_current_background_color = "#285080"
+            sidebar.popupTextColor = "#ffcc66"
+            sidebar.popupHighlightColor = "#74cc8a"
+            sidebar.popupControlColor = "#8f4532"
         }
         function test_scan_sends_displayed_bandwidth() {
             sidebar.open_and_take_control(true)
@@ -289,9 +455,13 @@ Item {
         }
     }
 }
-''', encoding="utf-8")
+'''.replace("SETTINGS_PATH", (folder / "settings.ini").as_posix())
     env = dict(os.environ, QT_QUICK_BACKEND="software", QT_QUICK_CONTROLS_STYLE="Material",
                QT_SCALE_FACTOR="1", QT_FORCE_STDERR_LOGGING="1")
     env["PATH"] = str(args.qt_bin) + os.pathsep + env.get("PATH", "")
-    raise SystemExit(subprocess.run([str(args.qt_bin / "qmltestrunner.exe"), "-input", str(folder)],
-                                   env=env, timeout=60).returncode)
+    command = [str(args.qt_bin / "qmltestrunner.exe"), "-input", str(folder)]
+    fixture = folder / "tst_sidebar.qml"
+    fixture.write_text(fixture_source.replace("EXPECT_RESTORED", "false"), encoding="utf-8")
+    subprocess.run(command, env=env, timeout=60, check=True)
+    fixture.write_text(fixture_source.replace("EXPECT_RESTORED", "true"), encoding="utf-8")
+    subprocess.run(command + ["SidebarLayoutAndReset::test_appearance_on_startup"], env=env, timeout=60, check=True)

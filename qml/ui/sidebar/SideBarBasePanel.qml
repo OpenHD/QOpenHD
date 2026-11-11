@@ -13,6 +13,7 @@ import "../elements"
 
 
 Item {
+    id: panel
     width: secondaryUiWidth
     height: secondaryUiHeight
 
@@ -23,6 +24,7 @@ Item {
 
     ScrollView {
         id: bodyScroll
+        objectName: "sidebarBodyScroll"
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -44,10 +46,26 @@ Item {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         Item {
-            id: contentContainer
             width: bodyScroll.width
-            implicitWidth: Math.max(childrenRect.width, width)
-            implicitHeight: childrenRect.height
+            implicitHeight: Math.max(panel.height - header.height, contentContainer.implicitHeight)
+
+            // Only the space below the rows is a customization target. The
+            // scroll view can still take the grab when the gesture is a drag.
+            MouseArea {
+                objectName: "sidebarEmptyBody"
+                y: contentContainer.implicitHeight
+                width: parent.width
+                height: Math.max(0, parent.height - y)
+                propagateComposedEvents: true
+                onClicked: function(mouse) { mouse.accepted = false }
+                onPressAndHold: sidebar.openCustomization()
+            }
+
+            Item {
+                id: contentContainer
+                width: parent.width
+                implicitHeight: childrenRect.y + childrenRect.height
+            }
         }
     }
 
@@ -61,6 +79,16 @@ Item {
         color: "transparent"
         opacity: 1.0
         z: 1
+        MouseArea {
+            objectName: "sidebarEmptyHeader"
+            anchors.left: parent.left
+            anchors.right: headerActionLoader.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            propagateComposedEvents: true
+            onClicked: function(mouse) { mouse.accepted = false }
+            onPressAndHold: sidebar.openCustomization()
+        }
         Text {
             anchors.left: parent.left
             anchors.right: headerActionLoader.left
@@ -71,7 +99,7 @@ Item {
             elide: Text.ElideRight
             text: qsTr(override_title)
             font.pixelSize: 30
-            color: "#edf6ff"
+            color: sidebar.textColor("#edf6ff")
             smooth: true
         }
         Rectangle {
@@ -81,13 +109,13 @@ Item {
             width: 44
             height: 44
             radius: 12
-            color: "#253e54"
+            color: sidebar.controlColor("#253e54", 0.8)
             Text {
                 anchors.centerIn: parent
                 text: headerIcon
                 font.family: "Font Awesome 5 Free"
                 font.pixelSize: 23
-                color: "#89dbff"
+                color: sidebar.highlightColor("#89dbff")
             }
         }
         Rectangle {

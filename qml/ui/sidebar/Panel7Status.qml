@@ -11,7 +11,7 @@ SideBarBasePanel {
     readonly property var air: _ohdSystemAir
     readonly property var ground: _ohdSystemGround
     readonly property bool flightControllerOnline: _fcMavlinkSystem.is_alive
-    readonly property color mutedText: "#acbfd1"
+    readonly property color mutedText: sidebar.textColor("#acbfd1")
     readonly property color onlineColor: "#62e6a8"
 
     function takeover_control() {
@@ -38,7 +38,7 @@ SideBarBasePanel {
                     Layout.preferredWidth: 1
                     Layout.preferredHeight: 130
                     radius: 14
-                    color: "#213548"
+                    color: sidebar.controlColor("#213548", 0.72)
                     border.color: "#365169"
 
                     readonly property var unit: modelData
@@ -59,7 +59,7 @@ SideBarBasePanel {
                             text: index === 0 ? qsTr("Air unit") : qsTr("Ground unit")
                             font.pixelSize: 22
                             font.weight: Font.DemiBold
-                            color: "#f2f8ff"
+                            color: sidebar.textColor("#f2f8ff")
                         }
                         Label {
                             Layout.fillWidth: true
@@ -92,7 +92,7 @@ SideBarBasePanel {
             Layout.fillWidth: true
             Layout.preferredHeight: 68
             radius: 12
-            color: "#1a2b3b"
+            color: sidebar.controlColor("#1a2b3b", 0.62)
 
             RowLayout {
                 anchors.fill: parent
@@ -123,7 +123,7 @@ SideBarBasePanel {
                         }
                         Label {
                             text: modelData.value
-                            color: "#f2f8ff"
+                            color: sidebar.textColor("#f2f8ff")
                             font.pixelSize: 21
                             font.weight: Font.DemiBold
                         }
@@ -138,7 +138,7 @@ SideBarBasePanel {
             Label {
                 Layout.fillWidth: true
                 text: qsTr("Flight controller")
-                color: "#e5eef7"
+                color: sidebar.textColor("#e5eef7")
                 font.pixelSize: 20
                 elide: Text.ElideRight
             }
@@ -177,14 +177,15 @@ SideBarBasePanel {
 
             background: Rectangle {
                 radius: 12
-                color: detailsButton.down || detailsButton.activeFocus ? "#235778" : "#203b53"
-                border.color: detailsButton.activeFocus ? "#71d4ff" : "#395c77"
+                color: detailsButton.down || detailsButton.activeFocus ? sidebar.highlightFill("#235778", "#203b53", 1.16)
+                    : sidebar.controlColor("#203b53", 1)
+                border.color: detailsButton.activeFocus ? sidebar.highlightColor("#71d4ff") : "#395c77"
                 border.width: detailsButton.activeFocus ? 2 : 1
             }
             contentItem: Label {
                 text: detailsButton.text
                 font: detailsButton.font
-                color: "#e7f6ff"
+                color: sidebar.textColor("#e7f6ff")
                 elide: Text.ElideRight
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter

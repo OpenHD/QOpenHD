@@ -47,7 +47,7 @@ SideBarBasePanel{
             width: secondaryUiWidth - 12
             leftPadding: 6
             wrapMode: Text.WordWrap
-            color: "white"
+            color: sidebar.textColor("white")
             font.pixelSize: 12
             text: videoPanel.cameraParamUpdates >= 0 && _airCameraSettingsModel.param_int_exists("RK_FPS_LOCK") &&
                   _airCameraSettingsModel.get_cached_int("RK_FPS_LOCK") === 1 ?
@@ -68,7 +68,7 @@ SideBarBasePanel{
             width: secondaryUiWidth - 12
             leftPadding: 6
             wrapMode: Text.WordWrap
-            color: "white"
+            color: sidebar.textColor("white")
             font.pixelSize: 12
             text: qsTr("HDR uses three exposures, the full field of view and 30 fps. Manual exposure; experimental ISP tuning.")
         }

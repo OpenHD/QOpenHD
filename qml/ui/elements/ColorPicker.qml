@@ -35,9 +35,20 @@ Card {
     property color customPreviousColor
 
     property alias color: colorWheel.color
+    property alias showAlpha: colorWheel.showAlpha
 
     signal cancelled
     signal colorChange
+
+    function openCustomColor(target, propertyName) {
+        customTarget = null
+        customProperty = propertyName
+        customPreviousColor = target[propertyName]
+        currentColorType = ColorPicker.ColorType.CustomColor
+        colorWheel.setSelectedColor(customPreviousColor)
+        customTarget = target
+        visible = true
+    }
 
 
     // used for saving the last color before the user opens the color picker, so they
@@ -133,6 +144,7 @@ Card {
 
         Button {
             width: 140
+            objectName: "colorPickerSelect"
             height: 48
             anchors.right: parent.right
             anchors.rightMargin: 12

@@ -69,8 +69,8 @@ Item{
         anchors.leftMargin: 22
         anchors.rightMargin: 22
         radius: 12
-        color: highlighted ? "#25455f" : "transparent"
-        border.color: highlighted ? "#578bab" : "transparent"
+        color: highlighted ? sidebar.highlightFill("#25455f", secondaryUiColor, 0.85) : "transparent"
+        border.color: highlighted ? sidebar.highlightColor("#578bab") : "transparent"
         border.width: 1
     }
     Rectangle {
@@ -81,7 +81,7 @@ Item{
         anchors.leftMargin: 22
         width: 4
         radius: 2
-        color: "#079eea"
+        color: sidebar.highlightColor("#079eea")
         visible: highlighted
     }
     Rectangle {
@@ -97,11 +97,11 @@ Item{
 
     Text {
         x: 40; anchors.verticalCenter: parent.verticalCenter
-        text: rowIcon; font.family: "Font Awesome 5 Free"; font.pixelSize: 23; color: highlighted ? "#89dbff" : "#b3c9db"
+        text: rowIcon; font.family: "Font Awesome 5 Free"; font.pixelSize: 23; color: highlighted ? sidebar.highlightColor("#89dbff") : sidebar.textColor("#b3c9db")
     }
     Text {
         anchors.right: parent.right; anchors.rightMargin: 34; anchors.verticalCenter: parent.verticalCenter
-        text: "\uf054"; font.family: "Font Awesome 5 Free"; font.pixelSize: 15; color: "#a2b9cc"
+        text: "\uf054"; font.family: "Font Awesome 5 Free"; font.pixelSize: 15; color: sidebar.textColor("#a2b9cc")
     }
     Text {
         id: title_str
@@ -114,7 +114,7 @@ Item{
         elide: Text.ElideRight
         font.pixelSize: 22
         anchors.top: parent.top
-        color: "white"
+        color: sidebar.textColor("white")
     }
 
     Text{
@@ -127,7 +127,7 @@ Item{
         horizontalAlignment: Qt.AlignRight
         rightPadding: 65
         font.pixelSize: 20
-        color: override_show_red_text ? "#ff9292" : "#d7e8f7"
+        color: override_show_red_text ? "#ff9292" : sidebar.textColor("#d7e8f7")
         anchors.right: parent.right
         wrapMode: Text.Wrap
         maximumLineCount: 2
@@ -147,7 +147,7 @@ Item{
         visible: m_title === "Pit Mode" && (m_displayed_value === "ON" || m_displayed_value === "OFF")
         anchors.right: parent.right; anchors.rightMargin: 65; anchors.verticalCenter: parent.verticalCenter
         width: 56; height: 28; radius: 14
-        color: m_displayed_value === "ON" ? "#00a8f5" : "#52616c"
+        color: m_displayed_value === "ON" ? sidebar.highlightColor(sidebar.controlColor("#00a8f5", 1.3)) : sidebar.controlColor("#52616c", 0.85)
         Rectangle { x: m_displayed_value === "ON" ? 30 : 2; y: 2; width: 24; height: 24; radius: 12; color: "white" }
     }
     MouseArea{

@@ -101,7 +101,7 @@ SideBarBasePanel{
         Label {
             visible: cameraPanel.arducam_camera
             text: qsTr("Live camera controls")
-            color: "white"
+            color: sidebar.textColor("white")
             font.bold: true
             leftPadding: 6
         }
@@ -110,7 +110,7 @@ SideBarBasePanel{
             width: parent.width - 12
             leftPadding: 6
             wrapMode: Text.WordWrap
-            color: "white"
+            color: sidebar.textColor("white")
             font.pixelSize: 12
             text: cameraPanel.manualExposure ?
                 qsTr("Exposure mode changes may briefly pause video. Other adjustments apply live.") :
@@ -253,7 +253,7 @@ SideBarBasePanel{
             Label {
                 Layout.fillWidth: true
                 text: qsTr("IP camera controls")
-                color: "white"
+                color: sidebar.textColor("white")
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter
                 topPadding: 8

@@ -44,7 +44,7 @@ SideBarBasePanel {
             }
         }
         Rectangle {
-            color: "#333c4c"
+            color: sidebar.controlColor("#333c4c", 0.72)
             opacity: 0.3
             height: recording_mode.height
             width: recording_mode.width
@@ -55,7 +55,7 @@ SideBarBasePanel {
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 18
-                color: "white"
+                color: sidebar.textColor("white")
                 smooth: true
             }
             Text {
@@ -73,7 +73,7 @@ SideBarBasePanel {
                 verticalAlignment: Qt.AlignVCenter
                 horizontalAlignment: Qt.AlignHCenter
                 font.pixelSize: 15
-                color: "white"
+                color: sidebar.textColor("white")
                 smooth: true
             }
         }

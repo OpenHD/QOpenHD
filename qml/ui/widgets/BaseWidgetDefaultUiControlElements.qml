@@ -7,7 +7,7 @@ import "../elements"
 
 // Can be used to quickly add the right UI elements for (persistently) setting scale and opacity for a HUD element (e.g. an element extending BaseWidget)
 // By default, placed in one of the popups, and more values can be added manually if needed
-// NOTE: Element needs to already extend base widget (we call methods and use variables from BaseWidget, the lazy evaluation of QML is fine with such an approach)
+// The caller supplies the BaseWidget settings interface.
 // If you are wondering how to use this file, just look into one of the widgets already using it as an example, it should be self-explanatory when creating new widgets
 ColumnLayout{
     width: 270
@@ -21,6 +21,8 @@ ColumnLayout{
     property bool show_transparency: true
     property bool show_background_color: false
     property var background_color_target: null
+    property Item background_color_picker: typeof hudOverlayGrid !== "undefined" ? hudOverlayGrid.colorPicker : null
+    property var additional_colors: []
 
     property bool show_quickpainteditem_font_scale: false
 
@@ -63,6 +65,7 @@ ColumnLayout{
         }
         Slider {
             id: transparency_slider
+            objectName: "widgetTransparencySlider"
             orientation: Qt.Horizontal
             from: .1
             value: bw_current_opacity
@@ -73,7 +76,7 @@ ColumnLayout{
             anchors.right: parent.right
             width: parent.width - 96
 
-            onValueChanged: {
+            onMoved: {
                 bw_set_current_opacity(transparency_slider.value);
             }
         }
@@ -93,6 +96,7 @@ ColumnLayout{
         }
         Slider {
             id: item_scale_Slider
+            objectName: "widgetSizeSlider"
             orientation: Qt.Horizontal
             from: .5
             value: bw_current_scale
@@ -103,49 +107,44 @@ ColumnLayout{
             anchors.right: parent.right
             width: parent.width - 96
 
-            onValueChanged: {
+            onMoved: {
                 bw_set_current_scale(item_scale_Slider.value)
             }
         }
     }
-    Item {
-        width: parent.width
-        height: 32
-        visible: show_background_color
-        Text {
-            text: qsTr("Background Color")
-            color: "white"
-            height: parent.height
-            font.bold: true
-            font.pixelSize: detailPanelFontPixels
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-        }
-        Rectangle {
-            id: background_color_preview
-            width: 22
-            height: 22
-            radius: 11
-            color: background_color_target ? background_color_target.bw_current_background_color : bw_current_background_color
-            border.color: "white"
-            anchors.right: parent.right
-            anchors.rightMargin: 6
-            anchors.verticalCenter: parent.verticalCenter
+    Repeater {
+        model: (show_background_color ? [{ label: qsTr("Background Color"),
+            propertyName: "bw_current_background_color", objectName: "widgetBackgroundColorSwatch" }] : [])
+            .concat(additional_colors)
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    var picker = hudOverlayGrid ? hudOverlayGrid.colorPicker : null;
-                    if (!picker || !background_color_target) {
-                        return;
-                    }
-                    picker.customTarget = background_color_target
-                    picker.customProperty = "bw_current_background_color"
-                    picker.customPreviousColor = background_color_target.bw_current_background_color
-                    picker.currentColorType = ColorPicker.ColorType.CustomColor
-                    picker.color = background_color_target.bw_current_background_color
-                    picker.visible = true
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: modelData.label
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Button {
+                objectName: modelData.objectName
+                width: 22
+                height: 22
+                anchors.right: parent.right
+                anchors.rightMargin: 6
+                anchors.verticalCenter: parent.verticalCenter
+                Accessible.name: modelData.label
+                enabled: !!background_color_target && !!background_color_picker
+                background: Rectangle {
+                    radius: 11
+                    color: background_color_target ? background_color_target[modelData.propertyName] : bw_current_background_color
+                    border.color: "white"
+                    border.width: parent.activeFocus ? 2 : 1
                 }
+                onClicked: background_color_picker.openCustomColor(background_color_target, modelData.propertyName)
             }
         }
     }
@@ -154,7 +153,7 @@ ColumnLayout{
         height: 32
         visible: show_quickpainteditem_font_scale
         Text {
-            text: qsTr("Font Sale: x"+bw_qquickpainteditem_font_scale.toFixed(1))
+            text: show_quickpainteditem_font_scale ? qsTr("Font Sale: x"+bw_qquickpainteditem_font_scale.toFixed(1)) : ""
             color: "white"
             height: parent.height
             font.bold: true
@@ -165,7 +164,7 @@ ColumnLayout{
         Slider {
             orientation: Qt.Horizontal
             from: .5
-            value: bw_qquickpainteditem_font_scale
+            value: show_quickpainteditem_font_scale ? bw_qquickpainteditem_font_scale : 1
             to: 2
             stepSize: .1
             height: parent.height
@@ -173,7 +172,7 @@ ColumnLayout{
             anchors.right: parent.right
             width: parent.width - 96
 
-            onValueChanged: {
+            onMoved: {
                 bw_set_qquickpainteditem_font_scale(value);
             }
         }
@@ -199,6 +198,7 @@ ColumnLayout{
             anchors.rightMargin: 6
             anchors.right: parent.right
             checked: {
+                if (!show_horizontal_lock) return false
                 // @disable-check M222
                 var _hCenter = settings.value(hCenterIdentifier,
                                               defaultHCenter)
@@ -212,8 +212,7 @@ ColumnLayout{
                 }
             }
 
-            onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                checked)
+            onCheckedChanged: if (show_horizontal_lock) settings.setValue(hCenterIdentifier, checked)
         }
     }
     Item {
@@ -235,6 +234,7 @@ ColumnLayout{
             anchors.rightMargin: 6
             anchors.right: parent.right
             checked: {
+                if (!show_vertical_lock) return false
                 // @disable-check M222
                 var _vCenter = settings.value(vCenterIdentifier,
                                               defaultVCenter)
@@ -248,8 +248,7 @@ ColumnLayout{
                 }
             }
 
-            onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                checked)
+            onCheckedChanged: if (show_vertical_lock) settings.setValue(vCenterIdentifier, checked)
         }
     }
 
