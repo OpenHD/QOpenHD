@@ -92,9 +92,7 @@ Rectangle {
         setMode(2)
     }
     function controls() {
-        var all = [autoMode, udpMode, tcpMode]
-        if (settings.qopenhd_mavlink_connection_mode === 0)
-            all = all.concat([androidButton, ethernetForwardButton, ethernetHotspotButton])
+        var all = [autoMode, udpMode, tcpMode, tetheringButton]
         if (settings.qopenhd_mavlink_connection_mode === 2)
             all = all.concat([ipField, saveButton, scanButton])
         for (var i = 0; i < resultsRepeater.count; ++i)
@@ -193,7 +191,7 @@ Rectangle {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 148
+                Layout.preferredHeight: modeColumn.implicitHeight + 26
                 radius: 12
                 color: settings_form.panelBackground
                 border.color: settings_form.lineColor
@@ -245,51 +243,14 @@ Rectangle {
                         }
                     }
 
-                }
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 185
-                visible: settings.qopenhd_mavlink_connection_mode === 0
-                radius: 12; color: settings_form.panelBackground; border.color: settings_form.lineColor
-                ColumnLayout {
-                    id: autoColumn
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 13
-                    spacing: 8
-                    Text { text: qsTr("AUTOMATIC CONNECTION OPTIONS"); color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true }
-                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                        id: androidButton
-                        Layout.fillWidth: true; height: MenuTypography.controlHeight
-                        text: qsTr("Open Android tethering settings")
-                        onClicked: _qopenhd.is_android() ? _qopenhd.android_open_tethering_settings() : _messageBoxInstance.set_text_and_show(qsTr("This feature is only available on Android"))
-                        onActiveFocusChanged: if (activeFocus) root.syncFocus(androidButton)
+                    AdvancedActionButton {
+                        id: tetheringButton
+                        Layout.alignment: Qt.AlignLeft
+                        visible: _qopenhd.is_android() && settings.qopenhd_mavlink_connection_mode === 0
+                        text: qsTr("Tethering settings")
+                        onClicked: _qopenhd.android_open_tethering_settings()
+                        onActiveFocusChanged: if (activeFocus) root.syncFocus(tetheringButton)
                         Keys.onPressed: root.handleButtonKey(event)
-                        background: Rectangle { radius: 9; color: androidButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: androidButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: androidButton.activeFocus ? 2 : 1 }
-                        contentItem: Text { text: androidButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
-                    }
-                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                        id: ethernetForwardButton
-                        Layout.fillWidth: true; height: MenuTypography.controlHeight
-                        text: qsTr("Ethernet forward + internet instructions")
-                        onClicked: _messageBoxInstance.set_text_and_show(qsTr("Set Ethernet to FORWARD+INTERNET, reboot the ground unit, then connect this device by Ethernet. Video and telemetry forwarding start automatically."))
-                        onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetForwardButton)
-                        Keys.onPressed: root.handleButtonKey(event)
-                        background: Rectangle { radius: 9; color: ethernetForwardButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: ethernetForwardButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ethernetForwardButton.activeFocus ? 2 : 1 }
-                        contentItem: Text { text: ethernetForwardButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
-                    }
-                    AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                        id: ethernetHotspotButton
-                        Layout.fillWidth: true; height: MenuTypography.controlHeight
-                        text: qsTr("Ethernet hotspot instructions")
-                        onClicked: _messageBoxInstance.set_text_and_show(qsTr("Set Ethernet to HOTSPOT, reboot the ground unit, then connect this device by Ethernet. You may need to disable Wi-Fi and cellular data."))
-                        onActiveFocusChanged: if (activeFocus) root.syncFocus(ethernetHotspotButton)
-                        Keys.onPressed: root.handleButtonKey(event)
-                        background: Rectangle { radius: 9; color: ethernetHotspotButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: ethernetHotspotButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: ethernetHotspotButton.activeFocus ? 2 : 1 }
-                        contentItem: Text { text: ethernetHotspotButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                     }
                 }
             }

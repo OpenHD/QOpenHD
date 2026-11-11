@@ -3,6 +3,9 @@ package org.openhd;
 import android.app.Activity;
 
 import android.content.Context;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.provider.Settings;
 
 import org.qtproject.qt5.android.bindings.QtActivity;
 import org.qtproject.qt5.android.bindings.QtApplication;
@@ -32,6 +35,22 @@ public class QOpenHDActivity extends QtActivity {
 
     public static void jniOnLoad() {
         nativeInit();
+    }
+
+    public void openTetheringSettings() {
+        try {
+            startActivity(new Intent("android.settings.TETHER_SETTINGS"));
+            return;
+        } catch (ActivityNotFoundException | SecurityException ignored) {
+            // Older Android versions expose the tethering activity through an alias.
+        }
+        try {
+            Intent tethering = new Intent(Intent.ACTION_MAIN);
+            tethering.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+            startActivity(tethering);
+        } catch (ActivityNotFoundException | SecurityException ignored) {
+            startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+        }
     }
 
     @Override

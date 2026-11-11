@@ -386,10 +386,11 @@ bool QOpenHD::is_windows()
 void QOpenHD::android_open_tethering_settings()
 {
 #ifdef __android__
-    qDebug()<<"android_open_tethering_settings()";
-    QAndroidJniObject::callStaticMethod<void>("org/openhd/IsConnected",
-                                              "makeAlertDialogOpenTetherSettings2",
-                                              "()V");
+    QtAndroid::runOnAndroidThread([] {
+        const auto activity = QtAndroid::androidActivity();
+        if (activity.isValid())
+            activity.callMethod<void>("openTetheringSettings", "()V");
+    });
 #endif
 }
 
