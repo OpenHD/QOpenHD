@@ -3,7 +3,7 @@ import argparse,os,subprocess,tempfile
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--qt-bin',type=Path,required=True);args=p.parse_args()
 menu=ROOT/'qml/ui/configpopup'
-paths=[menu/'features/JoystickSettingsPanel.qml',menu/'features/JoystickMapping.js',menu/'MenuTypography.js',menu/'AdvancedActionButton.qml',menu/'openhd_settings/CompactLinkComboBox.qml',ROOT/'qml/ui/elements/DarkComboBox.qml']
+paths=[menu/'AdvancedPage.qml',menu/'features/JoystickPage.qml',menu/'features/ChannelOverview.qml',menu/'features/ChannelRangeEditor.qml',menu/'features/RcRanges.js',menu/'features/ChannelPwmBar.qml',menu/'features/JoystickSettingsPanel.qml',menu/'features/JoystickMapping.js',menu/'MenuTypography.js',menu/'AdvancedActionButton.qml',menu/'openhd_settings/CompactLinkComboBox.qml',ROOT/'qml/ui/elements/DarkComboBox.qml']
 paths += [menu/'qopenhd_settings'/name for name in ['MapSettingsCard.qml','WidgetToggle.qml']]
 with tempfile.TemporaryDirectory(prefix='qopenhd-joystick-') as temp:
     folder=Path(temp);pages=folder/'pages';pages.mkdir()
@@ -14,7 +14,7 @@ with tempfile.TemporaryDirectory(prefix='qopenhd-joystick-') as temp:
     text=(ROOT/'tests/joystick/fixture.qml').read_text(encoding='utf-8').replace('"../../qml/ui/configpopup/features"','"pages"').replace('../../qml/',(ROOT/'qml').as_uri()+'/')
     (folder/'tst_joystick.qml').write_text(text,encoding='utf-8')
     env=os.environ.copy();env['PATH']=str(args.qt_bin)+os.pathsep+env.get('PATH','')
-    env.update(QT_SCALE_FACTOR='1',QT_QUICK_BACKEND='software',QT_QUICK_CONTROLS_STYLE='Material',QT_QPA_PLATFORM_PLUGIN_PATH=str(args.qt_bin.parent/'plugins/platforms'),QML2_IMPORT_PATH=str(args.qt_bin.parent/'qml'))
+    env.update(QT_QPA_PLATFORM='windows',QT_SCREEN_SCALE_FACTORS='1',QT_SCALE_FACTOR='1',QT_QUICK_BACKEND='software',QT_QUICK_CONTROLS_STYLE='Material',QT_QPA_PLATFORM_PLUGIN_PATH=str(args.qt_bin.parent/'plugins/platforms'),QML2_IMPORT_PATH=str(args.qt_bin.parent/'qml'))
     log=ROOT/'build'/('joystick-settings-'+args.qt_bin.parent.name+'.txt')
     result=subprocess.run([str(args.qt_bin/'qmltestrunner.exe'),'-input',str(folder),'-o',str(log)+',txt'],cwd=ROOT,env=env,timeout=60)
     print(log.read_text(encoding='utf-8') if log.exists() else 'No Qt output')

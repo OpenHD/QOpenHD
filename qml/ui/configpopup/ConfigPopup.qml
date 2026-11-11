@@ -80,7 +80,7 @@ Rectangle {
     property int creditsStarClickCount: 0
     property bool updatingNavigation: false
     readonly property var navigationPageIds: {
-        var pages = showDeveloperSettings ? [0, 1, 2, 8, 3, 5, 6, 7] : [0, 1, 2, 8, 5, 6]
+        var pages = showDeveloperSettings ? [0, 1, 2, 8, 4, 3, 5, 6, 7] : [0, 1, 2, 8, 4, 5, 6]
         if (showAdvancedSettings) pages.push(10)
         return pages
     }
@@ -109,8 +109,8 @@ Rectangle {
     onMenuPageTitleChanged: if (mainStackLayout.currentIndex !== 6) creditsStarClickCount = 0
     property int sidebarWidth: compactSidebar ? 72 : Math.max(160, Math.min(210, width * 0.17))
 
-    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), "", qsTr("CONNECT"), qsTr("CREDITS"), qsTr("DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS"), qsTr("AUDIO")][mainStackLayout.currentIndex]
-    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), "", qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("MAVLink and hardware diagnostics"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information"), qsTr("Sounds, speech and voice rules")][mainStackLayout.currentIndex]
+    readonly property string menuPageTitle: [qsTr("SYSTEM STATUS"), qsTr("OPENHD"), qsTr("OSD"), qsTr("SYSTEM LOGS"), qsTr("RC MAPPING"), qsTr("CONNECT"), qsTr("CREDITS"), qsTr("DEBUG"), qsTr("APPLICATION"), qsTr("DEVELOPER TOOLS"), qsTr("AUDIO")][mainStackLayout.currentIndex]
+    readonly property string menuPageSubtitle: [qsTr("Overview of all system components"), qsTr("Link, cameras and unit settings"), qsTr("Widgets, style and map"), qsTr("Live system messages"), qsTr("Joystick channel assignments and RC control"), qsTr("Connect to your OpenHD system"), qsTr("The OpenHD community"), qsTr("MAVLink and hardware diagnostics"), qsTr("General, vehicle and video settings"), qsTr("Diagnostics and system information"), qsTr("Sounds, speech and voice rules")][mainStackLayout.currentIndex]
     readonly property string menuPageIcon: ["\uf21e", "\uf085", "\uf108", "\uf03a", "\uf11b", "\uf6ff", "\uf005", "\uf188", "\uf013", "\uf0ad", "\uf028"][mainStackLayout.currentIndex]
 
     Settings {
@@ -176,7 +176,7 @@ Rectangle {
         ListElement { title: qsTr("OpenHD"); icon: "\uf085" }
         ListElement { title: qsTr("OSD"); icon: "\uf108" }
         ListElement { title: qsTr("Log"); icon: "\uf03a" }
-        ListElement { title: ""; icon: "" } // Reserved page ID; RC moved to Extras.
+        ListElement { title: qsTr("RC mapping"); icon: "\uf11b" }
         ListElement { title: qsTr("Connect"); icon: "\uf6ff" }
         ListElement { title: qsTr("Credits"); icon: "\uf005" }
         ListElement { title: qsTr("Debug"); icon: "\uf188" }
@@ -474,14 +474,13 @@ Rectangle {
             // Keep the Status heading, telemetry and toolbar clear of the cards.
             anchors.topMargin: contentFrame.statusHeaderInset
             currentIndex: 0
-            onCurrentIndexChanged: if (currentIndex === 4) currentIndex = 0
             // URL sources defer parsing/compiling each page's dependency tree.
             // Inline sourceComponents still resolve every page when this menu loads.
             AdvancedPageLoader { id: statusPage; selected: mainStackLayout.currentIndex === 0; source: "status/PanelStatus.qml" }
             AdvancedPageLoader { id: openhdPage; selected: mainStackLayout.currentIndex === 1; source: "openhd_settings/OHDSettingsPanel.qml" }
             AdvancedPageLoader { id: osdPage; selected: mainStackLayout.currentIndex === 2; source: "qopenhd_settings/OsdSettingsPanel.qml" }
             AdvancedPageLoader { id: logPage; selected: mainStackLayout.currentIndex === 3; source: "log/LogMessagesStatusView.qml" }
-            Item { property int status: Loader.Ready } // Retired RC page; preserve other page IDs.
+            AdvancedPageLoader { id: joystickPage; selected: mainStackLayout.currentIndex === 4; source: "features/JoystickPage.qml" }
             AdvancedPageLoader { id: connectPage; selected: mainStackLayout.currentIndex === 5; source: "connect/ConnectPanel.qml" }
             AdvancedPageLoader { id: creditsPage; selected: mainStackLayout.currentIndex === 6; source: "credits/Credits.qml" }
             AdvancedPageLoader { id: mavDebugPage; selected: mainStackLayout.currentIndex === 7; source: "dev/MavlinkDebugPanel.qml" }

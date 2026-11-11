@@ -25,7 +25,7 @@ def main():
     pages = {
         "status/PanelStatus.qml", "openhd_settings/OHDSettingsPanel.qml",
         "qopenhd_settings/AppSettingsPanel.qml", "qopenhd_settings/OsdSettingsPanel.qml", "log/LogMessagesStatusView.qml",
-        "rc/RcInfoPanel.qml", "connect/ConnectPanel.qml", "credits/Credits.qml",
+        "features/JoystickPage.qml", "connect/ConnectPanel.qml", "credits/Credits.qml",
         "dev/MavlinkDebugPanel.qml", "dev/AppDeveloperStatsPanel.qml",
     }
     stub = '''import QtQuick 2.12
@@ -141,7 +141,7 @@ Item {
             compare(root.diagnosticsUnlocked, false)
             compare(root.showDeveloperSettings, false)
             compare(root.navigationPageIds.indexOf(3), -1)
-            compare(root.navigationPageIds.indexOf(4), -1)
+            verify(root.navigationPageIds.indexOf(4) >= 0)
             compare(root.navigationPageIds.indexOf(7), -1)
             var navigation = findChild(root, "advancedNavigation")
             navigation.positionViewAtIndex(root.navigationPageIds.indexOf(6), ListView.Contain)
@@ -156,7 +156,7 @@ Item {
             tryCompare(root, "diagnosticsUnlocked", true)
             compare(root.showDeveloperSettings, true)
             verify(root.navigationPageIds.indexOf(3) >= 0)
-            compare(root.navigationPageIds.indexOf(4), -1)
+            verify(root.navigationPageIds.indexOf(4) >= 0)
             verify(root.navigationPageIds.indexOf(7) >= 0)
             compare(root.menuPageTitle, "CREDITS")
             wait(50)
@@ -167,6 +167,23 @@ Item {
             tryVerify(function() { return root.appDeveloperStatsPanel !== null })
             tryCompare(root.appDeveloperStatsPanel, "focusCalls", 1)
             compare(root.menuPageTitle, "DEVELOPER TOOLS")
+        }
+        function test_joystick_opens_from_normal_menu() {
+            var root = menu.item
+            _uiSimulator.profile = {accessMode:0}
+            _uiSimulator.active = true
+            compare(root.showAdvancedSettings, false)
+            compare(root.showDeveloperSettings, false)
+            verify(root.navigationPageIds.indexOf(4) >= 0)
+            var navigation = findChild(root, "advancedNavigation")
+            navigation.positionViewAtIndex(root.navigationPageIds.indexOf(4), ListView.Contain)
+            wait(50)
+            mouseClick(findChild(root, "navigationPage4"))
+            compare(root.menuPageTitle, "RC MAPPING")
+            compare(root.menuPageIcon, "\\uf11b")
+            tryVerify(function() { return root.currentPageReady })
+            keyClick(Qt.Key_Right)
+            _uiSimulator.active = false
         }
         function test_osd_and_application_are_separate() {
             var root = menu.item
@@ -187,7 +204,7 @@ Item {
             compare(root.showAdvancedSettings, false)
             compare(root.showDeveloperSettings, false)
             compare(root.navigationPageIds.indexOf(3), -1)
-            compare(root.navigationPageIds.indexOf(4), -1)
+            verify(root.navigationPageIds.indexOf(4) >= 0)
             _uiSimulator.profile = {accessMode:1}
             compare(root.showAdvancedSettings, true)
             compare(root.showDeveloperSettings, false)
@@ -195,7 +212,7 @@ Item {
             compare(root.showAdvancedSettings, true)
             compare(root.showDeveloperSettings, true)
             verify(root.navigationPageIds.indexOf(3) >= 0)
-            compare(root.navigationPageIds.indexOf(4), -1)
+            verify(root.navigationPageIds.indexOf(4) >= 0)
             _uiSimulator.active = false
             compare(root.showDeveloperSettings, true)
             compare(root.diagnosticsUnlocked, true)
@@ -264,7 +281,7 @@ Item {
         for name in pages:
             path = folder / name
             path.parent.mkdir(exist_ok=True)
-            valid = name.startswith("status/") or name.endswith(("OHDSettingsPanel.qml", "AppDeveloperStatsPanel.qml"))
+            valid = name.startswith("status/") or name.endswith(("OHDSettingsPanel.qml", "AppDeveloperStatsPanel.qml", "JoystickPage.qml"))
             path.write_text(stub if valid else "import QtQuick 2.12\nDeliberatelyMissingType {}\n", encoding="utf-8")
         shutil.copy(menu_dir / "status/StatusOverviewHeader.qml", folder / "status/StatusOverviewHeader.qml")
         (folder / "tst_menu.qml").write_text(test, encoding="utf-8")

@@ -130,6 +130,11 @@
         <file>ui/configpopup/qopenhd_settings/AudioRuleCard.qml</file>
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
         <file>ui/configpopup/features/UartSettingsPanel.qml</file>
+        <file>ui/configpopup/features/JoystickPage.qml</file>
+        <file>ui/configpopup/features/ChannelOverview.qml</file>
+        <file>ui/configpopup/features/ChannelRangeEditor.qml</file>
+        <file>ui/configpopup/features/RcRanges.js</file>
+        <file>ui/configpopup/features/ChannelPwmBar.qml</file>
         <file>ui/configpopup/features/JoystickSettingsPanel.qml</file>
         <file>ui/configpopup/features/JoystickMapping.js</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>

@@ -96,7 +96,13 @@ Flickable {
  }
  Column {
      id:cards;width:root.width;spacing:12
+     ChannelOverview {
+         objectName: "joystickChannelOverview"
+         width: parent.width
+         controller: root
+     }
      MapSettingsCard {
+         objectName: "joystickControls"
          width:parent.width;height:implicitHeight;title:qsTr("Joystick");icon:"\uf11b"
          subtitle:qsTr("Connect the joystick to the OpenHD Ground unit.")
          Column {
@@ -115,40 +121,6 @@ Flickable {
                  AdvancedActionButton {text:qsTr("Revert");enabled:root.dirty;onClicked:{root.mapping=Mapping.parse(root.savedMap);root.loadedMap=root.savedMap;root.learning=-1;root.message=""}}
              }
              Text {width:parent.width;visible:text.length>0;text:root.message;wrapMode:Text.WordWrap;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper}
-         }
-     }
-     GridLayout {
-         width:parent.width;columns:width>=1050?3:width>=680?2:1;columnSpacing:10;rowSpacing:8
-         Repeater {
-             model:root.mapping.length
-             Rectangle {
-                 id:channelRow;objectName:"joystickChannel"+(index+1)
-                 Layout.fillWidth:true;Layout.minimumWidth:0;implicitHeight:126
-                 color:settings_form.panelBackground;border.color:root.learning===index?settings_form.accentColor:settings_form.lineColor;radius:8
-                 readonly property int output:index
-                 readonly property int input:root.mapping[index]||0
-                 readonly property int pwm:input>0&&root.values.length===18?root.values[input-1]:-1
-                 ColumnLayout {
-                     anchors.fill:parent;anchors.margins:12;spacing:8
-                     RowLayout {
-                         Layout.fillWidth:true
-                         Text {text:qsTr("CH %1").arg(index+1);color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
-                         Text {Layout.fillWidth:true;text:root.luaBase>0&&index+1>=root.luaBase&&index+1<root.luaBase+4?qsTr("Lua"):"";color:settings_form.accentColor;font.family:Typography.family;font.pixelSize:Typography.helper}
-                         Text {text:channelRow.pwm>=800&&channelRow.pwm<=2200?channelRow.pwm:"--";color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.body}
-                     }
-                     RowLayout {
-                         Layout.fillWidth:true;spacing:8
-                         CompactLinkComboBox {
-                             objectName:"joystickSource"+(index+1);Layout.fillWidth:true;Layout.minimumWidth:0
-                             property var sources:{var a=[];if(root.modern)a.push({text:qsTr("Unassigned"),value:0});for(var j=1;j<=18;j++)a.push({text:Mapping.sourceName(j),value:j});return a}
-                             model:sources;textRole:"text";currentIndex:channelRow.input-(root.modern?0:1);enabled:!root.armed
-                             onActivated:root.assign(channelRow.output,sources[currentIndex].value)
-                         }
-                         AdvancedActionButton {text:root.learning===index?qsTr("Move..."):qsTr("Assign");implicitWidth:Typography.controlMinWidth;enabled:root.monitoring&&root.inputs&&root.inputs.is_alive&&!root.armed;onClicked:root.learn(index)}
-                     }
-                     ProgressBar {Layout.fillWidth:true;from:1000;to:2000;value:channelRow.pwm>=800&&channelRow.pwm<=2200?channelRow.pwm:1000}
-                 }
-             }
          }
      }
      MapSettingsCard {
@@ -179,31 +151,6 @@ Flickable {
                  onClicked:root.write(root.airParams,"RC_SET_BASE",root.freeBlocks[0],false)
              }
 
-         }
-     }
-     MapSettingsCard {
-         objectName:"joystickFcChannels";width:parent.width;height:implicitHeight
-         title:qsTr("FC channels");icon:"\uf1de"
-         Column {
-             Layout.fillWidth:true;Layout.minimumWidth:0;width:parent.width;spacing:4
-             Text {
-                 width:parent.width;visible:typeof _rcchannelsmodelfc==="undefined" || !_rcchannelsmodelfc.is_alive
-                 text:qsTr("Waiting for flight-controller channels.");wrapMode:Text.WordWrap
-                 color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.helper
-             }
-             Repeater {
-                 model:typeof _rcchannelsmodelfc!=="undefined"?_rcchannelsmodelfc:null
-                 Rectangle {
-                     objectName:"joystickFcChannel"+(index+1);width:parent.width;height:38;radius:6
-                     color:index%2?settings_form.panelBackgroundRaised:"transparent"
-                     RowLayout {
-                         anchors.fill:parent;anchors.leftMargin:10;anchors.rightMargin:10;spacing:12
-                         Text {text:qsTr("CH %1").arg(index+1);Layout.preferredWidth:52;color:settings_form.secondaryText;font.family:Typography.family;font.pixelSize:Typography.body}
-                         ProgressBar {Layout.fillWidth:true;from:1000;to:2000;value:model.curr_value>=800&&model.curr_value<=2200?model.curr_value:1000}
-                         Text {text:model.curr_value>=800&&model.curr_value<=2200?model.curr_value:"--";Layout.preferredWidth:48;horizontalAlignment:Text.AlignRight;color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body}
-                     }
-                 }
-             }
          }
      }
  }

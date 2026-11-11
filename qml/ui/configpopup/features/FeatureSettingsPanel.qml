@@ -109,7 +109,6 @@ AdvancedPage {
                 }
             }
             AdvancedTabButton { text: qsTr("UART"); iconText: "\uf120" }
-            AdvancedTabButton { text: qsTr("JOYSTICK"); iconText: "\uf11b" }
             AdvancedTabButton { text: qsTr("FLEETCONTROL"); iconText: "\uf0c0" }
         }
 
@@ -484,7 +483,6 @@ AdvancedPage {
             }
 
             UartSettingsPanel {}
-            JoystickSettingsPanel {}
             FleetControlSettingsPanel {
                 onBackRequested: root.backRequested()
             }
