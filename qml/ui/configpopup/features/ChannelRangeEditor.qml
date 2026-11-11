@@ -19,6 +19,7 @@ Column {
     property int live: -1
     property int actionIndex: 0
     property int selectedArea: 0
+    property int addedAreaValue: -1
     signal edited(var next)
     signal resetRequested()
     spacing: 12
@@ -218,7 +219,8 @@ Column {
                 enabled: root.ranges.length < 5 && root.ranges.length > 0 && root.ranges[root.selectedArea].upper > (root.selectedArea === 0 ? 900 : root.ranges[root.selectedArea-1].upper+1)
                 onClicked: {
                     var current = root.ranges[root.selectedArea].value
-                    var next = root.options[(root.optionIndex(current)+1)%root.options.length].value
+                    var next = root.addedAreaValue >= 0 ? root.addedAreaValue
+                        : root.options[(root.optionIndex(current)+1)%root.options.length].value
                     root.edited(Ranges.split(root.ranges, root.selectedArea, next))
                     root.selectedArea++
                 }

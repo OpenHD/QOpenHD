@@ -19,6 +19,8 @@ Item {
         property string color_caution:"yellow"
         property string font_text:"Sans Serif"
         property real osd_opacity:1.0
+        property real sidebar_popup_scale:1.2
+        property real sidebar_show_icon_scale:1.0
         property string link_overview_widget_bg_color:"#000000"
         property string osd_top_bar_background_color:""
         property string osd_top_bar_text_color:""
@@ -115,6 +117,15 @@ Item {
             page.usePreset(2);page.setStyle("color_text","#abcdef")
             page.visible=false;verify(Qt.colorEqual(settings.color_text,"#abcdef"))
             page.visible=true;verify(Qt.colorEqual(settings.color_text,"#abcdef"))
+        }
+        function test_sidebar_sizes_are_independent_of_style_menu(){
+            compare(visual(page,"sidebar_popup_scale"),null)
+            compare(visual(page,"sidebar_show_icon_scale"),null)
+            settings.sidebar_popup_scale=1.7
+            settings.sidebar_show_icon_scale=1.4
+            page.resetDefaults()
+            compare(settings.sidebar_popup_scale,1.7)
+            compare(settings.sidebar_show_icon_scale,1.4)
         }
         function test_colours_font_opacity_and_live_source(){
             var colour=visual(page,"styleColour_color_text")

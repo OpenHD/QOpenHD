@@ -84,6 +84,7 @@ void RCChannelsModel::update_all_channels(const RC_CHANNELS &channels)
     set_control_throttle(channels[2]); // T
     set_control_pitch(channels[3]); // R
     m_last_update_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
+    emit channelsUpdated();
 }
 
 void RCChannelsModel::set_channels_debug()

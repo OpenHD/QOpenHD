@@ -3,7 +3,7 @@ import argparse,os,subprocess,tempfile
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--qt-bin',type=Path,required=True);args=p.parse_args()
 menu=ROOT/'qml/ui/configpopup'
-paths=[menu/'AdvancedPage.qml',menu/'features/JoystickPage.qml',menu/'features/ChannelOverview.qml',menu/'features/ChannelRangeEditor.qml',menu/'features/RcRanges.js',menu/'features/ChannelPwmBar.qml',menu/'features/JoystickSettingsPanel.qml',menu/'features/JoystickMapping.js',menu/'MenuTypography.js',menu/'AdvancedActionButton.qml',menu/'openhd_settings/CompactLinkComboBox.qml',ROOT/'qml/ui/elements/DarkComboBox.qml']
+paths=[menu/'AdvancedPage.qml',menu/'features/JoystickPage.qml',menu/'features/ChannelOverview.qml',menu/'features/ChannelRangeEditor.qml',menu/'features/RcRanges.js',menu/'features/RcKeyboardNavigation.qml',menu/'features/ChannelPwmBar.qml',menu/'features/JoystickSettingsPanel.qml',menu/'features/JoystickMapping.js',menu/'MenuTypography.js',menu/'AdvancedActionButton.qml',menu/'openhd_settings/CompactLinkComboBox.qml',ROOT/'qml/ui/elements/DarkComboBox.qml']
 paths += [menu/'qopenhd_settings'/name for name in ['MapSettingsCard.qml','WidgetToggle.qml']]
 with tempfile.TemporaryDirectory(prefix='qopenhd-joystick-') as temp:
     folder=Path(temp);pages=folder/'pages';pages.mkdir()

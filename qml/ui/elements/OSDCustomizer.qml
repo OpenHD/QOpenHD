@@ -5,14 +5,13 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 
 import "colorwheel"
+import "../configpopup"
 
 Rectangle {
     id: osdCustomizer
 
-    //width: 196
-    //height: 312
-    width: 250
-    height: 350
+    width: parent ? Math.min(280, parent.width - 24) : 280
+    height: parent ? Math.min(col.implicitHeight, parent.height - 24) : col.implicitHeight
 
     color: "#cc000000"
 
@@ -37,16 +36,22 @@ Rectangle {
 
     transitions: [ Transition { NumberAnimation { property: "opacity"; duration: 250}} ]
 
-    Item {
+    Flickable {
         anchors.fill: parent
+        clip: true
+        contentWidth: width
+        contentHeight: col.implicitHeight
+        boundsBehavior: Flickable.StopAtBounds
+        ScrollBar.vertical: ScrollBar {}
 
         Column {
             id: col
-            anchors.fill: parent
+            width: osdCustomizer.width
             spacing: 6
             rightPadding: 12
             leftPadding: 12
             topPadding: 12
+            bottomPadding: 12
 
             Item {
                 width: parent.width - 24
@@ -195,23 +200,10 @@ Rectangle {
                 }
             }
 
-            /*Item{
-                height: 60
-                width: parent.width - 24
-                Slider{
-                    from: 0.5
-                    to: 1.5
-                    value: settings.hud_osd_qquickpainteditem_font_scale
-                    onValueChanged: settings.hud_osd_qquickpainteditem_font_scale=value
-                }
-            }*/
-
-            Button {
-                height: 60
+            AdvancedActionButton {
                 width: parent.width - 24
                 text: qsTr("Done")
-                Material.accent: Material.Red
-                highlighted: true
+                primary: true
 
                 onClicked: {
                     osdCustomizer.visible = false

@@ -19,6 +19,7 @@ ColumnLayout{
     property bool show_vertical_lock: false
     property bool show_horizontal_lock: false
     property bool show_transparency: true
+    property bool show_size: true
     property bool show_background_color: false
     property var background_color_target: null
     property Item background_color_picker: typeof hudOverlayGrid !== "undefined" ? hudOverlayGrid.colorPicker : null
@@ -85,6 +86,7 @@ ColumnLayout{
     Item {
         width: parent.width
         height: 32
+        visible: show_size
         Text {
             text: qsTr("Size: x"+bw_current_scale.toFixed(1))
             color: "white"

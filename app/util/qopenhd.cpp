@@ -2,12 +2,15 @@
 #include "settingsbackup.h"
 #include "widgetpreviewimage.h"
 #include <QQuickItemGrabResult>
+#include <QQuickWindow>
+#include <QKeyEvent>
 #include <QBuffer>
 #include "qopenhd.h"
 #include "audioannouncements.h"
 #include "qtcreatorlaunch.h"
 #include "qpixmap.h"
 #include <QCoreApplication>
+#include <QGuiApplication>
 #include <QSettings>
 #include <QDebug>
 #include <QLocale>
@@ -44,6 +47,25 @@
 #endif
 
 #include "mousehelper.h"
+
+void QOpenHD::postRcNavigationKey(int key) const
+{
+    switch (key) {
+    case Qt::Key_Up:
+    case Qt::Key_Down:
+    case Qt::Key_Left:
+    case Qt::Key_Right:
+        break;
+    default:
+        return;
+    }
+
+    auto* window = qobject_cast<QQuickWindow*>(QGuiApplication::focusWindow());
+    if (!window || !window->isActive()) return;
+
+    QCoreApplication::postEvent(window, new QKeyEvent(QEvent::KeyPress, key, Qt::NoModifier));
+    QCoreApplication::postEvent(window, new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier));
+}
 
 QOpenHD &QOpenHD::instance()
 {

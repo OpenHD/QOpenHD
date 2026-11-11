@@ -44,7 +44,9 @@ Button { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body
         Text {
             id: buttonIcon
             visible: control.iconText.length > 0
-            anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
+            anchors.left: control.text.length ? parent.left : undefined
+            anchors.horizontalCenter: control.text.length ? undefined : parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
             text: control.iconText
             color: control.primary ? "white" : (control.destructive ? _theme.errorColor : _theme.primaryText)
             font.family: "Font Awesome 5 Free"; font.pixelSize: MenuTypography.controlIcon

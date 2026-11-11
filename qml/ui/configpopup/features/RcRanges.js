@@ -45,3 +45,37 @@ function remove(ranges, index) {
     next.splice(index, 1)
     return next
 }
+
+function keyboardOptions() {
+    return [
+        { value: 0, text: qsTr("No key") },
+        { value: Qt.Key_Right, text: qsTr("Right") },
+        { value: Qt.Key_Left, text: qsTr("Left") },
+        { value: Qt.Key_Up, text: qsTr("Up") },
+        { value: Qt.Key_Down, text: qsTr("Down") }
+    ]
+}
+
+function keyboardProfiles(text) {
+    var profiles = {}
+    try {
+        var saved = JSON.parse(text)
+        if (!saved || typeof saved !== "object" || Array.isArray(saved)) return profiles
+        var keys = keyboardOptions().map(function(option) { return option.value })
+        for (var channel = 1; channel <= 18; ++channel) {
+            if (typeof saved[channel] !== "string") continue
+            var ranges = parse(saved[channel])
+            if (valid(ranges, keys) && ranges.some(function(range) { return range.value !== 0 }))
+                profiles[channel] = ranges
+        }
+    } catch (error) {
+        return {}
+    }
+    return profiles
+}
+
+function encodeKeyboardProfiles(profiles) {
+    var saved = {}
+    Object.keys(profiles).forEach(function(channel) { saved[channel] = encode(profiles[channel]) })
+    return JSON.stringify(saved)
+}

@@ -13,9 +13,12 @@ Item {
     readonly property var actions: [
         {rangeId:"RC_BW_RANGES", defaults:"1500:20,2100:40", legacy:"1300:10,1700:20,2100:40", values:[10,20,40], id:"BW_VIA_RC", name:qsTr("OpenHD channel width"), icon:"\uf03d", labels:["10 MHz","20 MHz","40 MHz"]},
         {rangeId:"RC_MCS_RANGES", defaults:"1300:0,1700:2,2100:3", legacy:"1200:0,1400:1,1600:2,1800:3,2100:4", values:[0,1,2,3,4], id:"MCS_VIA_RC", name:qsTr("MCS (dynamic)"), icon:"\uf012", labels:["MCS 0","MCS 1","MCS 2","MCS 3","MCS 4"]},
-        {rangeId:"RC_TX_RANGES", defaults:"1300:0,1700:1,2100:2", values:[0,1,2], id:"TXMODE_VIA_RC", name:qsTr("Transmit mode"), icon:"\uf519", labels:[qsTr("Off"),qsTr("Pit"),qsTr("Normal")]},
-        {rangeId:"RC_FHSS_RANGES", defaults:"1500:0,2100:1", values:[0,1], id:"FHSS_VIA_RC", name:qsTr("Frequency hopping"), icon:"\uf362", labels:[qsTr("Off"),qsTr("On")]}
+        {rangeId:"RC_TX_RANGES", defaults:"1300:0,1700:1,2100:2", values:[0,1,2], id:"TXMODE_VIA_RC", name:qsTr("Transmit mode"), icon:"\uf519", labels:[qsTr("Off"),qsTr("Pit"),qsTr("Normal")]}
     ]
+    readonly property int keyboardAction: actions.length
+    readonly property var keyboardOptions: Ranges.keyboardOptions()
+    readonly property var keyboardProfiles: Ranges.keyboardProfiles(settings.rc_keyboard_mappings)
+    readonly property string defaultKeyboardRanges: "1500:0,2100:0"
     property var fcValues: []
     readonly property var fc: typeof _rcchannelsmodelfc !== "undefined" ? _rcchannelsmodelfc : null
     readonly property var airLink: typeof _ohdSystemAir !== "undefined" ? _ohdSystemAir : null
@@ -45,6 +48,7 @@ Item {
     }
     function channelName(channel) {
         var names = assignedActions(channel).map(function(action) { return action.name })
+        if (keyboardProfiles[channel]) names.push(qsTr("Keyboard"))
         if (controller.luaBase > 0 && channel >= controller.luaBase && channel < controller.luaBase + 4)
             names.push(qsTr("OpenHD Lua · %1").arg(["D2","D1","D0","CLK"][channel-controller.luaBase]))
         if (!names.length) names.push(qsTr("Unassigned"))
@@ -57,7 +61,8 @@ Item {
         editor.originalAssignments = actions.map(function(action) { return root.assignment(action) })
         editor.originalRanges = actions.map(function(action) { return root.rangeString(action) })
         editor.ranges = editor.originalRanges.map(function(text) { return Ranges.parse(text) })
-        editor.selectedAction = editor.originalAssignments.indexOf(channel)
+        editor.keyboardRanges = keyboardProfiles[channel] || Ranges.parse(defaultKeyboardRanges)
+        editor.selectedAction = keyboardProfiles[channel] ? keyboardAction : editor.originalAssignments.indexOf(channel)
         editor.error = ""
         editor.savedChanges = false
         editor.open()
@@ -77,7 +82,8 @@ Item {
                 objectName: "joystickChannel" + (index+1)
                 readonly property int channel: index+1
                 readonly property var assigned: root.assignedActions(channel)
-                readonly property bool used: assigned.length > 0 || (controller.luaBase > 0 && channel >= controller.luaBase && channel < controller.luaBase+4)
+                readonly property bool hasKeyboard: !!root.keyboardProfiles[channel]
+                readonly property bool used: hasKeyboard || assigned.length > 0 || (controller.luaBase > 0 && channel >= controller.luaBase && channel < controller.luaBase+4)
                 readonly property int value: root.pwm(channel)
                 width: parent.width; implicitHeight: root.compact ? 100 : 64
                 hoverEnabled: true
@@ -92,11 +98,11 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true; spacing: 12
                         Label { text: "›  CH " + row.channel; Layout.preferredWidth: 62; color: settings_form.primaryText; font.bold: true }
-                        Label { text: row.assigned.length ? row.assigned[0].icon : "\uf1de"; font.family: "Font Awesome 5 Free"; color: row.assigned.length ? settings_form.accentColor : settings_form.secondaryText; Layout.preferredWidth: 24 }
+                        Label { text: row.hasKeyboard ? "\uf11c" : row.assigned.length ? row.assigned[0].icon : "\uf1de"; font.family: "Font Awesome 5 Free"; color: row.used ? settings_form.accentColor : settings_form.secondaryText; Layout.preferredWidth: 24 }
                         Label { text: root.channelName(row.channel); Layout.fillWidth: true; Layout.minimumWidth: 0; wrapMode: Text.WordWrap; maximumLineCount: 2; elide: Text.ElideRight; color: settings_form.primaryText; font.pixelSize: Typography.body }
                         ChannelPwmBar { visible: !root.compact; Layout.preferredWidth: 140; value: row.value }
                         Label { visible: !root.compact; Layout.preferredWidth: 48; text: root.valid(row.value) ? row.value : "—"; color: settings_form.primaryText }
-                        Label { visible: !root.compact; Layout.preferredWidth: 110; text: row.assigned.length ? "900 – 2100" : "—"; color: settings_form.secondaryText }
+                        Label { visible: !root.compact; Layout.preferredWidth: 110; text: row.hasKeyboard || row.assigned.length ? "900 – 2100" : "—"; color: settings_form.secondaryText }
                         Label {
                             visible: !root.compact; Layout.preferredWidth: 72; padding: 6; horizontalAlignment: Text.AlignHCenter
                             text: row.used ? qsTr("Used") : qsTr("Unused"); color: row.used ? "#75dd9a" : settings_form.secondaryText
@@ -121,6 +127,7 @@ Item {
         property int selectedAction: -1
         readonly property var selected: root.actions.map(function(action, i) { return i === editor.selectedAction })
         property var ranges: []
+        property var keyboardRanges: []
         property var originalRanges: []
         property string error: ""
         property bool savedChanges: false
@@ -130,12 +137,16 @@ Item {
         height: Math.min(parent.height - 24, Math.max(300, editorContent.implicitHeight + padding*2 + 156))
         modal: true; focus: true; padding: width < 500 ? 16 : 24
         closePolicy: Popup.CloseOnEscape
+        onAboutToShow: {
+            if (typeof hudOverlayGrid !== "undefined" && hudOverlayGrid.rcKeyboardEditor !== undefined)
+                hudOverlayGrid.rcKeyboardEditor = editor
+        }
         background: Rectangle {
             radius: 18; color: settings_form.panelBackground; border.color: settings_form.lineColor
             Rectangle { x: 24; y: 0; width: parent.width - 48; height: 2; radius: 1; color: settings_form.accentColor }
         }
         function selectAction(index) {
-            if (controller.armed || (index >= 0 && !root.supported(root.actions[index]))) return
+            if (controller.armed || (index >= 0 && index !== root.keyboardAction && !root.supported(root.actions[index]))) return
             selectedAction = index
         }
         function editRanges(index, next) {
@@ -144,6 +155,12 @@ Item {
         }
         function apply() {
             if (controller.armed) { error = qsTr("Disarm before changing RC settings."); return }
+            if (selectedAction === root.keyboardAction &&
+                    (!Ranges.valid(keyboardRanges, root.keyboardOptions.map(function(option) { return option.value }))
+                     || !keyboardRanges.some(function(range) { return range.value !== 0 }))) {
+                error = qsTr("Choose a direction for at least one PWM range.")
+                return
+            }
             if (root.actions.some(function(action,i) { return root.assignment(action) !== editor.originalAssignments[i] || root.rangeString(action) !== editor.originalRanges[i] })) {
                 error = qsTr("Settings changed while editing. Close and reopen this channel."); return
             }
@@ -174,6 +191,12 @@ Item {
                     savedChanges = true
                     var snapshot = originalAssignments.slice(); snapshot[i] = next; originalAssignments = snapshot
                 }
+            }
+            if (selectedAction === root.keyboardAction || root.keyboardProfiles[channel]) {
+                var profiles = Object.assign({}, root.keyboardProfiles)
+                if (selectedAction === root.keyboardAction) profiles[channel] = keyboardRanges
+                else delete profiles[channel]
+                settings.rc_keyboard_mappings = Ranges.encodeKeyboardProfiles(profiles)
             }
             close()
         }
@@ -219,6 +242,7 @@ Item {
                                     if (!root.supported(root.actions[i]) && editor.selectedAction !== i) continue
                                     options.push({text: root.actions[i].name, actionIndex: i})
                                 }
+                                options.push({text: qsTr("Keyboard"), actionIndex: root.keyboardAction})
                                 return options
                             }
                             textRole: "text"
@@ -226,10 +250,22 @@ Item {
                                 for (var i=0; i<model.length; ++i) if (model[i].actionIndex === editor.selectedAction) return i
                                 return 0
                             }
-                            enabled: controller.airParams && controller.airParams.system_is_alive() && model.length > 1 && !controller.armed
+                            enabled: !controller.armed
                             onActivated: {
                                 editor.selectAction(model[currentIndex].actionIndex)
                             }
+                        }
+                        ChannelRangeEditor {
+                            visible: editor.selectedAction === root.keyboardAction
+                            width: parent.width
+                            actionIndex: root.keyboardAction
+                            addedAreaValue: 0
+                            ranges: editor.keyboardRanges
+                            options: root.keyboardOptions
+                            editable: !controller.armed
+                            live: root.pwm(editor.channel)
+                            onEdited: function(next) { editor.keyboardRanges = next }
+                            onResetRequested: editor.keyboardRanges = Ranges.parse(root.defaultKeyboardRanges)
                         }
                         Repeater {
                             model: root.actions

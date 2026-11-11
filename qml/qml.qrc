@@ -86,6 +86,7 @@
         <file>ui/widgets/SpeedSecondWidget.qml</file>
         <file>ui/elements/FontSelect.qml</file>
         <file>ui/elements/OSDCustomizer.qml</file>
+        <file>ui/elements/SidebarSizeControls.qml</file>
         <file>ui/elements/colorwheel/CheckerBoard.qml</file>
         <file>ui/elements/colorwheel/ColorWheel.qml</file>
         <file>ui/elements/colorwheel/ColorUtils.js</file>
@@ -134,6 +135,7 @@
         <file>ui/configpopup/features/ChannelOverview.qml</file>
         <file>ui/configpopup/features/ChannelRangeEditor.qml</file>
         <file>ui/configpopup/features/RcRanges.js</file>
+        <file>ui/configpopup/features/RcKeyboardNavigation.qml</file>
         <file>ui/configpopup/features/ChannelPwmBar.qml</file>
         <file>ui/configpopup/features/JoystickSettingsPanel.qml</file>
         <file>ui/configpopup/features/JoystickMapping.js</file>
@@ -154,7 +156,6 @@
         <file>ui/elements/MessagePopup.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
-        <file>ui/widgets/UDPDataLinkDebugWidget.qml</file>
         <file>ui/widgets/BaseWidgetDefaultUiControlElements.qml</file>
         <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
         <file>ui/widgets/DistanceSensorWidget.qml</file>

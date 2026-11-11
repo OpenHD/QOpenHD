@@ -9,8 +9,17 @@ Item {
  FontLoader {source:"../../qml/osdfonts/Archivo-Regular.ttf"}
  FontLoader {source:"../../qml/resources/Font Awesome 5 Free-Solid-900.otf"}
  QtObject {id:settings_form;property bool darkMode:true;property bool showAdvancedSettings:true;property bool compactSidebar:true;property color pageBackground:"#091827";property int backCalls:0;function side_bar_regain_focus(){backCalls++} property color primaryText:"white";property color secondaryText:"#aebdcb";property color accentColor:"#278cff";property color panelBackground:"#102235";property color panelBackgroundRaised:"#15283b";property color lineColor:"#26394c"}
- ListModel {id:_rcchannelsmodelfc;property bool is_alive:true;function channelValues(){var a=[];for(var i=0;i<18;i++)a.push(i<count?get(i).curr_value:1500);return a} ListElement {curr_value:1200} ListElement {curr_value:1800} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500}}
+ ListModel {id:_rcchannelsmodelfc;property bool is_alive:true;signal channelsUpdated();function channelValues(){var a=[];for(var i=0;i<18;i++)a.push(i<count?get(i).curr_value:1500);return a} ListElement {curr_value:1200} ListElement {curr_value:1800} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500} ListElement {curr_value:1500}}
  QtObject {id:_fcMavlinkSystem;property bool armed:false}
+ QtObject {id:settings; property string rc_keyboard_mappings: "{}"}
+ QtObject {id:hudOverlayGrid; property QtObject rcKeyboardEditor: null}
+ Pages.RcKeyboardNavigation {
+     id: keyboard
+     channelModel: _rcchannelsmodelfc
+     mapping: settings.rc_keyboard_mappings
+     suspended: !!hudOverlayGrid.rcKeyboardEditor && hudOverlayGrid.rcKeyboardEditor.visible
+ }
+ SignalSpy { id: keys; target: keyboard; signalName: "keyPressed" }
  QtObject {id:_ohdSystemAir;property bool is_alive:true;property int curr_channel_mhz:5745;property int curr_channel_width_mhz:20}
  QtObject {
      id:_ohdSystemGroundSettings
@@ -59,7 +68,7 @@ Item {
  Loader {id:loader;anchors.fill:parent;sourceComponent:page}
  TestCase {
      name:"JoystickSettings";when:windowShown
-     function init(){settings_form.showAdvancedSettings=true;_ohdSystemGroundSettings.lastId="";loader.active=false;_fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=true;_ohdSystemGroundSettings.modern=true;_ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.saved="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";_ohdSystemGroundSettings.update_count++;_rcchannelsmodelfc.is_alive=true;_rcchannelsmodelfc.setProperty(2,"curr_value",1500);_ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.radioSupported=true;_ohdSystemAirSettingsModel.rangesSupported=true;_ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"};_ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.rejectId="";_ohdSystemAirSettingsModel.assignments={BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0};_ohdSystemAirSettingsModel.writes=[];_ohdSystemAirSettingsModel.base=0;_ohdSystemAirSettingsModel.update_count++;loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)}
+     function init(){settings.rc_keyboard_mappings="{}";keys.clear();settings_form.showAdvancedSettings=true;_ohdSystemGroundSettings.lastId="";loader.active=false;_fcMavlinkSystem.armed=false;_ohdSystemGroundSettings.connected=true;_ohdSystemGroundSettings.modern=true;_ohdSystemGroundSettings.enabledValue=0;_ohdSystemGroundSettings.error="";_ohdSystemGroundSettings.saved="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";_ohdSystemGroundSettings.update_count++;_rcchannelsmodelfc.is_alive=true;_rcchannelsmodelfc.setProperty(2,"curr_value",1500);_ohdSystemAirSettingsModel.connected=true;_ohdSystemAirSettingsModel.radioSupported=true;_ohdSystemAirSettingsModel.rangesSupported=true;_ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"};_ohdSystemAirSettingsModel.error="";_ohdSystemAirSettingsModel.rejectId="";_ohdSystemAirSettingsModel.assignments={BW_VIA_RC:3,MCS_VIA_RC:8,TXMODE_VIA_RC:0,FHSS_VIA_RC:0};_ohdSystemAirSettingsModel.writes=[];_ohdSystemAirSettingsModel.base=0;_ohdSystemAirSettingsModel.update_count++;loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)}
      function test_standalone_page_focus_and_back(){
          var page = standalonePage.createObject(scene)
          verify(page !== null)
@@ -206,20 +215,78 @@ Item {
          compare(_ohdSystemAirSettingsModel.writes.length,1)
          compare(_ohdSystemAirSettingsModel.enabledValue,0)
      }
-     function test_edit_hopping_on_off_ranges(){
-         var air=_ohdSystemAirSettingsModel
-         air.profiles=Object.assign({},air.profiles,{RC_FHSS_RANGES:"1500:0,2100:1"})
+     function test_keyboard_function_and_hidden_hopping(){
+         var air = _ohdSystemAirSettingsModel
+         air.assignments = Object.assign({}, air.assignments, {FHSS_VIA_RC: 6})
          air.update_count++
-         var editor=openEditor(6)
-         chooseFunction(editor,3)
-         var rangeEditor=findChild(editor.contentItem,"channelRangeEditor3")
-         verify(rangeEditor.editable)
-         setAreaValue(editor,3,0,1)
-         setAreaValue(editor,3,1,0)
+         var editor = openEditor(6)
+         var picker = findChild(editor.contentItem, "channelFunctionPicker")
+         verify(!picker.model.some(function(option) { return option.text === "Frequency hopping" }))
+         var keyboardOption = picker.model.find(function(option) { return option.text === "Keyboard" })
+         verify(keyboardOption !== undefined)
+         chooseFunction(editor, keyboardOption.actionIndex)
          editor.apply()
-         compare(air.profiles.RC_FHSS_RANGES,"1500:1,2100:0")
-         compare(air.assignments.FHSS_VIA_RC,6)
-         compare(air.enabledValue,0)
+         verify(editor.opened)
+         verify(editor.error.indexOf("direction") >= 0)
+         setAreaValue(editor, keyboardOption.actionIndex, 1, Qt.Key_Right)
+         editor.apply()
+         tryCompare(editor, "opened", false)
+         compare(Ranges.keyboardProfiles(settings.rc_keyboard_mappings)[6][1].value, Qt.Key_Right)
+         compare(air.assignments.FHSS_VIA_RC, 6)
+         compare(air.writes.length, 0)
+
+         editor = openEditor(6)
+         compare(editor.selectedAction, keyboardOption.actionIndex)
+         chooseFunction(editor, -1)
+         editor.apply()
+         tryCompare(editor, "opened", false)
+         compare(settings.rc_keyboard_mappings, "{}")
+         compare(air.assignments.FHSS_VIA_RC, 6)
+     }
+     function test_keyboard_range_edges_and_editor_suspend(){
+         var air = _ohdSystemAirSettingsModel
+         air.connected = false
+         air.update_count++
+         var editor = openEditor(3)
+         var picker = findChild(editor.contentItem, "channelFunctionPicker")
+         var keyboardOption = picker.model.find(function(option) { return option.text === "Keyboard" })
+         chooseFunction(editor, keyboardOption.actionIndex)
+         setAreaValue(editor, keyboardOption.actionIndex, 1, Qt.Key_Down)
+         editor.apply()
+         tryCompare(editor, "opened", false)
+         compare(air.writes.length, 0)
+         tryCompare(keyboard, "suspended", false)
+
+         function sample(pwm) {
+             _rcchannelsmodelfc.setProperty(2, "curr_value", pwm)
+             _rcchannelsmodelfc.channelsUpdated()
+         }
+         sample(1800)
+         compare(keys.count, 0)
+         sample(1000)
+         sample(1800)
+         compare(keys.count, 1)
+         compare(keys.signalArguments[0][0], Qt.Key_Down)
+         sample(1800)
+         sample(1498)
+         sample(1800)
+         compare(keys.count, 1)
+         sample(65535)
+         sample(1800)
+         compare(keys.count, 1)
+
+         editor = openEditor(3)
+         verify(keyboard.suspended)
+         sample(1000)
+         sample(1800)
+         compare(keys.count, 1)
+         editor.close()
+         tryCompare(keyboard, "suspended", false)
+         sample(1800)
+         compare(keys.count, 1)
+         sample(1000)
+         sample(1800)
+         compare(keys.count, 2)
      }
      function setAreaValue(editor, action, area, value) {
          findChild(editor.contentItem,"channelRangeEditor"+action).selectedArea=area
@@ -343,7 +410,7 @@ Item {
          chooseFunction(editor,0)
          _ohdSystemAirSettingsModel.connected=false;_ohdSystemAirSettingsModel.update_count++
          editor.apply();verify(editor.opened);compare(_ohdSystemAirSettingsModel.writes.length,0)
-         verify(!findChild(editor.contentItem,"channelFunctionPicker").enabled)
+         verify(findChild(editor.contentItem,"channelFunctionPicker").enabled)
      }
      function test_channel_popup_layout(){
          scene.width=1200;scene.height=800

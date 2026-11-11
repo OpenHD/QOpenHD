@@ -552,6 +552,9 @@ Settings {
     property double hide_identity_longitude_offset: 0.0
 
     property bool show_sidebar: true
+    property real sidebar_popup_scale: 1.2
+    property real sidebar_show_icon_scale: 1.0
+    property string rc_keyboard_mappings: "{}"
 
     property int qopenhd_mavlink_connection_mode: 0;
     property string qopenhd_mavlink_connection_manual_tcp_ip: "192.168.1.42"

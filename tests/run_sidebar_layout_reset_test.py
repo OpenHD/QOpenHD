@@ -16,10 +16,15 @@ with tempfile.TemporaryDirectory(prefix="qopenhd-sidebar-") as temp:
                  "Panel8FindAirUnit", "BaseJoyEditElement2"):
         source = (ROOT / "qml/ui/sidebar" / (name + ".qml")).read_text(encoding="utf-8")
         source = (source.replace("import OpenHD 1.0", "")
-                  .replace('import "../elements"', "").replace('import "../widgets"', ""))
+                  .replace('import "../elements"', "").replace('import "../widgets"', "")
+                  .replace('import "../configpopup"', ""))
         (folder / (name + ".qml")).write_text(source, encoding="utf-8")
-    for path in ("elements/Card.qml", "elements/ColorPicker.qml", "widgets/BaseWidgetDefaultUiControlElements.qml"):
-        source = (ROOT / "qml/ui" / path).read_text(encoding="utf-8").replace('import "../elements"', "")
+    for path in ("elements/Card.qml", "elements/ColorPicker.qml", "elements/DarkComboBox.qml",
+                 "elements/FontSelect.qml", "elements/OSDCustomizer.qml", "elements/SidebarSizeControls.qml",
+                 "widgets/BaseWidgetDefaultUiControlElements.qml", "configpopup/AdvancedActionButton.qml",
+                 "configpopup/MenuTypography.js"):
+        source = ((ROOT / "qml/ui" / path).read_text(encoding="utf-8").replace('import "../elements"', "")
+                  .replace('import "../configpopup"', "").replace('../configpopup/MenuTypography.js', 'MenuTypography.js'))
         (folder / Path(path).name).write_text(source, encoding="utf-8")
     shutil.copytree(ROOT / "qml/ui/elements/colorwheel", folder / "colorwheel")
     # Geometry uses the production shell; telemetry-heavy panel bodies are omitted.
@@ -87,11 +92,14 @@ Item {
         id: settings
         fileName: "SETTINGS_PATH"
         property bool show_sidebar: true
+        property real sidebar_popup_scale: 1.2
+        property real sidebar_show_icon_scale: 1.0
         property bool scan_passive_nexmon: false
         property int scan_channel_width_mhz: 20
         property color color_shape: "white"
         property color color_glow: "black"
         property color color_text: "white"
+        property string font_text: "Sans Serif"
     }
     QtObject {
         id: _wbLinkSettingsHelper
@@ -142,6 +150,8 @@ Item {
         }
     }
     SideBarMain { id: sidebar }
+    ColorPicker { id: colorPicker }
+    OSDCustomizer { id: quickStyle; anchors.centerIn: parent; visible: false }
     CameraImageReset { id: reset; settingsModel: backend; x: 500 }
     TestCase {
         name: "SidebarLayoutAndReset"
@@ -192,13 +202,13 @@ Item {
             compare(passiveCard.color, "#203448")
             compare(start.background.color, "#285879")
 
-            var sizeSlider = findChild(popup.contentItem, "widgetSizeSlider")
+            var sizeSlider = findChild(popup.contentItem, "sidebar_popup_scale")
             var opacitySlider = findChild(popup.contentItem, "widgetTransparencySlider")
             mouseClick(sizeSlider, sizeSlider.width * 0.75, sizeSlider.height / 2)
             mouseClick(opacitySlider, opacitySlider.width / 2, opacitySlider.height / 2)
             verify(sidebar.bw_current_scale > 1)
             verify(sidebar.secondaryUiOpacity < 0.94)
-            compare(settings.value("sidebar_popup_scale"), sidebar.bw_current_scale)
+            compare(settings.sidebar_popup_scale, sidebar.bw_current_scale)
             compare(settings.value("sidebar_popup_opacity"), sidebar.secondaryUiOpacity)
 
             var swatch = findChild(popup.contentItem, "widgetBackgroundColorSwatch")
@@ -306,6 +316,47 @@ Item {
             compare(sidebar.popupTextColor, EXPECT_RESTORED ? "#ffcc66" : "#edf6ff")
             compare(sidebar.popupHighlightColor, EXPECT_RESTORED ? "#74cc8a" : "#71d4ff")
             compare(sidebar.popupControlColor, EXPECT_RESTORED ? "#8f4532" : "#285879")
+            compare(sidebar.m_sidebar_icon_scale, EXPECT_RESTORED ? 1.5 : 1)
+        }
+        function test_sidebar_sizes_and_launcher() {
+            hudOverlayGrid.width = 800; hudOverlayGrid.height = 480
+            var launcher = findChild(sidebar, "sidebarLauncher")
+            compare(launcher.background, null)
+            sidebar.open_category(0)
+            sidebar.openCustomization()
+            var popup = findChild(sidebar, "sidebarCustomizePopup")
+            tryCompare(popup, "opened", true)
+            var buttonSize = findChild(popup.contentItem, "sidebar_show_icon_scale")
+            var popupSize = findChild(popup.contentItem, "sidebar_popup_scale")
+            buttonSize.value = 1.6
+            buttonSize.moved()
+            compare(launcher.width, Math.round(32 * 1.6))
+            popupSize.value = 1.8
+            popupSize.moved()
+            fuzzyCompare(sidebar.sidebarScale, sidebar.automaticScale * 1.8, 0.0001)
+            popup.close()
+            tryCompare(popup, "visible", false)
+            sidebar.close()
+            var iconPopup = findChild(sidebar, "sidebarIconResizePopup")
+            mousePress(launcher)
+            tryCompare(iconPopup, "opened", true)
+            mouseRelease(launcher)
+            verify(!sidebar.m_extra_is_visible)
+            iconPopup.close()
+            tryCompare(iconPopup, "visible", false)
+            mouseClick(launcher)
+            verify(sidebar.m_extra_is_visible)
+            sidebar.close()
+            settings.sidebar_popup_scale = 1.2
+            settings.sidebar_show_icon_scale = 1
+        }
+        function test_quick_style_has_no_sidebar_sizes() {
+            hudOverlayGrid.width = 400; hudOverlayGrid.height = 280
+            quickStyle.visible = true
+            verify(quickStyle.height <= hudOverlayGrid.height - 24)
+            compare(findChild(quickStyle, "sidebar_popup_scale"), null)
+            compare(findChild(quickStyle, "sidebar_show_icon_scale"), null)
+            quickStyle.visible = false
         }
         function test_zz_save_customization() {
             sidebar.bw_set_current_scale(1.7)
@@ -314,6 +365,7 @@ Item {
             sidebar.popupTextColor = "#ffcc66"
             sidebar.popupHighlightColor = "#74cc8a"
             sidebar.popupControlColor = "#8f4532"
+            settings.sidebar_show_icon_scale = 1.5
         }
         function test_scan_sends_displayed_bandwidth() {
             sidebar.open_and_take_control(true)

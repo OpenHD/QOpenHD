@@ -11,6 +11,7 @@ import OpenHD 1.0
 
 import "../elements"
 import "../widgets"
+import "../configpopup"
 
 
 Item {
@@ -48,7 +49,7 @@ Item {
     readonly property color defaultHighlightColor: "#71d4ff"
     readonly property color defaultControlColor: "#285879"
     readonly property real defaultPopupScale: 1.2
-    property real bw_current_scale: settings.value("sidebar_popup_scale", defaultPopupScale)
+    readonly property real bw_current_scale: Math.max(0.5, Math.min(3, settings.sidebar_popup_scale))
     property real bw_current_opacity: settings.value("sidebar_popup_opacity", defaultBackgroundOpacity)
     property color bw_current_background_color: settings.value("sidebar_popup_bg_color", defaultBackgroundColor.toString())
     property color popupTextColor: settings.value("sidebar_popup_text_color", defaultTextColor.toString())
@@ -59,9 +60,7 @@ Item {
     readonly property bool customControlColor: !Qt.colorEqual(popupControlColor, defaultControlColor)
 
     function bw_set_current_scale(value) {
-        bw_current_scale = value
-        settings.setValue("sidebar_popup_scale", value)
-        settings.sync()
+        settings.sidebar_popup_scale = value
     }
 
     function bw_set_current_opacity(value) {
@@ -105,9 +104,9 @@ Item {
         customizePopup.open()
     }
 
-    function containsPopupPoint(item, point) {
+    function containsSidebarPoint(item, point) {
         if (!m_extra_is_visible)
-            return false
+            return uiButton.visible && uiButton.contains(uiButton.mapFromItem(item, point.x, point.y))
         return popupBackground.contains(popupBackground.mapFromItem(item, point.x, point.y))
             || (choiceSelector.visible && choiceSelector.contains(choiceSelector.mapFromItem(item, point.x, point.y)))
     }
@@ -119,7 +118,7 @@ Item {
     onM_extra_is_visibleChanged: if (!m_extra_is_visible) customizePopup.close()
     property int m_stack_index: -1;
     property bool m_ui_button_long_press_handled: false
-    property real m_sidebar_icon_scale: settings.value("sidebar_show_icon_scale", 1.0)
+    readonly property real m_sidebar_icon_scale: clamp_sidebar_icon_scale(settings.sidebar_show_icon_scale)
 
     function clamp_sidebar_icon_scale(value){
         if(value < 0.7){
@@ -133,16 +132,6 @@ Item {
 
     function sidebar_icon_size_px(){
         return Math.round(32 * m_sidebar_icon_scale);
-    }
-
-    onM_sidebar_icon_scaleChanged: {
-        var clamped = clamp_sidebar_icon_scale(m_sidebar_icon_scale);
-        if(clamped !== m_sidebar_icon_scale){
-            m_sidebar_icon_scale = clamped;
-            return;
-        }
-        settings.setValue("sidebar_show_icon_scale", clamped);
-        settings.sync();
     }
 
 
@@ -275,54 +264,36 @@ Item {
 
 
     // Item that opens up the sidebar
-    Item {
+    AbstractButton {
         id: uiButton
+        objectName: "sidebarLauncher"
         width: sidebar_icon_size_px()
         height: sidebar_icon_size_px()
         anchors.verticalCenter: parent.verticalCenter
-        visible: m_stack_index<0;
-        MouseArea {
-            id: mouseArea1
-            anchors.fill: parent
-            onPressed: {
-                m_ui_button_long_press_handled = false;
-            }
-            onClicked: {
-                if(m_ui_button_long_press_handled){
-                    return;
-                }
-                open_and_take_control()
-            }
-            onPressAndHold: {
-                m_ui_button_long_press_handled = true;
-                sidebarIconResizePopup.open();
-            }
-            Rectangle {
-                width: parent.width
-                height: parent.height
-                color: "transparent"
-                border.width: 0
-                radius: width * 0.22
-                RowLayout {
-                    width: parent.width
-                    height: parent.height
-
-                    Text {
-                        text: "\uf054"
-                        font.pixelSize: Math.round(uiButton.height * 0.5)
-                        opacity: 1.0
-                        font.family: "Font Awesome 5 Free"
-                        color: "grey"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                }
-            }
+        visible: m_stack_index < 0
+        padding: 0
+        background: null
+        activeFocusOnTab: true
+        Accessible.name: qsTr("Open sidebar")
+        contentItem: Text {
+            text: "\uf054"
+            font.family: "Font Awesome 5 Free"
+            font.pixelSize: Math.round(uiButton.height * 0.5)
+            color: uiButton.activeFocus ? "#f2f6fb" : "grey"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+        onPressed: m_ui_button_long_press_handled = false
+        onClicked: if (!m_ui_button_long_press_handled) open_and_take_control()
+        onPressAndHold: {
+            m_ui_button_long_press_handled = true
+            sidebarIconResizePopup.open()
         }
     }
 
     Popup {
         id: sidebarIconResizePopup
+        objectName: "sidebarIconResizePopup"
         parent: Overlay.overlay
         width: Math.min(260, parent.width - 24)
         height: resizePopupColumn.implicitHeight + 16
@@ -367,10 +338,11 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Button {
+                AdvancedActionButton {
+                    Layout.preferredWidth: 34
                     text: "-"
                     onClicked: {
-                        m_sidebar_icon_scale = clamp_sidebar_icon_scale(m_sidebar_icon_scale - 0.1);
+                        settings.sidebar_show_icon_scale = clamp_sidebar_icon_scale(m_sidebar_icon_scale - 0.1);
                     }
                 }
 
@@ -382,14 +354,15 @@ Item {
                     stepSize: 0.1
                     value: m_sidebar_icon_scale
                     onMoved: {
-                        m_sidebar_icon_scale = value;
+                        settings.sidebar_show_icon_scale = value;
                     }
                 }
 
-                Button {
+                AdvancedActionButton {
+                    Layout.preferredWidth: 34
                     text: "+"
                     onClicked: {
-                        m_sidebar_icon_scale = clamp_sidebar_icon_scale(m_sidebar_icon_scale + 0.1);
+                        settings.sidebar_show_icon_scale = clamp_sidebar_icon_scale(m_sidebar_icon_scale + 0.1);
                     }
                 }
             }
@@ -398,10 +371,10 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Button {
+                AdvancedActionButton {
                     text: qsTr("Reset")
                     onClicked: {
-                        m_sidebar_icon_scale = 1.0;
+                        settings.sidebar_show_icon_scale = 1.0;
                     }
                 }
 
@@ -409,7 +382,8 @@ Item {
                     Layout.fillWidth: true
                 }
 
-                Button {
+                AdvancedActionButton {
+                    primary: true
                     text: qsTr("Done")
                     onClicked: {
                         sidebarIconResizePopup.close();
@@ -491,6 +465,7 @@ Item {
 
                     BaseWidgetDefaultUiControlElements {
                         Layout.fillWidth: true
+                        show_size: false
                         show_background_color: true
                         background_color_target: sidebar
                         background_color_picker: sidebarColorPicker
@@ -501,13 +476,16 @@ Item {
                         ]
                     }
 
+                    SidebarSizeControls { Layout.fillWidth: true }
+
                     RowLayout {
                         Layout.fillWidth: true
-                        Button {
+                        AdvancedActionButton {
                             objectName: "sidebarCustomizeReset"
                             text: qsTr("Reset")
                             onClicked: {
                                 bw_set_current_scale(defaultPopupScale)
+                                settings.sidebar_show_icon_scale = 1.0
                                 bw_set_current_opacity(defaultBackgroundOpacity)
                                 bw_current_background_color = defaultBackgroundColor
                                 popupTextColor = defaultTextColor
@@ -516,7 +494,8 @@ Item {
                             }
                         }
                         Item { Layout.fillWidth: true }
-                        Button {
+                        AdvancedActionButton {
+                            primary: true
                             text: qsTr("Done")
                             onClicked: customizePopup.close()
                         }

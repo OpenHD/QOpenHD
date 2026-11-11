@@ -93,7 +93,11 @@ FocusScope {
             settings["osd_"+bar+"_bar_font"]=index===0?"":p.font
         })
     }
-    function resetDefaults(){usePreset(0);settings.osd_opacity=1.0;settings.smoothing=33}
+    function resetDefaults(){
+        usePreset(0)
+        settings.osd_opacity=1.0
+        settings.smoothing=33
+    }
     function gainFocus(){resetButton.forceActiveFocus()}
     Component.onCompleted:requestPreview()
     onVisibleChanged:{if(visible)requestPreview();else cancelCapture()}

@@ -11,6 +11,7 @@ import "./widgets/map"
 import "../resources" as Resources
 import "./elements"
 import "./sidebar"
+import "./configpopup/features" as RcFeatures
 
 import "../video"
 
@@ -24,6 +25,13 @@ Item {
     property bool m_show_vertical_center_indicator: false
     property bool m_show_horizontal_center_indicator: false
     property Item colorPicker: null
+    property QtObject rcKeyboardEditor: null
+    RcFeatures.RcKeyboardNavigation {
+        channelModel: _rcchannelsmodelfc
+        mapping: settings.rc_keyboard_mappings
+        suspended: !!hudOverlayGrid.rcKeyboardEditor && hudOverlayGrid.rcKeyboardEditor.visible
+        onKeyPressed: function(key) { _qopenhd.postRcNavigationKey(key) }
+    }
     // Gallery thumbnails sample these existing visual items. No duplicate HUD,
     // telemetry consumer, map provider or video receiver is created.
     readonly property alias osdStylePreviewItem: actual_hud_elements
@@ -367,9 +375,6 @@ Item {
         WBLinkRateControlWidget{
             id: wBLinkRateControlWidget
         }
-        UDPDataLinkDebugWidget{
-            id: udpDataLinkDebugWidget
-        }
         RetransmissionStarsWidget{
             id: retransmissionStarsWidget
         }
@@ -626,7 +631,7 @@ Item {
         onTapped: {
         }
         onLongPressed: {
-            if (!sidebar.containsPopupPoint(hudOverlayGrid, osdCustomizeTap.point.position))
+            if (!sidebar.containsSidebarPoint(hudOverlayGrid, osdCustomizeTap.point.position))
                 osdCustomizer.visible = true
         }
         grabPermissions: PointerHandler.CanTakeOverFromAnything

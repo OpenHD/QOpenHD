@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.0
 
 import "colorwheel"
+import "../configpopup"
 
 
 Card {
@@ -125,39 +126,31 @@ Card {
     hasFooter: true
     cardFooter: Item {
         anchors.fill: parent
-        Button {
+        AdvancedActionButton {
             width: 96
-            height: 48
             text: qsTr("Cancel")
             anchors.left: parent.left
             anchors.leftMargin: 12
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
-            font.pixelSize: 14
-            font.capitalization: Font.MixedCase
-
-            onPressed: {
+            onClicked: {
                 colorPicker.visible = false
                 colorPicker.cancelled()
             }
         }
 
-        Button {
+        AdvancedActionButton {
             width: 140
             objectName: "colorPickerSelect"
-            height: 48
             anchors.right: parent.right
             anchors.rightMargin: 12
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 6
-            font.pixelSize: 14
-            font.capitalization: Font.MixedCase
-            Material.accent: Material.Red
-            highlighted: true
+            primary: true
 
             text:  qsTr("Select")
 
-            onPressed: {
+            onClicked: {
                 colorPicker.visible = false
             }
         }
