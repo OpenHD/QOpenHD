@@ -71,7 +71,16 @@ Item {
         active: requested || !applicationWindow.bootSplashEnabled
         asynchronous: applicationWindow.bootSplashEnabled
         source: "ui/configpopup/ConfigPopup.qml"
-        function openSettings() { visible = true }
+        property bool showSystemStatusOnOpen: false
+        function openSettings(showSystemStatus) {
+            showSystemStatusOnOpen = showSystemStatus === true
+            if (visible && item) openRequestedPage()
+            else visible = true
+        }
+        function openRequestedPage() {
+            item.openSettings(showSystemStatusOnOpen)
+            showSystemStatusOnOpen = false
+        }
         function close_all() {
             if (item) item.close_all()
             visible = false
@@ -80,11 +89,11 @@ Item {
         onVisibleChanged: {
             if (visible) {
                 requested = true
-                if (status === Loader.Ready) item.openSettings()
+                if (status === Loader.Ready) openRequestedPage()
             }
         }
         onLoaded: {
-            if (visible) item.openSettings()
+            if (visible) openRequestedPage()
             else item.visible = false
         }
         Connections {

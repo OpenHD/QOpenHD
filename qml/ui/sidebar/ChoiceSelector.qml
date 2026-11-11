@@ -4,8 +4,12 @@ import QtQuick.Controls 2.12
 Rectangle{
     id: choiceSelector
     width: 200
-    height: secondaryUiHeight - 390 / 8
-    //color: "green"
+    property real popupTop: 78
+    readonly property int inset: 6
+    readonly property int optionHeight: 40
+    readonly property real requiredHeight: availableChociesModel.count * (optionHeight + availableChociesListView.spacing)
+        - availableChociesListView.spacing + 2 * inset
+    height: Math.min(requiredHeight, secondaryUiHeight - popupTop)
     color: "transparent"
     visible: false
 
@@ -47,11 +51,18 @@ Rectangle{
         }
         m_initial_index=current_value_index;
         m_current_user_selected_index=m_initial_index;
-        visible=true;
-        focus=true;
-        m_parent=parent
-        const ui_required_height=availableChociesModel.count*73;
-        availableChociesListView.height=Math.min(ui_required_height, height);
+        m_parent = parent;
+        const rowTop = parent.mapToItem(choiceSelector.parent, 0, 0).y
+            - (choiceSelector.parent.height - secondaryUiHeight) / 2;
+        popupTop = Math.max(0, Math.min(secondaryUiHeight - requiredHeight, rowTop));
+        visible = true;
+        forceActiveFocus();
+        availableChociesListView.positionViewAtIndex(m_current_user_selected_index, ListView.Contain);
+    }
+
+    onM_current_user_selected_indexChanged: {
+        if (visible && m_current_user_selected_index >= 0)
+            availableChociesListView.positionViewAtIndex(m_current_user_selected_index, ListView.Contain)
     }
 
     function set_clickable(clickable){
@@ -150,37 +161,35 @@ Rectangle{
     Component {
         id: availableChociesDelegate
         Item {
-            width: 200
-            height: 70
+            width: ListView.view.width
+            height: choiceSelector.optionHeight
             id: choice
             // Background
             Rectangle{
                 anchors.fill: parent
-                //color: index==m_initial_index ? "yellow" : "orange"
-                color: "#2a3a4e"
-                opacity: index==m_initial_index ? 0.95 : 0.7
+                radius: 6
+                color: index === m_current_user_selected_index ? "#25455f" : "transparent"
+                border.color: "#578bab"
+                border.width: index === m_current_user_selected_index ? 1 : 0
             }
             Text {
                 text: qsTr(verbose)
                 anchors.fill: parent
                 verticalAlignment: Qt.AlignVCenter
-                horizontalAlignment: Qt.AlignHCenter
+                horizontalAlignment: Qt.AlignLeft
+                leftPadding: 41
+                rightPadding: 4
+                wrapMode: Text.WordWrap
+                maximumLineCount: 2
+                elide: Text.ElideRight
                 color: "white"
-                font.pixelSize: 15
+                font.pixelSize: 18
             }
-            // Outline current value
-            Rectangle{
-                anchors.fill: parent
-                color: "transparent"
-                border.color: "#e7f4ff"
-                border.width: index==m_initial_index ? 2 : 0;
-            }
-            // Outline current selection by user
-            Rectangle{
-                anchors.fill: parent
-                color: "transparent"
-                border.color: "#e7f4ff"
-                border.width: (index==m_current_user_selected_index) ? 3 : 0
+            Rectangle {
+                x: 10; anchors.verticalCenter: parent.verticalCenter; width: 20; height: 20; radius: 10
+                color: index === m_initial_index ? "#00a7f5" : "transparent"
+                border.color: index === m_initial_index ? "#00a7f5" : "#8e9da6"; border.width: 2
+                Rectangle { anchors.centerIn: parent; width: 8; height: 8; radius: 4; color: "white"; visible: index === m_initial_index }
             }
             MouseArea{
                 anchors.fill: parent
@@ -196,10 +205,10 @@ Rectangle{
     }
 
     Rectangle{
-        implicitWidth: availableChociesListView.width
-        implicitHeight: availableChociesListView.height
-        anchors.left: availableChociesListView.left
-        anchors.top: availableChociesListView.top
+        anchors.fill: parent
+        radius: 14
+        border.color: "#506b83"
+        border.width: 1
         color: secondaryUiColor
         opacity: secondaryUiOpacity
     }
@@ -208,10 +217,8 @@ Rectangle{
         id: availableChociesListView
         model: availableChociesModel
         delegate: availableChociesDelegate
-        anchors.top: parent.top
-        anchors.left: parent.left
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
+        anchors.margins: choiceSelector.inset
         clip: true
         spacing: 3
 

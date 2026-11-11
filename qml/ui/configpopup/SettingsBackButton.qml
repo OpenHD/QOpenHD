@@ -15,8 +15,6 @@ Button {
     activeFocusOnTab: true
     text: ""
     Accessible.name: qsTr("Back to video")
-    ToolTip.visible: hovered
-    ToolTip.text: qsTr("Back to video")
 
     background: Rectangle {
         radius: 8

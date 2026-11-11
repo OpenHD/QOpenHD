@@ -16,6 +16,7 @@ import "../elements"
 BaseJoyEditElement2 {
     id: pitModeElement
     m_title: "Pit Mode"
+    rowIcon: "\uf024"
 
     signal goto_previous()
     signal goto_next()

@@ -379,9 +379,15 @@ LOADER
             tryCompare(settings_panel, "status", Loader.Ready)
             tryVerify(function() { return settings_panel.item.currentPageReady })
             var cached = settings_panel.item
+            cached.user_quidance_open_connect_screen()
+            compare(cached.menuPageTitle, "CONNECT")
             settings_panel.close_all()
             settings_panel.openSettings()
             compare(settings_panel.item, cached)
+            compare(cached.menuPageTitle, "CONNECT")
+            settings_panel.close_all()
+            settings_panel.openSettings(true)
+            compare(cached.menuPageTitle, "SYSTEM STATUS")
             settings_panel.close_all()
         }
     }

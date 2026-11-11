@@ -119,7 +119,11 @@ Rectangle {
         property bool darkMode: true
     }
 
-    function openSettings() {
+    function openSettings(showSystemStatus) {
+        if (showSystemStatus === true) {
+            mainStackLayout.currentIndex = 0
+            navigation.currentIndex = navigationPageIds.indexOf(0)
+        }
         visible = true
         focus = true
         navigation.forceActiveFocus()

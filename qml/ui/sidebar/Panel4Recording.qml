@@ -13,6 +13,7 @@ import "../elements"
 
 SideBarBasePanel {
     override_title: "Air recording"
+    headerIcon: "\uf0c7"
 
     function takeover_control(){
         recording_mode.takeover_control();

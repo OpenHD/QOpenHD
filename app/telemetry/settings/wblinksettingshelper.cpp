@@ -208,7 +208,6 @@ void WBLinkSettingsHelper::process_message_openhd_wifibroadcast_scan_channels_pr
         }else{
             ss<<"-NOT FOUND";
         }
-        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
         qDebug()<<ss.str().c_str();
         if(msg.progress==100){
             if(msg.success){

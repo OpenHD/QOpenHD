@@ -14,6 +14,7 @@ import "../elements"
 SideBarBasePanel{
     id: cameraPanel
     override_title: "Camera"
+    headerIcon: "\uf030"
     property var imageReset: null
     headerAction: Component {
         CameraImageReset {

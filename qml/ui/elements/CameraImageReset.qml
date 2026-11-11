@@ -43,8 +43,6 @@ Button {
     flat: iconOnly
     Material.foreground: iconOnly ? "#ffffff" : undefined
     Accessible.name: qsTr("Reset camera / ISP")
-    ToolTip.visible: hovered
-    ToolTip.text: resetting ? qsTr("Resetting camera…") : qsTr("Reset camera / ISP")
     enabled: available && !resetting && !settingsModel.ui_is_busy && settingsModel.system_is_alive()
     onClicked: confirmation.open()
 

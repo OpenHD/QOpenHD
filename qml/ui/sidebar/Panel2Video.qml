@@ -14,6 +14,7 @@ import "../elements"
 SideBarBasePanel{
     id: videoPanel
     override_title: "Video"
+    headerIcon: "\uf03d"
     property int cameraParamUpdates: _airCameraSettingsModel.update_count
     property bool hasReadoutModes: cameraParamUpdates >= 0 &&
                                   _airCameraSettingsModel.param_int_exists("RK_CAM_MODE")

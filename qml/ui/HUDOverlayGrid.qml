@@ -116,11 +116,11 @@ Item {
         hudOverlayGrid.forceActiveFocus();
     }
     // Opens the config popup and gives it focus
-    function open_config_popup(){
+    function open_config_popup(showSystemStatus){
         // The HUD becomes not interactable while configpopup is opened
         hudOverlayGrid.enabled = false;
         actual_hud_elements.visible=false;
-        settings_panel.openSettings();
+        settings_panel.openSettings(showSystemStatus === true);
     }
 
     function start_keyboard_navigation(){

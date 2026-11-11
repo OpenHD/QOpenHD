@@ -17,15 +17,9 @@ Item {
     height: secondaryUiHeight
 
     property string override_title: "OVERRIDE ME"
-    property real headerHeight: 390 / 8
+    property string headerIcon: "\uf013"
+    property real headerHeight: 78
     property alias headerAction: headerActionLoader.sourceComponent
-
-    // The main background
-    Rectangle{
-        anchors.fill: parent
-        color: secondaryUiColor
-        opacity: secondaryUiOpacity
-    }
 
     ScrollView {
         id: bodyScroll
@@ -64,20 +58,48 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         height: headerHeight
-        color: highlightColor
-        opacity: 0.95
+        color: "transparent"
+        opacity: 1.0
         z: 1
         Text {
             anchors.left: parent.left
             anchors.right: headerActionLoader.left
             anchors.verticalCenter: parent.verticalCenter
-            horizontalAlignment: Text.AlignHCenter
+            anchors.leftMargin: 84
+            horizontalAlignment: Text.AlignLeft
+            font.weight: Font.DemiBold
             elide: Text.ElideRight
             text: qsTr(override_title)
-            font.pixelSize: 18
-            font.family: "AvantGarde-Medium"
-            color: "#ffffff"
+            font.pixelSize: 30
+            color: "#edf6ff"
             smooth: true
+        }
+        Rectangle {
+            anchors.left: parent.left
+            anchors.leftMargin: 24
+            anchors.verticalCenter: parent.verticalCenter
+            width: 44
+            height: 44
+            radius: 12
+            color: "#253e54"
+            Text {
+                anchors.centerIn: parent
+                text: headerIcon
+                font.family: "Font Awesome 5 Free"
+                font.pixelSize: 23
+                color: "#89dbff"
+            }
+        }
+        Rectangle {
+            anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
+            anchors.leftMargin: 24; anchors.rightMargin: 24
+            height: 1; color: "#3b5063"
+        }
+        Rectangle {
+            visible: override_title === "Link"
+            anchors.right: parent.right; anchors.rightMargin: 28; anchors.verticalCenter: parent.verticalCenter
+            width: 56; height: 27; radius: 14; color: "transparent"; border.color: "#3cd77d"; border.width: 1
+            Text { anchors.centerIn: parent; text: "AIR"; color: "#3cd77d"; font.pixelSize: 18; font.bold: true }
         }
         Loader {
             id: headerActionLoader

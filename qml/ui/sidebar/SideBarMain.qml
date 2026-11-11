@@ -26,15 +26,13 @@ Item {
     // Keep the panel and its choices inside short and narrow phone windows.
     readonly property real viewportWidth: parent ? parent.width : 800
     readonly property real viewportHeight: parent ? parent.height : 480
-    readonly property real sidebarScale: Math.max(0.01, Math.min(1, (viewportWidth - 12) / (320 + 390 / 9 + 200), (viewportHeight - 16) / 390))
-    scale: sidebarScale
+    readonly property real sidebarScale: 0.5 * Math.max(0.01, Math.min(1, (viewportWidth - 12) / (556 + 68 + 200), (viewportHeight - 28) / 464))
+    scale: m_extra_is_visible ? sidebarScale : sidebarScale * 2
     transformOrigin: Item.Left
-    property int secondaryUiWidth: 320
-    property int secondaryUiHeight: 390
-    property string secondaryUiColor: "#0a141e"
-    property real secondaryUiOpacity: 0.86
-    property string mainDarkColor: "#121b25"
-    property string highlightColor: "#1f2d3b"
+    property int secondaryUiWidth: 556
+    property int secondaryUiHeight: 464
+    property color secondaryUiColor: "#121e2a"
+    property real secondaryUiOpacity: 0.94
 
     // Set to true if the sidebar is active (and some HUD elements shall be disabled)
     property bool m_is_active : false
@@ -120,6 +118,7 @@ Item {
             close();
         }else{
             m_stack_index=index_stack_new;
+            handover_joystick_control_to_button(m_stack_index);
         }
 
     }
@@ -149,12 +148,9 @@ Item {
             b5.takeover_control();
             ensure_stack_item_visible(b5);
         }else if(stack_index==5){
-            b6.takeover_control();
-            ensure_stack_item_visible(b6);
-        }else if(stack_index==6){
             b7.takeover_control();
             ensure_stack_item_visible(b7);
-        }else if(stack_index==7){
+        }else if(stack_index==6){
             b8.takeover_control();
             ensure_stack_item_visible(b8);
         }
@@ -172,10 +168,8 @@ Item {
         }else if(stack_index==4){
             panel5.takeover_control();
         }else if(stack_index==5){
-            panel6.takeover_control();
-        }else if(stack_index==6){
             panel7.takeover_control();
-        }else if(stack_index==7){
+        }else if(stack_index==6){
             panel8.takeover_control();
         }
     }
@@ -346,13 +340,37 @@ Item {
         }
     }
 
+    Rectangle {
+        anchors.left: stack_manager.left
+        anchors.top: stack_manager.top
+        width: stack_manager.width + secondaryUiWidth
+        height: secondaryUiHeight
+        visible: m_extra_is_visible
+        radius: 16
+        gradient: Gradient {
+            GradientStop { position: 0; color: "#1c2d3d" }
+            GradientStop { position: 1; color: secondaryUiColor }
+        }
+        opacity: secondaryUiOpacity
+        border.color: "#40566a"
+        border.width: 1
+        Rectangle {
+            x: stack_manager.width
+            width: 1
+            y: 12
+            height: parent.height - 24
+            color: "#40566a"
+        }
+    }
+
     ScrollView{
         anchors.left: parent.left
+        anchors.leftMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         id: stack_manager
         objectName: "sidebarRail"
         visible: false
-        width: 390 / 9
+        width: 68
         padding: 0
         contentWidth: width
         height: secondaryUiHeight
@@ -380,6 +398,8 @@ Item {
         Column{
             id: stack_manager_content
             width: parent.width
+            y: 10
+            spacing: 4
             SidebarStackButton{
                 id: b0
                 override_text: "\uf053"
@@ -417,22 +437,16 @@ Item {
                 override_index: 4
             }
             SidebarStackButton{
-                id: b6
-                override_text: "\uf11b"
-                override_tag: "rc"
-                override_index: 5
-            }
-            SidebarStackButton{
                 id: b7
                 override_text: "\uf26c"
                 override_tag: "misc"
-                override_index: 6
+                override_index: 5
             }
             SidebarStackButton{
                 id: b8
                 override_text: "\uf55b"
                 override_tag: "status"
-                override_index: 7
+                override_index: 6
             }
         }
     }
@@ -469,17 +483,13 @@ Item {
             visible: m_stack_index==4;
         }
 
-        Panel5RC{
-            id: panel6
-            visible: m_stack_index==5;
-        }
         Panel6Misc{
             id: panel7
-            visible: m_stack_index==6;
+            visible: m_stack_index==5;
         }
         Panel7Status{
             id: panel8
-            visible: m_stack_index==7;
+            visible: m_stack_index==6;
         }
     }
 
@@ -487,7 +497,7 @@ Item {
         id: choiceSelector
         anchors.left: panels_item.right
         anchors.top: panels_item.top
-        anchors.topMargin: 390 / 8
+        anchors.topMargin: choiceSelector.popupTop
     }
 
 }

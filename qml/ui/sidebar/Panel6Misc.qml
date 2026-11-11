@@ -13,6 +13,7 @@ import "../elements"
 
 SideBarBasePanel{
     override_title: "Misc"
+    headerIcon: "\uf26c"
 
     function takeover_control(){
         air_wifi_mode.takeover_control();

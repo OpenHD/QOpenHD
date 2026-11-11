@@ -2,6 +2,7 @@ import QtQuick 2.0
 
 SideBarBasePanel{
     override_title: "Link"
+    headerIcon: "\uf1eb"
 
 
     function takeover_control(){
@@ -11,7 +12,7 @@ SideBarBasePanel{
     Column {
         anchors.top: parent.top
         anchors.topMargin: 0
-        spacing: 5
+        spacing: 0
 
         /*EditFrequencyElement{
             id: edit_frequency_element
@@ -45,6 +46,7 @@ SideBarBasePanel{
         MavlinkChoiceElement2{
             id:edit_frequency_element
             m_title: "Frequency"
+            rowIcon: "\uf83e"
             m_param_id: mPARAM_ID_FREQUENCY
             m_settings_model: _ohdSystemAirSettingsModel
             onGoto_previous: {
@@ -57,6 +59,7 @@ SideBarBasePanel{
         MavlinkChoiceElement2{
             id: edit_channel_width_element
             m_title: "Channel Width"
+            rowIcon: "\uf337"
             m_param_id: mPARAM_ID_CHANNEL_WIDTH
             m_settings_model: _ohdSystemAirSettingsModel
             onGoto_previous: {
@@ -69,6 +72,7 @@ SideBarBasePanel{
         MavlinkChoiceElement2{
             id: edit_rate_element
             m_title: "Modulation"
+            rowIcon: "\uf012"
             m_param_id: mPARAM_ID_RATE
             m_settings_model: _ohdSystemAirSettingsModel
             onGoto_previous: {

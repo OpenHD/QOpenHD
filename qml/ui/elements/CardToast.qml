@@ -1,77 +1,80 @@
 import QtQuick 2.12
 
-// Compact, theme-neutral HUD notification. Visibility and message queue timing
-// continue to be owned by QOpenHD in C++.
+// QOpenHD owns notification visibility and queue timing.
 Item {
     id: toast
     z: 22
 
-    property string m_text: qsTr("FILL ME TEXT")
+    property string m_text: ""
+    readonly property int horizontalPadding: 10
+    readonly property int verticalPadding: 6
 
-    width: parent.width
-    height: parent.height
+    anchors.fill: parent
+
+    onVisibleChanged: {
+        if (visible) appear.restart()
+    }
 
     Rectangle {
         id: surface
-        width: Math.min(430, Math.max(240, toast.width - 32))
-        height: Math.min(104, Math.max(48, message.implicitHeight + 20))
+        objectName: "toastSurface"
+        width: Math.min(360, Math.max(0, toast.width - 24),
+                        message.implicitWidth + iconBadge.width + 3 * toast.horizontalPadding)
+        height: Math.max(iconBadge.height, message.implicitHeight) + 2 * toast.verticalPadding
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: Math.max(22, parent.height * 0.075)
+        anchors.bottomMargin: Math.max(18, parent.height * 0.075)
         radius: 12
-        color: "#f2172738"
-        border.width: 1
-        border.color: "#526b83"
-        opacity: toast.visible ? 1 : 0
-        scale: toast.visible ? 1 : 0.96
+        border.color: "#41596d"
+        gradient: Gradient {
+            GradientStop { position: 0; color: "#1e3041" }
+            GradientStop { position: 1; color: "#152433" }
+        }
 
-        Behavior on opacity { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutBack } }
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            anchors.verticalCenter: parent.verticalCenter
-            width: 3
-            height: parent.height - 18
-            radius: 2
-            color: "#3b9cff"
+        NumberAnimation {
+            id: appear
+            target: surface
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 140
+            easing.type: Easing.OutCubic
         }
 
         Rectangle {
-            id: iconBackground
+            id: iconBadge
             anchors.left: parent.left
-            anchors.leftMargin: 15
+            anchors.leftMargin: toast.horizontalPadding
             anchors.verticalCenter: parent.verticalCenter
-            width: 28
-            height: 28
-            radius: 8
-            color: "#263b9cff"
+            width: 24
+            height: 24
+            radius: 7
+            color: "#29465e"
 
             Text {
                 anchors.centerIn: parent
                 text: "\uf05a"
-                color: "#67b2ff"
+                color: "#9cdbff"
                 font.family: "Font Awesome 5 Free"
-                font.pixelSize: 14
+                font.pixelSize: 13
             }
         }
 
         Text {
             id: message
-            anchors.left: iconBackground.right
-            anchors.leftMargin: 12
+            anchors.left: iconBadge.right
+            anchors.leftMargin: toast.horizontalPadding
             anchors.right: parent.right
-            anchors.rightMargin: 16
+            anchors.rightMargin: toast.horizontalPadding
             anchors.verticalCenter: parent.verticalCenter
             text: toast.m_text
-            color: "#f5f8fc"
+            textFormat: Text.PlainText
+            color: "#eff7ff"
             font.pixelSize: 13
             font.weight: Font.Medium
-            wrapMode: Text.WordWrap
+            wrapMode: Text.Wrap
             maximumLineCount: 4
             elide: Text.ElideRight
-            verticalAlignment: Text.AlignVCenter
         }
     }
 }

@@ -319,7 +319,6 @@
         <file>ui/sidebar/MavlinkChoiceElement.qml</file>
         <file>ui/sidebar/SideBarBasePanel.qml</file>
         <file>ui/sidebar/Panel1Link.qml</file>
-        <file>ui/sidebar/Panel5RC.qml</file>
         <file>ui/sidebar/Panel2Video.qml</file>
         <file>ui/sidebar/Panel3Camera.qml</file>
         <file>ui/sidebar/Panel4Recording.qml</file>

@@ -15,7 +15,10 @@ PopupBigGeneric {
 
     property bool scanning: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 1
     property int scanProgress: Math.max(0, Math.min(100, _wbLinkSettingsHelper.scan_progress_perc))
-    property bool scanFinished: !scanning && scanProgress >= 100
+    property bool scanFinished: !scanning && scanProgress >= 100 && scanError.length === 0
+    property string scanError: ""
+
+    onScanningChanged: if (scanning) scanError = ""
 
     Material.theme: settings_form.darkMode ? Material.Dark : Material.Light
     Material.accent: settings_form.accentColor
@@ -45,14 +48,11 @@ PopupBigGeneric {
     }
 
     function requestClose() {
-        if (scanning) {
-            _qopenhd.show_toast(qsTr("A channel scan is still running"))
-            return
-        }
-        close()
+        if (!scanning) close()
     }
 
     function open() {
+        scanError = ""
         visible = true
         enabled = true
         Qt.callLater(function() { rangeCombo.forceActiveFocus() })
@@ -66,13 +66,11 @@ PopupBigGeneric {
     function startScan() {
         var band = rangeCombo.currentIndex
         var widthMhz = settings.scan_channel_width_mhz
-        var accepted = _wbLinkSettingsHelper.start_scan_channels(band, widthMhz, settings.scan_passive_nexmon)
-        if (accepted)
-            _qopenhd.show_toast(qsTr("Channel scan started"))
-        else
-            _qopenhd.show_toast(settings.scan_passive_nexmon
+        scanError = ""
+        if (!_wbLinkSettingsHelper.start_scan_channels(band, widthMhz, settings.scan_passive_nexmon))
+            scanError = settings.scan_passive_nexmon
                 ? qsTr("Passive scan could not start. Check Nexmon availability and radio status.")
-                : qsTr("The radio is busy. Please try again."))
+                : qsTr("Scan could not start. Check the ground radio and try again.")
     }
 
     onCloseButtonClicked: requestClose()
@@ -279,6 +277,7 @@ PopupBigGeneric {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 58
+                visible: root.scanError.length === 0
                 radius: 12
                 color: settings_form.panelBackgroundRaised
                 border.color: settings_form.lineColor
@@ -322,7 +321,7 @@ PopupBigGeneric {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 78
+                Layout.preferredHeight: Math.max(78, scanFeedback.implicitHeight + 24)
                 radius: 12
                 color: root.scanFinished
                        ? (settings_form.darkMode ? "#103326" : "#ecfaf2")
@@ -344,7 +343,8 @@ PopupBigGeneric {
                         spacing: 3
                         Text {
                             Layout.fillWidth: true
-                            text: root.scanFinished
+                            id: scanFeedback
+                            text: root.scanError.length ? root.scanError : root.scanFinished
                                   ? (_wbLinkSettingsHelper.scanning_text_for_ui.length > 0
                                      ? _wbLinkSettingsHelper.scanning_text_for_ui : qsTr("Channel scan finished"))
                                   : (root.scanning ? qsTr("Keep this window open while the radio scans.")

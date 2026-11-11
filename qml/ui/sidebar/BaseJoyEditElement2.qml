@@ -23,9 +23,11 @@ import "../elements"
 // Joystick navigatable (focus) but also supports touch.
 Item{
     id: base_joy_edit_element
-    width: 320
-    height: 70
+    width: secondaryUiWidth
+    height: 58
+    readonly property bool highlighted: activeFocus || (choiceSelector.visible && choiceSelector.m_parent === base_joy_edit_element)
 
+    property string rowIcon: "\uf013"
     property string m_title: "FILL ME"
 
     property bool m_is_selected: false
@@ -61,39 +63,75 @@ Item{
         }
     }
 
-    Rectangle{
-        width: parent.width
-        height:parent.height
-        border.color: "white"
-        border.width: base_joy_edit_element.activeFocus ? 3 : 0;
-        color: "transparent"
-        opacity: 1.0;
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: 4
+        anchors.leftMargin: 22
+        anchors.rightMargin: 22
+        radius: 12
+        color: highlighted ? "#25455f" : "transparent"
+        border.color: highlighted ? "#578bab" : "transparent"
+        border.width: 1
+    }
+    Rectangle {
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.margins: 14
+        anchors.leftMargin: 22
+        width: 4
+        radius: 2
+        color: "#079eea"
+        visible: highlighted
+    }
+    Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 24
+        anchors.rightMargin: 24
+        height: 1
+        color: "#33475a"
+        visible: !highlighted
     }
 
-
+    Text {
+        x: 40; anchors.verticalCenter: parent.verticalCenter
+        text: rowIcon; font.family: "Font Awesome 5 Free"; font.pixelSize: 23; color: highlighted ? "#89dbff" : "#b3c9db"
+    }
+    Text {
+        anchors.right: parent.right; anchors.rightMargin: 34; anchors.verticalCenter: parent.verticalCenter
+        text: "\uf054"; font.family: "Font Awesome 5 Free"; font.pixelSize: 15; color: "#a2b9cc"
+    }
     Text {
         id: title_str
         text: qsTr(m_title)
-        width: parent.width/2
+        width: parent.width * 0.57
         height: parent.height
         verticalAlignment: Qt.AlignVCenter
-        horizontalAlignment: Qt.AlignHCenter
-        font.pixelSize: 16
+        horizontalAlignment: Qt.AlignLeft
+        leftPadding: 94
+        elide: Text.ElideRight
+        font.pixelSize: 22
         anchors.top: parent.top
         color: "white"
     }
 
     Text{
         id:value_string
-        width: parent.width/2
+        width: parent.width * 0.43
         height: parent.height
+        visible: !(m_title === "Pit Mode" && (m_displayed_value === "ON" || m_displayed_value === "OFF"))
         text: qsTr(m_displayed_value)
         verticalAlignment: Qt.AlignVCenter
-        horizontalAlignment: Qt.AlignHCenter
-        font.pixelSize: 13
-        color: override_show_red_text? "red" :  "white"
+        horizontalAlignment: Qt.AlignRight
+        rightPadding: 65
+        font.pixelSize: 20
+        color: override_show_red_text ? "#ff9292" : "#d7e8f7"
         anchors.right: parent.right
         wrapMode: Text.Wrap
+        maximumLineCount: 2
+        elide: Text.ElideRight
     }
 
 
@@ -105,6 +143,13 @@ Item{
         visible: !m_is_enabled
     }
 
+    Rectangle {
+        visible: m_title === "Pit Mode" && (m_displayed_value === "ON" || m_displayed_value === "OFF")
+        anchors.right: parent.right; anchors.rightMargin: 65; anchors.verticalCenter: parent.verticalCenter
+        width: 56; height: 28; radius: 14
+        color: m_displayed_value === "ON" ? "#00a8f5" : "#52616c"
+        Rectangle { x: m_displayed_value === "ON" ? 30 : 2; y: 2; width: 24; height: 24; radius: 12; color: "white" }
+    }
     MouseArea{
         anchors.fill: parent
         onClicked: {

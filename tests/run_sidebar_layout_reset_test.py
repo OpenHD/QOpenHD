@@ -11,15 +11,21 @@ parser.add_argument("--qt-bin", type=Path, required=True)
 args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix="qopenhd-sidebar-") as temp:
     folder = Path(temp)
-    for name in ("SideBarMain", "SideBarBasePanel", "SidebarStackButton", "ChoiceSelector"):
+    for name in ("SideBarMain", "SideBarBasePanel", "SidebarStackButton", "ChoiceSelector",
+                 "Panel8FindAirUnit", "BaseJoyEditElement2"):
         source = (ROOT / "qml/ui/sidebar" / (name + ".qml")).read_text(encoding="utf-8")
         source = source.replace("import OpenHD 1.0", "").replace('import "../elements"', "")
         (folder / (name + ".qml")).write_text(source, encoding="utf-8")
     # Geometry uses the production shell; telemetry-heavy panel bodies are omitted.
-    for name in ("Panel8FindAirUnit", "Panel1Link", "Panel2Video", "Panel3Camera",
-                 "Panel4Recording", "Panel5RC", "Panel6Misc", "Panel7Status"):
+    for name in ("Panel1Link", "Panel2Video", "Panel3Camera",
+                 "Panel4Recording", "Panel6Misc"):
         (folder / (name + ".qml")).write_text(
             'import QtQuick 2.12\nSideBarBasePanel { function takeover_control() {} }', encoding="utf-8")
+    (folder / "SystemHealth.js").write_bytes(
+        (ROOT / "qml/ui/configpopup/status/SystemHealth.js").read_bytes())
+    (folder / "Panel7Status.qml").write_text(
+        (ROOT / "qml/ui/sidebar/Panel7Status.qml").read_text(encoding="utf-8")
+        .replace("../configpopup/status/SystemHealth.js", "SystemHealth.js"), encoding="utf-8")
     (folder / "CameraImageReset.qml").write_text(
         (ROOT / "qml/ui/elements/CameraImageReset.qml").read_text(encoding="utf-8"), encoding="utf-8")
     camera_source = (ROOT / "qml/ui/sidebar/Panel3Camera.qml").read_text(encoding="utf-8")
@@ -40,13 +46,45 @@ import QtQuick.Controls 2.12
 import QtTest 1.2
 Item {
     id: hudOverlayGrid
+    property bool openedSystemStatus: false
+    function open_config_popup(showSystemStatus) { openedSystemStatus = showSystemStatus }
+    QtObject {
+        id: _ohdSystemAir
+        property bool is_alive: true
+        property int curr_soc_temp_degree: 73
+        property int curr_cpuload_perc: 31
+    }
+    QtObject {
+        id: _ohdSystemGround
+        property bool is_alive: true
+        property int wb_gnd_operating_mode: 0
+        property int curr_soc_temp_degree: 46
+        property int curr_cpuload_perc: 21
+        property int current_rx_rssi: -58
+        property int curr_rx_packet_loss_perc: 2
+    }
+    QtObject { id: _fcMavlinkSystem; property bool is_alive: true }
     width: 800; height: 480
     QtObject {
         id: settings
         property bool show_sidebar: true
+        property bool scan_passive_nexmon: false
+        property int scan_channel_width_mhz: 20
         function value(key, fallback) { return fallback }
         function setValue(key, value) {}
         function sync() {}
+    }
+    QtObject {
+        id: _wbLinkSettingsHelper
+        property bool ground_supports_10mhz: true
+        property int scan_progress_perc: 0
+        property string scanning_text_for_ui: ""
+        property var lastRequest: []
+        property bool acceptRequest: true
+        function start_scan_channels(band, widthMhz, passive) {
+            lastRequest = [band, widthMhz, passive]
+            return acceptRequest
+        }
     }
     QtObject { id: _qopenhd; property string toast: ""; function show_toast(value) { toast = value } }
     property var _airCameraSettingsModel: backend
@@ -107,9 +145,92 @@ Item {
             verify(bottom.x <= data.w)
             if (data.h < 390) verify(sidebar.sidebarScale < 1)
             // The complete panel + choice column must fit in logical viewport space.
-            verify((320 + 390/9 + 200) * sidebar.sidebarScale <= data.w)
+            verify((556 + 68 + 200) * sidebar.sidebarScale <= data.w)
             verify(sidebar.secondaryUiHeight * sidebar.sidebarScale <= data.h - 15)
             sidebar.close()
+        }
+        function test_scan_sends_displayed_bandwidth() {
+            sidebar.open_and_take_control(true)
+            _qopenhd.toast = ""
+            keyClick(Qt.Key_Right)
+            keyClick(Qt.Key_Down)
+            keyClick(Qt.Key_Right)
+            keyClick(Qt.Key_Up)
+            keyClick(Qt.Key_Return)
+            var bandwidth = findChild(sidebar, "scanBandwidth")
+            compare(bandwidth.m_displayed_value, "10 MHz")
+
+            var start = findChild(sidebar, "scanStart")
+            mouseClick(start)
+            compare(_wbLinkSettingsHelper.lastRequest, [0, 10, false])
+
+            // The settings menu can update the shared width while the HUD is alive.
+            settings.scan_channel_width_mhz = 40
+            compare(bandwidth.m_displayed_value, "40 MHz")
+            mouseClick(start)
+            compare(_wbLinkSettingsHelper.lastRequest, [0, 40, false])
+
+            settings.scan_channel_width_mhz = 10
+            settings.scan_passive_nexmon = true
+            compare(bandwidth.m_displayed_value, "20 MHz")
+            mouseClick(start)
+            compare(_wbLinkSettingsHelper.lastRequest, [0, 20, true])
+            settings.scan_passive_nexmon = false
+            compare(bandwidth.m_displayed_value, "10 MHz")
+            compare(_qopenhd.toast, "")
+
+            _wbLinkSettingsHelper.acceptRequest = false
+            mouseClick(start)
+            var feedback = findChild(sidebar, "sidebarScanFeedback")
+            verify(feedback.text.indexOf("Scan could not start") === 0)
+            compare(_qopenhd.toast, "")
+            _wbLinkSettingsHelper.acceptRequest = true
+            mouseClick(start)
+            verify(feedback.text.indexOf("Scan could not start") === -1)
+
+            _ohdSystemGround.wb_gnd_operating_mode = 1
+            verify(!start.enabled)
+            _ohdSystemGround.wb_gnd_operating_mode = 0
+            sidebar.close()
+        }
+        function test_sidebar_status_navigation() {
+            hudOverlayGrid.width = 800; hudOverlayGrid.height = 480
+            sidebar.open_and_take_control(true)
+            verify(findChild(sidebar, "sidebarCategory_rc") === null)
+            for (var i = 0; i < 6; ++i) keyClick(Qt.Key_Down)
+            var statusTab = findChild(sidebar, "sidebarCategory_status")
+            verify(statusTab.activeFocus)
+            keyClick(Qt.Key_Down)
+            verify(findChild(sidebar, "sidebarCategory_scan").activeFocus)
+            for (var j = 0; j < 6; ++j) keyClick(Qt.Key_Down)
+            keyClick(Qt.Key_Up)
+            verify(findChild(sidebar, "sidebarCategory_misc").activeFocus)
+            keyClick(Qt.Key_Down)
+            keyClick(Qt.Key_Right)
+            var details = findChild(sidebar, "sidebarStatusDetails")
+            verify(details.activeFocus)
+            function showsText(item, expected) {
+                if (!item.visible) return false
+                if (item.text === expected) return true
+                for (var k = 0; k < item.children.length; ++k) {
+                    if (showsText(item.children[k], expected)) return true
+                }
+                return false
+            }
+            verify(showsText(sidebar, "Warning"))
+            verify(showsText(sidebar, "-58 dBm"))
+            _ohdSystemGround.is_alive = false
+            verify(showsText(sidebar, "Offline"))
+            verify(!showsText(sidebar, "-58 dBm"))
+            _ohdSystemGround.is_alive = true
+            _ohdSystemGround.current_rx_rssi = -62
+            verify(showsText(sidebar, "-62 dBm"))
+            keyClick(Qt.Key_Left)
+            verify(statusTab.activeFocus)
+            keyClick(Qt.Key_Right)
+            keyClick(Qt.Key_Return)
+            verify(hudOverlayGrid.openedSystemStatus)
+            verify(!sidebar.m_extra_is_visible)
         }
         function test_reset_ack_sequence() {
             backend.reject=false; backend.writes=[]
@@ -152,9 +273,9 @@ Item {
             verify(button !== null)
             verify(button.visible)
             var pos=button.mapToItem(panels,0,0)
-            verify(pos.y < 390/8)
+            verify(pos.y < 78)
             verify(pos.x > 320/2)
-            compare(button.width,390/8)
+            compare(button.width,78)
             button.startReset()
             tryCompare(button,"resetting",false)
             compare(backend.values.GX_EXPOSURE,2)

@@ -17,8 +17,10 @@ import "../elements"
 //
 Item {
     id: sidebar_stack_button
-    height: 390 / 9 // Scale the full sidebar together, including category icons.
-    width: height
+    height: 52
+    width: 68
+    objectName: "sidebarCategory_" + override_tag
+    readonly property bool selected: m_stack_index === override_index
 
     property string override_text: "OVERRIDE ME"
     property string override_tag: "OVERRIDE ME"
@@ -36,28 +38,37 @@ Item {
     }
 
 
-    // Background
-    Rectangle{
-        width: parent.width
-        height: parent.height
-        color: (mouseArea.containsMouse || m_stack_index==override_index) ? highlightColor : mainDarkColor
-        border.color: sidebar_stack_button.activeFocus ? "#e7f4ff" : "#00000000"
-        border.width: sidebar_stack_button.activeFocus ? 2 : 0
+    Rectangle {
+        anchors.centerIn: parent
+        width: 54
+        height: 46
+        radius: 12
+        color: selected ? "#234f70" : (mouseArea.containsMouse ? "#223647" : "transparent")
+        border.color: "#71d4ff"
+        border.width: activeFocus ? 2 : 0
     }
-    // Icon
+
+    Rectangle {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        width: 4
+        height: 22
+        radius: 2
+        color: "#58ccff"
+        visible: selected
+    }
+
     Text {
-        anchors.fill: parent
+        anchors.centerIn: parent
         text: override_text
-        font.pixelSize: height / 2
-        opacity: 1.0
+        font.pixelSize: 24
         font.family: "Font Awesome 5 Free"
-        color: (mouseArea.containsMouse || m_stack_index==override_index) ? "#ffffff" : "#e0edf8"
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
+        color: selected ? "#d6f3ff" : "#bbcbd8"
     }
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+        hoverEnabled: true
         onClicked: {
             console.log("Item clicked: " + override_tag)
             sidebar.update_stack_index(override_index)
@@ -78,7 +89,7 @@ Item {
                             event.accepted=true;
                         }else if(event.key === Qt.Key_Down){
                             m_stack_index++;
-                            if(m_stack_index>7){
+                            if(m_stack_index>6){
                                 m_stack_index=0;
                             }
                             sidebar.handover_joystick_control_to_button(m_stack_index);

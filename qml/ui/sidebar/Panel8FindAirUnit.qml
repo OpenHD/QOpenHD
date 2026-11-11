@@ -1,302 +1,271 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
-import QtQuick.Controls.Material 2.12
-import Qt.labs.settings 1.0
-import OpenHD 1.0
-import "../elements"
 
-SideBarBasePanel{
+SideBarBasePanel {
+    id: page
     override_title: "Find Air Unit"
+    headerIcon: "\uf002"
 
-    function takeover_control(){
-        bandSelection.takeover_control();
+    readonly property bool groundOnline: _ohdSystemGround.is_alive
+    readonly property bool radioIdle: groundOnline && _ohdSystemGround.wb_gnd_operating_mode === 0
+    readonly property bool scanning: groundOnline && _ohdSystemGround.wb_gnd_operating_mode === 1
+    readonly property bool passive: settings.scan_passive_nexmon
+    readonly property bool allow10MHz: !passive && _wbLinkSettingsHelper.ground_supports_10mhz
+    readonly property int selectedBandwidth: settings.scan_channel_width_mhz === 40 ? 40
+        : settings.scan_channel_width_mhz === 10 && allow10MHz ? 10 : 20
+    readonly property int scanProgress: Math.max(0, Math.min(100, _wbLinkSettingsHelper.scan_progress_perc))
+    readonly property string scanResult: _wbLinkSettingsHelper.scanning_text_for_ui
+    readonly property bool showProgress: groundOnline && (scanning
+        || (scanError.length === 0 && scanProgress === 100 && scanResult.length > 0))
+
+    property int selectedBand: 0
+    property string scanError: ""
+
+    onScanningChanged: if (scanning) scanError = ""
+
+    function takeover_control() {
+        bandSelection.takeover_control()
     }
 
-    ColumnLayout{
-        id: panelColumn
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.left: parent.left
-        anchors.right: parent.right
-        spacing: 5
+    function startScan() {
+        if (!radioIdle) return
 
-        ListModel{
-            id: scanBandModel
-        }
-        ListModel{
-            id: scanBandwidthModel
-        }
+        scanError = ""
+        if (!_wbLinkSettingsHelper.start_scan_channels(selectedBand, selectedBandwidth, passive))
+            scanError = passive
+                ? qsTr("Passive scan could not start. Check Nexmon availability and radio status.")
+                : qsTr("Scan could not start. Check the ground radio and try again.")
+    }
 
-        function rebuildBandModel(){
-            scanBandModel.clear();
-            scanBandModel.append({value: 0, verbose: "OpenHD [1-7]"});
-            scanBandModel.append({value: 1, verbose: "2.4G"});
-            scanBandModel.append({value: 2, verbose: "5.8G"});
-        }
+    ListModel {
+        id: bands
+        ListElement { value: 0; verbose: qsTr("OpenHD [1–7]") }
+        ListElement { value: 1; verbose: qsTr("2.4 GHz") }
+        ListElement { value: 2; verbose: qsTr("5.8 GHz") }
+    }
 
-        function rebuildBandwidthModel(){
-            scanBandwidthModel.clear();
-            if(!settings.scan_passive_nexmon && _wbLinkSettingsHelper.ground_supports_10mhz){
-                scanBandwidthModel.append({value: 10, verbose: "10 MHz"});
-            }
-            scanBandwidthModel.append({value: 20, verbose: "20 MHz"});
-            scanBandwidthModel.append({value: 40, verbose: "40 MHz"});
-        }
+    ListModel { id: bandwidths }
 
-        function syncBandwidthIndex(){
-            for(var i=0;i<scanBandwidthModel.count;i++){
-                if(scanBandwidthModel.get(i).value===settings.scan_channel_width_mhz){
-                    bandwidthSelection.currentIndex=i;
-                    return;
-                }
-            }
-            if(scanBandwidthModel.count>0){
-                var defaultIndex=bandwidth_index_for_value(20);
-                if(defaultIndex<0){
-                    defaultIndex=0;
-                }
-                bandwidthSelection.currentIndex=defaultIndex;
-                settings.scan_channel_width_mhz=scanBandwidthModel.get(defaultIndex).value;
-            }
-        }
+    function rebuildBandwidths() {
+        if (choiceSelector.visible && choiceSelector.m_parent === bandwidthSelection)
+            choiceSelector.discard_and_close()
+        bandwidths.clear()
+        if (allow10MHz) bandwidths.append({ value: 10, verbose: qsTr("10 MHz") })
+        bandwidths.append({ value: 20, verbose: qsTr("20 MHz") })
+        bandwidths.append({ value: 40, verbose: qsTr("40 MHz") })
+    }
+    Component.onCompleted: rebuildBandwidths()
+    onAllow10MHzChanged: rebuildBandwidths()
 
-        function bandwidth_index_for_value(value){
-            for(var i=0;i<scanBandwidthModel.count;i++){
-                if(scanBandwidthModel.get(i).value===value){
-                    return i;
-                }
-            }
-            return -1;
-        }
+    ColumnLayout {
+        width: parent.width
+        spacing: 0
 
-        function syncBandIndex(){
-            if(scanBandModel.count<=0){
-                bandSelection.currentIndex=0;
-                return;
-            }
-            if(bandSelection.currentIndex<0 || bandSelection.currentIndex>=scanBandModel.count){
-                bandSelection.currentIndex=0;
-            }
-        }
-
-        Component.onCompleted: {
-            rebuildBandModel();
-            rebuildBandwidthModel();
-            syncBandIndex();
-            syncBandwidthIndex();
-        }
-
-        BaseJoyEditElement2{
+        BaseJoyEditElement2 {
             id: bandSelection
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            objectName: "scanBand"
+            Layout.fillWidth: true
+            rowIcon: "\uf012"
             m_title: "Channels"
+            m_displayed_value: bands.get(page.selectedBand).verbose
 
-            property int currentIndex: -1
-
-            m_displayed_value: (scanBandModel.count>0 && currentIndex>=0 && currentIndex<scanBandModel.count)
-                ? scanBandModel.get(currentIndex).verbose
-                : "OpenHD [1-7]"
-
-            Keys.onPressed: (event)=> {
-                if(event.key===Qt.Key_Left){
-                    sidebar.regain_control_on_sidebar_stack();
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Right || event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
-                    open_choices_menu(false);
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Up){
-                    choiceSelector.discard_and_close();
-                    sidebar.regain_control_on_sidebar_stack();
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Down){
-                    choiceSelector.discard_and_close();
-                    bandwidthSelection.takeover_control();
-                    event.accepted=true;
-                }
+            function openChoices(clickable) {
+                choiceSelector.open_choices(bands, page.selectedBand, bandSelection)
+                choiceSelector.set_clickable(clickable)
+            }
+            function user_selected_value(value) {
+                page.selectedBand = Number(value)
             }
 
-            onBase_joy_edit_element_clicked: {
-                if(choiceSelector.visible){
-                    choiceSelector.close_choices();
-                }else{
-                    open_choices_menu(true);
-                }
-            }
-
-            function open_choices_menu(clickable){
-                var idx=currentIndex;
-                if(idx<0 || idx>=scanBandModel.count){
-                    idx=0;
-                }
-                choiceSelector.open_choices(scanBandModel, scanBandModel.get(idx).value, bandSelection);
-                choiceSelector.set_clickable(clickable);
-            }
-
-            function user_selected_value(value_new){
-                currentIndex=parseInt(value_new);
-            }
+            Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
+            Keys.onUpPressed: sidebar.regain_control_on_sidebar_stack()
+            Keys.onDownPressed: bandwidthSelection.takeover_control()
+            Keys.onRightPressed: openChoices(false)
+            Keys.onReturnPressed: openChoices(false)
+            Keys.onEnterPressed: openChoices(false)
+            onBase_joy_edit_element_clicked: openChoices(true)
         }
 
-        BaseJoyEditElement2{
+        BaseJoyEditElement2 {
             id: bandwidthSelection
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            objectName: "scanBandwidth"
+            Layout.fillWidth: true
+            rowIcon: "\uf337"
             m_title: "Bandwidth"
+            m_displayed_value: qsTr("%1 MHz").arg(page.selectedBandwidth)
 
-            property int currentIndex: 0
-
-            m_displayed_value: (scanBandwidthModel.count>0 && currentIndex>=0 && currentIndex<scanBandwidthModel.count)
-                ? scanBandwidthModel.get(currentIndex).verbose
-                : "20 MHz"
-
-            Keys.onPressed: (event)=> {
-                if(event.key===Qt.Key_Left){
-                    sidebar.regain_control_on_sidebar_stack();
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Right || event.key===Qt.Key_Enter || event.key===Qt.Key_Return){
-                    open_choices_menu(false);
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Up){
-                    choiceSelector.discard_and_close();
-                    bandSelection.takeover_control();
-                    event.accepted=true;
-                }else if(event.key===Qt.Key_Down){
-                    choiceSelector.discard_and_close();
-                    scanModeSwitch.forceActiveFocus();
-                    event.accepted=true;
-                }
+            function openChoices(clickable) {
+                choiceSelector.open_choices(bandwidths, page.selectedBandwidth, bandwidthSelection)
+                choiceSelector.set_clickable(clickable)
+            }
+            function user_selected_value(value) {
+                var widthMhz = Number(value)
+                if (widthMhz === 20 || widthMhz === 40 || (widthMhz === 10 && page.allow10MHz))
+                    settings.scan_channel_width_mhz = widthMhz
             }
 
-            onBase_joy_edit_element_clicked: {
-                if(choiceSelector.visible){
-                    choiceSelector.close_choices();
-                }else{
-                    open_choices_menu(true);
-                }
-            }
+            Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
+            Keys.onUpPressed: bandSelection.takeover_control()
+            Keys.onDownPressed: if (modeSwitch.enabled) modeSwitch.forceActiveFocus()
+            Keys.onRightPressed: openChoices(false)
+            Keys.onReturnPressed: openChoices(false)
+            Keys.onEnterPressed: openChoices(false)
+            onBase_joy_edit_element_clicked: openChoices(true)
+        }
 
-            function open_choices_menu(clickable){
-                var idx=currentIndex;
-                if(idx<0 || idx>=scanBandwidthModel.count){
-                    idx=panelColumn.bandwidth_index_for_value(settings.scan_channel_width_mhz);
-                    if(idx<0){
-                        idx=0;
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.leftMargin: 24
+            Layout.rightMargin: 24
+            Layout.topMargin: 14
+            Layout.preferredHeight: modeRow.implicitHeight + 20
+            radius: 12
+            color: modeSwitch.activeFocus ? "#25455f" : "#203448"
+            border.color: modeSwitch.activeFocus ? "#71d4ff" : "#365169"
+
+            RowLayout {
+                id: modeRow
+                anchors.fill: parent
+                anchors.leftMargin: 14
+                anchors.rightMargin: 14
+                spacing: 12
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 3
+                    Label {
+                        Layout.fillWidth: true
+                        text: qsTr("Passive scan")
+                        font.pixelSize: 20
+                        font.weight: Font.DemiBold
+                        color: "#edf6ff"
+                        elide: Text.ElideRight
+                    }
+                    Label {
+                        Layout.fillWidth: true
+                        text: page.passive ? qsTr("Nexmon · Filters by Air bandwidth")
+                                           : qsTr("Primary radio")
+                        color: "#acbfd1"
+                        font.pixelSize: 17
+                        elide: Text.ElideRight
                     }
                 }
-                choiceSelector.open_choices(scanBandwidthModel, scanBandwidthModel.get(idx).value, bandwidthSelection);
-                choiceSelector.set_clickable(clickable);
-            }
 
-            function user_selected_value(value_new){
-                var value=parseInt(value_new);
-                var idx=panelColumn.bandwidth_index_for_value(value);
-                if(idx>=0){
-                    currentIndex=idx;
-                    settings.scan_channel_width_mhz = scanBandwidthModel.get(idx).value;
+                Switch {
+                    id: modeSwitch
+                    Accessible.name: qsTr("Passive scan")
+                    Layout.preferredWidth: 54
+                    Layout.preferredHeight: 40
+                    checked: page.passive
+                    enabled: page.radioIdle
+                    onToggled: settings.scan_passive_nexmon = checked
+                    Keys.onUpPressed: bandwidthSelection.takeover_control()
+                    Keys.onDownPressed: startButton.forceActiveFocus()
+                    Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
+                    Keys.onRightPressed: settings.scan_passive_nexmon = !checked
+                    Keys.onReturnPressed: settings.scan_passive_nexmon = !checked
+                    Keys.onEnterPressed: settings.scan_passive_nexmon = !checked
+
+                    indicator: Rectangle {
+                        x: (modeSwitch.width - width) / 2
+                        y: (modeSwitch.height - height) / 2
+                        width: 52
+                        height: 28
+                        radius: 14
+                        color: modeSwitch.checked ? "#278bc3" : "#52677a"
+                        Rectangle {
+                            x: modeSwitch.checked ? parent.width - width - 3 : 3
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 22
+                            height: 22
+                            radius: 11
+                            color: "#edf6ff"
+                        }
+                    }
                 }
             }
         }
 
-        Connections {
-            target: settings
-            function onScan_passive_nexmonChanged() {
-                panelColumn.rebuildBandwidthModel();
-                panelColumn.syncBandwidthIndex();
-            }
-        }
-        Connections {
-            target: _wbLinkSettingsHelper
-            function onGround_supports_10mhzChanged() {
-                panelColumn.rebuildBandwidthModel();
-                panelColumn.syncBandwidthIndex();
-            }
-        }
-
-        Switch {
-            id: scanModeSwitch
-            Layout.alignment: Qt.AlignHCenter
-            text: checked ? qsTr("Passive (Nexmon)") : qsTr("Normal (Devourer radio)")
-            checked: settings.scan_passive_nexmon
-            enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode === 0
-            onToggled: settings.scan_passive_nexmon = checked
-            Keys.onUpPressed: bandwidthSelection.takeover_control()
-            Keys.onDownPressed: startButton.forceActiveFocus()
-            Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
-            Keys.onReturnPressed: if (enabled) { settings.scan_passive_nexmon = !checked }
-            Keys.onEnterPressed: if (enabled) { settings.scan_passive_nexmon = !checked }
-        }
-
-Button {
-    id: startButton
-    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-    Layout.preferredWidth: 250
-            text: qsTr("START SCAN")
-    enabled: _ohdSystemGround.is_alive && _ohdSystemGround.wb_gnd_operating_mode==0
-    hoverEnabled: true
-
-    contentItem: Text {
-        text: startButton.text
-        color: "white"
-        font: startButton.font
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        anchors.fill: parent
-    }
-
-    background: Rectangle {
-        color: "#171d25"
-        border.color: "white"
-        border.width: startButton.activeFocus ? 3 : 0
-        opacity: startButton.activeFocus ? 1.0 : 0.8
-    }
-
-    function startScan(){
-        var how_many_freq_bands = bandSelection.currentIndex;
-        var channel_width_mhz = settings.scan_channel_width_mhz;
-        var result = _wbLinkSettingsHelper.start_scan_channels(how_many_freq_bands, channel_width_mhz, settings.scan_passive_nexmon);
-        if(result){
-            _qopenhd.show_toast(qsTr("Channel scan started, please wait"), true);
-        } else {
-            _qopenhd.show_toast(settings.scan_passive_nexmon
-                ? qsTr("Passive scan could not start. Check Nexmon availability and radio status.")
-                : qsTr("Busy, please try again later"), true);
-        }
-    }
-
-    onClicked: startScan()
-
-    Keys.onPressed: (event) => {
-        if(event.key === Qt.Key_Up){
-            scanModeSwitch.forceActiveFocus();
-            event.accepted = true;
-        } else if(event.key === Qt.Key_Left){
-            sidebar.regain_control_on_sidebar_stack();
-            event.accepted = true;
-        } else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
-            startScan();
-            event.accepted = true;
-        }
-    }
-}
-
-
-        RowLayout{
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            spacing: 10
-            ProgressBar{
-                Layout.preferredWidth: 150
-                value: _wbLinkSettingsHelper.scan_progress_perc/100.0
-            }
-            Text{
-                text: _wbLinkSettingsHelper.scan_progress_perc + "%"
-                font.pixelSize: 18
-                color: "#fff"
-            }
-        }
-
-        Item{
+        Button {
+            id: startButton
+            objectName: "scanStart"
             Layout.fillWidth: true
-            Layout.fillHeight: true
+            Layout.leftMargin: 24
+            Layout.rightMargin: 24
+            Layout.topMargin: 12
+            Layout.preferredHeight: 52
+            text: page.scanning ? qsTr("Scanning…") : qsTr("Start scan")
+            enabled: page.radioIdle
+            hoverEnabled: true
+            font.pixelSize: 21
+            font.weight: Font.DemiBold
+            onClicked: page.startScan()
+            Keys.onLeftPressed: sidebar.regain_control_on_sidebar_stack()
+            Keys.onUpPressed: modeSwitch.forceActiveFocus()
+            Keys.onRightPressed: page.startScan()
+            Keys.onReturnPressed: page.startScan()
+            Keys.onEnterPressed: page.startScan()
+
+            background: Rectangle {
+                radius: 12
+                color: !startButton.enabled ? "#26394b"
+                    : startButton.down ? "#225677"
+                    : startButton.hovered || startButton.activeFocus ? "#2f6d93" : "#285879"
+                border.color: startButton.activeFocus ? "#89dbff" : "#395c77"
+                border.width: startButton.activeFocus ? 2 : 1
+            }
+            contentItem: Label {
+                text: startButton.text
+                font: startButton.font
+                color: startButton.enabled ? "#f2f9ff" : "#adc1d2"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.leftMargin: 24
+            Layout.rightMargin: 24
+            Layout.topMargin: 14
+            spacing: 6
+
+            RowLayout {
+                Layout.fillWidth: true
+                Label {
+                    objectName: "sidebarScanFeedback"
+                    Layout.fillWidth: true
+                    text: !page.groundOnline ? qsTr("Ground unit offline")
+                        : page.scanError.length ? page.scanError
+                        : page.showProgress && page.scanResult.length ? page.scanResult
+                        : page.scanning ? qsTr("Searching for Air")
+                        : !page.radioIdle ? qsTr("Ground radio busy") : qsTr("Ready to scan")
+                    font.pixelSize: 18
+                    color: page.groundOnline && page.scanError.length ? "#ffcb76" : "#acbfd1"
+                    wrapMode: Text.WordWrap
+                }
+                Label {
+                    visible: page.showProgress
+                    text: qsTr("%1%").arg(page.scanProgress)
+                    font.pixelSize: 18
+                    color: "#d6f3ff"
+                }
+            }
+
+            Rectangle {
+                visible: page.showProgress
+                Layout.fillWidth: true
+                Layout.preferredHeight: 6
+                radius: 3
+                color: "#29445b"
+                Rectangle {
+                    width: parent.width * page.scanProgress / 100
+                    height: parent.height
+                    radius: parent.radius
+                    color: "#67cbfb"
+                }
+            }
         }
     }
 }

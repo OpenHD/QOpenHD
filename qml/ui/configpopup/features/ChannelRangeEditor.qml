@@ -87,7 +87,7 @@ Column {
                 textFromValue: function(value) { return value.toString() }
                 valueFromText: function(text) { return Number(text) }
                 onValueModified: root.edited(Ranges.setBoundary(root.ranges, root.selectedArea, value))
-                ToolTip.visible: hovered; ToolTip.text: qsTr("Inclusive upper PWM boundary in µs")
+                Accessible.name: qsTr("Inclusive upper PWM boundary in µs")
             }
         }
         Flow {

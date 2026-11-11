@@ -16,6 +16,7 @@ import "../elements"
 BaseJoyEditElement2 {
     id: powerChoiceElement
     m_title: "Power"
+    rowIcon: "\uf0e7"
 
     signal goto_previous()
     signal goto_next()
