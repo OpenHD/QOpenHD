@@ -104,6 +104,11 @@ Item {
         ListElement {value: 80; verbose:"80%"}
         ListElement {value: 100; verbose:"100%"}
     }
+    ListModel {
+        id: elements_model_streaming_format
+        ListElement {value: 0; verbose: "H.264"}
+        ListElement {value: 1; verbose: "H.265"}
+    }
     ListModel{
         id: elements_model_camera_rotation_degree
         ListElement {value: 0; verbose:"0 deg (default)"}
@@ -361,6 +366,8 @@ Item {
             return elements_model_wifi_mode
         }else if(param_id=="TX_PWR_LVL"){
             return elements_model_tx_power_level
+        }else if(param_id=="VIDEO_CODEC"){
+            return elements_model_streaming_format
         }else if(param_id=="ROTATION_DEG"){
             return elements_model_camera_rotation_degree
         }else if(param_id=="ROTATION_FLIP"){

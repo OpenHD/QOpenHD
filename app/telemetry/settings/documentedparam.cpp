@@ -1,4 +1,5 @@
 #include "documentedparam.h"
+#include "../models/openhd_core/camera.hpp"
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -35,6 +36,15 @@ QString DocumentedParam::camera_setting_category(const QString& id) {
 
 bool DocumentedParam::camera_setting_supported(const QString& id,int cameraType,int platformType) {
     if (cameraType < 0 || cameraType == 255) return false;
+    if (id == "ROTATION_DEG") {
+        XCamera camera{};
+        camera.camera_type = cameraType;
+        if (camera.requires_rockchip3_mpp_pipeline() ||
+            camera.requires_rockchip5_mpp_pipeline() ||
+            camera.requires_rockchip_rv_pipeline() ||
+            camera.requires_rockchip1126_mpp_csi_pipeline() ||
+            camera.requires_rockchip1126_mpp_testsrc_pipeline()) return false;
+    }
     const auto entry = fallback().value(id).toObject();
     const auto types = entry.value("supportedCameraTypes").toArray();
     if (!types.isEmpty() && !types.contains(cameraType)) return false;

@@ -44,6 +44,22 @@ SideBarBasePanel{
 
     property bool hasArducamHdr: cameraParamUpdates >= 0 &&
                                 _airCameraSettingsModel.param_int_exists("ARDUCAM_HDR")
+    readonly property int airPlatform: _ohdSystemAir.ohd_platform_type
+    readonly property bool hasStreamingFormat: cameraParamUpdates >= 0 &&
+        !(airPlatform >= 10 && airPlatform <= 13) &&
+        _airCameraSettingsModel.param_int_exists("VIDEO_CODEC") &&
+        _airCameraSettingsModel.get_ui_metadata("VIDEO_CODEC").cameraSupported === true
+    readonly property bool hasRotation: cameraParamUpdates >= 0 &&
+        _airCameraSettingsModel.param_int_exists("ROTATION_DEG") &&
+        _airCameraSettingsModel.get_ui_metadata("ROTATION_DEG").cameraSupported === true
+    readonly property bool hasFlip: cameraParamUpdates >= 0 &&
+        _airCameraSettingsModel.param_int_exists("ROTATION_FLIP")
+
+    function focusAfterStreamSettings() {
+        if (hasRotation) rotation_degree.takeover_control()
+        else if (hasFlip) rotation_flip.takeover_control()
+        else sidebar.regain_control_on_sidebar_stack()
+    }
 
     function takeover_control(){
         if (hasReadoutModes) readout_mode.takeover_control();
@@ -129,25 +145,44 @@ SideBarBasePanel{
                 else sidebar.regain_control_on_sidebar_stack()
             }
             onGoto_next: {
-               //sidebar.regain_control_on_sidebar_stack()
-                rotation_degree.takeover_control();
+                if (videoPanel.hasStreamingFormat) streaming_format.takeover_control()
+                else videoPanel.focusAfterStreamSettings()
             }
+        }
+        MavlinkChoiceElement2 {
+            id: streaming_format
+            visible: videoPanel.hasStreamingFormat
+            m_title: qsTr("Streaming format")
+            m_param_id: "VIDEO_CODEC"
+            m_settings_model: _airCameraSettingsModel
+            onGoto_previous: edit_resolution_element.takeover_control()
+            onGoto_next: videoPanel.focusAfterStreamSettings()
         }
         MavlinkChoiceElement2{
             id: rotation_degree
+            visible: videoPanel.hasRotation
             m_title: qsTr("Rotation")
             m_param_id: "ROTATION_DEG"
             m_settings_model: _airCameraSettingsModel
-            onGoto_previous: edit_resolution_element.takeover_control()
-            onGoto_next: rotation_flip.takeover_control()
+            onGoto_previous: {
+                if (videoPanel.hasStreamingFormat) streaming_format.takeover_control()
+                else edit_resolution_element.takeover_control()
+            }
+            onGoto_next: {
+                if (videoPanel.hasFlip) rotation_flip.takeover_control()
+                else sidebar.regain_control_on_sidebar_stack()
+            }
         }
         MavlinkChoiceElement2{
             id: rotation_flip
+            visible: videoPanel.hasFlip
             m_title: qsTr("Mirror / flip")
             m_param_id: "ROTATION_FLIP"
             m_settings_model: _airCameraSettingsModel
             onGoto_previous: {
-               rotation_degree.takeover_control();
+                if (videoPanel.hasRotation) rotation_degree.takeover_control()
+                else if (videoPanel.hasStreamingFormat) streaming_format.takeover_control()
+                else edit_resolution_element.takeover_control()
             }
             onGoto_next: {
                 sidebar.regain_control_on_sidebar_stack()
