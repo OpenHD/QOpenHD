@@ -124,10 +124,10 @@ Item {
             compare(parentTabs.tabIsAvailable(1), false)
             _ohdSystemAir.ohd_platform_type = 20
             compare(parentTabs.tabIsAvailable(1), true)
-            compare(single.categoryCount("CAMERA"), 1)
-            compare(dual.categoryCount("CAMERA"), 1)
-            compare(single.categoryCount("VIDEO"), 0)
-            compare(dual.categoryCount("VIDEO"), 0)
+            compare(single.categoryCount("CAMERA"), 0)
+            compare(dual.categoryCount("CAMERA"), 0)
+            compare(single.categoryCount("VIDEO"), 1)
+            compare(dual.categoryCount("VIDEO"), 1)
             params.codecSupported = false
             compare(parentTabs.tabIsAvailable(1), false)
             params.codecSupported = true

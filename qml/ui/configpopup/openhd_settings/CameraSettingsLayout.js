@@ -3,7 +3,7 @@
 // Shared by the category strips and their parent tab. Hidden expert-only
 // settings do not count as content in normal mode.
 function categoryFor(id, model, platformType) {
-        if (id === "VIDEO_CODEC" && platformType === 20) return "CAMERA" // Radxa Zero 3W
+        if (id === "VIDEO_CODEC" && platformType === 20) return "VIDEO" // Radxa Zero 3W
         if (model && typeof model.get_ui_metadata === "function") {
             var category = model.get_ui_metadata(id).cameraCategory
             if (category) return category
