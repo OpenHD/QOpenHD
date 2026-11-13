@@ -25,12 +25,15 @@ Column {
     onPrimaryPercentChanged: if (!editingShare) draftPercent = primaryPercent
     readonly property bool canSplit: linkId !== 3 && linkId !== 7 && hasPercent && dynamicCount() === 2
     readonly property bool splitEnabled: canSplit && canWrite && dynamicEnabled
+    readonly property string dynamicParameter: {
+        revision
+        if (parameterModel.param_int_exists("V_AUTO_BITRATE")) return "V_AUTO_BITRATE"
+        return parameterModel.param_int_exists("VARIABLE_BITRATE") ? "VARIABLE_BITRATE" : ""
+    }
     readonly property bool dynamicEnabled: {
         revision
-        if (parameterModel && parameterModel.param_int_exists("V_AUTO_BITRATE"))
-            return parameterModel.get_cached_int("V_AUTO_BITRATE") === 1
-        return parameterModel && parameterModel.param_int_exists("VARIABLE_BITRATE")
-            ? parameterModel.get_cached_int("VARIABLE_BITRATE") === 1 : linkId !== 1 || (!!allocation && !!allocation.enabled)
+        return dynamicParameter ? parameterModel.get_cached_int(dynamicParameter) === 1
+                                : !!allocation && !!allocation.enabled
     }
     readonly property bool customDataEnabled: {
         revision
@@ -137,6 +140,15 @@ Column {
                         Text { text: qsTr("Available"); color: "#adc8da"; font.family: MenuTypography.family; font.pixelSize: MenuTypography.helper }
                     }
                 }
+            }
+            Switch {
+                id: ethernetAutoBitrate
+                objectName: "ethernetDynamicBitrateSwitch"
+                visible: section.linkId === 2 && section.dynamicParameter !== ""
+                text: qsTr("Dynamic Link Bitrate")
+                enabled: section.canWrite
+                onClicked: section.parameterModel.try_set_param_int_async(section.dynamicParameter, checked ? 1 : 0, true)
+                Binding { target: ethernetAutoBitrate; property: "checked"; value: section.dynamicEnabled }
             }
             Rectangle {
                 width: parent.width; height: tableContent.implicitHeight; radius: 14; color: "#031e2c"; border.color: "#10384c"; clip: true

@@ -87,7 +87,7 @@ BaseWidget {
     }
 
     readonly property bool ethernetLink: _ohdSystemGround.primary_link_type === 2
-    readonly property int ethernetSpeed: _ohdSystemGround.ethernet_speed_mbit || 0
+    readonly property int ethernetSpeed: _ohdSystemGround.ethernet_speed_mbit || _ohdSystemAir.ethernet_speed_mbit || 0
     function get_text_dbm(){
         if (ethernetLink) return ethernetSpeed > 0 ? String(ethernetSpeed) : qsTr("N/A")
         var dbm=previewTelemetry("_ohdSystemGround", "current_rx_rssi", _ohdSystemGround.current_rx_rssi);

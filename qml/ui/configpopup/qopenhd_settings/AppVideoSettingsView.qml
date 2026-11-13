@@ -20,7 +20,10 @@ FocusScope {
     readonly property bool androidVideo: typeof QOPENHD_ENABLE_VIDEO_VIA_ANDROID !== "undefined" && QOPENHD_ENABLE_VIDEO_VIA_ANDROID
     readonly property bool playback: avcodec || gstreamer || nativeVideo || androidVideo
     readonly property bool secondary: settings.secondary_camera_available === true
-    readonly property bool externalDecode: avcodec && !nativeVideo && linux && (settings.dev_always_use_generic_external_decode_service || (rpi && settings.dev_rpi_use_external_omx_decode_service))
+    readonly property bool externalDecode: avcodec && !nativeVideo && linux && (rpi
+        ? (settings.dev_rpi_use_external_omx_decode_service || settings.dev_always_use_generic_external_decode_service)
+          && (settings.qopenhd_switch_primary_secondary ? settings.qopenhd_secondary_video_codec : settings.qopenhd_primary_video_codec) === 0
+        : settings.dev_always_use_generic_external_decode_service)
     readonly property bool fitSupported: nativeVideo || androidVideo || (avcodec && !externalDecode)
     readonly property bool softwareSupported: !nativeVideo && !externalDecode && (avcodec || gstreamer)
     readonly property bool testSupported: !nativeVideo && !externalDecode && (avcodec || gstreamer)

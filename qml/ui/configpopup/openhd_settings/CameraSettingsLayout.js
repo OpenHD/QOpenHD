@@ -38,7 +38,7 @@ function visibleInMode(id, advanced, model, platformType) {
     // Camera registry type 64 is VEYE GX/GXC IMX662 with the GX ISP.
     // Apply the hardware gate before Advanced mode can expose hidden controls.
     if (id.indexOf("GX_") === 0 && (!model || !model.param_int_exists("CAMERA_TYPE") || Number(model.get_cached_int("CAMERA_TYPE")) !== 64)) return false
-    if (id === "VIDEO_CODEC" && platformType === 20) return true
+    if (id === "BITRATE_MBITS" || (id === "VIDEO_CODEC" && platformType === 20)) return true
     if (advanced) return true
     if (metadata.hidden) return false
     return categoryFor(id, model, platformType) !== "ADVANCED"

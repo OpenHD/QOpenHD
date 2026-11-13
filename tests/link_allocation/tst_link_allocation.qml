@@ -168,6 +168,26 @@ Item {
             _ohdSystemAirSettingsModel.percent=60;_ohdSystemAirSettingsModel.update_count++
             popup.close()
         }
+        function test_manual_ethernet_bitrate() {
+            _ohdSystemAirSettingsModel.dynamicEnabled=1
+            _ohdSystemAirSettingsModel.update_count++
+            scene.fixture={id:2,capacity_bps:1000000000,categories:[]}
+            popup.open();wait(100)
+            var section=visualChild(popup.contentItem,"linkAllocationSection2")
+            var toggle=visualChild(section,"ethernetDynamicBitrateSwitch")
+            verify(toggle.visible);verify(toggle.checked)
+            compare(visualChild(section,"allocationBitrate0"),null)
+            mouseClick(toggle)
+            compare(_ohdSystemAirSettingsModel.dynamicEnabled,0)
+            var editor=visualChild(section,"allocationBitrate0")
+            verify(editor.visible)
+            var writes=_airCameraSettingsModel.writes
+            editor.commitInt(6)
+            compare(_airCameraSettingsModel.writes,writes+1)
+            compare(_airCameraSettingsModel.bitrate,6)
+            _airCameraSettingsModel.bitrate=8
+            popup.close()
+        }
         function test_split_on_other_video_transports() {
             _ohdSystemAirSettingsModel.dynamicEnabled=1
             _ohdSystemAirSettingsModel.update_count++

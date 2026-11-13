@@ -406,7 +406,7 @@ BaseWidget {
     }
 
     function ethernetSpeedText() {
-        var speed = _ohdSystemGround.ethernet_speed_mbit
+        var speed = _ohdSystemGround.ethernet_speed_mbit || _ohdSystemAir.ethernet_speed_mbit
         return speed > 0 ? qsTr("%1 Mbit/s").arg(speed) : qsTr("N/A")
     }
 

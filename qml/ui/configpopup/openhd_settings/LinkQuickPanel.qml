@@ -27,9 +27,17 @@ Rectangle {
         var links = _ohdSystemAir.link_usage.slice()
         var local = _ohdSystemGround.link_usage || []
         for (var i=0;i<local.length;i++) {
-            var present=false
-            for (var j=0;j<links.length;j++) if (links[j].id === local[i].id) { present=true; break }
-            if (!present) links.push(local[i])
+            var index = links.findIndex(function(link) { return link.id === local[i].id })
+            if (index < 0) {
+                links.push(local[i])
+            } else if (local[i].id === 2 && !(links[index].capacity_bps > 0) && local[i].capacity_bps > 0) {
+                // Preserve Air traffic and allocation data when only Ground reports a port speed.
+                var merged = {}
+                for (var key in links[index]) merged[key] = links[index][key]
+                merged.capacity_bps = local[i].capacity_bps
+                merged.port_duplex = local[i].port_duplex
+                links[index] = merged
+            }
         }
         return links
     }
@@ -507,7 +515,11 @@ Rectangle {
         }
     }
 
-    LinkAllocationPopup { id: allocationPopup; usage: root.usageFor("wifi"); linkUsages: root.visibleReportedUsage }
+    LinkAllocationPopup {
+        id: allocationPopup
+        usage: root.ethernetActive() ? root.usageFor("ethernet") || {id: 2} : root.usageFor("wifi")
+        linkUsages: root.visibleReportedUsage
+    }
     onVisibleChanged: if (!visible) allocationPopup.close()
 
     Component { id: wifiCard; WifiBroadcastLinkCard {} }

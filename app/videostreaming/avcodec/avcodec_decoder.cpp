@@ -163,6 +163,12 @@ void AVCodecDecoder::constant_decode()
         if(is_rpi && settings.generic.dev_rpi_use_external_omx_decode_service){
             use_external_decode_service=true;
         }
+        // The legacy Raspberry Pi service receives H.264 on the primary port.
+        // Decode HEVC through the codec-aware in-process backend.
+        if (is_rpi) {
+            use_external_decode_service = use_external_decode_service && m_primary_stream &&
+                                          stream_config.video_codec == QOpenHDVideoHelper::VideoCodecH264;
+        }
         if(use_external_decode_service){
             dirty_generic_decode_via_external_decode_service(settings);
         }else{
@@ -765,12 +771,14 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      }else if(decoder->id==AV_CODEC_ID_H265){
          qDebug()<<"H265 decode";
          if(!stream_config.enable_software_video_decoder){
-             qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
-             // HW format used by rpi h265 HW decoder
-             wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
-             use_pi_hw_decode=true;
-         }else{
-
+             for (int index = 0; const auto* config = avcodec_get_hw_config(decoder, index); ++index) {
+                 if (config->pix_fmt == AV_PIX_FMT_DRM_PRIME &&
+                     config->device_type == AV_HWDEVICE_TYPE_DRM) {
+                     wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+                     use_pi_hw_decode = true;
+                     break;
+                 }
+             }
          }
      }
      // ------------------------------------
@@ -795,7 +803,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
         if (hw_decoder_init(decoder_ctx, AV_HWDEVICE_TYPE_DRM) < 0){
           qDebug()<<"HW decoder init failed,fallback to SW decode";
           selected_decoding_type="SW(HW failed)";
-          assert(true);
+          decoder_ctx->get_format = avcodec_default_get_format;
         }else{
             selected_decoding_type="HW";
         }
