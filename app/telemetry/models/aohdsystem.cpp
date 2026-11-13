@@ -935,6 +935,16 @@ void AOHDSystem::update_alive()
     update_alive_status_with_hud_message(alive);
 }
 
+int AOHDSystem::ethernet_speed_mbit() const
+{
+    for (const auto& item : m_link_usage) {
+        const auto usage = item.toMap();
+        if (usage.value("id").toInt() == 2)
+            return usage.value("capacity_bps").toULongLong() / 1000000;
+    }
+    return 0;
+}
+
 void AOHDSystem::process_link_usage(const mavlink_data96_t& msg)
 {
     const int id = msg.data[5];

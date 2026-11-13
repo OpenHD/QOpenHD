@@ -291,7 +291,9 @@ BaseWidget {
     }
 
     function get_primary_link_text() {
-        return get_dbm_text() + " dBm | " + qsTr("loss %1").arg(get_rx_loss_text());
+        var signal = _ohdSystemGround.primary_link_type === 2
+                ? ethernetSpeedText() : get_dbm_text() + " dBm"
+        return signal + " | " + qsTr("loss %1").arg(get_rx_loss_text());
     }
 
     function get_quality_percent_value() {
@@ -401,6 +403,11 @@ BaseWidget {
             ret += " TX";
         }
         return ret;
+    }
+
+    function ethernetSpeedText() {
+        var speed = _ohdSystemGround.ethernet_speed_mbit
+        return speed > 0 ? qsTr("%1 Mbit/s").arg(speed) : qsTr("N/A")
     }
 
     function get_text_dbm() {
@@ -608,7 +615,9 @@ BaseWidget {
                     width: parent.width
                     height: 28
                     Text {
-                        text: qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
+                        text: _ohdSystemGround.primary_link_type === 2
+                              ? qsTr("Ethernet: %1").arg(ethernetSpeedText())
+                              : qsTr("GND RSSI: %1 dBm").arg(get_text_dbm())
                         color: "white"
                         height: parent.height
                         font.bold: true

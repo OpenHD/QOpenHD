@@ -45,7 +45,10 @@ BaseWidget {
         return "N/A";
     }
 
+    readonly property bool ethernetLink: _ohdSystemAir.primary_link_type === 2
+    readonly property int ethernetSpeed: _ohdSystemAir.ethernet_speed_mbit || 0
     function get_text_dbm(){
+        if (ethernetLink) return ethernetSpeed > 0 ? String(ethernetSpeed) : qsTr("N/A")
         var dbm=previewTelemetry("_ohdSystemAir", "current_rx_rssi", _ohdSystemAir.current_rx_rssi);
         if(dbm<=-127){
             return "N/A";
@@ -53,6 +56,7 @@ BaseWidget {
         return ""+dbm;
     }
     function get_dbm_text_color(){
+        if (ethernetLink) return "white"
         var warning_level=previewTelemetry("_ohdSystemAir", "dbm_too_low_warning", _ohdSystemAir.dbm_too_low_warning);
         if(settings.downlink_dbm_warning && warning_level==2){
             return "red";
@@ -179,7 +183,7 @@ BaseWidget {
             width: 32
             height: 24
             color: get_dbm_text_color()
-            text: qsTr("dBm")
+            text: ethernetLink ? (ethernetSpeed > 0 ? qsTr("Mbit/s") : "") : qsTr("dBm")
             anchors.left: uplink_rssi.right
             anchors.leftMargin: 2
             anchors.top: parent.top
