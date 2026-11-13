@@ -250,6 +250,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_status_air(const mavlink_op
     if(codec_in_openhd==0 || codec_in_openhd==1 || codec_in_openhd==2){
         if(codec_in_qopenhd!=codec_in_openhd){
            QOpenHDVideoHelper::set_qopenhd_camera_video_codec(secondary,codec_in_openhd);
+           emit decoderCodecChanged();
            std::stringstream log;
            log<<"QOpenHD- set "<<(secondary ? "CAM2" : "CAM1")<<" to "<<video_codec_to_string(msg.encoding_format);
            HUDLogMessagesModel::instance().add_message_info(log.str().c_str());

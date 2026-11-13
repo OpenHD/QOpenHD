@@ -57,7 +57,7 @@ FocusScope {
             "AIR_RECORDING_E": qsTr("Air-unit recording"),
             "STREAMING_E": qsTr("Camera stream"),
             "BITRATE_MBITS": qsTr("Encoder bitrate"),
-            "VIDEO_CODEC": qsTr("Video codec"),
+            "VIDEO_CODEC": platformType === 20 ? qsTr("Streaming format") : qsTr("Video codec"),
             "KEYFRAME_I": qsTr("Keyframe interval"),
             "RESOLUTION_FPS": qsTr("Output resolution"),
             "SENSOR_MODE": qsTr("Sensor mode"),

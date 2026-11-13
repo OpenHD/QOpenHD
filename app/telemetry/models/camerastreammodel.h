@@ -148,6 +148,7 @@ private:
     std::chrono::steady_clock::time_point m_last_wb_video_air_stats=std::chrono::steady_clock::now();
 signals:
     void streamFormatChanged();
+    void decoderCodecChanged();
 public:
     Q_INVOKABLE QVariantList get_camera_choices(int platform_type);
     Q_INVOKABLE QStringList get_manufacturer_choices(int platform_type);

@@ -23,7 +23,10 @@ Item {
         property int writes: 0
         property string writtenId: ""
         property int writtenValue: -999
-        function get_ui_metadata(id) { return {control: "integer"} }
+        function get_ui_metadata(id) { return {control: id === "VIDEO_CODEC" ? "enum" : "integer"} }
+        function int_param_has_enum_keys_values(id) { return id === "VIDEO_CODEC" }
+        function int_param_get_enum_keys(id) { return ["h264", "h265"] }
+        function int_param_get_enum_values(id) { return [0, 1] }
         function param_string_exists(id) { return false }
         function get_param_requires_manual_reboot(id) { return false }
         function get_warning_before_safe(id) { return "" }
@@ -83,6 +86,23 @@ FLIGHT_FUNCTIONS
             row.paramValue = 10
             keyClick(Qt.Key_Right); keyClick(Qt.Key_Return)
             compare(backend.writtenValue, 10)
+        }
+        function test_zero3w_streaming_format() {
+            var row = createTemporaryObject(rowComponent, fixture, {
+                paramId: "VIDEO_CODEC", paramValue: 0, platformType: 20
+            })
+            verify(row !== null)
+            compare(row.friendlyName("VIDEO_CODEC"), "Streaming format")
+            var combo = findChild(row, "parameterEnumEditor")
+            verify(combo !== null)
+            compare(combo.count, 2)
+            compare(combo.textAt(0), "H.264")
+            compare(combo.textAt(1), "H.265")
+            combo.activated(1)
+            compare(backend.writtenId, "VIDEO_CODEC")
+            compare(backend.writtenValue, 1)
+            combo.activated(0)
+            compare(backend.writtenValue, 0)
         }
         function test_flight_time_data() {
             return [{tag:"before-hour",value:"59:59",expected:"59:59"},

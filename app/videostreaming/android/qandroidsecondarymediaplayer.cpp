@@ -61,6 +61,16 @@ void QAndroidSecondaryMediaPlayer::playDebugLoop()
     tryStartPlayback();
 }
 
+void QAndroidSecondaryMediaPlayer::refreshStreamCodec()
+{
+    if (!m_videoOut || m_activeConfig == resolveStreamConfig())
+        return;
+
+    stopPlayback();
+    m_pendingPlayback = true;
+    tryStartPlayback();
+}
+
 std::optional<QOpenHDVideoHelper::VideoStreamConfigXX> QAndroidSecondaryMediaPlayer::resolveStreamConfig() const
 {
     const auto settings = QOpenHDVideoHelper::read_config_from_settings();

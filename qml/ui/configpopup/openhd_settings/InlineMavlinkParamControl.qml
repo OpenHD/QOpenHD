@@ -37,8 +37,14 @@ FocusScope {
     function filteredEnumPart(keys) {
         var result = []
         for (var i = 0; i < rawEnumValues.length; ++i) {
-            if (!valueBlocked(rawEnumValues[i]))
-                result.push(keys ? rawEnumKeys[i] : rawEnumValues[i])
+            var value = rawEnumValues[i]
+            if (valueBlocked(value)) continue
+            var label = rawEnumKeys[i]
+            if (paramId === "VIDEO_CODEC") {
+                if (Number(value) === 0) label = "H.264"
+                if (Number(value) === 1) label = "H.265"
+            }
+            result.push(keys ? label : value)
         }
         return result
     }
@@ -103,18 +109,19 @@ FocusScope {
     Component {
         id: enumEditor
         CompactLinkComboBox {
+            objectName: "parameterEnumEditor"
             model: root.enumKeys
             currentIndex: root.valueIndex()
             displayText: currentIndex >= 0 ? String(root.enumKeys[currentIndex]) : root.displayValue
             enabled: !root.busy
             popupWidth: Math.max(width, 260)
-            onActivated: {
-                if (currentIndex < 0 || currentIndex >= root.enumValues.length)
+            onActivated: function(index) {
+                if (index < 0 || index >= root.enumValues.length)
                     return
                 if (root.isInteger)
-                    root.commitInt(root.enumValues[currentIndex])
+                    root.commitInt(root.enumValues[index])
                 else
-                    root.commitString(root.enumValues[currentIndex])
+                    root.commitString(root.enumValues[index])
             }
         }
     }

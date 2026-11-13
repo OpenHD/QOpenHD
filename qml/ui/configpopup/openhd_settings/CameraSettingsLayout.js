@@ -2,7 +2,8 @@
 
 // Shared by the category strips and their parent tab. Hidden expert-only
 // settings do not count as content in normal mode.
-function categoryFor(id, model) {
+function categoryFor(id, model, platformType) {
+        if (id === "VIDEO_CODEC" && platformType === 20) return "CAMERA" // Radxa Zero 3W
         if (model && typeof model.get_ui_metadata === "function") {
             var category = model.get_ui_metadata(id).cameraCategory
             if (category) return category
@@ -30,17 +31,18 @@ function categoryFor(id, model) {
     }
 
 
-function visibleInMode(id, advanced, model) {
+function visibleInMode(id, advanced, model, platformType) {
     if (id === "HIGH_ENCRYPTION") return false
     var metadata = model && typeof model.get_ui_metadata === "function" ? model.get_ui_metadata(id) : ({})
     if (metadata.cameraSupported === false) return false
     // Camera registry type 64 is VEYE GX/GXC IMX662 with the GX ISP.
     // Apply the hardware gate before Advanced mode can expose hidden controls.
     if (id.indexOf("GX_") === 0 && (!model || !model.param_int_exists("CAMERA_TYPE") || Number(model.get_cached_int("CAMERA_TYPE")) !== 64)) return false
+    if (id === "VIDEO_CODEC" && platformType === 20) return true
     if (advanced) return true
     if (metadata.hidden) return false
-    return categoryFor(id, model) !== "ADVANCED"
+    return categoryFor(id, model, platformType) !== "ADVANCED"
 }
-function availableParameterIds(model, advanced) {
-    return model.param_ids().filter(function(id) { return visibleInMode(id, advanced, model) })
+function availableParameterIds(model, advanced, platformType) {
+    return model.param_ids().filter(function(id) { return visibleInMode(id, advanced, model, platformType) })
 }

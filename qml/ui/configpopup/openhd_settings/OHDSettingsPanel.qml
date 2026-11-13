@@ -34,8 +34,8 @@ Rectangle {
         _airCameraSettingsModel2.update_count
         _ohdSystemAirSettingsModel.update_count
         _ohdSystemGroundSettings.update_count
-        var cameraIds = CameraLayout.availableParameterIds(_airCameraSettingsModel, settings_form.showAdvancedSettings)
-            .concat(CameraLayout.availableParameterIds(_airCameraSettingsModel2, settings_form.showAdvancedSettings))
+        var cameraIds = CameraLayout.availableParameterIds(_airCameraSettingsModel, settings_form.showAdvancedSettings, _ohdSystemAir.ohd_platform_type)
+            .concat(CameraLayout.availableParameterIds(_airCameraSettingsModel2, settings_form.showAdvancedSettings, _ohdSystemAir.ohd_platform_type))
         var airIds = AirLayout.availableParameterIds(_ohdSystemAirSettingsModel,
             settings_form.showAdvancedSettings, settings_form.showDeveloperSettings === true,
             _qopenhd.debugMenuPreview)

@@ -29,6 +29,7 @@ public:
     void setVideoOut(QSurfaceTexture *videoOut);
 
     Q_INVOKABLE void playDebugLoop();
+    void refreshStreamCodec();
 
 signals:
     void videoOutChanged();

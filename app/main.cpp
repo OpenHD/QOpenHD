@@ -702,6 +702,13 @@ int main(int argc, char *argv[]) {
     // Create a player
     QAndroidMediaPlayer player;
     QAndroidSecondaryMediaPlayer secondaryPlayer;
+    for (int camera = 0; camera < 2; ++camera) {
+        auto& stream = CameraStreamModel::instance(camera);
+        QObject::connect(&stream, &CameraStreamModel::decoderCodecChanged,
+                         &player, &QAndroidMediaPlayer::refreshStreamCodec, Qt::QueuedConnection);
+        QObject::connect(&stream, &CameraStreamModel::decoderCodecChanged,
+                         &secondaryPlayer, &QAndroidSecondaryMediaPlayer::refreshStreamCodec, Qt::QueuedConnection);
+    }
     engine.rootContext()->setContextProperty("_mediaPlayer", &player);
     engine.rootContext()->setContextProperty("_secondaryMediaPlayer", &secondaryPlayer);
 #else

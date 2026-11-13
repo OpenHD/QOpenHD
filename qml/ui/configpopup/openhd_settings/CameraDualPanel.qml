@@ -62,7 +62,7 @@ FocusScope {
     }
 
     // ── Category helper functions ──
-    function categoryFor(id) { return CameraLayout.categoryFor(id, settingsModel) }
+    function categoryFor(id) { return CameraLayout.categoryFor(id, settingsModel, _ohdSystemAir.ohd_platform_type) }
 
     function categoryDescription(category) {
         if (category === "VIDEO") return qsTr("Streaming, recording, format and encoder settings")
@@ -78,7 +78,7 @@ FocusScope {
         var count = 0
         var ids = settingsModel ? settingsModel.param_ids() : []
         for (var i = 0; i < ids.length; ++i) {
-            if (!CameraLayout.visibleInMode(ids[i], settings_form.showAdvancedSettings, settingsModel)) continue
+            if (!CameraLayout.visibleInMode(ids[i], settings_form.showAdvancedSettings, settingsModel, _ohdSystemAir.ohd_platform_type)) continue
             if (categoryFor(ids[i]) === category) ++count
         }
         return count
@@ -256,6 +256,10 @@ FocusScope {
     Connections {
         target: settings_form
         function onShowAdvancedSettingsChanged() { root.ensureActiveCategory() }
+    }
+    Connections {
+        target: _ohdSystemAir
+        function onOhd_platform_typeChanged() { root.ensureActiveCategory() }
     }
     onSettingsModelChanged: Qt.callLater(ensureActiveCategory)
     onParamRevisionChanged: ensureActiveCategory()
@@ -657,7 +661,7 @@ FocusScope {
                                     visible: root.categoryFor(model.unique_id) === root.activeCategory &&
                                              root.activeCategory !== "CONNECTION" &&
                                              (settings_form.showAdvancedSettings || !model.whitelisted) &&
-                                             CameraLayout.visibleInMode(model.unique_id, settings_form.showAdvancedSettings, root.settingsModel)
+                                             CameraLayout.visibleInMode(model.unique_id, settings_form.showAdvancedSettings, root.settingsModel, _ohdSystemAir.ohd_platform_type)
                                     settingsModel: root.settingsModel
                                     categoryKey: root.activeCategory
                                     modelIndex: index

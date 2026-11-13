@@ -24,6 +24,7 @@ public:
 
     //Q_INVOKABLE void playFile(const QString &file);
     void switch_primary_secondary();
+    void refreshStreamCodec();
 private:
     void setup_start_video_decoder_display(const QOpenHDVideoHelper::VideoStreamConfig &config);
     void stop_cleanup_decoder_display();

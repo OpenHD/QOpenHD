@@ -37,7 +37,9 @@ void QAndroidMediaPlayer::setup_start_video_decoder_display(const QOpenHDVideoHe
         }
     };
     m_low_lag_decoder->registerOnDecoderRatioChangedCallback(ratio_changed_cb);
-    auto codec=config.primary_stream_config.video_codec;
+    const auto codec = config.generic.qopenhd_switch_primary_secondary
+                           ? config.secondary_stream_config.video_codec
+                           : config.primary_stream_config.video_codec;
     const int port = config.generic.qopenhd_switch_primary_secondary ? 5601 : 5600;
     m_receiver=std::make_unique<GstRtpReceiver>(port,codec);
 }
@@ -132,6 +134,28 @@ void QAndroidMediaPlayer::switch_primary_secondary()
     // Then we can safely clean up the decoder (and its surface)
     m_low_lag_decoder->setOutputSurface(nullptr,nullptr);
     // and re-create it with the right video port as input
+}
+
+void QAndroidMediaPlayer::refreshStreamCodec()
+{
+    if (!m_primaryVideoEnabled)
+        return;
+
+    const auto config = QOpenHDVideoHelper::read_config_from_settings();
+    const auto codec = config.generic.qopenhd_switch_primary_secondary
+                           ? config.secondary_stream_config.video_codec
+                           : config.primary_stream_config.video_codec;
+    if (m_receiver && m_receiver->get_codec() == codec)
+        return;
+
+    const auto surface = m_videoOut;
+    if (m_videoOut)
+        m_videoOut->disconnect(this);
+    m_videoOut.clear();
+    stop_cleanup_decoder_display();
+    setup_start_video_decoder_display(config);
+    if (surface)
+        setVideoOut(surface.data());
 }
 
 /*void QAndroidMediaPlayer::playFile(const QString &file)

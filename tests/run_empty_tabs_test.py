@@ -59,15 +59,17 @@ Item {
         property color panelBackgroundRaised: "gray"
         property color lineColor: "gray"
     }
+    QtObject { id: _ohdSystemAir; property int ohd_platform_type: 0 }
     QtObject { id: _qopenhd; property bool debugMenuPreview: false }
     QtObject {
         id: params
         property var ids: []
         property int cameraType: 0
+        property bool codecSupported: true
         function get_cached_int(id) { return cameraType }
         property int update_count: 0
         function param_ids() { return ids }
-        function get_ui_metadata(id) { return {hidden:id === "KEYFRAME_I"} }
+        function get_ui_metadata(id) { return {hidden:id === "KEYFRAME_I" || id === "VIDEO_CODEC", cameraSupported: id !== "VIDEO_CODEC" || codecSupported} }
         function param_int_exists(id) { return ids.indexOf(id) >= 0 }
         function param_string_exists(id) { return ids.indexOf(id) >= 0 }
     }
@@ -115,6 +117,21 @@ Item {
             tabs.visible = false
             compare(tabs.currentIndex, 2)
             tabs.visible = true
+        }
+        function test_zero3w_streaming_format() {
+            settings_form.showAdvancedSettings = false
+            params.ids = ["VIDEO_CODEC"]; params.update_count++
+            compare(parentTabs.tabIsAvailable(1), false)
+            _ohdSystemAir.ohd_platform_type = 20
+            compare(parentTabs.tabIsAvailable(1), true)
+            compare(single.categoryCount("CAMERA"), 1)
+            compare(dual.categoryCount("CAMERA"), 1)
+            compare(single.categoryCount("VIDEO"), 0)
+            compare(dual.categoryCount("VIDEO"), 0)
+            params.codecSupported = false
+            compare(parentTabs.tabIsAvailable(1), false)
+            params.codecSupported = true
+            _ohdSystemAir.ohd_platform_type = 0
         }
         function test_camera_categories() {
             var panels = [single, dual]
