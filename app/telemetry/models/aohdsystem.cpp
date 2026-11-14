@@ -188,9 +188,9 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
                 m_ground_details_received=std::chrono::steady_clock::now();
                 consumed=true;break;
             }
-            if(!m_is_air) break;
             if(parsed.type != 0x4f || parsed.len < 16 || parsed.len > 96 ||
                     std::memcmp(parsed.data, "OHLU", 4) != 0 || parsed.data[4] != 1) break;
+            if(!m_is_air && parsed.data[5] != 2) break;
             process_link_usage(parsed);
             consumed = true;
         }break;
