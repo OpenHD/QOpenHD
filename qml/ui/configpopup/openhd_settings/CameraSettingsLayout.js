@@ -3,6 +3,8 @@
 // Shared by the category strips and their parent tab. Hidden expert-only
 // settings do not count as content in normal mode.
 function categoryFor(id, model, platformType) {
+        if (["RK_EXP_LINES", "RK_ANALOG_GAIN", "RK_AE_BIAS"].indexOf(id) >= 0)
+            return "EXPOSURE"
         if (id === "VIDEO_CODEC" && platformType === 20) return "VIDEO" // Radxa Zero 3W
         if (model && typeof model.get_ui_metadata === "function") {
             var category = model.get_ui_metadata(id).cameraCategory

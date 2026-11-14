@@ -66,6 +66,7 @@ static constexpr int X_CAM_TYPE_ROCK_3_IMX462 = 94;
 static constexpr int X_CAM_TYPE_ROCK_3_IMX519 = 95;
 static constexpr int X_CAM_TYPE_ROCK_3_OHD_Jaguar = 96;
 static constexpr int X_CAM_TYPE_ROCK_3_VEYE = 97;
+static constexpr int X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY = 98;
 static constexpr int X_CAM_TYPE_NVIDIA_XAVIER_IMX577 = 101;
 static constexpr int X_CAM_TYPE_OPENIPC_GENERIC = 110;
 static constexpr int X_CAM_TYPE_QC_IMX577 = 120;
@@ -156,6 +157,7 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {95, "ROCK_3_IMX519"},
   {96, "ROCK_3_OHD_Jaguar"},
   {97, "ROCK_3_VEYE"},
+  {98, "ROCK_3_IMX462_PIVARIETY"},
   {101, "XAVIER_IMX577"},
   {110, "OPENIPC_X"},
   {120, "CORETRONIC IMX577"},
@@ -533,6 +535,10 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar
   {1920, 1080, 100},
 };
 
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY[] = {
+  {1920, 1080, 60},
+};
+
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_NVIDIA_XAVIER_IMX577[] = {
   {1280, 720, 60},
   {1920, 1080, 60},
@@ -725,6 +731,7 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_ROCK_3_IMX462, kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462[0])},
   {X_CAM_TYPE_ROCK_3_IMX519, kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX519, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX519) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX519[0])},
   {X_CAM_TYPE_ROCK_3_OHD_Jaguar, kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar[0])},
+  {X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY, kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY[0])},
   {X_CAM_TYPE_NVIDIA_XAVIER_IMX577, kCameraResolutions_X_CAM_TYPE_NVIDIA_XAVIER_IMX577, sizeof(kCameraResolutions_X_CAM_TYPE_NVIDIA_XAVIER_IMX577) / sizeof(kCameraResolutions_X_CAM_TYPE_NVIDIA_XAVIER_IMX577[0])},
   {X_CAM_TYPE_QC_IMX577, kCameraResolutions_X_CAM_TYPE_QC_IMX577, sizeof(kCameraResolutions_X_CAM_TYPE_QC_IMX577) / sizeof(kCameraResolutions_X_CAM_TYPE_QC_IMX577[0])},
   {X_CAM_TYPE_QC_OV9282, kCameraResolutions_X_CAM_TYPE_QC_OV9282, sizeof(kCameraResolutions_X_CAM_TYPE_QC_OV9282) / sizeof(kCameraResolutions_X_CAM_TYPE_QC_OV9282[0])},
@@ -868,6 +875,12 @@ inline constexpr CameraUiEntry kManufacturer_ROCK3_ARDUCAM_Cameras[] = {
 };
 
 inline constexpr ManufacturerEntry kManufacturer_ROCK3_ARDUCAM = {"Arducam", kManufacturer_ROCK3_ARDUCAM_Cameras, sizeof(kManufacturer_ROCK3_ARDUCAM_Cameras) / sizeof(kManufacturer_ROCK3_ARDUCAM_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_ZERO3W_PIVARIETY_Cameras[] = {
+  {X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY, "IMX462 Pivariety"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_ZERO3W_PIVARIETY = {"Arducam Pivariety", kManufacturer_ZERO3W_PIVARIETY_Cameras, sizeof(kManufacturer_ZERO3W_PIVARIETY_Cameras) / sizeof(kManufacturer_ZERO3W_PIVARIETY_Cameras[0])};
 
 inline constexpr CameraUiEntry kManufacturer_ROCK5_A_GENERIC_Cameras[] = {
   {X_CAM_TYPE_ROCK_5_IMX415, "IMX415"},
@@ -1038,6 +1051,7 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers[] = {
   kManufacturer_ROCK3_ARDUCAM,
+  kManufacturer_ZERO3W_PIVARIETY,
   kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
@@ -1226,6 +1240,7 @@ using openhd::camera_registry::X_CAM_TYPE_ROCK_3_IMX462;
 using openhd::camera_registry::X_CAM_TYPE_ROCK_3_IMX519;
 using openhd::camera_registry::X_CAM_TYPE_ROCK_3_OHD_Jaguar;
 using openhd::camera_registry::X_CAM_TYPE_ROCK_3_VEYE;
+using openhd::camera_registry::X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY;
 using openhd::camera_registry::X_CAM_TYPE_NVIDIA_XAVIER_IMX577;
 using openhd::camera_registry::X_CAM_TYPE_OPENIPC_GENERIC;
 using openhd::camera_registry::X_CAM_TYPE_QC_IMX577;
