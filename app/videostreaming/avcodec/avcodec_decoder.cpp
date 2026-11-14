@@ -172,6 +172,11 @@ void AVCodecDecoder::constant_decode()
         if(use_external_decode_service){
             dirty_generic_decode_via_external_decode_service(settings);
         }else{
+            if (is_rpi && m_primary_stream) {
+                // Release a legacy decoder left running across a QOpenHD restart.
+                qopenhd::decode::service::send_sysutil_video_request(
+                    "stop", stream_config, 0, false, settings.generic.qopenhd_switch_primary_secondary);
+            }
             if(settings.generic.dev_test_video_mode!=QOpenHDVideoHelper::VideoTestMode::DISABLED){
                 // file playback always goes via non-custom rtp parser (since it is not rtp)
                 do_custom_rtp=false;
