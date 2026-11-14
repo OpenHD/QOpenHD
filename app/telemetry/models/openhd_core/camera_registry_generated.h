@@ -507,6 +507,7 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX708[] =
   {1280, 720, 30},
   {1280, 720, 60},
   {1920, 1080, 60},
+  {1280, 720, 120},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462[] = {
