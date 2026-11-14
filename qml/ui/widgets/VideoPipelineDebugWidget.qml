@@ -25,6 +25,13 @@ BaseWidget {
 
     property int selectedCamera: 0
     property var selectedModel: selectedCamera === 0 ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
+    readonly property string codecLabel: {
+        var codec = selectedModel.encoding_codec
+        if (codec === 0) return "H.264"
+        if (codec === 1) return "H.265"
+        if (codec === 2) return "MJPEG"
+        return qsTr("N/A")
+    }
     property var selectedSettingsModel: selectedCamera === 0 ? _airCameraSettingsModel : _airCameraSettingsModel2
     property int requestedMbits: 10
     property int requestedQpMin: 5
@@ -459,6 +466,10 @@ BaseWidget {
                 columnSpacing: 12
                 rowSpacing: 3
 
+                Text { text: qsTr("Codec"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text { text: debugWidget.codecLabel; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
+                Text { text: qsTr("Real bitrate"); color: "#05ff00"; font.pixelSize: 13; Layout.preferredWidth: 132 }
+                Text { text: selectedModel.curr_video_measured_encoder_bitrate; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
                 Text { text: qsTr("Dynamic bitrate"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text {
                     text: selectedModel.supports_variable_bitrate ? qsTr("yes") : qsTr("no")
@@ -477,8 +488,6 @@ BaseWidget {
                 }
                 Text { text: qsTr("Set bitrate"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_recomended_video_bitrate_string; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
-                Text { text: qsTr("Real bitrate"); color: "#05ff00"; font.pixelSize: 13; Layout.preferredWidth: 132 }
-                Text { text: selectedModel.curr_video_measured_encoder_bitrate; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
                 Text { text: qsTr("Set FPS"); color: "white"; font.pixelSize: 13; Layout.preferredWidth: 132 }
                 Text { text: selectedModel.curr_set_video_fps; color: settings.color_text; font.pixelSize: 13; Layout.fillWidth: true; elide: Text.ElideRight }
                 Text { text: qsTr("Real FPS"); color: "#05ff00"; font.pixelSize: 13; Layout.preferredWidth: 132 }
@@ -878,7 +887,16 @@ BaseWidget {
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: parent.width - 80
+                    width: 45
+                    height: parent.height
+                    text: debugWidget.codecLabel
+                    color: settings.color_text
+                    font.pixelSize: 12
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                }
+                Text {
+                    width: parent.width - 133
                     height: parent.height
                     text: qsTr("real %1").arg(selectedModel.curr_video_measured_encoder_bitrate)
                     color: settings.color_text
