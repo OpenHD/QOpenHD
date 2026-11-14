@@ -58,9 +58,14 @@ void MouseHelper::init_from_settings()
     QSettings settings;
     const int custom_cursor_type=settings.value("custom_cursor_type",0).toInt();
     const int custom_cursor_scale=settings.value("custom_cursor_scale",1).toInt();
-    const bool enable_cursor_auto_hide=settings.value("enable_cursor_auto_hide",false).toBool();
+    const bool enable_cursor_auto_hide=settings.value("enable_cursor_auto_hide",cursor_auto_hide_default()).toBool();
     set_active_cursor_type_and_scale(custom_cursor_type,custom_cursor_scale);
     set_hide_cursor_inactive_enable(enable_cursor_auto_hide);
+}
+
+bool MouseHelper::cursor_auto_hide_default() const
+{
+    return qEnvironmentVariableIntValue("QOPENHD_CURSOR_AUTO_HIDE_DEFAULT") == 1;
 }
 
 void MouseHelper::set_active_cursor_type_and_scale(const int cursor_type, const int cursor_scale)
@@ -75,6 +80,7 @@ void MouseHelper::set_hide_cursor_inactive_enable(bool enable)
     if(enable){
         QCoreApplication::instance()->installEventFilter(this);
         m_enable_hide_cursor_when_inactive=true;
+        m_timer.start(m_inactivity_duration_msec);
     }else{
         QCoreApplication::instance()->removeEventFilter(this);
         m_enable_hide_cursor_when_inactive=false;
@@ -85,7 +91,9 @@ void MouseHelper::set_hide_cursor_inactive_enable(bool enable)
 }
 
 bool MouseHelper::eventFilter(QObject *pWatched, QEvent *pEvent){
-    if (pEvent->type() == QEvent::MouseMove){
+    if (pEvent->type() == QEvent::MouseMove ||
+        pEvent->type() == QEvent::MouseButtonPress ||
+        pEvent->type() == QEvent::Wheel){
         on_mouse_event();
     }
     return QObject::eventFilter(pWatched, pEvent);

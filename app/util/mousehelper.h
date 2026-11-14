@@ -13,9 +13,11 @@
 class MouseHelper : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool cursorAutoHideDefault READ cursor_auto_hide_default CONSTANT)
 public:
     static MouseHelper& instance();
     explicit MouseHelper();
+    bool cursor_auto_hide_default() const;
     // update when settings change
     Q_INVOKABLE void set_active_cursor_type_and_scale(const int cursor_type,const int cursor_scale);
     // Enable / disable auto hide

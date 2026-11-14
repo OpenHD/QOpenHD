@@ -27,6 +27,13 @@ void bufferRelease(void* data, wl_buffer*) {
     buffer->busy = false; buffer->frame.reset();
 }
 const wl_buffer_listener bufferListener{bufferRelease};
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+void frameReady(void* data, wl_callback* callback, uint32_t) {
+    *static_cast<wl_callback**>(data) = nullptr;
+    wl_callback_destroy(callback);
+}
+const wl_callback_listener frameListener{frameReady};
+#endif
 struct Feedback {
     struct wp_presentation_feedback* proxy = nullptr;
     WaylandVideo* video;
@@ -116,6 +123,14 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
     wl_surface* surface = nullptr; wl_subsurface* sub = nullptr; wp_viewport* viewport = nullptr;
     std::vector<std::unique_ptr<Buffer>> buffers;
     std::vector<std::unique_ptr<Feedback>> feedbacks;
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+    // A KMS plane can retain the current and pending buffers until the
+    // page-flip event releases the previous scanout buffer.
+    constexpr size_t maxBuffers = 3;
+    wl_callback* repaintPending = nullptr;
+#else
+    constexpr size_t maxBuffers = 2;
+#endif
     try {
         if (wl_display_roundtrip_queue(display, queue) < 0 || wl_display_roundtrip_queue(display, queue) < 0)
             throw std::runtime_error("Wayland registry failed");
@@ -143,7 +158,14 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
             int width, height, rotation; bool stretch;
             {
                 std::lock_guard<std::mutex> lock(mutex_);
-                if (buffers.size() < 2) next.swap(latest_);
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+                // Leave a submitted frame in place until the compositor has
+                // repainted it. Keep only the newest waiting decoder output.
+                const bool canCommit = !repaintPending && buffers.size() < maxBuffers;
+#else
+                const bool canCommit = buffers.size() < maxBuffers;
+#endif
+                if (canCommit) next.swap(latest_);
                 width = width_; height = height_; rotation = rotation_; stretch = stretch_;
             }
             if (next && width > 0 && height > 0) {
@@ -193,6 +215,10 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
                     wp_presentation_feedback_add_listener(feedback->proxy, &feedbackListener, feedback.get());
                     feedbacks.push_back(std::move(feedback));
                 }
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+                repaintPending = wl_surface_frame(surface);
+                wl_callback_add_listener(repaintPending, &frameListener, &repaintPending);
+#endif
                 wl_surface_commit(surface);
                 buffers.push_back(std::move(buffer)); ++committed;
             }
@@ -215,6 +241,9 @@ void WaylandVideo::run(wl_display* display, wl_surface* parent) {
         }
     } catch (const std::exception& error) { std::fprintf(stderr, "Native presentation: %s\n", error.what()); }
     state = -1;
+#ifdef QOPENHD_ENABLE_ROCKCHIP_VIDEO
+    if (repaintPending) wl_callback_destroy(repaintPending);
+#endif
     if (surface) { wl_surface_attach(surface, nullptr, 0, 0); wl_surface_commit(surface); }
     if (viewport) wp_viewport_destroy(viewport);
     if (sub) wl_subsurface_destroy(sub);

@@ -560,7 +560,7 @@ Settings {
 
     property int custom_cursor_type: 0
     property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,
-    property bool enable_cursor_auto_hide: false
+    property bool enable_cursor_auto_hide: typeof _mouseHelper !== "undefined" && _mouseHelper.cursorAutoHideDefault === true
 
     // message can be removed if needed.
     property bool dev_wb_show_no_stbc_enabled_warning: false
