@@ -120,9 +120,15 @@ QNetworkReply* OfflineMapBuilder::request(const QUrl& url, const QByteArray& bod
     req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     auto* reply = body.isEmpty() ? m_network.get(req) : m_network.post(req, body);
-    QTimer::singleShot(body.isEmpty() ? 20000 : 120000, reply, [reply] { if (reply->isRunning()) reply->abort(); });
+    QTimer::singleShot(body.isEmpty() ? 20000 : 120000, reply, [reply] {
+        if (!reply->isRunning()) return;
+        reply->setProperty("requestTimedOut", true);
+        reply->abort();
+    });
     connect(reply, &QNetworkReply::readyRead, this, [reply] {
-        if (reply->bytesAvailable() > 32 * 1024 * 1024) reply->abort();
+        if (reply->bytesAvailable() <= 32 * 1024 * 1024) return;
+        reply->setProperty("responseTooLarge", true);
+        reply->abort();
     });
     return reply;
 }
@@ -192,55 +198,113 @@ void OfflineMapBuilder::generate(const QString& name, double s, double w, double
     m_total = count; m_progress = 0; m_busy = true; ++m_job;
     m_ways.clear(); m_tiles.clear();
     m_geometryRegions.clear(); m_geometryRegion = 0; m_geometryPoints = 0; m_geometryIds.clear();
+    m_useAlternateGeometryServer = false;
     const int rows = qMax(1, int(std::ceil((n - s) * 111.2 / 25.0)));
     const int columns = qMax(1, int(std::ceil((e - w) * 111.2 * std::cos((s+n) * 0.5 * pi / 180.0) / 25.0)));
     for (int row = 0; row < rows; ++row)
         for (int column = 0; column < columns; ++column)
             m_geometryRegions.append(QRectF(w + (e-w) * column / columns, s + (n-s) * row / rows,
                                            (e-w) / columns, (n-s) / rows));
-    m_status = tr("Downloading road geometry..."); emit changed(); fetchGeometry(0);
+    fetchGeometry();
 }
 
-void OfflineMapBuilder::fetchGeometry(int layer, int attempt) {
+bool OfflineMapBuilder::splitGeometryRegion() {
     const auto region = m_geometryRegions[m_geometryRegion];
-    const QString query = QStringLiteral("[out:json][timeout:90];way[\"%1\"](%2,%3,%4,%5);out geom;")
-        .arg(layer == 0 ? "highway" : "waterway").arg(region.top(), 0, 'f', 7).arg(region.left(), 0, 'f', 7)
+    const double width = region.width() * std::cos(region.center().y() * pi / 180.0);
+    const bool splitLongitude = width >= region.height();
+    if (qMax(width, region.height()) * 111.2 < 10.0) return false;
+
+    auto first = region;
+    auto second = region;
+    if (splitLongitude) {
+        first.setRight(region.center().x());
+        second.setLeft(region.center().x());
+    } else {
+        first.setBottom(region.center().y());
+        second.setTop(region.center().y());
+    }
+    m_geometryRegions[m_geometryRegion] = first;
+    m_geometryRegions.insert(m_geometryRegion + 1, second);
+    return true;
+}
+
+void OfflineMapBuilder::fetchGeometry(bool alternateTried) {
+    const auto job = m_job;
+    const auto region = m_geometryRegions[m_geometryRegion];
+    const QString bounds = QStringLiteral("%1,%2,%3,%4")
+        .arg(region.top(), 0, 'f', 7).arg(region.left(), 0, 'f', 7)
         .arg(region.bottom(), 0, 'f', 7).arg(region.right(), 0, 'f', 7);
-    QUrlQuery form; form.addQueryItem("data", query);
+    const QString query = QStringLiteral("[out:json][timeout:60];(way[\"highway\"](%1);way[\"waterway\"](%1););out geom;")
+        .arg(bounds);
+    const bool customEndpoint = !qEnvironmentVariableIsEmpty("OPENHD_MAP_DATA_URL");
     auto url = endpoint("OPENHD_MAP_DATA_URL", "https://overpass-api.de/api/interpreter");
-    if (attempt == 1 && qEnvironmentVariable("OPENHD_MAP_DATA_URL").isEmpty())
+    if (!customEndpoint && m_useAlternateGeometryServer)
         url = QUrl("https://overpass.private.coffee/api/interpreter");
-    auto* reply = request(url, form.query(QUrl::FullyEncoded).toUtf8());
-    m_reply = reply; const auto job = m_job;
-    connect(reply, &QNetworkReply::finished, this, [this, reply, layer, job, attempt] {
+
+    m_status = tr("Downloading roads and waterways: part %1 of %2...")
+        .arg(m_geometryRegion + 1).arg(m_geometryRegions.size());
+    emit changed();
+    if (job != m_job || !m_busy) return;
+
+    auto* reply = request(url, "data=" + QUrl::toPercentEncoding(query));
+    m_reply = reply;
+    connect(reply, &QNetworkReply::finished, this, [this, reply, job, customEndpoint, alternateTried] {
         reply->deleteLater();
         if (job != m_job || !m_busy) return;
         m_reply = nullptr;
-        const auto retry = [this, layer, job, attempt] {
-            if (attempt != 0 || !qEnvironmentVariable("OPENHD_MAP_DATA_URL").isEmpty()) return false;
-            m_status = tr("Map server is busy. Trying another free server..."); emit changed();
-            QTimer::singleShot(1000, this, [this, layer, job] { if (job == m_job && m_busy) fetchGeometry(layer, 1); });
-            return true;
-        };
-        if (reply->error() != QNetworkReply::NoError) {
-            if (retry()) return;
-            fail(tr("Map data download failed: %1. Try a smaller area or retry later.").arg(reply->errorString())); return;
+        const auto networkError = reply->error();
+        const int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        const auto response = networkError == QNetworkReply::NoError
+            ? QJsonDocument::fromJson(reply->readAll()).object() : QJsonObject{};
+        const auto elements = response.value("elements");
+        const auto remark = response.value("remark").toString();
+        if (networkError != QNetworkReply::NoError || !elements.isArray() || response.contains("remark")) {
+            const bool tooLarge = statusCode == 413 || reply->property("responseTooLarge").toBool()
+                || remark.contains("out of memory", Qt::CaseInsensitive);
+            const bool timedOut = statusCode == 408 || statusCode == 504
+                || networkError == QNetworkReply::TimeoutError || reply->property("requestTimedOut").toBool()
+                || remark.contains("timed out", Qt::CaseInsensitive) || remark.contains("timeout", Qt::CaseInsensitive);
+            const bool queryTimedOut = statusCode == 504 || (timedOut && !remark.isEmpty());
+            const auto retryLater = [this, job](bool triedAlternate) {
+                QTimer::singleShot(1000, this, [this, job, triedAlternate] {
+                    if (job == m_job && m_busy) fetchGeometry(triedAlternate);
+                });
+            };
+            if ((tooLarge || queryTimedOut) && splitGeometryRegion()) {
+                m_status = tr("Retrying with a smaller map section...");
+                emit changed();
+                retryLater(alternateTried);
+                return;
+            }
+            if (!tooLarge && !customEndpoint && !alternateTried) {
+                m_useAlternateGeometryServer = !m_useAlternateGeometryServer;
+                m_status = tr("Map server request failed. Trying the other server...");
+                emit changed();
+                retryLater(true);
+                return;
+            }
+
+            QString reason;
+            if (tooLarge) reason = tr("the server returned too much data");
+            else if (timedOut) reason = tr("the map server timed out");
+            else if (statusCode == 429) reason = tr("the map server is rate limiting requests");
+            else if (statusCode >= 400) reason = tr("the map server returned HTTP %1").arg(statusCode);
+            else if (networkError == QNetworkReply::OperationCanceledError) reason = tr("the map download was interrupted");
+            else if (networkError != QNetworkReply::NoError) reason = reply->errorString();
+            else reason = tr("the map server returned incomplete data");
+            fail(tr("Could not download map section %1 of %2 (%3). Try again later or draw a smaller area.")
+                 .arg(m_geometryRegion + 1).arg(m_geometryRegions.size()).arg(reason));
+            return;
         }
-        QJsonParseError error;
-        const auto document = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError || !document.object().value("elements").isArray()
-            || document.object().contains("remark")) {
-            if (retry()) return;
-            fail(tr("Map service returned incomplete data. Try again later.")); return;
-        }
-        for (const auto& element : document.object().value("elements").toArray()) {
+        for (const auto& element : elements.toArray()) {
             const auto row = element.toObject(); const auto tags = row.value("tags").toObject();
             const auto id = qint64(row.value("id").toDouble());
             if (id && m_geometryIds.contains(id)) continue;
             if (id) m_geometryIds.insert(id);
             Way way; const auto highway = tags.value("highway").toString();
-            way.color = layer ? QColor("#71b4d5") : QColor("#eef0df");
-            way.width = layer ? 2.0 : (highway == "motorway" || highway == "trunk") ? 4.0
+            const bool waterway = tags.contains("waterway");
+            way.color = waterway ? QColor("#71b4d5") : QColor("#eef0df");
+            way.width = waterway ? 2.0 : (highway == "motorway" || highway == "trunk") ? 4.0
                 : (highway == "primary" || highway == "secondary") ? 3.0
                 : (highway == "track" || highway == "path" || highway == "footway") ? 1.0 : 2.0;
             for (const auto& point : row.value("geometry").toArray()) {
@@ -254,13 +318,8 @@ void OfflineMapBuilder::fetchGeometry(int layer, int attempt) {
             if (way.points.size() > 1) { way.bounds = way.points.boundingRect(); m_ways.append(way); }
         }
         if (++m_geometryRegion < m_geometryRegions.size()) {
-            m_status = tr("Downloading map data: part %1 of %2...")
-                .arg(layer * m_geometryRegions.size() + m_geometryRegion + 1).arg(2 * m_geometryRegions.size());
-            emit changed(); fetchGeometry(layer); return;
-        }
-        if (layer == 0) {
-            m_geometryRegion = 0; m_geometryIds.clear();
-            m_status = tr("Downloading waterways..."); emit changed(); fetchGeometry(1); return;
+            fetchGeometry();
+            return;
         }
         m_payload.reset(new QTemporaryFile);
         if (!m_payload->open()) { fail(tr("Cannot create the map download file.")); return; }

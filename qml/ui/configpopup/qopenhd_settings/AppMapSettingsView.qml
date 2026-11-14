@@ -20,6 +20,8 @@ FocusScope {
  property url areaSelectionSource:"../../widgets/map/OfflineMapSelection.qml"
  property bool selecting:false
  property string selectionMode:"circle"
+ readonly property var mapRadiiKm:[5,10,25,50]
+ property int radiusIndex:1
  property var pendingRegion:null
  property int detailLevel:1
  readonly property int estimatedTiles:builder&&selectionCanvas.item&&selectionCanvas.item.selectionValid?builder.tileCount(selectionCanvas.item.south,selectionCanvas.item.west,selectionCanvas.item.north,selectionCanvas.item.east,13+detailLevel):0
@@ -45,6 +47,7 @@ FocusScope {
    if(settings.map_api_key.trim())builder.setMapboxKey(settings.map_api_key.trim())
    selectionCanvas.setSource(root.areaSelectionSource,{
     initialLatitude:applicationWindow.referenceLatitude,initialLongitude:applicationWindow.referenceLongitude,
+    radiusMeters:root.mapRadiiKm[root.radiusIndex]*1000,
     tileCacheDirectory:builder.mapCacheDirectory(settings.map_api_key.trim()?"preview_mapbox":"preview"),
     tileHost:settings.map_api_key.trim()?builder.mapboxBaseUrl:tiles.osmBaseUrl,
     usingMapbox:settings.map_api_key.trim().length>0})
@@ -283,6 +286,17 @@ FocusScope {
          RowLayout {width:parent.width;spacing:0
           MapActionButton {objectName:"offlineRectangle";Layout.fillWidth:true;implicitWidth:90;text:qsTr("Rectangle");primary:root.selectionMode==="rectangle";enabled:!!root.builder&&!root.busy;onClicked:root.chooseMode("rectangle")}
           MapActionButton {objectName:"offlineCircle";Layout.fillWidth:true;implicitWidth:78;text:qsTr("Circle");primary:root.selectionMode==="circle";enabled:!!root.builder&&!root.busy;onClicked:root.chooseMode("circle")}
+         }
+         CompactLinkComboBox {
+          objectName:"offlineRadius";Layout.fillWidth:true;Layout.preferredHeight:Typography.controlHeight
+          topInset:0;bottomInset:0;font.pixelSize:Typography.body
+          visible:root.selectionMode==="circle";enabled:!root.busy
+          model:root.mapRadiiKm.map(function(radius){return qsTr("%1 km radius").arg(radius)})
+          currentIndex:root.radiusIndex
+          onActivated:function(index){
+           root.radiusIndex=index
+           if(selectionCanvas.item)selectionCanvas.item.radiusMeters=root.mapRadiiKm[index]*1000
+          }
          }
         }
         ColumnLayout {height:implicitHeight;width:parent.columns===3?parent.width*0.27:parent.width;spacing:7

@@ -47,7 +47,8 @@ signals:
 private:
     struct Way { QPolygonF points; QRectF bounds; QColor color; double width; };
     struct Tile { int z, x, y; quint64 offset; quint32 size; };
-    void fetchGeometry(int layer, int attempt = 0);
+    void fetchGeometry(bool alternateTried = false);
+    bool splitGeometryRegion();
     void renderNext();
     void finishPackage();
     void fail(const QString& message);
@@ -67,6 +68,7 @@ private:
     quint64 m_job = 0;
     QVector<QRectF> m_geometryRegions;
     int m_geometryRegion = 0, m_geometryPoints = 0;
+    bool m_useAlternateGeometryServer = false;
     QSet<qint64> m_geometryIds;
     QVector<int> m_rowWays;
     QVector<Way> m_ways;

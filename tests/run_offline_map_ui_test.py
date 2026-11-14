@@ -89,6 +89,9 @@ Item {
             verify(canvas.item.selectionValid)
             var centre = canvas.item.radiusCenter
             verify(Math.abs(centre.distanceTo(QtPositioning.coordinate(canvas.item.north, centre.longitude)) - 50000) < 100)
+            canvas.item.radiusMeters = 10000
+            compare(canvas.item.radiusCenter, centre)
+            verify(Math.abs(centre.distanceTo(QtPositioning.coordinate(canvas.item.north, centre.longitude)) - 10000) < 100)
             var oldZoom = map.zoomLevel
             map.zoomLevel = oldZoom + 1
             verify(map.zoomLevel > oldZoom)

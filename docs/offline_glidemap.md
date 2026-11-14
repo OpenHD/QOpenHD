@@ -23,11 +23,10 @@ The package format is `GLDMAP1`, shared with OpenHD Glide and FleetControl.
 ## Create a map in QOpenHD
 
 Open **OSD & Application > Map > Create offline map**. Enter a town or region,
-press **Find region**, select a result, then pan/zoom the preview. Press
-**50 km radius** to select the map centre, or tap a point on the preview.
-The circle always has a 50 km radius (100 km across); its enclosing rectangle
-is saved so the entire circle is covered. Alternatively, press **Draw rectangle**
-and drag across your flying area. Choose detail and press **Create map**. Download status, rendering progress and a Cancel
+press **Find**, select a result, then pan/zoom the preview. Choose **Circle** and
+a radius of 5, 10, 25, or 50 km, then tap a point on the preview. The default
+radius is 10 km. The map covers the enclosing rectangle. Alternatively, choose
+**Rectangle** and drag across your flying area. Choose detail and press **Create map**. Download status, rendering progress and a Cancel
 button remain available while it runs. After a successful save, QOpenHD selects
 **OpenHD Offline** automatically. No restart, account, paid key or Python runtime
 is needed on the board.
@@ -43,7 +42,9 @@ one-second throttle and an in-memory results cache.
 Each package covers one rectangle, with zooms 0 through 13 (overview), 14
 (standard), 15 (high) or 16 (maximum). Limits are 11,000 square kilometres,
 262,144 tiles, 1 GiB per package and two million geometry points. Geometry is
-fetched in sections of at most approximately 25 km per side. Higher detail takes
+fetched in sections of at most approximately 25 km per side, with roads and waterways
+in the same request. The builder can switch public servers when a request fails
+and subdivide sections that exceed the query or response limits. Higher detail takes
 more time and storage. Polar areas beyond 85 degrees and date-line crossings are
 not supported. Downloads require an internet connection. A failed or cancelled
 generation never installs a partial package; existing packages stay available.

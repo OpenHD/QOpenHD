@@ -11,12 +11,13 @@ Item {
     property bool usingMapbox: false
     property bool drawing: false
     property bool radiusMode: true
+    property int radiusMeters: 50000
     property var radiusCenter: QtPositioning.coordinate(initialLatitude, initialLongitude)
     function selectRadius(coordinate) {
         if (!coordinate || !coordinate.isValid) return
         drawing = false
         radiusCenter = coordinate
-        var angular = 50000 / 6371007.2
+        var angular = radiusMeters / 6371007.2
         var latitude = coordinate.latitude * Math.PI / 180
         var deltaLon = Math.asin(Math.sin(angular) / Math.cos(latitude)) * 180 / Math.PI
         south = coordinate.latitude - angular * 180 / Math.PI
@@ -47,6 +48,13 @@ Item {
         }
     }
     Component.onCompleted: selectRadius(radiusCenter)
+    onRadiusMetersChanged: {
+        if (!radiusMode) return
+        selectRadius(radiusCenter)
+        if (map && map.mapReady && selectionValid)
+            map.visibleRegion = QtPositioning.rectangle(QtPositioning.coordinate(north, west),
+                                                       QtPositioning.coordinate(south, east))
+    }
     onInitialLatitudeChanged: map.center = QtPositioning.coordinate(initialLatitude, initialLongitude)
     onInitialLongitudeChanged: map.center = QtPositioning.coordinate(initialLatitude, initialLongitude)
 
@@ -86,7 +94,7 @@ Item {
         MapCircle {
             visible: root.selectionValid && root.radiusMode
             center: root.radiusCenter
-            radius: 50000
+            radius: root.radiusMeters
             color: "#4030a8ff"
             border.color: "#30a8ff"; border.width: 2
         }

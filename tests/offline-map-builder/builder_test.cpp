@@ -47,7 +47,10 @@ int main(int argc, char** argv) {
     }
     QTcpServer server; CHECK(server.listen(QHostAddress::LocalHost, 0));
     bool invalidData = false;
+    bool timeOutNextSection = false;
+    bool holdNextSection = false;
     int requests = 0;
+    int combinedGeometryRequests = 0;
     QByteArray fixtureTile;
     bool tileTokenReceived = false;
     QObject::connect(&server, &QTcpServer::newConnection, &app, [&] {
@@ -64,6 +67,21 @@ int main(int argc, char** argv) {
                 if (data.size() < headerEnd + 4 + contentLength) return;
                 socket->setProperty("answered", true); ++requests;
                 if (data.startsWith("GET /tiles/")) tileTokenReceived = data.contains("access_token=pk.fixture");
+                if (data.startsWith("POST /data")) {
+                    const auto query = QByteArray::fromPercentEncoding(data.mid(headerEnd + 4));
+                    if (query.startsWith("data=") && query.contains("way[\"highway\"]") && query.contains("way[\"waterway\"]"))
+                        ++combinedGeometryRequests;
+                    if (holdNextSection) {
+                        holdNextSection = false;
+                        return;
+                    }
+                    if (timeOutNextSection) {
+                        timeOutNextSection = false;
+                        socket->write("HTTP/1.1 504 Gateway Timeout\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+                        socket->disconnectFromHost();
+                        return;
+                    }
+                }
                 const QByteArray body = data.startsWith("GET /tiles/") ? fixtureTile : data.startsWith("GET /search")
                     ? QByteArray("[{\"display_name\":\"Test region\",\"boundingbox\":[\"49.999\",\"50.001\",\"7.999\",\"8.001\"]}]")
                     : invalidData ? QByteArray("{\"remark\":\"timeout\",\"elements\":[]}")
@@ -97,6 +115,7 @@ int main(int argc, char** argv) {
     builder.generate("Test field", 49.999, 7.999, 50.001, 8.001, 15);
     CHECK(waitFor([&] { return !builder.busy(); }));
     CHECK(!path.isEmpty()); CHECK(builder.progress() == 1.0);
+    CHECK(combinedGeometryRequests == 1);
     QFile package(path); CHECK(package.open(QIODevice::ReadOnly)); CHECK(package.read(8) == QByteArray("GLDMAP1\0", 8)); package.close();
     qputenv("GLIDE_MAP_PACKAGE_DIR", output.path().toUtf8());
     OfflineMapTileProvider provider; provider.setPosition(50, 8);
@@ -130,19 +149,27 @@ int main(int argc, char** argv) {
     path.clear(); invalidData = true;
     builder.generate("Incomplete", 49.999, 7.999, 50.001, 8.001, 15);
     CHECK(waitFor([&] { return !builder.busy(); })); CHECK(path.isEmpty());
+    CHECK(builder.status().contains("timed out"));
     CHECK(QDir(output.path()).entryList({"*.glidemap"}, QDir::Files).size() == 1);
-    builder.generate("Cancelled", 49.999, 7.999, 50.001, 8.001, 15); builder.cancel();
+    holdNextSection = true;
+    builder.generate("Cancelled", 49.999, 7.999, 50.001, 8.001, 15);
+    CHECK(waitFor([&] { return !holdNextSection; }));
+    builder.cancel();
     CHECK(!builder.busy()); CHECK(path.isEmpty());
     CHECK(QDir(output.path()).entryList({"*.glidemap"}, QDir::Files).size() == 1);
     invalidData = false;
     path.clear();
     const int requestsBeforeRadius = requests;
-    builder.generate("50 km radius", 49.55, 7.30, 50.45, 8.70, 14);
+    const int combinedBeforeRadius = combinedGeometryRequests;
+    timeOutNextSection = true;
+    builder.generate("Large map", 49.56, 7.31, 50.44, 8.69, 14);
     CHECK(waitFor([&] { return !builder.busy(); }, 60000));
     if (path.isEmpty()) std::cerr << builder.status().toStdString() << "\n";
     CHECK(!path.isEmpty());
     CHECK(builder.progress() == 1.0);
-    CHECK(requests - requestsBeforeRadius > 2); // Large geometry is fetched in sections.
+    // 4 x 4 sections, one timed-out section replaced by two smaller sections.
+    CHECK(requests - requestsBeforeRadius == 18);
+    CHECK(combinedGeometryRequests - combinedBeforeRadius == 18);
     std::cout << "Search, bounds, generation, GLDMAP1 playback, invalid data, and cancellation passed (" << requests << " fixture requests).\n";
     return 0;
 }

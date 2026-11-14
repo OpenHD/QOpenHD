@@ -87,6 +87,10 @@ Item {
   function test_offline_controls_use_builder(){
    page.beginSelection();tryCompare(visual(page,"offlineAreaCanvas"),"status",Loader.Ready)
    compare(page.selectionMode,"circle");compare(page.estimatedTiles,1234)
+   var radius=visual(page,"offlineRadius")
+   compare(visual(page,"offlineAreaCanvas").item.radiusMeters,10000)
+   radius.activated(0)
+   compare(visual(page,"offlineAreaCanvas").item.radiusMeters,5000)
    page.detailLevel=2;page.createMap();compare(_offlineMapBuilder.generations,1);compare(_offlineMapBuilder.lastZoom,15)
    _offlineMapBuilder.generated("fixture.gldmap");compare(settings.selected_map_provider,2);compare(page.selecting,false);compare(_offlineMapTiles.reloads,1)
    page.chooseMode("rectangle");tryCompare(visual(page,"offlineAreaCanvas"),"status",Loader.Ready);compare(visual(page,"offlineAreaCanvas").item.drawing,true)
