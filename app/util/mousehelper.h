@@ -1,11 +1,13 @@
 #ifndef QMOUSEHIDER_H
 #define QMOUSEHIDER_H
 
-#include <atomic>
-
 #include <QCoreApplication>
+#include <QPointer>
 #include <QTimer>
 #include <qapplication.h>
+
+class QQuickPaintedItem;
+class QQuickWindow;
 
 // adds 2 features
 // 1) high visibility cursor for people in the field
@@ -18,6 +20,7 @@ public:
     static MouseHelper& instance();
     explicit MouseHelper();
     bool cursor_auto_hide_default() const;
+    void attach_hud_cursor(QQuickWindow* window);
     // update when settings change
     Q_INVOKABLE void set_active_cursor_type_and_scale(const int cursor_type,const int cursor_scale);
     // Enable / disable auto hide
@@ -30,6 +33,10 @@ private:
     int m_cursor_scale=1;
     bool m_enable_hide_cursor_when_inactive=false;
     bool m_cursor_state_active= true; // active by default
+    QPointer<QQuickWindow> m_hud_window;
+    QPointer<QQuickPaintedItem> m_hud_cursor;
+    QPointF m_pointer_position;
+    bool m_pointer_inside=false;
 
     bool eventFilter(QObject *pWatched, QEvent *pEvent) override;
     void on_mouse_event();

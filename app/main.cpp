@@ -756,6 +756,8 @@ int main(int argc, char *argv[]) {
     } else {
         engine.load(url);
     }
+    if (!engine.rootObjects().isEmpty())
+        MouseHelper::instance().attach_hud_cursor(qobject_cast<QQuickWindow*>(engine.rootObjects().first()));
 #ifdef Q_OS_WIN
     // Qt's requestActivate alone can run before the native window is exposed.
     // Present it after exposure, and activate the native window once at startup.
