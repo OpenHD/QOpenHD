@@ -39,7 +39,8 @@ class GL_shaders {
 	GLint uvs=-1;
 	GLint s_texture_y=-1;
 	GLint s_texture_uv=-1;
-  };
+    GLint chroma_in_alpha=-1;
+};
   // YUV 420P (As defined in AV_PIX_FMT_YUV420P)
   // Y,U,V are in 3 separate planes (textures)
   struct YUV420PShader{
@@ -73,7 +74,7 @@ class GL_shaders {
   // each plane (Y,U,V) has its own texture
   void draw_YUV420P(GLuint textureY,GLuint textureU,GLuint textureV,int rotation_degree);
   // Y has its own texture, UV are interleaved in the same texture.
-  void draw_NV12(GLuint textureY,GLuint textureUV,int rotation_degree);
+  void draw_NV12(GLuint textureY, GLuint textureUV, int rotation_degree, bool chroma_in_alpha = false);
   //
   static void debug_set_swap_interval(int interval);
 };

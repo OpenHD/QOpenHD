@@ -56,79 +56,50 @@ void GL_VideoRenderer::init_gl() {
 // https://stackoverflow.com/questions/9413845/ffmpeg-avframe-to-opengl-texture-without-yuv-to-rgb-soft-conversion
 // https://bugfreeblog.duckdns.org/2022/01/yuv420p-opengl-shader-conversion.html
 // https://stackoverflow.com/questions/30191911/is-it-possible-to-draw-yuv422-and-yuv420-texture-using-opengl
-void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
-  assert(frame);
-  assert(is_AV_PIX_FMT_YUV42XP(frame->format));
-  /*if(false){
-	if(yuv_420_p_sw_frame_texture.sdl_texture== nullptr){
-	  yuv_420_p_sw_frame_texture.sdl_texture = SDL_CreateTexture(sdl_renderer,
-																 SDL_PIXELFORMAT_YV12,
-									SDL_TEXTUREACCESS_STREAMING,
-									frame->width,
-									frame->height);
-	  assert(yuv_420_p_sw_frame_texture.sdl_texture!= nullptr);
-	}
-	if(frame->format==AV_PIX_FMT_YUV420P){
-	  SDL_SetYUVConversionMode(SDL_YUV_CONVERSION_JPEG);
-	}else{
-	  SDL_SetYUVConversionMode(SDL_YUV_CONVERSION_BT601);
-	}
-	SDL_UpdateYUVTexture(yuv_420_p_sw_frame_texture.sdl_texture, nullptr,
-						 frame->data[0],
-						 frame->linesize[0],
-						 frame->data[1],
-						 frame->linesize[1],
-						 frame->data[2],
-						 frame->linesize[2]);
-	yuv_420_p_sw_frame_texture.has_valid_image= true;
-	return;
-  }*/
-  const GLuint frame_width=frame->width;
-  const GLuint frame_height=frame->height;
-  //const GLuint frame_width=frame->linesize[0];
-  //const GLuint frame_height=frame->linesize[1];
-  // Both 420 and 422 have half width
-  const GLuint uv_width= frame_width/2;
-  //const GLuint uv_width=frame->linesize[1];
-  // 420 has half height, 422 has full height
-  const GLuint uv_height=is_AV_PIX_FMT_YUV420P(frame->format) ? frame_height/2 : frame_height;
-  //std::cerr<<"UV width x height"<<uv_width<<"x"<<uv_height<<"\n";
-  GLuint widths[3] = {
-	  frame_width,
-	  uv_width,
-	  uv_width
-  };
-  GLuint heights[3] = {
-	  frame_height,
-	  uv_height,
-	  uv_height
-  };
-  // Better be safe than sorry with how annying QT can be
-  int gl_unpack_row_length_before=0;
-  glGetIntegerv(GL_UNPACK_ROW_LENGTH,&gl_unpack_row_length_before);
-  int gl_unpack_alignment_before=0;
-  glGetIntegerv(GL_UNPACK_ALIGNMENT,&gl_unpack_alignment_before);
-  for(int i=0;i<3;i++){
-	if(yuv_420_p_sw_frame_texture.textures[i]==0){
-	  glGenTextures(1,&yuv_420_p_sw_frame_texture.textures[i]);
-	  assert(yuv_420_p_sw_frame_texture.textures[i]>0);
-	}
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	const auto test_texture_target=GL_TEXTURE_2D;
-	glBindTexture(test_texture_target, yuv_420_p_sw_frame_texture.textures[i]);
-	glTexParameteri(test_texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(test_texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH,frame->linesize[i]);
-	glTexImage2D(test_texture_target, 0, GL_LUMINANCE, widths[i], heights[i], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
+void GL_VideoRenderer::update_texture_yuv(AVFrame* frame) {
+  auto& texture = yuv_420_p_sw_frame_texture;
+  const bool interleaved = frame->format == AV_PIX_FMT_NV12;
+  const bool subsampled_height = interleaved || is_AV_PIX_FMT_YUV420P(frame->format);
+  const bool allocate = texture.last_width != frame->width ||
+                        texture.last_height != frame->height ||
+                        texture.last_format != frame->format;
+  const int widths[]{frame->width, (frame->width + 1) / 2, (frame->width + 1) / 2};
+  const int chroma_height = subsampled_height ? (frame->height + 1) / 2 : frame->height;
+  const int heights[]{frame->height, chroma_height, chroma_height};
+
+  int row_length = 0, alignment = 0;
+  glGetIntegerv(GL_UNPACK_ROW_LENGTH, &row_length);
+  glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  for (int i = 0; i < (interleaved ? 2 : 3); ++i) {
+    const bool uv = interleaved && i == 1;
+    const GLenum format = uv ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
+    if (texture.textures[i] == 0) {
+      glGenTextures(1, &texture.textures[i]);
+      glBindTexture(GL_TEXTURE_2D, texture.textures[i]);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    } else {
+      glBindTexture(GL_TEXTURE_2D, texture.textures[i]);
+    }
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, frame->linesize[i] / (uv ? 2 : 1));
+    if (allocate) {
+      glTexImage2D(GL_TEXTURE_2D, 0, format, widths[i], heights[i], 0, format,
+                   GL_UNSIGNED_BYTE, frame->data[i]);
+    } else {
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, widths[i], heights[i], format,
+                      GL_UNSIGNED_BYTE, frame->data[i]);
+    }
   }
-  glPixelStorei(GL_UNPACK_ROW_LENGTH,gl_unpack_row_length_before);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, gl_unpack_alignment_before);
-  glBindTexture(GL_TEXTURE_2D,0);
-  GL_shaders::checkGlError("upload YUV420P");
-  yuv_420_p_sw_frame_texture.has_valid_image= true;
-  //std::cout<<"Colorspace:"<<av_color_space_name(frame->colorspace)<<"\n";
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, row_length);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  texture.last_width = frame->width;
+  texture.last_height = frame->height;
+  texture.last_format = frame->format;
+  texture.has_valid_image = true;
   av_frame_free(&frame);
-  GL_shaders::checkGlError("upload YUV420P");
+  GL_shaders::checkGlError("upload YUV texture");
 }
 
 void GL_VideoRenderer::update_texture_cuda(AVFrame *frame) {
@@ -270,7 +241,7 @@ void GL_VideoRenderer::update_texture_vdpau(AVFrame* hw_frame) {
 	av_frame_free(&hw_frame);
 	return;
   }
-  update_texture_yuv420P_yuv422P(sw_frame);
+  update_texture_yuv(sw_frame);
   //av_frame_free(&sw_frame);
   av_frame_free(&hw_frame);
 }
@@ -290,9 +261,9 @@ void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
   }else if(frame->format==AV_PIX_FMT_CUDA){
     //std::cout<<"update_texture_CUDA\n";
 	update_texture_cuda(frame);
-  }else if(is_AV_PIX_FMT_YUV42XP(frame->format)){
+  }else if(is_AV_PIX_FMT_YUV42XP(frame->format) || frame->format == AV_PIX_FMT_NV12){
     //std::cout<<"update_texture_yuv420P / yuv422P\n";
-	update_texture_yuv420P_yuv422P(frame);
+	update_texture_yuv(frame);
   }else if(frame->format==AV_PIX_FMT_VDPAU){
     //std::cout<<"update_texture_vdpau\n";
 	update_texture_vdpau(frame);
@@ -311,15 +282,12 @@ void GL_VideoRenderer::draw_texture_gl(const bool dev_draw_alternating_rgb_dummy
   }else if(cuda_frametexture.has_valid_image) {
     gl_shaders->draw_NV12(cuda_frametexture.textures[0], cuda_frametexture.textures[1],rotation_degree);
   }else if(yuv_420_p_sw_frame_texture.has_valid_image){
-    /*if(yuv_420_p_sw_frame_texture.sdl_texture!= nullptr){
-	  //std::cout<<"SDL render\n";
-	  SDL_RenderCopy(sdl_renderer, yuv_420_p_sw_frame_texture.sdl_texture, nullptr, nullptr);
-    }else{*/
-	  //std::cout<<"Cust render\n";
-	  gl_shaders->draw_YUV420P(yuv_420_p_sw_frame_texture.textures[0],
-							   yuv_420_p_sw_frame_texture.textures[1],
-                               yuv_420_p_sw_frame_texture.textures[2],rotation_degree);
-    //}
+    const auto& texture = yuv_420_p_sw_frame_texture;
+    if (texture.last_format == AV_PIX_FMT_NV12) {
+      gl_shaders->draw_NV12(texture.textures[0], texture.textures[1], rotation_degree, true);
+    } else {
+      gl_shaders->draw_YUV420P(texture.textures[0], texture.textures[1], texture.textures[2], rotation_degree);
+    }
   }
   else{
 	// no valid video texture yet, alternating draw the rgb textures.

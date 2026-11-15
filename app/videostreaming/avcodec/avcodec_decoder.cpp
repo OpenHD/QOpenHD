@@ -18,6 +18,12 @@
 #include "ExternalDecodeService.hpp"
 #include "telemetry/models/camerastreammodel.h"
 
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+extern "C" {
+#include <libswscale/swscale.h>
+}
+#endif
+
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     int err = 0;
     ctx->hw_frames_ctx = NULL;
@@ -80,6 +86,9 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
 AVCodecDecoder::~AVCodecDecoder()
 {
     terminate();
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+    sws_freeContext(m_desktop_conversion);
+#endif
 }
 
 void AVCodecDecoder::init(bool primaryStream)
@@ -197,105 +206,146 @@ void AVCodecDecoder::constant_decode()
 
 int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std::chrono::steady_clock::time_point> parse_time)
 {
-    AVFrame *frame = nullptr;
-    //qDebug()<<"Decode packet:"<<packet->pos<<" size:"<<packet->size<<" B";
-    const auto beforeFeedFrame=std::chrono::steady_clock::now();
-    if(parse_time!=std::nullopt){
-        const auto delay=beforeFeedFrame-parse_time.value();
-        avg_parse_time.add(delay);
-        avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-            //qDebug()<<name.c_str()<<":"<<message.c_str();
+    const auto beforeFeed = std::chrono::steady_clock::now();
+    if (parse_time) {
+        avg_parse_time.add(beforeFeed - *parse_time);
+        avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3), [](const auto&, const auto& message) {
             DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
         });
     }
-    const auto beforeFeedFrameUs=getTimeUs();
-    packet->pts=beforeFeedFrameUs;
-    timestamp_add_fed(packet->pts);
 
-    //m_ffmpeg_dequeue_or_queue_mutex.lock();
-    const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, packet);
-    //m_ffmpeg_dequeue_or_queue_mutex.unlock();
-    if (ret_avcodec_send_packet < 0) {
-        fprintf(stderr, "Error during decoding\n");
-        return ret_avcodec_send_packet;
-    }
-    // alloc output frame(s)
-    if (!(frame = av_frame_alloc())) {
-        // NOTE: It is a common practice to not care about OOM, and this is the best approach in my opinion.
-        // but ffmpeg uses malloc and returns error codes, so we keep this practice here.
-        qDebug()<<"can not alloc frame";
-        av_frame_free(&frame);
-        return AVERROR(ENOMEM);
-    }
-    int ret=0;
-    // Poll until we get the frame out
-    const auto loopUntilFrameBegin=std::chrono::steady_clock::now();
-    bool gotFrame=false;
-    int n_times_we_tried_getting_a_frame_this_time=0;
-    while (!gotFrame){
-        //m_ffmpeg_dequeue_or_queue_mutex.lock();
-        ret = avcodec_receive_frame(decoder_ctx, frame);
-        //m_ffmpeg_dequeue_or_queue_mutex.unlock();
-        if(ret == AVERROR_EOF){
-            qDebug()<<"Got EOF";
-            break;
-        }else if(ret==0){
-            //debug_is_valid_timestamp(frame->pts);
-            // we got a new frame
-            if(!use_frame_timestamps_for_latency){
-                const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
-                //qDebug()<<"(True) decode delay(wait):"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
-                avg_decode_time.add(x_delay);
-            }else{
-                const auto now_us=getTimeUs();
-                const auto delay_us=now_us-frame->pts;
-                //qDebug()<<"(True) decode delay(nowait):"<<((float)delay_us/1000.0f)<<" ms";
-                //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
-                //frame->pts=now;
-                avg_decode_time.add(std::chrono::microseconds(delay_us));
-            }
-            gotFrame=true;
-            frame->pts=beforeFeedFrameUs;
-            // display frame
+    packet->pts = getTimeUs();
+    AVFrame* frame = av_frame_alloc();
+    if (!frame) return AVERROR(ENOMEM);
+
+    auto drain = [&]() {
+        int result = 0;
+        while (!request_restart && (result = avcodec_receive_frame(decoder_ctx, frame)) == 0) {
+            const auto now = getTimeUs();
+            if (frame->pts == AV_NOPTS_VALUE || frame->pts > now) frame->pts = packet->pts;
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+            present_desktop_frame(frame);
+#else
             on_new_frame(frame);
-            avg_decode_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                //qDebug()<<name.c_str()<<":"<<message.c_str();
+#endif
+            avg_decode_time.add(std::chrono::microseconds(now - frame->pts));
+            avg_decode_time.custom_print_in_intervals(std::chrono::seconds(3), [](const auto&, const auto& message) {
                 DecodingStatistcs::instance().set_decode_time(message.c_str());
             });
-        }else if(ret==AVERROR(EAGAIN)){
-            // TODO FIXME REMOVE
-            if(true){
-                break;
-            }
-            if(n_no_output_frame_after_x_seconds>=2){
-                // note decode latency is now wrong
-                //qDebug()<<"Skipping decode lockstep due to no frame for more than X seconds\n";
-                DecodingStatistcs::instance().set_doing_wait_for_frame_decode("No");
-                if(n_times_we_tried_getting_a_frame_this_time>4){
-                    break;
-                }
-            }
-            //std::cout<<"avcodec_receive_frame returned:"<<ret<<"\n";
-            // for some video files, the decoder does not output a frame every time a h264 frame has been fed
-            // In this case, I unblock after X seconds, but we cannot measure the decode delay by using the before-after
-            // approach. We can still measure it using the pts timestamp from av, but this one cannot necessarily be trusted 100%
-            if(std::chrono::steady_clock::now()-loopUntilFrameBegin > std::chrono::seconds(2)){
-              qDebug()<<"Got no frame after X seconds. Break, but decode delay will be reported wrong";
-              n_no_output_frame_after_x_seconds++;
-              use_frame_timestamps_for_latency=true;
-              break;
-            }
-            // sleep a bit to not hog the CPU too much
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }else{
-            qDebug()<<"Got unlikely / weird error:"<<ret;
-            break;
+            av_frame_unref(frame);
         }
-        n_times_we_tried_getting_a_frame_this_time++;
+        return request_restart ? 0 : result;
+    };
+
+    int result = avcodec_send_packet(decoder_ctx, packet);
+    if (result == AVERROR(EAGAIN)) {
+        result = drain();
+        if (result == AVERROR(EAGAIN)) result = avcodec_send_packet(decoder_ctx, packet);
     }
+    if (result == 0) result = drain();
     av_frame_free(&frame);
-    return 0;
+
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+    if (result == AVERROR_EXTERNAL && decoder_ctx->hw_device_ctx) {
+        qWarning() << "Hardware decoder failed; reopening in software";
+        m_failed_hw_codec = decoder->id;
+        request_restart = true;
+    }
+#endif
+    if (result == AVERROR(EAGAIN) || result == AVERROR_INVALIDDATA) return 0;
+    if (result < 0) qDebug() << "Decode error:" << av_error_as_string(result).c_str();
+    return result;
 }
+
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+void AVCodecDecoder::configure_desktop_decoder(bool force_software)
+{
+#ifdef Q_OS_WIN
+    constexpr AVHWDeviceType devices[]{AV_HWDEVICE_TYPE_D3D11VA};
+#else
+    constexpr AVHWDeviceType devices[]{AV_HWDEVICE_TYPE_VAAPI, AV_HWDEVICE_TYPE_CUDA};
+#endif
+    m_reported_format = AV_PIX_FMT_NONE;
+    decoder_ctx->thread_count = 2;
+    if (m_failed_hw_codec != decoder->id) m_failed_hw_codec = AV_CODEC_ID_NONE;
+    if (force_software || m_failed_hw_codec == decoder->id) return;
+
+    for (const auto device : devices) {
+        for (int i = 0; const auto* config = avcodec_get_hw_config(decoder, i); ++i) {
+            if (config->device_type != device || !(config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX))
+                continue;
+            if (hw_decoder_init(decoder_ctx, device) < 0) break;
+            wanted_hw_pix_fmt = config->pix_fmt;
+            decoder_ctx->get_format = [](AVCodecContext* context, const AVPixelFormat* formats) {
+                for (auto p = formats; *p != AV_PIX_FMT_NONE; ++p) {
+                    if (*p == wanted_hw_pix_fmt) return *p;
+                }
+                return avcodec_default_get_format(context, formats);
+            };
+            decoder_ctx->thread_count = 1;
+            return;
+        }
+    }
+}
+
+void AVCodecDecoder::present_desktop_frame(AVFrame* frame)
+{
+    const auto format = static_cast<AVPixelFormat>(frame->format);
+    const auto free_frame = [](AVFrame* f) { av_frame_free(&f); };
+    std::unique_ptr<AVFrame, decltype(free_frame)> downloaded(nullptr, free_frame);
+    std::unique_ptr<AVFrame, decltype(free_frame)> converted(nullptr, free_frame);
+    AVFrame* render_frame = frame;
+    AVHWDeviceType device = AV_HWDEVICE_TYPE_NONE;
+    if (frame->hw_frames_ctx) {
+        const auto* frames = reinterpret_cast<const AVHWFramesContext*>(frame->hw_frames_ctx->data);
+        device = frames->device_ctx->type;
+        downloaded.reset(av_frame_alloc());
+        if (!downloaded || av_hwframe_transfer_data(downloaded.get(), frame, 0) < 0) {
+            qWarning() << "Hardware frame transfer failed; reopening in software";
+            m_failed_hw_codec = decoder->id;
+            request_restart = true;
+            return;
+        }
+        av_frame_copy_props(downloaded.get(), frame);
+        render_frame = downloaded.get();
+    }
+
+    if (!is_AV_PIX_FMT_YUV42XP(render_frame->format) && render_frame->format != AV_PIX_FMT_NV12) {
+        // Main 10 and other formats outside the OpenGL renderer's 8-bit texture paths.
+        const auto pixel_format = static_cast<AVPixelFormat>(render_frame->format);
+        const int width = render_frame->width;
+        const int height = render_frame->height;
+        m_desktop_conversion = sws_getCachedContext(m_desktop_conversion, width, height, pixel_format,
+                                                   width, height, AV_PIX_FMT_YUV420P, SWS_FAST_BILINEAR,
+                                                   nullptr, nullptr, nullptr);
+        converted.reset(av_frame_alloc());
+        if (!m_desktop_conversion || !converted) return;
+        converted->format = AV_PIX_FMT_YUV420P;
+        converted->width = width;
+        converted->height = height;
+        if (av_frame_get_buffer(converted.get(), 0) < 0 ||
+            sws_scale(m_desktop_conversion, render_frame->data, render_frame->linesize, 0, height,
+                      converted->data, converted->linesize) != height) return;
+        av_frame_copy_props(converted.get(), render_frame);
+        render_frame = converted.get();
+    }
+    render_frame->pts = frame->pts;
+
+    if (m_primary_stream && m_reported_format != format) {
+        if (device == AV_HWDEVICE_TYPE_NONE) {
+            DecodingStatistcs::instance().set_decoding_type("SW");
+        } else {
+            DecodingStatistcs::instance().set_decoding_type(
+                QString("HW (%1)").arg(av_hwdevice_get_type_name(device)));
+        }
+        qInfo() << "Video decoder:" << (device == AV_HWDEVICE_TYPE_NONE ? "software" :
+                                        av_hwdevice_get_type_name(device));
+        m_reported_format = format;
+    }
+    on_new_frame(render_frame);
+}
+#endif
+
 
 int AVCodecDecoder::decode_config_data(AVPacket *packet)
 {
@@ -412,7 +462,6 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 void AVCodecDecoder::reset_before_decode_start()
 {
     m_last_decoded_frame = std::chrono::steady_clock::now();
-    n_no_output_frame_after_x_seconds=0;
     last_frame_width=-1;
     last_frame_height=-1;
     avg_decode_time.reset();
@@ -463,7 +512,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 
         }
     }
-    av_log_set_level(AV_LOG_TRACE);
+    av_log_set_level(AV_LOG_WARNING);
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
@@ -558,6 +607,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
       return 0;
     }
 
+#ifndef QOPENHD_DESKTOP_HW_DECODE
     const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_DRM;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_VAAPI;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_CUDA;
@@ -609,6 +659,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
         return 0;
     }
 
+#endif
     if (!(decoder_ctx = avcodec_alloc_context3(decoder))){
         qDebug()<<"avcodec_alloc_context3 failed";
         avformat_close_input(&input_ctx);
@@ -629,6 +680,9 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
         return -1;
     }
 
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+    configure_desktop_decoder(stream_config.enable_software_video_decoder);
+#else
     std::string selected_decoding_type="?";
     if(stream_config.enable_software_video_decoder ||
             // for mjpeg we always use sw decode r.n, since for some reason the "fallback" to sw decode doesn't work here
@@ -658,9 +712,11 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 
     // A thread count of 1 reduces latency for both SW and HW decode
     decoder_ctx->thread_count = 1;
+#endif
 
    if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
         qDebug()<<"Failed to open codec for stream ";//<< video_stream;
+        avcodec_free_context(&decoder_ctx);
         avformat_close_input(&input_ctx);
         return -1;
     }
@@ -670,7 +726,9 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     int nFeedFrames=0;
     auto lastFrame=std::chrono::steady_clock::now();
     reset_before_decode_start();
+#ifndef QOPENHD_DESKTOP_HW_DECODE
     DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
+#endif
     while (ret >= 0) {
         if(request_restart){
             request_restart=false;
@@ -745,7 +803,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
 
     // This thread pulls frame(s) from the rtp decoder and therefore should have high priority
     SchedulingHelper::setThreadParamsMaxRealtime();
-    av_log_set_level(AV_LOG_TRACE);
+    av_log_set_level(AV_LOG_WARNING);
      assert(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264 || stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265);
      if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
@@ -757,6 +815,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          return;
      }
      // ----------------------
+#ifndef QOPENHD_DESKTOP_HW_DECODE
      bool use_pi_hw_decode=false;
      if (decoder->id == AV_CODEC_ID_H264) {
          qDebug()<<"H264 decode";
@@ -787,6 +846,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          }
      }
      // ------------------------------------
+#endif
      decoder_ctx = avcodec_alloc_context3(decoder);
      if (!decoder_ctx) {
          qDebug()<< "AVCodecDecoder::open_and_decode_until_error_custom_rtp: Could not allocate video codec context";
@@ -802,6 +862,9 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
     decoder_ctx->flags2 |= AV_CODEC_FLAG2_SHOW_ALL;
     // --------------------------------------
     // --------------------------------------
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+    configure_desktop_decoder(stream_config.enable_software_video_decoder);
+#else
     std::string selected_decoding_type="?";
     if(use_pi_hw_decode){
         decoder_ctx->get_format  = get_hw_format;
@@ -817,6 +880,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
     }
     // A thread count of 1 reduces latency for both SW and HW decode
     decoder_ctx->thread_count = 1;
+#endif
 
     // ---------------------------------------
 
@@ -833,7 +897,9 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
 #endif
 
      reset_before_decode_start();
+#ifndef QOPENHD_DESKTOP_HW_DECODE
      DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
+#endif
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
      NalAccessUnitParser access_units(decoder->id);

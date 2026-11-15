@@ -34,11 +34,12 @@ args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix="qopenhd-sidebar-") as temp:
     folder = Path(temp)
     for name in ("SideBarMain", "SideBarBasePanel", "SidebarStackButton", "ChoiceSelector",
-                 "Panel8FindAirUnit", "BaseJoyEditElement2"):
+                 "Panel8FindAirUnit", "BaseJoyEditElement2", "Panel2Video", "ActionElement"):
         source = (ROOT / "qml/ui/sidebar" / (name + ".qml")).read_text(encoding="utf-8")
         source = (source.replace("import OpenHD 1.0", "")
                   .replace('import "../elements"', "").replace('import "../widgets"', "")
                   .replace('import "../configpopup"', ""))
+        source = source.replace('import "../../ui" as Ui', "")
         (folder / (name + ".qml")).write_text(source, encoding="utf-8")
     for path in ("elements/Card.qml", "elements/ColorPicker.qml", "elements/DarkComboBox.qml",
                  "elements/FontSelect.qml", "elements/OSDCustomizer.qml", "elements/SidebarSizeControls.qml",
@@ -49,7 +50,7 @@ with tempfile.TemporaryDirectory(prefix="qopenhd-sidebar-") as temp:
         (folder / Path(path).name).write_text(source, encoding="utf-8")
     shutil.copytree(ROOT / "qml/ui/elements/colorwheel", folder / "colorwheel")
     # Geometry uses the production shell; telemetry-heavy panel bodies are omitted.
-    for name in ("Panel2Video", "Panel4Recording", "Panel6Misc"):
+    for name in ("Panel4Recording", "Panel6Misc"):
         (folder / (name + ".qml")).write_text(
             'import QtQuick 2.12\nSideBarBasePanel { function takeover_control() {} }', encoding="utf-8")
     (folder / "Panel1Link.qml").write_text('''import QtQuick 2.12
@@ -78,6 +79,8 @@ Item {
     property string m_title
     property string m_param_id
     property var m_settings_model
+    property bool override_takes_string_param: false
+    objectName: m_param_id
     signal goto_previous()
     signal goto_next()
     function takeover_control() { forceActiveFocus() }
@@ -95,6 +98,7 @@ Item {
     QtObject {
         id: _ohdSystemAir
         property bool is_alive: true
+        property int ohd_platform_type: 20
         property int curr_soc_temp_degree: 73
         property int curr_cpuload_perc: 31
     }
@@ -152,6 +156,7 @@ Item {
         function system_is_alive() { return true }
         function param_int_exists(id) { return values[id] !== undefined }
         function get_cached_int(id) { return values[id] }
+        function get_ui_metadata(id) { return {cameraSupported: true} }
         function ensure_parameters_available() {}
         function try_set_param_int_async(id, value, log) {
             if (ui_is_busy) fail("Overlapping parameter writes")
@@ -166,7 +171,10 @@ Item {
         property int newValue
         onTriggered: {
             backend.ui_is_busy = false
-            if (!backend.reject) backend.values[idToAck] = newValue
+            if (!backend.reject) {
+                backend.values[idToAck] = newValue
+                backend.update_count++
+            }
             backend.backupParameterFinished(idToAck, !backend.reject)
         }
     }
@@ -177,6 +185,54 @@ Item {
     TestCase {
         name: "SidebarLayoutAndReset"
         when: windowShown
+        function test_intra_refresh_switch() {
+            hudOverlayGrid.width = 1000; hudOverlayGrid.height = 600
+            var savedValues = backend.values
+            backend.values = ({RESOLUTION_FPS:720, VIDEO_CODEC:0, ROTATION_FLIP:0})
+            backend.writes = []
+            backend.reject = false
+            backend.update_count++
+            sidebar.open_category(2)
+
+            var row = findChild(sidebar, "sidebarIntraRefresh")
+            verify(row !== null)
+            compare(row.visible, false)
+            backend.values.MPP_IR_ENABLE = 0
+            backend.update_count++
+            tryCompare(row, "visible", true)
+            compare(row.m_displayed_value, "OFF")
+
+            findChild(sidebar, "VIDEO_CODEC").goto_next()
+            verify(row.activeFocus)
+            keyClick(Qt.Key_Down)
+            var flip = findChild(sidebar, "ROTATION_FLIP")
+            verify(flip.activeFocus)
+            flip.goto_previous()
+            verify(row.activeFocus)
+
+            mouseClick(row)
+            compare(backend.writes.length, 1)
+            compare(backend.writes[0], ["MPP_IR_ENABLE", 1])
+            tryCompare(row, "m_displayed_value", "ON")
+            row.takeover_control()
+            keyClick(Qt.Key_Return)
+            compare(backend.writes[1], ["MPP_IR_ENABLE", 0])
+            tryCompare(row, "m_displayed_value", "OFF")
+
+            backend.reject = true
+            mouseClick(row)
+            tryCompare(backend, "ui_is_busy", false)
+            compare(row.m_displayed_value, "OFF")
+            delete backend.values.MPP_IR_ENABLE
+            backend.update_count++
+            tryCompare(row, "visible", false)
+            flip.goto_previous()
+            verify(findChild(sidebar, "VIDEO_CODEC").activeFocus)
+            sidebar.close()
+            backend.values = savedValues
+            backend.reject = false
+            backend.update_count++
+        }
         function test_geometry_data() {
             return [{tag:"desktop",w:1280,h:720}, {tag:"short",w:800,h:280},
                     {tag:"phone",w:915,h:360}, {tag:"portrait",w:360,h:800},

@@ -56,6 +56,9 @@ Item{
     property bool m_is_selected: false
 
     property string m_displayed_value: "VALUE T"
+    property bool inlineToggle: false
+    readonly property bool showsToggle: (inlineToggle || m_title === "Pit Mode") &&
+        (m_displayed_value === "ON" || m_displayed_value === "OFF")
 
     property bool m_is_enabled: true
 
@@ -124,6 +127,7 @@ Item{
     }
     Text {
         anchors.right: parent.right; anchors.rightMargin: 34; anchors.verticalCenter: parent.verticalCenter
+        visible: !inlineToggle
         text: "\uf054"; font.family: "Font Awesome 5 Free"; font.pixelSize: 15; color: sidebar.textColor("#a2b9cc")
     }
     Text {
@@ -144,7 +148,7 @@ Item{
         id:value_string
         width: parent.width * 0.43
         height: parent.height
-        visible: !(m_title === "Pit Mode" && (m_displayed_value === "ON" || m_displayed_value === "OFF"))
+        visible: !showsToggle
         text: qsTr(m_displayed_value)
         verticalAlignment: Qt.AlignVCenter
         horizontalAlignment: Qt.AlignRight
@@ -167,7 +171,7 @@ Item{
     }
 
     Rectangle {
-        visible: m_title === "Pit Mode" && (m_displayed_value === "ON" || m_displayed_value === "OFF")
+        visible: showsToggle
         anchors.right: parent.right; anchors.rightMargin: 65; anchors.verticalCenter: parent.verticalCenter
         width: 56; height: 28; radius: 14
         color: m_displayed_value === "ON" ? sidebar.highlightColor(sidebar.controlColor("#00a8f5", 1.3)) : sidebar.controlColor("#52616c", 0.85)

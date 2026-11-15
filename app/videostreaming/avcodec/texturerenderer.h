@@ -7,6 +7,7 @@
 #include <QtQuick/QQuickWindow>
 #include <memory>
 #include <chrono>
+#include <deque>
 #include <mutex>
 #include <QRect>
 #include <QVector3D>
@@ -55,11 +56,15 @@ private:
     bool initialized=false;
     int renderCount=0;
 private:
-    std::mutex latest_frame_mutex;
-    AVFrame* m_latest_frame=nullptr;
-    std::mutex m_secondary_latest_frame_mutex;
-    AVFrame* m_secondary_latest_frame=nullptr;
-    AVFrame* fetch_latest_decoded_frame(bool primaryStream=true);
+    struct FrameDeleter {
+        void operator()(AVFrame* frame) const { av_frame_free(&frame); }
+    };
+    using QueuedFrame = std::unique_ptr<AVFrame, FrameDeleter>;
+    std::mutex primary_frames_mutex;
+    std::deque<QueuedFrame> primary_frames;
+    std::mutex secondary_frames_mutex;
+    std::deque<QueuedFrame> secondary_frames;
+    AVFrame* take_next_decoded_frame(bool primaryStream=true);
 private:
     struct DisplayStats{
         int n_frames_rendered=0;

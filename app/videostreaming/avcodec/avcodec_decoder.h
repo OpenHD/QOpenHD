@@ -19,6 +19,10 @@
 
 #include <custom/rawreceiver.h>
 
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+struct SwsContext;
+#endif
+
 //exp
 //#include "drm_kms/drmprime_out.h"
 
@@ -56,12 +60,7 @@ private:
     // and do this in a loop. The "decode until error" is needed because due to the fact that the input stream
     // might be incomplete, we cannot quarantee that the decoder won't encounter any errors.
     int open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings);
-    // feed one frame to the decoder, then wait until the frame is returned
-    // (This gives the lowest latency on most decoders that have a "lockstep").
-    // If we didn't get a frame out for X seconds after feeding a frame more than X times,
-    // This will stop performing the lockstep. In this case, either the decoder cannot decode
-    // the video without buffering (which is bad, but some IP camera(s) create such a stream)
-    // or the underlying decode implementation (e.g. rpi foundation h264 !? investigate) has some quirks.
+    // Submit a packet and drain all frames currently ready for presentation.
     int decode_and_wait_for_frame(AVPacket *packet,std::optional<std::chrono::steady_clock::time_point> parse_time=std::nullopt);
     // Just send data to the codec, do not check or wait for a frame
     int decode_config_data(AVPacket *packet);
@@ -72,8 +71,6 @@ private:
     std::atomic<bool> request_restart=false;
     // Completely stop (Exit QOpenHD)
     std::atomic<bool> m_should_terminate{false};
-    int n_no_output_frame_after_x_seconds=0;
-    bool use_frame_timestamps_for_latency=false;
     AvgCalculator avg_decode_time{"Decode"};
     AvgCalculator avg_parse_time{"Parse&Enqueue"};
     AvgCalculator avg_send_mmal_frame_to_display{"MMAL send frame"};
@@ -116,6 +113,13 @@ private:
     bool feed_rtp_frame_if_available();
 private:
     void reset_before_decode_start();
+#ifdef QOPENHD_DESKTOP_HW_DECODE
+    void configure_desktop_decoder(bool force_software);
+    void present_desktop_frame(AVFrame* frame);
+    AVCodecID m_failed_hw_codec = AV_CODEC_ID_NONE;
+    AVPixelFormat m_reported_format = AV_PIX_FMT_NONE;
+    SwsContext* m_desktop_conversion = nullptr;
+#endif
     // On some platforms, it is easiest to just start and stop a service that does the video decode (QOpenHD is then transparently layered on top)
     void dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings);
 };

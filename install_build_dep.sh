@@ -14,7 +14,7 @@ function install_pi_packages {
 PLATFORM_PACKAGES="libgbm-dev"
 }
 function install_x86_packages {
-PLATFORM_PACKAGES="qml-module-qt-labs-platform qtbase5-private-dev libgbm-dev"
+PLATFORM_PACKAGES="qml-module-qt-labs-platform qtbase5-private-dev libgbm-dev libswscale-dev"
 }
 function install_rock_packages {
 # QOpenHD does not use GBM directly. Avoid pulling libgbm-dev into the old

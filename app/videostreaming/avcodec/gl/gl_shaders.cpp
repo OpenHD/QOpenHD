@@ -107,24 +107,22 @@ static const GLchar* fragment_shader_source_YUV420P =
 	"}\n";
 static const GLchar* fragment_shader_source_NV12 =
     "#version 100\n"
-	"precision mediump float;\n"
+    "precision mediump float;\n"
     "uniform vec3 preview_gain;\n"
-	"uniform sampler2D s_texture_y;\n"
-	"uniform sampler2D s_texture_uv;\n"
+    "uniform sampler2D s_texture_y;\n"
+    "uniform sampler2D s_texture_uv;\n"
+    "uniform bool chroma_in_alpha;\n"
     "varying vec2 v_texCoord;\n"
-	"void main() {	\n"
-	"	vec3 YCbCr = vec3(\n"
-	"		texture2D(s_texture_y, v_texCoord).x,\n"
-	"		texture2D(s_texture_uv,v_texCoord).xy\n"
-	"	);"
-	"	mat3 colorMatrix = mat3(\n"
-    "		1.1644, 1.1644, 1.1644,\n"
-    "        0.0, -0.3917, 2.0172,\n"
-    "        1.5960, -0.8129, 0.0"
-	"		);\n"
-    "	gl_FragColor = vec4(clamp(YCbCr*colorMatrix,0.0,1.0), 1.0);\n"
-    "gl_FragColor.rgb = clamp(gl_FragColor.rgb * preview_gain, 0.0, 1.0);\n"
-	"}\n";
+    "void main() {\n"
+    "    vec4 uv = texture2D(s_texture_uv, v_texCoord);\n"
+    "    vec3 yuv = vec3(texture2D(s_texture_y, v_texCoord).r, uv.r,\n"
+    "                    chroma_in_alpha ? uv.a : uv.g);\n"
+    "    yuv -= vec3(16.0, 128.0, 128.0) / 255.0;\n"
+    "    vec3 rgb = vec3(dot(yuv, vec3(1.1644, 0.0, 1.596)),\n"
+    "                    dot(yuv, vec3(1.1644, -0.3918, -0.813)),\n"
+    "                    dot(yuv, vec3(1.1644, 2.0172, 0.0)));\n"
+    "    gl_FragColor = vec4(clamp(rgb * preview_gain, 0.0, 1.0), 1.0);\n"
+    "}\n";
 
 /// negative x,y is bottom left and first vertex
 /// 3 ---- 4
@@ -230,6 +228,7 @@ void GL_shaders::initialize() {
   nv12_shader.uvs = checked_glGetAttribLocation(nv12_shader.program, "tex_coords");
   nv12_shader.s_texture_y=checked_glGetUniformLocation(nv12_shader.program, "s_texture_y");
   nv12_shader.s_texture_uv=checked_glGetUniformLocation(nv12_shader.program, "s_texture_uv");
+  nv12_shader.chroma_in_alpha=checked_glGetUniformLocation(nv12_shader.program, "chroma_in_alpha");
   checkGlError("Create shader NV12");
   //
   glGenBuffers(1, &vbo);
@@ -328,8 +327,9 @@ void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV,
   checkGlError("Draw YUV420 texture");
 }
 
-void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV,int rotation_degree) {
+void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV, int rotation_degree, bool chroma_in_alpha) {
   glUseProgram(nv12_shader.program);
+  glUniform1i(nv12_shader.chroma_in_alpha, chroma_in_alpha);
   apply_preview_gain(nv12_shader.program);
   const std::vector<GLuint> textures{textureY,textureUV};
   bind_textures(textures);

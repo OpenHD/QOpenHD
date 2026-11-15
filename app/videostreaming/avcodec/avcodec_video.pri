@@ -9,8 +9,9 @@ unix:!android {
     PKGCONFIG += libdrm
 }
 win32 {
+    DEFINES += QOPENHD_DESKTOP_HW_DECODE
     INCLUDEPATH += $$PWD/../../../build-libs-windows/ffmpeg/include
-    LIBS += -L$$PWD/../../../build-libs-windows/ffmpeg/lib -lavcodec -lavutil -lavformat
+    LIBS += -L$$PWD/../../../build-libs-windows/ffmpeg/lib -lavcodec -lavutil -lavformat -lswscale
 
     angle_x86 = $$PWD/../../../build-libs-windows/angle-x86
     angle_x64 = $$PWD/../../../build-libs-windows/angle-x64
@@ -28,6 +29,11 @@ win32 {
     DEFINES += EGL_EGLEXT_PROTOTYPES
     DEFINES += GL_GLEXT_PROTOTYPES
 #    LIBS += -lOpengl32
+}
+
+linux:!android:contains(QT_ARCH, i386|x86_64) {
+    DEFINES += QOPENHD_DESKTOP_HW_DECODE
+    PKGCONFIG += libswscale
 }
 
 # just using the something something webrtc from stephen was the easiest solution.

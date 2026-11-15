@@ -48,8 +48,8 @@ BaseWidget {
     property bool forceKeyframeAvailable: false
     property int requestedPacketLossPercent: 0
     property int requestedKeyframeLossPercent: 0
-    property bool requestedIntraRefreshEnabled: true
-    property int requestedIntraRefreshMode: 1
+    property bool requestedIntraRefreshEnabled: false
+    property int requestedIntraRefreshMode: 0
     property int requestedIntraRefreshNum: 8
     property double impairmentEditingUntilMs: 0
     property int qpParamsAvailabilityUpdateCount: -1
@@ -131,7 +131,7 @@ BaseWidget {
         }
         if (intraRefreshParamsAvailable) {
             requestedIntraRefreshEnabled = selectedSettingsModel.get_cached_int("MPP_IR_ENABLE") !== 0;
-            requestedIntraRefreshMode = selectedSettingsModel.get_cached_int("MPP_IR_MODE");
+            requestedIntraRefreshMode = selectedSettingsModel.get_cached_int("MPP_IR_MODE") === 1 ? 1 : 0;
             requestedIntraRefreshNum = selectedSettingsModel.get_cached_int("MPP_IR_NUM");
         }
     }
@@ -171,9 +171,11 @@ BaseWidget {
     }
 
     function applyIntraRefreshControls() {
-        var ok = setDebugParameter("MPP_IR_ENABLE", requestedIntraRefreshEnabled ? 1 : 0)
-                && setDebugParameter("MPP_IR_MODE", requestedIntraRefreshMode)
-                && setDebugParameter("MPP_IR_NUM", requestedIntraRefreshNum);
+        if (!requestedIntraRefreshEnabled && !setDebugParameter("MPP_IR_ENABLE", 0))
+            return;
+        var ok = setDebugParameter("MPP_IR_MODE", requestedIntraRefreshMode)
+                && setDebugParameter("MPP_IR_NUM", requestedIntraRefreshNum)
+                && (!requestedIntraRefreshEnabled || setDebugParameter("MPP_IR_ENABLE", 1));
         if (ok)
             _hudLogMessagesModel.signalAddLogMessage(6, qsTr("MPP intra-refresh updated"));
     }
@@ -813,7 +815,7 @@ BaseWidget {
                         onActivated: { markImpairmentEditing(); requestedIntraRefreshMode = currentIndex; }
                         Layout.preferredWidth: 135
                     }
-                    Text { text: qsTr("native MPP control"); color: "#ff99dd99"; font.pixelSize: 10 }
+                    Text { text: qsTr("Restarts the video stream"); color: "#ff99dd99"; font.pixelSize: 10 }
                 }
 
                 Text {
