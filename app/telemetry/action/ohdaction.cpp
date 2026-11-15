@@ -170,6 +170,10 @@ bool OHDAction::send_storage_action(int action, int storageId,
                     m_format_air_sd_card_status="Storage operation failed";
                 }
                 emit formatAirSdCardStatusChanged();
+                if (action == 2) {
+                    emit airStorageRepartitionFinished(result.opt_ack.has_value() &&
+                                                       result.opt_ack->result == MAV_RESULT_ACCEPTED);
+                }
             },Qt::QueuedConnection);
         });
     if(!queued){
@@ -411,6 +415,7 @@ bool OHDAction::process_message(const mavlink_message_t &message)
                                                : (isDisk && !internal);
     item["canCreatePartition"]=isDisk && (capabilityFlags & 1)!=0;
     item["canResizePartition"]=isDisk && (capabilityFlags & 2)!=0;
+    item["recordingCardNeedsFormat"]=isDisk && (capabilityFlags & 32)!=0;
     item["canMount"]=(hasCapabilityFlags ? (capabilityFlags & 8)!=0
                                           : (!isDisk && !internal)) &&
                        storage.status!=STORAGE_STATUS_UNFORMATTED;

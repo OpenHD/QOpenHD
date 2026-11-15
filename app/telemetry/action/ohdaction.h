@@ -98,6 +98,7 @@ signals:
     void powerActionFinished(bool ground, bool reboot, QString result);
     void formatAirSdCardStatusChanged();
     void airStorageDevicesChanged();
+    void airStorageRepartitionFinished(bool ok);
 private:
     bool m_power_action_busy=false;
     bool m_settings_reset_busy=false;

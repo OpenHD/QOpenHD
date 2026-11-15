@@ -18,6 +18,97 @@ ApplicationWindow {
     id: applicationWindow
     visible: true
 
+    readonly property bool recordingSdAirConnected: _ohdSystemAir.is_alive &&
+        [25, 27, 28, 29].indexOf(_ohdSystemAir.ohd_platform_type) !== -1 &&
+        !_qopenhd.debugMenuPreview
+    property int dismissedRecordingCard: 0
+
+    onRecordingSdAirConnectedChanged: {
+        if (!recordingSdAirConnected) {
+            recordingCardPrompt.submitted = false
+            recordingCardPrompt.close()
+            dismissedRecordingCard = 0
+        }
+    }
+
+    Timer {
+        // The Air unit probes blank media asynchronously and supports card swaps.
+        interval: 15000
+        repeat: true
+        triggeredOnStart: true
+        running: applicationWindow.recordingSdAirConnected
+        onTriggered: {
+            if (!recordingCardPrompt.visible && !_ohdAction.formatAirSdCardBusy)
+                _ohdAction.refresh_air_storage()
+        }
+    }
+
+    Connections {
+        target: _ohdAction
+        function onAirStorageDevicesChanged() {
+            if (!applicationWindow.recordingSdAirConnected || recordingCardPrompt.visible)
+                return
+            var items = _ohdAction.airStorageDevices
+            for (var i = 0; i < items.length; ++i) {
+                if (items[i].recordingCardNeedsFormat &&
+                        items[i].id !== applicationWindow.dismissedRecordingCard) {
+                    recordingCardPrompt.storageId = items[i].id
+                    recordingCardPrompt.device = items[i].device
+                    recordingCardPrompt.formatFailed = false
+                    recordingCardPrompt.open()
+                    return
+                }
+            }
+        }
+        function onAirStorageRepartitionFinished(ok) {
+            if (!recordingCardPrompt.submitted) return
+            recordingCardPrompt.submitted = false
+            if (ok) {
+                applicationWindow.dismissedRecordingCard = recordingCardPrompt.storageId
+                recordingCardPrompt.close()
+            } else {
+                recordingCardPrompt.formatFailed = true
+            }
+        }
+    }
+
+    Dialog {
+        id: recordingCardPrompt
+        property int storageId: 0
+        property string device: ""
+        property bool submitted: false
+        property bool formatFailed: false
+        title: qsTr("Format recording card?")
+        modal: true
+        closePolicy: Popup.NoAutoClose
+        anchors.centerIn: parent
+        width: Math.min(applicationWindow.width - 24, 440)
+        contentItem: Label {
+            text: recordingCardPrompt.submitted ? qsTr("Formatting the recording card…")
+                : recordingCardPrompt.formatFailed ? qsTr("The Air unit could not prepare this card. Check the card and try again.")
+                : qsTr("The Air unit’s SD card (%1) needs formatting for recording. Click Format card to erase all data on this card and prepare it for recording.").arg(recordingCardPrompt.device)
+            wrapMode: Text.WordWrap
+        }
+        footer: DialogButtonBox {
+            Button {
+                text: qsTr("Later")
+                enabled: !recordingCardPrompt.submitted
+                DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+            }
+            Button {
+                text: qsTr("Format card")
+                enabled: applicationWindow.recordingSdAirConnected &&
+                         !recordingCardPrompt.submitted && !_ohdAction.formatAirSdCardBusy
+                DialogButtonBox.buttonRole: DialogButtonBox.ActionRole
+                onClicked: {
+                    recordingCardPrompt.submitted = _ohdAction.repartition_air_storage(recordingCardPrompt.storageId)
+                    recordingCardPrompt.formatFailed = !recordingCardPrompt.submitted
+                }
+            }
+        }
+        onRejected: applicationWindow.dismissedRecordingCard = storageId
+    }
+
     // Map/ADS-B position priority: craft GPS, ground-device location, then IP.
     // The internet fallback is automatic and never becomes aircraft telemetry.
     readonly property bool fcPositionValid: _fcMavlinkSystem.is_alive && _fcMavlinkSystem.gps_fix_type >= 2
