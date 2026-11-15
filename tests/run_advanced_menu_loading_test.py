@@ -46,6 +46,12 @@ Item {
     QtObject { id: _qopenhd; property string version_string: "test"; property bool launchedFromQtCreator: false; property bool debugMenuPreview: false; property int debugMenuPreviewLevel: 0; onDebugMenuPreviewLevelChanged: debugMenuPreview = debugMenuPreviewLevel > 0 }
     QtObject { id: _uiSimulator; property bool active: false; property var profile: ({accessMode:0}) }
     QtObject { id: hudOverlayGrid; function regain_focus() {} }
+    QtObject {
+        id: settings
+        property bool dev_show_advanced_button: false
+        property bool dev_show_whitelisted_params: false
+        function sync() {}
+    }
     Loader { id: menu; anchors.fill: parent; source: "ConfigPopup.qml" }
     TestCase {
         name: "AdvancedMenuLoading"; when: windowShown
@@ -155,6 +161,9 @@ Item {
             mouseClick(star)
             tryCompare(root, "diagnosticsUnlocked", true)
             compare(root.showDeveloperSettings, true)
+            compare(root.showAdvancedSettings, true)
+            compare(settings.dev_show_advanced_button, true)
+            compare(settings.dev_show_whitelisted_params, true)
             verify(root.navigationPageIds.indexOf(3) >= 0)
             verify(root.navigationPageIds.indexOf(4) >= 0)
             verify(root.navigationPageIds.indexOf(7) >= 0)

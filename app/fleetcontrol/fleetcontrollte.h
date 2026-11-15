@@ -89,6 +89,11 @@ class FleetControlLte : public QObject {
   void clearSession();
   void refreshLocalStatus();
   void restoreProvisionedLogin();
+  void restoreSession();
+  void signIn(const QString& username, const QString& password, bool automatic);
+  void saveSession();
+  void forgetSession();
+  void setAccount(const QJsonObject& account);
   static QString responseError(const QJsonObject& object,
                                const QString& fallback);
   bool installCertificate(const QByteArray& certificate, QString& path,
@@ -116,5 +121,6 @@ class FleetControlLte : public QObject {
   QString m_certificate_status = QStringLiteral("No video certificate installed");
   QString m_certificate_expires_at;
   QTimer m_timer;
+  QTimer m_session_retry;
   QNetworkAccessManager m_network;
 };

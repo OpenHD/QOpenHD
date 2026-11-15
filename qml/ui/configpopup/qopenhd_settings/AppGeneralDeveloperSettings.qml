@@ -5,20 +5,6 @@ import "../../elements"
 Item {
  width:parent.width;implicitHeight:legacyColumn.height
  Column {id:legacyColumn;width:parent.width;spacing:5
-            SettingBaseElement {
-                m_short_description: qsTr("Show advanced settings")
-                Switch {
-                    anchors.right: parent.right
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_show_advanced_button
-                    onToggled: {
-                        settings.dev_show_whitelisted_params = checked
-                        settings.dev_show_advanced_button = checked
-                    }
-                }
-            }
-
             SettingBaseElement{
                 m_short_description: qsTr("Ground Battery Cells")
 

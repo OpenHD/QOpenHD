@@ -1,0 +1,20 @@
+{
+  "version": 8,
+  "name": "OpenHD Offline",
+  "layers": [
+    {"id":"background","type":"background","paint":{"background-color":"#f4f1eb"}},
+    {"id":"land","type":"fill","source":"shortbread","source-layer":"land","filter":["in","kind","forest","wood","grass","meadow","park","scrub","nature_reserve"],"paint":{"fill-color":"#d6e5c9"}},
+    {"id":"farmland","type":"fill","source":"shortbread","source-layer":"land","filter":["in","kind","farmland","orchard","vineyard"],"paint":{"fill-color":"#e8ead2"}},
+    {"id":"ocean","type":"fill","source":"shortbread","source-layer":"ocean","paint":{"fill-color":"#9ecce2"}},
+    {"id":"lakes","type":"fill","source":"shortbread","source-layer":"water_polygons","paint":{"fill-color":"#9ecce2"}},
+    {"id":"streams","type":"line","source":"shortbread","source-layer":"water_lines","paint":{"line-color":"#82b9d4","line-width":{"stops":[[8,0.6],[16,2.5]]}}},
+    {"id":"buildings","type":"fill","source":"shortbread","source-layer":"buildings","minzoom":14,"paint":{"fill-color":"#dfd5ca","fill-outline-color":"#d2c6ba"}},
+    {"id":"minor-roads","type":"line","source":"shortbread","source-layer":"streets","filter":["in","kind","service","residential","living_street","unclassified","tertiary","road","pedestrian"],"layout":{"line-cap":"round","line-join":"round"},"paint":{"line-color":"#ffffff","line-width":{"stops":[[10,0.65],[16,4.2]]}}},
+    {"id":"trails","type":"line","source":"shortbread","source-layer":"streets","filter":["in","kind","track","path","footway","cycleway","bridleway","steps"],"paint":{"line-color":"#ac9984","line-width":{"stops":[[12,0.3],[16,1.6]]},"line-dasharray":[2,2]}},
+    {"id":"road-casings","type":"line","source":"shortbread","source-layer":"streets","filter":["in","kind","motorway","trunk","primary","secondary"],"layout":{"line-cap":"round","line-join":"round"},"paint":{"line-color":"#cea96d","line-width":{"stops":[[6,0.9],[12,3],[16,8]]}}},
+    {"id":"main-roads","type":"line","source":"shortbread","source-layer":"streets","filter":["in","kind","motorway","trunk","primary","secondary"],"layout":{"line-cap":"round","line-join":"round"},"paint":{"line-color":"#ffde9e","line-width":{"stops":[[6,0.6],[12,2],[16,6]]}}},
+    {"id":"boundaries","type":"line","source":"shortbread","source-layer":"boundaries","filter":["in","admin_level",2,4],"paint":{"line-color":"#a695ae","line-width":1,"line-dasharray":[4,2]}},
+    {"id":"street-labels","type":"symbol","source":"shortbread","source-layer":"street_labels","minzoom":12,"layout":{"symbol-placement":"line","text-field":"{name}","text-font":["OpenHD Sans"],"text-size":{"stops":[[12,10],[16,13]]}},"paint":{"text-color":"#535659","text-halo-color":"#ffffff","text-halo-width":1}},
+    {"id":"place-labels","type":"symbol","source":"shortbread","source-layer":"place_labels","layout":{"text-field":"{name}","text-font":["OpenHD Sans"],"text-size":{"stops":[[5,11],[11,13],[16,15]]}},"paint":{"text-color":"#243649","text-halo-color":"#ffffff","text-halo-width":1.3}}
+  ]
+}

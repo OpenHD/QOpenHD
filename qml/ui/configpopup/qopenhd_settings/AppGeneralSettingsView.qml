@@ -105,16 +105,6 @@ FocusScope {
     }
    }
    GeneralSettingsCard {
-    width:parent.width;height:implicitHeight;title:qsTr("Show advanced settings");icon:"\uf1de";controlWidth:48
-    hint:qsTr("Show additional OpenHD options and the Audio page in the left sidebar.")
-    headerControls:WidgetToggle {
-     objectName:"generalAdvancedSettings"
-     anchors.fill:parent
-     checked:settings.dev_show_advanced_button
-     onToggled:{settings.dev_show_whitelisted_params=checked;settings.dev_show_advanced_button=checked}
-    }
-   }
-   GeneralSettingsCard {
     width:parent.width;height:implicitHeight;title:qsTr("Reset all settings");icon:"\uf2ea";controlWidth:0
     Column {
      width:parent.width;spacing:4

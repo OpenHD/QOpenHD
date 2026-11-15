@@ -23,6 +23,7 @@ find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Quick)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Gui)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Widgets)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Network)
+find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS Sql)
 find_package(Qt6 ${X_QT_VERSION} REQUIRED COMPONENTS LinguistTools)
 find_package(Qt6 ${X_QT_VERSION} QUIET COMPONENTS Multimedia)
 find_package(Qt6 ${X_QT_VERSION} QUIET COMPONENTS TextToSpeech)
@@ -107,6 +108,7 @@ qt_add_executable(QOpenHDApp
     lib/geographiclib-c-2.0/src/geodesic.c
     ##
     ${QOPENHD_MAIN_QRC}
+    app/map/offline-vector.qrc
     qml/qml_assets_credits.qrc
     qml/qml_assets_cursors.qrc
     qml/qml_assets_fonts.qrc
@@ -176,8 +178,11 @@ target_include_directories(QOpenHDApp PUBLIC lib/geographiclib-c-2.0/src)
 
 
 target_link_libraries(QOpenHDApp
-    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Network
+    PRIVATE Qt6::Core Qt6::Quick Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Sql
 )
+if(WIN32)
+    target_link_libraries(QOpenHDApp PRIVATE crypt32)
+endif()
 if(QOPENHD_RPI_NATIVE)
     include(app/videostreaming/rpi/rpi_video.cmake)
 endif()
@@ -198,9 +203,10 @@ if(NOT QOPENHD_RPI_NATIVE)
 add_executable(qopenhd-offline-map-test
     tests/offline_map_provider_test.cpp
     app/map/offlinemaptileprovider.cpp
+    app/map/offline-vector.qrc
 )
 target_include_directories(qopenhd-offline-map-test PRIVATE app)
-target_link_libraries(qopenhd-offline-map-test PRIVATE Qt6::Core Qt6::Network)
+target_link_libraries(qopenhd-offline-map-test PRIVATE Qt6::Core Qt6::Network Qt6::Sql)
 endif()
 
 set_property(TARGET QOpenHDApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

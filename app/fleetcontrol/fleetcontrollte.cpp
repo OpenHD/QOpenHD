@@ -7,9 +7,57 @@
 #include <QNetworkRequest>
 #include <QSaveFile>
 #include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
+#include <QNetworkCookie>
+#include <QNetworkCookieJar>
+#include <QSettings>
+#include <QStandardPaths>
 #include <QUrl>
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <dpapi.h>
+#endif
 
 namespace {
+QString sessionPath() {
+  return QDir(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation))
+      .filePath(QStringLiteral("fleetcontrol-session"));
+}
+
+const auto sessionCookie = QByteArrayLiteral("fc_session");
+const auto provisioningDisabled = QStringLiteral("FleetControl/provisionedLoginDisabled");
+
+QString loginPath() { return sessionPath() + QStringLiteral("-login"); }
+
+QByteArray protectLogin(const QByteArray& bytes, bool encrypt) {
+#ifdef Q_OS_WIN
+  if (bytes.isEmpty()) return {};
+  DATA_BLOB input{static_cast<DWORD>(bytes.size()),
+                  reinterpret_cast<BYTE*>(const_cast<char*>(bytes.constData()))};
+  DATA_BLOB output{};
+  const BOOL ok = encrypt
+      ? CryptProtectData(&input, L"QOpenHD FleetControl", nullptr, nullptr, nullptr, CRYPTPROTECT_UI_FORBIDDEN, &output)
+      : CryptUnprotectData(&input, nullptr, nullptr, nullptr, nullptr, CRYPTPROTECT_UI_FORBIDDEN, &output);
+  if (!ok) return {};
+  const QByteArray result(reinterpret_cast<const char*>(output.pbData), static_cast<int>(output.cbData));
+  LocalFree(output.pbData);
+  return result;
+#else
+  Q_UNUSED(encrypt)
+  return bytes;
+#endif
+}
+
+bool saveAccountData(const QString& path, const QByteArray& data) {
+  const auto bytes = protectLogin(data, true);
+  QSaveFile file(path);
+  return !bytes.isEmpty() && QDir().mkpath(QFileInfo(path).absolutePath())
+      && file.open(QIODevice::WriteOnly)
+      && file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner)
+      && file.write(bytes) == bytes.size() && file.commit();
+}
+
 QVariantMap licenseMap(const QJsonObject& object) {
   const auto features = object.value(QStringLiteral("features")).toObject();
   QVariantMap result;
@@ -63,10 +111,84 @@ FleetControlLte::FleetControlLte(QObject* parent)
   connect(&m_timer, &QTimer::timeout, this, &FleetControlLte::refreshLocalStatus);
   m_timer.start(5000);
   refreshLocalStatus();
-  QTimer::singleShot(0, this, &FleetControlLte::restoreProvisionedLogin);
+  m_session_retry.setSingleShot(true);
+  m_session_retry.setInterval(30000);
+  connect(&m_session_retry, &QTimer::timeout, this, &FleetControlLte::restoreSession);
+  QTimer::singleShot(0, this, &FleetControlLte::restoreSession);
+}
+
+void FleetControlLte::saveSession() {
+  const auto cookies = m_network.cookieJar()->cookiesForUrl(QUrl(m_endpoint + "/api/session"));
+  for (const auto& cookie : cookies) {
+    if (cookie.name() != sessionCookie || !cookie.isSecure() || cookie.isSessionCookie()) continue;
+    saveAccountData(sessionPath(), cookie.toRawForm());
+    return;
+  }
+}
+
+void FleetControlLte::forgetSession() {
+  m_session_retry.stop();
+  QFile::remove(sessionPath());
+  const auto cookies = m_network.cookieJar()->cookiesForUrl(QUrl(m_endpoint + "/api/session"));
+  for (const auto& cookie : cookies)
+    if (cookie.name() == sessionCookie) m_network.cookieJar()->deleteCookie(cookie);
+}
+
+void FleetControlLte::setAccount(const QJsonObject& account) {
+  m_account_name = account.value(QStringLiteral("displayName")).toString(
+      account.value(QStringLiteral("username")).toString());
+  m_authenticated = true;
+  emit statusChanged();
+}
+
+void FleetControlLte::restoreSession() {
+  if (m_authenticated || m_busy) return;
+  QFile file(sessionPath());
+  if (!file.open(QIODevice::ReadOnly)) {
+    restoreProvisionedLogin();
+    return;
+  }
+  const auto cookies = QNetworkCookie::parseCookies(protectLogin(file.read(16384), false));
+  file.close();
+  const QUrl endpoint(m_endpoint + "/api/session");
+  if (cookies.size() != 1 || cookies.front().name() != sessionCookie
+      || !cookies.front().isSecure() || cookies.front().isSessionCookie()
+      || cookies.front().expirationDate() <= QDateTime::currentDateTimeUtc()
+      || !m_network.cookieJar()->setCookiesFromUrl(cookies, endpoint)) {
+    forgetSession();
+    restoreProvisionedLogin();
+    return;
+  }
+  setBusy(true);
+  setStatusText(QStringLiteral("Restoring FleetControl session…"));
+  request("GET", QStringLiteral("/api/session"), {},
+          [this](const QJsonObject& object, int status, const QString&) {
+    setBusy(false);
+    if (status == 200 && object.value(QStringLiteral("authenticated")).toBool()) {
+      setAccount(object.value(QStringLiteral("account")).toObject());
+      refreshAccount();
+    } else if (status == 401) {
+      setStatusText(QStringLiteral("FleetControl session expired. Sign in again."));
+      restoreProvisionedLogin();
+    } else {
+      setStatusText(QStringLiteral("Could not reach FleetControl. Retrying the saved session…"));
+      m_session_retry.start();
+    }
+  });
 }
 
 void FleetControlLte::restoreProvisionedLogin() {
+  QFile saved(loginPath());
+  if (saved.open(QIODevice::ReadOnly)) {
+    const auto object = QJsonDocument::fromJson(protectLogin(saved.read(16384), false)).object();
+    const auto username = object.value("username").toString();
+    const auto password = object.value("password").toString();
+    if (!username.isEmpty() && !password.isEmpty()) {
+      signIn(username, password, true);
+      return;
+    }
+  }
+  if (QSettings().value(provisioningDisabled, false).toBool()) return;
   QFile file(QStringLiteral("/root/.config/OpenHD/FleetControlCredentials.json"));
   if (!file.open(QIODevice::ReadOnly)) return;
   QJsonParseError parse_error{};
@@ -75,7 +197,7 @@ void FleetControlLte::restoreProvisionedLogin() {
   const auto object = document.object();
   const QString username = object.value(QStringLiteral("username")).toString();
   const QString password = object.value(QStringLiteral("password")).toString();
-  if (!username.trimmed().isEmpty() && !password.isEmpty()) login(username, password);
+  if (!username.trimmed().isEmpty() && !password.isEmpty()) signIn(username.trimmed(), password, true);
 }
 
 void FleetControlLte::setBusy(bool value) {
@@ -112,7 +234,13 @@ void FleetControlLte::request(const QByteArray& method, const QString& path,
   connect(reply, &QNetworkReply::finished, this, [this, reply, handler = std::move(handler)]() {
     const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     m_online=status>0;
-    if(status==401)m_authenticated=false;
+    if (status == 401) {
+      forgetSession();
+      if (m_authenticated) {
+        clearSession();
+        if (QFile::exists(loginPath())) m_session_retry.start();
+      }
+    }
     emit statusChanged();
     QJsonParseError parseError{};
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &parseError);
@@ -133,22 +261,30 @@ void FleetControlLte::login(const QString& username, const QString& password) {
     setStatusText(QStringLiteral("Enter your operator ID or email and password"));
     return;
   }
+  signIn(username.trimmed(), password, false);
+}
+
+void FleetControlLte::signIn(const QString& username, const QString& password, bool automatic) {
+  m_session_retry.stop();
   setBusy(true);
   setStatusText(QStringLiteral("Signing in…"));
   request("POST", QStringLiteral("/api/login"),
           {{QStringLiteral("username"), username.trimmed()},
-           {QStringLiteral("password"), password}},
-          [this](const QJsonObject& object, int, const QString& error) {
+           {QStringLiteral("password"), password},
+           {QStringLiteral("rememberMe"), true}},
+          [this, username, password, automatic](const QJsonObject& object, int status, const QString& error) {
     if (!error.isEmpty() || !object.value(QStringLiteral("ok")).toBool()) {
+      if (automatic && status == 401) QFile::remove(loginPath());
+      if (automatic && (status == 0 || status >= 500)) m_session_retry.start();
       setBusy(false);
       setStatusText(error.isEmpty() ? QStringLiteral("Sign-in failed") : error);
       return;
     }
-    const auto account = object.value(QStringLiteral("account")).toObject();
-    m_account_name = account.value(QStringLiteral("displayName")).toString(
-        account.value(QStringLiteral("username")).toString());
-    m_authenticated = true;
-    emit statusChanged();
+    setAccount(object.value(QStringLiteral("account")).toObject());
+    saveSession();
+    if (!saveAccountData(loginPath(), QJsonDocument(QJsonObject{
+        {"username", username}, {"password", password}
+    }).toJson(QJsonDocument::Compact))) qWarning("Could not save FleetControl login locally");
     setBusy(false);
     refreshAccount();
   });
@@ -172,13 +308,20 @@ void FleetControlLte::clearSession() {
 
 void FleetControlLte::logout() {
   if (m_busy) return;
+  QSettings settings;
+  settings.setValue(provisioningDisabled, true);
+  settings.sync();
+  QFile::remove(loginPath());
   setBusy(true);
   request("POST", QStringLiteral("/api/logout"), {},
           [this](const QJsonObject&, int, const QString&) {
+    forgetSession();
     clearSession();
     setBusy(false);
     setStatusText(QStringLiteral("Signed out"));
   });
+  // Local sign-out takes effect immediately even if the server is unreachable.
+  forgetSession();
 }
 
 void FleetControlLte::refreshAccount() {

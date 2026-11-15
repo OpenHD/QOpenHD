@@ -466,7 +466,7 @@ Settings {
     property bool control_widget_use_fc_channels: true
 
     property bool show_gpio: false
-    property int selected_map_provider: 0
+    property int selected_map_provider: -1
     property int selected_map_variant: 0
 
     property bool show_vibration: false

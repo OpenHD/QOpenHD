@@ -13,6 +13,8 @@ FocusScope {
  readonly property var builder:typeof _offlineMapBuilder!=="undefined"?_offlineMapBuilder:null
  readonly property var tiles:typeof _offlineMapTiles!=="undefined"?_offlineMapTiles:null
  readonly property var sourceMap:mapTarget?mapTarget.map:null
+ readonly property int providerIndex:settings.selected_map_provider>=0?settings.selected_map_provider
+                                      :tiles&&tiles.vectorStyleUrl?2:0
  readonly property bool wide:width>=1100
  readonly property real leftWidth:wide?Math.floor((pageScroll.width-12)*0.56):pageScroll.width
  readonly property real rightWidth:wide?pageScroll.width-leftWidth-12:pageScroll.width
@@ -162,7 +164,7 @@ FocusScope {
        width:(sourceCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
        Text {text:qsTr("Map Provider");color:settings_form.primaryText;font.family:Typography.family;font.pixelSize:Typography.body;font.bold:true}
 
-       CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;objectName:"mapProvider";optionIcon:"\uf279";width:parent.width;height:Typography.controlHeight;model:root.mapTarget?root.mapTarget.pluginModel:[];textRole:"description";currentIndex:settings.selected_map_provider;onActivated:settings.selected_map_provider=currentIndex}
+       CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;objectName:"mapProvider";optionIcon:"\uf279";width:parent.width;height:Typography.controlHeight;model:root.mapTarget?root.mapTarget.pluginModel:[];textRole:"description";currentIndex:root.providerIndex;onActivated:settings.selected_map_provider=currentIndex}
       }
       Column {
        width:(sourceCard.contentWidth-(parent.columns-1)*parent.spacing)/parent.columns;spacing:6
@@ -170,7 +172,7 @@ FocusScope {
 
        CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;
         id:mapStyle;objectName:"mapStyle";width:parent.width;height:Typography.controlHeight;textRole:"description"
-        model:root.mapTarget&&root.mapTarget.activeProviderName==="mapboxgl"?root.mapTarget.supportedMapTypes:[{description:settings.selected_map_provider===2?qsTr("Offline"):settings.selected_map_provider===1?qsTr("Streets"):qsTr("Standard (default)")}]
+        model:root.mapTarget&&root.mapTarget.activeProviderName==="mapboxgl"?root.mapTarget.supportedMapTypes:[{description:root.providerIndex===2?qsTr("Offline"):root.providerIndex===1?qsTr("Streets"):qsTr("Standard (default)")}]
         enabled:root.mapTarget&&root.mapTarget.activeProviderName==="mapboxgl"&&count>0
         currentIndex:enabled?root.mapTarget.activeMapTypeIndex:0;onActivated:settings.selected_map_variant=currentIndex
        }
@@ -245,7 +247,7 @@ FocusScope {
       }
       Rectangle {
        anchors.right:parent.right;anchors.top:parent.top;anchors.margins:8;width:Math.min(parent.width-75,providerInfo.implicitWidth+18);height:providerInfo.implicitHeight+14;radius:6;color:"#df071b2a";visible:!root.selecting
-       Text {id:providerInfo;anchors.centerIn:parent;text:qsTr("Provider: %1").arg(settings.selected_map_provider===2?"OpenHD Offline":settings.selected_map_provider===1?"Mapbox":"OpenStreetMap")+"\n"+qsTr("Style: %1").arg(mapStyle.currentText);color:"white";font.family:Typography.family;font.pixelSize:Typography.helper}
+       Text {id:providerInfo;anchors.centerIn:parent;text:qsTr("Provider: %1").arg(root.providerIndex===2?"OpenHD Offline":root.providerIndex===1?"Mapbox":"OpenStreetMap")+"\n"+qsTr("Style: %1").arg(mapStyle.currentText);color:"white";font.family:Typography.family;font.pixelSize:Typography.helper}
       }
      }
 
@@ -257,16 +259,27 @@ FocusScope {
      Flow {Layout.fillWidth:true;Layout.preferredWidth:offlineCard.contentWidth;Layout.preferredHeight:implicitHeight;spacing:10
       CompactLinkComboBox {topInset:0;bottomInset:0;font.pixelSize:Typography.body;id:offlinePackages;objectName:"offlinePackages";optionIcon:"\uf279";width:offlineCard.contentWidth>600?Math.max(180,offlineCard.contentWidth-355):offlineCard.contentWidth;height:Typography.controlHeight;model:root.tiles?root.tiles.packages:[];textRole:"name";enabled:count>0}
       MapActionButton {objectName:"jumpToOfflineMap";text:qsTr("Jump to map");iconText:"\uf35d";enabled:offlinePackages.currentIndex>=0&&!!root.mapTarget;onClicked:{root.mapTarget.jumpToOfflineMap(root.tiles.packages[offlinePackages.currentIndex]);root.refreshPreview()}}
-      MapActionButton {objectName:"prepareOfflineMap";text:qsTr("Create offline map");iconText:"\uf019";primary:true;enabled:!!root.builder&&!root.busy;onClicked:root.beginSelection()}
+      MapActionButton {text:qsTr("Open map folder");iconText:"\uf07c";enabled:!!root.tiles;onClicked:Qt.openUrlExternally(root.tiles.mapDirectory())}
+      MapActionButton {text:qsTr("Reload maps");iconText:"\uf2f1";enabled:!!root.tiles;onClicked:{
+        if (root.providerIndex !== 2) root.tiles.reload()
+        if (root.mapTarget) root.mapTarget.configure()
+        root.refreshPreview()
+      }}
+     }
+     Text {
+      Layout.preferredWidth:offlineCard.contentWidth;wrapMode:Text.WordWrap;color:settings_form.secondaryText
+      font.family:Typography.family;font.pixelSize:Typography.helper
+      text:qsTr("Download a regional map in ImageWriter or copy a Shortbread MBTiles file into the map folder.")
      }
      Rectangle {
+      visible:settings_form.showDeveloperSettings===true
       Layout.fillWidth:true;implicitHeight:creationBody.implicitHeight+28;radius:9;color:"transparent";border.color:settings_form.lineColor
       Column {
        id:creationBody;x:14;y:14;width:parent.width-28;spacing:12
        RowLayout {width:parent.width;spacing:12
         Text {text:"\uf279";font.family:"Font Awesome 5 Free";font.pixelSize:Typography.sectionIcon;color:settings_form.accentColor}
         ColumnLayout {Layout.fillWidth:true;spacing:2
-         Text {text:qsTr("Create Offline Map");font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true;color:settings_form.primaryText}
+         Text {text:qsTr("Create legacy raster map");font.family:Typography.family;font.pixelSize:Typography.sectionTitle;font.bold:true;color:settings_form.primaryText}
 
         }
        }

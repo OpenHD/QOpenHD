@@ -6,15 +6,21 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QRegularExpression>
 #include <QSet>
 #include <QStandardPaths>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QTcpSocket>
 #include <QNetworkReply>
 #include <QNetworkDiskCache>
 #include <QPointer>
 #include <QTimer>
 #include <QUrlQuery>
+#include <QUuid>
 
 #include <cstring>
 
@@ -24,6 +30,8 @@ constexpr char kMagic[8] = { 'G', 'L', 'D', 'M', 'A', 'P', '1', '\0' };
 QStringList packageDirectories()
 {
     QStringList paths;
+    const auto vectorDirectory = qEnvironmentVariable("OPENHD_MAP_PACKAGE_DIR");
+    if (!vectorDirectory.isEmpty()) paths << vectorDirectory;
     const auto configured = qEnvironmentVariable("GLIDE_MAP_PACKAGE_DIR");
     if (!configured.isEmpty()) paths << configured;
     // ImageWriter places selected ground-station packages on the Config partition.
@@ -63,9 +71,39 @@ OfflineMapTileProvider::OfflineMapTileProvider(QObject* parent)
     reload();
 }
 
+OfflineMapTileProvider::~OfflineMapTileProvider()
+{
+    clearPackages();
+}
+
 QString OfflineMapTileProvider::baseUrl() const
 {
     return QStringLiteral("http://127.0.0.1:%1/").arg(m_server.serverPort());
+}
+
+QString OfflineMapTileProvider::vectorStyleUrl() const
+{
+    for (const auto& package : m_packages) {
+        if (!package.databaseName.isEmpty())
+            return baseUrl() + QStringLiteral("vector/%1/style.json").arg(m_revision);
+    }
+    return {};
+}
+
+bool OfflineMapTileProvider::rasterAvailable() const
+{
+    for (const auto& package : m_packages)
+        if (package.databaseName.isEmpty()) return true;
+    return false;
+}
+
+QUrl OfflineMapTileProvider::mapDirectory() const
+{
+    const auto configured = qEnvironmentVariable("OPENHD_MAP_PACKAGE_DIR");
+    const QDir directory(configured.isEmpty()
+        ? QDir(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)).filePath("maps")
+        : configured);
+    return QDir().mkpath(directory.absolutePath()) ? QUrl::fromLocalFile(directory.absolutePath()) : QUrl();
 }
 
 // The OSM plugin is present even in the static Pi Qt kit, which omits Mapbox GL.
@@ -158,7 +196,8 @@ QVariantList OfflineMapTileProvider::packages() const
     for (const auto& p : m_packages)
         result.append(QVariantMap{{"name", p.name}, {"south", p.south}, {"west", p.west},
                                   {"north", p.north}, {"east", p.east},
-                                  {"minZoom", int(p.minZoom)}, {"maxZoom", int(p.maxZoom)}});
+                                  {"minZoom", int(p.minZoom)}, {"maxZoom", int(p.maxZoom)},
+                                  {"vector", !p.databaseName.isEmpty()}});
     return result;
 }
 
@@ -211,22 +250,86 @@ bool OfflineMapTileProvider::loadPackage(const QString& path, Package& package) 
     return !package.tiles.isEmpty();
 }
 
+bool OfflineMapTileProvider::loadVectorPackage(const QString& path, Package& package) const
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly) || file.read(16) != QByteArray("SQLite format 3\0", 16))
+        return false;
+    file.close();
+    const auto connection = QUuid::createUuid().toString();
+    QHash<QString, QString> metadata;
+    {
+        auto database = QSqlDatabase::addDatabase("QSQLITE", connection);
+        database.setConnectOptions("QSQLITE_OPEN_READONLY");
+        database.setDatabaseName(path);
+        if (database.open()) {
+            QSqlQuery query(database);
+            if (query.exec("SELECT name, value FROM metadata WHERE name IN "
+                           "('name','format','bounds','minzoom','maxzoom','json') LIMIT 32")) {
+                while (query.next()) metadata.insert(query.value(0).toString(), query.value(1).toString());
+            }
+            if (!query.exec("SELECT tile_data FROM tiles LIMIT 1") || !query.next()) metadata.clear();
+        }
+    }
+    const auto bounds = metadata.value("bounds").split(',');
+    bool minOk = false, maxOk = false;
+    const int minZoom = metadata.value("minzoom").toInt(&minOk);
+    const int maxZoom = metadata.value("maxzoom").toInt(&maxOk);
+    double coordinates[4] {};
+    bool boundsOk = bounds.size() == 4;
+    for (int index = 0; boundsOk && index < 4; ++index)
+        coordinates[index] = bounds[index].toDouble(&boundsOk);
+    QSet<QString> layers;
+    const auto tileJson = QJsonDocument::fromJson(metadata.value("json").toUtf8()).object();
+    for (const auto& layer : tileJson.value("vector_layers").toArray())
+        layers.insert(layer.toObject().value("id").toString());
+    if (metadata.value("format") != "pbf" || !layers.contains("streets") || !layers.contains("place_labels")
+        || !boundsOk || !(coordinates[0] >= -180 && coordinates[0] < coordinates[2] && coordinates[2] <= 180
+                          && coordinates[1] >= -90 && coordinates[1] < coordinates[3] && coordinates[3] <= 90)
+        || !minOk || !maxOk || minZoom < 0 || maxZoom < minZoom || maxZoom > 22) {
+        QSqlDatabase::removeDatabase(connection);
+        return false;
+    }
+    package.path = path;
+    package.databaseName = connection;
+    package.name = metadata.value("name").left(128);
+    if (package.name.isEmpty() || package.name == "Shortbread")
+        package.name = QFileInfo(path).completeBaseName();
+    package.west = coordinates[0];
+    package.south = coordinates[1];
+    package.east = coordinates[2];
+    package.north = coordinates[3];
+    package.minZoom = static_cast<quint8>(minZoom);
+    package.maxZoom = static_cast<quint8>(maxZoom);
+    return true;
+}
+
+void OfflineMapTileProvider::clearPackages()
+{
+    for (const auto& package : m_packages)
+        if (!package.databaseName.isEmpty()) QSqlDatabase::removeDatabase(package.databaseName);
+    m_packages.clear();
+}
+
 void OfflineMapTileProvider::reload()
 {
     const auto oldName = activePackageName();
-    m_packages.clear();
+    clearPackages();
     m_activePackage = -1;
+    ++m_revision;
     QSet<QString> seen;
     for (const auto& directory : packageDirectories()) {
         const QDir dir(directory);
         qInfo() << "Searching for OpenHD offline maps in" << dir.absolutePath();
-        for (const auto& info : dir.entryInfoList({ QStringLiteral("*.glidemap") }, QDir::Files | QDir::Readable)) {
+        for (const auto& info : dir.entryInfoList({QStringLiteral("*.mbtiles"), QStringLiteral("*.glidemap")},
+                                                  QDir::Files | QDir::Readable)) {
             const auto canonical = info.canonicalFilePath();
             if (canonical.isEmpty() || seen.contains(canonical)) continue;
             seen.insert(canonical);
             Package package;
-            if (loadPackage(canonical, package)) {
-                qInfo() << "Loaded OpenHD offline map" << package.name << canonical << package.tiles.size() << "tiles";
+            const bool vector = info.suffix().compare("mbtiles", Qt::CaseInsensitive) == 0;
+            if (vector ? loadVectorPackage(canonical, package) : loadPackage(canonical, package)) {
+                qInfo() << "Loaded OpenHD offline map" << package.name << canonical;
                 m_packages.push_back(std::move(package));
             } else {
                 qWarning() << "Ignored invalid OpenHD offline map" << canonical;
@@ -243,14 +346,58 @@ void OfflineMapTileProvider::setPosition(double latitude, double longitude)
     for (int index = 0; index < m_packages.size(); ++index) {
         const auto& candidate = m_packages[index];
         if (!candidate.contains(latitude, longitude)) continue;
-        if (best < 0 || candidate.maxZoom > m_packages[best].maxZoom
-            || (candidate.maxZoom == m_packages[best].maxZoom && candidate.area() < m_packages[best].area())) best = index;
+        if (best < 0) {
+            best = index;
+            continue;
+        }
+        const auto& current = m_packages[best];
+        const bool vector = !candidate.databaseName.isEmpty();
+        const bool currentVector = !current.databaseName.isEmpty();
+        if ((vector && !currentVector) || (vector == currentVector &&
+            (candidate.maxZoom > current.maxZoom ||
+             (candidate.maxZoom == current.maxZoom && candidate.area() < current.area())))) best = index;
     }
     if (best != m_activePackage) {
         m_activePackage = best;
         qInfo() << "Active OpenHD offline map:" << activePackageName();
         emit activePackageChanged();
     }
+}
+
+QByteArray OfflineMapTileProvider::vectorStyle() const
+{
+    QFile file(":/offline-vector/style.json");
+    if (!file.open(QIODevice::ReadOnly)) return {};
+    auto style = QJsonDocument::fromJson(file.readAll()).object();
+    const auto url = baseUrl();
+    int minZoom = 22, maxZoom = 0;
+    for (const auto& package : m_packages) {
+        if (package.databaseName.isEmpty()) continue;
+        minZoom = qMin(minZoom, int(package.minZoom));
+        maxZoom = qMax(maxZoom, int(package.maxZoom));
+    }
+    style.insert("glyphs", url + "vector/glyphs/{fontstack}/{range}.pbf");
+    style.insert("sources", QJsonObject{{"shortbread", QJsonObject{
+        {"type", "vector"}, {"minzoom", minZoom}, {"maxzoom", maxZoom},
+        {"tiles", QJsonArray{url + QStringLiteral("vector/%1/{z}/{x}/{y}.pbf").arg(m_revision)}}
+    }}});
+    return QJsonDocument(style).toJson(QJsonDocument::Compact);
+}
+
+QByteArray OfflineMapTileProvider::readVectorTile(int zoom, int x, int y) const
+{
+    const int tmsY = (1 << zoom) - 1 - y;
+    for (const auto& package : m_packages) {
+        if (package.databaseName.isEmpty() || zoom < package.minZoom || zoom > package.maxZoom) continue;
+        QSqlQuery query(QSqlDatabase::database(package.databaseName, false));
+        query.prepare("SELECT tile_data FROM tiles WHERE zoom_level=? AND tile_column=? AND tile_row=? "
+                      "AND length(tile_data) <= 4194304 LIMIT 1");
+        query.addBindValue(zoom);
+        query.addBindValue(x);
+        query.addBindValue(tmsY);
+        if (query.exec() && query.next()) return query.value(0).toByteArray();
+    }
+    return {};
 }
 
 QByteArray OfflineMapTileProvider::readTile(int zoom, int x, int y) const
@@ -276,16 +423,47 @@ void OfflineMapTileProvider::acceptConnections()
         socket->setProperty("request", QByteArray {});
         connect(socket, &QTcpSocket::readyRead, this, [this, socket] { consumeRequest(socket); });
         connect(socket, &QTcpSocket::disconnected, socket, &QObject::deleteLater);
+        QTimer::singleShot(5000, socket, &QTcpSocket::disconnectFromHost);
     }
 }
 
 void OfflineMapTileProvider::consumeRequest(QTcpSocket* socket)
 {
     auto request = socket->property("request").toByteArray() + socket->readAll();
+    if (request.size() > 8192) {
+        sendResponse(socket, 404, "Invalid tile request");
+        return;
+    }
     socket->setProperty("request", request);
     if (!request.contains("\r\n\r\n")) return;
+    const auto line = QString::fromLatin1(request.left(request.indexOf("\r\n")));
+    const auto vectorPrefix = QStringLiteral("GET /vector/%1/").arg(m_revision);
+    if (line.startsWith(vectorPrefix + "style.json HTTP/") && !vectorStyleUrl().isEmpty()) {
+        sendResponse(socket, 200, vectorStyle(), "application/json");
+        return;
+    }
+    static const QRegularExpression glyphPath("^GET /vector/glyphs/(?:OpenHD%20Sans|OpenHD Sans)/([0-9]{1,5}-[0-9]{1,5})\\.pbf HTTP/");
+    const auto glyph = glyphPath.match(line);
+    if (glyph.hasMatch()) {
+        QFile file(":/offline-vector/glyphs/" + glyph.captured(1) + ".pbf");
+        sendResponse(socket, 200, file.open(QIODevice::ReadOnly) ? file.readAll() : QByteArray{},
+                     "application/x-protobuf");
+        return;
+    }
+    static const QRegularExpression vectorPath("^(\\d{1,2})/(\\d{1,7})/(\\d{1,7})\\.pbf(?:\\?[^ ]*)? HTTP/");
+    if (line.startsWith(vectorPrefix)) {
+        const auto match = vectorPath.match(line.mid(vectorPrefix.size()));
+        if (match.hasMatch()) {
+            const int z = match.captured(1).toInt(), x = match.captured(2).toInt(), y = match.captured(3).toInt();
+            if (z <= 22 && x < (1 << z) && y < (1 << z)) {
+                const auto tile = readVectorTile(z, x, y);
+                sendResponse(socket, 200, tile, "application/x-protobuf", tile.startsWith("\x1f\x8b"));
+                return;
+            }
+        }
+    }
     static const QRegularExpression tilePath(QStringLiteral("^GET /([0-9]+)/([0-9]+)/([0-9]+)\\.png(?:\\?[^ ]*)? HTTP/"));
-    const auto match = tilePath.match(QString::fromLatin1(request.left(request.indexOf("\r\n"))));
+    const auto match = tilePath.match(line);
     if (!match.hasMatch()) {
         sendResponse(socket, 404, "Offline tile not found\n");
         return;
@@ -295,12 +473,14 @@ void OfflineMapTileProvider::consumeRequest(QTcpSocket* socket)
     else sendResponse(socket, 200, tile, "image/png");
 }
 
-void OfflineMapTileProvider::sendResponse(QTcpSocket* socket, int status, const QByteArray& body, const QByteArray& contentType)
+void OfflineMapTileProvider::sendResponse(QTcpSocket* socket, int status, const QByteArray& body,
+                                          const QByteArray& contentType, bool gzip)
 {
     const QByteArray reason = status == 200 ? "OK" : "Not Found";
     QByteArray response = "HTTP/1.1 " + QByteArray::number(status) + " " + reason + "\r\n"
         "Content-Type: " + contentType + "\r\n"
         "Content-Length: " + QByteArray::number(body.size()) + "\r\n"
+        + (gzip ? QByteArray("Content-Encoding: gzip\r\n") : QByteArray())
         + (status == 200 ? QByteArray("Cache-Control: public, max-age=604800\r\n")
                          : QByteArray("Cache-Control: no-store\r\n")) +
         "Connection: close\r\n\r\n" + body;

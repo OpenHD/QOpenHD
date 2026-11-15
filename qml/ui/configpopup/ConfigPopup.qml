@@ -76,7 +76,7 @@ Rectangle {
             AdvancedActionButton { text:qsTr("Configure / Stop");height:MenuTypography.controlHeight;onClicked:settings_form.openSimulator() }
         }
     }
-    property bool diagnosticsUnlocked: false
+    property bool diagnosticsUnlocked: advancedThemeSettings.diagnosticsUnlocked
     property int creditsStarClickCount: 0
     property bool updatingNavigation: false
     readonly property var navigationPageIds: {
@@ -99,7 +99,13 @@ Rectangle {
         creditsStarClickCount++
         if (creditsStarClickCount < 5) return
         updatingNavigation = true
-        diagnosticsUnlocked = true
+        advancedThemeSettings.diagnosticsUnlocked = true
+        if (typeof settings !== "undefined") {
+            settings.dev_show_whitelisted_params = true
+            settings.dev_show_advanced_button = true
+            settings.sync()
+        }
+        advancedThemeSettings.sync()
         navigation.currentIndex = navigationPageIds.indexOf(6)
         Qt.callLater(function() {
             navigation.currentIndex = navigationPageIds.indexOf(mainStackLayout.currentIndex)
@@ -117,6 +123,7 @@ Rectangle {
         id: advancedThemeSettings
         category: "AdvancedMenu"
         property bool darkMode: true
+        property bool diagnosticsUnlocked: false
     }
 
     function openSettings(showSystemStatus) {

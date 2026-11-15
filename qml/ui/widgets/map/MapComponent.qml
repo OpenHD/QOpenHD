@@ -110,7 +110,8 @@ Map {
         visibleRegion = QtPositioning.rectangle(QtPositioning.coordinate(region.north, region.west),
                                                QtPositioning.coordinate(region.south, region.east))
         // Older installed packages may not contain the overview zooms.
-        zoomLevel = Math.max(region.minZoom || 0, Math.min(region.maxZoom || maximumZoomLevel, zoomLevel))
+        var maxZoom = region.vector ? maximumZoomLevel : region.maxZoom || maximumZoomLevel
+        zoomLevel = Math.max(region.minZoom || 0, Math.min(maxZoom, zoomLevel))
         pendingRegion = null
     }
 

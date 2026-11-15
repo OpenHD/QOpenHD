@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/offline-vector">
+        <file alias="style.json">offline-vector/style.json</file>
+        <file alias="glyphs/0-255.pbf">offline-vector/glyphs/0-255.pbf</file>
+        <file alias="glyphs/256-511.pbf">offline-vector/glyphs/256-511.pbf</file>
+        <file alias="glyphs/512-767.pbf">offline-vector/glyphs/512-767.pbf</file>
+        <file alias="glyphs/768-1023.pbf">offline-vector/glyphs/768-1023.pbf</file>
+        <file alias="glyphs/1024-1279.pbf">offline-vector/glyphs/1024-1279.pbf</file>
+        <file alias="glyphs/8192-8447.pbf">offline-vector/glyphs/8192-8447.pbf</file>
+    </qresource>
+</RCC>

@@ -92,6 +92,7 @@ win32:CONFIG(lowmemrelease, debug|release) {
 }
 
 win32 {
+    LIBS += -lcrypt32
     ffmpeg_bin = $$PWD/build-libs-windows/ffmpeg/bin
     windows_deploy_script = $$PWD/tools/deploy_windows.ps1
     qt_install_prefix = $$[QT_INSTALL_PREFIX]
@@ -146,7 +147,7 @@ LinuxBuild {
 QT +=core quick qml gui \
     widgets network
 !contains(CONFIG, nxp_native):!contains(CONFIG, rockchip_native): QT += opengl
-QT += charts
+QT += charts sql
 #QT += gui-private
 #LIBS += Ldrm
 
@@ -266,7 +267,7 @@ HEADERS += \
     app/osd/aoagauge.h \
 
 
-RESOURCES += qml/qml.qrc \
+RESOURCES += app/map/offline-vector.qrc qml/qml.qrc \
              qml/qml_assets_fonts.qrc \
              qml/qml_assets_images.qrc \
              qml/qml_assets_credits.qrc \

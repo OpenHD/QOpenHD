@@ -122,6 +122,8 @@ Item {
     QtObject {
         id: _offlineMapTiles
         property bool available: true
+        property bool rasterAvailable: true
+        property string vectorStyleUrl: ""
         property int packageCount: 1
         property var packages: [{name: "Remote field", south: 49, west: 7, north: 50, east: 8, minZoom: 0, maxZoom: 14}]
         property string baseUrl: "http://127.0.0.1:9/"
@@ -219,8 +221,8 @@ Item {
             tryCompare(widget, "activeProviderName", "openhd_offline")
             compare(widget.map.activeMapType, "satellite")
             settings.selected_map_provider = -1
-            tryCompare(settings, "selected_map_provider", 0)
-            compare(settings.selected_map_provider, 0)
+            tryCompare(widget, "activeProviderName", "osm")
+            compare(settings.selected_map_provider, -1)
             verify(widget.map !== null)
             widget.createMap(widget.widgetInnerMap, "unavailable_test_provider")
             compare(widget.map, null)

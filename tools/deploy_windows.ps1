@@ -136,7 +136,7 @@ foreach ($qmlImport in @("Qt", "QtCharts", "QtGraphicalEffects", "QtLocation", "
     Copy-ExistingDirectory (Join-Path $qtQml $qmlImport) (Join-Path (Join-Path $TargetDir "qml") $qmlImport)
 }
 
-foreach ($required in @("geoservices/qtgeoservices_osm.dll", "sqldrivers/qsqlite.dll",
+foreach ($required in @("geoservices/qtgeoservices_osm.dll", "geoservices/qtgeoservices_mapboxgl.dll", "sqldrivers/qsqlite.dll",
                          "Qt5Sql.dll", "qml/QtLocation/qmldir", "qml/QtPositioning/qmldir")) {
     if (!(Test-Path -LiteralPath (Join-Path $TargetDir $required) -PathType Leaf)) {
         throw "Missing deployed map runtime: $required"

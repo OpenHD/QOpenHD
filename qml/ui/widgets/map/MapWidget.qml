@@ -74,11 +74,13 @@ MapWidgetForm {
     }
 
     function configure() {
-        if(settings.selected_map_provider < 0 || settings.selected_map_provider>=pluginModel.count){
+        if (settings.selected_map_provider < -1 || settings.selected_map_provider >= pluginModel.count) {
             // Fixup possibly invalid index
-            settings.selected_map_provider=0;
+            settings.selected_map_provider = -1
         }
-        var provider = pluginModel.get(settings.selected_map_provider)
+        var index = settings.selected_map_provider < 0
+                ? (_offlineMapTiles.vectorStyleUrl ? 2 : 0) : settings.selected_map_provider
+        var provider = pluginModel.get(index)
         activeProviderName = provider.name
         switch (provider.name) {
         case "mapboxgl":{
@@ -91,6 +93,18 @@ MapWidgetForm {
         }
         case "openhd_offline":{
             _offlineMapTiles.reload()
+            if (_offlineMapTiles.vectorStyleUrl && (!pendingOfflineRegion || pendingOfflineRegion.vector !== false)) {
+                activeProviderName = "openhd_vector"
+                createMap(widgetInnerMap, "openhd_vector")
+                if (map && !pendingOfflineRegion && followDrone && !demoFlight && !gpsPreviewRequested
+                        && !applicationWindow.referencePositionValid) {
+                    var vectorRegion = _offlineMapTiles.packages.find(function(region) { return region.vector })
+                    if (vectorRegion) map.showOfflineRegion(vectorRegion)
+                }
+                if (map || !_offlineMapTiles.rasterAvailable)
+                    break
+                activeProviderName = "openhd_offline"
+            }
             createMap(widgetInnerMap, "openhd_offline")
             break
         }
@@ -104,6 +118,24 @@ MapWidgetForm {
             map.showOfflineRegion(pendingOfflineRegion)
             pendingOfflineRegion = null
         }
+    }
+
+    function createVectorPlugin() {
+        var url = JSON.stringify(_offlineMapTiles.vectorStyleUrl)
+        for (var i = 0; i < 2; ++i) {
+            var engine = i === 0 ? "maplibre" : "mapboxgl"
+            var styleParameter = i === 0 ? "maplibre.map.styles" : "mapboxgl.mapping.additional_style_urls"
+            var parameters = 'PluginParameter { name: "' + styleParameter + '"; value: ' + url + ' }'
+            if (i === 1)
+                parameters += 'PluginParameter { name: "mapboxgl.api_base_url"; value: '
+                              + JSON.stringify(_offlineMapTiles.baseUrl) + ' }'
+            var plugin = Qt.createQmlObject('import QtLocation 5.15; Plugin { name: "' + engine + '"; '
+                                            + parameters + ' }', mapWidget)
+            if (plugin.supportsMapping())
+                return plugin
+            plugin.destroy()
+        }
+        return null
     }
 
     // Each map owns a fresh plugin: QtLocation cannot switch an existing map's plugin.
@@ -145,7 +177,8 @@ MapWidgetForm {
                         + 'PluginParameter { name: "osm.mapping.custom.datacopyright"; value: "OpenStreetMap contributors" }'
         }
         try {
-            mapPlugin = Qt.createQmlObject('import QtLocation 5.15; Plugin { name: '
+            mapPlugin = provider === "openhd_vector" ? createVectorPlugin()
+                : Qt.createQmlObject('import QtLocation 5.15; Plugin { name: '
                                           + JSON.stringify(provider === "openhd_offline" ? "osm" : provider)
                                           + '; ' + parameters + ' }', mapWidget)
             if (provider === "mapboxgl" && !mapPlugin.supportsMapping()) {
@@ -164,9 +197,10 @@ MapWidgetForm {
                     + JSON.stringify('<a href="https://www.mapbox.com/about/maps/">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a> <a href="https://apps.mapbox.com/feedback/">Improve this map</a>') + ' }'
                 mapPlugin = Qt.createQmlObject('import QtLocation 5.15; Plugin { name: "osm"; ' + rasterParameters + ' }', mapWidget)
             }
-            if (!mapPlugin.supportsMapping()) {
+            if (!mapPlugin || !mapPlugin.supportsMapping()) {
                 clearMap()
-                mapFailure = qsTr("Map provider unavailable. Choose another provider in map settings.")
+                mapFailure = provider === "openhd_vector" ? qsTr("This QOpenHD build needs a vector map renderer to open MBTiles.")
+                    : qsTr("Map provider unavailable. Choose another provider in map settings.")
                 return
             }
             var component = Qt.createComponent("MapComponent.qml")
@@ -196,19 +230,22 @@ MapWidgetForm {
                 var packages = _offlineMapTiles.packages
                 var minZoom = 30, maxZoom = 0
                 for (var i = 0; i < packages.length; ++i) {
+                    if (packages[i].vector === true) continue
                     minZoom = Math.min(minZoom, packages[i].minZoom)
                     maxZoom = Math.max(maxZoom, packages[i].maxZoom)
                 }
-                map.minimumZoomLevel = minZoom
-                map.maximumZoomLevel = maxZoom
-                map.zoomLevel = Math.max(minZoom, Math.min(maxZoom, settings.map_zoom))
+                if (minZoom <= maxZoom) {
+                    map.minimumZoomLevel = minZoom
+                    map.maximumZoomLevel = maxZoom
+                    map.zoomLevel = Math.max(minZoom, Math.min(maxZoom, settings.map_zoom))
+                }
             }
             map.expandRequested.connect(function() {
                 if (mapExpanded) configureSmallMap()
                 else configureLargeMap()
             })
             map.halfSizeRequested.connect(toggleHalfSizeMap)
-            map.gesture.enabled = true
+            if (map.gesture) map.gesture.enabled = true
             if (!followDrone && previousCenter && previousCenter.isValid)
                 map.center = previousCenter
         } catch (error) {
@@ -240,7 +277,8 @@ MapWidgetForm {
         }
         // OSM's built-in Qt 5 styles include retired HTTP endpoints. Our custom
         // style uses the explicit HTTPS (or localhost offline) endpoint above.
-        var index = activeProviderName === "mapboxgl" ? settings.selected_map_variant : types.length - 1
+        var index = activeProviderName === "openhd_vector" ? 0
+            : activeProviderName === "mapboxgl" ? settings.selected_map_variant : types.length - 1
         if (index < 0 || index >= types.length)
             index = 0
         activeMapTypeIndex = index
@@ -287,7 +325,7 @@ MapWidgetForm {
         if (mapExpanded == false) {
             resetAnchors()
             setAlignment(0, 0, 48, false, false, true)
-            if (map) map.gesture.enabled = true
+            if (map && map.gesture) map.gesture.enabled = true
             mapExpanded = true
             scale = 1
         }
@@ -306,7 +344,7 @@ MapWidgetForm {
         mapExpanded = false
         resizeSmallMap()
         loadAlignment()
-        if (map) map.gesture.enabled = true
+        if (map && map.gesture) map.gesture.enabled = true
     }
 
 }

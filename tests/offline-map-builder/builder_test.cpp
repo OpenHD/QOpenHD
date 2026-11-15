@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QImage>
 #include <QNetworkReply>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTemporaryDir>
@@ -170,6 +172,37 @@ int main(int argc, char** argv) {
     // 4 x 4 sections, one timed-out section replaced by two smaller sections.
     CHECK(requests - requestsBeforeRadius == 18);
     CHECK(combinedGeometryRequests - combinedBeforeRadius == 18);
-    std::cout << "Search, bounds, generation, GLDMAP1 playback, invalid data, and cancellation passed (" << requests << " fixture requests).\n";
+    const QString connection = "offline-vector-fixture";
+    {
+        auto database = QSqlDatabase::addDatabase("QSQLITE", connection);
+        database.setDatabaseName(output.filePath("shortbread.mbtiles"));
+        CHECK(database.open());
+        QSqlQuery query(database);
+        CHECK(query.exec("CREATE TABLE metadata(name TEXT, value TEXT)"));
+        CHECK(query.exec(R"SQL(INSERT INTO metadata VALUES
+            ('name','Vector map'),('format','pbf'),('bounds','7,49,9,51'),('minzoom','0'),('maxzoom','14'),
+            ('json','{"vector_layers":[{"id":"streets"},{"id":"place_labels"}]}'))SQL"));
+        CHECK(query.exec("CREATE TABLE tiles(zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB)"));
+        CHECK(query.exec("INSERT INTO tiles VALUES(1,1,1,X'1a00')"));
+    }
+    QSqlDatabase::removeDatabase(connection);
+    provider.reload();
+    provider.setPosition(50, 8);
+    CHECK(provider.activePackageName() == "Vector map");
+    CHECK(provider.rasterAvailable());
+    const QUrl style(provider.vectorStyleUrl());
+    CHECK(style.host() == "127.0.0.1");
+    auto* styleReply = network.get(QNetworkRequest(style));
+    CHECK(waitFor([&] { return styleReply->isFinished(); }));
+    CHECK(styleReply->error() == QNetworkReply::NoError);
+    CHECK(styleReply->readAll().contains(style.resolved(QUrl(".")).toEncoded()));
+    auto* vectorReply = network.get(QNetworkRequest(style.resolved(QUrl("1/1/0.pbf"))));
+    CHECK(waitFor([&] { return vectorReply->isFinished(); }));
+    CHECK(vectorReply->error() == QNetworkReply::NoError);
+    CHECK(vectorReply->readAll() == QByteArray::fromHex("1a00"));
+    auto* glyphReply = network.get(QNetworkRequest(QUrl(provider.baseUrl() + "vector/glyphs/OpenHD%20Sans/0-255.pbf")));
+    CHECK(waitFor([&] { return glyphReply->isFinished(); }));
+    CHECK(glyphReply->error() == QNetworkReply::NoError && !glyphReply->readAll().isEmpty());
+    std::cout << "Search, GLDMAP1 playback, MBTiles style and XYZ tiles, invalid data, and cancellation passed.\n";
     return 0;
 }
