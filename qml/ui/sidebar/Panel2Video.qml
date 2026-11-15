@@ -49,25 +49,40 @@ SideBarBasePanel{
         !(airPlatform >= 10 && airPlatform <= 13) &&
         _airCameraSettingsModel.param_int_exists("VIDEO_CODEC") &&
         _airCameraSettingsModel.get_ui_metadata("VIDEO_CODEC").cameraSupported === true
-    readonly property string intraRefreshParam: "MPP_IR_ENABLE"
-    readonly property bool hasIntraRefresh: cameraParamUpdates >= 0 &&
-        _ohdSystemAir.is_alive && _airCameraSettingsModel.has_params_fetched &&
-        _airCameraSettingsModel.param_int_exists(intraRefreshParam)
+    readonly property bool hasIntraRefresh: hasCameraSwitch("MPP_IR_ENABLE")
+    readonly property bool hasCenterRoi: hasCameraSwitch("MPP_ROI_ENABLE")
     readonly property bool hasRotation: cameraParamUpdates >= 0 &&
         _airCameraSettingsModel.param_int_exists("ROTATION_DEG") &&
         _airCameraSettingsModel.get_ui_metadata("ROTATION_DEG").cameraSupported === true
     readonly property bool hasFlip: cameraParamUpdates >= 0 &&
         _airCameraSettingsModel.param_int_exists("ROTATION_FLIP")
 
+    function hasCameraSwitch(parameterId) {
+        return cameraParamUpdates >= 0 && _ohdSystemAir.is_alive &&
+            _airCameraSettingsModel.has_params_fetched &&
+            _airCameraSettingsModel.param_int_exists(parameterId)
+    }
+
     function focusAfterStreamingFormat() {
         if (hasIntraRefresh) intra_refresh.takeover_control()
+        else focusAfterIntraRefresh()
+    }
+
+    function focusAfterIntraRefresh() {
+        if (hasCenterRoi) center_roi.takeover_control()
         else focusOrientation()
     }
 
-    function focusBeforeOrientation() {
+    function focusBeforeCenterRoi() {
         if (hasIntraRefresh) intra_refresh.takeover_control()
         else focusBeforeIntraRefresh()
     }
+
+    function focusBeforeOrientation() {
+        if (hasCenterRoi) center_roi.takeover_control()
+        else focusBeforeCenterRoi()
+    }
+
 
     function focusBeforeIntraRefresh() {
         if (hasStreamingFormat) streaming_format.takeover_control()
@@ -85,6 +100,49 @@ SideBarBasePanel{
         else if (hasArducamHdr) arducam_hdr.takeover_control();
         else edit_resolution_element.takeover_control();
     }
+
+    component CameraSwitch: ActionElement {
+        property string parameterId
+        signal previousRequested
+        signal nextRequested
+
+        readonly property bool enabledOnAir: videoPanel.cameraParamUpdates >= 0 &&
+            visible && _airCameraSettingsModel.get_cached_int(parameterId) === 1
+        m_displayed_value: enabledOnAir ? "ON" : "OFF"
+        inlineToggle: true
+
+        Accessible.role: Accessible.CheckBox
+        Accessible.name: m_title
+        Accessible.checked: enabledOnAir
+        Accessible.onPressAction: toggle()
+
+        function toggle() {
+            if (!visible || !videoPanel.hasCameraSwitch(parameterId)) return
+            if (_airCameraSettingsModel.ui_is_busy) {
+                _qopenhd.show_toast(qsTr("Busy, please try again later"))
+                return
+            }
+            _airCameraSettingsModel.try_set_param_int_async(parameterId, enabledOnAir ? 0 : 1, true)
+        }
+
+        onBase_joy_edit_element_clicked: toggle()
+        Keys.onPressed: (event) => {
+            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter ||
+                event.key === Qt.Key_Space || event.key === Qt.Key_Right) {
+                toggle()
+            } else if (event.key === Qt.Key_Up) {
+                previousRequested()
+            } else if (event.key === Qt.Key_Down) {
+                nextRequested()
+            } else if (event.key === Qt.Key_Left) {
+                sidebar.regain_control_on_sidebar_stack()
+            } else {
+                return
+            }
+            event.accepted = true
+        }
+    }
+
 
     Column {
         anchors.top: parent.top
@@ -177,48 +235,25 @@ SideBarBasePanel{
             onGoto_previous: edit_resolution_element.takeover_control()
             onGoto_next: videoPanel.focusAfterStreamingFormat()
         }
-        ActionElement {
+        CameraSwitch {
             id: intra_refresh
             objectName: "sidebarIntraRefresh"
+            parameterId: "MPP_IR_ENABLE"
             visible: videoPanel.hasIntraRefresh
-            readonly property bool refreshEnabled: videoPanel.cameraParamUpdates >= 0 &&
-                visible && _airCameraSettingsModel.get_cached_int(videoPanel.intraRefreshParam) === 1
             m_title: qsTr("Intra refresh")
-            m_displayed_value: refreshEnabled ? "ON" : "OFF"
-            inlineToggle: true
-
-            Accessible.role: Accessible.CheckBox
-            Accessible.name: m_title
-            Accessible.checked: refreshEnabled
-            Accessible.onPressAction: toggleRefresh()
-
-            function toggleRefresh() {
-                if (!visible || !videoPanel.hasIntraRefresh) return
-                if (_airCameraSettingsModel.ui_is_busy) {
-                    _qopenhd.show_toast(qsTr("Busy, please try again later"))
-                    return
-                }
-                _airCameraSettingsModel.try_set_param_int_async(videoPanel.intraRefreshParam,
-                                                                refreshEnabled ? 0 : 1, true)
-            }
-
-            onBase_joy_edit_element_clicked: toggleRefresh()
-            Keys.onPressed: (event) => {
-                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter ||
-                    event.key === Qt.Key_Space || event.key === Qt.Key_Right) {
-                    toggleRefresh()
-                } else if (event.key === Qt.Key_Up) {
-                    videoPanel.focusBeforeIntraRefresh()
-                } else if (event.key === Qt.Key_Down) {
-                    videoPanel.focusOrientation()
-                } else if (event.key === Qt.Key_Left) {
-                    sidebar.regain_control_on_sidebar_stack()
-                } else {
-                    return
-                }
-                event.accepted = true
-            }
+            onPreviousRequested: videoPanel.focusBeforeIntraRefresh()
+            onNextRequested: videoPanel.focusAfterIntraRefresh()
         }
+        CameraSwitch {
+            id: center_roi
+            objectName: "sidebarCenterRoi"
+            parameterId: "MPP_ROI_ENABLE"
+            visible: videoPanel.hasCenterRoi
+            m_title: qsTr("Center ROI")
+            onPreviousRequested: videoPanel.focusBeforeCenterRoi()
+            onNextRequested: videoPanel.focusOrientation()
+        }
+
         MavlinkChoiceElement2{
             id: rotation_degree
             visible: videoPanel.hasRotation

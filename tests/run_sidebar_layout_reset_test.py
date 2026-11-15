@@ -233,6 +233,48 @@ Item {
             backend.reject = false
             backend.update_count++
         }
+        function test_center_roi_switch() {
+            hudOverlayGrid.width = 1000; hudOverlayGrid.height = 600
+            var savedValues = backend.values
+            backend.values = ({RESOLUTION_FPS:720, VIDEO_CODEC:1, MPP_IR_ENABLE:1, ROTATION_FLIP:0})
+            backend.writes = []
+            backend.update_count++
+            sidebar.open_category(2)
+
+            var refresh = findChild(sidebar, "sidebarIntraRefresh")
+            var roi = findChild(sidebar, "sidebarCenterRoi")
+            var flip = findChild(sidebar, "ROTATION_FLIP")
+            verify(roi !== null)
+            compare(roi.visible, false)
+            backend.values.MPP_ROI_ENABLE = 1
+            backend.update_count++
+            tryCompare(roi, "visible", true)
+            compare(roi.m_displayed_value, "ON")
+
+            refresh.takeover_control()
+            keyClick(Qt.Key_Down)
+            verify(roi.activeFocus)
+            keyClick(Qt.Key_Down)
+            verify(flip.activeFocus)
+            flip.goto_previous()
+            verify(roi.activeFocus)
+            keyClick(Qt.Key_Return)
+            compare(backend.writes[0], ["MPP_ROI_ENABLE", 0])
+            tryCompare(roi, "m_displayed_value", "OFF")
+
+            delete backend.values.MPP_IR_ENABLE
+            backend.update_count++
+            findChild(sidebar, "VIDEO_CODEC").goto_next()
+            verify(roi.activeFocus)
+            keyClick(Qt.Key_Up)
+            verify(findChild(sidebar, "VIDEO_CODEC").activeFocus)
+            mouseClick(roi)
+            compare(backend.writes[1], ["MPP_ROI_ENABLE", 1])
+            tryCompare(roi, "m_displayed_value", "ON")
+            sidebar.close()
+            backend.values = savedValues
+            backend.update_count++
+        }
         function test_geometry_data() {
             return [{tag:"desktop",w:1280,h:720}, {tag:"short",w:800,h:280},
                     {tag:"phone",w:915,h:360}, {tag:"portrait",w:360,h:800},
