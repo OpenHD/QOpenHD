@@ -33,15 +33,8 @@ public:
     void paint(QQuickWindow *window,int rotation_degree);
     // adds a new frame to be picked up by the GL thread
     int queue_new_frame_for_display(AVFrame * src_frame, bool primaryStream=true);
-    // remoe the currently queued frame if there is one (be carefull to not forget that the
-    // GL thread can pick up a queued frame at any time).
-    void remove_queued_frame_if_avalable(bool primaryStream=true);
-    // If we switch from a decode method that requires OpenGL to a decode method
-    // that uses the HW composer, we need to become "transparent" again - or rather
-    // not draw any video with OpenGL, which will have the same effect
-    void clear_all_video_textures_next_frame(){
-        m_clear_all_video_textures_next_frame=true;
-    }
+    // Discard old frames now and release the GL texture on the render thread.
+    void clear_video_texture(bool primaryStream);
 private:
     std::array<float,3> m_preview_gain{{1.0f,1.0f,1.0f}};
     QSize m_viewportSize;
@@ -64,7 +57,9 @@ private:
     std::deque<QueuedFrame> primary_frames;
     std::mutex secondary_frames_mutex;
     std::deque<QueuedFrame> secondary_frames;
-    AVFrame* take_next_decoded_frame(bool primaryStream=true);
+    bool primary_texture_needs_clear=false;
+    bool secondary_texture_needs_clear=false;
+    AVFrame* take_next_decoded_frame(bool primaryStream, bool& clear_texture);
 private:
     struct DisplayStats{
         int n_frames_rendered=0;
@@ -77,7 +72,6 @@ private:
       };
     DisplayStats m_display_stats;
     bool dev_draw_alternating_rgb_dummy_frames=false;
-    bool m_clear_all_video_textures_next_frame=false;
 };
 
 #endif // TEXTURERENDERER_H

@@ -1,6 +1,8 @@
 #include "avcodec_decoder.h"
 #include "qdebug.h"
 #include <QFileInfo>
+#include <QDir>
+#include <QFile>
 #include <iostream>
 #include <sstream>
 
@@ -21,6 +23,22 @@
 #ifdef QOPENHD_DESKTOP_HW_DECODE
 extern "C" {
 #include <libswscale/swscale.h>
+}
+#endif
+
+#ifdef IS_PLATFORM_RPI
+static bool uses_pi4_fkms_video_plane()
+{
+    QFile compatibility("/proc/device-tree/compatible");
+    if (!compatibility.open(QIODevice::ReadOnly) ||
+        !compatibility.readAll().split('\0').contains("brcm,bcm2711")) return false;
+    const QDir soc("/proc/device-tree/soc");
+    for (const auto& node : soc.entryList({"firmwarekms*"}, QDir::Dirs)) {
+        QFile status(soc.filePath(node + "/status"));
+        if (status.open(QIODevice::ReadOnly) && status.readAll().startsWith("okay"))
+            return true;
+    }
+    return false;
 }
 #endif
 
@@ -145,6 +163,12 @@ void AVCodecDecoder::timer_check_settings_changed_callback()
 
 void AVCodecDecoder::constant_decode()
 {
+    auto previous_codec = std::optional<QOpenHDVideoHelper::VideoCodec>{};
+#ifdef IS_PLATFORM_RPI
+    const bool pi4_fkms = uses_pi4_fkms_video_plane();
+#else
+    constexpr bool pi4_fkms = false;
+#endif
     while(!m_should_terminate){
         qDebug()<<"Start decode";
         const auto settings = QOpenHDVideoHelper::read_config_from_settings();
@@ -172,12 +196,16 @@ void AVCodecDecoder::constant_decode()
         if(is_rpi && settings.generic.dev_rpi_use_external_omx_decode_service){
             use_external_decode_service=true;
         }
-        // The legacy Raspberry Pi service receives H.264 on the primary port.
-        // Decode HEVC through the codec-aware in-process backend.
         if (is_rpi) {
-            use_external_decode_service = use_external_decode_service && m_primary_stream &&
-                                          stream_config.video_codec == QOpenHDVideoHelper::VideoCodecH264;
+            const bool h264 = stream_config.video_codec == QOpenHDVideoHelper::VideoCodecH264;
+            const bool h265 = stream_config.video_codec == QOpenHDVideoHelper::VideoCodecH265;
+            use_external_decode_service = m_primary_stream &&
+                ((pi4_fkms && (h264 || h265)) || (use_external_decode_service && h264));
         }
+        if (use_external_decode_service || previous_codec != stream_config.video_codec) {
+            TextureRenderer::instance().clear_video_texture(m_primary_stream);
+        }
+        previous_codec = stream_config.video_codec;
         if(use_external_decode_service){
             dirty_generic_decode_via_external_decode_service(settings);
         }else{

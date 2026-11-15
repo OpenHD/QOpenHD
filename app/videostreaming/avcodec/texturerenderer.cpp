@@ -57,16 +57,15 @@ void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
    if(window){
        window->beginExternalCommands();
    }
-   if(m_clear_all_video_textures_next_frame){
-       remove_queued_frame_if_avalable(true);
+   bool clear_primary_texture = false;
+   AVFrame* new_frame = take_next_decoded_frame(true, clear_primary_texture);
+   if (clear_primary_texture) {
        gl_video_renderer->clean_video_textures_gl();
        DecodingStatistcs::instance().set_n_renderer_dropped_frames(-1);
        DecodingStatistcs::instance().set_n_rendered_frames(-1);
        DecodingStatistcs::instance().set_decode_and_render_time("-1");
-       m_clear_all_video_textures_next_frame=false;
    }
    //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
-   AVFrame* new_frame=take_next_decoded_frame();
    if(new_frame!= nullptr){
      // Note : the update might free the frame, so we gotta store the timestamp before !
      const auto frame_pts=new_frame->pts;
@@ -106,7 +105,9 @@ void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
        secondary_viewport=m_secondaryViewport;
    }
    if(secondary_viewport.width()>0 && secondary_viewport.height()>0){
-       AVFrame* secondary_frame=take_next_decoded_frame(false);
+       bool clear_secondary_texture = false;
+       AVFrame* secondary_frame = take_next_decoded_frame(false, clear_secondary_texture);
+       if (clear_secondary_texture) m_secondary_gl_video_renderer->clean_video_textures_gl();
        if(secondary_frame!=nullptr){
            m_secondary_gl_video_renderer->update_texture_gl(secondary_frame);
        }
@@ -159,19 +160,23 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame* src_frame, bool primar
     return 0;
 }
 
-void TextureRenderer::remove_queued_frame_if_avalable(bool primaryStream)
+void TextureRenderer::clear_video_texture(bool primaryStream)
 {
     auto& mutex = primaryStream ? primary_frames_mutex : secondary_frames_mutex;
     auto& frames = primaryStream ? primary_frames : secondary_frames;
     std::lock_guard<std::mutex> lock(mutex);
     frames.clear();
+    (primaryStream ? primary_texture_needs_clear : secondary_texture_needs_clear) = true;
 }
 
-AVFrame* TextureRenderer::take_next_decoded_frame(bool primaryStream)
+AVFrame* TextureRenderer::take_next_decoded_frame(bool primaryStream, bool& clear_texture)
 {
     auto& mutex = primaryStream ? primary_frames_mutex : secondary_frames_mutex;
     auto& frames = primaryStream ? primary_frames : secondary_frames;
     std::lock_guard<std::mutex> lock(mutex);
+    auto& pending_clear = primaryStream ? primary_texture_needs_clear : secondary_texture_needs_clear;
+    clear_texture = pending_clear;
+    pending_clear = false;
     if (frames.empty()) return nullptr;
 
     auto frame = std::move(frames.front());
