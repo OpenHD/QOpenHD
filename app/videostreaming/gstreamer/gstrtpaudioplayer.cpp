@@ -47,6 +47,23 @@ QString quoteGst(QString value)
     value.replace('"', "\\\"");
     return QStringLiteral("\"") + value + QStringLiteral("\"");
 }
+
+const GValue *firstChannelPeak(const GValue *peaks)
+{
+    if (!peaks) return nullptr;
+    if (GST_VALUE_HOLDS_LIST(peaks)) {
+        return gst_value_list_get_size(peaks) ? gst_value_list_get_value(peaks, 0) : nullptr;
+    }
+
+    // The GStreamer level element still posts its peaks as a GLib GValueArray.
+    G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+    if (G_VALUE_HOLDS(peaks, g_value_array_get_type())) {
+        const auto *array = static_cast<const GValueArray *>(g_value_get_boxed(peaks));
+        return array && array->n_values ? &array->values[0] : nullptr;
+    }
+    G_GNUC_END_IGNORE_DEPRECATIONS
+    return nullptr;
+}
 }
 
 GstRtpAudioPlayer::GstRtpAudioPlayer(QObject *parent) : QObject(parent)
@@ -302,10 +319,11 @@ void GstRtpAudioPlayer::pollBus()
         } else {
             const GstStructure *structure = gst_message_get_structure(message);
             if (structure && gst_structure_has_name(structure, "level")) {
-                const GValue *peaks = gst_structure_get_value(structure, "peak");
-                if (peaks && GST_VALUE_HOLDS_LIST(peaks) && gst_value_list_get_size(peaks) > 0) {
-                    const double db = g_value_get_double(gst_value_list_get_value(peaks, 0));
-                    const int level = qBound(0, qRound((db + 60.0) * 100.0 / 60.0), 100);
+                const GValue *peak = firstChannelPeak(gst_structure_get_value(structure, "peak"));
+                if (peak && G_VALUE_HOLDS_DOUBLE(peak)) {
+                    const double db = g_value_get_double(peak);
+                    const double boundedDb = qIsNaN(db) ? -60.0 : qBound(-60.0, db, 0.0);
+                    const int level = qRound((boundedDb + 60.0) * 100.0 / 60.0);
                     const QString sourceName = QString::fromUtf8(GST_OBJECT_NAME(GST_MESSAGE_SRC(message)));
                     if (sourceName == QStringLiteral("input_level") && level != m_inputLevel) {
                         m_inputLevel = level;
