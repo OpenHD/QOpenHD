@@ -69,6 +69,7 @@ Item {
      property bool connected:true
      property bool radioSupported:true
      property bool rangesSupported:true
+     property bool luaSupported:true
      property var profiles: ({RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"})
      property string error:""
      property string rejectId:""
@@ -77,7 +78,10 @@ Item {
      property int base:0
      property int enabledValue:0
      function system_is_alive(){return connected}
-     function param_int_exists(id){return assignments[id]!==undefined?radioSupported:true}
+     function param_int_exists(id) {
+         if (id === "RC_SET_BASE") return luaSupported
+         return assignments[id] !== undefined ? radioSupported : true
+     }
      function param_string_exists(id){return rangesSupported && profiles[id]!==undefined}
      function get_cached_string(id){return profiles[id] || ""}
      function try_update_parameter_string(id,value){if(error)return error;if(id===rejectId)return "Rejected";var log=writes.slice();log.push({id:id,value:value});writes=log;var next=Object.assign({},profiles);next[id]=value;profiles=next;update_count++;return ""}
@@ -177,6 +181,39 @@ Item {
          editor=openEditor(6);chooseFunction(editor,-1);editor.apply()
          compare(_ohdSystemAirSettingsModel.assignments.BW_VIA_RC,0)
          compare(_ohdSystemAirSettingsModel.assignments.MCS_VIA_RC,8)
+     }
+     function test_assign_radio_functions_without_lua() {
+         const air = _ohdSystemAirSettingsModel
+         air.luaSupported = false
+         air.enabledValue = 0
+         air.update_count++
+         try {
+             verify(!findChild(loader.item, "joystickLuaControls").visible)
+             _ohdSystemAir.is_alive = false
+             const editor = openEditor(6)
+             const picker = findChild(editor.contentItem, "channelFunctionPicker")
+             verify(!picker.model.some(function(option) { return option.actionIndex === 0 }))
+             _ohdSystemAir.is_alive = true
+             verify(picker.model.some(function(option) { return option.actionIndex === 0 }))
+             editor.close()
+             tryCompare(editor, "opened", false)
+             const bandwidthEditor = openEditor(6)
+             chooseFunction(bandwidthEditor, 0)
+             bandwidthEditor.apply()
+             tryCompare(bandwidthEditor, "opened", false)
+             const mcsEditor = openEditor(7)
+             chooseFunction(mcsEditor, 1)
+             mcsEditor.apply()
+             tryCompare(mcsEditor, "opened", false)
+             compare(air.assignments.BW_VIA_RC, 6)
+             compare(air.assignments.MCS_VIA_RC, 7)
+             compare(air.writes.map(function(write) { return write.id }), ["BW_VIA_RC", "MCS_VIA_RC"])
+             compare(air.enabledValue, 0)
+         } finally {
+             _ohdSystemAir.is_alive = true
+             air.luaSupported = true
+             air.update_count++
+         }
      }
      function test_channel_functions_rejected_stale_and_armed(){
          var editor=openEditor(6)

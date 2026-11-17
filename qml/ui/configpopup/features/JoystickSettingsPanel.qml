@@ -25,7 +25,12 @@ Flickable {
  readonly property string savedMap:{revision;return available?groundParams.get_cached_string("RC_CHAN_MAP"):""}
  readonly property bool dirty:mapping.join(",")!==savedMap
  readonly property var freeBlocks:Mapping.freeBlocks(mapping)
- readonly property bool luaAvailable:{airRevision;return airParams&&airParams.system_is_alive()&&airParams.param_int_exists("RC_SET_BASE")&&airParams.param_int_exists("RC_OHD_CTRL")}
+ readonly property bool airConnected: {
+     airRevision
+     return airParams && (typeof _ohdSystemAir === "undefined" || _ohdSystemAir.is_alive)
+             && airParams.system_is_alive()
+ }
+ readonly property bool luaAvailable:{airRevision;return airConnected&&airParams.param_int_exists("RC_SET_BASE")&&airParams.param_int_exists("RC_OHD_CTRL")}
  readonly property int luaBase:{airRevision;return luaAvailable?airParams.get_cached_int("RC_SET_BASE"):0}
  property var mapping:[]
  property var values:[]
@@ -126,7 +131,7 @@ Flickable {
      }
      MapSettingsCard {
          objectName: "joystickLuaControls"
-         visible: settings_form.showAdvancedSettings
+         visible: settings_form.showAdvancedSettings && root.luaAvailable
          width:parent.width;height:implicitHeight;title:qsTr("OpenHD Lua channels");icon:"\uf121"
          subtitle:qsTr("Four consecutive channels for the transmitter's OpenHD Lua tool.")
          Column {

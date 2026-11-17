@@ -34,8 +34,8 @@ Item {
     property var controller
     readonly property bool compact: width < 900
     readonly property var actions: [
-        {rangeId:"RC_BW_RANGES", defaults:"1500:20,2100:40", legacy:"1300:10,1700:20,2100:40", values:[10,20,40], id:"BW_VIA_RC", name:qsTr("OpenHD channel width"), icon:"\uf03d", labels:["10 MHz","20 MHz","40 MHz"]},
-        {rangeId:"RC_MCS_RANGES", defaults:"1300:0,1700:2,2100:3", legacy:"1200:0,1400:1,1600:2,1800:3,2100:4", values:[0,1,2,3,4], id:"MCS_VIA_RC", name:qsTr("MCS (dynamic)"), icon:"\uf012", labels:["MCS 0","MCS 1","MCS 2","MCS 3","MCS 4"]},
+        {rangeId:"RC_BW_RANGES", defaults:"1500:20,2100:40", legacy:"1300:10,1700:20,2100:40", values:[10,20,40], id:"BW_VIA_RC", name:qsTr("Channel width (bandwidth)"), icon:"\uf03d", labels:["10 MHz","20 MHz","40 MHz"]},
+        {rangeId:"RC_MCS_RANGES", defaults:"1300:0,1700:2,2100:3", legacy:"1200:0,1400:1,1600:2,1800:3,2100:4", values:[0,1,2,3,4], id:"MCS_VIA_RC", name:qsTr("MCS"), icon:"\uf012", labels:["MCS 0","MCS 1","MCS 2","MCS 3","MCS 4"]},
         {rangeId:"RC_TX_RANGES", defaults:"1300:0,1700:1,2100:2", values:[0,1,2], id:"TXMODE_VIA_RC", name:qsTr("Transmit mode"), icon:"\uf519", labels:[qsTr("Off"),qsTr("Pit"),qsTr("Normal")]}
     ]
     readonly property int keyboardAction: actions.length
@@ -50,7 +50,7 @@ Item {
 
     function supported(action) {
         controller.airRevision
-        return controller.airParams && controller.airParams.system_is_alive() && controller.airParams.param_int_exists(action.id)
+        return controller.airConnected && controller.airParams.param_int_exists(action.id)
     }
     function assignment(action) {
         controller.airRevision
