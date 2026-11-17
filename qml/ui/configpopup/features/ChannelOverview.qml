@@ -52,6 +52,11 @@ Item {
         controller.airRevision
         return controller.airConnected && controller.airParams.param_int_exists(action.id)
     }
+    function radioAvailabilityMessage() {
+        if (!controller.airConnected) return qsTr("Connect the Air unit to assign this function.")
+        if (!controller.airParams.has_params_fetched) return qsTr("Waiting for Air settings…")
+        return qsTr("The connected Air unit does not report this function.")
+    }
     function assignment(action) {
         controller.airRevision
         return supported(action) ? controller.airParams.get_cached_int(action.id) : 0
@@ -81,11 +86,10 @@ Item {
     function valid(value) { return value >= 800 && value <= 2200 }
     function openChannel(channel) {
         editor.channel = channel
-        editor.originalAssignments = actions.map(function(action) { return root.assignment(action) })
-        editor.originalRanges = actions.map(function(action) { return root.rangeString(action) })
-        editor.ranges = editor.originalRanges.map(function(text) { return Ranges.parse(text) })
         editor.keyboardRanges = keyboardProfiles[channel] || Ranges.parse(defaultKeyboardRanges)
-        editor.selectedAction = keyboardProfiles[channel] ? keyboardAction : editor.originalAssignments.indexOf(channel)
+        editor.waitingForAirSettings = !editor.airSettingsReady
+        editor.selectionEdited = false
+        editor.captureRadioSettings()
         editor.error = ""
         editor.savedChanges = false
         editor.open()
@@ -93,6 +97,14 @@ Item {
     Timer {
         interval: 100; running: root.visible; repeat: true; triggeredOnStart: true
         onTriggered: root.fcValues = root.fc && root.fc.is_alive && typeof root.fc.channelValues === "function" ? root.fc.channelValues() : []
+    }
+    Timer {
+        interval: 1500
+        repeat: true
+        triggeredOnStart: true
+        running: editor.opened && controller.airConnected
+                 && !controller.airParams.has_params_fetched
+        onTriggered: controller.airParams.ensure_parameters_available()
     }
 
     Column {
@@ -148,6 +160,18 @@ Item {
         property int channel: 1
         property var originalAssignments: []
         property int selectedAction: -1
+        property bool selectionEdited: false
+        property bool waitingForAirSettings: false
+        readonly property bool airSettingsReady: controller.airConnected && controller.airParams.has_params_fetched
+        onAirSettingsReadyChanged: {
+            if (opened && waitingForAirSettings && airSettingsReady) {
+                waitingForAirSettings = false
+                captureRadioSettings()
+            }
+        }
+        readonly property bool selectedRadioAvailable: selectedAction < 0
+                || selectedAction === root.keyboardAction
+                || root.supported(root.actions[selectedAction])
         readonly property var selected: root.actions.map(function(action, i) { return i === editor.selectedAction })
         property var ranges: []
         property var keyboardRanges: []
@@ -168,9 +192,18 @@ Item {
             radius: 18; color: settings_form.panelBackground; border.color: settings_form.lineColor
             Rectangle { x: 24; y: 0; width: parent.width - 48; height: 2; radius: 1; color: settings_form.accentColor }
         }
+        function captureRadioSettings() {
+            originalAssignments = root.actions.map(function(action) { return root.assignment(action) })
+            originalRanges = root.actions.map(function(action) { return root.rangeString(action) })
+            ranges = originalRanges.map(function(text) { return Ranges.parse(text) })
+            if (!selectionEdited)
+                selectedAction = root.keyboardProfiles[channel] ? root.keyboardAction : originalAssignments.indexOf(channel)
+        }
         function selectAction(index) {
-            if (controller.armed || (index >= 0 && index !== root.keyboardAction && !root.supported(root.actions[index]))) return
+            if (controller.armed) return
+            selectionEdited = true
             selectedAction = index
+            error = ""
         }
         function editRanges(index, next) {
             if (controller.armed || !root.rangesSupported(root.actions[index])) return
@@ -178,6 +211,7 @@ Item {
         }
         function apply() {
             if (controller.armed) { error = qsTr("Disarm before changing RC settings."); return }
+            if (!selectedRadioAvailable) { error = root.radioAvailabilityMessage(); return }
             if (selectedAction === root.keyboardAction &&
                     (!Ranges.valid(keyboardRanges, root.keyboardOptions.map(function(option) { return option.value }))
                      || !keyboardRanges.some(function(range) { return range.value !== 0 }))) {
@@ -262,7 +296,8 @@ Item {
                                 controller.airRevision
                                 var options = [{text: qsTr("Unassigned"), actionIndex: -1}]
                                 for (var i=0; i<root.actions.length; ++i) {
-                                    if (!root.supported(root.actions[i]) && editor.selectedAction !== i) continue
+                                    var action = root.actions[i]
+                                    if (action.id === "TXMODE_VIA_RC" && !root.supported(action) && editor.selectedAction !== i) continue
                                     options.push({text: root.actions[i].name, actionIndex: i})
                                 }
                                 options.push({text: qsTr("Keyboard"), actionIndex: root.keyboardAction})
@@ -277,6 +312,14 @@ Item {
                             onActivated: {
                                 editor.selectAction(model[currentIndex].actionIndex)
                             }
+                        }
+                        Label {
+                            visible: !editor.selectedRadioAvailable
+                            width: parent.width
+                            wrapMode: Text.WordWrap
+                            color: settings_form.secondaryText
+                            font.pixelSize: Typography.helper
+                            text: visible ? root.radioAvailabilityMessage() : ""
                         }
                         ChannelRangeEditor {
                             visible: editor.selectedAction === root.keyboardAction
@@ -343,7 +386,7 @@ Item {
                     Layout.fillWidth: true
                     AdvancedActionButton { text: qsTr("Cancel"); onClicked: editor.close() }
                     Item { Layout.fillWidth: true }
-                    AdvancedActionButton { objectName: "channelApply"; text: qsTr("Apply"); primary: true; enabled: !controller.armed; onClicked: editor.apply() }
+                    AdvancedActionButton { objectName: "channelApply"; text: qsTr("Apply"); primary: true; enabled: !controller.armed && editor.selectedRadioAvailable; onClicked: editor.apply() }
                 }
             }
         }

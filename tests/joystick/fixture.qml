@@ -70,6 +70,8 @@ Item {
      property bool radioSupported:true
      property bool rangesSupported:true
      property bool luaSupported:true
+     property bool has_params_fetched:true
+     property int fetchRequests:0
      property var profiles: ({RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:"1300:0,1700:2,2100:3"})
      property string error:""
      property string rejectId:""
@@ -78,6 +80,7 @@ Item {
      property int base:0
      property int enabledValue:0
      function system_is_alive(){return connected}
+     function ensure_parameters_available(){fetchRequests++}
      function param_int_exists(id) {
          if (id === "RC_SET_BASE") return luaSupported
          return assignments[id] !== undefined ? radioSupported : true
@@ -192,7 +195,12 @@ Item {
              _ohdSystemAir.is_alive = false
              const editor = openEditor(6)
              const picker = findChild(editor.contentItem, "channelFunctionPicker")
-             verify(!picker.model.some(function(option) { return option.actionIndex === 0 }))
+             verify(picker.model.some(function(option) { return option.actionIndex === 0 }))
+             verify(picker.model.some(function(option) { return option.actionIndex === 1 }))
+             chooseFunction(editor, 0)
+             compare(findChild(editor.contentItem, "channelApply").enabled, false)
+             editor.apply()
+             compare(air.writes.length, 0)
              _ohdSystemAir.is_alive = true
              verify(picker.model.some(function(option) { return option.actionIndex === 0 }))
              editor.close()
@@ -212,6 +220,29 @@ Item {
          } finally {
              _ohdSystemAir.is_alive = true
              air.luaSupported = true
+             air.update_count++
+         }
+     }
+     function test_radio_editor_fetches_missing_air_parameters() {
+         const air = _ohdSystemAirSettingsModel
+         air.radioSupported = false
+         air.has_params_fetched = false
+         air.fetchRequests = 0
+         air.update_count++
+         try {
+             const editor = openEditor(6)
+             chooseFunction(editor, 1)
+             tryCompare(air, "fetchRequests", 1)
+             verify(!findChild(editor.contentItem, "channelApply").enabled)
+             air.radioSupported = true
+             air.update_count++
+             air.has_params_fetched = true
+             verify(findChild(editor.contentItem, "channelApply").enabled)
+             editor.apply()
+             compare(air.assignments.MCS_VIA_RC, 6)
+         } finally {
+             air.has_params_fetched = true
+             air.radioSupported = true
              air.update_count++
          }
      }
