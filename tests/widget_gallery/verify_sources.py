@@ -8,8 +8,8 @@ hud=(root/'qml/ui/HUDOverlayGrid.qml').read_text()
 registry=hud.split('readonly property var widgetPreviewTargets: ({',1)[1].split('    })',1)[0]
 sources=dict(re.findall(r'"([^"\n]+)": ([\w.]+)',registry))
 ids=set(re.findall(r'\bid:\s*(\w+)',hud))
-assert len(sources)==len(widgets)==57
+assert len(sources)==len(widgets)==58
 assert set(sources)=={w['key'] for w in widgets}
 assert all(target.split('.')[0] in ids for target in sources.values())
 assert all('preview' not in w and 'sample' not in w for w in widgets)
-print('PASS: all 57 gallery settings map to existing HUD widgets; no generic preview fixtures remain')
+print(f'PASS: all {len(widgets)} gallery settings map to existing HUD widgets; no generic preview fixtures remain')

@@ -113,6 +113,7 @@ BaseWidgetForm {
     property int detailPanelFontPixels: 13
 
     property bool dragging: false
+    signal widgetTapped()
 
     property bool isFullScreen: false
 
@@ -367,6 +368,8 @@ BaseWidgetForm {
                     widgetAction.open()
                 }
             }
+        } else if (!globalDragLock) {
+            widgetTapped()
         }
     }
 

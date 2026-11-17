@@ -102,6 +102,7 @@ https://github.com/OpenHD
         <file>ui/widgets/AdsbTrafficWidget.qml</file>
         <file>ui/widgets/AdsbOsdOverlay.qml</file>
         <file>ui/widgets/IPCameraControlWidget.qml</file>
+        <file>ui/widgets/FocusWidget.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
         <file>ui/elements/LanguageSelect.qml</file>
         <file>ui/elements/LanguageSelectForm.ui.qml</file>

@@ -71,5 +71,5 @@ int main(int argc,char** argv) {
  }
  delete object;UiSimulator::instance().stop();XParam::instance().terminate();CmdSender::instance().terminate();
  report<<"Checked "<<checked<<" previews in eight categories\n";
- return success && checked==57?0:1;
+ return success && checked==58?0:1;
 }

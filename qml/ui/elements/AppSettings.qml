@@ -510,6 +510,7 @@ Settings {
 
     property bool show_example_widget: false
     property bool show_ip_camera_control_widget: false
+    property bool show_focus_widget: false
 
     property bool show_distance_sensor_widget: false
     // (GPS) time

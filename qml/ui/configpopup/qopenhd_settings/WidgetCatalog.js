@@ -279,6 +279,13 @@ var widgets = [
     "developer": false
   },
   {
+    "key": "show_focus_widget",
+    "title": "Focus",
+    "description": "Trigger one-shot autofocus on a supported camera",
+    "category": "controls",
+    "developer": false
+  },
+  {
     "key": "show_gpio",
     "title": "GPIO",
     "description": "GPIO controls",

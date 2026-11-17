@@ -88,6 +88,7 @@ Item {
         "show_sidebar": sidebar,
         "qrenderstats_show": qRenderStatsWidget.item,
         "show_ip_camera_control_widget": ipCameraControlWidget,
+        "show_focus_widget": focusWidget,
         "show_gpio": gpioWidget,
         "show_txc_temp_air": airTempTxc,
         "show_txc_temp_gnd": gndTempTxc,
@@ -617,6 +618,9 @@ Item {
 
         IPCameraControlWidget {
             id: ipCameraControlWidget
+        }
+        FocusWidget {
+            id: focusWidget
         }
 
         DistanceSensorWidget{

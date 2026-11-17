@@ -44,6 +44,7 @@ Item {
         property bool show_sidebar: false
         property bool qrenderstats_show: false
         property bool show_ip_camera_control_widget: false
+        property bool show_focus_widget: false
         property bool show_gpio: false
         property bool show_txc_temp_air: false
         property bool show_txc_temp_gnd: false
@@ -83,23 +84,23 @@ Item {
             Catalog.widgets.forEach(function(w){settings[w.key]=false});gallery.revision++
         }
         function test_inventory_and_developer_gate(){
-            compare(Catalog.widgets.length,57)
+            compare(Catalog.widgets.length,58)
             compare(gallery.category,"flight")
             compare(gallery.sections.length,1)
             compare(visual(gallery,"widgetCategory_all"),null)
             compare(gallery.categories.length,7)
             var keys={};Catalog.widgets.forEach(function(w){verify(!keys[w.key],"Duplicate "+w.key);keys[w.key]=true;compare(typeof settings[w.key],"boolean")})
-            compare(gallery.availableWidgets.length,54)
+            compare(gallery.availableWidgets.length,55)
             compare(gallery.matches("developer").length,0)
             settings_form.showDeveloperSettings=true
-            compare(gallery.availableWidgets.length,57)
+            compare(gallery.availableWidgets.length,58)
             compare(gallery.matches("developer").length,2)
         }
         function test_video_debug_advanced_gate_and_toggle(){
             function videoEntries(){return gallery.availableWidgets.filter(function(w){return w.key==="show_video_pipeline_debug_widget"})}
             compare(videoEntries().length,0)
             settings_form.showAdvancedSettings=true
-            compare(gallery.availableWidgets.length,55)
+            compare(gallery.availableWidgets.length,56)
             compare(gallery.matches("developer").length,0)
             compare(videoEntries().length,1)
             gallery.category="link"
