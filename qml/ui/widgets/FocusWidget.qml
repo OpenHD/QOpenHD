@@ -17,12 +17,16 @@ BaseWidget {
         const airSettings = _ohdSystemAirSettingsModel
         airSettings.update_count
         if (!_ohdSystemAir.is_alive || !airSettings.has_params_fetched) return false
+        if (airSettings.param_int_exists("CAM_AF_MASK") &&
+            (airSettings.get_cached_int("CAM_AF_MASK") & (1 << cameraIndex)) !== 0) return true
         return ["CAM_CTRL_ACTIVE", "SIYI_ACTIVE", "TOPOTEK_ACTIVE"].some(function(id) {
             return airSettings.param_int_exists(id) && airSettings.get_cached_int(id) === 1
         })
     }
 
-    visible: settings.show_focus_widget && settings.show_widgets && controlAvailable
+    // A selected widget stays discoverable while the camera is starting or offline.
+    visible: settings.show_focus_widget && settings.show_widgets
+    opacity: widgetGalleryPreview || controlAvailable ? 1.0 : 0.5
     activeFocusOnTab: visible
     Accessible.role: Accessible.Button
     Accessible.name: qsTr("Focus")
@@ -32,7 +36,11 @@ BaseWidget {
     onWidgetTapped: requestFocus()
 
     function requestFocus() {
-        if (!visible || widgetGalleryPreview || dragging || !controlAvailable) return
+        if (!visible || widgetGalleryPreview || dragging) return
+        if (!controlAvailable) {
+            _qopenhd.show_toast(qsTr("Autofocus is unavailable on the selected camera"))
+            return
+        }
         const queued = _ohdAction.camera_autofocus(cameraIndex)
         _qopenhd.show_toast(queued ? qsTr("Autofocus requested") : qsTr("Could not send autofocus request"))
     }
