@@ -410,25 +410,111 @@ Item {
          findChild(editor.contentItem,"rangeReset0").clicked();editor.apply()
          compare(_ohdSystemAirSettingsModel.profiles.RC_BW_RANGES,"1500:20,2100:40")
      }
-     function test_custom_mcs_values_and_five_areas(){
+     function test_mcs_defaults_add_remove_and_reopen(){
          var editor=openEditor(8)
+         // Existing custom values must not change merely by opening the editor.
          compare(Ranges.encode(editor.ranges[1]),"1300:0,1700:2,2100:3")
+         findChild(editor.contentItem,"rangeReset1").clicked()
+         compare(Ranges.encode(editor.ranges[1]),"1300:0,1700:1,2100:2")
+         var rangeEditor=findChild(editor.contentItem,"channelRangeEditor1")
+         var add=findChild(editor.contentItem,"rangeAdd1")
+         var remove=findChild(editor.contentItem,"rangeRemove1")
+         compare(add.text,"+ Add MCS Level")
+         for(var i=0;i<3;i++) {rangeEditor.selectedArea=i;verify(remove.enabled)}
+         add.clicked()
+         compare(Ranges.encode(editor.ranges[1]),"1200:0,1500:1,1800:2,2100:3")
+         add.clicked()
+         compare(Ranges.encode(editor.ranges[1]),"1140:0,1380:1,1620:2,1860:3,2100:4")
+         verify(!add.enabled);add.clicked();compare(editor.ranges[1].length,5)
+         var expected=Ranges.encode(editor.ranges[1]);editor.apply()
+         compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,expected)
+         // Recreate the page: profiles are read from the persistent Air parameter, not page state.
+         loader.active=false;loader.active=true;tryCompare(loader,"status",Loader.Ready)
+         editor=openEditor(8)
+         compare(Ranges.encode(editor.ranges[1]),expected)
+         rangeEditor=findChild(editor.contentItem,"channelRangeEditor1")
+         rangeEditor.selectedArea=3
+         findChild(editor.contentItem,"rangeRemove1").clicked()
+         compare(Ranges.encode(editor.ranges[1]),"1200:0,1500:1,1800:2,2100:4")
+         rangeEditor.selectedArea=3
+         findChild(editor.contentItem,"rangeRemove1").clicked()
+         compare(Ranges.encode(editor.ranges[1]),"1300:0,1700:1,2100:2")
+         rangeEditor.selectedArea=0
+         findChild(editor.contentItem,"rangeRemove1").clicked()
+         compare(Ranges.encode(editor.ranges[1]),"1500:1,2100:2")
+         findChild(editor.contentItem,"rangeRemove1").clicked()
+         compare(Ranges.encode(editor.ranges[1]),"2100:2")
+         verify(!findChild(editor.contentItem,"rangeRemove1").enabled)
+         editor.apply()
+         editor=openEditor(8)
+         compare(Ranges.encode(editor.ranges[1]),"2100:2")
+     }
+     function test_legacy_mcs_profiles_preserved_data(){
+         return [
+             {tag:"five",profile:"1200:0,1400:1,1600:2,1800:3,2100:4"},
+             {tag:"custom",profile:"1300:1,1700:3,2100:4"},
+             {tag:"single",profile:"2100:4"},
+             {tag:"nonuniform",profile:"900:4,901:2,1400:0,2099:3,2100:1"}
+         ]
+     }
+     function test_legacy_mcs_profiles_preserved(data){
+         _ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:data.profile}
+         _ohdSystemAirSettingsModel.update_count++
+         var editor=openEditor(8)
+         compare(Ranges.encode(editor.ranges[1]),data.profile)
+         editor.apply()
+         compare(_ohdSystemAirSettingsModel.writes.length,0)
+         compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,data.profile)
+     }
+     function test_mcs_distribution_boundaries(){
+         var ranges=Ranges.parse("1300:0,1700:1,2100:2")
+         for(var count=3;count<=5;count++) {
+             compare(ranges.length,count)
+             verify(Ranges.valid(ranges,[0,1,2,3,4]))
+             compare(ranges[ranges.length-1].upper,2100)
+             var low=900, widths=[]
+             for(var i=0;i<ranges.length;i++) {widths.push(ranges[i].upper-low+1);low=ranges[i].upper+1}
+             verify(Math.max.apply(null,widths)-Math.min.apply(null,widths)<=1)
+             for(var j=0;j<ranges.length;j++) {
+                 var reduced=Ranges.removeMcsLevel(ranges,j)
+                 compare(reduced.length,count-1)
+                 verify(Ranges.valid(reduced,[0,1,2,3,4]))
+                 verify(!reduced.some(function(range) {return range.value===j}))
+             }
+             ranges=Ranges.addMcsLevel(ranges)
+         }
+     }
+     function test_empty_mcs_profile_uses_defaults_and_custom_values_remain_editable(){
+         _ohdSystemAirSettingsModel.profiles={RC_BW_RANGES:"1500:20,2100:40",RC_MCS_RANGES:""}
+         _ohdSystemAirSettingsModel.update_count++
+         var editor=openEditor(8)
+         compare(Ranges.encode(editor.ranges[1]),"1300:0,1700:1,2100:2")
          setAreaValue(editor,1,0,1);setAreaValue(editor,1,1,3);setAreaValue(editor,1,2,4)
          editor.apply()
          compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,"1300:1,1700:3,2100:4")
-         editor=openEditor(8)
+     }
+     function test_mcs_compact_layout_and_direct_save(){
+         scene.width=440;scene.height=480
+         var editor=openEditor(8)
+         findChild(editor.contentItem,"rangeReset1").clicked()
          var add=findChild(editor.contentItem,"rangeAdd1")
          add.clicked();add.clicked()
-         compare(editor.ranges[1].length,5);verify(!add.enabled)
-         for(var i=0;i<5;i++)setAreaValue(editor,1,i,i)
-         var expected=Ranges.encode(editor.ranges[1]);editor.apply()
-         compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,expected)
-         editor=openEditor(8)
-         for(var j=0;j<4;j++)findChild(editor.contentItem,"rangeRemove1").clicked()
-         compare(editor.ranges[1].length,1);compare(editor.ranges[1][0].upper,2100)
-         verify(!findChild(editor.contentItem,"rangeRemove1").enabled)
-         editor.apply()
-         verify(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES.indexOf("2100:")===0)
+         var scroll=findChild(editor.contentItem,"channelEditorScroll")
+         scroll.contentY=Math.max(0,scroll.contentHeight-scroll.height)
+         wait(50)
+         verify(add.width<=scroll.width)
+         verify(editor.width<=scene.width)
+         verify(editor.height<=scene.height)
+         var apply=findChild(editor.contentItem,"channelApply")
+         var position=apply.mapToItem(scene,0,0)
+         verify(position.y+apply.height<=scene.height)
+         grabImage(scene).save("build/mcs-levels-compact.png")
+         compare(apply.text,"Save")
+         compare(_ohdSystemAirSettingsModel.writes.length,0)
+         mouseClick(apply)
+         tryCompare(editor,"opened",false)
+         compare(_ohdSystemAirSettingsModel.profiles.RC_MCS_RANGES,"1140:0,1380:1,1620:2,1860:3,2100:4")
+         scene.width=1200;scene.height=800
      }
      function test_custom_ranges_rejected_stale_and_disconnected(){
          var editor=openEditor(6);chooseFunction(editor,0)

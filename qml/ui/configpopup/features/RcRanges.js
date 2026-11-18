@@ -69,6 +69,33 @@ function remove(ranges, index) {
     return next
 }
 
+// Inclusive bounds, shared endpoints and no gaps, including non-divisible counts.
+function distribute(ranges) {
+    var next = copy(ranges)
+    for (var i = 0; i < next.length; ++i)
+        next[i].upper = 900 + Math.round(1200 * (i + 1) / next.length)
+    return next
+}
+function nextMcsLevel(ranges) {
+    if (ranges.length >= 5) return -1
+    for (var value = 0; value <= 4; ++value)
+        if (!ranges.some(function(range) { return range.value === value })) return value
+    return -1
+}
+function addMcsLevel(ranges) {
+    var next = copy(ranges), value = nextMcsLevel(ranges)
+    if (value < 0) return next
+    next.push({upper: 2100, value: value})
+    return distribute(next)
+}
+function canRemoveMcsLevel(ranges, index) {
+    return ranges.length > 1 && index >= 0 && index < ranges.length
+}
+function removeMcsLevel(ranges, index) {
+    if (!canRemoveMcsLevel(ranges, index)) return copy(ranges)
+    return distribute(remove(ranges, index))
+}
+
 function keyboardOptions() {
     return [
         { value: 0, text: qsTr("No key") },

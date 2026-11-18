@@ -15,7 +15,7 @@
       "id": "RC_MCS_RANGES",
       "type": "string",
       "label": "RC MCS ranges",
-      "description": "MCS PWM areas: inclusive upper bound:value pairs, e.g. 1300:0,1700:2,2100:3. Covers 900-2100 us with 1-5 areas; values are MCS 0-4.",
+      "description": "MCS PWM areas: inclusive upper bound:value pairs, e.g. 1300:0,1700:1,2100:2. Covers 900-2100 us with 1-5 areas; values are MCS 0-4. The channel editor defaults to MCS 0, 1 and 2 and preserves saved profiles.",
       "group": "RC",
       "hidden": false,
       "readOnly": false,

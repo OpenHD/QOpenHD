@@ -35,7 +35,7 @@ Item {
     readonly property bool compact: width < 900
     readonly property var actions: [
         {rangeId:"RC_BW_RANGES", defaults:"1500:20,2100:40", legacy:"1300:10,1700:20,2100:40", values:[10,20,40], id:"BW_VIA_RC", name:qsTr("Channel width (bandwidth)"), icon:"\uf03d", labels:["10 MHz","20 MHz","40 MHz"]},
-        {rangeId:"RC_MCS_RANGES", defaults:"1300:0,1700:2,2100:3", legacy:"1200:0,1400:1,1600:2,1800:3,2100:4", values:[0,1,2,3,4], id:"MCS_VIA_RC", name:qsTr("MCS"), icon:"\uf012", labels:["MCS 0","MCS 1","MCS 2","MCS 3","MCS 4"]},
+        {rangeId:"RC_MCS_RANGES", defaults:"1300:0,1700:1,2100:2", legacy:"1200:0,1400:1,1600:2,1800:3,2100:4", values:[0,1,2,3,4], id:"MCS_VIA_RC", name:qsTr("MCS"), icon:"\uf012", labels:["MCS 0","MCS 1","MCS 2","MCS 3","MCS 4"]},
         {rangeId:"RC_TX_RANGES", defaults:"1300:0,1700:1,2100:2", values:[0,1,2], id:"TXMODE_VIA_RC", name:qsTr("Transmit mode"), icon:"\uf519", labels:[qsTr("Off"),qsTr("Pit"),qsTr("Normal")]}
     ]
     readonly property int keyboardAction: actions.length
@@ -195,7 +195,7 @@ Item {
         function captureRadioSettings() {
             originalAssignments = root.actions.map(function(action) { return root.assignment(action) })
             originalRanges = root.actions.map(function(action) { return root.rangeString(action) })
-            ranges = originalRanges.map(function(text) { return Ranges.parse(text) })
+            ranges = originalRanges.map(function(text, i) { return Ranges.parse(text === "" ? root.actions[i].defaults : text) })
             if (!selectionEdited)
                 selectedAction = root.keyboardProfiles[channel] ? root.keyboardAction : originalAssignments.indexOf(channel)
         }
@@ -360,6 +360,7 @@ Item {
                                     ChannelRangeEditor {
                                         width: parent.width
                                         actionIndex: actionSection.actionIndex
+                                        mcsLevels: actionSection.action.id === "MCS_VIA_RC"
                                         ranges: editor.ranges[actionIndex] || []
                                         options: actionSection.action.values.map(function(value, i) { return {text: actionSection.action.labels[i], value: value} })
                                         editable: root.rangesSupported(actionSection.action) && !controller.armed
@@ -386,7 +387,7 @@ Item {
                     Layout.fillWidth: true
                     AdvancedActionButton { text: qsTr("Cancel"); onClicked: editor.close() }
                     Item { Layout.fillWidth: true }
-                    AdvancedActionButton { objectName: "channelApply"; text: qsTr("Apply"); primary: true; enabled: !controller.armed && editor.selectedRadioAvailable; onClicked: editor.apply() }
+                    AdvancedActionButton { objectName: "channelApply"; text: qsTr("Save"); primary: true; enabled: !controller.armed && editor.selectedRadioAvailable; onClicked: editor.apply() }
                 }
             }
         }

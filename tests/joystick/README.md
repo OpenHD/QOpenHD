@@ -26,7 +26,7 @@ MAVLink release values for channels 1-8 and 9-18. Neither the UI fixture nor the
 backend mapping test substitutes for a connected joystick/ELRS test.
 
 The main-menu overview uses FC-reported PWM for OpenHD function ranges. Channel
-popups stage one Air radio function per channel until Apply. Coverage
+popups stage one Air radio function per channel until Save. Coverage
 includes Cancel, rejected writes, stale configuration, disconnection, armed-state
 protection and live range highlighting. MCS and channel width support custom areas on Air firmware exposing
 `RC_MCS_RANGES` and `RC_BW_RANGES`. Transmit mode and FHSS retain fixed thresholds.
@@ -35,7 +35,7 @@ sequential; a partial failure leaves the popup open and reports saved changes.
 
 The channel overview replaces the separate FC live-view card; joystick controls
 sit below the overview. The popup selects one function through a dropdown,
-shows connected range segments with live highlighting, and keeps Apply/Cancel
+shows connected range segments with live highlighting, and keeps Save/Cancel
 visible while its body scrolls. Layout coverage includes a 440 x 480 viewport.
 It reads the existing FC channel directly and never changes joystick mapping or
 detects an input. Choosing Unassigned clears the channel's OpenHD function;
@@ -45,8 +45,25 @@ Select an area, choose its output value, and edit its inclusive upper PWM bound.
 `+ Area` splits the selected area; Remove merges it with a neighbor. One to five
 areas cover 900–2100 µs continuously; the last upper bound stays at 2100. Values
 and order are independent, so users can select 10/20/40 MHz, MCS 1/3/4, or all
-MCS 0–4. Defaults are 20/40 MHz and MCS 0/2/3. Apply saves each complete profile
+MCS 0–4. Defaults are 20/40 MHz and MCS 0/1/2. Save persists each complete profile
 as a PARAM_EXT string (`upper:value,...`) before moving its channel assignment.
 Cancel discards drafts. Old firmware shows its original fixed profiles without
 editing. Tests cover splitting, removing, boundaries, custom values, defaults,
 rejected writes, stale profiles, and compatibility.
+
+For MCS, `+ Add MCS Level` appends the lowest unused supported level (normally
+MCS 3, then 4). Adding or removing a level distributes the whole 900–2100 µs
+span evenly. Any MCS level can be removed, down to one area covering the full span.
+Existing profiles, including one/two-area custom mappings, arbitrary values and
+five-area legacy thresholds, load unchanged. Defaults is an explicit reset;
+empty new profiles use the UI defaults. Non-empty Air profiles take precedence
+over UI defaults, including profiles from firmware with different defaults.
+Channel width and keyboard retain their existing split/merge controls.
+
+Save persists and applies the staged mapping directly, without a second dialog.
+Cancel discards the draft. Armed, disconnected and stale-setting guards run
+before the first write. The existing PARAM_EXT write saves on the Air unit
+(`WBLinkSettingsHolder::set_rc_ranges` calls `PersistentSettings::persist()`);
+reopening QOpenHD reads that device profile. The fixture recreates the page to
+check this reload path, but does not replace a physical Air/QOpenHD restart
+and radio-link test.
