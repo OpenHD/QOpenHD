@@ -293,6 +293,10 @@ Item {
         width: sidebar_icon_size_px()
         height: sidebar_icon_size_px()
         anchors.verticalCenter: parent.verticalCenter
+        // Leave the middle of the left edge clear for a landscape camera/notch.
+        // Compensate for the sidebar scale so the opener sits at 66% of the viewport.
+        anchors.verticalCenterOffset: Math.max(0, Math.min(viewportHeight * 0.16 / sidebar.scale,
+                                                          (viewportHeight / sidebar.scale - height) / 2 - 8))
         visible: m_stack_index < 0
         padding: 0
         background: null
