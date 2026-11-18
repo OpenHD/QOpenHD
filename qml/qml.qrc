@@ -333,6 +333,7 @@ https://github.com/OpenHD
         <file>ui/widgets/DevStreamingInfoText.qml</file>
         <file>ui/AnyParamBusyIndicator.qml</file>
         <file>ui/sidebar/SideBarMain.qml</file>
+        <file>ui/sidebar/SidebarEdgeTab.qml</file>
         <file>ui/sidebar/TriangleButton.qml</file>
         <file>ui/sidebar/MavlinkSwitch.qml</file>
         <file>ui/sidebar/InfoElement.qml</file>

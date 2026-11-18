@@ -142,6 +142,8 @@ Item {
     property int m_stack_index: -1;
     property bool m_ui_button_long_press_handled: false
     readonly property real m_sidebar_icon_scale: clamp_sidebar_icon_scale(settings.sidebar_show_icon_scale)
+    property color launcherColor: settings.value("sidebar_launcher_color", "#ffffff")
+    onLauncherColorChanged: saveColor("sidebar_launcher_color", launcherColor, "#ffffff")
 
     function clamp_sidebar_icon_scale(value){
         if(value < 0.7){
@@ -290,8 +292,8 @@ Item {
     AbstractButton {
         id: uiButton
         objectName: "sidebarLauncher"
-        width: sidebar_icon_size_px()
-        height: sidebar_icon_size_px()
+        width: Math.round(40 * m_sidebar_icon_scale)
+        height: Math.round(150 * m_sidebar_icon_scale)
         anchors.verticalCenter: parent.verticalCenter
         // Leave the middle of the left edge clear for a landscape camera/notch.
         // Compensate for the sidebar scale so the opener sits at 66% of the viewport.
@@ -302,13 +304,9 @@ Item {
         background: null
         activeFocusOnTab: true
         Accessible.name: qsTr("Open sidebar")
-        contentItem: Text {
-            text: "\uf054"
-            font.family: "Font Awesome 5 Free"
-            font.pixelSize: Math.round(uiButton.height * 0.5)
-            color: uiButton.activeFocus ? "#f2f6fb" : "grey"
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+        contentItem: SidebarEdgeTab {
+            tabColor: sidebar.launcherColor
+            emphasized: uiButton.activeFocus || uiButton.down
         }
         onPressed: m_ui_button_long_press_handled = false
         onClicked: if (!m_ui_button_long_press_handled) open_and_take_control()
@@ -347,7 +345,7 @@ Item {
 
             Text {
                 width: parent.width
-                text: qsTr("Sidebar Icon Size")
+                text: qsTr("Sidebar Button")
                 color: "white"
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter
@@ -355,10 +353,20 @@ Item {
 
             Text {
                 width: parent.width
-                text: qsTr("Long press icon to resize")
+                text: qsTr("Long press the tab to change its size and color")
+                wrapMode: Text.WordWrap
                 color: "#c7d4dd"
                 font.pixelSize: 12
                 horizontalAlignment: Text.AlignHCenter
+            }
+
+            AdvancedActionButton {
+                width: parent.width
+                text: qsTr("Color")
+                onClicked: {
+                    launcherColorPopup.open()
+                    launcherColorPicker.openCustomColor(sidebar, "launcherColor")
+                }
             }
 
             RowLayout {
@@ -402,6 +410,7 @@ Item {
                     text: qsTr("Reset")
                     onClicked: {
                         settings.sidebar_show_icon_scale = 1.0;
+                        sidebar.launcherColor = "#ffffff";
                     }
                 }
 
@@ -417,6 +426,30 @@ Item {
                     }
                 }
             }
+        }
+    }
+
+    Popup {
+        id: launcherColorPopup
+        parent: Overlay.overlay
+        width: Math.min(380, parent.width - 24)
+        height: Math.min(280, parent.height - 24)
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        modal: true
+        focus: true
+        padding: 0
+        onClosed: {
+            if (launcherColorPicker.visible) {
+                launcherColorPicker.cancelled()
+                launcherColorPicker.visible = false
+            }
+        }
+        contentItem: ColorPicker {
+            id: launcherColorPicker
+            currentColorType: ColorPicker.ColorType.CustomColor
+            showAlpha: false
+            onVisibleChanged: if (!visible) launcherColorPopup.close()
         }
     }
 
