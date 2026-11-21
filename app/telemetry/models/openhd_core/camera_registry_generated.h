@@ -67,6 +67,18 @@ static constexpr int X_CAM_TYPE_ROCK_3_IMX519 = 95;
 static constexpr int X_CAM_TYPE_ROCK_3_OHD_Jaguar = 96;
 static constexpr int X_CAM_TYPE_ROCK_3_VEYE = 97;
 static constexpr int X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY = 98;
+static constexpr int X_CAM_TYPE_OCHIN_CAM0_IMX219 = 102;
+static constexpr int X_CAM_TYPE_OCHIN_CAM1_IMX219 = 103;
+static constexpr int X_CAM_TYPE_OCHIN_CAM0_IMX708 = 104;
+static constexpr int X_CAM_TYPE_OCHIN_CAM1_IMX708 = 105;
+static constexpr int X_CAM_TYPE_OCHIN_CAM0_IMX519 = 106;
+static constexpr int X_CAM_TYPE_OCHIN_CAM1_IMX519 = 107;
+static constexpr int X_CAM_TYPE_OCHIN_CAM0_IMX462 = 108;
+static constexpr int X_CAM_TYPE_OCHIN_CAM1_IMX462 = 109;
+static constexpr int X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY = 112;
+static constexpr int X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY = 113;
+static constexpr int X_CAM_TYPE_ROCK_3_RK628_HDMI_IN = 100;
+static constexpr int X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE = 99;
 static constexpr int X_CAM_TYPE_NVIDIA_XAVIER_IMX577 = 101;
 static constexpr int X_CAM_TYPE_OPENIPC_GENERIC = 110;
 static constexpr int X_CAM_TYPE_QC_IMX577 = 120;
@@ -158,6 +170,18 @@ inline constexpr CameraTypeNameEntry kCameraTypeNameEntries[] = {
   {96, "ROCK_3_OHD_Jaguar"},
   {97, "ROCK_3_VEYE"},
   {98, "ROCK_3_IMX462_PIVARIETY"},
+  {102, "OCHIN_CAM0_IMX219"},
+  {103, "OCHIN_CAM1_IMX219"},
+  {104, "OCHIN_CAM0_IMX708"},
+  {105, "OCHIN_CAM1_IMX708"},
+  {106, "OCHIN_CAM0_IMX519"},
+  {107, "OCHIN_CAM1_IMX519"},
+  {108, "OCHIN_CAM0_IMX462"},
+  {109, "OCHIN_CAM1_IMX462"},
+  {112, "OCHIN_CAM0_IMX462_PIVARIETY"},
+  {113, "OCHIN_CAM1_IMX462_PIVARIETY"},
+  {100, "ROCK_3_RK628_HDMI_IN"},
+  {99, "ROCK_3_HDMI_IN_4LANE"},
   {101, "XAVIER_IMX577"},
   {110, "OPENIPC_X"},
   {120, "CORETRONIC IMX577"},
@@ -490,6 +514,7 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_5_OHD_Jaguar
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_HDMI_IN[] = {
   {1280, 720, 30},
   {1280, 720, 60},
+  {1920, 1080, 30},
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_OV5647[] = {
@@ -536,6 +561,70 @@ inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar
 };
 
 inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY[] = {
+  {1920, 1080, 60},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX219[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX219[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX708[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX708[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX519[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX519[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY[] = {
+  {1280, 720, 30},
+  {1920, 1080, 30},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_RK628_HDMI_IN[] = {
+  {1280, 720, 30},
+  {1280, 720, 60},
+  {1920, 1080, 30},
+  {1920, 1080, 60},
+};
+
+inline constexpr ResolutionEntry kCameraResolutions_X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE[] = {
+  {1280, 720, 30},
+  {1280, 720, 60},
+  {1920, 1080, 30},
   {1920, 1080, 60},
 };
 
@@ -732,6 +821,18 @@ inline constexpr CameraResolutionEntry kCameraResolutionEntries[] = {
   {X_CAM_TYPE_ROCK_3_IMX519, kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX519, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX519) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX519[0])},
   {X_CAM_TYPE_ROCK_3_OHD_Jaguar, kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_OHD_Jaguar[0])},
   {X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY, kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY[0])},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX219, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX219, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX219) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX219[0])},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX219, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX219, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX219) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX219[0])},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX708, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX708, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX708) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX708[0])},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX708, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX708, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX708) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX708[0])},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX519, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX519, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX519) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX519[0])},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX519, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX519, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX519) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX519[0])},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX462, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462[0])},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX462, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462[0])},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY[0])},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY, kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY, sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY) / sizeof(kCameraResolutions_X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY[0])},
+  {X_CAM_TYPE_ROCK_3_RK628_HDMI_IN, kCameraResolutions_X_CAM_TYPE_ROCK_3_RK628_HDMI_IN, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_RK628_HDMI_IN) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_RK628_HDMI_IN[0])},
+  {X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE, kCameraResolutions_X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE, sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE) / sizeof(kCameraResolutions_X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE[0])},
   {X_CAM_TYPE_NVIDIA_XAVIER_IMX577, kCameraResolutions_X_CAM_TYPE_NVIDIA_XAVIER_IMX577, sizeof(kCameraResolutions_X_CAM_TYPE_NVIDIA_XAVIER_IMX577) / sizeof(kCameraResolutions_X_CAM_TYPE_NVIDIA_XAVIER_IMX577[0])},
   {X_CAM_TYPE_QC_IMX577, kCameraResolutions_X_CAM_TYPE_QC_IMX577, sizeof(kCameraResolutions_X_CAM_TYPE_QC_IMX577) / sizeof(kCameraResolutions_X_CAM_TYPE_QC_IMX577[0])},
   {X_CAM_TYPE_QC_OV9282, kCameraResolutions_X_CAM_TYPE_QC_OV9282, sizeof(kCameraResolutions_X_CAM_TYPE_QC_OV9282) / sizeof(kCameraResolutions_X_CAM_TYPE_QC_OV9282[0])},
@@ -866,6 +967,47 @@ inline constexpr CameraUiEntry kManufacturer_A733_ALLWINNER_Cameras[] = {
 };
 
 inline constexpr ManufacturerEntry kManufacturer_A733_ALLWINNER = {"ALLWINNER", kManufacturer_A733_ALLWINNER_Cameras, sizeof(kManufacturer_A733_ALLWINNER_Cameras) / sizeof(kManufacturer_A733_ALLWINNER_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_OCHIN_CSI_Cameras[] = {
+  {X_CAM_TYPE_OCHIN_CAM0_IMX219, "IMX219 on CAM0"},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX219, "IMX219 on CAM1"},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX708, "IMX708 on CAM0"},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX708, "IMX708 on CAM1"},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX519, "IMX519 on CAM0"},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX519, "IMX519 on CAM1"},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX462, "IMX462 on CAM0"},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX462, "IMX462 on CAM1"},
+  {X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY, "IMX462 Pivariety on CAM0"},
+  {X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY, "IMX462 Pivariety on CAM1"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_OCHIN_CSI = {"OCHIN CSI", kManufacturer_OCHIN_CSI_Cameras, sizeof(kManufacturer_OCHIN_CSI_Cameras) / sizeof(kManufacturer_OCHIN_CSI_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_ROCK3_HDMI_Cameras[] = {
+  {X_CAM_TYPE_ROCK_3_HDMI_IN, "TC358743 (2 CSI lanes)"},
+  {X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE, "TC358743 (4 CSI lanes)"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_ROCK3_HDMI = {"HDMI to CSI", kManufacturer_ROCK3_HDMI_Cameras, sizeof(kManufacturer_ROCK3_HDMI_Cameras) / sizeof(kManufacturer_ROCK3_HDMI_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_ROCK3_RK628_Cameras[] = {
+  {X_CAM_TYPE_ROCK_3_RK628_HDMI_IN, "Radxa HDMI to CSI (RK628H)"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_ROCK3_RK628 = {"Radxa", kManufacturer_ROCK3_RK628_Cameras, sizeof(kManufacturer_ROCK3_RK628_Cameras) / sizeof(kManufacturer_ROCK3_RK628_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_ROCK3_HDMI_2LANE_Cameras[] = {
+  {X_CAM_TYPE_ROCK_3_HDMI_IN, "TC358743 (2 CSI lanes)"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_ROCK3_HDMI_2LANE = {"HDMI to CSI", kManufacturer_ROCK3_HDMI_2LANE_Cameras, sizeof(kManufacturer_ROCK3_HDMI_2LANE_Cameras) / sizeof(kManufacturer_ROCK3_HDMI_2LANE_Cameras[0])};
+
+inline constexpr CameraUiEntry kManufacturer_ROCK3_RPIF_Cameras[] = {
+  {X_CAM_TYPE_ROCK_3_OV5647, "OV5647"},
+  {X_CAM_TYPE_ROCK_3_IMX219, "IMX219"},
+};
+
+inline constexpr ManufacturerEntry kManufacturer_ROCK3_RPIF = {"Raspberry Pi", kManufacturer_ROCK3_RPIF_Cameras, sizeof(kManufacturer_ROCK3_RPIF_Cameras) / sizeof(kManufacturer_ROCK3_RPIF_Cameras[0])};
 
 inline constexpr CameraUiEntry kManufacturer_ROCK3_ARDUCAM_Cameras[] = {
   {X_CAM_TYPE_ROCK_3_IMX462, "IMX462"},
@@ -1050,6 +1192,9 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_
 };
 
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers[] = {
+  kManufacturer_ROCK3_HDMI,
+  kManufacturer_ROCK3_RK628,
+  kManufacturer_ROCK3_RPIF,
   kManufacturer_ROCK3_ARDUCAM,
   kManufacturer_ZERO3W_PIVARIETY,
   kManufacturer_IP_CAMERA,
@@ -1057,8 +1202,34 @@ inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RAD
   kManufacturer_DEBUG,
 };
 
+inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_RADXA_CM3_OCHIN_Manufacturers[] = {
+  kManufacturer_OCHIN_CSI,
+  kManufacturer_IP_CAMERA,
+  kManufacturer_USB,
+  kManufacturer_DEBUG,
+};
+
 inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3_Manufacturers[] = {
+  kManufacturer_ROCK3_HDMI,
+  kManufacturer_ROCK3_RPIF,
   kManufacturer_ROCK3_ARDUCAM,
+  kManufacturer_IP_CAMERA,
+  kManufacturer_USB,
+  kManufacturer_DEBUG,
+  kManufacturer_ZERO3W_PIVARIETY,
+};
+
+inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3568_RADXA_ROCK3_Manufacturers[] = {
+  kManufacturer_ROCK3_RPIF,
+  kManufacturer_ROCK3_HDMI_2LANE,
+  kManufacturer_USB,
+  kManufacturer_DEBUG,
+};
+
+inline constexpr ManufacturerEntry kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ROCK3C_Manufacturers[] = {
+  kManufacturer_ROCK3_RPIF,
+  kManufacturer_ROCK3_HDMI_2LANE,
+  kManufacturer_ROCK3_RK628,
   kManufacturer_IP_CAMERA,
   kManufacturer_USB,
   kManufacturer_DEBUG,
@@ -1141,7 +1312,10 @@ inline constexpr PlatformCameraChoicesEntry kPlatformCameraChoices[] = {
   {X_PLATFORM_TYPE_ALWINNER_X20, kPlatform_X_PLATFORM_TYPE_ALWINNER_X20_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_X20_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_X20_Manufacturers[0])},
   {X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z, kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ALWINNER_CUBIE_A7Z_Manufacturers[0])},
   {X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W, kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W_Manufacturers[0])},
+  {X_PLATFORM_TYPE_RADXA_CM3_OCHIN, kPlatform_X_PLATFORM_TYPE_RADXA_CM3_OCHIN_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_RADXA_CM3_OCHIN_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_RADXA_CM3_OCHIN_Manufacturers[0])},
   {X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3, kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3_Manufacturers[0])},
+  {X_PLATFORM_TYPE_ROCKCHIP_RK3568_RADXA_ROCK3, kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3568_RADXA_ROCK3_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3568_RADXA_ROCK3_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3568_RADXA_ROCK3_Manufacturers[0])},
+  {X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ROCK3C, kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ROCK3C_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ROCK3C_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ROCK3C_Manufacturers[0])},
   {X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A, kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A_Manufacturers[0])},
   {X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B, kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B_Manufacturers[0])},
   {X_PLATFORM_TYPE_X86, kPlatform_X_PLATFORM_TYPE_X86_Manufacturers, sizeof(kPlatform_X_PLATFORM_TYPE_X86_Manufacturers) / sizeof(kPlatform_X_PLATFORM_TYPE_X86_Manufacturers[0])},
@@ -1241,6 +1415,18 @@ using openhd::camera_registry::X_CAM_TYPE_ROCK_3_IMX519;
 using openhd::camera_registry::X_CAM_TYPE_ROCK_3_OHD_Jaguar;
 using openhd::camera_registry::X_CAM_TYPE_ROCK_3_VEYE;
 using openhd::camera_registry::X_CAM_TYPE_ROCK_3_IMX462_PIVARIETY;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM0_IMX219;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM1_IMX219;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM0_IMX708;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM1_IMX708;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM0_IMX519;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM1_IMX519;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM0_IMX462;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM1_IMX462;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM0_IMX462_PIVARIETY;
+using openhd::camera_registry::X_CAM_TYPE_OCHIN_CAM1_IMX462_PIVARIETY;
+using openhd::camera_registry::X_CAM_TYPE_ROCK_3_RK628_HDMI_IN;
+using openhd::camera_registry::X_CAM_TYPE_ROCK_3_HDMI_IN_4LANE;
 using openhd::camera_registry::X_CAM_TYPE_NVIDIA_XAVIER_IMX577;
 using openhd::camera_registry::X_CAM_TYPE_OPENIPC_GENERIC;
 using openhd::camera_registry::X_CAM_TYPE_QC_IMX577;

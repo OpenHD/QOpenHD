@@ -25,6 +25,9 @@ static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A = 21;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_B = 22;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RV1126 = 23;
 static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3 = 24;
+static constexpr int X_PLATFORM_TYPE_RADXA_CM3_OCHIN = 38;
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3568_RADXA_ROCK3 = 34;
+static constexpr int X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ROCK3C = 35;
 static constexpr int X_PLATFORM_TYPE_LUCKFOX_RV110X = 25;
 // 26 used to be X_PLATFORM_TYPE_ROCKCHIP_RV1103, merged with
 // X_PLATFORM_TYPE_LUCKFOX_RV110X now
@@ -69,6 +72,12 @@ static std::string x_platform_type_to_string(int platform_type) {
       return "RPI 5";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ZERO3W:
       return "RADXA ZERO3W";
+    case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_ROCK3C:
+      return "Radxa ROCK 3C";
+    case X_PLATFORM_TYPE_ROCKCHIP_RK3568_RADXA_ROCK3:
+      return "Radxa ROCK 3";
+    case X_PLATFORM_TYPE_RADXA_CM3_OCHIN:
+      return "Radxa CM3 on OCHIN";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3566_RADXA_CM3:
       return "RADXA CM3";
     case X_PLATFORM_TYPE_ROCKCHIP_RK3588_RADXA_ROCK5_A:
