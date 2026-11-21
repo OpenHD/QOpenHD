@@ -283,7 +283,7 @@ bool OfflineMapTileProvider::loadVectorPackage(const QString& path, Package& pac
     const auto tileJson = QJsonDocument::fromJson(metadata.value("json").toUtf8()).object();
     for (const auto& layer : tileJson.value("vector_layers").toArray())
         layers.insert(layer.toObject().value("id").toString());
-    if (metadata.value("format") != "pbf" || !layers.contains("streets") || !layers.contains("place_labels")
+    if (metadata.value("format") != "pbf" || !layers.contains("streets") || (!layers.contains("place_labels") && !layers.contains("street_labels"))
         || !boundsOk || !(coordinates[0] >= -180 && coordinates[0] < coordinates[2] && coordinates[2] <= 180
                           && coordinates[1] >= -90 && coordinates[1] < coordinates[3] && coordinates[3] <= 90)
         || !minOk || !maxOk || minZoom < 0 || maxZoom < minZoom || maxZoom > 22) {
