@@ -25,6 +25,7 @@ SOURCES += \
     app/telemetry/settings/improvedintsetting.cpp \
     app/telemetry/settings/improvedstringsetting.cpp \
     app/telemetry/MavlinkTelemetry.cpp \
+    app/telemetry/connection/lan_platform_discovery.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
     app/telemetry/models/fcmavlinksystem.cpp \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
@@ -63,6 +64,7 @@ HEADERS += \
     app/telemetry/settings/improvedintsetting.h \
     app/telemetry/settings/improvedstringsetting.h \
     app/telemetry/MavlinkTelemetry.h \
+    app/telemetry/connection/lan_platform_discovery.h \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \
     app/telemetry/models/fcmavlinkmissionitemsmodel.h \

@@ -26,6 +26,8 @@
 	<string>${IPHONEOS_DEPLOYMENT_TARGET}</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Optional camera overlay</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>QOpenHD discovers and connects to OpenHD units on your local network.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location is required for drone home position and map location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

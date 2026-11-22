@@ -13,6 +13,7 @@
 
 #include "connection/udp_connection.h"
 #include "connection/tcp_connection.h"
+#include "connection/lan_platform_discovery.h"
 #include "models/mavlinkmessagestatsmodel.h"
 
 /**
@@ -70,6 +71,7 @@ public:
     L_RO_PROP(bool,udp_localhost_mode_enabled,set_udp_localhost_mode_enabled,true)
     //
     L_RO_PROP(QString,telemetry_connection_status,set_telemetry_connection_status,"N/A");
+    L_RO_PROP(QVariantList,lan_platforms,set_lan_platforms,QVariantList{});
 
 private:
     // Called every time we get a mavlink message (from any system).
@@ -85,6 +87,7 @@ private:
     // timesync is handled extra independently
     void process_message_timesync(const mavlink_message_t &msg, int64_t received_us);
 private:
+    std::unique_ptr<LanPlatformDiscovery> m_lan_platform_discovery;
     std::unique_ptr<UDPConnection> m_udp_connection=nullptr;
     std::unique_ptr<TCPConnection> m_tcp_connection_wifi_hs=nullptr;
     std::unique_ptr<TCPConnection> m_tcp_connection_eth_hs=nullptr;

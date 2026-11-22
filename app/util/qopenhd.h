@@ -32,7 +32,6 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QSettings>
-#include "asyncping.h"
 #include "asynccommandrunner.h"
 
 #ifdef ENABLE_SPEECH
@@ -113,8 +112,6 @@ public:
     Q_INVOKABLE void sysctl_openhd(int task);
 
     Q_INVOKABLE bool is_valid_ip(QString ip);
-    Q_INVOKABLE bool ping_ip_async(QString ip) { return m_ping.start(ip); }
-    Q_INVOKABLE void cancel_ping() { m_ping.cancel(); }
     Q_INVOKABLE bool is_platform_rpi();
     Q_INVOKABLE bool is_platform_rock();
     Q_INVOKABLE bool is_platform_nxp();
@@ -146,12 +143,10 @@ public:
     void fontFamilyChanged(QString fontFamily);
     void debugMenuPreviewChanged();
     void debugMenuPreviewLevelChanged();
-    void pingFinished(QString ip, bool reachable);
     void systemActionFinished(QString id, QString result, bool success);
 private:
     const bool m_launchedFromQtCreator;
     std::atomic_int m_debugMenuPreviewLevel{0};
-     AsyncPing m_ping;
      AsyncCommandRunner m_commands;
      QQmlApplicationEngine *m_engine = nullptr;
      QTranslator m_translator;

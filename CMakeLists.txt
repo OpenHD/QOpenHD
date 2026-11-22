@@ -43,7 +43,6 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/util/qopenhd.cpp
     app/util/audioannouncements.cpp
     app/util/settingsbackup.cpp
-    app/util/asyncping.cpp
     app/util/asynccommandrunner.cpp
     app/util/qrenderstats.cpp
     app/map/offlinemaptileprovider.cpp
@@ -62,6 +61,7 @@ set(QOPENHD_SOURCE_FILES_LIST
     app/logging/logmessagesmodel.cpp
     #
     app/telemetry/MavlinkTelemetry.cpp
+    app/telemetry/connection/lan_platform_discovery.cpp
     app/telemetry/action/fcaction.cpp
     app/telemetry/action/fcmissionhandler.cpp
     app/telemetry/action/fcmsgintervalhandler.cpp
@@ -143,6 +143,7 @@ if(APPLE AND NOT IOS)
     target_compile_definitions(QOpenHDApp PRIVATE __macos__ __apple__)
     set_target_properties(QOpenHDApp PROPERTIES
         MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/mac/Info.cmake.plist.in"
         MACOSX_BUNDLE_GUI_IDENTIFIER "org.openhd.QOpenHD"
         MACOSX_BUNDLE_BUNDLE_NAME "QOpenHD"
         MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"

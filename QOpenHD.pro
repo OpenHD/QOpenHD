@@ -206,7 +206,6 @@ SOURCES += \
     app/util/qopenhd.cpp \
     app/util/audioannouncements.cpp \
     app/util/settingsbackup.cpp \
-    app/util/asyncping.cpp \
     app/util/asynccommandrunner.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
@@ -236,7 +235,6 @@ HEADERS += \
     app/util/widgetpreviewimage.h \
     app/util/settingsbackup.h \
     app/util/qtcreatorlaunch.h \
-    app/util/asyncping.h \
     app/util/asynccommandrunner.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
@@ -302,11 +300,15 @@ DISTFILES += \
 
 iOSBuild {
     QMAKE_INFO_PLIST    = ios/Info.plist
+    lan_broadcast_entitlements.name = "CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]"
+    lan_broadcast_entitlements.value = $$shell_path($$PWD/ios/QOpenHD.entitlements)
+    QMAKE_MAC_XCODE_SETTINGS += lan_broadcast_entitlements
     QMAKE_TARGET_BUNDLE_PREFIX = com.infincia
     QMAKE_BUNDLE = qopenhd
     QMAKE_DEVELOPMENT_TEAM = G738Z89QKM
     ICON                = $${BASEDIR}/icons/macos.icns
     DISTFILES        += ios/Info.plist \
+                        ios/QOpenHD.entitlements \
                         icons/LaunchScreen.png \
                         icons/LaunchScreen.storyboard
     LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio -framework CoreVideo -framework CoreMedia
@@ -322,10 +324,10 @@ iOSBuild {
     QMAKE_ASSET_CATALOGS += $$PWD/icons/ios/Assets.xcassets
 
     HEADERS += \
-        src/platform/appleplatform.h
+        app/platform/appleplatform.h
 
     SOURCES += \
-        src/platform/appleplatform.mm
+        app/platform/appleplatform.mm
 }
 
 MacBuild {

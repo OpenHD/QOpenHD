@@ -55,6 +55,8 @@ void MavlinkTelemetry::start()
     // OpenHD Ground sends to this client port; replies use the discovered sender.
     m_udp_connection=std::make_unique<UDPConnection>(udp_ip,OHD_GROUND_CLIENT_UDP_PORT_OUT,cb_udp);
     m_udp_connection->start_looping();
+    m_lan_platform_discovery = std::make_unique<LanPlatformDiscovery>(
+        [this](const QVariantList& platforms) { set_lan_platforms(platforms); });
     auto cb_tcp=[this, generation](mavlink_message_t msg){
         process_mavlink_message(msg, generation);
     };
@@ -70,6 +72,8 @@ void MavlinkTelemetry::start()
 void MavlinkTelemetry::terminate()
 {
     ++m_receive_generation; // Discard deliveries queued by a retired connection.
+    m_lan_platform_discovery.reset();
+    set_lan_platforms({});
     // first stop any incoming telemetry
     if(m_heartbeat_thread){
         m_heartbeat_thread_run=false;

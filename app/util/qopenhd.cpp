@@ -125,7 +125,6 @@ QOpenHD::QOpenHD(QObject *parent)
     : QObject{parent}, m_launchedFromQtCreator(qopenhd::launchedFromQtCreator())
 {
     connect(this, &QOpenHD::signal_toast_add, this, &QOpenHD::do_not_call_toast_add);
-    connect(&m_ping, &AsyncPing::finished, this, &QOpenHD::pingFinished);
     connect(&m_commands, &AsyncCommandRunner::finished, this, &QOpenHD::systemActionFinished);
     connect(&m_commands, &AsyncCommandRunner::finished, this, [this](QString id, QString result, bool success) {
         if (!success || id == "service" || id == "dhcp") show_toast(result, !success);

@@ -1,6 +1,6 @@
 import ".."
 import "../MenuTypography.js" as MenuTypography
-import QtQuick 2.12
+import QtQuick 2.15
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
@@ -12,73 +12,12 @@ Rectangle {
     focus: false
 
     property bool connected: _ohdSystemAir.is_alive || _ohdSystemGround.is_alive
-    property bool isScanning: false
-    property int scanProgress: 0
-    property int scanIndex: 1
-    property int scanMax: 254
     property int keyboardIndex: 0
-    property string scanPrefix: "192.168.0"
 
-    ListModel { id: scanResultsModel }
-
-    Timer {
-        id: scanTimer
-        interval: 120
-        repeat: false
-        onTriggered: {
-            if (!root.isScanning) return
-            if (root.scanIndex > root.scanMax) {
-                root.isScanning = false
-                root.scanProgress = 100
-                return
-            }
-            var candidateIp = root.scanPrefix + "." + root.scanIndex
-            // A canceled process may still be exiting. Retry without blocking.
-            if (!_qopenhd.ping_ip_async(candidateIp)) restart()
-        }
-    }
-
-    Connections {
-        target: _qopenhd
-        function onPingFinished(ip, reachable) {
-            if (!root.isScanning || ip !== root.scanPrefix + "." + root.scanIndex) return
-            if (reachable) scanResultsModel.append({ ip: ip })
-            root.scanProgress = Math.min(100, Math.round((root.scanIndex / root.scanMax) * 100))
-            root.scanIndex++
-            scanTimer.restart()
-        }
-    }
-
-    function stopScan() {
-        scanTimer.stop()
-        _qopenhd.cancel_ping()
-        isScanning = false
-    }
-    onVisibleChanged: if (!visible) stopScan()
-    Component.onDestruction: stopScan()
-
-    function derivePrefix() {
-        var parts = settings.qopenhd_mavlink_connection_manual_tcp_ip.split(".")
-        return parts.length === 4 ? parts[0] + "." + parts[1] + "." + parts[2] : "192.168.0"
-    }
-    function startScan() {
-        if (isScanning)
-            return
-        scanPrefix = derivePrefix()
-        scanResultsModel.clear()
-        scanIndex = 1
-        scanProgress = 0
-        isScanning = true
-        scanTimer.start()
-    }
     function setMode(mode) {
         if (settings.qopenhd_mavlink_connection_mode !== mode) {
             _mavlinkTelemetry.change_telemetry_connection_mode(mode)
             settings.qopenhd_mavlink_connection_mode = mode
-        }
-        if (mode !== 2 && isScanning) {
-            stopScan()
-            scanProgress = 0
         }
     }
     function applyTcpTarget(ip) {
@@ -93,10 +32,12 @@ Rectangle {
     }
     function controls() {
         var all = [autoMode, udpMode, tcpMode, tetheringButton]
+        for (var i = 0; i < lanRepeater.count; ++i) {
+            var row = lanRepeater.itemAt(i)
+            if (row) all.push(row.connectButton)
+        }
         if (settings.qopenhd_mavlink_connection_mode === 2)
-            all = all.concat([ipField, saveButton, scanButton])
-        for (var i = 0; i < resultsRepeater.count; ++i)
-            all.push(resultsRepeater.itemAt(i))
+            all = all.concat([ipField, saveButton])
         var available = []
         for (var j = 0; j < all.length; ++j) {
             if (all[j] && all[j].visible && all[j].enabled)
@@ -257,8 +198,69 @@ Rectangle {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 184 + resultsRepeater.count * 46 +
-                                        ((root.isScanning || root.scanProgress > 0) ? 15 : 0)
+                Layout.preferredHeight: lanColumn.implicitHeight + 26
+                radius: 12
+                color: settings_form.panelBackground
+                border.color: settings_form.lineColor
+
+                ColumnLayout {
+                    id: lanColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: 13
+                    spacing: 8
+
+                    Text {
+                        text: qsTr("LOCAL ETHERNET")
+                        color: settings_form.primaryText
+                        font.family: MenuTypography.family
+                        font.pixelSize: MenuTypography.body
+                        font.bold: true
+                    }
+
+                    Text {
+                        visible: lanRepeater.count === 0
+                        text: qsTr("Listening for OpenHD units…")
+                        color: settings_form.secondaryText
+                        font.family: MenuTypography.family
+                        font.pixelSize: MenuTypography.body
+                    }
+
+                    Repeater {
+                        id: lanRepeater
+                        model: _mavlinkTelemetry.lan_platforms
+                        delegate: RowLayout {
+                            property alias connectButton: lanConnectButton
+                            Layout.fillWidth: true
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: modelData.role === "AIR"
+                                      ? qsTr("Air · %1").arg(modelData.ip)
+                                      : qsTr("Ground · %1").arg(modelData.ip)
+                                color: settings_form.primaryText
+                                font.family: MenuTypography.family
+                                font.pixelSize: MenuTypography.body
+                            }
+
+                            AdvancedActionButton {
+                                id: lanConnectButton
+                                text: qsTr("CONNECT")
+                                font.family: MenuTypography.family
+                                font.pixelSize: MenuTypography.body
+                                onClicked: root.applyTcpTarget(modelData.ip)
+                                onActiveFocusChanged: if (activeFocus) root.syncFocus(lanConnectButton)
+                                Keys.onPressed: root.handleButtonKey(event)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: tcpColumn.implicitHeight + 26
                 visible: settings.qopenhd_mavlink_connection_mode === 2
                 radius: 12; color: settings_form.panelBackground; border.color: settings_form.lineColor
                 ColumnLayout {
@@ -287,7 +289,7 @@ Rectangle {
                             bottomPadding: 0
                             verticalAlignment: TextInput.AlignVCenter
                             selectByMouse: true
-                            validator: RegExpValidator { regExp: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/ }
+                            validator: RegularExpressionValidator { regularExpression: /^((?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){0,3}(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/ }
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             onAccepted: root.applyTcpTarget(text)
                             onActiveFocusChanged: if (activeFocus) root.syncFocus(ipField)
@@ -310,51 +312,6 @@ Rectangle {
                             Keys.onPressed: root.handleButtonKey(event)
                             background: Rectangle { radius: 9; color: saveButton.hovered ? "#176fc7" : settings_form.accentColor; border.color: saveButton.activeFocus ? "white" : "transparent"; border.width: 2 }
                             contentItem: Text { text: saveButton.text; color: "white"; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                        }
-                    }
-                    RowLayout {
-                        Layout.fillWidth: true; spacing: 8
-                        AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                            id: scanButton
-                            Layout.fillWidth: true; height: MenuTypography.controlHeight
-                            text: root.isScanning ? qsTr("SCANNING %1%").arg(root.scanProgress) : qsTr("SCAN ETHERNET FOR OPENHD")
-                            enabled: !root.isScanning
-                            onClicked: root.startScan()
-                            onActiveFocusChanged: if (activeFocus) root.syncFocus(scanButton)
-                            Keys.onPressed: root.handleButtonKey(event)
-                            background: Rectangle { radius: 9; color: scanButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; opacity: scanButton.enabled ? 1 : 0.5; border.color: scanButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: scanButton.activeFocus ? 2 : 1 }
-                            contentItem: Text { text: scanButton.text; color: settings_form.primaryText; opacity: scanButton.enabled ? 1 : 0.5; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
-                        }
-                        Text { text: root.scanPrefix + ".x"; color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family }
-                    }
-                    Rectangle {
-                        Layout.fillWidth: true; height: 5; radius: 3
-                        visible: root.isScanning || root.scanProgress > 0
-                        color: settings_form.lineColor
-                        Rectangle { width: parent.width * root.scanProgress / 100; height: parent.height; radius: parent.radius; color: settings_form.accentColor }
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        text: scanResultsModel.count === 0
-                              ? (root.isScanning ? qsTr("Searching for responsive hosts…") : qsTr("No devices discovered yet."))
-                              : qsTr("Discovered devices")
-                        color: settings_form.secondaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family
-                    }
-                    ColumnLayout {
-                        Layout.fillWidth: true; spacing: 6
-                        Repeater {
-                            id: resultsRepeater
-                            model: scanResultsModel
-                            delegate: AdvancedActionButton { font.family: MenuTypography.family; font.pixelSize: MenuTypography.body;
-                                id: resultButton
-                                Layout.fillWidth: true; height: MenuTypography.controlHeight
-                                text: ip + "    " + qsTr("CONNECT")
-                                onClicked: root.applyTcpTarget(ip)
-                                onActiveFocusChanged: if (activeFocus) root.syncFocus(resultButton)
-                                Keys.onPressed: root.handleButtonKey(event)
-                                background: Rectangle { radius: 9; color: resultButton.hovered ? settings_form.panelBackgroundRaised : "transparent"; border.color: resultButton.activeFocus ? settings_form.accentColor : settings_form.lineColor; border.width: resultButton.activeFocus ? 2 : 1 }
-                                contentItem: Text { text: resultButton.text; color: settings_form.primaryText; font.pixelSize: MenuTypography.body; font.family: MenuTypography.family; font.bold: true; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                            }
                         }
                     }
                 }

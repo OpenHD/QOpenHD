@@ -22,6 +22,8 @@
 	<string>10.12</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>QOpenHD discovers and connects to OpenHD units on your local network.</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
 </dict>
