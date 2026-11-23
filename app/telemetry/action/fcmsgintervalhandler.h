@@ -1,6 +1,7 @@
 #ifndef FCMSGINTERVALHANDLER_H
 #define FCMSGINTERVALHANDLER_H
 
+#include <cstdint>
 #include <mutex>
 #include <qdebug.h>
 #include <vector>
@@ -56,6 +57,8 @@ private:
         //MessageInterval{0,0},
         };
     std::mutex m_mutex;
+    bool m_command_pending=false;
+    uint64_t m_setup_generation=0;
     bool m_ready_for_next_command=true;
     int m_next_rate_index=0;
     int m_skipped_intervals=0;

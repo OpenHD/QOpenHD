@@ -51,8 +51,8 @@ public:
     bool sendMessage(mavlink_message_t msg);
     bool has_active_tcp_connection() const;
     struct FCMavId{
-        int comp_id;
         int sys_id;
+        int comp_id;
     };
     // Returns default FC sys / comp id until FC is successfully discovered.
     FCMavId get_fc_mav_id();

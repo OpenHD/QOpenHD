@@ -253,15 +253,26 @@ void MavlinkTelemetry::process_mavlink_message(const mavlink_message_t& msg, uin
         process_message_timesync(msg, received_us);
         return;
     }
-    const bool firmware_status = FCMavlinkSystem::instance().process_firmware_status(msg);
+    auto& fc = FCMavlinkSystem::instance();
+    const auto previous_identity = fc.firmware_identity();
+    const bool firmware_status = fc.process_firmware_status(msg);
     if (firmware_status) {
         // Air's configured UART can establish an FC endpoint even when its
         // heartbeat stream is disabled. Reuse the same FC routing/model state.
-        const auto identity = FCMavlinkSystem::instance().firmware_identity();
+        const auto identity = fc.firmware_identity();
         if (identity.value("sys", -1).toInt() >= 0 && identity.value("comp", -1).toInt() >= 0) {
             m_fc_sys_id = identity.value("sys").toInt();
             m_fc_comp_id = identity.value("comp").toInt();
             m_fc_found = true;
+        }
+        const auto firmware = identity.value("type").toInt();
+        if ((firmware == 1 || firmware == 2) &&
+            (identity.value("gen") != previous_identity.value("gen") ||
+             identity.value("sys") != previous_identity.value("sys") ||
+             identity.value("comp") != previous_identity.value("comp") ||
+             identity.value("type") != previous_identity.value("type"))) {
+            // Message intervals are runtime settings and are lost on FC reboot.
+            FCMsgIntervalHandler::instance().restart();
         }
         FCAction::instance().request_battery_capacity_if_needed();
         // These are also registered parameters. Let XParam account for their
