@@ -282,6 +282,20 @@ Item {
          _ohdSystemGround.is_alive=false
          compare(Object.keys(board.highlights).length,0)
      }
+     function test_board_art_matches_selected_unit(){
+         _ohdSystemAir.ohd_platform_type=20
+         _ohdSystemGround.ohd_platform_type=13
+         var board=findChild(loader.item,"portsBoardPinout")
+         compare(board.platform,20)
+         selectUnit(1)
+         compare(board.platform,13)
+         verify(board.title.indexOf("Pi 5") >= 0)
+         _ohdSystemGround.ohd_platform_type=11
+         compare(board.platform,11)
+         verify(board.title.indexOf("Pi 4") >= 0)
+         _ohdSystemGround.ohd_platform_type=12
+         compare(findChild(loader.item,"portsBoardPinout"),null)
+     }
      function test_gpio_highlights_use_physical_pins(){
          _ohdSystemAir.ohd_platform_type=11
          _ohdSystemAirSettingsModel.values.GPIO_2=1

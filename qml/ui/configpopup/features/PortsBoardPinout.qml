@@ -19,7 +19,7 @@ MapSettingsCard {
 
     // Platform IDs from openhd_platform.h. Compute-module carrier mappings vary.
     readonly property bool radxa: platform === 20
-    readonly property bool supported: radxa || platform === 11
+    readonly property bool supported: radxa || platform === 11 || platform === 13
     readonly property var pinNames: radxa ? [
         "3.3 V", "5 V", "GPIO1_A0", "5 V", "GPIO1_A1", "GND", "GPIO3_C4", "GPIO0_D1",
         "GND", "GPIO0_D0", "GPIO3_A1", "GPIO3_A3", "GPIO3_A2", "GND", "GPIO3_B0", "GPIO3_B1",
@@ -94,7 +94,7 @@ MapSettingsCard {
 
     onPlatformChanged: inspectedPin = 0
     onAirChanged: inspectedPin = 0
-    title: radxa ? qsTr("Radxa ZERO 3W · Pinout") : qsTr("Raspberry Pi 4 Model B · Pinout")
+    title: radxa ? qsTr("Radxa ZERO 3W · Pinout") : platform === 13 ? qsTr("Raspberry Pi 5 · Pinout") : qsTr("Raspberry Pi 4 Model B · Pinout")
     headerNote: air ? qsTr("Air") : qsTr("Ground")
     icon: "\uf2db"
     compact: true
@@ -113,7 +113,7 @@ MapSettingsCard {
             Layout.minimumWidth: 0
             Layout.preferredHeight: parent.columns === 1 ? 190 : 428
             Layout.alignment: Qt.AlignVCenter
-            radxa: root.radxa
+            platform: root.platform
             highlights: root.highlights
             inspectedPin: root.inspectedPin
         }
