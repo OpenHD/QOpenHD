@@ -26,6 +26,9 @@ Item {
          property int writes:0
          property string lastId:""
          property var lastValue:""
+         property string rejectId:""
+         property var writeLog:[]
+         signal parameterWriteFinished(string id, bool success)
          function param_int_exists(id){return typeof values[id]==="number"}
          function param_string_exists(id){return typeof values[id]==="string"}
          function get_cached_int(id){return values[id]}
@@ -51,8 +54,20 @@ Item {
          function int_param_get_min_value(id){return 0}
          function int_param_get_max_value(id){return 10}
          function get_warning_before_safe(id){return ""}
-         function try_set_param_int_async(id,value,log){values[id]=value;lastId=id;lastValue=value;writes++;update_count++}
-         function try_set_param_string_async(id,value,log){values[id]=value;lastId=id;lastValue=value;writes++;update_count++}
+         function save(id, value){
+             tests.verify(!ui_is_busy)
+             ui_is_busy=true
+             Qt.callLater(function(){
+                 lastId=id;lastValue=value;writes++
+                 writeLog=writeLog.concat([{id:id,value:value}])
+                 var success=id!==rejectId
+                 if (success) {values[id]=value;update_count++}
+                 ui_is_busy=false
+                 parameterWriteFinished(id,success)
+             })
+         }
+         function try_set_param_int_async(id,value,log){save(id,value)}
+         function try_set_param_string_async(id,value,log){save(id,value)}
      }
  }
  property var _ohdSystemAirSettingsModel:paramModel.createObject(scene)
@@ -61,6 +76,7 @@ Item {
  Loader {id:loader;anchors.fill:parent;sourceComponent:page}
  Rectangle {anchors.fill:parent;color:"#091827";z:-1}
  TestCase {
+     id:tests
      name:"PortsSettings";when:windowShown
      function row(group,id){return findChild(loader.item,"portSetting_"+group+"_"+id)}
      function section(name){return findChild(loader.item,"portsSection_"+name)}
@@ -68,6 +84,13 @@ Item {
          var tabs=findChild(loader.item,"portsUnitTabs")
          mouseClick(tabs.itemAt(index))
          compare(tabs.currentIndex,index)
+     }
+     function applyChanges(expectSuccess){
+         var button=findChild(loader.item,"portsApply")
+         verify(button.visible && button.enabled)
+         mouseClick(button)
+         tryVerify(function(){return !loader.item.activeDraft.applying})
+         compare(loader.item.activeDraft.failed,expectSuccess===false)
      }
      function init(){
          loader.active=false;scene.width=1200;scene.height=850;settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=false;_qopenhd.debugMenuPreview=false;_ohdSystemAir.is_alive=true;_ohdSystemGround.is_alive=true
@@ -84,35 +107,45 @@ Item {
          _ohdSystemAirSettingsModel.detectedPorts=["/dev/ttyS1","/dev/ttyS2","/dev/ttyUSB0"]
          _ohdSystemGroundSettings.detectedPorts=["/dev/ttyUSB0","/dev/ttyUSB1"]
          _ohdSystemAirSettingsModel.writes=0;_ohdSystemGroundSettings.writes=0
+         _ohdSystemAirSettingsModel.rejectId="";_ohdSystemGroundSettings.rejectId=""
+         _ohdSystemAirSettingsModel.writeLog=[];_ohdSystemGroundSettings.writeLog=[]
          _ohdSystemAirSettingsModel.update_count++;_ohdSystemGroundSettings.update_count++
          loader.active=true;tryCompare(loader,"status",Loader.Ready);wait(50)
      }
      function test_tracker_routes_to_ground(){
          selectUnit(1)
          row("tracker","TRACKER_UART_OUT").commitChoice("/dev/ttyUSB1")
+         compare(_ohdSystemGroundSettings.writes,0)
+         applyChanges()
          compare(_ohdSystemGroundSettings.lastId,"TRACKER_UART_OUT");compare(_ohdSystemAirSettingsModel.writes,0)
-         row("tracker","TRACK_UART_FLOW").commitToggle(true);compare(_ohdSystemGroundSettings.lastValue,1)
+         row("tracker","TRACK_UART_FLOW").commitToggle(true)
+         applyChanges()
+         compare(_ohdSystemGroundSettings.lastValue,1)
      }
      function test_ground_independent_of_air(){
          selectUnit(1)
          _ohdSystemAir.is_alive=false;verify(!row("tracker","TRACK_UART_BAUD").busy)
-         row("tracker","TRACK_UART_BAUD").commitChoice(115200);compare(_ohdSystemGroundSettings.lastValue,115200)
+         row("tracker","TRACK_UART_BAUD").commitChoice(115200)
+         applyChanges()
+         compare(_ohdSystemGroundSettings.lastValue,115200)
          _ohdSystemGround.is_alive=false;row("tracker","TRACK_UART_BAUD").commitChoice(9600);compare(_ohdSystemGroundSettings.writes,1)
      }
      function test_roles_write_to_the_selected_unit(){
          settings_form.showAdvancedSettings=true
          row("fc","FC_UART_BAUD").commitChoice(115200)
-         compare(_ohdSystemAirSettingsModel.lastId,"FC_UART_BAUD")
          row("airLink","OHD_UART_EN").commitToggle(true)
          compare(row("groundLink","OHD_UART_EN"),null)
          selectUnit(1)
          compare(row("airLink","OHD_UART_EN"),null)
          row("groundLink","OHD_UART_EN").commitToggle(true)
-         compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,1)
+         applyChanges()
+         compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,0)
          compare(_ohdSystemGroundSettings.values.OHD_UART_EN,1)
          selectUnit(0)
          row("gpio","GPIO_26").commitChoice(2)
-         compare(_ohdSystemAirSettingsModel.lastId,"GPIO_26")
+         applyChanges()
+         compare(_ohdSystemAirSettingsModel.values.FC_UART_BAUD,115200)
+         compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,1)
          compare(_ohdSystemAirSettingsModel.values.GPIO_26,2)
      }
      function test_unit_tabs_keyboard(){
@@ -135,9 +168,11 @@ Item {
                  ["","/dev/ttyUSB0","/dev/ttyUSB1"])
          editor.activated(1)
          compare(_ohdSystemGroundSettings.writes,0)
-         compare(editor.currentIndex,0)
-         verify(loader.item.validationError.length>0)
+         compare(editor.currentIndex,1)
+         applyChanges(false)
+         compare(_ohdSystemGroundSettings.values.TRACKER_UART_OUT,"")
          editor.activated(2)
+         applyChanges()
          compare(_ohdSystemGroundSettings.lastValue,"/dev/ttyUSB1")
          compare(editor.currentIndex,2)
      }
@@ -152,6 +187,7 @@ Item {
          keyClick(Qt.Key_Down)
          keyClick(Qt.Key_Return)
          tryCompare(editor.popup,"opened",false)
+         applyChanges()
          compare(_ohdSystemGroundSettings.lastValue,"/dev/ttyUSB0")
          compare(findChild(tracker,"portChoiceEditor"),editor)
      }
@@ -169,6 +205,7 @@ Item {
          fc.commitChoice("DEFAULT")
          compare(_ohdSystemAirSettingsModel.writes,0)
          fc.commitChoice("/dev/ttyACM0")
+         applyChanges()
          compare(_ohdSystemAirSettingsModel.lastValue,"/dev/ttyACM0")
 
          selectUnit(1)
@@ -196,14 +233,47 @@ Item {
          settings_form.showAdvancedSettings=true
          row("sbus","SBUS_DEV").commitChoice("/dev/ttyS1")
          row("sbus","SBUS_EN").commitToggle(true)
+         applyChanges(false)
          compare(_ohdSystemAirSettingsModel.values.SBUS_EN,0)
+         row("sbus","SBUS_DEV").commitChoice("/dev/ttyS2")
+         row("sbus","SBUS_EN").commitToggle(false)
          row("airLink","OHD_UART_TLM").commitChoice("")
          row("airLink","OHD_UART_EN").commitToggle(true)
+         applyChanges(false)
          compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,0)
          row("airLink","OHD_UART_TLM").commitChoice("/dev/ttyUSB0")
-         row("airLink","OHD_UART_EN").commitToggle(true)
+         applyChanges()
          compare(_ohdSystemAirSettingsModel.values.OHD_UART_EN,1)
      }
+     function test_apply_retains_rejected_changes(){
+         var model=_ohdSystemAirSettingsModel
+         model.rejectId="GPIO_26"
+         row("fc","FC_UART_BAUD").commitChoice(115200)
+         row("gpio","GPIO_26").commitChoice(2)
+         compare(model.writes,0)
+         applyChanges(false)
+         compare(model.values.FC_UART_BAUD,115200)
+         compare(model.values.GPIO_26,0)
+         compare(Object.keys(loader.item.activeDraft.edits),["GPIO_26"])
+         model.rejectId=""
+         applyChanges()
+         compare(model.values.GPIO_26,2)
+         compare(model.writes,3)
+         verify(!loader.item.activeDraft.dirty)
+     }
+     function test_apply_can_swap_port_owners(){
+         settings_form.showAdvancedSettings=true
+         var model=_ohdSystemAirSettingsModel
+         model.values.SBUS_EN=1
+         model.update_count++
+         row("fc","FC_UART_CONN").commitChoice("/dev/ttyS2")
+         row("sbus","SBUS_DEV").commitChoice("/dev/ttyS1")
+         applyChanges()
+         compare(model.writeLog.slice(0,2),[{id:"FC_UART_CONN",value:""},{id:"SBUS_EN",value:0}])
+         compare(model.values.FC_UART_CONN,"/dev/ttyS2")
+         compare(model.values.SBUS_DEV,"/dev/ttyS1")
+         compare(model.values.SBUS_EN,1)
+      }
      function test_priorities_use_bounded_steppers(){
          settings_form.showAdvancedSettings=true
          var priority=row("airLink","UART_PRI_RC")
@@ -284,6 +354,35 @@ Item {
          compare(board.highlights[18].label,"Tracker")
          _ohdSystemGround.is_alive=false
          compare(Object.keys(board.highlights).length,0)
+     }
+     function test_pin_options_follow_live_inventory_and_preview_the_draft(){
+         var model=_ohdSystemAirSettingsModel
+         _ohdSystemAir.ohd_platform_type=20
+         model.values.FC_UART_CONN=""
+         model.update_count++
+         var board=findChild(loader.item,"portsBoardPinout")
+         var art=findChild(board,"portsBoardArt")
+         tryCompare(art,"imageReady",true)
+         var marker=findChild(art,"portsBoardMarker16")
+         var pin=findChild(board,"portsHeaderPin16")
+         verify(marker.visible && marker.option)
+         compare(findChild(pin,"pinDescription").text,"UART4 M1 RX")
+         verify(!board.highlights[16])
+
+         model.detectedPorts=["/dev/ttyS4"]
+         model.headerRoutes={"/dev/ttyS4":{rx:16,tx:18}}
+         model.update_count++
+         compare(Object.keys(board.options),["16","18"])
+         compare(board.options[16].port,"/dev/ttyS4")
+
+         row("fc","FC_UART_CONN").commitChoice("/dev/ttyS4")
+         compare(model.values.FC_UART_CONN,"")
+         verify(marker.visible && marker.pending && !marker.option)
+         compare(board.highlights[16].label,"FC telemetry")
+         compare(Object.keys(board.options).length,0)
+         applyChanges()
+         compare(model.values.FC_UART_CONN,"/dev/ttyS4")
+         verify(marker.visible && !marker.pending)
      }
      function test_board_and_chart_share_pin_rows(){
          var platforms=[20,11,13,21,22,31,32,34,35]

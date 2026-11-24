@@ -20,11 +20,11 @@ public:
  Q_INVOKABLE bool system_is_alive(){return connected;}
  Q_INVOKABLE QVariantMap backup_parameters(){return values;}
  Q_INVOKABLE QString request_backup_restore(QString id,QVariant value){
-  QTimer::singleShot(0,this,[this,id,value]{writes.append(id);if(id==reject)emit backupParameterFinished(id,false);else{values[id]=value;emit backupParameterFinished(id,true);}});
+  QTimer::singleShot(0,this,[this,id,value]{writes.append(id);if(id==reject)emit parameterWriteFinished(id,false);else{values[id]=value;emit parameterWriteFinished(id,true);}});
   return {};
  }
 signals:
- void backupParameterFinished(QString id,bool success);
+ void parameterWriteFinished(QString id,bool success);
 };
 static QVariantMap identity(QString id,int platform=11){
  if(id=="qopenhd")return {{"os",QSysInfo::kernelType()},{"architecture",QSysInfo::currentCpuArchitecture()},{"family","desktop"}};

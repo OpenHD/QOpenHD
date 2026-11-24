@@ -307,7 +307,7 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
 
 void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int value,bool log_result)
 {
-    if (m_simulation) { emit backupParameterFinished(param_id, setSimulationValue(param_id, value)); return; }
+    if (m_simulation) { emit parameterWriteFinished(param_id, setSimulationValue(param_id, value)); return; }
     if (QOpenHD::instance().debugMenuPreview()) return;
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
@@ -342,7 +342,7 @@ void MavlinkSettingsModel::try_set_param_int_async(const QString param_id, int v
 
 void MavlinkSettingsModel::try_set_param_string_async(const QString param_id,QString value,bool log_result)
 {
-    if (m_simulation) { setSimulationValue(param_id, value); return; }
+    if (m_simulation) { emit parameterWriteFinished(param_id, setSimulationValue(param_id, value)); return; }
     if (QOpenHD::instance().debugMenuPreview()) return;
     if(m_is_currently_busy){
         qDebug()<<"BUSY";
@@ -989,7 +989,7 @@ void MavlinkSettingsModel::finalize_update_param(QString param_id,std::variant<i
     }
     set_update_count(m_update_count+1);
     qDebug()<<"Update count:"<<m_update_count;
-    emit backupParameterFinished(param_id,success);
+    emit parameterWriteFinished(param_id,success);
 }
 
 void MavlinkSettingsModel::perform_dirty_actions(const SettingData &data)

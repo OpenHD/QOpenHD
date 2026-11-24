@@ -144,6 +144,47 @@ var lyraPi = [
     "GPIO1_C2", "GND", "GPIO1_A1", "GPIO1_A5", "GPIO1_A2", "GPIO1_A4", "GND", "GPIO1_A3"
 ]
 
+// Available UART muxes from the board pinouts. The live device metadata
+// determines which of these muxes is actually driving a Linux serial device.
+var zeroUarts = [
+    ["UART2 M0", 10, 8], ["UART3 M0", 3, 5], ["UART4 M1", 16, 18],
+    ["UART5 M1", 33, 32], ["UART9 M1", 24, 21]
+]
+var piHeaderUart = [["UART on GPIO14/15", 10, 8]]
+var cubieUarts = [
+    ["UART0", 10, 8], ["UART0", 11, 7], ["UART2", 11, 7],
+    ["UART3", 3, 5], ["UART3", 27, 28], ["UART4", 18, 16]
+]
+var picoUarts = [["UART2 M1", 2, 1], ["UART3 M1", 20, 19], ["UART4 M1", 7, 6]]
+
+var uartOptionsByBoard = {
+    "zero": zeroUarts, "zero-e": zeroUarts, "rock3c": zeroUarts,
+    "pi2": piHeaderUart, "pi3": piHeaderUart, "pi3a": piHeaderUart,
+    "pi-zero": piHeaderUart, "pi-zero-w": piHeaderUart, "pi-zero2": piHeaderUart,
+    "pi4": piHeaderUart.concat([["UART2", 28, 27], ["UART3", 29, 7], ["UART4", 21, 24], ["UART5", 33, 32]]),
+    "pi5": [["UART0", 10, 8], ["UART1", 28, 27], ["UART2", 29, 7], ["UART3", 21, 24], ["UART4", 33, 32]],
+    "rock3-family": [["UART2 M0", 10, 8], ["UART3 M0", 3, 5], ["UART5 M1", 33, 32], ["UART9 M1", 24, 21]],
+    "rock5a": [["UART2 M0", 10, 8], ["UART4 M2", 29, 7], ["UART8 M0", 40, 32]],
+    "rock5b": [["UART2 M0", 10, 8], ["UART2 M2", 38, 36], ["UART3 M1", 35, 12],
+               ["UART4 M2", 19, 23], ["UART7 M1", 11, 15], ["UART7 M2", 24, 26]],
+    "a7z": cubieUarts, "a7s": cubieUarts,
+    "aura": [["UART4 M1", 10, 8], ["UART5 M1", 35, 38], ["UART6 M0", 33, 32], ["UART7 M0", 29, 7]],
+    "pico": picoUarts, "pico-plus": picoUarts.concat([["UART5 M0", 22, 21]]),
+    "lyra": [["UART0", 2, 1]], "lyra-plus": [["UART0", 3, 1]],
+    "lyra-zero": [["UART0", 10, 8]], "lyra-pi": [["UART0", 10, 8]]
+}
+uartOptionsByBoard.rock3 = uartOptionsByBoard["rock3-family"]
+uartOptionsByBoard.rock3b = uartOptionsByBoard["rock3-family"]
+
+function uartOptions(art) {
+    return uartOptionsByBoard[art] || []
+}
+
+function uartName(art, rx, tx, fallback) {
+    var route = uartOptions(art).find(function(option) { return option[1] === rx && option[2] === tx })
+    return route ? route[0] : fallback
+}
+
 // Physical pin numbers. These are available functions, separate from live mux routes.
 function pinFunction(art, pin) {
     if (art === "pi4") {

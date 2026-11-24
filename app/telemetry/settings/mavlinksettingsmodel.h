@@ -73,7 +73,7 @@ public:
     Q_INVOKABLE QVariantMap backup_parameters() const;
     Q_INVOKABLE QString request_backup_restore(QString id, QVariant value);
 signals:
-    void backupParameterFinished(QString id, bool success);
+    void parameterWriteFinished(QString id, bool success);
 public:
 
     enum Roles {

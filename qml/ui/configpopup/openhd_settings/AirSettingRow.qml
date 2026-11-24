@@ -13,6 +13,9 @@ FocusScope {
     property string labelIcon: ""
     property var settingsModel
     property var validateChange: null
+    property var stagedValue: undefined
+    property var stageChange: null
+    property bool applying: false
     signal validationFailed(string reason)
     property bool connectionAlive: _ohdSystemAir.is_alive
     property string labelOverride: ""
@@ -21,10 +24,13 @@ FocusScope {
     readonly property int revision: settingsModel.update_count
     readonly property var metadata: { var changed = revision; return settingsModel.get_ui_metadata(paramId) }
     readonly property bool integer: { var changed = revision; return settingsModel.param_int_exists(paramId) }
-    readonly property var value: { var changed = revision; return integer ? settingsModel.get_cached_int(paramId) : settingsModel.get_cached_string(paramId) }
+    readonly property var value: {
+        var changed = revision
+        if (stagedValue !== undefined) return stagedValue
+        return integer ? settingsModel.get_cached_int(paramId) : settingsModel.get_cached_string(paramId) }
     readonly property bool infoOnly: ["FC_FW_INFO", "FC_FW_EVID", "SIYI_ACTIVE", "TOPOTEK_ACTIVE", "CAM_CTRL_ACTIVE"].indexOf(paramId) >= 0
     readonly property bool locked: _qopenhd.debugMenuPreview || metadata.readOnly === true || infoOnly
-    readonly property bool busy: settingsModel.ui_is_busy || !connectionAlive || _qopenhd.debugMenuPreview
+    readonly property bool busy: applying || settingsModel.ui_is_busy || !connectionAlive || _qopenhd.debugMenuPreview
     readonly property bool toggle: integer && (metadata.control === "toggle" || ["ETH_LINK_EN", "FC_UART_FLWCTL", "OHD_UART_EN", "OHD_UART_FLW", "TRACK_UART_FLOW", "LOG_OPENHD", "LOG_MAVLINK", "ADSB_ENABLE", "SBUS_EN", "CONFIG_BOOT_AIR"].indexOf(paramId) >= 0)
     readonly property bool port: ["FC_UART_CONN", "OHD_UART_TLM", "SBUS_DEV", "TRACKER_UART_OUT"].indexOf(paramId) >= 0
     readonly property bool cells: paramId === "FC_BATT_N_CELLS"
@@ -85,15 +91,16 @@ FocusScope {
         return false
     }
     function commitToggle(enabled) {
-        if (locked || busy || !changeAllowed(enabled ? 1 : 0)) return
-        var warning = settingsModel.get_warning_before_safe(paramId)
-        if (warning) _messageBoxInstance.set_text_and_show(warning)
-        settingsModel.try_set_param_int_async(paramId, enabled ? 1 : 0, true)
+        commitChoice(enabled ? 1 : 0)
     }
     function commitChoice(selected) {
         if (locked || busy) return
         if (port && !choices.some(function(choice) { return choice.value === selected })) return
         if (!changeAllowed(selected)) return
+        if (stageChange) {
+            stageChange(paramId, integer ? Number(selected) : String(selected))
+            return
+        }
         var warning = settingsModel.get_warning_before_safe(paramId)
         if (warning) _messageBoxInstance.set_text_and_show(warning)
         if (integer) settingsModel.try_set_param_int_async(paramId, Number(selected), true)
@@ -176,6 +183,7 @@ FocusScope {
             readOnly: row.locked
             busy: row.busy
             compact: row.compact
+            stageChange: row.stageChange ? row.commitChoice : null
             preferStepper: row.compact && row.paramId.indexOf("UART_PRI_") === 0
             minimumOverride: row.paramId === "SBUS_HZ" ? 1 : undefined
             maximumOverride: row.paramId === "SBUS_HZ" ? 200 : undefined
@@ -190,7 +198,7 @@ FocusScope {
             enabled: !row.locked && !row.busy
             onToggled: {
                 row.commitToggle(checked)
-                if (row.validateChange)
+                if (row.validateChange || row.stageChange)
                     checked = Qt.binding(function() { return Number(row.value) !== 0 })
             }
             Accessible.name: row.label

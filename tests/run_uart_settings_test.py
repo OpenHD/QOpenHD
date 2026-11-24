@@ -3,7 +3,7 @@ import argparse,os,shutil,subprocess,tempfile
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--qt-bin',type=Path,required=True);args=p.parse_args()
 menu=ROOT/'qml/ui/configpopup'
-paths=[menu/'features/PortsSettingsPanel.qml',menu/'features/PortsSettingsCard.qml',menu/'features/PortsBoardPinout.qml',menu/'features/PortsBoardArt.qml',menu/'features/PortsBoardArtwork.js',menu/'features/PortsBoardProfiles.js',menu/'MenuTypography.js',menu/'AdvancedPage.qml',menu/'AdvancedTabButton.qml',menu/'AdvancedActionButton.qml',menu/'AdvancedDialog.qml',menu/'AdvancedDialogButton.qml',menu/'openhd_settings/CompactLinkComboBox.qml',ROOT/'qml/ui/elements/DarkComboBox.qml']
+paths=[menu/'features/PortsSettingsPanel.qml',menu/'features/PortsSettingsCard.qml',menu/'features/PortsSettingsDraft.qml',menu/'features/PortsBoardPinout.qml',menu/'features/PortsBoardArt.qml',menu/'features/PortsBoardArtwork.js',menu/'features/PortsBoardProfiles.js',menu/'MenuTypography.js',menu/'AdvancedPage.qml',menu/'AdvancedTabButton.qml',menu/'AdvancedActionButton.qml',menu/'AdvancedDialog.qml',menu/'AdvancedDialogButton.qml',menu/'openhd_settings/CompactLinkComboBox.qml',ROOT/'qml/ui/elements/DarkComboBox.qml']
 paths += [menu/'openhd_settings'/name for name in ['AirSettingRow.qml','AirSettingsLayout.js','InlineMavlinkParamControl.qml']]
 paths += [menu/'qopenhd_settings/MapSettingsCard.qml']
 with tempfile.TemporaryDirectory(prefix='qopenhd-uart-') as temp:

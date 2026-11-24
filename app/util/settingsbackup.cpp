@@ -63,7 +63,7 @@ SettingsBackup::SettingsBackup(const QList<Section>& sections,QObject* parent):Q
  m_timeout.setSingleShot(true);m_timeout.setInterval(45000);
  connect(&m_timeout,&QTimer::timeout,this,[this]{fail(tr("Restore stopped: no acknowledgement. Some settings may already have changed."));});
  for(const auto& section:sections)
-  connect(section.model,SIGNAL(backupParameterFinished(QString,bool)),this,SLOT(onParameterFinished(QString,bool)),Qt::QueuedConnection);
+  connect(section.model,SIGNAL(parameterWriteFinished(QString,bool)),this,SLOT(onParameterFinished(QString,bool)),Qt::QueuedConnection);
 }
 bool SettingsBackup::restorableParameter(const QString& id) {
  return !QStringList{"JOY_MONITOR","AR_RESET_CMD","AR_PAIR_CMD","AR_PAIR","SYS_REBOOT","SYS_SHUTDOWN"}.contains(id)

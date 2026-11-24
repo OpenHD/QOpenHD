@@ -16,6 +16,7 @@ MapSettingsCard {
     property bool advanced: false
     property bool connected: false
     property var settingsModel
+    property var draft
     property real viewportHeight: 750
     property int inspectedPin: 0
     property int inspectedAuxPin: 0
@@ -38,9 +39,7 @@ MapSettingsCard {
     readonly property var auxPins: profile.aux
     readonly property bool hasPinout: pinNames.length > 0
     readonly property bool schematic: !hasPinout
-    readonly property var assignments: {
-        if (!settingsModel) return []
-        settingsModel.update_count
+    readonly property var portRoles: {
         var roles = air ? [{id: "FC_UART_CONN", label: qsTr("FC telemetry")}] :
                           [{id: "TRACKER_UART_OUT", label: qsTr("Tracker"), txOnly: true}]
         if (advanced && air)
@@ -48,16 +47,37 @@ MapSettingsCard {
         if (advanced)
             roles.push({id: "OHD_UART_TLM", enable: "OHD_UART_EN", label: qsTr("OpenHD link")})
 
-        return roles.reduce(function(list, role) {
+        return roles
+    }
+    readonly property var availableRoutes: {
+        if (!connected || !settingsModel || !hasPinout) return {}
+        settingsModel.update_count
+        return portRoles.reduce(function(routes, role) {
+            if (!settingsModel.param_string_exists(role.id)) return routes
+            var reported = settingsModel.get_ui_metadata(role.id).serialHeaderRoutes || {}
+            for (var port in reported) {
+                if (port.indexOf("/dev/") !== 0) continue
+                var pins = reported[port]
+                if (pins && (isHeaderPin(pins.rx) || isHeaderPin(pins.tx))) routes[port] = pins
+            }
+            return routes
+        }, {})
+    }
+    readonly property var assignments: {
+        if (!settingsModel) return []
+        settingsModel.update_count
+        return portRoles.reduce(function(list, role) {
             if (!settingsModel.param_string_exists(role.id) ||
                     (role.enable && (!settingsModel.param_int_exists(role.enable) ||
-                                     !settingsModel.get_cached_int(role.enable)))) return list
-            var value = settingsModel.get_cached_string(role.id)
+                                     !effectiveValue(role.enable)))) return list
+            var value = effectiveValue(role.id)
             if (!value) return list
             var meta = settingsModel.get_ui_metadata(role.id)
             var port = meta.serialConfigured === value && meta.serialResolved ? meta.serialResolved : value
-            var pins = hasPinout && meta.serialHeaderRoutes ? meta.serialHeaderRoutes[port] : null
+            var pins = availableRoutes[port]
             list.push({label: role.label, port: port,
+                       pending: draft && (draft.edits[role.id] !== undefined ||
+                                (role.enable && draft.edits[role.enable] !== undefined)),
                        rx: pins && !role.txOnly && isHeaderPin(pins.rx) ? pins.rx : 0,
                        tx: pins && isHeaderPin(pins.tx) ? pins.tx : 0})
             return list
@@ -68,33 +88,70 @@ MapSettingsCard {
         if (!connected || !settingsModel || !hasPinout) return result
         settingsModel.update_count
 
-        function add(pin, label, signal, color) {
+        function add(pin, label, signal, color, pending, port) {
             if (!isHeaderPin(pin)) return
             var existing = result[pin]
             if (existing) {
                 existing.label += " / " + label
                 return
             }
-            result[pin] = {label: label, signal: signal, color: color}
+            result[pin] = {label: label, signal: signal, color: color, pending: Boolean(pending), port: port || ""}
         }
         for (var i = 0; i < assignments.length; ++i) {
             var role = assignments[i]
-            add(role.rx, role.label, "RX", "#36dafa")
-            add(role.tx, role.label, "TX", "#7aefa7")
+            add(role.rx, role.label, "RX", "#36dafa", role.pending, role.port)
+            add(role.tx, role.label, "TX", "#7aefa7", role.pending, role.port)
         }
         if (profile.raspberryGpio) {
             var gpios = [{id: "GPIO_2", pin: 3}, {id: "GPIO_26", pin: 37}]
             for (var j = 0; j < gpios.length; ++j) {
                 var gpio = gpios[j]
                 if (!settingsModel.param_int_exists(gpio.id)) continue
-                var value = settingsModel.get_cached_int(gpio.id)
+                var value = effectiveValue(gpio.id)
                 if (value === 1 || value === 2)
                     add(gpio.pin, pinNames[gpio.pin - 1], value === 1 ? qsTr("High") : qsTr("Low"),
-                        value === 1 ? "#ffc064" : "#d8a7ff")
+                        value === 1 ? "#ffc064" : "#d8a7ff", draft && draft.edits[gpio.id] !== undefined)
             }
         }
         return result
     }
+    readonly property var routeOptions: {
+        if (!hasPinout || assignments.some(function(role) { return role.rx || role.tx })) return []
+        var ports = Object.keys(availableRoutes).sort()
+        if (ports.length) {
+            return ports.map(function(port) {
+                var route = availableRoutes[port]
+                return {
+                    name: Boards.uartName(profile.art, route.rx, route.tx, port.substring(5)),
+                    rx: route.rx, tx: route.tx, port: port
+                }
+            })
+        }
+        return Boards.uartOptions(profile.art).map(function(option) {
+            return {name: option[0], rx: option[1], tx: option[2], port: ""}
+        })
+    }
+    readonly property var options: {
+        var pins = {}
+        function add(pin, option, signal, color) {
+            if (!isHeaderPin(pin)) return
+            var name = option.name + " " + signal
+            if (pins[pin]) {
+                if (pins[pin].label.indexOf(name) < 0)
+                    pins[pin].label += " / " + name
+                return
+            }
+            pins[pin] = {label: name, signal: signal, color: color, option: true,
+                         port: option.port, shortName: option.name.replace("UART", "U")}
+        }
+        for (var i = 0; i < routeOptions.length; ++i) {
+            var option = routeOptions[i]
+            add(option.rx, option, "RX", "#36dafa")
+            add(option.tx, option, "TX", "#7aefa7")
+        }
+        return pins
+    }
+    readonly property var pinMarks: Object.assign({}, options, highlights)
     readonly property bool compactView: contentWidth < 665 || viewportHeight < 540 || (hasPinout && fittedRowPitch < 14)
     readonly property bool compactBesideArt: hasPinout && compactView && contentWidth >= 400
     readonly property int chartHeaderHeight: 42
@@ -113,13 +170,31 @@ MapSettingsCard {
         : Math.max(102, Math.min(196, Math.floor(viewportHeight - stackedPreviewHeight - 66)))
     readonly property real previewHeight: compactBesideArt ? compactHeight : compactView ? stackedPreviewHeight : 190
     readonly property int compactArtWidth: Math.round(Math.min(250, contentWidth * 0.34))
-    readonly property var focusedAssignment: highlights[inspectedPin] || null
+    readonly property var focusedAssignment: pinMarks[inspectedPin] || null
     readonly property int firstAssignedPin: {
+        var active = assignments.find(function(role) { return role.rx || role.tx })
+        if (active) return active.rx && active.tx ? Math.min(active.rx, active.tx) : active.rx || active.tx
+        // For an older Zero 3 image, focus the documented mux for the saved
+        // UART number while keeping its markers in the "possible" state.
+        if (profile.art === "zero" || profile.art === "zero-e") {
+            var serial = assignments.length && /^\/dev\/ttyS([0-9]+)$/.exec(assignments[0].port)
+            var possible = serial && routeOptions.find(function(option) {
+                return !option.port && option.name.split(" ")[0] === "UART" + serial[1]
+            })
+            if (possible) return Math.min(possible.rx, possible.tx)
+        }
         var pins = Object.keys(highlights)
-        return pins.length ? Math.min.apply(null, pins.map(Number)) : 0
+        if (pins.length) return Math.min.apply(null, pins.map(Number))
+        var optionPins = Object.keys(options)
+        return optionPins.length ? Math.min.apply(null, optionPins.map(Number)) : 0
     }
     readonly property real firstRowY: sideBySide
         ? boardArt.topForScale(artScale) + boardArt.geometry.header.y * artScale : chartHeaderHeight + rowPitch / 2
+
+    function effectiveValue(id) {
+        if (draft) return draft.valueFor(id)
+        return settingsModel.param_int_exists(id) ? settingsModel.get_cached_int(id) : settingsModel.get_cached_string(id)
+    }
 
     function isHeaderPin(pin) {
         return typeof pin === "number" && pin % 1 === 0 && pin >= 1 && pin <= pinNames.length
@@ -164,29 +239,24 @@ MapSettingsCard {
     icon: "\uf2db"
     compact: true
 
-    GridLayout {
+    Item {
+        id: diagram
+        readonly property bool sideBySide: root.sideBySide || root.compactBesideArt
+        readonly property int spacing: root.compactBesideArt ? 10 : 20
         Layout.fillWidth: true
         Layout.minimumWidth: 0
         Layout.preferredWidth: 0
-        columns: root.sideBySide || root.compactBesideArt ? 2 : 1
-        columnSpacing: root.compactBesideArt ? 10 : 20
-        rowSpacing: 10
+        implicitHeight: root.hasPinout ? Math.max(boardArt.height, pinChart.y + pinChart.height) : boardArt.height
 
         PortsBoardArt {
             id: boardArt
             objectName: "portsBoardArt"
-            Layout.fillWidth: true
-            Layout.row: 0
-            Layout.column: 0
-            Layout.preferredWidth: root.sideBySide ? root.artSlotWidth
-                                 : root.compactBesideArt ? root.compactArtWidth : root.contentWidth
-            Layout.minimumWidth: 0
-            Layout.preferredHeight: root.sideBySide ? alignedHeight : root.previewHeight
-            Layout.alignment: Qt.AlignTop
+            width: root.sideBySide ? root.artSlotWidth : root.compactBesideArt ? root.compactArtWidth : diagram.width
+            height: root.sideBySide ? alignedHeight : root.previewHeight
             alignedScale: root.artScale
             alignedFirstRow: root.chartHeaderHeight + root.rowPitch / 2
             artwork: root.profile.art
-            highlights: root.highlights
+            highlights: root.pinMarks
             inspectedPin: root.inspectedPin
             inspectedAuxPin: root.inspectedAuxPin
             onPinPicked: function(pin, auxiliary) { root.selectPin(pin, auxiliary) }
@@ -196,21 +266,17 @@ MapSettingsCard {
             id: pinChart
             objectName: "portsPinChart"
             visible: root.hasPinout
-            Layout.fillWidth: true
-            Layout.row: root.sideBySide || root.compactBesideArt ? 0 : 1
-            Layout.column: root.sideBySide || root.compactBesideArt ? 1 : 0
-            Layout.preferredWidth: root.sideBySide ? root.contentWidth - root.artSlotWidth - 20
-                                 : root.compactBesideArt ? root.contentWidth - root.compactArtWidth - 10 : root.contentWidth
-            Layout.minimumWidth: 0
-            Layout.alignment: Qt.AlignTop
-            implicitHeight: pinList.y + pinList.height + 8
+            x: diagram.sideBySide ? boardArt.width + diagram.spacing : 0
+            y: diagram.sideBySide ? 0 : boardArt.height + 10
+            width: Math.max(0, diagram.width - x)
+            height: pinList.y + pinList.height + 8
             color: settings_form.pageBackground
             border.color: settings_form.lineColor
             radius: 10
 
             Text {
                 anchors.top: parent.top
-                anchors.topMargin: 11
+                anchors.topMargin: root.routeOptions.length ? 6 : 11
                 anchors.left: parent.left
                 anchors.right: parent.right
                 text: boardArt.geometry.header && boardArt.geometry.header.columnGap > boardArt.geometry.header.pitch * 3
@@ -221,6 +287,20 @@ MapSettingsCard {
                 font.pixelSize: Typography.sectionTitle
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter
+            }
+            Text {
+                anchors.top: parent.top
+                anchors.topMargin: 24
+                anchors.left: parent.left
+                anchors.right: parent.right
+                visible: root.routeOptions.length > 0
+                text: Object.keys(root.availableRoutes).length ? qsTr("Available UART pins")
+                      : qsTr("Documented UART options")
+                color: settings_form.secondaryText
+                font.family: Typography.family
+                font.pixelSize: Typography.helper
+                horizontalAlignment: Text.AlignHCenter
+                elide: Text.ElideRight
             }
 
             Flickable {
@@ -258,7 +338,7 @@ MapSettingsCard {
                     if (!interactive) return
                     var top = row * root.rowPitch
                     if (center) {
-                        var first = Math.max(0, row - Math.floor(height / root.rowPitch / 2))
+                        var first = Math.max(0, row - Math.floor((height / root.rowPitch - 1) / 2))
                         contentY = Math.min(contentHeight - height, first * root.rowPitch)
                     } else if (top < contentY)
                         contentY = top
@@ -273,7 +353,9 @@ MapSettingsCard {
                         readonly property int pin: root.pinAtSlot(index)
                         readonly property bool odd: index % 2 === 0
                         readonly property int row: Math.floor(index / 2)
-                        readonly property var assignment: root.highlights[pin] || null
+                        readonly property var assignment: root.pinMarks[pin] || null
+                        readonly property bool option: !!assignment && assignment.option === true
+                        readonly property bool pending: !!assignment && assignment.pending === true
                         readonly property string pinName: root.pinNames[pin - 1]
                         readonly property string alternate: root.functionForPin(pin)
                         readonly property bool inspected: root.inspectedPin === pin
@@ -295,7 +377,10 @@ MapSettingsCard {
                         Accessible.role: Accessible.Button
                         Accessible.name: qsTr("Pin %1, %2").arg(pin).arg(pinName) +
                             (alternate ? ", " + qsTr("Alternate function: %1").arg(alternate) : "") +
-                            (assignment ? ", " + assignment.label + " " + assignment.signal : "")
+                            (assignment ? ", " + assignment.label + (assignment.option ? "" : ", " + assignment.signal) : "") +
+                            (assignment && assignment.port ? ", " + assignment.port : "") +
+                            (assignment && assignment.option && !assignment.port ? ", " + qsTr("Possible UART pin") : "") +
+                            (assignment && assignment.pending ? ", " + qsTr("Pending apply") : "")
                         onClicked: root.selectPin(pin, false)
                         onActiveFocusChanged: if (activeFocus) {
                             pinList.revealRow(row)
@@ -309,7 +394,8 @@ MapSettingsCard {
                             radius: 4
                             color: pinButton.assignment
                                    ? Qt.tint(settings_form.pageBackground, Qt.rgba(pinButton.pinColor.r, pinButton.pinColor.g,
-                                                                                  pinButton.pinColor.b, 0.16))
+                                                                                  pinButton.pinColor.b,
+                                                                                  pinButton.option ? 0.07 : 0.16))
                                    : pinButton.hovered || pinButton.inspected ? settings_form.panelBackgroundRaised : "transparent"
                             border.width: pinButton.visualFocus || pinButton.inspected ? 1 : 0
                             border.color: settings_form.accentColor
@@ -322,6 +408,7 @@ MapSettingsCard {
                                 anchors.verticalCenter: parent.verticalCenter
                                 radius: 1
                                 color: pinButton.pinColor
+                                opacity: pinButton.option ? 0.5 : 1
                             }
                         }
                         contentItem: RowLayout {
@@ -333,7 +420,8 @@ MapSettingsCard {
                                 Layout.preferredWidth: pinButton.padSize
                                 Layout.preferredHeight: pinButton.padSize
                                 radius: pinButton.pin === 1 ? 3 : width / 2
-                                color: pinButton.assignment ? pinButton.pinColor : settings_form.panelBackground
+                                color: pinButton.assignment && !pinButton.option && !pinButton.pending
+                                       ? pinButton.pinColor : settings_form.panelBackground
                                 border.width: pinButton.assignment ? 2 : 1
                                 border.color: pinButton.pinColor
                                 Rectangle {
@@ -341,7 +429,8 @@ MapSettingsCard {
                                     width: Math.max(3, parent.width * 0.35)
                                     height: width
                                     radius: width / 2
-                                    color: pinButton.assignment ? "#102633" : pinButton.pinColor
+                                    color: pinButton.assignment && !pinButton.option && !pinButton.pending
+                                           ? "#102633" : pinButton.pinColor
                                 }
                             }
                             Text {
@@ -361,15 +450,17 @@ MapSettingsCard {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 Layout.minimumWidth: 0
-                                text: pinButton.assignment ? pinButton.assignment.signal + " · " + pinButton.assignment.label
-                                                           : pinButton.pinName + (pinButton.alternate ? " · " + pinButton.alternate : "")
+                                text: !pinButton.assignment
+                                    ? pinButton.pinName + (pinButton.alternate ? " · " + pinButton.alternate : "")
+                                    : pinButton.assignment.option ? pinButton.assignment.label
+                                    : pinButton.assignment.signal + " · " + pinButton.assignment.label
                                 horizontalAlignment: pinButton.odd ? Text.AlignRight : Text.AlignLeft
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
                                 color: pinButton.assignment ? settings_form.primaryText : settings_form.secondaryText
                                 font.family: Typography.family
                                 font.pixelSize: Typography.helper
-                                font.bold: !!pinButton.assignment
+                                font.bold: !!pinButton.assignment && !pinButton.option
                             }
                         }
                     }
@@ -434,7 +525,9 @@ MapSettingsCard {
                                            .arg(root.auxPins[root.inspectedAuxPin - 1])
             : root.inspectedPin ? qsTr("Pin %1 · %2").arg(root.inspectedPin).arg(root.pinNames[root.inspectedPin - 1]) +
               (root.functionForPin(root.inspectedPin) ? " · " + root.functionForPin(root.inspectedPin) : "") +
-              (root.focusedAssignment ? " · " + root.focusedAssignment.label + " " + root.focusedAssignment.signal : "") : ""
+              (root.focusedAssignment ? " · " + root.focusedAssignment.label +
+                  (root.focusedAssignment.option ? "" : " " + root.focusedAssignment.signal) +
+                  (root.focusedAssignment.port ? " · " + root.focusedAssignment.port : "") : "") : ""
         color: settings_form.primaryText
         font.family: Typography.family
         font.pixelSize: Typography.body

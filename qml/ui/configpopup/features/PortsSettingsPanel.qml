@@ -10,8 +10,19 @@ AdvancedPage {
     initialFocusItem: unitTabs.currentItem
     onBackRequested: settings_form.side_bar_regain_focus()
 
-    property string validationError: ""
     readonly property bool editingAir: unitTabs.currentIndex === 0
+    readonly property var activeDraft: editingAir ? airDraft : groundDraft
+
+    PortsSettingsDraft {
+        id: airDraft
+        model: _ohdSystemAirSettingsModel
+        connected: _ohdSystemAir.is_alive
+    }
+    PortsSettingsDraft {
+        id: groundDraft
+        model: _ohdSystemGroundSettings
+        connected: _ohdSystemGround.is_alive
+    }
     readonly property var sections: ({
         fc: {id: "fc", title: qsTr("Flight controller telemetry"), icon: "\uf1d8", groups: [
             {rows: [
@@ -79,33 +90,76 @@ AdvancedPage {
         function onIs_aliveChanged() { root.requestSettings(_ohdSystemGround, _ohdSystemGroundSettings) }
     }
 
-    function validatePort(air, model, id, value) {
-        validationError = ""
+    function portRoles(air) {
         var roles = air ? [
             {port: "FC_UART_CONN", name: qsTr("Flight controller telemetry")},
             {port: "SBUS_DEV", enable: "SBUS_EN", name: qsTr("SBUS output")}
         ] : [{port: "TRACKER_UART_OUT", name: qsTr("Tracker output")}]
         roles.push({port: "OHD_UART_TLM", enable: "OHD_UART_EN", name: qsTr("OpenHD UART link")})
+        return roles
+    }
 
-        function portFor(role) {
-            var port = role.port === id ? String(value) : model.param_string_exists(role.port) ? model.get_cached_string(role.port) : ""
-            // Linux treats repeated slashes in a local device path as a single slash.
-            return port.trim().replace(/\/{2,}/g, "/")
-        }
-        function enabled(role) {
-            return !role.enable || (role.enable === id ? Number(value) !== 0 :
-                model.param_int_exists(role.enable) && model.get_cached_int(role.enable) !== 0)
+    function resolvedPort(draft, role, value) {
+        if (!value) return ""
+        var meta = draft.model.get_ui_metadata(role.port)
+        var path = meta.serialConfigured === value && meta.serialResolved ? meta.serialResolved : value
+        return path === "DEFAULT" ? "" : path.trim().replace(/\/{2,}/g, "/")
+    }
+
+    function applyCurrent() {
+        var draft = activeDraft
+        if (!draft.connected || !draft.dirty || draft.applying || draft.model.ui_is_busy ||
+                _qopenhd.debugMenuPreview) return
+        var intended = Object.assign({}, draft.edits)
+        var roles = portRoles(editingAir)
+        var state = roles.map(function(role) {
+            var enabled = !role.enable || Boolean(draft.valueFor(role.enable))
+            return {
+                role: role,
+                enabled: enabled,
+                wasEnabled: !role.enable || Boolean(draft.savedValue(role.enable)),
+                edited: intended[role.port] !== undefined || (role.enable && intended[role.enable] !== undefined),
+                path: enabled ? resolvedPort(draft, role, draft.valueFor(role.port)) : "",
+                oldPath: resolvedPort(draft, role, draft.savedValue(role.port))
+            }
+        })
+        var releases = []
+        var portIds = []
+        var enableIds = []
+        for (var i = 0; i < state.length; ++i) {
+            var entry = state[i]
+            var role = entry.role
+            portIds.push(role.port)
+            if (role.enable) enableIds.push(role.enable)
+            if (entry.edited && role.enable && entry.enabled && !draft.valueFor(role.port)) {
+                draft.reject(qsTr("Choose a UART port for %1 before enabling it.").arg(role.name))
+                return
+            }
+            var other = state.find(function(item) { return item !== entry && item.path && item.path === entry.path })
+            if (entry.edited && other) {
+                draft.reject(qsTr("%1 already uses %2.").arg(other.role.name).arg(entry.path))
+                return
+            }
+            // Free a port another role will claim before writing any new owners.
+            if (entry.wasEnabled && entry.oldPath && entry.oldPath !== entry.path &&
+                    state.some(function(item) { return item !== entry && item.path === entry.oldPath })) {
+                var stopId = role.enable || role.port
+                if (intended[stopId] === undefined) intended[stopId] = draft.valueFor(stopId)
+                releases.push({id: stopId, label: role.name, value: role.enable ? 0 : ""})
+            }
         }
 
-        var changed = roles.find(function(role) { return role.port === id || role.enable === id })
-        if (!changed || !enabled(changed)) return ""
-        var port = portFor(changed)
-        if (!port && changed.enable) return qsTr("Choose a UART port for %1 before enabling it.").arg(changed.name)
-        // DEFAULT is a role-specific alias resolved on the unit.
-        if (!port || port === "DEFAULT") return ""
-        var conflict = roles.find(function(role) { return role !== changed && enabled(role) && portFor(role) === port })
-        if (conflict) return qsTr("%1 already uses %2 on %3.").arg(conflict.name).arg(port).arg(air ? qsTr("Air") : qsTr("Ground"))
-        return ""
+        function applyOrder(id) {
+            if (enableIds.indexOf(id) >= 0) return intended[id] ? 3 : 0
+            return portIds.indexOf(id) >= 0 ? 2 : 1
+        }
+        var writes = Object.keys(intended).sort(function(left, right) {
+            return applyOrder(left) - applyOrder(right)
+        }).map(function(id) {
+            var metadata = draft.model.get_ui_metadata(id)
+            return {id: id, value: intended[id], label: metadata.label || id}
+        })
+        draft.apply(releases.concat(writes), intended)
     }
 
     ColumnLayout {
@@ -120,7 +174,6 @@ AdvancedPage {
             spacing: 0
             padding: 1
             onCurrentIndexChanged: {
-                root.validationError = ""
                 if (portList) portList.contentY = 0
             }
             Keys.onLeftPressed: focusUnit(0)
@@ -156,16 +209,6 @@ AdvancedPage {
                 text: qsTr("Ground Unit")
                 iconText: "\uf519"
             }
-        }
-
-        Text {
-            Layout.fillWidth: true
-            visible: root.validationError !== ""
-            text: root.validationError
-            color: settings_form.errorColor
-            font.family: Typography.family
-            font.pixelSize: Typography.body
-            wrapMode: Text.Wrap
         }
 
         Item {
@@ -214,7 +257,8 @@ AdvancedPage {
                             advanced: settings_form.showAdvancedSettings
                             connected: boardLoader.unit.is_alive
                             onPinFocused: function(item) { portList.reveal(item) }
-                            settingsModel: air ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings
+                            settingsModel: root.activeDraft.model
+                            draft: root.activeDraft
                             onBackRequested: root.backRequested()
                         }
                     }
@@ -235,10 +279,9 @@ AdvancedPage {
                                     width: (cardGrid.width - cardGrid.columnSpacing * (cardGrid.columns - 1)) / cardGrid.columns
                                     section: modelData
                                     air: root.editingAir
-                                    params: air ? _ohdSystemAirSettingsModel : _ohdSystemGroundSettings
-                                    connected: air ? _ohdSystemAir.is_alive : _ohdSystemGround.is_alive
-                                    validateChange: function(id, value) { return root.validatePort(card.air, card.params, id, value) }
-                                    onValidationFailed: function(reason) { root.validationError = reason }
+                                    params: root.activeDraft.model
+                                    connected: root.activeDraft.connected
+                                    draft: root.activeDraft
                                     onSettingFocused: function(row) { portList.reveal(row) }
                                     onBackRequested: root.backRequested()
                                 }
@@ -246,6 +289,32 @@ AdvancedPage {
                         }
                     }
                 }
+            }
+        }
+        RowLayout {
+            Layout.fillWidth: true
+            visible: root.activeDraft.dirty || root.activeDraft.applying || root.activeDraft.status !== ""
+            spacing: 10
+
+            Text {
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                text: root.activeDraft.applying ? qsTr("Applying…")
+                      : root.activeDraft.status || qsTr("Unapplied changes")
+                color: root.activeDraft.failed ? settings_form.errorColor : settings_form.secondaryText
+                font.family: Typography.family
+                font.pixelSize: Typography.helper
+                wrapMode: Text.Wrap
+            }
+
+            AdvancedActionButton {
+                objectName: "portsApply"
+                primary: true
+                text: qsTr("Apply")
+                enabled: root.activeDraft.connected && root.activeDraft.dirty && !root.activeDraft.applying &&
+                         !root.activeDraft.model.ui_is_busy && !_qopenhd.debugMenuPreview
+                onClicked: root.applyCurrent()
+                Keys.onEscapePressed: root.backRequested()
             }
         }
     }

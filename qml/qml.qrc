@@ -156,6 +156,7 @@ https://github.com/OpenHD
         <file>ui/configpopup/features/FeatureSettingsPanel.qml</file>
         <file>ui/configpopup/features/PortsSettingsPanel.qml</file>
         <file>ui/configpopup/features/PortsSettingsCard.qml</file>
+        <file>ui/configpopup/features/PortsSettingsDraft.qml</file>
         <file>ui/configpopup/features/PortsBoardPinout.qml</file>
         <file>ui/configpopup/features/PortsBoardArt.qml</file>
         <file>ui/configpopup/features/PortsBoardArtwork.js</file>

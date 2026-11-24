@@ -13,6 +13,7 @@ FocusScope {
     property bool busy: false
     property bool compact: false
     property bool preferStepper: false
+    property var stageChange: null
     property var minimumOverride: undefined
     property var maximumOverride: undefined
     // Values which are documented globally but unsupported by the active hardware.
@@ -64,10 +65,18 @@ FocusScope {
             _messageBoxInstance.set_text_and_show(warning)
     }
     function commitInt(value) {
+        if (stageChange) {
+            stageChange(Number(value))
+            return
+        }
         warnIfNeeded()
         settingsModel.try_set_param_int_async(paramId, Number(value), true)
     }
     function commitString(value) {
+        if (stageChange) {
+            stageChange(String(value))
+            return
+        }
         warnIfNeeded()
         settingsModel.try_set_param_string_async(paramId, String(value), true)
     }

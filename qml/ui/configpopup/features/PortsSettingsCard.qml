@@ -11,8 +11,7 @@ MapSettingsCard {
     property bool air
     property var params
     property bool connected
-    property var validateChange
-    signal validationFailed(string reason)
+    property var draft
     signal settingFocused(Item row)
     signal backRequested()
 
@@ -90,8 +89,9 @@ MapSettingsCard {
                             paramId: modelData[0]
                             labelOverride: modelData[1]
                             labelIcon: modelData[2] || ""
-                            validateChange: card.validateChange
-                            onValidationFailed: function(reason) { card.validationFailed(reason) }
+                            stagedValue: card.draft.edits[paramId]
+                            applying: card.draft.applying
+                            stageChange: function(id, value) { card.draft.stage(id, value) }
                             onBackRequested: card.backRequested()
                             onActiveFocusChanged: if (activeFocus) card.settingFocused(settingRow)
                         }
