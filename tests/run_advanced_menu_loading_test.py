@@ -67,6 +67,7 @@ Item {
             var ports = findChild(root, "navigationPage11")
             var icon = findChild(ports, "portsNavigationIcon")
             verify(icon !== null && icon.visible)
+            verify(!findChild(ports, "navigationGlyph").visible)
             var rc = findChild(root, "navigationPage4")
             if (rc) verify(!findChild(rc, "portsNavigationIcon").visible)
             mouseClick(ports)

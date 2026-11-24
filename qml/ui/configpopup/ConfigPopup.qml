@@ -194,7 +194,7 @@ Rectangle {
         ListElement { title: qsTr("Application"); icon: "\uf013" }
         ListElement { title: qsTr("Developer tools"); icon: "\uf0ad" }
         ListElement { title: qsTr("Audio"); icon: "\uf028" }
-        ListElement { title: qsTr("Ports"); icon: "\uf519" }
+        ListElement { title: qsTr("Ports"); icon: "" }
     }
 
     Rectangle {
@@ -262,7 +262,9 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         x: settings_form.compactSidebar ? Math.round((parent.width - width) / 2) : 13
                         Text {
+                            objectName: "navigationGlyph"
                             anchors.centerIn: parent
+                            visible: navigationIcon.glyph.length > 0
                             text: navigationIcon.glyph
                             color: navigationIcon.foreground
                             font.family: "Font Awesome 5 Free"
