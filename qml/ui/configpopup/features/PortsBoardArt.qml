@@ -6,11 +6,11 @@ Item {
     property var highlights: ({})
     property int inspectedPin: 0
     property real alignedScale: 0
-    readonly property int drawingHeight: board.art === "a7s" ? 365
-        : ["pi3", "pi4", "pi5"].indexOf(board.art) >= 0 ? 442 : 426
+    readonly property bool fullSizePi: ["pi3", "pi4", "pi5"].indexOf(board.art) >= 0
+    readonly property int drawingHeight: fullSizePi ? 478 : board.art === "a7s" ? 365 : 426
     readonly property real drawingScale: alignedScale > 0 ? alignedScale : Math.min(width / 298, height / drawingHeight)
     readonly property real canvasTop: alignedScale > 0 ? 8 : (height - drawingScale * drawingHeight) / 2
-    readonly property real headerStart: 66
+    readonly property real headerStart: fullSizePi ? 76 : 66
     readonly property real headerPitch: 15
 
     function pinCenterY(pin) {
@@ -92,6 +92,12 @@ Item {
                 if (socket)
                     box(x + Math.round(w * 0.56), y + 9, Math.round(w * 0.28), h - 18, 3, socket, ink, 3)
             }
+            function ribbonSocket(x, y, w) {
+                box(x, y, w, 13, 3, "#e5dfc7", ink, 3)
+                box(x + 4, y + 3, w - 8, 4, 1, "#384856", ink, 1)
+                for (var contact = x + 8; contact < x + w - 6; contact += 4)
+                    line([contact, y + 8, contact, y + 10], "#b28f59", 1)
+            }
             function chip(x, y, w, h, name, brand, steel) {
                 for (var i = 0; i < 8; ++i) {
                     var px = x + 9 + i * (w - 18) / 7
@@ -119,7 +125,7 @@ Item {
             var y0 = narrow ? 21 : 31
             var y1 = narrow ? 402 : 378
             if (art === "a7s") y1 = 326
-            if (root.drawingHeight === 442) y1 = 391
+            if (root.fullSizePi) y1 = 431
             if (schematic) {
                 x0 = art === "pico" ? 73 : 30
                 x1 = art === "pico" ? 225 : 268
@@ -144,8 +150,9 @@ Item {
                 dot(sx, sy, 2, "#c3ac6c", ink, 0.8)
             }
 
+            var lowerHoleY = root.fullSizePi ? 393 : y1 - 20
             var holes = [[x0 + 19,y0 + 20], [x1 - 19,y0 + 20],
-                         [x0 + 19,y1 - 20], [x1 - 19,y1 - 20]]
+                         [x0 + 19,lowerHoleY], [x1 - 19,lowerHoleY]]
             for (var h = 0; h < holes.length; ++h) {
                 var hole = holes[h]
                 dot(hole[0], hole[1], 10.5, "#ffd578", ink, 3)
@@ -229,9 +236,9 @@ Item {
                 if (art !== "pi3") metal(13, 163, 35, 30, "#304050")
                 if (!pi5) metal(11, 255, 43, 36, "#151b22")
                 var pi4 = art === "pi4"
-                metal(50, pi4 ? 367 : 361, pi4 ? 56 : 61, pi4 ? 54 : 60, pi4 ? "#292c3a" : "#bd944e")
-                metal(117, 367, 53, 54, art === "pi3" ? "#292c3a" : "#1c7bba")
-                metal(183, pi4 ? 361 : 367, pi4 ? 63 : 53, pi4 ? 60 : 54, pi4 ? "#bd944e" : "#292c3a")
+                metal(50, pi4 ? 414 : 409, pi4 ? 56 : 61, pi4 ? 54 : 60, pi4 ? "#292c3a" : "#bd944e")
+                metal(117, 414, 53, 54, art === "pi3" ? "#292c3a" : "#1c7bba")
+                metal(183, pi4 ? 409 : 414, pi4 ? 63 : 53, pi4 ? 60 : 54, pi4 ? "#bd944e" : "#292c3a")
                 chip(93, 107, 93, 76, board.chip, board.brand, true)
                 chip(pi5 ? 93 : 121, 207, 63, 43, pi5 ? "RP1" : pi4 ? "LPDDR4" : "RAM", "", false)
                 if (pi5) {
@@ -239,8 +246,8 @@ Item {
                     box(59, 243, 15, 29, 3, "#e9e9d7", ink, 3)
                     box(181, 69, 22, 10, 2, "#f1eddf", ink, 3)
                 } else {
-                    box(56, 228, 58, 11, 3, "#e1ddd1", ink, 3)
-                    box(103, 46, 78, 13, 3, "#e1ddd1", ink, 3)
+                    ribbonSocket(45, 230, 65)
+                    ribbonSocket(102, 45, 76)
                     chip(84, 268, 47, 35, pi4 ? "VL805" : "USB", "", false)
                     chip(155, 279, 43, 30, "LAN", "", false)
                 }
