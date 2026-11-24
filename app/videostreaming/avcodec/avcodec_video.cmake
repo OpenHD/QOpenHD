@@ -24,4 +24,11 @@ if(WIN32 OR (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCH
 endif()
 target_link_libraries(QOpenHDApp PRIVATE GLESv2 EGL)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(i.86|x86_64|amd64)$")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(X86_DRM REQUIRED IMPORTED_TARGET libdrm)
+    target_sources(QOpenHDApp PRIVATE ${CMAKE_CURRENT_LIST_DIR}/drm_kms/x86_kms.cpp)
+    target_link_libraries(QOpenHDApp PRIVATE Qt6::GuiPrivate PkgConfig::X86_DRM)
+endif()
+
 add_compile_definitions(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)

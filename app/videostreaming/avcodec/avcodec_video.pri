@@ -34,6 +34,9 @@ win32 {
 linux:!android:contains(QT_ARCH, i386|x86_64) {
     DEFINES += QOPENHD_DESKTOP_HW_DECODE
     PKGCONFIG += libswscale
+    QT += gui-private
+    SOURCES += $$PWD/drm_kms/x86_kms.cpp
+    HEADERS += $$PWD/drm_kms/x86_kms.h
 }
 
 # just using the something something webrtc from stephen was the easiest solution.

@@ -5,6 +5,7 @@
 
 #if defined(__linux__) && !defined(__android__) && defined(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)
 #include "videostreaming/avcodec/drm_kms/kms_renderer.h"
+#include "videostreaming/avcodec/drm_kms/x86_kms.h"
 #include <QSettings>
 #endif
 
@@ -33,6 +34,9 @@ void QRenderStats::register_to_root_window(QQmlApplicationEngine& engine)
 
 void QRenderStats::registerOnWindow(QQuickWindow *window)
 {
+#ifdef QOPENHD_X86_KMS_AVAILABLE
+    X86Kms::attach(window);
+#endif
     QSettings settings;
 #if defined(__linux__) && !defined(__android__) && defined(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)
 #if defined(IS_PLATFORM_ROCK)

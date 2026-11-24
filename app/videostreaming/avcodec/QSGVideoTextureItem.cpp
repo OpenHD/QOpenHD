@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
 #include "QSGVideoTextureItem.h"
+#include "drm_kms/x86_kms.h"
 
 #include <QtQuick/qquickwindow.h>
 #include <QtCore/QRunnable>
@@ -31,6 +32,10 @@ void QSGVideoTextureItem::setPreviewGain(const QVector3D& gain)
     const QVector3D value(safe(gain.x()),safe(gain.y()),safe(gain.z()));
     if(value == m_preview_gain) return;
     m_preview_gain=value;
+#ifdef QOPENHD_X86_KMS_AVAILABLE
+    // Per-channel preview corrections require the existing shader renderer.
+    if (m_primary_stream && value != QVector3D(1, 1, 1)) X86Kms::disable();
+#endif
     emit previewGainChanged();
     update();
 }

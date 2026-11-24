@@ -119,6 +119,7 @@ private:
     AVCodecID m_failed_hw_codec = AV_CODEC_ID_NONE;
     AVPixelFormat m_reported_format = AV_PIX_FMT_NONE;
     SwsContext* m_desktop_conversion = nullptr;
+    bool m_native_video = false;
 #endif
     // On some platforms, it is easiest to just start and stop a service that does the video decode (QOpenHD is then transparently layered on top)
     void dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings);

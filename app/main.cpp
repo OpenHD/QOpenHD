@@ -59,6 +59,7 @@
 #endif
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
 #include "QSGVideoTextureItem.h"
+#include "videostreaming/avcodec/drm_kms/x86_kms.h"
 #endif
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #include "videostreaming/gstreamer/gst_helper.hpp"
@@ -455,7 +456,8 @@ int main(int argc, char *argv[]) {
 #ifdef QOPENHD_ENABLE_NXP_VIDEO
     const bool earlyBootSplash = true;
 #else
-    const bool earlyBootSplash = QOpenHD::instance().is_platform_rpi();
+    const bool earlyBootSplash = QOpenHD::instance().is_platform_rpi() ||
+                                 qEnvironmentVariableIntValue("QOPENHD_BOOT_ANIMATION") == 1;
 #endif
 #ifdef QOPENHD_ENABLE_NXP_VIDEO
     QQuickWindow::setDefaultAlphaBuffer(true);
@@ -465,7 +467,12 @@ int main(int argc, char *argv[]) {
     nxpFormat.setAlphaBufferSize(8);
     QSurfaceFormat::setDefaultFormat(nxpFormat);
 #endif
-    if (earlyBootSplash) {
+#ifdef QOPENHD_X86_KMS_AVAILABLE
+    const bool x86Kms = X86Kms::prepare();
+#else
+    const bool x86Kms = false;
+#endif
+    if (earlyBootSplash || x86Kms) {
         // The startup window also hosts the HUD above the external video plane.
         // EGL's alpha format must be selected before this window is created.
         QQuickWindow::setDefaultAlphaBuffer(true);
@@ -481,6 +488,7 @@ int main(int argc, char *argv[]) {
 #endif
     QApplication app(argc, argv);
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("QOPENHD_X86_KMS", x86Kms);
 #ifdef QOPENHD_ENABLE_NXP_VIDEO
     // The permanent startup window selects native Hantro movie playback before
     // the other models and platform context properties have been initialized.

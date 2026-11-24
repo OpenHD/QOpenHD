@@ -1,4 +1,5 @@
 #include "avcodec_decoder.h"
+#include "drm_kms/x86_kms.h"
 #include "qdebug.h"
 #include <QFileInfo>
 #include <QDir>
@@ -46,8 +47,11 @@ static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     int err = 0;
     ctx->hw_frames_ctx = NULL;
     // ctx->hw_device_ctx gets freed when we call avcodec_free_context
+    const auto requested_device = qgetenv("QOPENHD_VAAPI_DEVICE");
+    const char* device = type == AV_HWDEVICE_TYPE_VAAPI && !requested_device.isEmpty()
+            ? requested_device.constData() : nullptr;
     if ((err = av_hwdevice_ctx_create(&ctx->hw_device_ctx, type,
-                                      NULL, NULL, 0)) < 0) {
+                                      device, NULL, 0)) < 0) {
         fprintf(stderr, "Failed to create specified HW device.\n");
         return err;
     }
@@ -318,6 +322,18 @@ void AVCodecDecoder::configure_desktop_decoder(bool force_software)
 
 void AVCodecDecoder::present_desktop_frame(AVFrame* frame)
 {
+#ifdef QOPENHD_X86_KMS_AVAILABLE
+    if (m_primary_stream && QOpenHDVideoHelper::get_display_rotation() == 0 && X86Kms::enqueue(frame)) {
+        if (!m_native_video) TextureRenderer::instance().clear_video_texture(true);
+        m_native_video = true;
+        m_last_decoded_frame = std::chrono::steady_clock::now();
+        DecodingStatistcs::instance().util_set_primary_stream_frame_format("NV12 (VAAPI/KMS)", frame->width, frame->height);
+        DecodingStatistcs::instance().set_decoding_type("HW (VAAPI/KMS)");
+        return;
+    }
+    if (m_native_video) X86Kms::disable();
+#endif
+    m_native_video = false;
     const auto format = static_cast<AVPixelFormat>(frame->format);
     const auto free_frame = [](AVFrame* f) { av_frame_free(&f); };
     std::unique_ptr<AVFrame, decltype(free_frame)> downloaded(nullptr, free_frame);
