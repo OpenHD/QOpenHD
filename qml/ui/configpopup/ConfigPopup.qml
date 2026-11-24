@@ -253,15 +253,57 @@ Rectangle {
                 highlighted: mainStackLayout.currentIndex === modelData
                 Accessible.name: navigationModel.get(modelData).title
                 contentItem: Item {
-                    Text {
-                        width: 25
+                    Item {
+                        id: navigationIcon
+                        property color foreground: navDelegate.highlighted ? "#ffffff" : settings_form.primaryText
+                        property string glyph: navigationModel.get(modelData).icon
+                        width: 28
+                        height: 24
                         anchors.verticalCenter: parent.verticalCenter
-                        x: settings_form.compactSidebar ? Math.round((parent.width - width) / 2) : 14
-                        text: navigationModel.get(modelData).icon
-                        color: navDelegate.highlighted ? "#ffffff" : settings_form.primaryText
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: MenuTypography.rowIcon
-                        horizontalAlignment: Text.AlignHCenter
+                        x: settings_form.compactSidebar ? Math.round((parent.width - width) / 2) : 13
+                        Text {
+                            anchors.centerIn: parent
+                            text: navigationIcon.glyph
+                            color: navigationIcon.foreground
+                            font.family: "Font Awesome 5 Free"
+                            font.pixelSize: MenuTypography.rowIcon
+                        }
+                        Column {
+                            objectName: "portsNavigationIcon"
+                            anchors.centerIn: parent
+                            visible: modelData === 11
+                            spacing: 2
+                            Repeater {
+                                model: ["TX", "RX"]
+                                delegate: Item {
+                                    width: navigationIcon.width
+                                    height: 10
+                                    Text {
+                                        anchors.left: parent.left
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: modelData
+                                        color: navigationIcon.foreground
+                                        font.family: MenuTypography.family
+                                        font.pixelSize: 9
+                                        font.bold: true
+                                    }
+                                    Rectangle {
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 12; height: 2; radius: 1
+                                        color: navigationIcon.foreground
+                                    }
+                                    Rectangle {
+                                        x: index === 0 ? parent.width - width : 15
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 6; height: 6; radius: 3
+                                        color: index === 0 ? (navDelegate.highlighted ? "#174d82" : sidebar.color) : navigationIcon.foreground
+                                        border.color: navigationIcon.foreground
+                                        border.width: 1.5
+                                    }
+                                }
+                            }
+                        }
                     }
                     Text {
                         visible: !settings_form.compactSidebar

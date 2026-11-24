@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import "../qopenhd_settings"
 import "../MenuTypography.js" as Typography
+import "PortsBoardProfiles.js" as Boards
 
 MapSettingsCard {
     id: root
@@ -17,24 +18,25 @@ MapSettingsCard {
     signal backRequested()
     signal pinFocused(Item item)
 
-    // Platform IDs from openhd_platform.h. Compute-module carrier mappings vary.
-    readonly property bool radxa: platform === 20
-    readonly property bool supported: radxa || platform === 11 || platform === 13
-    readonly property var pinNames: radxa ? [
-        "3.3 V", "5 V", "GPIO1_A0", "5 V", "GPIO1_A1", "GND", "GPIO3_C4", "GPIO0_D1",
-        "GND", "GPIO0_D0", "GPIO3_A1", "GPIO3_A3", "GPIO3_A2", "GND", "GPIO3_B0", "GPIO3_B1",
-        "3.3 V", "GPIO3_B2", "GPIO4_C3", "GND", "GPIO4_C5", "GPIO3_C1", "GPIO4_C2", "GPIO4_C6",
-        "GND", "NC", "GPIO4_B2", "GPIO4_B3", "GPIO3_B3", "GND", "GPIO3_B4", "GPIO3_C2",
-        "GPIO3_C3", "GND", "GPIO3_A4", "GPIO3_A7", "GPIO1_A4", "GPIO3_A6", "GND", "GPIO3_A5"
-    ] : [
-        "3.3 V", "5 V", "GPIO 2", "5 V", "GPIO 3", "GND", "GPIO 4", "GPIO 14",
-        "GND", "GPIO 15", "GPIO 17", "GPIO 18", "GPIO 27", "GND", "GPIO 22", "GPIO 23",
-        "3.3 V", "GPIO 24", "GPIO 10", "GND", "GPIO 9", "GPIO 25", "GPIO 11", "GPIO 8",
-        "GND", "GPIO 7", "GPIO 0", "GPIO 1", "GPIO 5", "GND", "GPIO 6", "GPIO 12",
-        "GPIO 13", "GND", "GPIO 19", "GPIO 16", "GPIO 26", "GPIO 20", "GND", "GPIO 21"
-    ]
+    readonly property string deviceModel: {
+        if (!connected || !settingsModel) return ""
+        settingsModel.update_count
+        var params = air ? ["FC_UART_CONN", "OHD_UART_TLM", "SBUS_DEV"] : ["TRACKER_UART_OUT", "OHD_UART_TLM"]
+        for (var i = 0; i < params.length; ++i) {
+            if (!settingsModel.param_string_exists(params[i])) continue
+            var model = settingsModel.get_ui_metadata(params[i]).serialBoardModel
+            if (model) return model
+        }
+        return ""
+    }
+    readonly property var profile: Boards.profile(platform, deviceModel)
+    readonly property var pinNames: profile.pins
+    readonly property var auxPins: profile.aux
+    readonly property bool hasPinout: pinNames.length > 0
+    readonly property bool schematic: !hasPinout
+    readonly property bool raspberryGpio: ["pi-zero", "pi3", "pi4", "pi5"].indexOf(profile.art) >= 0
     readonly property var assignments: {
-        if (!settingsModel || !supported) return []
+        if (!settingsModel) return []
         settingsModel.update_count
         var roles = air ? [{id: "FC_UART_CONN", label: qsTr("FC telemetry")}] :
                           [{id: "TRACKER_UART_OUT", label: qsTr("Tracker"), txOnly: true}]
@@ -51,7 +53,7 @@ MapSettingsCard {
             if (!value) return list
             var meta = settingsModel.get_ui_metadata(role.id)
             var port = meta.serialConfigured === value && meta.serialResolved ? meta.serialResolved : value
-            var pins = radxa && meta.serialHeaderRoutes ? meta.serialHeaderRoutes[port] : null
+            var pins = hasPinout && meta.serialHeaderRoutes ? meta.serialHeaderRoutes[port] : null
             list.push({label: role.label, port: port, rx: pins && !role.txOnly ? pins.rx : 0,
                        tx: pins ? pins.tx : 0})
             return list
@@ -59,11 +61,11 @@ MapSettingsCard {
     }
     readonly property var highlights: {
         var result = {}
-        if (!connected || !settingsModel || !supported) return result
+        if (!connected || !settingsModel || !hasPinout) return result
         settingsModel.update_count
 
         function add(pin, label, signal, color) {
-            if (typeof pin !== "number" || pin % 1 !== 0 || pin < 1 || pin > 40) return
+            if (typeof pin !== "number" || pin % 1 !== 0 || pin < 1 || pin > pinNames.length) return
             var existing = result[pin]
             if (existing) {
                 existing.label += " / " + label
@@ -76,9 +78,9 @@ MapSettingsCard {
             add(role.rx, role.label, "RX", "#16c4f3")
             add(role.tx, role.label, "TX", "#66e88a")
         }
-        if (Object.keys(result).length)
+        if (Object.keys(result).length && pinNames[5] === "GND")
             add(6, qsTr("Reference"), "GND", "#c0c9da")
-        if (!radxa) {
+        if (raspberryGpio) {
             var gpios = [{id: "GPIO_2", pin: 3}, {id: "GPIO_26", pin: 37}]
             for (var j = 0; j < gpios.length; ++j) {
                 var gpio = gpios[j]
@@ -95,9 +97,9 @@ MapSettingsCard {
     readonly property real artScale: sideBySide ? rowPitch / boardArt.headerPitch : 0
     readonly property var focusedAssignment: highlights[inspectedPin] || null
 
-    onPlatformChanged: inspectedPin = 0
+    onProfileChanged: inspectedPin = 0
     onAirChanged: inspectedPin = 0
-    title: radxa ? qsTr("Radxa ZERO 3W · Pinout") : platform === 13 ? qsTr("Raspberry Pi 5 · Pinout") : qsTr("Raspberry Pi 4 Model B · Pinout")
+    title: hasPinout ? qsTr("%1 · Pinout").arg(profile.name) : profile.name
     headerNote: air ? qsTr("Air") : qsTr("Ground")
     icon: "\uf2db"
     compact: true
@@ -106,7 +108,7 @@ MapSettingsCard {
         Layout.fillWidth: true
         Layout.minimumWidth: 0
         Layout.preferredWidth: 0
-        columns: root.sideBySide ? 2 : 1
+        columns: root.hasPinout && root.sideBySide ? 2 : 1
         columnSpacing: 20
         rowSpacing: 10
 
@@ -116,15 +118,16 @@ MapSettingsCard {
             Layout.fillWidth: true
             Layout.preferredWidth: 220
             Layout.minimumWidth: 0
-            Layout.preferredHeight: root.sideBySide ? root.artScale * 426 + 16 : 220
+            Layout.preferredHeight: root.hasPinout && root.sideBySide ? root.artScale * 426 + 16 : root.hasPinout ? 220 : 150
             Layout.alignment: Qt.AlignTop
-            alignedScale: root.artScale
-            platform: root.platform
+            alignedScale: root.hasPinout ? root.artScale : 0
+            board: root.profile
             highlights: root.highlights
             inspectedPin: root.inspectedPin
         }
 
         Rectangle {
+            visible: root.hasPinout
             Layout.fillWidth: true
             Layout.preferredWidth: 315
             Layout.minimumWidth: 0
@@ -144,7 +147,7 @@ MapSettingsCard {
                 Text {
                     Layout.fillWidth: true
                     id: headerTitle
-                    text: qsTr("GPIO header · 2 × 20")
+                    text: qsTr("GPIO header · 2 × %1").arg(root.pinNames.length / 2)
                     color: settings_form.primaryText
                     font.family: Typography.family
                     font.pixelSize: Typography.sectionTitle
@@ -162,7 +165,7 @@ MapSettingsCard {
                     rowSpacing: 1
 
                     Repeater {
-                        model: 40
+                        model: root.pinNames.length
                         delegate: Button {
                             id: pinButton
                             readonly property int pin: index + 1
@@ -239,6 +242,56 @@ MapSettingsCard {
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    Text {
+        Layout.fillWidth: true
+        visible: root.schematic
+        text: root.deviceModel && root.deviceModel !== root.profile.name
+              ? qsTr("%1 · Connector pinout unavailable").arg(root.deviceModel)
+              : qsTr("Connector pinout unavailable")
+        color: settings_form.secondaryText
+        font.family: Typography.family
+        font.pixelSize: Typography.helper
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.Wrap
+    }
+
+    ColumnLayout {
+        Layout.fillWidth: true
+        visible: root.auxPins.length > 0
+
+        Text {
+            text: qsTr("Auxiliary GPIO header · 1 × %1").arg(root.auxPins.length)
+            color: settings_form.primaryText
+            font.family: Typography.family
+            font.pixelSize: Typography.sectionTitle
+            font.bold: true
+        }
+
+        Flow {
+            Layout.fillWidth: true
+            spacing: 6
+
+            Repeater {
+                model: root.auxPins
+                Rectangle {
+                    width: auxLabel.implicitWidth + 14
+                    height: 24
+                    color: settings_form.pageBackground
+                    border.color: settings_form.lineColor
+                    radius: 5
+                    Text {
+                        id: auxLabel
+                        anchors.centerIn: parent
+                        text: (index + 1) + " · " + modelData
+                        color: settings_form.secondaryText
+                        font.family: Typography.family
+                        font.pixelSize: Typography.helper
                     }
                 }
             }

@@ -897,6 +897,8 @@ QVariantMap MavlinkSettingsModel::get_ui_metadata(QString param_id) const
     const auto documented = DocumentedParam::find_param(param_id.toStdString(),metadata_sys_id(),metadata_comp_id());
     const auto resolved=DocumentedParam::metadata(param_id.toStdString(),metadata_sys_id(),metadata_comp_id());
     if (resolved["serialPortScan"].toBool()) result.insert("serialPortScan",true);
+    if (resolved["serialBoardModel"].isString())
+        result.insert("serialBoardModel", resolved["serialBoardModel"].toString());
     if (resolved["serialHeaderRoutes"].isObject()) {
         result.insert("serialHeaderRoutes", resolved["serialHeaderRoutes"].toObject().toVariantMap());
         result.insert("serialConfigured", resolved["serialConfigured"].toString());

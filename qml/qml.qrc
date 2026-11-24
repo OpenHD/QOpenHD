@@ -158,6 +158,7 @@ https://github.com/OpenHD
         <file>ui/configpopup/features/PortsSettingsCard.qml</file>
         <file>ui/configpopup/features/PortsBoardPinout.qml</file>
         <file>ui/configpopup/features/PortsBoardArt.qml</file>
+        <file>ui/configpopup/features/PortsBoardProfiles.js</file>
         <file>ui/configpopup/features/JoystickPage.qml</file>
         <file>ui/configpopup/features/ChannelOverview.qml</file>
         <file>ui/configpopup/features/ChannelRangeEditor.qml</file>

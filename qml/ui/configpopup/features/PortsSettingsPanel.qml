@@ -204,7 +204,7 @@ AdvancedPage {
                         id: boardLoader
                         width: cards.width
                         readonly property var unit: root.editingAir ? _ohdSystemAir : _ohdSystemGround
-                        active: [20, 11, 13].indexOf(unit.ohd_platform_type) >= 0
+                        active: unit.ohd_platform_type >= 0
                         visible: active
                         sourceComponent: PortsBoardPinout {
                             platform: boardLoader.unit.ohd_platform_type

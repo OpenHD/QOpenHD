@@ -22,6 +22,7 @@ Item {
          property var detectedPorts: []
          property bool hasSerialScan: true
          property var headerRoutes: ({})
+         property string boardModel: ""
          property int writes:0
          property string lastId:""
          property var lastValue:""
@@ -31,7 +32,7 @@ Item {
          function get_cached_string(id){return values[id]}
          function get_ui_metadata(id){
              return {label:id, description:"", readOnly:false, serialPortScan:hasSerialScan,
-                     keys:detectedPorts, values:detectedPorts, serialHeaderRoutes:headerRoutes}
+                     keys:detectedPorts, values:detectedPorts, serialHeaderRoutes:headerRoutes, serialBoardModel:boardModel}
          }
          function string_param_has_enum(id){return false}
          function ensure_parameters_available(){}
@@ -74,6 +75,8 @@ Item {
          _ohdSystemGroundSettings.values={TRACKER_UART_OUT:"",TRACK_UART_BAUD:9600,TRACK_UART_FLOW:0,OHD_UART_EN:0,OHD_UART_TLM:"/dev/ttyUSB0",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
          _ohdSystemAir.ohd_platform_type=-1
          _ohdSystemGround.ohd_platform_type=-1
+         _ohdSystemAirSettingsModel.boardModel=""
+         _ohdSystemGroundSettings.boardModel=""
          _ohdSystemAirSettingsModel.headerRoutes={}
          _ohdSystemGroundSettings.headerRoutes={}
          _ohdSystemAirSettingsModel.hasSerialScan=true
@@ -283,13 +286,14 @@ Item {
          compare(Object.keys(board.highlights).length,0)
      }
      function test_board_and_chart_share_pin_rows(){
-         for (var i=0; i<3; ++i) {
-             _ohdSystemAir.ohd_platform_type=[20,11,13][i]
+         var platforms=[20,11,13,21,22,31,32,34,35]
+         for (var i=0; i<platforms.length; ++i) {
+             _ohdSystemAir.ohd_platform_type=platforms[i]
              var board=findChild(loader.item,"portsBoardPinout")
              var art=findChild(board,"portsBoardArt")
              wait(50)
              verify(board.sideBySide)
-             for (var number=1; number<=40; ++number) {
+             for (var number=1; number<=board.pinNames.length; ++number) {
                  var pin=findChild(board,"portsHeaderPin"+number)
                  var chartY=pin.mapToItem(board, pin.width / 2, pin.height / 2).y
                  var boardY=art.mapToItem(board, 0, art.pinCenterY(number)).y
@@ -310,7 +314,50 @@ Item {
          compare(board.platform,11)
          verify(board.title.indexOf("Pi 4") >= 0)
          _ohdSystemGround.ohd_platform_type=12
+         verify(board.schematic)
+         compare(board.pinNames.length,0)
+         verify(board.title.indexOf("Compute Module 4") >= 0)
+
+         _ohdSystemGround.ohd_platform_type=13
+         _ohdSystemGroundSettings.boardModel="Raspberry Pi Compute Module 5 Rev 1.0"
+         _ohdSystemGroundSettings.update_count++
+         verify(board.schematic)
+         verify(board.title.indexOf("Compute Module 5") >= 0)
+
+         _ohdSystemGround.ohd_platform_type=-1
          tryVerify(function(){return findChild(loader.item,"portsBoardPinout") === null})
+     }
+     function test_each_platform_has_a_named_view(){
+         var platformIds=[0,1,10,11,12,13,20,21,22,23,24,25,27,28,29,30,31,32,34,35,36,38,40,46,47,51,52,61,255]
+         var named=[]
+         for (var i=0; i<platformIds.length; ++i) {
+             _ohdSystemAir.ohd_platform_type=platformIds[i]
+             var board=findChild(loader.item,"portsBoardPinout")
+             verify(board !== null)
+             verify(board.title.length > 0)
+             if (i > 0 && i < platformIds.length - 1) {
+                 verify(named.indexOf(board.title) < 0)
+                 named.push(board.title)
+             }
+         }
+     }
+     function test_reported_board_models_and_connector_sizes(){
+         _ohdSystemAir.ohd_platform_type=10
+         _ohdSystemAirSettingsModel.boardModel="Raspberry Pi Zero 2 W Rev 1.0"
+         _ohdSystemAirSettingsModel.update_count++
+         var board=findChild(loader.item,"portsBoardPinout")
+         compare(board.pinNames[7],"GPIO 14")
+         verify(board.title.indexOf("Zero 2 W") >= 0)
+         _ohdSystemAir.ohd_platform_type=31
+         compare(board.pinNames.length,30)
+         compare(board.auxPins.length,15)
+         compare(board.auxPins[3],"GND")
+         _ohdSystemAir.ohd_platform_type=35
+         _ohdSystemAirSettingsModel.headerRoutes={"/dev/ttyS1":{rx:16,tx:18}}
+         _ohdSystemAirSettingsModel.update_count++
+         compare(board.highlights[16].label,"FC telemetry")
+         compare(board.highlights[18].signal,"TX")
+         compare(board.pinNames[25],"GPIO4_D1")
      }
      function test_gpio_highlights_use_physical_pins(){
          _ohdSystemAir.ohd_platform_type=11

@@ -2,7 +2,7 @@ import QtQuick 2.12
 
 Item {
     id: root
-    property int platform: 20
+    property var board: ({art: "module", name: "", brand: "", chip: "", pins: [], aux: []})
     property var highlights: ({})
     property int inspectedPin: 0
     property real alignedScale: 0
@@ -14,8 +14,6 @@ Item {
     function pinCenterY(pin) {
         return canvasTop + (headerStart + Math.floor((pin - 1) / 2) * headerPitch) * drawingScale
     }
-    readonly property bool radxa: platform === 20
-    readonly property bool pi5: platform === 13
 
     Canvas {
         id: canvas
@@ -26,7 +24,7 @@ Item {
             target: root
             function onHighlightsChanged() { canvas.requestPaint() }
             function onInspectedPinChanged() { canvas.requestPaint() }
-            function onPlatformChanged() { canvas.requestPaint() }
+            function onBoardChanged() { canvas.requestPaint() }
             function onDrawingScaleChanged() { canvas.requestPaint() }
         }
 
@@ -107,25 +105,39 @@ Item {
                 text(name, x + w / 2, y + h * 0.66, w < 55 ? 11 : 15, steel ? "#12273c" : "#f0f7ff")
             }
 
-            // Top-side views. The Pi is rotated clockwise so its header reads down the page.
-            var narrow = root.radxa
+            var board = root.board
+            var art = board.art
+            var pixelBoard = art === "pc"
+            var schematic = board.pins.length === 0
+            var pi5 = art === "pi5"
+            var leftHeader = ["zero", "rock5a", "a7s"].indexOf(art) >= 0
+            var narrow = ["zero", "pi-zero", "a7z"].indexOf(art) >= 0
             var x0 = narrow ? 58 : 24
             var x1 = narrow ? 234 : 262
             var y0 = narrow ? 21 : 31
             var y1 = narrow ? 402 : 378
-            var pcb = finish(x0, y0, x1 - x0, y1 - y0,
-                             narrow ? ["#21967a", "#106356", "#073b36"]
-                                    : ["#75a644", "#397c40", "#21563c"])
+            if (art === "a7s") y1 = 326
+            if (schematic) {
+                x0 = art === "pico" ? 73 : 30
+                x1 = art === "pico" ? 225 : 268
+                y0 = pixelBoard ? 106 : art === "pico" ? 36 : 80
+                y1 = pixelBoard ? 313 : art === "pico" ? 396 : 342
+            }
+            var isRaspberry = art.indexOf("pi") === 0 && art !== "pico"
+            var shade = isRaspberry ? ["#75a644", "#397c40", "#21563c"]
+                                    : ["#21967a", "#106356", "#073b36"]
+            if (schematic) shade = ["#36718b", "#234457", "#173043"]
+            var pcb = finish(x0, y0, x1 - x0, y1 - y0, shade)
             box(x0 + 5, y0 + 9, x1 - x0, y1 - y0, 19, "#050f1c", ink, 10)
             box(x0, y0, x1 - x0, y1 - y0, 18, pcb, ink, 7)
             box(x0 + 4, y0 + 4, x1 - x0 - 8, y1 - y0 - 8, 15,
-                "rgba(0,0,0,0)", narrow ? "#4bd8b3" : "#b4d666", 2.5)
+                "rgba(0,0,0,0)", isRaspberry ? "#b4d666" : "#4bd8b3", 2.5)
 
             for (var trace = 0; trace < 10; ++trace) {
                 var sx = x0 + 26 + (trace % 4) * 12
                 var sy = y0 + 62 + trace * 24
                 line([sx, sy, sx + 34, sy, sx + 48, sy + 14, x1 - 33, sy + 14],
-                     narrow ? "#338d71" : "#91ab55", 1.6)
+                     isRaspberry ? "#91ab55" : "#338d71", 1.6)
                 dot(sx, sy, 2, "#c3ac6c", ink, 0.8)
             }
 
@@ -144,7 +156,7 @@ Item {
                 line([dx + 2, dy + 2, dx + 9, dy + 2], "#e4e1ba", 1)
             }
 
-            if (narrow) {
+            if (art === "zero") {
                 metal(216, 64, 41, 44, "#33435c")
                 metal(216, 135, 41, 45, "#355a7a")
                 metal(210, 316, 40, 37, "#6b481d")
@@ -160,17 +172,64 @@ Item {
                 metal(116, 309, 69, 55, "")
                 text("Wi-Fi", 149, 342, 11, "#24364b")
                 line([114, 390, 124, 390, 124, 378, 133, 378, 133, 390, 141, 390], "#f7c867", 2.5)
+            } else if (art === "pi-zero" || art === "a7z") {
+                var cubie = art === "a7z"
+                metal(43, 75, 40, 33, "#33435c")
+                metal(43, 258, 43, 38, "#355a7a")
+                metal(43, 318, 43, 38, "#6b481d")
+                chip(107, 137, 85, 82, board.chip, board.brand, cubie)
+                chip(105, 233, 82, 37, cubie ? "LPDDR5" : "RAM", "", false)
+                metal(114, cubie ? 62 : 333, 56, 39, "")
+                text(cubie ? "Wi-Fi" : "microSD", 142, cubie ? 86 : 356, 10, "#24364b")
+            } else if (art === "rock5a" || art === "rock5b" || art === "rock3" || art === "rock3c") {
+                var rock5 = art === "rock5a" || art === "rock5b"
+                var ioX = leftHeader ? 198 : 10
+                metal(36, 331, 46, 35, "#303b51")
+                metal(ioX, 72, 53, 57, "#486383")
+                metal(ioX, 143, 48, 52, "#2678a3")
+                metal(ioX, 229, 59, 60, "#af8a50")
+                chip(leftHeader ? 101 : 83, 119, 96, 84, board.chip, board.brand, art !== "rock5a")
+                chip(97, 239, 76, 48, "LPDDR4" + (rock5 ? "X" : ""), "", false)
+                box(97, 317, 47, 17, 3, "#b9bead", ink, 3)
+                if (art === "rock5b")
+                    metal(152, 330, 43, 34, "#27384d")
+            } else if (art === "a7s") {
+                metal(164, 37, 83, 53, "#ad8652")
+                metal(208, 113, 54, 53, "#2b6d95")
+                metal(226, 199, 40, 35, "#344d64")
+                metal(226, 247, 40, 35, "#344d64")
+                chip(99, 106, 97, 76, board.chip, board.brand, true)
+                chip(110, 213, 82, 47, "LPDDR5", "", false)
+                box(84, 289, 110, 14, 3, "#d6d5bc", ink, 3)
+                for (var auxPin = 0; auxPin < board.aux.length; ++auxPin)
+                    dot(90 + auxPin * 7, 296, 2.3, "#ffd578", ink, 1)
+                text("1", 89, 315, 9, "#ffffff")
+                text(String(board.aux.length), 188, 315, 9, "#ffffff")
+            } else if (schematic) {
+                if (pixelBoard) {
+                    metal(229, 156, 38, 86, "#3c657e")
+                    box(59, 259, 117, 14, 4, "#364e6f", ink, 3)
+                }
+                if (art === "pico") {
+                    metal(127, 38, 47, 34, "#365269")
+                    chip(104, 234, 92, 51, "RAM", "", false)
+                }
+                if (art === "carrier") {
+                    metal(43, 106, 44, 31, "")
+                    metal(212, 256, 42, 40, "")
+                }
+                chip(91, 144, 116, 85, board.chip || board.brand, board.chip ? board.brand : "", true)
             } else {
                 metal(11, 73, 37, 36, "#354457")
                 metal(13, 123, 35, 30, "#304050")
-                metal(13, 163, 35, 30, "#304050")
-                if (!root.pi5) metal(15, 223, 40, 35, "#151b22")
-                metal(50, 337, 56, 56, root.pi5 ? "#2c3146" : "#b98d49")
+                if (art !== "pi3") metal(13, 163, 35, 30, "#304050")
+                if (!pi5) metal(15, 223, 40, 35, "#151b22")
+                metal(50, 337, 56, 56, pi5 ? "#2c3146" : "#b98d49")
                 metal(117, 337, 53, 54, "#1c7bba")
-                metal(183, 334, 53, 59, root.pi5 ? "#bd944e" : "#292c3a")
-                chip(93, 107, 93, 76, root.pi5 ? "BCM2712" : "BCM2711", "BROADCOM", true)
-                chip(93, 207, 63, 43, root.pi5 ? "RP1" : "LPDDR4", "", false)
-                if (root.pi5) {
+                metal(183, 334, 53, 59, pi5 ? "#bd944e" : "#292c3a")
+                chip(93, 107, 93, 76, board.chip, board.brand, true)
+                chip(93, 207, 63, 43, pi5 ? "RP1" : "LPDDR4", "", false)
+                if (pi5) {
                     box(59, 204, 15, 29, 3, "#e9e9d7", ink, 3)
                     box(59, 243, 15, 29, 3, "#e9e9d7", ink, 3)
                     box(181, 69, 22, 10, 2, "#f1eddf", ink, 3)
@@ -180,11 +239,12 @@ Item {
                 }
             }
 
-            var headerX = narrow ? 69 : 218
+            if (schematic) return
+            var headerX = leftHeader ? (narrow ? 69 : 36) : (narrow ? 198 : 218)
             var headerY = root.headerStart
             var pitch = root.headerPitch
-            box(headerX - 9, headerY - 10, 34, pitch * 19 + 20, 5, "#102436", ink, 4)
-            for (var pin = 1; pin <= 40; ++pin) {
+            box(headerX - 9, headerY - 10, 34, pitch * (board.pins.length / 2 - 1) + 20, 5, "#102436", ink, 4)
+            for (var pin = 1; pin <= board.pins.length; ++pin) {
                 var assignment = root.highlights[pin]
                 var leftColumn = pin % 2 === 1
                 var px = headerX + (leftColumn ? 0 : 15)
