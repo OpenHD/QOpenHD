@@ -527,7 +527,7 @@ Settings {
     property bool set_mavlink_message_rates: true
     // Double the default rate(s) - for people who want more mavlink
     property bool mavlink_message_rates_high_speed: false
-    property bool mavlink_message_rates_high_speed_rc_channels: false
+    property bool mavlink_message_rates_high_speed_rc_channels: true
     // log a warning if fc is quiet - happened to a lot of people new to mavlink
     property bool log_quiet_fc_warning_to_hud : true
     // Reduce log spam in system logs

@@ -28,7 +28,7 @@ void FCMsgIntervalHandler::opt_send_messages(){
             const auto interval=m_intervals.at(m_next_rate_index);
             auto interval_hz=interval.interval_hz;
             const bool mavlink_message_rates_high_speed=settings.value("mavlink_message_rates_high_speed",false).toBool();
-            const bool mavlink_message_rates_high_speed_rc_channels=settings.value("mavlink_message_rates_high_speed_rc_channels",false).toBool();
+            const bool mavlink_message_rates_high_speed_rc_channels=settings.value("mavlink_message_rates_high_speed_rc_channels",true).toBool();
             if(mavlink_message_rates_high_speed_rc_channels && interval.msg_id==MAVLINK_MSG_ID_RC_CHANNELS){
                 interval_hz=15;
             }
