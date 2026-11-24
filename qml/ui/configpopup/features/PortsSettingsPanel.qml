@@ -174,6 +174,7 @@ AdvancedPage {
 
             Flickable {
                 id: portList
+                objectName: "portsScrollView"
                 anchors.fill: parent
                 contentWidth: width
                 contentHeight: cards.implicitHeight
@@ -208,6 +209,7 @@ AdvancedPage {
                         visible: active
                         sourceComponent: PortsBoardPinout {
                             platform: boardLoader.unit.ohd_platform_type
+                            viewportHeight: portList.height
                             air: root.editingAir
                             advanced: settings_form.showAdvancedSettings
                             connected: boardLoader.unit.is_alive

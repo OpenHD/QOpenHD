@@ -87,6 +87,63 @@ var a7sAux = [
 ]
 
 
+// https://wiki.luckfox.com/Luckfox-Pico-Plus-Mini/GPIO/
+var pico = [
+    "GPIO1_B2", "GPIO1_B3", "GND", "GPIO1_C7", "GPIO1_C6", "GPIO1_C5", "GPIO1_C4", "GND",
+    "GPIO1_D2", "GPIO1_D3", "GPIO1_A2", "GPIO1_C0", "GND", "GPIO1_C1", "GPIO1_C2", "GPIO1_C3",
+    "GPIO0_A4", "GND", "GPIO1_D0", "GPIO1_D1", "GPIO4_B1", "GPIO4_B0", "GND", "GPIO4_A6",
+    "GPIO4_A2", "GPIO4_A3", "GPIO4_A4", "GND", "NC", "NC", "GPIO4_C0", "GPIO4_C1",
+    "GND", "NC", "NC", "3.3 V OUT", "3V3_EN", "GND", "VSYS", "VBUS"
+]
+
+var picoPlus = pico.slice(0, 20).concat([
+    "GPIO3_A6", "GPIO3_A7", "GND", "GPIO3_A5", "GPIO3_A4", "GPIO3_A2", "GPIO3_A3", "GND",
+    "GPIO3_A1", "NC", "GPIO4_C0", "GPIO4_C1", "GND", "NC", "NC", "3.3 V OUT",
+    "3V3_EN", "GND", "VSYS", "VBUS"
+])
+
+// https://www.luckfox.com/Luckfox-Aura
+var aura = [
+    "3.3 V", "5 V", "GPIO0_D1", "5 V", "GPIO0_D0", "GND", "GPIO5_B4", "GPIO5_A2",
+    "GND", "GPIO5_A3", "GPIO5_C2", "GPIO5_C5", "GPIO5_C3", "GND", "GPIO5_C4", "GPIO5_C6",
+    "3.3 V", "GPIO5_C7", "GPIO5_D2", "GND", "GPIO5_D3", "GPIO5_B6", "GPIO5_D1", "GPIO5_D0",
+    "GND", "GPIO5_B7", "GPIO5_A7", "GPIO5_A1", "GPIO5_B5", "GND", "GPIO5_B2", "GPIO5_B0",
+    "GPIO5_B1", "GND", "GPIO5_A5", "GPIO5_A0", "GPIO5_B3", "GPIO5_A4", "GND", "GPIO5_A6"
+]
+
+// https://wiki.luckfox.com/Luckfox-Lyra/Pinout/
+var lyra = [
+    "GPIO0_C6", "GPIO0_C7", "GND", "GPIO0_B4", "GPIO0_B5", "GPIO0_A0", "GPIO0_A1", "GND",
+    "GPIO0_B3", "GPIO0_B2", "GPIO0_B1", "GPIO0_B0", "GND", "GPIO0_A7", "GPIO0_A6", "GPIO0_A5",
+    "GPIO0_A4", "GND", "GPIO0_A3", "GPIO0_A2", "GPIO1_D3", "GPIO1_D2", "GND", "GPIO1_D1",
+    "GPIO1_C3", "GPIO1_C2", "GPIO1_B3", "GND", "GPIO1_B2", "RESET", "GPIO4_B2", "GPIO4_B3",
+    "GND", "GPIO1_B1", "NC", "3.3 V OUT", "3V3_EN", "GND", "VSYS", "VBUS"
+]
+
+var lyraPlus = [
+    "GPIO0_C6", "VBUS", "GPIO0_C7", "VSYS", "GND", "GND", "GPIO0_B4", "3V3_EN",
+    "GPIO0_B5", "3.3 V OUT", "GPIO0_A0", "NC", "GPIO0_A1", "GPIO1_B1", "GND", "GND",
+    "GPIO0_B3", "GPIO4_B3", "GPIO0_B2", "GPIO4_B2", "GPIO0_B1", "RESET", "GPIO0_B0", "GPIO1_B2",
+    "GND", "GND", "GPIO0_A7", "GPIO1_B3", "GPIO0_A6", "GPIO1_C2", "GPIO0_A5", "GPIO1_C3",
+    "GPIO0_A4", "GPIO1_D1", "GND", "GND", "GPIO0_A3", "GPIO1_D2", "GPIO0_A2", "GPIO1_D3"
+]
+
+var lyraZero = [
+    "3.3 V OUT", "VSYS", "GPIO0_A0", "VSYS", "GPIO0_A1", "GND", "GPIO0_A2", "GPIO0_C6",
+    "GND", "GPIO0_C7", "GPIO0_A3", "GPIO0_B6", "GPIO0_A4", "GND", "GPIO0_A5", "GPIO0_B5",
+    "3.3 V OUT", "GPIO0_B4", "GPIO0_A6", "GND", "GPIO0_A7", "GPIO0_B3", "GPIO0_B0", "GPIO0_B2",
+    "GND", "GPIO0_B1", "GPIO1_B1", "GPIO1_D3", "GPIO1_B2", "GND", "GPIO1_B3", "GPIO1_D2",
+    "GPIO1_C2", "GND", "GPIO0_C0", "GPIO1_D1", "GPIO1_C3", "GPIO0_C1", "GND", "GPIO0_C2"
+]
+
+var lyraPi = [
+    "3.3 V OUT", "VSYS", "GPIO0_A0", "VSYS", "GPIO0_A1", "GND", "GPIO0_A2", "GPIO0_C6",
+    "GND", "GPIO0_C7", "GPIO0_A3", "GPIO0_B6", "GPIO0_A4", "GND", "GPIO0_A5", "GPIO0_B5",
+    "3.3 V OUT", "GPIO0_B4", "GPIO0_A6", "GND", "GPIO0_A7", "GPIO0_B3", "GPIO0_B0", "GPIO0_B2",
+    "GND", "GPIO0_B1", "GPIO1_B1", "GPIO1_D3", "GPIO1_B2", "GND", "GPIO1_B3", "GPIO1_D2",
+    "GPIO1_C2", "GND", "GPIO1_A1", "GPIO1_A5", "GPIO1_A2", "GPIO1_A4", "GND", "GPIO1_A3"
+]
+
 // Physical pin numbers. These are available functions, separate from live mux routes.
 function pinFunction(art, pin) {
     if (art === "pi4") {
@@ -105,70 +162,129 @@ function pinFunction(art, pin) {
             27: "UART3 RX", 28: "UART3 TX"
         })[pin] || ""
     }
+    if (art === "pico" || art === "pico-plus") {
+        return ({
+            1: "UART2 TX", 2: "UART2 RX", 6: "UART4 TX", 7: "UART4 RX",
+            19: "UART3 TX", 20: "UART3 RX"
+        })[pin] || (art === "pico-plus" && pin === 21 ? "UART5 TX"
+                   : art === "pico-plus" && pin === 22 ? "UART5 RX" : "")
+    }
+    if (art === "aura") {
+        return ({
+            7: "UART7 TX", 8: "UART4 TX", 10: "UART4 RX", 29: "UART7 RX",
+            32: "UART6 TX", 33: "UART6 RX", 35: "UART5 RX", 38: "UART5 TX"
+        })[pin] || ""
+    }
+    if (art === "lyra") return pin === 1 ? "UART0 TX" : pin === 2 ? "UART0 RX" : ""
+    if (art === "lyra-plus") return pin === 1 ? "UART0 TX" : pin === 3 ? "UART0 RX" : ""
+    if (art === "lyra-zero" || art === "lyra-pi")
+        return pin === 8 ? "UART0 TX" : pin === 10 ? "UART0 RX" : ""
     return ""
 }
 
-function board(name, chip, brand, art, pins, aux) {
-    return {name: name, chip: chip, brand: brand, art: art, pins: pins || [], aux: aux || []}
+function board(name, art, pins, aux) {
+    return {name: name, art: art, pins: pins || [], aux: aux || [], raspberryGpio: pins === pi}
 }
 
-// IDs follow openhd_platform.h. Some identify a family or compute module;
-// the device-tree model can disambiguate the physical board in these cases.
+// Platform IDs identify an SoC family in several cases. Only select a physical
+// board for a unique platform or for an identifiable device-tree model.
 function profile(platform, deviceModel) {
-    var model = (deviceModel || "").toLowerCase()
+    var model = (deviceModel || "").toLowerCase().replace(/[-_]+/g, " ")
     switch (platform) {
-    case 1: return board("PC / x86-64", "x86-64", "", "pc")
+    case 1:
+        return board(deviceModel || "PC / x86-64", "pc")
     case 10:
+        if (/compute module (3|1)|\bcm3\b/.test(model))
+            return board(deviceModel, "pi-cm3")
         if (model.indexOf("raspberry pi zero 2") >= 0)
-            return board("Raspberry Pi Zero 2 W", "RP3A0", "BROADCOM", "pi-zero", pi)
+            return board("Raspberry Pi Zero 2 W", "pi-zero2", pi)
+        if (model.indexOf("raspberry pi zero w") >= 0)
+            return board("Raspberry Pi Zero W", "pi-zero-w", pi)
         if (model.indexOf("raspberry pi zero") >= 0)
-            return board("Raspberry Pi Zero", "BCM2835", "BROADCOM", "pi-zero", pi)
-        if (/raspberry pi [23] model/.test(model))
-            return board(deviceModel, model.indexOf("raspberry pi 2") >= 0 ? "BROADCOM" : "BCM2837",
-                         "", "pi3", pi)
-        return board("Raspberry Pi 3 / earlier", "", "BROADCOM", "module")
-    case 11: return board("Raspberry Pi 4 Model B", "BCM2711", "BROADCOM", "pi4", pi)
-    case 12: return board("Raspberry Pi Compute Module 4", "BCM2711", "BROADCOM", "module")
+            return board("Raspberry Pi Zero", "pi-zero", pi)
+        if (model.indexOf("raspberry pi 3 model a") >= 0)
+            return board("Raspberry Pi 3 Model A+", "pi3a", pi)
+        if (/raspberry pi 3 model b/.test(model))
+            return board(deviceModel, "pi3", pi)
+        if (/raspberry pi 2 model b/.test(model))
+            return board(deviceModel, "pi2", pi)
+        return board("Raspberry Pi 3 / earlier", "pi-family")
+    case 11:
+        return board("Raspberry Pi 4 Model B", "pi4", pi)
+    case 12:
+        if (model.indexOf("compute module 4s") >= 0)
+            return board("Raspberry Pi Compute Module 4S", "pi-cm4s")
+        return board("Raspberry Pi Compute Module 4", "pi-cm4")
     case 13:
         if (/compute module 5|\bcm5\b/.test(model))
-            return board("Raspberry Pi Compute Module 5", "BCM2712", "BROADCOM", "module")
-        return board("Raspberry Pi 5", "BCM2712", "BROADCOM", "pi5", pi)
+            return board("Raspberry Pi Compute Module 5", "pi-cm5")
+        return board("Raspberry Pi 5", "pi5", pi)
     case 20:
-        if (/rock[- ]?3[ab]/.test(model)) return profile(34, deviceModel)
-        if (/rock[- ]?3c/.test(model)) return profile(35, deviceModel)
-        if (model.indexOf("zero 3e") >= 0)
-            return board("Radxa ZERO 3E", "RK3566", "ROCKCHIP", "zero", zero)
-        return board("Radxa ZERO 3W", "RK3566", "ROCKCHIP", "zero", zero)
-    case 21: return board("Radxa ROCK 5A", "RK3588S", "ROCKCHIP", "rock5a", rock5a)
-    case 22: return board("Radxa ROCK 5B", "RK3588", "ROCKCHIP", "rock5b", rock5b)
+        if (/rock ?3[ab]/.test(model)) return profile(34, deviceModel)
+        if (/rock ?3c/.test(model)) return profile(35, deviceModel)
+        return /zero ?3e/.test(model) ? board("Radxa ZERO 3E", "zero-e", zero)
+                                       : board("Radxa ZERO 3W", "zero", zero)
+    case 21:
+        return board("Radxa ROCK 5A", "rock5a", rock5a)
+    case 22:
+        return board(/5b(\+| plus)/.test(model) ? "Radxa ROCK 5B+" : "Radxa ROCK 5B", "rock5b", rock5b)
     case 23:
-        if (model && model.indexOf("cm5") < 0)
-            return board(deviceModel, "RV1126", "ROCKCHIP", "module")
-        return board("Radxa CM5 / RV1126 family", "", "ROCKCHIP", "module")
-    case 24: return board("Radxa CM3", "RK3566", "ROCKCHIP", "module")
+        if (model.indexOf("cm5") >= 0 || model.indexOf("compute module 5") >= 0)
+            return board("Radxa CM5", "radxa-cm5")
+        return board(deviceModel || "Radxa CM5 / RV1126 family", "rv1126")
+    case 24:
+        if (/cm3[ij]/.test(model))
+            return board(deviceModel, "radxa-cm3j")
+        return board("Radxa CM3", "radxa-cm3")
     case 25:
-    case 26: return board(deviceModel || "Luckfox Pico / RV110X", "RV110X", "ROCKCHIP", "pico")
-    case 27: return board("Luckfox Lyra", "RK3506", "ROCKCHIP", "pico")
-    case 28: return board("OpenHD Core X21", "X21", "OPENHD", "openhd")
-    case 29: return board("Luckfox Aura", "RV1126B", "ROCKCHIP", "pico")
-    case 30: return board("OpenHD Core X20", "X20", "OPENHD", "openhd")
-    case 31: return board("Radxa Cubie A7S", "A733", "ALLWINNER", "a7s", a7s, a7sAux)
-    case 32: return board("Radxa Cubie A7Z", "A733", "ALLWINNER", "a7z", a7z)
+    case 26:
+        if (/luckfox pico plus\b/.test(model))
+            return board("Luckfox Pico Plus", "pico-plus", picoPlus)
+        if (/^luckfox pico( v[0-9.]+)?$/.test(model))
+            return board("Luckfox Pico", "pico", pico)
+        return board(deviceModel || "Luckfox Pico / RV110X", "pico-family")
+    case 27:
+        if (model.indexOf("lyra ultra") >= 0)
+            return board(deviceModel, "lyra-ultra")
+        if (model.indexOf("lyra plus") >= 0)
+            return board("Luckfox Lyra Plus", "lyra-plus", lyraPlus)
+        if (model.indexOf("lyra zero") >= 0)
+            return board("Luckfox Lyra Zero W", "lyra-zero", lyraZero)
+        if (model.indexOf("lyra pi") >= 0)
+            return board(deviceModel, "lyra-pi", lyraPi)
+        if (/^luckfox lyra( b)?( v[0-9.]+)?$/.test(model))
+            return board(deviceModel, "lyra", lyra)
+        return board(deviceModel || "Luckfox Lyra", "lyra-family")
+    case 28: return board(deviceModel || "OpenHD Core X21", "x21")
+    case 29: return board(deviceModel || "Luckfox Aura", "aura", aura)
+    case 30: return board(deviceModel || "OpenHD Core X20", "x20")
+    case 31: return board("Radxa Cubie A7S", "a7s", a7s, a7sAux)
+    case 32: return board("Radxa Cubie A7Z", "a7z", a7z)
     case 34:
-        if (model.indexOf("rock 3a") >= 0 || model.indexOf("rock3a") >= 0)
-            return board("Radxa ROCK 3A", "RK3568", "ROCKCHIP", "rock3", rock3a)
-        if (model.indexOf("rock 3b") >= 0 || model.indexOf("rock3b") >= 0)
-            return board("Radxa ROCK 3B", "RK3568", "ROCKCHIP", "rock3", rock3b)
-        return board("Radxa ROCK 3A / 3B", "RK3568", "ROCKCHIP", "rock3", rock3ab)
-    case 35: return board("Radxa ROCK 3C", "RK3566", "ROCKCHIP", "rock3c", rock3c)
-    case 36: return board("OpenIPC SigmaStar", "", "SIGMASTAR", "module")
-    case 38: return board("Radxa CM3 on OCHIN", "RK3566", "ROCKCHIP", "carrier")
-    case 40: return board("NVIDIA Xavier", "XAVIER", "NVIDIA", "module")
-    case 46: return board("Qualcomm QRB5165", "QRB5165", "QUALCOMM", "module")
-    case 47: return board("Qualcomm QCS405", "QCS405", "QUALCOMM", "module")
-    case 51: return board("Orqa", "", "ORQA", "module")
-    case 52: return board("UVX Mod", "", "UVX", "module")
-    case 61: return board("NXP i.MX8", "i.MX8", "NXP", "module")
-    default: return board(deviceModel || qsTranslate("PortsBoardPinout", "Unknown hardware"), "", "", "module")
+        if (/rock ?3a/.test(model))
+            return board("Radxa ROCK 3A", "rock3", rock3a)
+        if (/rock ?3b/.test(model))
+            return board("Radxa ROCK 3B", "rock3b", rock3b)
+        return board("Radxa ROCK 3A / 3B", "rock3-family", rock3ab)
+    case 35: return board("Radxa ROCK 3C", "rock3c", rock3c)
+    case 36: return board(deviceModel || "OpenIPC SigmaStar", "sigmastar")
+    case 38: return board("Radxa CM3 on OCHIN", "ochin")
+    case 40:
+        if (model.indexOf("xavier nx") >= 0)
+            return board("NVIDIA Jetson Xavier NX", "xavier-nx")
+        if (model.indexOf("agx xavier") >= 0)
+            return board("NVIDIA Jetson AGX Xavier", "xavier-agx")
+        return board(deviceModel || "NVIDIA Xavier", "xavier")
+    case 46:
+        if (model.indexOf("rb5") >= 0)
+            return board(deviceModel, "rb5")
+        if (model.indexOf("5165rb") >= 0)
+            return board(deviceModel, "rb5-som")
+        return board(deviceModel || "Qualcomm QRB5165", "qrb5165")
+    case 47: return board(deviceModel || "Qualcomm QCS405", "qcs405")
+    case 51: return board(deviceModel || "Orqa", "orqa")
+    case 52: return board(deviceModel || "UVX Mod", "uvx")
+    case 61: return board(deviceModel || "NXP i.MX8", "imx8")
+    default: return board(deviceModel || qsTranslate("PortsBoardPinout", "Unknown hardware"), "unknown")
     }
 }

@@ -158,6 +158,60 @@ https://github.com/OpenHD
         <file>ui/configpopup/features/PortsSettingsCard.qml</file>
         <file>ui/configpopup/features/PortsBoardPinout.qml</file>
         <file>ui/configpopup/features/PortsBoardArt.qml</file>
+        <file>ui/configpopup/features/PortsBoardArtwork.js</file>
+        <file>ui/configpopup/features/artwork/a7s.png</file>
+        <file>ui/configpopup/features/artwork/a7z.png</file>
+        <file>ui/configpopup/features/artwork/aura.png</file>
+        <file>ui/configpopup/features/artwork/imx8.png</file>
+        <file>ui/configpopup/features/artwork/lyra.png</file>
+        <file>ui/configpopup/features/artwork/lyra-family.png</file>
+        <file>ui/configpopup/features/artwork/lyra-pi.png</file>
+        <file>ui/configpopup/features/artwork/lyra-plus.png</file>
+        <file>ui/configpopup/features/artwork/lyra-ultra.png</file>
+        <file>ui/configpopup/features/artwork/lyra-zero.png</file>
+        <file>ui/configpopup/features/artwork/ochin.png</file>
+        <file>ui/configpopup/features/artwork/orqa.png</file>
+        <file>ui/configpopup/features/artwork/pc.png</file>
+        <file>ui/configpopup/features/artwork/pi-cm3.png</file>
+        <file>ui/configpopup/features/artwork/pi-cm4.png</file>
+        <file>ui/configpopup/features/artwork/pi-cm4s.png</file>
+        <file>ui/configpopup/features/artwork/pi-cm5.png</file>
+        <file>ui/configpopup/features/artwork/pi-family.png</file>
+        <file>ui/configpopup/features/artwork/pi-zero.png</file>
+        <file>ui/configpopup/features/artwork/pi-zero-w.png</file>
+        <file>ui/configpopup/features/artwork/pi-zero2.png</file>
+        <file>ui/configpopup/features/artwork/pi2.png</file>
+        <file>ui/configpopup/features/artwork/pi3.png</file>
+        <file>ui/configpopup/features/artwork/pi3a.png</file>
+        <file>ui/configpopup/features/artwork/pi4.png</file>
+        <file>ui/configpopup/features/artwork/pi5.png</file>
+        <file>ui/configpopup/features/artwork/pico.png</file>
+        <file>ui/configpopup/features/artwork/pico-family.png</file>
+        <file>ui/configpopup/features/artwork/pico-plus.png</file>
+        <file>ui/configpopup/features/artwork/qcs405.png</file>
+        <file>ui/configpopup/features/artwork/qrb5165.png</file>
+        <file>ui/configpopup/features/artwork/radxa-cm3.png</file>
+        <file>ui/configpopup/features/artwork/radxa-cm3j.png</file>
+        <file>ui/configpopup/features/artwork/radxa-cm5.png</file>
+        <file>ui/configpopup/features/artwork/rb5.png</file>
+        <file>ui/configpopup/features/artwork/rb5-som.png</file>
+        <file>ui/configpopup/features/artwork/rock3.png</file>
+        <file>ui/configpopup/features/artwork/rock3-family.png</file>
+        <file>ui/configpopup/features/artwork/rock3b.png</file>
+        <file>ui/configpopup/features/artwork/rock3c.png</file>
+        <file>ui/configpopup/features/artwork/rock5a.png</file>
+        <file>ui/configpopup/features/artwork/rock5b.png</file>
+        <file>ui/configpopup/features/artwork/rv1126.png</file>
+        <file>ui/configpopup/features/artwork/sigmastar.png</file>
+        <file>ui/configpopup/features/artwork/unknown.png</file>
+        <file>ui/configpopup/features/artwork/uvx.png</file>
+        <file>ui/configpopup/features/artwork/x20.png</file>
+        <file>ui/configpopup/features/artwork/x21.png</file>
+        <file>ui/configpopup/features/artwork/xavier.png</file>
+        <file>ui/configpopup/features/artwork/xavier-agx.png</file>
+        <file>ui/configpopup/features/artwork/xavier-nx.png</file>
+        <file>ui/configpopup/features/artwork/zero.png</file>
+        <file>ui/configpopup/features/artwork/zero-e.png</file>
         <file>ui/configpopup/features/PortsBoardProfiles.js</file>
         <file>ui/configpopup/features/JoystickPage.qml</file>
         <file>ui/configpopup/features/ChannelOverview.qml</file>

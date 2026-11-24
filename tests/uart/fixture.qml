@@ -70,7 +70,7 @@ Item {
          compare(tabs.currentIndex,index)
      }
      function init(){
-         loader.active=false;settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=false;_qopenhd.debugMenuPreview=false;_ohdSystemAir.is_alive=true;_ohdSystemGround.is_alive=true
+         loader.active=false;scene.width=1200;scene.height=850;settings_form.showAdvancedSettings=false;settings_form.showDeveloperSettings=false;_qopenhd.debugMenuPreview=false;_ohdSystemAir.is_alive=true;_ohdSystemGround.is_alive=true
          _ohdSystemAirSettingsModel.values={FC_UART_CONN:"/dev/ttyS1",FC_UART_BAUD:921600,FC_UART_FLWCTL:0,SBUS_EN:0,SBUS_DEV:"/dev/ttyS2",SBUS_HZ:50,GPIO_2:0,GPIO_26:0,OHD_UART_EN:0,OHD_UART_TLM:"/dev/ttyUSB0",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
          _ohdSystemGroundSettings.values={TRACKER_UART_OUT:"",TRACK_UART_BAUD:9600,TRACK_UART_FLOW:0,OHD_UART_EN:0,OHD_UART_TLM:"/dev/ttyUSB0",OHD_UART_BAUD:115200,OHD_UART_FLW:0,UART_PRI_RC:3,UART_PRI_OHD:2,UART_PRI_FC:1}
          _ohdSystemAir.ohd_platform_type=-1
@@ -298,6 +298,12 @@ Item {
                  var chartY=pin.mapToItem(board, pin.width / 2, pin.height / 2).y
                  var boardY=art.mapToItem(board, 0, art.pinCenterY(number)).y
                  verify(Math.abs(chartY-boardY) <= 1, "Pin " + number + " at " + chartY + " vs " + boardY)
+                 var labels=["pinPad","pinNumber","pinDescription"]
+                 for (var k=0; k<labels.length; ++k) {
+                     var label=findChild(pin, labels[k])
+                     var labelY=label.mapToItem(board,0,label.height/2).y
+                     verify(Math.abs(labelY-chartY) <= 1, "Pin " + number + " " + labels[k] + " differs from row center")
+                 }
                  compare(pin.odd,number % 2 === 1)
              }
          }
@@ -328,14 +334,17 @@ Item {
          tryVerify(function(){return findChild(loader.item,"portsBoardPinout") === null})
      }
      function test_each_platform_has_a_named_view(){
-         var platformIds=[0,1,10,11,12,13,20,21,22,23,24,25,27,28,29,30,31,32,34,35,36,38,40,46,47,51,52,61,255]
+         var platformIds=[0,1,10,11,12,13,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,38,40,46,47,51,52,61,255]
          var named=[]
          for (var i=0; i<platformIds.length; ++i) {
              _ohdSystemAir.ohd_platform_type=platformIds[i]
              var board=findChild(loader.item,"portsBoardPinout")
              verify(board !== null)
              verify(board.title.length > 0)
-             if (i > 0 && i < platformIds.length - 1) {
+             var art=findChild(board,"portsBoardArt")
+             tryCompare(art,"imageReady",true)
+             compare(board.pinNames.length, art.geometry.header ? art.geometry.header.rows * art.geometry.header.columns : 0)
+             if (i > 0 && i < platformIds.length - 1 && platformIds[i] !== 26) {
                  verify(named.indexOf(board.title) < 0)
                  named.push(board.title)
              }
@@ -370,6 +379,68 @@ Item {
          _ohdSystemAir.ohd_platform_type=32
          compare(board.functionForPin(16),"UART4 TX")
          compare(board.functionForPin(18),"UART4 RX")
+     }
+     function test_original_proportions_and_pin_locations(){
+         var cases=[
+             [11,"",56,85], [20,"",30,65], [21,"",56,85], [22,"",75,100], [29,"",56,85],
+             [31,"",51,51], [32,"",30,65], [34,"Radxa ROCK 3B",75,100],
+             [10,"Raspberry Pi Zero 2 W Rev 1.0",30,65], [27,"Luckfox Lyra Plus",21,72]
+         ]
+         for (var i=0; i<cases.length; ++i) {
+             var entry=cases[i]
+             _ohdSystemAir.ohd_platform_type=entry[0]
+             _ohdSystemAirSettingsModel.boardModel=entry[1]
+             _ohdSystemAirSettingsModel.update_count++
+             var board=findChild(loader.item,"portsBoardPinout")
+             var art=findChild(board,"portsBoardArt")
+             tryCompare(art,"imageReady",true)
+             verify(art.pcbBounds.width > 0 && art.pcbBounds.height > 0)
+             verify(Math.abs(art.pcbBounds.width / art.pcbBounds.height - entry[2] / entry[3]) < 0.0001)
+             var last=art.pointForPin(board.pinNames.length,false)
+             verify(last.x > art.pcbBounds.x && last.x < art.pcbBounds.x + art.pcbBounds.width)
+             verify(last.y > art.pcbBounds.y && last.y < art.pcbBounds.y + art.pcbBounds.height)
+         }
+     }
+     function test_low_resolution_pin_navigation(){
+         scene.width=630
+         scene.height=380
+         _ohdSystemAir.ohd_platform_type=20
+         _ohdSystemAirSettingsModel.values.FC_UART_CONN="/dev/ttyS4"
+         _ohdSystemAirSettingsModel.headerRoutes={"/dev/ttyS4":{rx:16,tx:18}}
+         _ohdSystemAirSettingsModel.update_count++
+         var board=findChild(loader.item,"portsBoardPinout")
+         var art=findChild(board,"portsBoardArt")
+         var scroll=findChild(loader.item,"portsScrollView")
+         tryCompare(art,"imageReady",true)
+         var pins=findChild(board,"portsPinList")
+         verify(board.compactView)
+         verify(pins.visible && pins.interactive)
+         verify(board.height < scroll.height)
+         verify(art.artWidth <= art.width && art.artHeight <= art.height)
+         verify(findChild(art,"portsBoardMarker16").visible)
+         verify(findChild(art,"portsBoardMarker18").visible)
+         verify(!findChild(art,"portsBoardMarker8").visible)
+         tryVerify(function(){return pins.contentY > 0})
+         var rx=findChild(board,"portsHeaderPin16")
+         var tx=findChild(board,"portsHeaderPin18")
+         var rxY=rx.mapToItem(pins,0,rx.height/2).y
+         var txY=tx.mapToItem(pins,0,tx.height/2).y
+         verify(rxY >= rx.height/2 && txY + tx.height/2 <= pins.height)
+
+         var pin=art.pointForPin(16,false)
+         compare(art.hitPin(pin.x,pin.y,art.geometry.header),16)
+         mouseClick(art,Math.round(pin.x),Math.round(pin.y))
+         compare(board.inspectedPin,16)
+         tx.forceActiveFocus()
+         keyClick(Qt.Key_Space)
+         compare(board.inspectedPin,18)
+
+         var last=findChild(board,"portsHeaderPin40")
+         last.forceActiveFocus()
+         tryVerify(function(){return last.mapToItem(pins,0,last.height).y <= pins.height + 1})
+         keyClick(Qt.Key_Space)
+         compare(board.inspectedPin,40)
+         verify(findChild(art,"portsBoardMarker40").visible)
      }
      function test_gpio_highlights_use_physical_pins(){
          _ohdSystemAir.ohd_platform_type=11
